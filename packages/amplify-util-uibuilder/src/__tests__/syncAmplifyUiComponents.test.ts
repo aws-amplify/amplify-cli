@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
+import { AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import {
   generateUiBuilderComponents,
@@ -13,8 +13,8 @@ import { AmplifyStudioClient } from '../clients';
 import * as createUiBuilderComponentDependency from '../commands/utils/codegenResources';
 import { exampleSchema } from './utils';
 
-jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   FeatureFlags: {
     getBoolean: () => false,
     getNumber: () => 0,
@@ -139,6 +139,10 @@ describe('should sync amplify ui builder components', () => {
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
           },
         })),
       })),
@@ -179,6 +183,10 @@ describe('should sync amplify ui builder components', () => {
       expect.objectContaining({
         autoGenerateForms: true,
         autoGenerateViews: true,
+        formFeatureFlags: {
+          isRelationshipSupported: false,
+          isNonModelSupported: false,
+        },
       }),
     );
   });

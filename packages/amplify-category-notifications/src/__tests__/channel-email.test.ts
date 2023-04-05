@@ -1,7 +1,7 @@
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as channelEmail from '../channel-email';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
-import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
 import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
 jest.mock('@aws-amplify/amplify-prompts');

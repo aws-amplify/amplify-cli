@@ -13,7 +13,7 @@ import {
   IPluginCapabilityAPIResponse,
   $TSAny,
   AmplifyError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { addResource } from './provider-utils/awscloudformation/index';
 import { analyticsPush } from './commands/analytics';
@@ -22,7 +22,7 @@ import { invokeNotificationsAPIGetAvailableChannelNames } from './plugin-client-
 import { pinpointHasInAppMessagingPolicy } from './utils/pinpoint-helper';
 import { getAnalyticsResources } from './utils/analytics-helper';
 import { analyticsMigrations } from './migrations';
-import { LocalEnvInfo } from 'amplify-cli-core';
+import { LocalEnvInfo } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Get all analytics resources. If resourceProviderService name is provided,

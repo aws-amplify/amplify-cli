@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run as runHelp } from './analytics/help';
 
 export { run as analyticsPush } from './analytics/push';

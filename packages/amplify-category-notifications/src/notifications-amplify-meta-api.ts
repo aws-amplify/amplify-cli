@@ -12,7 +12,7 @@ import {
   INotificationsResourceMeta,
   pathManager,
   AmplifyError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { invokeGetLastPushTimeStamp } from './plugin-client-api-analytics';
 import { getAvailableChannels } from './notifications-backend-cfg-channel-api';

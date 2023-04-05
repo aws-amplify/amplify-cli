@@ -1,7 +1,7 @@
 /**
  * Channel Action handler API
  */
-import { $TSAny, $TSContext, IPluginCapabilityAPIResponse } from 'amplify-cli-core';
+import { $TSAny, $TSContext, IPluginCapabilityAPIResponse } from '@aws-amplify/amplify-cli-core';
 import { INotificationsResourceBackendConfig } from './notifications-backend-cfg-types';
 
 /**
