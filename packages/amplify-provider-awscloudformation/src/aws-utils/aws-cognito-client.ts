@@ -3,22 +3,17 @@ import aws from './aws.js';
 import * as AWS from 'aws-sdk';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 
-export class CognitoUserPoolClient {
-  private static instance: CognitoUserPoolClient;
+export class CognitoUserPoolClientProvider {
+  private static instance: CognitoUserPoolClientProvider;
   readonly client: AWS.CognitoIdentityServiceProvider;
 
-  static async getInstance(context: $TSContext, options = {}): Promise<CognitoUserPoolClient> {
-    if (!CognitoUserPoolClient.instance) {
-      let cred: AwsSecrets = {};
-      try {
-        cred = await loadConfiguration(context);
-      } catch (e) {
-        // ignore missing config
-      }
+  static async getInstance(context: $TSContext, options = {}): Promise<CognitoUserPoolClientProvider> {
+    if (!CognitoUserPoolClientProvider.instance) {
+      const cred: AwsSecrets = await loadConfiguration(context);
 
-      CognitoUserPoolClient.instance = new CognitoUserPoolClient(cred, options);
+      CognitoUserPoolClientProvider.instance = new CognitoUserPoolClientProvider(cred, options);
     }
-    return CognitoUserPoolClient.instance;
+    return CognitoUserPoolClientProvider.instance;
   }
 
   constructor(creds: AwsSecrets, options = {}) {

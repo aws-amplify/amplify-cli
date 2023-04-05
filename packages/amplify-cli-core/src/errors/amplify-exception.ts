@@ -202,6 +202,7 @@ export type AmplifyFaultType =
   | 'NotificationsChannelSmsFault'
   | 'NotImplementedFault'
   | 'ParameterDownloadFault'
+  | 'ParametersNotFoundFault'
   | 'ParameterUploadFault'
   | 'PluginNotLoadedFault'
   | 'ProjectDeleteFault'

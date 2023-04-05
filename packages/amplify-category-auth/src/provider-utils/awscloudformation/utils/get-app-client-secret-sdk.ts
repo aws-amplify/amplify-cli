@@ -1,7 +1,7 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
-export const getAppClientSecretViaSdk = async (context: $TSContext, userpoolId: string, clientId: string): Promise<string | undefined> => {
+export const getAppClientSecret = async (context: $TSContext, userpoolId: string, clientId: string): Promise<string | undefined> => {
   const identity = await getCognitoIdentityProviderClient(context);
   const params = {
     ClientId: clientId,

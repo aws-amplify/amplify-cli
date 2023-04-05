@@ -3,7 +3,7 @@ import { join } from 'path';
 import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
 import { CircleCIConfig } from './cci-types';
 import { loadConfig, REPO_ROOT, saveConfig } from './cci-utils';
-import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
+import { migrationFromV10Tests, migrationFromV11Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
 import { splitTestsV2 } from './split-e2e-tests-v2';
 
 function verifyConfig() {
@@ -135,8 +135,19 @@ function main(): void {
       return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
+  const splitV11MigrationTests = splitTestsV2(
+    splitV10MigrationTests,
+    counts,
+    'amplify_migration_tests_v11',
+    'build_test_deploy_v3',
+    join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
+    true,
+    (tests: string[]) => {
+      return tests.filter((testName) => migrationFromV11Tests.find((t) => t === testName));
+    },
+  );
   console.log(counts);
-  saveConfig(splitV10MigrationTests);
+  saveConfig(splitV11MigrationTests);
   verifyConfig();
 }
 main();

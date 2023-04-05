@@ -1,10 +1,8 @@
-import { $TSContext, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
-import { AuthInputState } from '../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
-import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
-import { updatesAppClientSecret } from '../../../../provider-utils/awscloudformation/utils/generate-cognito-app-client-secret';
+import { $TSContext, stateManager, pathManager, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { updateAppClientWithGeneratedSecret } from '../../../../provider-utils/awscloudformation/utils/generate-cognito-app-client-secret';
 import { projectHasAuth } from '../../../../provider-utils/awscloudformation/utils/project-has-auth';
 import { getAuthResourceName } from '../../../../utils/getAuthResourceName';
-import { getAppClientSecretViaSdk } from '../../../../provider-utils/awscloudformation/utils/get-app-client-secret-sdk';
+import { getAppClientSecret } from '../../../../provider-utils/awscloudformation/utils/get-app-client-secret-sdk';
 
 jest.mock('amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/project-has-auth');
@@ -13,14 +11,14 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/get-app-client-sec
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
+const AmplifyFaultMock = AmplifyFault as jest.MockedClass<typeof AmplifyFault>;
 const projectHasAuthMock = projectHasAuth as jest.MockedFunction<typeof projectHasAuth>;
 const getAuthResourceNameMock = getAuthResourceName as jest.MockedFunction<typeof getAuthResourceName>;
-const getAppClientSecretViaSdkMock = getAppClientSecretViaSdk as jest.MockedFunction<typeof getAppClientSecretViaSdk>;
+const getAppClientSecretMock = getAppClientSecret as jest.MockedFunction<typeof getAppClientSecret>;
 
 pathManagerMock.getBackendDirPath.mockReturnValue('mockBackendPath');
 projectHasAuthMock.mockReturnValue(true);
 getAuthResourceNameMock.mockResolvedValue('mockResource');
-
 const contextStub = {
   amplify: {
     getImportedAuthProperties: jest.fn().mockResolvedValue({ imported: false }),
@@ -28,7 +26,7 @@ const contextStub = {
   },
 };
 describe('test auth trigger stack Parameters', () => {
-  it('test case 1 - app client secret when userpoolId isnt present  ', async () => {
+  it('test case 1 - throws error when userpoolId isnt present  ', async () => {
     stateManagerMock.getMeta.mockReturnValue({
       auth: {
         mockResource: {
@@ -38,83 +36,27 @@ describe('test auth trigger stack Parameters', () => {
         },
       },
     });
-    getAppClientSecretViaSdkMock.mockResolvedValue('mockAppClientSecret');
-    jest.spyOn(AuthInputState.prototype, 'cliInputFileExists').mockReturnValue(true);
-    jest.spyOn(AuthInputState.prototype, 'getCLIInputPayload').mockReturnValue({
-      version: '1',
-      cognitoConfig: {
-        authSelections: 'identityPoolAndUserPool',
-        autoVerifiedAttributes: ['mock'],
-        mfaConfiguration: 'OFF',
-        useEnabledMfas: false,
-        requiredAttributes: ['mock'],
-        resourceName: 'mockResource',
-        useDefault: 'default',
-        usernameAttributes: [AttributeType.EMAIL],
-        serviceName: 'Cognito',
-        userpoolClientGenerateSecret: false,
-      },
+    AmplifyFaultMock.mockImplementationOnce(() => {
+      {
+        throw new Error('clientId and userpoolId should be present in amplify-meta.json');
+      }
     });
-    await updatesAppClientSecret(contextStub as unknown as $TSContext);
-    expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`
+    await expect(
+      async () => await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"clientId and userpoolId should be present in amplify-meta.json"`);
+    expect(AmplifyFaultMock.mock.calls).toMatchInlineSnapshot(`
       Array [
         Array [
-          "auth",
-          "mockResource",
-          "output",
+          "ParametersNotFoundFault",
           Object {
-            "AppClientID": "mockClientId",
-          },
-        ],
-      ]
-    `);
-  });
-  it('test case 2 - app client doesnt get generated when userpoolClientGenerateSecret is false  ', async () => {
-    jest.clearAllMocks();
-    stateManagerMock.getMeta.mockReturnValue({
-      auth: {
-        mockResource: {
-          output: {
-            AppClientID: 'mockClientId',
-            UserPoolId: 'mockUserpoolId',
-          },
-        },
-      },
-    });
-    getAppClientSecretViaSdkMock.mockResolvedValue('mockAppClientSecret');
-    jest.spyOn(AuthInputState.prototype, 'cliInputFileExists').mockReturnValue(true);
-    jest.spyOn(AuthInputState.prototype, 'getCLIInputPayload').mockReturnValue({
-      version: '1',
-      cognitoConfig: {
-        authSelections: 'identityPoolAndUserPool',
-        autoVerifiedAttributes: ['mock'],
-        mfaConfiguration: 'OFF',
-        useEnabledMfas: false,
-        requiredAttributes: ['mock'],
-        resourceName: 'mockResource',
-        useDefault: 'default',
-        usernameAttributes: [AttributeType.EMAIL],
-        serviceName: 'Cognito',
-        userpoolClientGenerateSecret: false,
-      },
-    });
-    await updatesAppClientSecret(contextStub as unknown as $TSContext);
-    expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "auth",
-          "mockResource",
-          "output",
-          Object {
-            "AppClientID": "mockClientId",
-            "UserPoolId": "mockUserpoolId",
+            "message": "clientId and userpoolId should be present in amplify-meta.json",
           },
         ],
       ]
     `);
   });
 
-  it('test case 2 - appClientSecret doesnt gets generated when sdk returns undefined ', async () => {
+  it('test case 2 - appClientSecret doesnt get updated when sdk returns undefined ', async () => {
     jest.clearAllMocks();
     stateManagerMock.getMeta.mockReturnValue({
       auth: {
@@ -126,40 +68,12 @@ describe('test auth trigger stack Parameters', () => {
         },
       },
     });
-    getAppClientSecretViaSdkMock.mockResolvedValue(undefined);
-    jest.spyOn(AuthInputState.prototype, 'cliInputFileExists').mockReturnValue(true);
-    jest.spyOn(AuthInputState.prototype, 'getCLIInputPayload').mockReturnValue({
-      version: '1',
-      cognitoConfig: {
-        authSelections: 'identityPoolAndUserPool',
-        autoVerifiedAttributes: ['mock'],
-        mfaConfiguration: 'OFF',
-        useEnabledMfas: false,
-        requiredAttributes: ['mock'],
-        resourceName: 'mockResource',
-        useDefault: 'default',
-        usernameAttributes: [AttributeType.EMAIL],
-        serviceName: 'Cognito',
-        userpoolClientGenerateSecret: true,
-      },
-    });
-    await updatesAppClientSecret(contextStub as unknown as $TSContext);
-    expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "auth",
-          "mockResource",
-          "output",
-          Object {
-            "AppClientID": "mockClientId",
-            "UserPoolId": "mockUserpoolId",
-          },
-        ],
-      ]
-    `);
+    getAppClientSecretMock.mockResolvedValue(undefined);
+    await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext);
+    expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`Array []`);
   });
 
-  it('test case 3 - appClientSecret gets generated when userpoolClientGenerateSecret is true ', async () => {
+  it('test case 3 - appClientSecret updates successfully ', async () => {
     jest.clearAllMocks();
     stateManagerMock.getMeta.mockReturnValue({
       auth: {
@@ -167,28 +81,18 @@ describe('test auth trigger stack Parameters', () => {
           output: {
             AppClientID: 'mockClientId',
             UserPoolId: 'mockUserpoolId',
+            AmazonWebClient: 'mockAmazonWebClient',
+            FacebookWebClient: 'mockFacebookWebClient',
+            GoogleWebClient: 'mockGoogleWebClient',
+            AppleWebClient: 'mockAppleWebClient',
+            HostedUIDomain: 'mockHostedUIDomain',
+            OAuthMetadata: 'mockOAuthMetadata',
           },
         },
       },
     });
-    getAppClientSecretViaSdkMock.mockResolvedValue('mockAppClientSecret');
-    jest.spyOn(AuthInputState.prototype, 'cliInputFileExists').mockReturnValue(true);
-    jest.spyOn(AuthInputState.prototype, 'getCLIInputPayload').mockReturnValue({
-      version: '1',
-      cognitoConfig: {
-        authSelections: 'identityPoolAndUserPool',
-        autoVerifiedAttributes: ['mock'],
-        mfaConfiguration: 'OFF',
-        useEnabledMfas: false,
-        requiredAttributes: ['mock'],
-        resourceName: 'mockResource',
-        useDefault: 'default',
-        usernameAttributes: [AttributeType.EMAIL],
-        serviceName: 'Cognito',
-        userpoolClientGenerateSecret: true,
-      },
-    });
-    await updatesAppClientSecret(contextStub as unknown as $TSContext);
+    getAppClientSecretMock.mockResolvedValue('mockAppClientSecret');
+    await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext);
     expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`
       Array [
         Array [
@@ -196,10 +100,50 @@ describe('test auth trigger stack Parameters', () => {
           "mockResource",
           "output",
           Object {
+            "AmazonWebClient": "mockAmazonWebClient",
             "AppClientID": "mockClientId",
             "AppClientSecret": "mockAppClientSecret",
+            "AppleWebClient": "mockAppleWebClient",
+            "FacebookWebClient": "mockFacebookWebClient",
+            "GoogleWebClient": "mockGoogleWebClient",
+            "HostedUIDomain": "mockHostedUIDomain",
+            "OAuthMetadata": "mockOAuthMetadata",
             "UserPoolId": "mockUserpoolId",
           },
+        ],
+      ]
+    `);
+  });
+
+  it('test case 4 -  throws error when getAppClientSecret call fails ', async () => {
+    jest.clearAllMocks();
+    stateManagerMock.getMeta.mockReturnValue({
+      auth: {
+        mockResource: {
+          output: {
+            AppClientID: 'mockClientId',
+            UserPoolId: 'mockUserpoolId',
+          },
+        },
+      },
+    });
+    getAppClientSecretMock.mockRejectedValue('error fetching app client secret');
+    AmplifyFaultMock.mockImplementationOnce(() => {
+      {
+        throw new Error('error fetching app client secret');
+      }
+    });
+    await expect(
+      async () => await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"error fetching app client secret"`);
+    expect(AmplifyFaultMock.mock.calls).toMatchInlineSnapshot(`
+      Array [
+        Array [
+          "ServiceCallFault",
+          Object {
+            "message": undefined,
+          },
+          "error fetching app client secret",
         ],
       ]
     `);

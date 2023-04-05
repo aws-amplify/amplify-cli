@@ -4,15 +4,13 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getAwsIOSConfig,
   getCLIInputs,
   getProjectMeta,
-  getUserPoolClients,
   setCLIInputs,
 } from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
 import { initIosProjectWithProfile11 } from '../../migration-helpers-v11/init';
-import { pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
+import { assertAppClientSecretInFiles, pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -58,21 +56,3 @@ describe('amplify add auth...', () => {
     await pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift(projRoot, projRoot2);
   });
 });
-
-const assertAppClientSecretInFiles = async (projRoot: string): Promise<void> => {
-  const config = await getAwsIOSConfig(projRoot);
-  const clientSecretInAwsIOSConfig = config.CognitoUserPool.Default.AppClientSecret;
-  expect(clientSecretInAwsIOSConfig).toBeDefined();
-  const meta = getProjectMeta(projRoot);
-  const id = Object.keys(meta.auth)[0];
-  const authMeta = meta.auth[id];
-  const clientIds = [authMeta.output.AppClientID];
-  const clientSecretInMetaFile = authMeta.output.AppClientSecret;
-  // compare client secret in meta file and ios config file
-  expect(clientSecretInMetaFile).toBeDefined();
-  expect(clientSecretInAwsIOSConfig).toEqual(clientSecretInMetaFile);
-  const clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
-  expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
-  // compare client secret in meta file with cloud value
-  expect(clients[0].UserPoolClient.ClientSecret).toEqual(clientSecretInMetaFile);
-};

@@ -28,7 +28,7 @@ import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 import { loadConfigurationForEnv } from './configuration-manager';
 import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { SSM } from './aws-utils/aws-ssm';
-import { CognitoUserPoolClient } from './aws-utils/aws-cognito-client';
+import { CognitoUserPoolClientProvider } from './aws-utils/aws-cognito-client';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
 import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
@@ -137,7 +137,7 @@ export async function getConfiguredSSMClient(context) {
 }
 
 export async function getConfiguredCognitoIdentityProviderClient(context) {
-  return await CognitoUserPoolClient.getInstance(context);
+  return await CognitoUserPoolClientProvider.getInstance(context);
 }
 
 export async function getConfiguredLocationServiceClient(context: $TSContext, options?: Record<string, unknown>) {
