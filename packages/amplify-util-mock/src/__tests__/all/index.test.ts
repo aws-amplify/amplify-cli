@@ -1,6 +1,6 @@
-import { $TSAny, AmplifyFault } from 'amplify-cli-core';
+import { $TSAny } from 'amplify-cli-core';
 import { mockAllCategories } from '../../mockAll';
-import { prompter, printer } from '@aws-amplify/amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 
 jest.mock('@aws-amplify/amplify-prompts');
 
