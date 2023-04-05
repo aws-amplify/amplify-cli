@@ -18,7 +18,8 @@ RUN sudo apt-get update && \
   groff \
   less \
   tree \
-  nano
+  nano \
+  python3-pip
 
 # Install NodeJS tools
 RUN mkdir /home/circleci/.npm-global && \
@@ -29,21 +30,20 @@ RUN mkdir /home/circleci/.npm-global && \
 RUN sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
 # Install Python
-RUN sudo add-apt-repository ppa:deadsnakes/ppa -y && \
-    sudo sudo apt-get update && \
-    sudo apt-get install -y \
-  python2 \
-  libpython2-dev \
-  python3.8 \
-  python3.8-distutils \
-  python3-pip \
-  libpython3-dev
+# inspired by: https://github.com/aws/aws-codebuild-docker-images/blob/9282872af78aeb1b5df3010ed3872c40f3d0f056/al2/x86_64/standard/2.0/Dockerfile
+RUN curl https://pyenv.run | bash
+ENV PATH="/home/circleci/.pyenv/shims:/home/circleci/.pyenv/bin:$PATH"
+ENV PYTHON_38_VERSION="3.8.10"
 
-RUN sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1 && \
-    python3 --version && \
-    pip3 --version && \
-    which python3 && \
-    pip3 install --user pipenv
+ARG PYTHON_PIP_VERSION=21.1.2
+ENV PYYAML_VERSION=5.4.1
+COPY tools/runtime_configs/python/$PYTHON_38_VERSION /root/.pyenv/plugins/python-build/share/python-build/$PYTHON_38_VERSION
+RUN env PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install $PYTHON_38_VERSION && rm -rf /tmp/*
+RUN pyenv global $PYTHON_38_VERSION
+RUN set -ex \
+    && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
+    && pip3 install --no-cache-dir --upgrade "PyYAML==$PYYAML_VERSION" \
+    && pip3 install --no-cache-dir --upgrade setuptools wheel aws-sam-cli boto3 pipenv virtualenv
 
 # Install AWS CLI
 RUN sudo pip install awscli
