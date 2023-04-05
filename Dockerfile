@@ -56,7 +56,7 @@ ARG AWS_REGION
 RUN aws configure --profile=pkg-binaries-fetcher set aws_access_key_id $PKG_AWS_ACCESS_KEY && \
   aws configure --profile=pkg-binaries-fetcher set aws_secret_access_key $PKG_AWS_SECRET_ACCESS_KEY  && \
   aws configure --profile=pkg-binaries-fetcher set aws_session_token $PKG_AWS_SESSION_TOKEN
-ENV binaries_bucket_name="amplify-cli-pkg-fetch-nodejs-binaries" \
+ENV binaries_bucket_name="amplify-cli-pkg-fetch-nodejs-binaries"
 ENV binaries_tag="v3.4"
 ENV fourteen_version="14.21.3"
 ENV eighteen_version="18.15.0"
