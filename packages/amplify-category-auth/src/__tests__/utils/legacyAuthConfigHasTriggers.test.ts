@@ -4,8 +4,6 @@ import { legacyAuthConfigHasTriggers } from '../../utils/legacyAuthConfigHasTrig
 jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-
-stateManagerMock.getResourceParametersJson.mock;
 describe('legacyAuthConfigHasTriggers', () => {
   it('returns false if params are undefined', () => {
     stateManagerMock.getResourceParametersJson.mockReturnValueOnce(undefined);
