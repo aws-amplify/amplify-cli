@@ -4,7 +4,7 @@ env:
   variables:
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2b.test.ts
-    IS_CI: true
+    CI: true
 phases:
   build:
     commands:
@@ -13,7 +13,7 @@ phases:
       - export CODEBUILD_SOURCE_VERSION=4610160556171f344780aeb2f0d01b7b20147b5d
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
-      - export IS_CI=true
+      - export CI=true
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
       - source ./shared-scripts.sh && _runE2ETestsLinux
