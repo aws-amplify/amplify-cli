@@ -4,13 +4,20 @@ env:
   variables:
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2b.test.ts
+    CI: true
+    CIRCLECI: true
 phases:
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
-      # - export CODEBUILD_SOURCE_VERSION=3fd87009bf573ebc8cda120dfe0cfd7f6a134fe3
+      - export NODE_OPTIONS=--max-old-space-size=8096
+      # - export CODEBUILD_SOURCE_VERSION=4610160556171f344780aeb2f0d01b7b20147b5d
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
       - source ./shared-scripts.sh && _runE2ETestsLinux
+      - codebuild-breakpoint
+  post_build:
+    commands:
+      - aws sts get-caller-identity
