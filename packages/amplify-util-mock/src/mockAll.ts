@@ -4,10 +4,11 @@ import { start as startLambdaServer } from './func';
 
 import { ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
 import { prompter } from '@aws-amplify/amplify-prompts';
+import { $TSContext } from 'amplify-cli-core';
 
 const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', FunctionServiceName.LambdaFunction];
 
-export async function mockAllCategories(context: any) {
+export async function mockAllCategories(context: $TSContext): Promise<void> {
   const resources = await context.amplify.getResourceStatus();
   const mockableResources = resources.allResources.filter(
     (resource) => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service),
