@@ -22,9 +22,10 @@ batch:
     - identifier: build_windows
       buildspec: codebuild_specs/build_windows.yml
       env:
+        imagePullCredentialsType: CODEBUILD
         type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
-        # image: aws/codebuild/windows-base:2019-2.0
+        image: aws/codebuild/windows-base:2019-2.0
     - identifier: test
       buildspec: codebuild_specs/test.yml
       env:
@@ -104,9 +105,10 @@ batch:
     - identifier: run_e2e_tests_windows
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
+        imagePullCredentialsType: CODEBUILD
         type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
-        # image: aws/codebuild/windows-base:2019-2.0
+        image: aws/codebuild/windows-base:2019-2.0
       debug-session: true
       depend-on:
         - upload_pkg_binaries
