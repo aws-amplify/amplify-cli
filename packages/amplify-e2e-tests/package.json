@@ -38,7 +38,7 @@
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.68.0",
-    "aws-sdk": "^2.1233.0",
+    "aws-sdk": "^2.1350.0",
     "axios": "^0.26.0",
     "circleci-api": "^4.1.4",
     "constructs": "^10.0.5",

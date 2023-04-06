@@ -1,5 +1,5 @@
 import { Amplify } from 'aws-sdk';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { getConfiguredAmplifyClient } from '../aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from '../amplify-service-permission-check';
 import { init } from '../amplify-service-manager';

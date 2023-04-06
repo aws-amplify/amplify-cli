@@ -120,7 +120,7 @@ class CloudFormation {
     return new Promise((resolve, reject) => {
       this.pollQueue.once('empty', () => {
         const failedStacks = this.stackEvents.filter((ev) => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
-
+        const customStackIds = this.getCustomStackIds(failedStacks);
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
           printer.error('The following resources failed to deploy:');
@@ -128,7 +128,7 @@ class CloudFormation {
             console.log(t);
             console.log('\n');
           });
-          resolve(collectStackErrorMessages(this.filterFailedStackEvents(failedStacks)));
+          resolve(collectStackErrorMessages(this.filterFailedStackEvents(failedStacks), customStackIds));
         } catch (e) {
           reject(e);
         } finally {
@@ -138,6 +138,19 @@ class CloudFormation {
         }
       });
     });
+  }
+
+  getCustomStackIds(eventsWithFailure) {
+    return eventsWithFailure
+      .filter((stack) => stack.ResourceType === 'AWS::CloudFormation::Stack')
+      .filter(
+        (stack) =>
+          this.eventMap['rootResources'] &&
+          this.eventMap['rootResources'].some(
+            (resource) => resource.category.includes('custom-') && resource.key === stack.LogicalResourceId,
+          ),
+      )
+      .map((stack) => stack.PhysicalResourceId);
   }
 
   /**

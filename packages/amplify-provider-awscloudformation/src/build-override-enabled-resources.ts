@@ -1,5 +1,5 @@
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
-import { $TSContext, $TSObject, IAmplifyResource } from 'amplify-cli-core';
+import { $TSContext, $TSObject, IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Build all the cfn files for categories  that support overrides

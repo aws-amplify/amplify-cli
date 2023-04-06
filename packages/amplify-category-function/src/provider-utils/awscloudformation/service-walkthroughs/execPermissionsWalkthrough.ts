@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as TransformPackage from 'graphql-transformer-core';

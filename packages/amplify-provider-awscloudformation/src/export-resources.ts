@@ -7,7 +7,7 @@ import {
   spinner,
   stateManager,
   validateExportDirectoryPath,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';

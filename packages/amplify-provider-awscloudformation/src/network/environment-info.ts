@@ -1,4 +1,4 @@
-import { AmplifyError, JSONUtilities } from 'amplify-cli-core';
+import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { EC2 } from 'aws-sdk';
 import { Netmask } from 'netmask';
 import { loadConfiguration } from '../configuration-manager';

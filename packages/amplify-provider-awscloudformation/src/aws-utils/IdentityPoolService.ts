@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyFault, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import { CognitoIdentity } from 'aws-sdk';
 import { PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse } from 'aws-sdk/clients/cognitoidentity';

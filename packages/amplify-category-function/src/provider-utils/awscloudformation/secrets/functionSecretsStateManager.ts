@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError, JSONUtilities, pathManager, ResourceName, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, JSONUtilities, pathManager, ResourceName, stateManager } from '@aws-amplify/amplify-cli-core';
 import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from '@aws-amplify/amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';

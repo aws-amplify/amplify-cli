@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   getResourcesForCfn,
   generateEnvVariablesForCfn,
@@ -8,7 +8,6 @@ import {
   constructCFModelTableNameComponent,
   constructCFModelTableArnComponent,
 } from '../../../../provider-utils/awscloudformation/utils/cloudformationHelpers';
-import { stateManager } from 'amplify-cli-core';
 import { CRUDOperation } from '../../../../constants';
 import inquirer from 'inquirer';
 
