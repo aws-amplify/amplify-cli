@@ -201,6 +201,8 @@ jobs:
       - run: yarn lint-check
       - run: yarn lint-check-package-json
       - run: yarn prettier-check
+    environment:
+      NODE_OPTIONS: --max-old-space-size=5120
 
   verify-api-extract:
     <<: *linux-e2e-executor-xlarge
