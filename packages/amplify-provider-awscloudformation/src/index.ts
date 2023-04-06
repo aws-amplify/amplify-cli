@@ -30,7 +30,7 @@ import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-util
 import { SSM } from './aws-utils/aws-ssm';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
-import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
+import { $TSContext, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import * as resourceExport from './export-resources';
 import * as exportUpdateMeta from './export-update-amplify-meta';
 

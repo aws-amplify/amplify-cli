@@ -4,13 +4,9 @@ import glob from 'glob';
 import * as execa from 'execa';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { dotnetcore31, executableName } from '../constants';
+import { executableName } from '../constants';
 
-export const build = async ({ srcRoot, lastBuildTimeStamp, buildType, runtime }: BuildRequest): Promise<BuildResult> => {
-  if (runtime === dotnetcore31) {
-    printer.warn(`.NET Core 3.1 is deprecated. Migrate your function at ${srcRoot} to .NET 6.`);
-  }
+export const build = async ({ srcRoot, lastBuildTimeStamp, buildType }: BuildRequest): Promise<BuildResult> => {
   const distPath = path.join(srcRoot, 'dist');
   const sourceFolder = path.join(srcRoot, 'src');
   if (!lastBuildTimeStamp || !fs.existsSync(distPath) || isBuildStale(sourceFolder, lastBuildTimeStamp)) {

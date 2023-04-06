@@ -1,5 +1,5 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 // eslint-disable-next-line import/no-cycle
 import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT } from '../../api/api';

@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { mockAllCategories } from '../../mockAll';
 import { run as runHelp } from './help';
 

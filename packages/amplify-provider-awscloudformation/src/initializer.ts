@@ -12,7 +12,7 @@ import {
   stateManager,
   Tag,
   Template,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';

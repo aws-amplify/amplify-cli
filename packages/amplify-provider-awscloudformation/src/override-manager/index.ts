@@ -1,4 +1,4 @@
-import { $TSContext, Template } from 'amplify-cli-core';
+import { $TSContext, Template } from '@aws-amplify/amplify-cli-core';
 import { AmplifyRootStackTransform } from '../root-stack-builder';
 
 // eslint-disable-next-line import/no-cycle

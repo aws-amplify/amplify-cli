@@ -585,7 +585,11 @@ async function addS3ForIdentity(context, storageAccess, bucketName) {
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-    throw new Error(checkResult.errors.join(os.EOL));
+    throw new AmplifyError('ConfigurationError', {
+      message: 'The imported auth config is not compatible with the specified predictions config',
+      details: checkResult.errors.join(os.EOL),
+      resolution: 'Manually configure the imported auth resource according to the details above',
+    });
   }
 
   if (checkResult.errors && checkResult.errors.length > 0) {

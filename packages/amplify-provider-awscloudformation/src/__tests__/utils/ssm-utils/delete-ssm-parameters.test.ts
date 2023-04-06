@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../../../aws-utils/aws-ssm';
 import { deleteEnvironmentParametersFromService } from '../../../utils/ssm-utils/delete-ssm-parameters';

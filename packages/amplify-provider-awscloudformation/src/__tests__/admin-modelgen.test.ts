@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, pathManager } from 'amplify-cli-core';
+import { $TSContext, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { adminModelgen } from '../admin-modelgen';
 import { S3 } from '../aws-utils/aws-s3';
