@@ -41,6 +41,12 @@ export class LayerCloudState {
         spinner.stop();
         return [];
       }
+      if (layerVersionList.length === 0) {
+        const missingLayers = layerStacks.map(({ LogicalResourceId }) => `    * ${LogicalResourceId}\n`);
+        throw new AmplifyError('LambdaLayerNotFoundError', {
+          message: `No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?\n\nThe following layers were not found:\n${missingLayers}`,
+        });
+      }
 
       layerVersionList.forEach((layerVersion: LayerVersionMetadata) => {
         let layerLogicalIdSuffix: string;
@@ -103,11 +109,6 @@ export class LayerCloudState {
         // eslint-disable-next-line no-param-reassign
         layerVersion.legacyLayer = layerVersion.LogicalName === undefined || layerVersion.LogicalName === 'LambdaLayer';
       });
-      if (layerVersionList.length === 0) {
-        throw new AmplifyError('LambdaLayerNotFoundError', {
-          message: 'No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?',
-        });
-      }
       this.layerVersionsMetadata = layerVersionList.sort((a: LayerVersionMetadata, b: LayerVersionMetadata) => b.Version - a.Version);
       this.latestVersionLogicalId = this.layerVersionsMetadata[0].LogicalName;
     } catch (e) {

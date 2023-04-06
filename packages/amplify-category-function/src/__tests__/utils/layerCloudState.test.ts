@@ -48,7 +48,7 @@ describe('When the lambda layer is not found in the deployed stack', () => {
     await cloudState.getLayerVersionsFromCloud(context as unknown as $TSContext, LAYER_NAME);
     expect(context.usageData.emitError).toHaveBeenCalledWith(
       new Error(
-        'An error occurred fetching the latest layer version metadata for "a-fake-layer-name": No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?',
+        `An error occurred fetching the latest layer version metadata for "a-fake-layer-name": No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?\n\nThe following layers were not found:\n    * ${LAYER_NAME}\n`,
       ),
     );
     expect(processExit).toHaveBeenCalledWith(1);
