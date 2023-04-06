@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSObject, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Checks if auth already exists in the project and prints a warning if so.
