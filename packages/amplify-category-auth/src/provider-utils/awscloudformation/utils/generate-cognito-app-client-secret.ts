@@ -17,6 +17,7 @@ export const updateAppClientWithGeneratedSecret = async (context: $TSContext): P
       const authMetaOutput: MetaOutput = stateManager.getMeta()?.auth[authResourceName]?.output;
       const clientId = authMetaOutput.AppClientID;
       const userpoolId = authMetaOutput.UserPoolId;
+      // no else case required as userpool client is default created with userPool when created through amplify
       if (clientId && userpoolId) {
         try {
           const appClientSecret = await getAppClientSecret(context, userpoolId, clientId);
@@ -33,15 +34,6 @@ export const updateAppClientWithGeneratedSecret = async (context: $TSContext): P
             error,
           );
         }
-      } else {
-        console.log('reached here');
-        /* throw a fault here as both clientId and userPoolId are expected to be 
-         present in amplify-meta.json. This follows previous behavior of fectching 
-         appClientSecret with CustomResource if any input parameter is missing from custom resource
-        */
-        throw new AmplifyFault('ParametersNotFoundFault', {
-          message: 'clientId and userpoolId should be present in amplify-meta.json',
-        });
       }
     }
   }

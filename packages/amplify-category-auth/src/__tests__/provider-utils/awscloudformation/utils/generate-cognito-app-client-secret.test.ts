@@ -26,37 +26,8 @@ const contextStub = {
   },
 };
 describe('test auth trigger stack Parameters', () => {
-  it('test case 1 - throws error when userpoolId isnt present  ', async () => {
-    stateManagerMock.getMeta.mockReturnValue({
-      auth: {
-        mockResource: {
-          output: {
-            AppClientID: 'mockClientId',
-          },
-        },
-      },
-    });
-    AmplifyFaultMock.mockImplementationOnce(() => {
-      {
-        throw new Error('clientId and userpoolId should be present in amplify-meta.json');
-      }
-    });
-    await expect(
-      async () => await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"clientId and userpoolId should be present in amplify-meta.json"`);
-    expect(AmplifyFaultMock.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "ParametersNotFoundFault",
-          Object {
-            "message": "clientId and userpoolId should be present in amplify-meta.json",
-          },
-        ],
-      ]
-    `);
-  });
 
-  it('test case 2 - appClientSecret doesnt get updated when sdk returns undefined ', async () => {
+  it('test case 1 - appClientSecret doesnt get updated when sdk returns undefined ', async () => {
     jest.clearAllMocks();
     stateManagerMock.getMeta.mockReturnValue({
       auth: {
@@ -73,7 +44,7 @@ describe('test auth trigger stack Parameters', () => {
     expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`Array []`);
   });
 
-  it('test case 3 - appClientSecret updates successfully ', async () => {
+  it('test case 2 - appClientSecret updates successfully ', async () => {
     jest.clearAllMocks();
     stateManagerMock.getMeta.mockReturnValue({
       auth: {
@@ -115,7 +86,7 @@ describe('test auth trigger stack Parameters', () => {
     `);
   });
 
-  it('test case 4 -  throws error when getAppClientSecret call fails ', async () => {
+  it('test case 3 -  throws error when getAppClientSecret call fails ', async () => {
     jest.clearAllMocks();
     stateManagerMock.getMeta.mockReturnValue({
       auth: {
