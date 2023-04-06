@@ -41,6 +41,7 @@ describe('handleCloudFormationError', () => {
       expect(handleCloudFormationError(cfnError));
     }).toThrowError(cfnError);
   });
+
   it('throws an AmplifyError if all erred resources are from custom resources', () => {
     const error1: CFNErrorMessage = {
       name: 'error1',
