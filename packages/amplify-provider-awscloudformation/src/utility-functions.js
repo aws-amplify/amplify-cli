@@ -1,4 +1,4 @@
-const { ApiCategoryFacade, AmplifyFault } = require('amplify-cli-core');
+const { ApiCategoryFacade, AmplifyFault } = require('@aws-amplify/amplify-cli-core');
 const awsRegions = require('./aws-regions');
 const { Lambda } = require('./aws-utils/aws-lambda');
 const DynamoDB = require('./aws-utils/aws-dynamodb');
