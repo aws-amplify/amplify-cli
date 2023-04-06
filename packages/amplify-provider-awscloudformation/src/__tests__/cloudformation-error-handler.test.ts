@@ -1,6 +1,6 @@
 import { handleCloudFormationError } from '../cloud-formation-error-handler';
 import { CFNErrorMessage, serializeErrorMessages } from '../aws-utils/cloudformation-error-serializer';
-import { AmplifyError, AmplifyException } from 'amplify-cli-core';
+import { AmplifyError, AmplifyException } from '@aws-amplify/amplify-cli-core';
 
 describe('handleCloudFormationError', () => {
   let cfnError;
