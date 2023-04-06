@@ -2,7 +2,6 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import inquirer from 'inquirer';
 import sequential from 'promise-sequential';
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { S3 } from './aws-utils/aws-s3';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { ProviderName, AmplifyAppIdLabel } from './constants';
