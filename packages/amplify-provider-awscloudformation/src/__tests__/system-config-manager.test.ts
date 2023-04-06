@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import { CredentialProviderChain, ProcessCredentials } from 'aws-sdk';
 import { getProfileCredentials, getProfiledAwsConfig } from '../system-config-manager';

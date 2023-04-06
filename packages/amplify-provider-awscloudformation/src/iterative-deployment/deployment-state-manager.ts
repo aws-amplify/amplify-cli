@@ -9,7 +9,7 @@ import {
   JSONUtilities,
   stateManager,
   AmplifyError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { S3 } from '../aws-utils/aws-s3';
 import { ProviderName } from '../constants';
 

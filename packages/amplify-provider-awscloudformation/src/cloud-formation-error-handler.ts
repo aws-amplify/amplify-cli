@@ -1,4 +1,4 @@
-import { $TSAny, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { deserializeErrorMessages, CFNErrorMessage, CFNErrorMessages } from './aws-utils/cloudformation-error-serializer';
 
 const s3Indicator = '(AWS::S3::Bucket)';

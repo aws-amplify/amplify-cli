@@ -1,4 +1,13 @@
-import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext, AmplifyError, LocalEnvInfo } from 'amplify-cli-core';
+import {
+  exitOnNextTick,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  LocalEnvInfo,
+} from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { prompt } from 'inquirer';

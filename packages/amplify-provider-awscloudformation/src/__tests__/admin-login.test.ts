@@ -1,4 +1,4 @@
-import { $TSContext, $TSAny } from 'amplify-cli-core';
+import { $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as adminLogin from '../admin-login';
 import { AmplifySpinner } from '@aws-amplify/amplify-prompts';
 
