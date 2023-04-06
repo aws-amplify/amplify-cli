@@ -3,8 +3,9 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import Template from 'cloudform-types/types/template';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import { $TSAny, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { Construct } from 'constructs';
@@ -41,6 +42,9 @@ const authProvidersList: Record<string, string> = {
   // eslint-disable-next-line spellcheck/spell-checker
   'appleid.apple.com': 'appleAppId',
 };
+
+const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
+const { readJson } = JSONUtilities;
 
 /**
  *  default props for Auth Stack
@@ -102,6 +106,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   openIdLambdaIAMPolicy?: iam.CfnPolicy;
   openIdLambdaInputs?: cdk.CustomResource;
   openIdLambdaRole?: iam.CfnRole;
+  openIdcResource?: iam.CfnOIDCProvider;
 
   constructor(scope: Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);
@@ -498,7 +503,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     // Begin IdentityPool Resources
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') {
       if (props.audiences && props.audiences.length > 0) {
-        this.createOpenIdLambdaCustomResource(props);
+        this.createOpenIdcResource(props);
       }
 
       this.identityPool = new cognito.CfnIdentityPool(this, 'IdentityPool', {
@@ -547,7 +552,14 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
       if (props.audiences && props.audiences.length > 0) {
         this.identityPool.openIdConnectProviderArns = [cdk.Fn.getAtt('OpenIdLambdaInputs', 'providerArn').toString()];
-        this.identityPool.node.addDependency(this.openIdLambdaInputs!.node!.defaultChild!);
+
+        if (this.openIdLambdaInputs) {
+          this.identityPool.node.addDependency(this.openIdLambdaInputs!.node!.defaultChild!);
+        }
+
+        if (this.openIdcResource) {
+          this.identityPool.addDependency(this.openIdcResource);
+        }
       }
 
       if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') {
@@ -1070,7 +1082,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   /**
    * creates OpenId customResource for Cognito
    */
-  createOpenIdLambdaCustomResource(props: CognitoStackOptions): void {
+  deleteExistingOpenIdLambdaCustomResource(props: CognitoStackOptions): void {
     // iam role
     /**
       # Created to execute Lambda which sets MFA config values
@@ -1145,7 +1157,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: ['iam:CreateOpenIDConnectProvider', 'iam:GetOpenIDConnectProvider', 'iam:AddClientIDToOpenIDConnectProvider'],
+            Action: ['iam:DeleteOpenIDConnectProvider'],
             Resource: cdk.Fn.sub('arn:aws:iam::${account}:oidc-provider/accounts.google.com', {
               account: cdk.Fn.ref('AWS::AccountId'),
             }),
@@ -1218,6 +1230,30 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
     });
     this.openIdLambdaInputs.node.addDependency(this.openIdLogPolicy);
+  }
+
+  createOpenIdcResource(props: CognitoStackOptions): void {
+    const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', props.resourceName);
+    const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
+    const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.OpenIdLambda?.Type === 'AWS::Lambda::Function';
+    const userPoolDomainCreatedInCloud = authCfnTemplate?.Resources?.OidcProviderResource?.Type === 'AWS::IAM::OIDCProvider';
+
+    if (lambdaCalloutCreatedInCloud && !userPoolDomainCreatedInCloud) {
+      this.deleteExistingOpenIdLambdaCustomResource(props);
+    }
+
+    const thumbprintList = ['0000000000000000000000000000000000000000'];
+    const url = 'https://accounts.google.com';
+
+    this.openIdcResource = new iam.CfnOIDCProvider(this, 'OidcProviderResource', {
+      clientIdList: props.audiences,
+      thumbprintList,
+      url,
+    });
+
+    if (this.openIdLambda) {
+      this.openIdcResource.addDependency(this.openIdLambda);
+    }
   }
 
   generateIAMPolicies = (props: CognitoStackOptions): void => {
