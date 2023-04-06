@@ -38,7 +38,7 @@ export const handleCloudFormationError = (err: Error & { details?: string }): vo
     );
   }
 
-  checkIfAllErrorsAreFromCustomResources(err);
+  throwIfAllErrorsAreFromCustomResources(err);
 
   if (err?.details?.includes(s3Indicator)) {
     handleS3Error(err);
@@ -47,7 +47,7 @@ export const handleCloudFormationError = (err: Error & { details?: string }): vo
   throw err;
 };
 
-const checkIfAllErrorsAreFromCustomResources = (err: Error & { details?: string }) => {
+const throwIfAllErrorsAreFromCustomResources = (err: Error & { details?: string }) => {
   const deserializedErrorMessages: CFNErrorMessages = deserializeErrorMessages(err.details);
   const onlyCustomResourceError =
     deserializedErrorMessages?.messages.length > 0 &&
