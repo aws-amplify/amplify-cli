@@ -325,7 +325,7 @@ function _runE2ETestsWindows {
 
 
 function _scanArtifacts {
-    if ! yarn ts-node .circleci/scan_artifacts.ts; then
+    if ! yarn ts-node .circleci/scan_artifacts_codebuild.ts; then
         echo "Cleaning the repository"
         git clean -fdx
         exit 1
