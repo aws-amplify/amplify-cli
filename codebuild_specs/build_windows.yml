@@ -1,0 +1,11 @@
+version: 0.2
+env:
+  shell: powershell.exe
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _buildWindows
+
+artifacts:
+  files:
+    - 'shared-scripts.sh'
