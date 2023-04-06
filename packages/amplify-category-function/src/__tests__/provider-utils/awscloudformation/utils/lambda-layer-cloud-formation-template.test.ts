@@ -111,7 +111,7 @@ describe('test layer CFN generation functions', () => {
       generateLayerCfnObj(false, parameters_stub, []);
     } catch (e) {
       expect(AmplifyError).toHaveBeenCalledWith('LambdaLayerNotFoundError', {
-        message: 'No versions were found for the Lambda Layer. Were they deleted?',
+        message: 'No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?',
       });
     }
   });

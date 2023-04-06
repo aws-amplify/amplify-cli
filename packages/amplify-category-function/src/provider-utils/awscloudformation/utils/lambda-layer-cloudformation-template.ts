@@ -33,7 +33,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
     logicalName = _.first(versionList)?.LogicalName;
     if (!logicalName) {
       throw new AmplifyError('LambdaLayerNotFoundError', {
-        message: 'No versions were found for the Lambda Layer. Were they deleted?',
+        message: 'No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?',
       });
     }
   }

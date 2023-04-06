@@ -1,3 +1,4 @@
+import { AmplifyError } from 'amplify-cli-core';
 import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
 import ora from 'ora';
 import { LayerCfnLogicalNamePrefix } from './constants';
@@ -104,6 +105,11 @@ export class LayerCloudState {
         // eslint-disable-next-line no-param-reassign
         layerVersion.legacyLayer = layerVersion.LogicalName === undefined || layerVersion.LogicalName === 'LambdaLayer';
       });
+      if (layerVersionList.length === 0) {
+        throw new AmplifyError('LambdaLayerNotFoundError', {
+          message: 'No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?',
+        });
+      }
       this.layerVersionsMetadata = layerVersionList.sort((a: LayerVersionMetadata, b: LayerVersionMetadata) => b.Version - a.Version);
       this.latestVersionLogicalId = this.layerVersionsMetadata[0].LogicalName;
     } catch (e) {
