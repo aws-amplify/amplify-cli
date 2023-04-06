@@ -1,4 +1,4 @@
-import { pathManager, stateManager } from 'amplify-cli-core';
+import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import { generateLayerCfnObj } from '../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template';
 import { isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';

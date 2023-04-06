@@ -1,4 +1,4 @@
-import { $TSContext, exitOnNextTick, spinner } from 'amplify-cli-core';
+import { $TSContext, exitOnNextTick, spinner } from '@aws-amplify/amplify-cli-core';
 import { LayerCfnLogicalNamePrefix } from './constants';
 // eslint-disable-next-line import/no-cycle
 import { isMultiEnvLayer } from './layerHelpers';

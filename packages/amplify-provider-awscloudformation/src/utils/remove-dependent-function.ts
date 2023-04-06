@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';
 import path from 'path';
 import { readProjectConfiguration, collectDirectivesByTypeNames, getTableNameForModel } from 'graphql-transformer-core';
 

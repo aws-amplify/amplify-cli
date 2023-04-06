@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, stateManager } from '@aws-amplify/amplify-cli-core';
 import { run } from '../initializer';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import CloudFormation from '../aws-utils/aws-cfn';

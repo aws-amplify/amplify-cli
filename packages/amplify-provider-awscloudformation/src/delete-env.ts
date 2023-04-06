@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { loadConfigurationForEnv } from './configuration-manager';
 import Cloudformation from './aws-utils/aws-cfn';
 import { S3 } from './aws-utils/aws-s3';

@@ -1,4 +1,4 @@
-import { $TSMeta } from 'amplify-cli-core';
+import { $TSMeta } from '@aws-amplify/amplify-cli-core';
 import { FunctionDependency } from '@aws-amplify/amplify-function-plugin-interface';
 import { lambdaLayerSetting, resourceAccessSetting, ServiceName } from './constants';
 

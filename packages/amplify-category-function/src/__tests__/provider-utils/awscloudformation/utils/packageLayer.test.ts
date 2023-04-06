@@ -1,4 +1,4 @@
-import { $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
+import { $TSContext, convertNumBytes, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
 import { FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { packageLayer } from '../../../../provider-utils/awscloudformation/utils/packageLayer';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';

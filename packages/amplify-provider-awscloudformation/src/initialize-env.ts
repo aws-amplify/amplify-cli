@@ -12,7 +12,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
-import { $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';

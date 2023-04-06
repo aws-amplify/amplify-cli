@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
 import { FunctionRuntimeLifecycleManager, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';

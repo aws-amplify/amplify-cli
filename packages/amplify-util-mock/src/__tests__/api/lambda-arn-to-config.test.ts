@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { lambdaArnToConfig } from '../../api/lambda-arn-to-config';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import { loadLambdaConfig } from '../../utils/lambda/load-lambda-config';

@@ -1,6 +1,6 @@
 import { StackEvent } from 'aws-sdk/clients/cloudformation';
 import * as aws from 'aws-sdk';
-import { AmplifyFault } from 'amplify-cli-core';
+import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { fileLogger, Logger } from '../utils/aws-logger';
 
 export interface StackEventMonitorOptions {
