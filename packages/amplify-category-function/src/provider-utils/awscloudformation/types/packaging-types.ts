@@ -1,4 +1,4 @@
-import { $TSContext, ResourceTuple } from 'amplify-cli-core';
+import { $TSContext, ResourceTuple } from '@aws-amplify/amplify-cli-core';
 
 export type PackageRequestMeta = ResourceTuple & {
   service: string;

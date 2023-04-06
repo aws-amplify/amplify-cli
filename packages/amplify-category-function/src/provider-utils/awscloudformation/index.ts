@@ -8,7 +8,8 @@ import {
   readCFNTemplate,
   stateManager,
   writeCFNTemplate,
-} from 'amplify-cli-core';
+  createDefaultCustomPoliciesFile,
+} from '@aws-amplify/amplify-cli-core';
 import {
   FunctionParameters,
   FunctionTemplate,
@@ -35,7 +36,6 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
-import { createDefaultCustomPoliciesFile } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function

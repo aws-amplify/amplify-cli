@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSMeta, $TSObject, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, $TSObject, getPackageManager, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import crypto from 'crypto';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';

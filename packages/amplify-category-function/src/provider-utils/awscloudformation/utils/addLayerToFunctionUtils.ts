@@ -1,4 +1,4 @@
-import { $TSContext, $TSMeta } from 'amplify-cli-core';
+import { $TSContext, $TSMeta } from '@aws-amplify/amplify-cli-core';
 import {
   ExternalLayer,
   FunctionDependency,
