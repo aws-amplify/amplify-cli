@@ -147,9 +147,8 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
       'Remove existing environment variables',
       "I'm done",
     ];
-    const action = 'Remove existing environment variables';
     chain.wait(/Select what you want to do with environment variables:*/);
-    singleSelect(chain, action, actions);
+    singleSelect(chain, actions[2], actions);
     chain.wait('Which environment variable do you want to remove:');
     chain.sendCarriageReturn(); // assumes only one variable
     chain.wait(/Select what you want to do with environment variables:*/);

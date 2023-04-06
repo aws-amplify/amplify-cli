@@ -894,6 +894,29 @@ const handleCfnFiles = (eventMap: EventMap, category: string, resource: string, 
   });
 };
 
+const getNestedStackParameters = async (context: $TSContext, categories: Array<string>, amplifyMeta: any) => {
+  const s3 = await S3.getInstance(context);
+  const currentEnvName = context.amplify.getEnvInfo().envName;
+  const urlParametersMap = {};
+  for (const category of categories) {
+    const resources = Object.keys(amplifyMeta[category]);
+    for (const resource of resources) {
+      const resourceDetails = amplifyMeta[category][resource];
+      if (resourceDetails.providerMetadata) {
+        const templateURL = resourceDetails.providerMetadata.s3TemplateURL;
+        try {
+          const key = templateURL.split(resourceDetails.s3Bucket.deploymentBucketName + '/')[1];
+          const jsonBody = await s3.getFile({ Key: key }, currentEnvName);
+          urlParametersMap[templateURL] = Object.keys(JSON.parse(jsonBody.toString()).Parameters);
+        } catch {
+          urlParametersMap[templateURL] = [];
+        }
+      }
+    }
+  }
+  return urlParametersMap;
+};
+
 /**
  *
  */
@@ -1054,28 +1077,8 @@ export const formNestedStack = async (
   }
 
   let categories = Object.keys(amplifyMeta);
-
   categories = categories.filter((category) => category !== 'providers');
-
-  const s3 = await S3.getInstance(context);
-  const currentEnvName = context.amplify.getEnvInfo().envName;
-  const urlParametersMap = {};
-  for (const category of categories) {
-    const resources = Object.keys(amplifyMeta[category]);
-    for (const resource of resources) {
-      const resourceDetails = amplifyMeta[category][resource];
-      if (resourceDetails.providerMetadata) {
-        const templateURL = resourceDetails.providerMetadata.s3TemplateURL;
-        try {
-          const key = templateURL.replace('https://s3.amazonaws.com/', '').split(resourceDetails.s3Bucket.deploymentBucketName + '/')[1];
-          const jsonBody = await s3.getFile({ Key: key }, currentEnvName);
-          urlParametersMap[templateURL] = Object.keys(JSON.parse(jsonBody.toString()).Parameters);
-        } catch {
-          urlParametersMap[templateURL] = [];
-        }
-      }
-    }
-  }
+  const urlParametersMap = await getNestedStackParameters(context, categories, amplifyMeta);
 
   categories.forEach((category) => {
     const resources = Object.keys(amplifyMeta[category]);
