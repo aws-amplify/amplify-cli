@@ -18,7 +18,7 @@
     "@aws-amplify/codegen-ui": "2.11.0",
     "@aws-amplify/codegen-ui-react": "2.11.0",
     "amplify-cli-core": "4.0.1",
-    "amplify-codegen": "^3.4.1",
+    "amplify-codegen": "3.4.2-improved-pluralization-testing.0",
     "aws-sdk": "^2.1233.0",
     "fs-extra": "^8.1.0",
     "ora": "^4.0.3",
