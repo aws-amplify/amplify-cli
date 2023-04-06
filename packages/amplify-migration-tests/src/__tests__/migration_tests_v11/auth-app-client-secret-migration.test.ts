@@ -48,8 +48,8 @@ describe('amplify add auth...', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('...should init an IOS project and add default auth', async () => {
@@ -73,7 +73,7 @@ describe('amplify add auth...', () => {
       await amplifyPushForce(projRoot3, true);
       await assertAppClientSecretInFiles(projRoot3);
     } finally {
-      // deleteProjectDir(projRoot3);
+      deleteProjectDir(projRoot3);
     }
   });
 });
