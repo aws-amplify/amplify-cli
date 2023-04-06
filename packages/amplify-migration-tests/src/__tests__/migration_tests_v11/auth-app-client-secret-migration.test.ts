@@ -1,9 +1,12 @@
 import {
   addAuthWithDefault,
+  amplifyPullNonInteractive,
   amplifyPushAuth,
+  amplifyPushForce,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  getAppId,
   getCLIInputs,
   getProjectMeta,
   setCLIInputs,
@@ -45,14 +48,32 @@ describe('amplify add auth...', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
+    // await deleteProject(projRoot);
+    // deleteProjectDir(projRoot);
   });
 
   it('...should init an IOS project and add default auth', async () => {
     // assert client secret in projRoot
     await assertAppClientSecretInFiles(projRoot);
     const projRoot2 = await createNewProjectDir(`${projectName}2`);
+    const projRoot3 = await createNewProjectDir(`${projectName}3`);
     await pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift(projRoot, projRoot2);
+    const appId = getAppId(projRoot);
+    expect(appId).toBeDefined();
+    const frontendConfig = {
+      frontend: 'ios',
+    };
+    const envName = 'integtest';
+    try {
+      await amplifyPullNonInteractive(projRoot3, {
+        appId,
+        frontend: frontendConfig,
+        envName,
+      });
+      await amplifyPushForce(projRoot3, true);
+      await assertAppClientSecretInFiles(projRoot3);
+    } finally {
+      // deleteProjectDir(projRoot3);
+    }
   });
 });

@@ -15,6 +15,7 @@ import {
   getUserPoolClients,
   parametersExists,
 } from '@aws-amplify/amplify-e2e-core';
+import { amplifyPullNonInteractive } from '@aws-amplify/amplify-e2e-core/lib/init/amplifyPull';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { AmplifyCategories } from 'amplify-cli-core';
 import { Writable } from 'stream';
@@ -188,7 +189,6 @@ export const pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift = async
     await amplifyPushForce(projRoot2, true);
     assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
     expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
-    await assertAppClientSecretInFiles(projRoot2);
   } finally {
     deleteProjectDir(projRoot2);
   }
