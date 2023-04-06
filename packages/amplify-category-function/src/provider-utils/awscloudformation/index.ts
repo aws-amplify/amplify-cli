@@ -36,7 +36,6 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
-import { createDefaultCustomPoliciesFile } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Entry point for creating a new function
