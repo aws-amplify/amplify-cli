@@ -4,7 +4,7 @@ import { start as startLambdaServer } from './func';
 
 import { ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
 import { prompter } from '@aws-amplify/amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', FunctionServiceName.LambdaFunction];
 
