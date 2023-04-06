@@ -53,13 +53,13 @@ describe('should notify when packages are missing', () => {
       },
     };
     notifyMissingPackages(context as unknown as $TSContext);
-    expect(printerDependency.printer.warn).toBeCalledTimes(2);
+    expect(printerDependency.printer.warn).toBeCalledTimes(3);
   });
 
   it('notifies for partial missing dependencies', async () => {
     JSONUtilitiesDependency.JSONUtilities.readJson = jest.fn().mockImplementation(() => ({
       projectPath: __dirname,
-      dependencies: { '@aws-amplify/ui-react': '4.2.0' },
+      dependencies: { '@aws-amplify/ui-react': '4.6.0' },
     }));
     const context = {
       input: {
@@ -69,6 +69,6 @@ describe('should notify when packages are missing', () => {
       },
     };
     notifyMissingPackages(context as unknown as $TSContext);
-    expect(printerDependency.printer.warn).toBeCalledTimes(1);
+    expect(printerDependency.printer.warn).toBeCalledTimes(2);
   });
 });
