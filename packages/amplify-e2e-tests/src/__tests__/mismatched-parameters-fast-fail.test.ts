@@ -11,7 +11,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { addEnvironmentCarryOverEnvVars, checkoutEnvironment } from '../environment/env';
 
-describe('mismatched-parameters-fast-fail', () => {
+describe('mismatched parameters', () => {
   const firstEnvName = 'dev';
   const secondEnvName = 'prod';
   const envVarKey = 'myvar';
