@@ -4,7 +4,6 @@ import { EOL } from 'os';
 import { nspawn as spawn, getCLIPath, getAwsProviderConfig } from '..';
 import { CategoriesConfig } from './headless-types';
 import { AmplifyFrontend } from 'amplify-cli-core';
-import { chain } from 'lodash';
 
 const defaultSettings = {
   name: EOL,
