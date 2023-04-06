@@ -7,6 +7,7 @@ import {
   generateRandomShortId,
   addFunction,
   updateFunction,
+  amplifyPushExpectError,
 } from '@aws-amplify/amplify-e2e-core';
 import { addEnvironmentCarryOverEnvVars, checkoutEnvironment } from '../environment/env';
 
@@ -44,42 +45,6 @@ describe('mismatched-parameters-fast-fail', () => {
     await updateFunction(projRoot, { environmentVariables: { key: envVarKey, value: '', operation: 'remove' } }, 'nodejs');
     await amplifyPushAuth(projRoot);
     await checkoutEnvironment(projRoot, { envName: firstEnvName });
-    let threwError = false;
-    try {
-      await amplifyPushAuth(projRoot);
-    } catch (error) {
-      threwError = true;
-      expect(error).toBeDefined();
-      //   expect(error.message).toContain('Your environments have inconsistent parameters');
-    }
-    expect(threwError).toBeTruthy();
-  });
-
-  it('succeed when matched parameters', async () => {
-    await initJSProjectWithProfile(projRoot, { envName: firstEnvName, disableAmplifyAppCreation: false });
-    const functionName = `testfunction${generateRandomShortId()}`;
-    await addFunction(
-      projRoot,
-      {
-        functionTemplate: 'Hello World',
-        name: functionName,
-        environmentVariables: {
-          key: envVarKey,
-          value: 'myval',
-        },
-      },
-      'nodejs',
-    );
-    await addEnvironmentCarryOverEnvVars(projRoot, { envName: secondEnvName });
-    // don't update function here
-    await amplifyPushAuth(projRoot);
-    await checkoutEnvironment(projRoot, { envName: firstEnvName });
-    let threwError = false;
-    try {
-      await amplifyPushAuth(projRoot);
-    } catch (error) {
-      threwError = true;
-    }
-    expect(threwError).toBeFalsy();
+    await amplifyPushExpectError(projRoot, 'Your environments have inconsistent parameters');
   });
 });

@@ -393,3 +393,11 @@ export const amplifyPushOverride = async (cwd: string, testingWithLatestCodebase
     .wait(/.*/)
     .runAsync();
 };
+
+export const amplifyPushExpectError = async (cwd: string, expectErrorMessage: string): Promise<void> => {
+  await spawn(getCLIPath(), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    .wait('Are you sure you want to continue?')
+    .sendYes()
+    .wait(expectErrorMessage)
+    .runAsync((err) => !!err);
+};
