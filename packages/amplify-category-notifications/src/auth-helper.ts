@@ -121,7 +121,9 @@ const checkAuth = async (context: $TSContext, resourceName: string): Promise<voi
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
     throw new AmplifyError('ConfigurationError', {
-      message: checkResult.errors.join(os.EOL),
+      message: 'The imported auth config is not compatible with the specified notifications config',
+      details: checkResult.errors.join(os.EOL),
+      resolution: 'Manually configure the imported auth resource according to the details above',
     });
   }
 
