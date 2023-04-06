@@ -4,12 +4,12 @@
 
 ```ts
 
-import { $TSAny } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as AWS_2 from 'aws-sdk';
-import { IAmplifyResource } from 'amplify-cli-core';
-import { Template } from 'amplify-cli-core';
+import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
+import { Template } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export const cfnRootStackFileName = "root-cloudformation-stack.json";

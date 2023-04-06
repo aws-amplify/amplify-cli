@@ -1,5 +1,5 @@
 import { handleCloudFormationError } from '../cloud-formation-error-handler';
-import { AmplifyException } from 'amplify-cli-core';
+import { AmplifyException } from '@aws-amplify/amplify-cli-core';
 
 describe('bucket already exists error', () => {
   const bucketName = 'bucket-name';

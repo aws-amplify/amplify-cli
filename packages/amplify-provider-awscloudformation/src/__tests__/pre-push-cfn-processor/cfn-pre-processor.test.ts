@@ -1,4 +1,4 @@
-import { CFNTemplateFormat, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import { CFNTemplateFormat, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { Template } from 'cloudform-types';
 import * as path from 'path';
 import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from '../../pre-push-cfn-processor/cfn-pre-processor';

@@ -1,4 +1,4 @@
-import { $TSContext, open } from 'amplify-cli-core';
+import { $TSContext, open } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { run } from '../setup-new-user';
 

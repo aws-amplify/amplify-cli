@@ -10,7 +10,7 @@ import {
   spinner,
   $TSAny,
   ApiCategoryFacade,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { Fn, Template } from 'cloudform-types';
 import * as path from 'path';

@@ -1,7 +1,7 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { start } from '../../func';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as inquirer from 'inquirer';
 

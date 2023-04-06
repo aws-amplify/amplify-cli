@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
 import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';

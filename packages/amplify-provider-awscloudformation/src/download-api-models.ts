@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import extract from 'extract-zip';
 import * as fs from 'fs-extra';

@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { Capture, Template, Match } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import { cloneDeep } from 'lodash';
