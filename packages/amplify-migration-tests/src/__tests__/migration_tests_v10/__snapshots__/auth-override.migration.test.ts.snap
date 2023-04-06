@@ -1,121 +1,65 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`amplify migration test auth ...should add auth with overrides and work fine on latest version 1`] = `
-"Resources
-[~] AWS::Lambda::Function UserPoolClientLambda 
- ├─ [~] Code
- │   └─ [~] .ZipFile:
- │       ├─ [-] const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then(res => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch(err => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
+"IAM Statement Changes
+┌───┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬────────┬────────────────────────────────────┬───────────────────────────┬───────────┐
+│   │ Resource                                                                                                                                                                                    │ Effect │ Action                             │ Principal                 │ Condition │
+├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
+│ - │ \${UserPool.Arn}                                                                                                                                                                             │ Allow  │ cognito-idp:DescribeUserPoolClient │ AWS:\${UserPoolClientRole} │           │
+├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
+│ - │ {\\"Fn::Sub\\":[\\"arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*\\",{\\"region\\":\\"\${AWS::Region}\\",\\"account\\":\\"\${AWS::AccountId}\\",\\"lambda\\":\\"\${UserPoolClientLambda}\\"}]} │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
+│   │                                                                                                                                                                                             │        │ logs:CreateLogStream               │                           │           │
+│   │                                                                                                                                                                                             │        │ logs:PutLogEvents                  │                           │           │
+└───┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴────────┴────────────────────────────────────┴───────────────────────────┴───────────┘
+(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)
 
- │       └─ [+] const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then((res) => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch((err) => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
+Conditions
+[-] Condition ShouldOutputAppClientSecrets: {\\"Fn::Equals\\":[{\\"Ref\\":\\"userpoolClientGenerateSecret\\"},true]}
 
- └─ [~] Runtime
-     ├─ [-] nodejs14.x
-     └─ [+] nodejs16.x
+Resources
+[-] AWS::IAM::Role UserPoolClientRole destroy
+[-] AWS::Lambda::Function UserPoolClientLambda destroy
+[-] AWS::IAM::Policy UserPoolClientLambdaPolicy destroy
+[-] AWS::IAM::Policy UserPoolClientLogPolicy destroy
+[-] Custom::LambdaCallout UserPoolClientInputs destroy
+[~] AWS::Cognito::IdentityPool IdentityPool 
+ └─ [-] DependsOn
+     └─ [\\"UserPoolClientInputs\\"]
+
+Outputs
+[-] Output AppClientSecret: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"UserPoolClientInputs\\",\\"appSecret\\"]},\\"Condition\\":\\"ShouldOutputAppClientSecrets\\"}
 
 "
 `;
 
 exports[`amplify migration test auth ...should add auth with overrides and work fine on latest version 2`] = `
-"Resources
-[~] AWS::Lambda::Function UserPoolClientLambda 
- ├─ [~] Code
- │   └─ [~] .ZipFile:
- │       ├─ [-] const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then(res => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch(err => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
+"IAM Statement Changes
+┌───┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬────────┬────────────────────────────────────┬───────────────────────────┬───────────┐
+│   │ Resource                                                                                                                                                                                    │ Effect │ Action                             │ Principal                 │ Condition │
+├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
+│ - │ \${UserPool.Arn}                                                                                                                                                                             │ Allow  │ cognito-idp:DescribeUserPoolClient │ AWS:\${UserPoolClientRole} │           │
+├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
+│ - │ {\\"Fn::Sub\\":[\\"arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*\\",{\\"region\\":\\"\${AWS::Region}\\",\\"account\\":\\"\${AWS::AccountId}\\",\\"lambda\\":\\"\${UserPoolClientLambda}\\"}]} │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
+│   │                                                                                                                                                                                             │        │ logs:CreateLogStream               │                           │           │
+│   │                                                                                                                                                                                             │        │ logs:PutLogEvents                  │                           │           │
+└───┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴────────┴────────────────────────────────────┴───────────────────────────┴───────────┘
+(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)
 
- │       └─ [+] const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then((res) => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch((err) => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
+Conditions
+[-] Condition ShouldOutputAppClientSecrets: {\\"Fn::Equals\\":[{\\"Ref\\":\\"userpoolClientGenerateSecret\\"},true]}
 
- └─ [~] Runtime
-     ├─ [-] nodejs14.x
-     └─ [+] nodejs16.x
+Resources
+[-] AWS::IAM::Role UserPoolClientRole destroy
+[-] AWS::Lambda::Function UserPoolClientLambda destroy
+[-] AWS::IAM::Policy UserPoolClientLambdaPolicy destroy
+[-] AWS::IAM::Policy UserPoolClientLogPolicy destroy
+[-] Custom::LambdaCallout UserPoolClientInputs destroy
+[~] AWS::Cognito::IdentityPool IdentityPool 
+ └─ [-] DependsOn
+     └─ [\\"UserPoolClientInputs\\"]
+
+Outputs
+[-] Output AppClientSecret: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"UserPoolClientInputs\\",\\"appSecret\\"]},\\"Condition\\":\\"ShouldOutputAppClientSecrets\\"}
 
 "
 `;
