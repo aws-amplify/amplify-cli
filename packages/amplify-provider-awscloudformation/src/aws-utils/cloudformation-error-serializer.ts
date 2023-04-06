@@ -1,3 +1,4 @@
+import { StackEvent } from 'aws-sdk/clients/cloudformation';
 export const getStatusToErrorMsg = (status) => {
   const MAP = {
     CREATE_FAILED: 'create',
@@ -8,15 +9,16 @@ export const getStatusToErrorMsg = (status) => {
 };
 
 /**
- * Return an error message from the failed stacks for populating it in the AmplifyFault's details
+ * Return an error message from the failed stacks for populating it in the AmplifyException's details
  */
-export const collectStackErrorMessages = (eventsWithFailure) => {
+export const collectStackErrorMessages = (eventsWithFailure: StackEvent[], customStackIds: string[]) => {
   const errorMessages = {
-    messages: eventsWithFailure.map((event) => {
+    messages: eventsWithFailure.map((event: StackEvent) => {
       const name = `${event.LogicalResourceId} (${event.ResourceType})`;
       const eventType = `${getStatusToErrorMsg(event.ResourceStatus)}`;
       const reason = `${event.ResourceStatusReason}`;
-      const errorMessage: CFNErrorMessage = { name, eventType, reason };
+      const isCustomResource = customStackIds.includes(event.PhysicalResourceId) || customStackIds.includes(event.StackId);
+      const errorMessage: CFNErrorMessage = { name, eventType, reason, isCustomResource };
       return errorMessage;
     }),
   };
@@ -28,7 +30,8 @@ export const serializeErrorMessages = (errorMessages: CFNErrorMessages) => {
   errorMessages.messages.forEach((errorMessage) => {
     let currentString = `Name: ${errorMessage.name}, `;
     currentString += `Event Type: ${errorMessage.eventType}, `;
-    currentString += `Reason: ${errorMessage.reason}\n`;
+    currentString += `Reason: ${errorMessage.reason}, `;
+    currentString += `IsCustomResource: ${errorMessage.isCustomResource}\n`;
     serializedStringParts.push(currentString);
   });
   return serializedStringParts.join('\n');
@@ -36,12 +39,13 @@ export const serializeErrorMessages = (errorMessages: CFNErrorMessages) => {
 
 export const deserializeErrorMessages = (errorDetails: string): CFNErrorMessages => {
   const deserializedMessages: CFNErrorMessages = { messages: [] };
-  const separateLines = errorDetails.split('\n');
-  separateLines.forEach((line) => {
-    const separateFields = line.split(/Name: |, Event Type: |, Reason: /);
-    const [, name, eventType, reason] = separateFields;
+  const separateLines = errorDetails?.split('\n');
+  separateLines?.forEach((line) => {
+    const separateFields = line.split(/Name: |, Event Type: |, Reason: |, IsCustomResource: /);
+    const [, name, eventType, reason, isCustomResourceString] = separateFields;
+    const isCustomResource = isCustomResourceString === 'true';
     if (name && eventType && reason) {
-      const deserializedMessage: CFNErrorMessage = { name, eventType, reason };
+      const deserializedMessage: CFNErrorMessage = { name, eventType, reason, isCustomResource };
       deserializedMessages.messages.push(deserializedMessage);
     }
   });
@@ -52,6 +56,7 @@ export type CFNErrorMessage = {
   name: string;
   eventType: string;
   reason: string;
+  isCustomResource: boolean;
 };
 
 export type CFNErrorMessages = {
