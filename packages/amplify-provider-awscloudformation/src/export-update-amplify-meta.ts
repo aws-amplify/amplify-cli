@@ -1,5 +1,5 @@
 /* eslint-disable no-continue */
-import { $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import * as _ from 'lodash';
 import Cloudformation from './aws-utils/aws-cfn';
 

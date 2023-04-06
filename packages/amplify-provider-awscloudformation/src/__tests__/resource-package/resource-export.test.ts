@@ -7,7 +7,7 @@ import {
   buildOverrideDir,
   stateManager,
   ApiCategoryFacade,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-package/types';
 import * as fs from 'fs-extra';
 

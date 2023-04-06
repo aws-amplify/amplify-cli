@@ -297,7 +297,7 @@ async function checkRequirements(requirements, context, category, targetResource
     result.allowUnauthenticatedIdentities = true;
   } else {
     result.allowUnauthenticatedIdentities = false;
-    result.errors.push(`Auth configuration is required to allow unauthenticated users, but it is not configured properly.`);
+    result.errors.push(`Specified resource configuration requires Cognito Identity Provider unauthenticated access but it is not enabled.`);
   }
 
   result.requirementsMet = result.authSelections && result.allowUnauthenticatedIdentities;

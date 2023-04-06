@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { SSM } from '../../../aws-utils/aws-ssm';
 import type { SSM as SSMType } from 'aws-sdk';
 import { getEnvParametersDownloadHandler, getEnvParametersUploadHandler } from '../../../utils/ssm-utils/env-parameter-ssm-helpers';

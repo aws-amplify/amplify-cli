@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 
 export function getMockDataDirectory(context: $TSContext) {
