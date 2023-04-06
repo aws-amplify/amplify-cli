@@ -10,7 +10,11 @@ import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate } from '@a
 import Resource from 'cloudform-types/types/resource';
 import Lambda from 'cloudform-types/types/lambda';
 
-const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x'];
+// See https://docs.aws.amazon.com/lambda/latest/dg/lambda-nodejs.html.
+const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x', 'nodejs12.x'];
+// Note. It's safe to auto migrate existing lambdas above to nodejs16.x by replacing runtime
+// as they bundle AWS SDK v2. This mechanism isn't viable to upgrade to nodejs18.x
+// as that version bundles AWS SDK v3 which is not compatible.
 const lambdaRuntimeVersion = 'nodejs16.x';
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
