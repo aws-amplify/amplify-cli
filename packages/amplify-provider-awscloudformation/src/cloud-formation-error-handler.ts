@@ -38,9 +38,29 @@ export const handleCloudFormationError = (err: Error & { details?: string }): vo
     );
   }
 
+  checkIfAllErrorsAreFromCustomResources(err);
+
   if (err?.details?.includes(s3Indicator)) {
     handleS3Error(err);
   }
 
   throw err;
+};
+
+const checkIfAllErrorsAreFromCustomResources = (err: Error & { details?: string }) => {
+  const deserializedErrorMessages: CFNErrorMessages = deserializeErrorMessages(err.details);
+  const onlyCustomResourceError =
+    deserializedErrorMessages?.messages.length > 0 &&
+    deserializedErrorMessages.messages.every((cfnError: CFNErrorMessage) => cfnError.isCustomResource);
+  if (onlyCustomResourceError) {
+    throw new AmplifyError(
+      'InvalidCustomResourceError',
+      {
+        message: 'CFN Deployment failed for custom resources.',
+        details: err.details,
+      },
+      err,
+    );
+  }
+  // else let the calling function throw the original error
 };
