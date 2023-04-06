@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.4-mock-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3...@aws-amplify/cli-internal@11.0.4-mock-fix.0) (2023-04-06)
+
+
+### Bug Fixes
+
+* build exe context for mock push ([03bdec8](https://github.com/aws-amplify/amplify-cli/commit/03bdec8b011081aefc3ed80867aa6b17cb6348b7))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* env param fail-fast checks don't fatal on missing appId or envName ([#12373](https://github.com/aws-amplify/amplify-cli/issues/12373)) ([4a4caf3](https://github.com/aws-amplify/amplify-cli/commit/4a4caf39320276215a882bc829bb459bd7896ae9))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+
+
+
+
+
 ## [11.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.3) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

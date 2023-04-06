@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-mock-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.12...@aws-amplify/amplify-util-uibuilder@1.7.0-mock-fix.0) (2023-04-06)
+
+
+### Bug Fixes
+
+* **amplify-util-uibuilder:** update codegen-ui to 2.11.1 ([#12352](https://github.com/aws-amplify/amplify-cli/issues/12352)) ([78590b8](https://github.com/aws-amplify/amplify-cli/commit/78590b8d4face7bbc0b174337b77b118affc525b))
+
+
+### Features
+
+* **amplify-util-uibuilder:** formFeatureFlags metadata ([#12369](https://github.com/aws-amplify/amplify-cli/issues/12369)) ([e520c6c](https://github.com/aws-amplify/amplify-cli/commit/e520c6c686fa5e7112993745626f737612fa9145))
+
+
+
+
+
 ## [1.6.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.12-rc.e9e0d157d.0...@aws-amplify/amplify-util-uibuilder@1.6.12) (2023-03-23)
 
 

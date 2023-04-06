@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.6-mock-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.0.5...@aws-amplify/amplify-util-mock@5.0.6-mock-fix.0) (2023-04-06)
+
+
+### Bug Fixes
+
+* add util mock to dependencies for e2e tests ([cddc267](https://github.com/aws-amplify/amplify-cli/commit/cddc2673457f5be42b342863096b809e7623746e))
+* build exe context for mock push ([03bdec8](https://github.com/aws-amplify/amplify-cli/commit/03bdec8b011081aefc3ed80867aa6b17cb6348b7))
+
+
+
+
+
 ## [5.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.0.5-rc.e9e0d157d.0...@aws-amplify/amplify-util-mock@5.0.5) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.2-mock-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.1...@aws-amplify/amplify-e2e-core@4.8.2-mock-fix.0) (2023-04-06)
+
+
+### Bug Fixes
+
+* **api:** add null placeholder for nested stack during api rebuild ([#11460](https://github.com/aws-amplify/amplify-cli/issues/11460)) ([33f9b34](https://github.com/aws-amplify/amplify-cli/commit/33f9b3415ce73d5318bb065f3e970daa90b8b8f1))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* env param fail-fast checks don't fatal on missing appId or envName ([#12373](https://github.com/aws-amplify/amplify-cli/issues/12373)) ([4a4caf3](https://github.com/aws-amplify/amplify-cli/commit/4a4caf39320276215a882bc829bb459bd7896ae9))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* multi select race conditions ([#12356](https://github.com/aws-amplify/amplify-cli/issues/12356)) ([f52500a](https://github.com/aws-amplify/amplify-cli/commit/f52500a9baa0dbaa9556a0699669bd6d75ab06b1))
+* source temp aws creds and ec2 instance credentials  using general level config ([#12181](https://github.com/aws-amplify/amplify-cli/issues/12181)) ([68d267c](https://github.com/aws-amplify/amplify-cli/commit/68d267cef06da727f06839498202091cfba283a0))
+
+
+
+
+
 ## [4.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.1-rc.e9e0d157d.0...@aws-amplify/amplify-e2e-core@4.8.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core

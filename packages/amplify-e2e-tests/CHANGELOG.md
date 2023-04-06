@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.2-mock-fix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.1...amplify-e2e-tests@4.0.2-mock-fix.0) (2023-04-06)
+
+
+### Bug Fixes
+
+* add util mock to dependencies for e2e tests ([cddc267](https://github.com/aws-amplify/amplify-cli/commit/cddc2673457f5be42b342863096b809e7623746e))
+* **api:** add null placeholder for nested stack during api rebuild ([#11460](https://github.com/aws-amplify/amplify-cli/issues/11460)) ([33f9b34](https://github.com/aws-amplify/amplify-cli/commit/33f9b3415ce73d5318bb065f3e970daa90b8b8f1))
+* codegen version in snapshots ([#12362](https://github.com/aws-amplify/amplify-cli/issues/12362)) ([0cbdd7d](https://github.com/aws-amplify/amplify-cli/commit/0cbdd7d30b7e036552627b43da49e0bc5aeb2da0))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* generate model introspection regardless of studio and datastore ([#12258](https://github.com/aws-amplify/amplify-cli/issues/12258)) ([8056b01](https://github.com/aws-amplify/amplify-cli/commit/8056b01ac144268797ff40e734a04fd7b665872f))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+* source temp aws creds and ec2 instance credentials  using general level config ([#12181](https://github.com/aws-amplify/amplify-cli/issues/12181)) ([68d267c](https://github.com/aws-amplify/amplify-cli/commit/68d267cef06da727f06839498202091cfba283a0))
+
+
+
+
+
 ## [4.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.1-rc.e9e0d157d.0...amplify-e2e-tests@4.0.1) (2023-03-23)
 
 **Note:** Version bump only for package amplify-e2e-tests
