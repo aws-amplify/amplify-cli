@@ -25,7 +25,6 @@ describe('mismatched-parameters-fast-fail', () => {
     deleteProjectDir(projRoot);
   });
 
-  jest.retryTimes(0);
   it('fast fail when mismatched parameters', async () => {
     await initJSProjectWithProfile(projRoot, { envName: firstEnvName, disableAmplifyAppCreation: false });
     const functionName = `testfunction${generateRandomShortId()}`;
