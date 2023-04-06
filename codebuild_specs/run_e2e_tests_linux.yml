@@ -7,7 +7,7 @@ env:
     CI: true
     CIRCLECI: true
     # mock value
-    ENV_VAR_WITH_SECRETS: 'xyz123'
+    ENV_VAR_WITH_SECRETS: 'FACEBOOK_APP_ID,GOOGLE_APP_ID'
     # mock values for credentials below
     FACEBOOK_APP_ID: 'fbAppId'
     FACEBOOK_APP_SECRET: 'fbAppSecret'
@@ -19,14 +19,13 @@ env:
     APPLE_TEAM_ID: '2QLEWNDK6K'
     APPLE_KEY_ID: '2QLZXKYJ8J'
     # mock value, Cognito validates the private key, this is an invalidated key.
-    APPLE_PRIVATE_KEY_2: '----BEGIN PRIVATE KEY-----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----'
     APPLE_PRIVATE_KEY: '----BEGIN PRIVATE KEY-----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----'
 phases:
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
       - export NODE_OPTIONS=--max-old-space-size=8096
-      - export CODEBUILD_SOURCE_VERSION=4610160556171f344780aeb2f0d01b7b20147b5d
+      # - export CODEBUILD_SOURCE_VERSION=4610160556171f344780aeb2f0d01b7b20147b5d
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
