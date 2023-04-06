@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import * as execa from 'execa';
 import { PackageRequest, PackageResult } from '@aws-amplify/amplify-function-plugin-interface';
-import { dotnetcore31, executableName } from '../constants';
+import { executableName } from '../constants';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export const packageAssemblies = async (request: PackageRequest, context: any): Promise<PackageResult> => {
@@ -14,7 +14,7 @@ export const packageAssemblies = async (request: PackageRequest, context: any): 
   }
 
   const packageHash = (await context.amplify.hashDir(distPath, [])) as string;
-  const framework = request.runtime === dotnetcore31 ? 'netcoreapp3.1' : 'net6.0';
+  const framework = 'net6.0';
   try {
     const result = execa.sync(
       executableName,

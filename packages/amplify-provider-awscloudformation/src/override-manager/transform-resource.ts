@@ -7,7 +7,7 @@ import {
   IAmplifyResource,
   JSONUtilities,
   pathManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import ora from 'ora';

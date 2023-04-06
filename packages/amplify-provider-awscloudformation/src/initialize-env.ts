@@ -1,4 +1,4 @@
-import { $TSContext, $TSMeta, AmplifyError, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSMeta, AmplifyError, JSONUtilities, PathConstants, stateManager } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';

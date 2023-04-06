@@ -1,4 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
 
 jest.mock('amplify-cli-core', () => ({

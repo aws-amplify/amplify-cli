@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 export function getAppSyncResourceName(): string {
   const amplifyMeta = stateManager.getMeta();
