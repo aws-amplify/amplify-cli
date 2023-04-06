@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { $TSAny } from 'amplify-cli-core';
 
 export interface GraphQLLocation {
   line: number;
@@ -10,13 +11,13 @@ export interface GraphQLError {
   path: string[];
 }
 export interface GraphQLResponse {
-  data: any;
+  data: $TSAny;
   errors: GraphQLError[];
 }
 export class GraphQLClient {
-  constructor(private url: string, private headers: any) {}
+  constructor(private url: string, private headers: $TSAny) {}
 
-  async query(query: string, variables: any): Promise<GraphQLResponse> {
+  async query(query: string, variables: $TSAny): Promise<GraphQLResponse> {
     const axRes = await axios.post<GraphQLResponse>(
       this.url,
       {
