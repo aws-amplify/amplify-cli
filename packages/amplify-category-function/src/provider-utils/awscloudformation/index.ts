@@ -8,7 +8,7 @@ import {
   readCFNTemplate,
   stateManager,
   writeCFNTemplate,
-createDefaultCustomPoliciesFile,
+  createDefaultCustomPoliciesFile,
 } from '@aws-amplify/amplify-cli-core';
 import {
   FunctionParameters,
