@@ -1,7 +1,7 @@
 import path from 'path';
 import _ from 'lodash';
 import * as uuid from 'uuid';
-import { $TSContext, stateManager, pathManager, JSONUtilities, $TSAny, $TSObject, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, stateManager, pathManager, JSONUtilities, $TSAny, $TSObject, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { byValue, maxLength, printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getEnvParamManager, ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { functionParametersFileName } from './constants';
