@@ -1,4 +1,4 @@
-import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { category, authCategoryName } from '../constants';
 import path from 'path';
 import _ from 'lodash';
@@ -108,15 +108,20 @@ export const checkAuthConfig = async (
 
     // If auth is not added, throw error
     if (!checkResult.authEnabled) {
-      throw new Error(
-        `Adding ${service} to your project requires the Auth category for managing authentication rules. Please add auth using "amplify add auth"`,
-      );
+      throw new AmplifyError('ConfigurationError', {
+        message: `Adding ${service} to your project requires the Auth category for managing authentication rules`,
+        resolution: 'Add auth using "amplify add auth"',
+      });
     }
 
     // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
     // configuration.
     if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-      throw new Error(checkResult.errors.join(os.EOL));
+      throw new AmplifyError('ConfigurationError', {
+        message: 'The imported auth config is not compatible with the specified geo config',
+        details: checkResult.errors.join(os.EOL),
+        resolution: 'Manually configure the imported auth resource according to the details above',
+      });
     }
 
     if (checkResult.errors && checkResult.errors.length > 0) {

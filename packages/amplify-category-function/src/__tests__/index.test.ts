@@ -1,5 +1,5 @@
 import sequential from 'promise-sequential';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { initEnv, isMockable } from '..';
 import { getLocalFunctionSecretNames } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';

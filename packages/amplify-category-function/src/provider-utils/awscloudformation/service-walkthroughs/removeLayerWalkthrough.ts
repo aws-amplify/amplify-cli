@@ -1,7 +1,6 @@
-import { $TSContext, $TSObject, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, pathManager, spinner, stateManager } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
 import inquirer, { QuestionCollection } from 'inquirer';
-import ora from 'ora';
 import { categoryName } from '../../../constants';
 import { LayerCloudState } from '../utils/layerCloudState';
 import { saveLayerVersionsToBeRemovedByCfn } from '../utils/layerConfiguration';
@@ -110,7 +109,7 @@ function warnLegacyRemoval(
 async function deleteLayerVersionsWithSdk(context: $TSContext, layerName: string, versions: number[]) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
   const lambdaClient = await providerPlugin.getLambdaSdk(context);
-  const spinner = ora('Deleting layer version from the cloud...').start();
+  spinner.start('Deleting layer version from the cloud...');
   try {
     await lambdaClient.deleteLayerVersions(layerName, versions);
     spinner.succeed('Layers deleted');

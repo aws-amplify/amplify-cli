@@ -1,4 +1,4 @@
-import { runHelp, commandsInfo } from 'amplify-cli-core';
+import { runHelp, commandsInfo } from '@aws-amplify/amplify-cli-core';
 
 async function run(context) {
   runHelp(context, commandsInfo);

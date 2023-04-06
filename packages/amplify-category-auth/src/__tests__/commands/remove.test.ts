@@ -3,7 +3,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import * as remove from '../../commands/auth/remove';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const saveCLIInputPayloadMock = jest.fn();
 

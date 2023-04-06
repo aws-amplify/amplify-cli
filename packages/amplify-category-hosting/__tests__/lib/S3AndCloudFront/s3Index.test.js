@@ -1,6 +1,6 @@
 jest.mock('fs-extra');
 jest.mock('open');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 jest.mock('../../../lib/S3AndCloudFront/configuration-manager');
 jest.mock('../../../lib/S3AndCloudFront/helpers/file-uploader');
@@ -8,7 +8,7 @@ jest.mock('../../../lib/S3AndCloudFront/helpers/cloudfront-manager');
 
 const fs = require('fs-extra');
 const path = require('path');
-const { open } = require('amplify-cli-core');
+const { open } = require('@aws-amplify/amplify-cli-core');
 
 const configManager = require('../../../lib/S3AndCloudFront/configuration-manager');
 const fileUPloader = require('../../../lib/S3AndCloudFront/helpers/file-uploader');
@@ -27,9 +27,9 @@ const PROD = 'PROD (S3 with CloudFront using HTTPS)';
 
 const s3IndexModule = require('../../../lib/S3AndCloudFront/index');
 
-const amplifyPrompts = require('amplify-prompts');
+const amplifyPrompts = require('@aws-amplify/amplify-prompts');
 
-jest.mock('amplify-prompts', () => ({
+jest.mock('@aws-amplify/amplify-prompts', () => ({
   prompter: {
     input: jest.fn(),
     yesOrNo: jest.fn(),

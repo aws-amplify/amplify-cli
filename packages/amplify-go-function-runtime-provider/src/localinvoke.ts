@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { $TSContext, pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
 import getPort from 'get-port';
 import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { executeCommand } from './runtime';

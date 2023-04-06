@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, pathManager, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, stateManager, pathManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { mocked } from 'ts-jest/utils';
 import * as path from 'path';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';

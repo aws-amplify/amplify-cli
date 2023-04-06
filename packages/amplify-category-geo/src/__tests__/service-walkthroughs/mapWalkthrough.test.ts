@@ -8,7 +8,7 @@ import { createMapWalkthrough, updateMapWalkthrough } from '../../service-walkth
 import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
 jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('Map walkthrough works as expected', () => {
   const projectName = 'mockProject';

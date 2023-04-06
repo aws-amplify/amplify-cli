@@ -33,7 +33,7 @@ jest.mock('../system-config-manager', () => ({
 }));
 jest.mock('../utility-obfuscate');
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const printerMock = printer as jest.Mocked<typeof printer>;
 
 describe('setupNewUser.run', () => {
