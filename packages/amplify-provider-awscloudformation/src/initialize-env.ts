@@ -1,17 +1,3 @@
-/* eslint-disable max-depth */
-/* eslint-disable max-lines-per-function */
-/* eslint-disable prefer-const */
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-return-await */
-/* eslint-disable consistent-return */
-/* eslint-disable no-continue */
-/* eslint-disable max-len */
-/* eslint-disable spellcheck/spell-checker */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable func-style */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { $TSContext, $TSMeta, AmplifyError, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
@@ -45,7 +31,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
       if (err?.code === 'NoSuchBucket') {
         throw new AmplifyError('EnvironmentNotInitializedError', {
           message: `Could not find a deployment bucket for the specified backend environment. This environment may have been deleted.`,
-          resolution: 'Make sure the environment has been initialized with "amplify init" or "amplfiy env add".',
+          resolution: 'Make sure the environment has been initialized with "amplify init" or "amplify env add".',
         });
       }
       // if there was some other error, rethrow it
@@ -89,7 +75,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     const cfnItem = await new Cloudformation(context);
     await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);
 
-    // Copy provider metadata from current-cloud-backend/amplify-meta to backend/ampliy-meta
+    // Copy provider metadata from current-cloud-backend/amplify-meta to backend/amplify-meta
     const currentAmplifyMeta = stateManager.getCurrentMeta();
     const amplifyMeta = stateManager.getMeta();
 
