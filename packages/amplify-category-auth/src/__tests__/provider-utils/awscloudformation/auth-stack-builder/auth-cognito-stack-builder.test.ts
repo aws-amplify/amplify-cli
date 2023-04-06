@@ -168,7 +168,7 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.lambdaConfigPermissions).toHaveProperty('UserPoolPreSignupLambdaInvokePermission');
   });
 
-  it.only('adds correct oidc dependencies', async () => {
+  it('adds correct oidc dependencies', async () => {
     const testApp = new cdk.App();
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
 
