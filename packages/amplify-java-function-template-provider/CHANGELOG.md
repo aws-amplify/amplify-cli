@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.18-codegen-improved-pluralization.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.17...amplify-java-function-template-provider@1.5.18-codegen-improved-pluralization.0) (2023-04-06)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.17-rc.e9e0d157d.0...amplify-java-function-template-provider@1.5.17) (2023-03-23)
 
 **Note:** Version bump only for package amplify-java-function-template-provider
