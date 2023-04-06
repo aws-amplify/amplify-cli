@@ -5,7 +5,6 @@ import { categoryName } from '../../constants';
 import { PackageRequestMeta } from '../../provider-utils/awscloudformation/types/packaging-types';
 import { buildFunction } from '../../provider-utils/awscloudformation/utils/buildFunction';
 import { packageResource } from '../../provider-utils/awscloudformation/utils/package';
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 export const name = 'build';
 
 /**
