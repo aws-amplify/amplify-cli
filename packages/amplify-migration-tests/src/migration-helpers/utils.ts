@@ -15,7 +15,6 @@ import {
   getUserPoolClients,
   parametersExists,
 } from '@aws-amplify/amplify-e2e-core';
-import { amplifyPullNonInteractive } from '@aws-amplify/amplify-e2e-core/lib/init/amplifyPull';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { AmplifyCategories } from 'amplify-cli-core';
 import { Writable } from 'stream';

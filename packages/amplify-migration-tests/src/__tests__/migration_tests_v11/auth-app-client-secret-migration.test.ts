@@ -57,6 +57,7 @@ describe('amplify add auth...', () => {
     await assertAppClientSecretInFiles(projRoot);
     const projRoot2 = await createNewProjectDir(`${projectName}2`);
     const projRoot3 = await createNewProjectDir(`${projectName}3`);
+    // using amplify push force here as changes are only related to build files
     await pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift(projRoot, projRoot2);
     const appId = getAppId(projRoot);
     expect(appId).toBeDefined();
