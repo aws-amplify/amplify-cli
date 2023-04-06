@@ -8,7 +8,6 @@ import {
   constructCFModelTableNameComponent,
   constructCFModelTableArnComponent,
 } from '../../../../provider-utils/awscloudformation/utils/cloudformationHelpers';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { CRUDOperation } from '../../../../constants';
 import inquirer from 'inquirer';
 
