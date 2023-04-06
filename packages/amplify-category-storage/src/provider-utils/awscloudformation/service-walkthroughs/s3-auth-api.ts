@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { AmplifyCategories } from 'amplify-cli-core';
 import os from 'os';
@@ -65,7 +65,11 @@ export async function checkStorageAuthenticationRequirements(
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-    throw new Error(checkResult.errors.join(os.EOL));
+    throw new AmplifyError('ConfigurationError', {
+      message: 'The imported auth config is not compatible with the specified storage config',
+      details: checkResult.errors.join(os.EOL),
+      resolution: 'Manually configure the imported auth resource according to the details above',
+    });
   }
 
   if (checkResult.errors && checkResult.errors.length > 0) {

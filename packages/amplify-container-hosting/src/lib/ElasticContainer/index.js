@@ -7,7 +7,7 @@ const path = require('path');
 const constants = require('../constants');
 
 const { EcsAlbStack, NETWORK_STACK_LOGICAL_ID, DEPLOYMENT_MECHANISM, processDockerConfig } = require('@aws-amplify/amplify-category-api');
-const { open } = require('amplify-cli-core');
+const { open } = require('@aws-amplify/amplify-cli-core');
 
 const serviceName = 'ElasticContainer';
 const categoryName = 'hosting';

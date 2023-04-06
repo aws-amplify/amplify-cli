@@ -1,7 +1,7 @@
 /**
  *  API to update Notifications category state in the state-db ( backend-config, frontend-config, teams-provider, amplify-meta)
  */
-import { $TSAny, pathManager, stateManager, AmplifySupportedService, AmplifyCategories, $TSContext } from 'amplify-cli-core';
+import { $TSAny, pathManager, stateManager, AmplifySupportedService, AmplifyCategories, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { INotificationsResourceBackendConfig, INotificationsResourceBackendConfigValue } from './notifications-backend-cfg-types';
 
 /**
