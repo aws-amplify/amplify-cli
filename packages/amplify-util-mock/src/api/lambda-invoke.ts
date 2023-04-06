@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from '@aws-amplify/amplify-cli-core';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 import { BuildType, FunctionRuntimeLifecycleManager, BuildRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';

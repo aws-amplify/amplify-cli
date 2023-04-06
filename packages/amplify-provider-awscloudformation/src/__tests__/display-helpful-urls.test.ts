@@ -1,4 +1,4 @@
-import { ApiCategoryFacade, BannerMessage, stateManager } from 'amplify-cli-core';
+import { ApiCategoryFacade, BannerMessage, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AWSError } from 'aws-sdk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { SNS } from '../aws-utils/aws-sns';

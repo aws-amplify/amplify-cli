@@ -1,6 +1,6 @@
 // @ts-check
 import chalk from 'chalk';
-import { BannerMessage, stateManager, FeatureFlags, ApiCategoryFacade, AmplifyFault, $TSAny } from 'amplify-cli-core';
+import { BannerMessage, stateManager, FeatureFlags, ApiCategoryFacade, AmplifyFault, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { fileLogger } from './utils/aws-logger';
 import { SNS } from './aws-utils/aws-sns';

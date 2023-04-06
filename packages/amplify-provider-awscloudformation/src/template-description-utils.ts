@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
+import { $TSAny, $TSContext, readCFNTemplate, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import * as os from 'os';
 import * as path from 'path';
 import { getCfnFiles } from './push-resources';

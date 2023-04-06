@@ -1,4 +1,4 @@
-import { stateManager, $TSContext, AmplifyError } from 'amplify-cli-core';
+import { stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';

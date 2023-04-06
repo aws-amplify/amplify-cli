@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as fs from 'fs-extra';
 import * as path from 'path';

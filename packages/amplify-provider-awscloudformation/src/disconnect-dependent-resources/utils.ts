@@ -1,4 +1,12 @@
-import { AmplifyFault, $TSAny, JSONUtilities, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import {
+  AmplifyFault,
+  $TSAny,
+  JSONUtilities,
+  pathManager,
+  readCFNTemplate,
+  stateManager,
+  writeCFNTemplate,
+} from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { CloudFormation } from 'aws-sdk';

@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import _ from 'lodash';

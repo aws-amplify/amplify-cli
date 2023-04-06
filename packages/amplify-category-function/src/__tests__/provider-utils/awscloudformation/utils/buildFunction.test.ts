@@ -1,4 +1,4 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
 import { BuildType, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { buildFunction } from '../../../../provider-utils/awscloudformation/utils/buildFunction';
 

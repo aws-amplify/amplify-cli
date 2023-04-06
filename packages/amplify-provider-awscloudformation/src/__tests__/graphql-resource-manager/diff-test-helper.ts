@@ -1,6 +1,6 @@
 import { diff as getDiffs } from 'deep-diff';
 import { DynamoDB } from 'cloudform-types';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as gsiTestHelper from './gsi-test-helpers';
 import { DiffableProject } from '../../graphql-resource-manager/utils';
 

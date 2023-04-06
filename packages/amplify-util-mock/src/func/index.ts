@@ -1,8 +1,12 @@
 import * as path from 'path';
+
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import { getInvoker, category, isMockable, getBuilder } from '@aws-amplify/amplify-category-function';
 import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import * as inquirer from 'inquirer';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+
 import _ from 'lodash';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 

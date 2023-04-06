@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, AmplifyFault, pathManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, pathManager } from '@aws-amplify/amplify-cli-core';
 import { APITest } from '../../api/api';
 import * as lambdaInvoke from '../../api/lambda-invoke';
 import { getMockSearchableTriggerDirectory } from '../../utils';

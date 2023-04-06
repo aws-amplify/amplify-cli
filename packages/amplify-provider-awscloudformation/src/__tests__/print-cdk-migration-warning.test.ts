@@ -1,4 +1,4 @@
-import { $TSObject, $TSContext } from 'amplify-cli-core';
+import { $TSObject, $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { printCdkMigrationWarning } from '../print-cdk-migration-warning';
