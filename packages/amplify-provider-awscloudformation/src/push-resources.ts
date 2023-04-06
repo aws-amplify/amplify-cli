@@ -1208,9 +1208,10 @@ export const formNestedStack = async (
               (parameter) => !nonCustomParameters.includes(parameter) && !urlParameters.includes(parameter),
             );
             if (misMatchedParams.length) {
-              throw new AmplifyError('EnvironmentConfigurationError', {
+              throw new AmplifyFault('DeploymentFault', {
                 message: 'Your environments have inconsistent parameters',
-                resolution: `Use 'amplify pull' to pull the backend or remove these parameters: ${misMatchedParams.toString()}`,
+                code: 400,
+                details: `Use 'amplify pull' to pull the backend or remove these parameters: ${misMatchedParams.toString()}`,
               });
             }
           }
