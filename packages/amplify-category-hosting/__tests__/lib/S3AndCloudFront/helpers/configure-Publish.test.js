@@ -1,9 +1,9 @@
 const fs = require('fs-extra');
 const path = require('path');
 const configurePublish = require('../../../../lib/S3AndCloudFront/helpers/configure-Publish');
-const amplifyPrompts = require('amplify-prompts');
+const amplifyPrompts = require('@aws-amplify/amplify-prompts');
 
-jest.mock('amplify-prompts', () => ({
+jest.mock('@aws-amplify/amplify-prompts', () => ({
   prompter: {
     input: jest.fn(),
     yesOrNo: jest.fn(),

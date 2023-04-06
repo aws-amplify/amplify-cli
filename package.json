@@ -36,7 +36,7 @@
     "prettier-check": "yarn prettier --check .",
     "prettier-changes": "git diff --name-only --diff-filter MRA dev | xargs yarn prettier --write",
     "prettier-write": "yarn prettier --write .",
-    "production-build": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn && nx run-many --target=build --all",
+    "production-build": "yarn --frozen-lockfile --network-concurrency 1 --cache-folder ~/.cache/yarn && nx run-many --target=build --all",
     "promote-rc": "./scripts/promote-rc.sh",
     "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access",
     "release-rc": "./scripts/release-rc.sh",
@@ -142,7 +142,7 @@
     "lnk": "1.1.0",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.1.0",
-    "pkg": "^5.8.0",
+    "pkg": "^5.8.1",
     "prettier": "^2.8.4",
     "rimraf": "^3.0.0",
     "ts-jest": "^27.0.0",
@@ -157,6 +157,7 @@
     "**/jake/async": "^2.6.4",
     "**/json5": "^2.2.3",
     "**/nth-check": "^2.0.1",
-    "**/undici": "^5.8.0"
+    "**/undici": "^5.8.0",
+    "**/pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
   }
 }

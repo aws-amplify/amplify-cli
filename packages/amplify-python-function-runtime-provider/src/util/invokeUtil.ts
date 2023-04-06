@@ -2,7 +2,7 @@
 import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import path from 'path';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager, AmplifyError } from 'amplify-cli-core';
 import { packageName, relativeShimPath } from '../constants';
 import { getPythonBinaryName } from './pyUtils';
 
@@ -16,7 +16,7 @@ export async function pythonInvoke(context: any, request: InvocationRequest): Pr
   const pyBinary = getPythonBinaryName();
 
   if (!pyBinary) {
-    throw new Error(`Could not find 'python3' or 'python' executable in the PATH.`);
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Could not find 'python3' or 'python' executable in the PATH.` });
   }
 
   const childProcess = execa('pipenv', ['run', pyBinary, shimPath, handlerFile + '.py', handlerName], {
@@ -29,7 +29,13 @@ export async function pythonInvoke(context: any, request: InvocationRequest): Pr
   childProcess.stderr?.pipe(process.stderr);
   childProcess.stdout?.pipe(process.stdout);
 
-  const { stdout } = await childProcess;
+  let stdout;
+  try {
+    stdout = (await childProcess).stdout;
+  } catch (err) {
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: err.message }, err);
+  }
+
   const lines = stdout.split('\n');
   const lastLine = lines[lines.length - 1];
 

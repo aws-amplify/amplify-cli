@@ -859,7 +859,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   useProfile = useProfile ?? projectConfig?.config?.useProfile;
   profileName = profileName ?? projectConfig?.config?.profileName;
 
-  const generalCreds = projectConfig?.configLevel === 'general';
+  const generalCreds = projectConfig?.configLevel === 'general' || cfnParams?.configLevel === 'general';
 
   if (generalCreds) {
     return { type: 'general' };

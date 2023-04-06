@@ -1,5 +1,4 @@
-// disabling eslint until this file is migrated to TS
-/* eslint-disable */
+/* eslint-disable spellcheck/spell-checker */
 const constants = require('../constants/plugin-constants');
 const pathManager = require('../utils/path-manager');
 const fs = require('fs-extra');
@@ -8,7 +7,7 @@ const configUtils = require('../utils/config-utils');
 const questions = require('../modules/questions/question-generator');
 const ValidationError = require('../error/validation-error').default;
 const clientFactory = require('../utils/client-factory');
-const tableUtis = require('../utils/table-utils');
+const tableUtils = require('../utils/table-utils');
 const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
 const { spinner } = require('amplify-cli-core');
 
@@ -63,7 +62,7 @@ async function initEnv(context) {
     // hosting is deleted. But current env config is not cleaned
     const { type } = consoleConfig;
     // clean team provider info
-    await configUtils.deleteHostingEnvParams(context);
+    await configUtils.deleteHostingEnvParams();
     // clean #current-backend-env for CICD.
     if (type === constants.TYPE_CICD) {
       await configUtils.deleteConsoleConfigFromCurrMeta(context);
@@ -133,7 +132,7 @@ async function status(context, mute) {
   }
 
   const appId = utils.getAppIdForCurrEnv(context);
-  await tableUtis.generateTableContentForApp(context, appId);
+  await tableUtils.generateTableContentForApp(context, appId);
 }
 
 function loadDeployType(context) {
@@ -184,4 +183,3 @@ module.exports = {
   configure,
   status,
 };
-/* eslint-enable */

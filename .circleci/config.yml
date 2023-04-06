@@ -167,7 +167,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --no-cache --maxWorkers=3
+            retry yarn run console-integration --no-cache --maxWorkers=4
           name: Run Amplify Console integration tests
           no_output_timeout: 90m
       - run:

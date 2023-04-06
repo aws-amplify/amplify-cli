@@ -13,6 +13,7 @@ import {
   deleteProjectDir,
   getAmplifyInitConfig,
   getAmplifyPullConfig,
+  getAwsProviderConfig,
   getProjectConfig,
   getSocialProviders,
   getTeamProviderInfo,
@@ -76,7 +77,7 @@ describe('attach amplify to git-cloned project', () => {
         region: importBucketRegion,
       },
     };
-    await nonInteractiveInitAttach(projRoot, getAmplifyInitConfig(projectName, envName), categoriesConfig);
+    await nonInteractiveInitAttach(projRoot, getAmplifyInitConfig(projectName, envName), getAwsProviderConfig(), categoriesConfig);
     await buildOverrides(projRoot);
 
     // expect no file changes

@@ -24,10 +24,12 @@ async function publish(context, doSkipBuild, doSkipPush) {
     const appId = utils.getAppIdForCurrEnv(context);
     const env = utils.getCurrEnv(context);
     spinner.start(ZIPPING_MESSAGE);
-    artifactsPath = await zipArtifacts(context).catch((err) => {
+    try {
+      artifactsPath = await zipArtifacts(context);
+    } catch (err) {
       spinner.fail(ZIPPING_FAILURE_MESSAGE);
       throw err;
-    });
+    }
     spinner.succeed(ZIPPING_SUCCESS_MESSAGE);
     await amplifyUtils.publishFileToAmplify(appId, env, artifactsPath, amplifyClient);
     context.print.info(amplifyUtils.getDefaultDomainForBranch(appId, env));
