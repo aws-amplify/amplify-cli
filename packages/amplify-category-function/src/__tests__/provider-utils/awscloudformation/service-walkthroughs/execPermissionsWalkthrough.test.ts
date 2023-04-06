@@ -1,4 +1,4 @@
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   getResourcesForCfn,
   generateEnvVariablesForCfn,
