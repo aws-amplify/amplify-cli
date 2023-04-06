@@ -140,7 +140,7 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
     chain.wait('What do you want to do?');
     chain.sendCarriageReturn(); // "I'm done"
   }
-  if (settings.environmentVariables.operation && settings.environmentVariables.operation == 'remove') {
+  if (settings.environmentVariables?.operation && settings.environmentVariables.operation == 'remove') {
     const actions = [
       'Add new environment variable',
       'Update existing environment variables',
