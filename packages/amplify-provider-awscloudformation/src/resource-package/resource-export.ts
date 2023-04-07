@@ -7,7 +7,7 @@ import {
   readCFNTemplate,
   stateManager,
   writeCFNTemplate,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { Template, Fn } from 'cloudform-types';
 import * as fs from 'fs-extra';
 import * as path from 'path';

@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { findModelLambdaTriggers, findSearchableLambdaTriggers } from '../../utils/lambda/find-lambda-triggers';
 import * as path from 'path';
 

@@ -2,7 +2,7 @@ import { AttributeDefinition, GlobalSecondaryIndex, KeySchema } from 'cloudform-
 import { DynamoDB, IntrinsicFunction } from 'cloudform-types';
 
 import _ from 'lodash';
-import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from '@aws-amplify/amplify-cli-core';
 import { GSIRecord } from '../utils/amplify-resource-state-utils';
 
 export const MAX_GSI_PER_TABLE = 20;

@@ -5,7 +5,7 @@ import glob from 'glob';
 import extract from 'extract-zip';
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import { exitOnNextTick, pathManager, PathConstants, AmplifyError } from 'amplify-cli-core';
+import { exitOnNextTick, pathManager, PathConstants, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import * as configurationManager from './configuration-manager';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';

@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { appSyncFunctionHandler, dynamoDBResourceHandler } from '../../../CFNParser/resource-processors/appsync';
 import { CloudFormationResource } from '../../../CFNParser/stack/types';
 import { CloudFormationParseContext } from '../../../CFNParser/types';

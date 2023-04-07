@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 import aws from './aws';
 import { loadConfiguration } from '../configuration-manager';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 class ECR {
   public ecr: AWS.ECR;
 

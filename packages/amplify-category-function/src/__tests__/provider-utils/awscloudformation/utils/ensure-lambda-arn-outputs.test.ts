@@ -1,4 +1,4 @@
-import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from 'amplify-cli-core';
+import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from '@aws-amplify/amplify-cli-core';
 import { ensureLambdaExecutionRoleOutputs } from '../../../../provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
 
 jest.mock('amplify-cli-core');

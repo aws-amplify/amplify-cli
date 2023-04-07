@@ -2,12 +2,11 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import inquirer from 'inquirer';
 import sequential from 'promise-sequential';
-import { $TSContext } from 'amplify-cli-core';
 import { S3 } from './aws-utils/aws-s3';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { ProviderName, AmplifyAppIdLabel } from './constants';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
-import { stateManager, AmplifyFault, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, stateManager, AmplifyFault, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { fileLogger } from './utils/aws-logger';
 import { loadConfigurationForEnv } from './configuration-manager';
 

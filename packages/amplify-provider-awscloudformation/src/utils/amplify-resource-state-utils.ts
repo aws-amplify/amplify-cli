@@ -3,7 +3,7 @@ import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types
 import { CloudFormation } from 'aws-sdk';
 import { Capabilities } from 'aws-sdk/clients/cloudformation';
 import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 export interface GSIRecord {
   attributeDefinition: AttributeDefinition[];

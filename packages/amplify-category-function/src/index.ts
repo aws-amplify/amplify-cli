@@ -1,5 +1,5 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import _ from 'lodash';
 import * as path from 'path';

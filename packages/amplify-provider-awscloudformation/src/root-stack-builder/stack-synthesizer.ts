@@ -1,5 +1,5 @@
 import { FileAssetSource, LegacyStackSynthesizer, Stack } from 'aws-cdk-lib';
-import { AmplifyFault, JSONUtilities, Template } from 'amplify-cli-core';
+import { AmplifyFault, JSONUtilities, Template } from '@aws-amplify/amplify-cli-core';
 import crypto from 'crypto';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 

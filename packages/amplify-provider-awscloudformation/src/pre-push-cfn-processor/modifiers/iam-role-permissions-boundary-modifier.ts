@@ -1,4 +1,4 @@
-import { getPermissionsBoundaryArn } from 'amplify-cli-core';
+import { getPermissionsBoundaryArn } from '@aws-amplify/amplify-cli-core';
 import Role from 'cloudform-types/types/iam/role';
 import { ResourceModifier } from '../pre-push-cfn-modifier';
 
