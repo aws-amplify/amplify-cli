@@ -198,7 +198,10 @@ const createCommands = (amplify: Amplify, cliVersion: string): Command[] => [
   {
     description: `Install Amplify CLI v${cliVersion}`,
     run: async () => {
-      NPM.install(`@aws-amplify/cli@${cliVersion}`, true);
+      return new Promise<void>((resolve) => {
+        NPM.install(`@aws-amplify/cli@${cliVersion}`, true);
+        resolve();
+      });
     },
   },
   {
