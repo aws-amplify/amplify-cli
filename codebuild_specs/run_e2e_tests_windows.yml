@@ -1,7 +1,6 @@
 version: 0.2
 env:
   shell: powershell.exe
-  imagePullCredentialsType: CODEBUILD
   variables:
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts|src/__tests__/auth_2f.test.ts
