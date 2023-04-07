@@ -6,7 +6,7 @@ const detectPort = require('detect-port');
 // eslint-disable-next-line spellcheck/spell-checker
 const log = require('logdown')('dynamodb-emulator');
 const execa = require('execa');
-const { pathManager } = require('amplify-cli-core');
+const { pathManager } = require('@aws-amplify/amplify-cli-core');
 
 // random port I chose in the ephemeral range.
 const basePort = 62224;
