@@ -78,15 +78,15 @@ export const importResource = async (
 };
 
 const printSuccess = (context: $TSContext, authSelections: AuthSelections, userPool: UserPoolType, identityPool?: IdentityPool): void => {
-  printer.info('');
+  printer.blankLine();
   if (authSelections === 'userPoolOnly') {
     printer.info(importMessages.UserPoolOnlySuccess(userPool.Name!));
   } else {
     printer.info(importMessages.UserPoolAndIdentityPoolSuccess(userPool.Name!, identityPool!.IdentityPoolName));
   }
-  printer.info('');
+  printer.blankLine();
   printer.info('Next steps:');
-  printer.info('');
+  printer.blankLine();
   printer.info("- This resource will be available for GraphQL APIs ('amplify add api')");
   printer.info('- Use Amplify libraries to add sign up, sign in, and sign out capabilities to your client');
   printer.info('  application.');
@@ -552,7 +552,7 @@ const appClientsOAuthPropertiesMatching = async (
 
   if (!propertiesMatching) {
     printer.error(importMessages.OAuth.SomePropertiesAreNotMatching);
-    printer.info('');
+    printer.blankLine();
 
     if (!supportedIdentityProvidersMatching) {
       showValidationTable(
@@ -672,9 +672,9 @@ const showValidationTable = (
   }
 
   printer.info(title);
-  printer.info('');
+  printer.blankLine();
   context.print.table(tableOptions, { format: 'markdown' });
-  printer.info('');
+  printer.blankLine();
 };
 
 const isArraysEqual = (left: string[], right: string[]): boolean => {
