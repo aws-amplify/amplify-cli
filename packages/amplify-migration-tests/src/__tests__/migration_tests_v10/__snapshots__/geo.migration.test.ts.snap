@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+g// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`geo category migration from v10 to latest ...pull and push should not drift with new amplify version 1`] = `
 "IAM Statement Changes
@@ -30,10 +30,10 @@ Outputs
 [-] Output AppClientSecret: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"UserPoolClientInputs\\",\\"appSecret\\"]},\\"Condition\\":\\"ShouldOutputAppClientSecrets\\"}
 
 Resources
-[~] AWS::Lambda::Function RoleMapFunction 
- └─ [~] Runtime
-     ├─ [-] nodejs14.x
-     └─ [+] nodejs16.x
+[-] AWS::IAM::Role LambdaExecutionRole destroy
+[-] AWS::Lambda::Function RoleMapFunction destroy
+[-] AWS::IAM::Policy LambdaCloudWatchPolicy destroy
+[-] Custom::LambdaCallout RoleMapFunctionInput destroy
 
 "
 `;
@@ -68,10 +68,10 @@ Outputs
 [-] Output AppClientSecret: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"UserPoolClientInputs\\",\\"appSecret\\"]},\\"Condition\\":\\"ShouldOutputAppClientSecrets\\"}
 
 Resources
-[~] AWS::Lambda::Function RoleMapFunction 
- └─ [~] Runtime
-     ├─ [-] nodejs14.x
-     └─ [+] nodejs16.x
+[-] AWS::IAM::Role LambdaExecutionRole destroy
+[-] AWS::Lambda::Function RoleMapFunction destroy
+[-] AWS::IAM::Policy LambdaCloudWatchPolicy destroy
+[-] Custom::LambdaCallout RoleMapFunctionInput destroy
 
 "
 `;
