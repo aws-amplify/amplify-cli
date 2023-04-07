@@ -11,10 +11,10 @@ import {
   $TSMeta,
   AmplifyError,
   AmplifyFault,
+  FeatureFlags,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { invokeAnalyticsAPICreateResource, invokeAnalyticsAPIGetResources, invokeAnalyticsPush } from './plugin-client-api-analytics';
-
 import * as authHelper from './auth-helper';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
@@ -22,9 +22,16 @@ import { PinpointName } from './pinpoint-name';
 import { isChannelDeploymentDeferred } from './notifications-backend-cfg-channel-api';
 import { constructResourceMeta, addPartialNotificationsAppMeta } from './notifications-amplify-meta-api';
 import { addPartialNotificationsBackendConfig } from './notifications-backend-cfg-api';
-
-const providerName = 'awscloudformation';
+import aws from 'aws-sdk';
+import {
+  formUserAgentParam,
+  loadConfiguration,
+  resolveRegion,
+  loadConfigurationForEnv,
+} from '@aws-amplify/amplify-provider-awscloudformation';
+import proxyAgent from 'proxy-agent';
 const spinner = ora('');
+const defaultPinpointRegion = 'us-east-1';
 
 /**
  * Get the Pinpoint app from analytics category
@@ -463,7 +470,7 @@ const deleteApp = async (context: $TSContext, pinpointAppId: string): Promise<$T
     ApplicationId: pinpointAppId,
   };
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
-  const pinpointClient = await getPinpointClient(context, 'delete', envName);
+  const pinpointClient = await getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'delete', envName);
   spinner.start('Deleting Pinpoint app.');
   return new Promise((resolve, reject) => {
     pinpointClient.deleteApp(params, (err: $TSAny, data: $TSAny) => {
@@ -500,13 +507,84 @@ export const console = async (context: $TSContext): Promise<void> => {
   }
 };
 
-/**
- * Get Pinpoint client from cloudformation
- */
-export const getPinpointClient = async (context: $TSContext, action: string, envName: string): Promise<$TSAny> => {
-  const providerPlugins = context.amplify.getProviderPlugins(context);
-  const provider = await import(providerPlugins[providerName]);
-  return provider.getConfiguredPinpointClient(context, AmplifyCategories.NOTIFICATIONS, action, envName);
+const getConfiguredCredentials = async (context: $TSContext, envName?: string): Promise<{ region?: string } | undefined> => {
+  try {
+    if (envName) {
+      return loadConfigurationForEnv(context, envName);
+    } else {
+      return loadConfiguration(context);
+    }
+  } catch (e) {
+    // ignore missing config
+    return undefined;
+  }
+};
+
+export const getPinpointClient = async (
+  context: $TSContext,
+  category: string,
+  action?: string,
+  envName?: string,
+): Promise<aws.Pinpoint> => {
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  const cred = await getConfiguredCredentials(context, envName);
+
+  const { amplifyMeta } = context.exeInfo;
+  const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
+
+  category = category || 'missing';
+  action = action || 'missing';
+  const userAgentAction = `${category}:${action}`;
+  const defaultOptions = {
+    region: pinpointApp?.Region ?? mapServiceRegion(cred?.region || resolveRegion()),
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+  };
+
+  if (httpProxy) {
+    aws.config.update({
+      httpOptions: {
+        agent: proxyAgent(httpProxy),
+      },
+    });
+  }
+
+  return new aws.Pinpoint({ ...cred, ...defaultOptions });
+};
+
+export const mapServiceRegion = (region: string): string => {
+  const serviceRegionMap = getPinpointRegionMapping();
+  if (serviceRegionMap[region]) {
+    return serviceRegionMap[region];
+  }
+  return defaultPinpointRegion;
+};
+
+export const getPinpointRegionMapping = (): { [key: string]: string } => {
+  const latestPinpointRegions = FeatureFlags.getNumber('latestRegionSupport.pinpoint');
+
+  return {
+    'us-east-1': 'us-east-1',
+    'us-east-2': latestPinpointRegions ? 'us-east-2' : 'us-east-1',
+    'sa-east-1': 'us-east-1',
+    'ca-central-1': latestPinpointRegions >= 1 ? 'ca-central-1' : 'us-east-1',
+    'us-west-1': 'us-west-2',
+    'us-west-2': 'us-west-2',
+    'cn-north-1': 'us-west-2',
+    'cn-northwest-1': 'us-west-2',
+    'ap-south-1': latestPinpointRegions >= 1 ? 'ap-south-1' : 'us-east-1',
+    'ap-northeast-3': 'us-west-2',
+    'ap-northeast-2': latestPinpointRegions >= 1 ? 'ap-northeast-2' : 'us-east-1',
+    'ap-southeast-1': latestPinpointRegions >= 1 ? 'ap-southeast-1' : 'us-east-1',
+    'ap-southeast-2': latestPinpointRegions >= 1 ? 'ap-southeast-2' : 'us-east-1',
+    'ap-northeast-1': latestPinpointRegions >= 1 ? 'ap-northeast-1' : 'us-east-1',
+    'eu-central-1': 'eu-central-1',
+    'eu-north-1': 'eu-central-1',
+    'eu-south-1': 'eu-central-1',
+    'eu-west-1': 'eu-west-1',
+    'eu-west-2': latestPinpointRegions >= 1 ? 'eu-west-2' : 'eu-west-1',
+    'eu-west-3': 'eu-west-1',
+    'me-south-1': 'ap-south-1',
+  };
 };
 
 /**

@@ -20,6 +20,9 @@ export const deleteEnvironmentParametersFromService: (context: $TSContext, envNa
 // @public (undocumented)
 export type DownloadHandler = (keys: string[]) => Promise<PrimitiveRecord>;
 
+// @public (undocumented)
+export function formUserAgentParam(context: any, userAgentAction: any): string;
+
 // Warning: (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -42,6 +45,11 @@ export const getLocationRegionMapping: () => $TSObject;
 // @public (undocumented)
 export const getLocationSupportedRegion: (region: string) => string;
 
+// Warning: (ae-forgotten-export) The symbol "AwsSecrets" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function loadConfiguration(context: $TSContext): Promise<AwsSecrets>;
+
 // Warning: (ae-forgotten-export) The symbol "AwsSdkConfig" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -52,6 +60,9 @@ export type PrimitiveRecord = Record<string, string | number | boolean>;
 
 // @public (undocumented)
 export const resolveAppId: (context: $TSContext) => string;
+
+// @public (undocumented)
+export function resolveRegion(): string;
 
 // @public (undocumented)
 export const rootStackFileName = "root-cloudformation-stack.json";
