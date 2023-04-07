@@ -17,7 +17,7 @@ import {
   StartableTimedCodePath,
   StoppableTimedCodePath,
   TimedCodePath,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { CLIFlowReport } from './FlowReport';
 import { getUrl } from './getUsageDataUrl';
 import redactInput from './identifiable-input-regex';

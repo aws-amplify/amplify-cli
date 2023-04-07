@@ -8,8 +8,8 @@ const cliInputsFile = '/amplify/backend/auth/cognito/cli-inputs.json';
 let cloudBackendExists: boolean;
 let setInCloudBackendDir: boolean;
 
-jest.mock('amplify-cli-core', () => {
-  const { stateManager } = jest.requireActual('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const { stateManager } = jest.requireActual('@aws-amplify/amplify-cli-core');
 
   return {
     JSONUtilities: {

@@ -1,5 +1,5 @@
 import { getFrontendConfig } from '@aws-amplify/amplify-category-auth';
-import { $TSAny, stateManager } from 'amplify-cli-core';
+import { $TSAny, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import sequential from 'promise-sequential';

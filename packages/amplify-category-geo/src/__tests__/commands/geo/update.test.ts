@@ -6,7 +6,7 @@ import { run } from '../../../commands/geo/update';
 const mockUpdateResource = updateResource as jest.MockedFunction<typeof updateResource>;
 mockUpdateResource.mockImplementation(async (_, service: string) => service);
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../provider-controllers/index');
 
 describe('update command tests', () => {

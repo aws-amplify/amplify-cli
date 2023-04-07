@@ -6,7 +6,7 @@ import { LayerCloudState } from '../../../../provider-utils/awscloudformation/ut
 import { loadLayerConfigurationFile } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoader');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');

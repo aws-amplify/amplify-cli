@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { constructExeInfo } from '../../../extensions/amplify-helpers/construct-exeInfo';
 let context_stub = {} as $TSContext;
 

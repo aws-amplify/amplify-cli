@@ -11,7 +11,7 @@ mockRemoveResource.mockImplementation((context: $TSContext, service: string): Pr
   });
 });
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../provider-controllers');
 
 describe('remove command tests', () => {

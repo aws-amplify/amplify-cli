@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "ajv": "^6.12.6",
-    "amplify-cli-core": "4.0.1",
+    "@aws-amplify/amplify-cli-core": "4.0.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

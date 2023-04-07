@@ -2,7 +2,7 @@
 import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { CLIInput } from '../command-input';
-import { IUsageData, IUsageDataPayload, ProjectSettings } from 'amplify-cli-core';
+import { IUsageData, IUsageDataPayload, ProjectSettings } from '@aws-amplify/amplify-cli-core';
 import { CLINoFlowReport } from './NoFlowReport';
 import { UsageDataPayload } from './UsageDataPayload';
 

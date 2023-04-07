@@ -9,7 +9,7 @@ import {
   JSONUtilities,
   PathConstants,
   pathManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 
 /**

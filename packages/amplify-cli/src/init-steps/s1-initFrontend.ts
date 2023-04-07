@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as inquirer from 'inquirer';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { normalizeFrontendHandlerName } from '../input-params-manager';

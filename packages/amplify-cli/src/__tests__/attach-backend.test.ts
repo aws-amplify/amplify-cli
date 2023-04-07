@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { attachBackend } from '../attach-backend';
 
 jest.mock('../amplify-service-helper');
@@ -9,7 +9,7 @@ jest.mock('../attach-backend-steps/a40-generateFiles');
 jest.mock('../initialize-env');
 jest.mock('@aws-amplify/amplify-prompts');
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('fs-extra');
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 

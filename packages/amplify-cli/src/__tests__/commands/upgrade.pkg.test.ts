@@ -1,8 +1,8 @@
 /* eslint-disable jest/no-interpolation-in-snapshots */
 import * as fs from 'fs-extra';
 import fetch, { Response } from 'node-fetch';
-import { $TSContext } from 'amplify-cli-core';
-import * as core from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import * as core from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import execa from 'execa';
 import { run } from '../../commands/upgrade';
@@ -45,7 +45,7 @@ jest.mock('progress');
 
 jest.mock('tar-fs');
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir'),
   },

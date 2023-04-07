@@ -1,4 +1,4 @@
-import { $TSObject, HydrateTags, pathManager, stateManager, Tag } from 'amplify-cli-core';
+import { $TSObject, HydrateTags, pathManager, stateManager, Tag } from '@aws-amplify/amplify-cli-core';
 import { Context } from '../../domain/context';
 
 /**

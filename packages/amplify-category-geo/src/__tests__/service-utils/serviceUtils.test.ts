@@ -7,7 +7,7 @@ import { getCurrentMapParameters, getMapFriendlyNames } from '../../service-util
 import { getCurrentPlaceIndexParameters } from '../../service-utils/placeIndexUtils';
 import { getCurrentGeofenceCollectionParameters } from '../../service-utils/geofenceCollectionUtils';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 describe('Test resource utility functions', () => {
   const map1Params = {
