@@ -26,7 +26,6 @@ const contextStub = {
   },
 };
 describe('test auth trigger stack Parameters', () => {
-
   it('test case 1 - appClientSecret doesnt get updated when sdk returns undefined ', async () => {
     jest.clearAllMocks();
     stateManagerMock.getMeta.mockReturnValue({
