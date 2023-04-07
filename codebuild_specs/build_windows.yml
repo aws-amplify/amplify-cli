@@ -4,6 +4,9 @@ env:
 phases:
   build:
     commands:
+      - node -v
+      - npm -v
+      - n install 18
       - yarn run production-build
       - yarn build-tests
 
