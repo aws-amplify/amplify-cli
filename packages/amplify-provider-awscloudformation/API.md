@@ -17,6 +17,14 @@ export const cfnRootStackFileName = "root-cloudformation-stack.json";
 // @public (undocumented)
 export const deleteEnvironmentParametersFromService: (context: $TSContext, envName: string) => Promise<void>;
 
+// @public (undocumented)
+export function getConfiguredAWSClient(context: any, category: any, action: any): Promise<any>;
+
+// Warning: (ae-forgotten-export) The symbol "CognitoUserPoolClientProvider" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function getConfiguredCognitoIdentityProviderClient(context: any): Promise<CognitoUserPoolClientProvider>;
+
 // Warning: (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)

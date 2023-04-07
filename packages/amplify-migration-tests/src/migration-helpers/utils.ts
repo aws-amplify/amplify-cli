@@ -1,21 +1,25 @@
-import { v4 as uuid } from 'uuid';
 import {
   amplifyPull,
+  amplifyPushForce,
   amplifyPushWithoutCodegen,
   cliInputsExists,
   createNewProjectDir,
   deleteProjectDir,
   getAppId,
+  getAwsIOSConfig,
   getBackendConfig,
   getCLIInputs,
   getCloudFormationTemplate,
   getParameters,
+  getProjectMeta,
+  getUserPoolClients,
   parametersExists,
 } from '@aws-amplify/amplify-e2e-core';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
-import { Writable } from 'stream';
 import { AmplifyCategories } from 'amplify-cli-core';
+import { Writable } from 'stream';
 import strip from 'strip-ansi';
+import { v4 as uuid } from 'uuid';
 
 /**
  * generates a random string
@@ -169,4 +173,43 @@ export const pullPushWithLatestCodebaseValidateParameterAndCfnDrift = async (pro
   } finally {
     deleteProjectDir(projRoot2);
   }
+};
+
+/**
+ * Pulls and pushes with force project with latest codebase. Validates parameter and cfn drift.
+ */
+export const pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift = async (projRoot: string, projRoot2: string): Promise<void> => {
+  const appId = getAppId(projRoot);
+  expect(appId).toBeDefined();
+  try {
+    await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
+    assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
+    expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+    await amplifyPushForce(projRoot2, true);
+    assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
+    expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+  } finally {
+    deleteProjectDir(projRoot2);
+  }
+};
+
+/**
+ * asserts app client secret in projects files and on cloud
+ */
+export const assertAppClientSecretInFiles = async (projRoot: string): Promise<void> => {
+  const config = await getAwsIOSConfig(projRoot);
+  const clientSecretInAwsIOSConfig = config.CognitoUserPool.Default.AppClientSecret;
+  expect(clientSecretInAwsIOSConfig).toBeDefined();
+  const meta = getProjectMeta(projRoot);
+  const id = Object.keys(meta.auth)[0];
+  const authMeta = meta.auth[id];
+  const clientIds = [authMeta.output.AppClientID];
+  const clientSecretInMetaFile = authMeta.output.AppClientSecret;
+  // compare client secret in meta file and ios config file
+  expect(clientSecretInMetaFile).toBeDefined();
+  expect(clientSecretInAwsIOSConfig).toEqual(clientSecretInMetaFile);
+  const clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
+  expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
+  // compare client secret in meta file with cloud value
+  expect(clients[0].UserPoolClient.ClientSecret).toEqual(clientSecretInMetaFile);
 };

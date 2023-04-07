@@ -48,12 +48,19 @@ describe('amplify add auth...', () => {
     await amplifyPushAuth(projRoot);
 
     config = await getAwsIOSConfig(projRoot);
-    expect(config.CognitoUserPool.Default.AppClientSecret).toBeDefined();
+    const clientSecretInAwsIOSConfig = config.CognitoUserPool.Default.AppClientSecret;
+    expect(clientSecretInAwsIOSConfig).toBeDefined();
     meta = getProjectMeta(projRoot);
     id = Object.keys(meta.auth)[0];
     authMeta = meta.auth[id];
     clientIds = [authMeta.output.AppClientID];
+    const clientSecretInMetaFile = authMeta.output.AppClientSecret;
+    // compare client secret in meta file and ios config file
+    expect(clientSecretInMetaFile).toBeDefined();
+    expect(clientSecretInAwsIOSConfig).toEqual(clientSecretInMetaFile);
     clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
     expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
+    // compare client secret in meta file with cloud value
+    expect(clients[0].UserPoolClient.ClientSecret).toEqual(clientSecretInMetaFile);
   });
 });
