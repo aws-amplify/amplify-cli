@@ -20303,7 +20303,7 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
-pkg-fetch@3.4.2, "pkg-fetch@https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff":
+pkg-fetch@3.4.2:
   version "3.4.2"
   resolved "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
   dependencies:
