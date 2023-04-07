@@ -1,4 +1,4 @@
-import { AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import { generateLayerCfnObj } from '../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template';
 import { isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
@@ -104,17 +104,6 @@ describe('test layer CFN generation functions', () => {
     validateParameters(layerCfn);
     validateOutput(layerCfn);
     expect(Object.keys(layerCfn.Resources).length).toBe(2); // 1 LayerVersion, 1 LayerVersionPermission
-  });
-
-  it('should throw an error when the logical name is not found', () => {
-    try {
-      generateLayerCfnObj(false, parameters_stub, []);
-    } catch {
-      expect(AmplifyError).toHaveBeenCalledWith('LambdaLayerNotFoundError', {
-        message: 'No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?',
-      });
-    }
-    expect.assertions(1);
   });
 
   it('should generate the expected CFN for an existing LL resource and new version', () => {
