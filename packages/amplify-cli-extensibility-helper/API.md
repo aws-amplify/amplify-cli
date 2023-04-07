@@ -4,7 +4,7 @@
 
 ```ts
 
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { addCDKResourceDependency as addResourceDependency } from '@aws-amplify/amplify-category-custom';
 import { AmplifyResourceProps } from '@aws-amplify/amplify-category-custom';
 import * as apigwCdk from 'aws-cdk-lib/aws-apigateway';
