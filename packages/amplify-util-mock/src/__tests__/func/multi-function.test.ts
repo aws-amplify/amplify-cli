@@ -4,6 +4,7 @@ import { $TSAny } from 'amplify-cli-core';
 
 jest.mock('../../func');
 jest.mock('@aws-amplify/amplify-prompts');
+jest.mock('../../../../amplify-dynamodb-simulator');
 jest.mock('amplify-cli-core', () => ({
   ...jest.requireActual('amplify-cli-core'),
   FeatureFlags: {
