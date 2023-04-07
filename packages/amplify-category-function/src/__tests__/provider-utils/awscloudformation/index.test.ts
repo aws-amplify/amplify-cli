@@ -5,7 +5,7 @@ import { buildFunction } from '../../../provider-utils/awscloudformation/utils/b
 import { getBuilder } from '../../..';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({
   providers: {

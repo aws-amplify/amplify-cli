@@ -1,4 +1,4 @@
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import {
   ExecutionContext,
   getCLIPath,

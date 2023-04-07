@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as path from 'path';
 import chalk from 'chalk';
-import { JSONUtilities, $TSAny, PluginInfo, PluginPlatform } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny, PluginInfo, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 import { satisfies } from 'semver';
 
 /**

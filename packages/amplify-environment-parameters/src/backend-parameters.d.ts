@@ -1,4 +1,4 @@
-import { ResourceTuple } from 'amplify-cli-core';
+import { ResourceTuple } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Defines the shape of the mapping stored in `backend-config.json` to map ParameterStore parameters to corresponding project resources

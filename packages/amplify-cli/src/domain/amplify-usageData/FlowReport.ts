@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { CLIInput } from '../command-input';
 import { getAmplifyLogger, Redactor, IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 

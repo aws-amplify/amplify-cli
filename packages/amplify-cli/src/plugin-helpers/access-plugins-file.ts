@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as os from 'os';
-import { PluginPlatform, constants, JSONUtilities } from 'amplify-cli-core';
+import { PluginPlatform, constants, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 export function readPluginsJsonFile(): PluginPlatform | undefined {
   const pluginsFilePath = getPluginsJsonFilePath();

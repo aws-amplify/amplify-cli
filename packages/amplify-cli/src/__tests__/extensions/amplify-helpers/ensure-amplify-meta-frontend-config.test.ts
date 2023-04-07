@@ -1,7 +1,7 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { ensureAmplifyMetaFrontendConfig } from '../../../extensions/amplify-helpers/on-category-outputs-change';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({ auth: { authResource: { service: 'Cognito' } } });

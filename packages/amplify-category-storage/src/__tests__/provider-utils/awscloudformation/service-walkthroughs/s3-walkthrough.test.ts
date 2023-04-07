@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifySupportedService, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as uuid from 'uuid';
 import { AmplifyS3ResourceStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
@@ -16,7 +16,7 @@ import {
 import { MigrationParams, S3InputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
 import { addWalkthrough, updateWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-walkthrough';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state');
 jest.mock('../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform');

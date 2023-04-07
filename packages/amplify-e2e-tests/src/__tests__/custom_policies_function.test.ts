@@ -13,7 +13,8 @@ import {
   deleteProjectDir,
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
-import { JSONUtilities } from 'amplify-cli-core';
+
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { GetParameterCommand, PutParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 
 const customIAMPolicy: CustomIAMPolicy = {

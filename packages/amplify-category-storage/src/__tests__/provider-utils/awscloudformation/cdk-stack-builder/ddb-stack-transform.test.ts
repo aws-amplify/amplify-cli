@@ -1,6 +1,6 @@
 /* These tests test the DDBStackTransform and run the cdk builder tool which is used within this file */
 
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { DDBStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import {
   DynamoDBCLIInputs,
@@ -8,7 +8,7 @@ import {
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types';
 import { DynamoDBInputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   buildOverrideDir: jest.fn().mockResolvedValue(false),
   JSONUtilities: {
     writeJson: jest.fn(),

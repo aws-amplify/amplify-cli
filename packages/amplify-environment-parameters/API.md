@@ -4,7 +4,7 @@
 
 ```ts
 
-import { IAmplifyResource } from 'amplify-cli-core';
+import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export const cloneEnvParamManager: (srcEnvParamManager: IEnvironmentParameterManager, destEnvName: string) => Promise<void>;

@@ -1,6 +1,6 @@
-import { $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 jest.mock('../../commands/init');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 import { run as runEnvCmd } from '../../commands/env';
 import { run as runAddEnvCmd } from '../../commands/env/add';
 import * as envList from '../../commands/env/list';

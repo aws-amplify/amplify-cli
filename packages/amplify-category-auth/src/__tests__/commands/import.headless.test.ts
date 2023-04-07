@@ -13,8 +13,8 @@ jest.mock('@aws-amplify/amplify-prompts', () => ({
   },
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   FeatureFlags: {
     getBoolean: () => false,
   },

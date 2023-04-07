@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, exitOnNextTick } from 'amplify-cli-core';
+import { $TSAny, $TSContext, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 import { matchRegex, alphanumeric, and, maxLength, minLength, printer, prompter } from '@aws-amplify/amplify-prompts';
 import {
   getRoleAccessDefaultValues,

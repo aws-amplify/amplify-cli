@@ -1,6 +1,6 @@
-import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { AmplifyCategories } from 'amplify-cli-core';
+import { AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import os from 'os';
 
 /* This file contains all functions interacting with AUTH category */

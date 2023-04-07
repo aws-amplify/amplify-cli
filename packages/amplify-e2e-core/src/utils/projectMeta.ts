@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny } from '@aws-amplify/amplify-cli-core';
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const getAWSConfigAndroidPath = (projectRoot: string): string =>

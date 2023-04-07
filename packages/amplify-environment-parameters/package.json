@@ -27,8 +27,8 @@
     "generate-schemas": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path src/backend-parameters.d.ts --type BackendParameters --no-type-check --out lib/schemas/BackendParameters.schema.json && copyfiles --flat lib/schemas/BackendParameters.schema.json src/schemas"
   },
   "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.0.1",
     "ajv": "^6.12.6",
-    "amplify-cli-core": "4.0.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

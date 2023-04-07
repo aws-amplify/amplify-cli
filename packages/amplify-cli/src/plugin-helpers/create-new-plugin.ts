@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import { Context } from '../domain/context';
-import { constants, AmplifyEvent, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { constants, AmplifyEvent, JSONUtilities, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { AmplifyPluginType } from '../domain/amplify-plugin-type';
 import { validPluginName } from './verify-plugin';
 import { createIndentation } from './display-plugin-platform';

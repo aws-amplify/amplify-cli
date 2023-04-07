@@ -1,4 +1,4 @@
-import { $TSContext, isPackaged, pathManager } from 'amplify-cli-core';
+import { $TSContext, isPackaged, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { setRegPendingDelete } from '../utils/win-utils';

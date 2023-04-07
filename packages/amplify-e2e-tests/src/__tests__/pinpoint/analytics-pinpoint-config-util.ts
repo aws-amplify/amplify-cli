@@ -9,7 +9,7 @@ import {
   getAppId,
   removeAnalytics,
 } from '@aws-amplify/amplify-e2e-core';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyFlutterConfig } from '@aws-amplify/amplify-e2e-core';
 import { getAWSExports } from '../../schema-api-directives/authHelper';
 

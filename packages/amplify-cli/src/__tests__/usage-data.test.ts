@@ -4,12 +4,12 @@ import * as uuid from 'uuid';
 
 import { UsageData } from '../domain/amplify-usageData/UsageData';
 import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CLIInput as CommandLineInput } from '../domain/command-input';
-import { ManuallyTimedCodePath } from 'amplify-cli-core';
+import { ManuallyTimedCodePath } from '@aws-amplify/amplify-cli-core';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
 import { SerializableError } from '../domain/amplify-usageData/SerializableError';
-import { ProjectSettings } from 'amplify-cli-core/src/types';
+import { ProjectSettings } from '@aws-amplify/amplify-cli-core/src/types';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';

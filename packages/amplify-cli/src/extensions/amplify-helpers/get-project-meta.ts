@@ -1,4 +1,4 @@
-import { $TSMeta, projectNotInitializedError, stateManager } from 'amplify-cli-core';
+import { $TSMeta, projectNotInitializedError, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * returns project meta

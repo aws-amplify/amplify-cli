@@ -9,7 +9,7 @@ jest.mock('../configuration-manager');
 jest.mock('../aws-utils/aws-cfn');
 jest.mock('fs-extra');
 jest.mock('../amplify-service-manager');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../permissions-boundary/permissions-boundary');
 
 const CloudFormationMock = CloudFormation as jest.MockedClass<typeof CloudFormation>;

@@ -1,4 +1,4 @@
-import { AmplifyError, pathManager } from 'amplify-cli-core';
+import { AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * checks if the current directory is a nested project

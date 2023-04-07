@@ -14,7 +14,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { Writable } from 'stream';
-import { AmplifyCategories } from 'amplify-cli-core';
+import { AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import strip from 'strip-ansi';
 
 /**

@@ -8,7 +8,7 @@ import {
   amplifyPushOverride,
   replaceOverrideFileWithProjectInfo,
 } from '@aws-amplify/amplify-e2e-core';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('amplify init', () => {

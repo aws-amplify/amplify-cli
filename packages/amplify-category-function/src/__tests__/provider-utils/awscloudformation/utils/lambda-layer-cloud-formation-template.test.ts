@@ -9,7 +9,7 @@ import {
   PermissionEnum,
 } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 pathManager_mock.getResourceDirectoryPath.mockReturnValue('fakeProject/amplify/backend/myLayer/');
@@ -65,7 +65,7 @@ function validateOutput(layerCfn) {
 
 describe('test layer CFN generation functions', () => {
   beforeAll(() => {
-    jest.mock('amplify-cli-core', () => ({
+    jest.mock('@aws-amplify/amplify-cli-core', () => ({
       stateManager: {
         getLocalEnvInfo: jest.fn().mockReturnValue('testenv'),
       },

@@ -3,8 +3,8 @@ import { AuthInputState } from '../../../../provider-utils/awscloudformation/aut
 
 jest.mock('fs-extra');
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockbackendDirPath'),
     findProjectRoot: jest.fn().mockReturnValue('mockProject'),

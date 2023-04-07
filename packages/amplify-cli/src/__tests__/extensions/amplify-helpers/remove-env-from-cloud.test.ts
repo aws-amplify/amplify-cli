@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { removeEnvFromCloud } from '../../../extensions/amplify-helpers/remove-env-from-cloud';
 import { getAllCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-all-category-pluginInfos';
 
