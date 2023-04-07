@@ -6,11 +6,7 @@ import { ARTIFACT_STORAGE_PATH_ALLOW_LIST_CODEBUILD } from '../scripts/artifact-
 
 const ROOT_FOLDER_ABSOLUTE_PATH = process.env.CODEBUILD_SRC_DIR as string;
 
-export const hasMatchingContentInFolder = (
-  patterns: string[],
-  folder: string,
-  excludeFolder = '{node_modules,.cache,.git,.cache,.git}',
-): boolean => {
+export const hasMatchingContentInFolder = (patterns: string[], folder: string, excludeFolder = '{node_modules,.cache,.git}'): boolean => {
   console.log('Scanning folder:', folder);
   const patternParam = patterns.reduce<string[]>((acc, v) => [...acc, '-e', v], []);
 
