@@ -3,7 +3,7 @@ import { EOL } from 'os';
 // eslint-disable-next-line import/no-cycle
 import { nspawn as spawn, getCLIPath, getAwsProviderConfig } from '..';
 import { CategoriesConfig } from './headless-types';
-import { AmplifyFrontend } from 'amplify-cli-core';
+import { AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 
 const defaultSettings = {
   name: EOL,
