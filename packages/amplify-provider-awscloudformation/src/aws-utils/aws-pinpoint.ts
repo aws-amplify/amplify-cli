@@ -6,24 +6,20 @@ const { formUserAgentParam } = require('./user-agent');
 
 const defaultPinpointRegion = 'us-east-1';
 
-async function getConfiguredPinpointClient(context, category, action, envName) {
-  let cred = {};
+export const getConfiguredPinpointClient = async (
+  context: $TSContext,
+  category: string,
+  action?: string[],
+  envName?: string,
+): Promise<aws.Pinpoint> => {
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  const cred = await getConfiguredCredentials(context, envName);
 
-  try {
-    if (envName) {
-      cred = await configurationManager.loadConfigurationForEnv(context, envName);
-    } else {
-      cred = await configurationManager.loadConfiguration(context);
-    }
-  } catch (e) {
-    // ignore missing config
-  }
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
   const defaultOptions = {
-    region: mapServiceRegion(cred.region || configurationManager.resolveRegion()),
+    region: mapServiceRegion(cred?.region || configurationManager.resolveRegion()),
     customUserAgent: formUserAgentParam(context, userAgentAction),
   };
 
@@ -36,17 +32,17 @@ async function getConfiguredPinpointClient(context, category, action, envName) {
   }
 
   return new aws.Pinpoint({ ...cred, ...defaultOptions });
-}
+};
 
-function mapServiceRegion(region) {
+const mapServiceRegion = (region: string): string => {
   const serviceRegionMap = getPinpointRegionMapping();
   if (serviceRegionMap[region]) {
     return serviceRegionMap[region];
   }
   return defaultPinpointRegion;
-}
+};
 
-function getPinpointRegionMapping() {
+export const getPinpointRegionMapping = (): { [key: string]: string } => {
   const latestPinpointRegions = FeatureFlags.getNumber('latestRegionSupport.pinpoint');
 
   return {
@@ -58,12 +54,12 @@ function getPinpointRegionMapping() {
     'us-west-2': 'us-west-2',
     'cn-north-1': 'us-west-2',
     'cn-northwest-1': 'us-west-2',
-    'ap-south-1': latestPinpointRegions >= 1 ? 'ap-south-1' : 'us-west-2',
+    'ap-south-1': latestPinpointRegions >= 1 ? 'ap-south-1' : 'us-east-1',
     'ap-northeast-3': 'us-west-2',
-    'ap-northeast-2': latestPinpointRegions >= 1 ? 'ap-northeast-2' : 'us-west-2',
-    'ap-southeast-1': latestPinpointRegions >= 1 ? 'ap-southeast-1' : 'us-west-2',
-    'ap-southeast-2': latestPinpointRegions >= 1 ? 'ap-southeast-2' : 'us-west-2',
-    'ap-northeast-1': latestPinpointRegions >= 1 ? 'ap-northeast-1' : 'us-west-2',
+    'ap-northeast-2': latestPinpointRegions >= 1 ? 'ap-northeast-2' : 'us-east-1',
+    'ap-southeast-1': latestPinpointRegions >= 1 ? 'ap-southeast-1' : 'us-east-1',
+    'ap-southeast-2': latestPinpointRegions >= 1 ? 'ap-southeast-2' : 'us-east-1',
+    'ap-northeast-1': latestPinpointRegions >= 1 ? 'ap-northeast-1' : 'us-east-1',
     'eu-central-1': 'eu-central-1',
     'eu-north-1': 'eu-central-1',
     'eu-south-1': 'eu-central-1',
@@ -72,9 +68,17 @@ function getPinpointRegionMapping() {
     'eu-west-3': 'eu-west-1',
     'me-south-1': 'ap-south-1',
   };
-}
+};
 
-module.exports = {
-  getPinpointRegionMapping,
-  getConfiguredPinpointClient,
+const getConfiguredCredentials = async (context: $TSContext, envName: string): Promise<configurationManager.AwsSecrets | undefined> => {
+  try {
+    if (envName) {
+      return configurationManager.loadConfigurationForEnv(context, envName);
+    } else {
+      return configurationManager.loadConfiguration(context);
+    }
+  } catch (e) {
+    // ignore missing config
+    return undefined;
+  }
 };
