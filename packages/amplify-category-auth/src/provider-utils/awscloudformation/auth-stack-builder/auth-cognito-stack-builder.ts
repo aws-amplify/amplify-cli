@@ -1,21 +1,14 @@
-import * as cdk from 'aws-cdk-lib';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cognito from 'aws-cdk-lib/aws-cognito';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { $TSAny, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
+import * as cdk from 'aws-cdk-lib';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { Construct } from 'constructs';
-import {
-  hostedUILambdaFilePath,
-  hostedUIProviderLambdaFilePath,
-  mfaLambdaFilePath,
-  oauthLambdaFilePath,
-  openIdLambdaFilePath,
-  userPoolClientLambdaFilePath,
-} from '../constants';
+import { mfaLambdaFilePath, openIdLambdaFilePath } from '../constants';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
 
@@ -69,26 +62,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   lambdaConfigPermissions?: Record<string, lambda.CfnPermission>;
   lambdaTriggerPermissions?: Record<string, iam.CfnPolicy>;
   // custom resources userPoolClient
-  userPoolClientLambda?: lambda.CfnFunction;
-  userPoolClientRole?: iam.CfnRole;
-  userPoolClientLambdaPolicy?: iam.CfnPolicy;
-  userPoolClientLogPolicy?: iam.CfnPolicy;
-  userPoolClientInputs?: cdk.CustomResource;
-  // custom resources HostedUI
-  hostedUICustomResource?: lambda.CfnFunction;
-  hostedUICustomResourcePolicy?: iam.CfnPolicy;
-  hostedUICustomResourceLogPolicy?: iam.CfnPolicy;
-  hostedUICustomResourceInputs?: cdk.CustomResource;
-  // custom resource HostedUI Provider
-  hostedUIProvidersCustomResource?: lambda.CfnFunction;
-  hostedUIProvidersCustomResourcePolicy?: iam.CfnPolicy;
-  hostedUIProvidersCustomResourceLogPolicy?: iam.CfnPolicy;
-  hostedUIProvidersCustomResourceInputs?: cdk.CustomResource;
-  // custom resource OAUTH Provider
-  oAuthCustomResource?: lambda.CfnFunction;
-  oAuthCustomResourcePolicy?: iam.CfnPolicy;
-  oAuthCustomResourceLogPolicy?: iam.CfnPolicy;
-  oAuthCustomResourceInputs?: cdk.CustomResource;
   // custom resource MFA
   mfaLambda?: lambda.CfnFunction;
   mfaLogPolicy?: iam.CfnPolicy;
@@ -481,16 +454,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       this.userPoolClient.generateSecret = cdk.Fn.ref('userpoolClientGenerateSecret') as unknown as boolean;
       this.userPoolClient.addDependency(this.userPool);
 
-      this.createUserPoolClientCustomResource(props);
-      if (props.hostedUIDomainName) {
-        this.createHostedUICustomResource();
-      }
-      if (props.hostedUIProviderMeta) {
-        this.createHostedUIProviderCustomResource();
-      }
-      if (props.oAuthMetadata) {
-        this.createOAuthCustomResource();
-      }
       if (!props.useEnabledMfas && props.mfaConfiguration !== 'OFF') {
         this.createMFACustomResource(props);
       }
@@ -549,11 +512,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         this.identityPool.openIdConnectProviderArns = [cdk.Fn.getAtt('OpenIdLambdaInputs', 'providerArn').toString()];
         this.identityPool.node.addDependency(this.openIdLambdaInputs!.node!.defaultChild!);
       }
-
-      if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') {
-        this.identityPool.node.addDependency(this.userPoolClientInputs!.node!.defaultChild!);
-      }
-
       /**
        *  # Created to map Auth and Unauth roles to the identity pool
           # Depends on Identity Pool for ID ref
@@ -619,349 +577,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
    *  add Function for Custom Resource in Root stack
    */
   public renderCloudFormationTemplate = (): string => JSONUtilities.stringify(this._toCloudFormation())!;
-
-  /**
-   * creates userpool client custom resource
-   */
-  createUserPoolClientCustomResource(props: CognitoStackOptions): void {
-    // iam role
-    this.userPoolClientRole = new iam.CfnRole(this, 'UserPoolClientRole', {
-      roleName: cdk.Fn.conditionIf(
-        'ShouldNotCreateEnvResources',
-        cdk.Fn.ref('userpoolClientLambdaRole'),
-        cdk.Fn.join('', [
-          'upClientLambdaRole',
-          `${props.sharedId}`,
-          cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
-          '-',
-          cdk.Fn.ref('env'),
-        ]),
-      ).toString(),
-      assumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Principal: {
-              Service: 'lambda.amazonaws.com',
-            },
-            Action: 'sts:AssumeRole',
-          },
-        ],
-      },
-    });
-    this.userPoolClientRole.addDependency(this.userPoolClient!);
-
-    // lambda function
-    this.userPoolClientLambda = new lambda.CfnFunction(this, 'UserPoolClientLambda', {
-      code: {
-        zipFile: fs.readFileSync(userPoolClientLambdaFilePath, 'utf-8'),
-      },
-      handler: 'index.handler',
-      role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
-      timeout: 300,
-    });
-    this.userPoolClientLambda.addDependency(this.userPoolClientRole);
-
-    // userPool client lambda policy
-    /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
-        # Depends on UserPool for Arn
-        # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
-     */
-    this.userPoolClientLambdaPolicy = new iam.CfnPolicy(this, 'UserPoolClientLambdaPolicy', {
-      // eslint-disable-next-line spellcheck/spell-checker
-      policyName: `${props.resourceNameTruncated}_userpoolclient_lambda_iam_policy`,
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolClient'],
-            Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
-          },
-        ],
-      },
-      roles: [cdk.Fn.ref('UserPoolClientRole')],
-    });
-    this.userPoolClientLambdaPolicy.addDependency(this.userPoolClientLambda);
-
-    // userPool Client Log policy
-
-    this.userPoolClientLogPolicy = new iam.CfnPolicy(this, 'UserPoolClientLogPolicy', {
-      // eslint-disable-next-line spellcheck/spell-checker
-      policyName: `${props.resourceNameTruncated}_userpoolclient_lambda_log_policy`,
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-            Resource: cdk.Fn.sub('arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*', {
-              region: cdk.Fn.ref('AWS::Region'),
-              account: cdk.Fn.ref('AWS::AccountId'),
-              lambda: cdk.Fn.ref('UserPoolClientLambda'),
-            }),
-          },
-        ],
-      },
-      roles: [cdk.Fn.ref('UserPoolClientRole')],
-    });
-    this.userPoolClientLogPolicy.addDependency(this.userPoolClientLambdaPolicy);
-
-    // userPoolClient Custom Resource
-    this.userPoolClientInputs = new cdk.CustomResource(this, 'UserPoolClientInputs', {
-      serviceToken: this.userPoolClientLambda.attrArn,
-      resourceType: 'Custom::LambdaCallout',
-      properties: {
-        clientId: cdk.Fn.ref('UserPoolClient'),
-        userpoolId: cdk.Fn.ref('UserPool'),
-      },
-    });
-    this.userPoolClientInputs.node.addDependency(this.userPoolClientLogPolicy);
-  }
-
-  /**
-   * Creates custom lambda to update userPool client on Cognito
-   */
-  createHostedUICustomResource(): void {
-    // lambda function
-    this.hostedUICustomResource = new lambda.CfnFunction(this, 'HostedUICustomResource', {
-      code: {
-        zipFile: fs.readFileSync(hostedUILambdaFilePath, 'utf-8'),
-      },
-      handler: 'index.handler',
-      role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
-      timeout: 300,
-    });
-    this.hostedUICustomResource.addDependency(this.userPoolClientRole!);
-
-    // userPool client lambda policy
-    /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
-        # Depends on UserPool for Arn
-        # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
-     */
-    this.hostedUICustomResourcePolicy = new iam.CfnPolicy(this, 'HostedUICustomResourcePolicy', {
-      policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), cdk.Fn.ref('hostedUI')]),
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: ['cognito-idp:CreateUserPoolDomain', 'cognito-idp:DescribeUserPool', 'cognito-idp:DeleteUserPoolDomain'],
-            Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
-          },
-          {
-            Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolDomain'],
-            Resource: '*',
-          },
-        ],
-      },
-      roles: [cdk.Fn.ref('UserPoolClientRole')],
-    });
-    this.hostedUICustomResourcePolicy.addDependency(this.hostedUICustomResource);
-
-    // userPool Client Log policy
-
-    this.hostedUICustomResourceLogPolicy = new iam.CfnPolicy(this, 'HostedUICustomResourceLogPolicy', {
-      policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), 'hostedUILogPolicy']),
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-            Resource: cdk.Fn.sub('arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*', {
-              region: cdk.Fn.ref('AWS::Region'),
-              account: cdk.Fn.ref('AWS::AccountId'),
-              lambda: cdk.Fn.ref('HostedUICustomResource'),
-            }),
-          },
-        ],
-      },
-      roles: [cdk.Fn.ref('UserPoolClientRole')],
-    });
-    this.hostedUICustomResourceLogPolicy.addDependency(this.hostedUICustomResourcePolicy);
-
-    // userPoolClient Custom Resource
-    this.hostedUICustomResourceInputs = new cdk.CustomResource(this, 'HostedUICustomResourceInputs', {
-      serviceToken: this.hostedUICustomResource.attrArn,
-      resourceType: 'Custom::LambdaCallout',
-      properties: {
-        hostedUIDomainName: cdk.Fn.conditionIf(
-          'ShouldNotCreateEnvResources',
-          cdk.Fn.ref('hostedUIDomainName'),
-          cdk.Fn.join('-', [cdk.Fn.ref('hostedUIDomainName'), cdk.Fn.ref('env')]),
-        ),
-        userPoolId: cdk.Fn.ref('UserPool'),
-      },
-    });
-    this.hostedUICustomResourceInputs.node.addDependency(this.hostedUICustomResourceLogPolicy);
-  }
-
-  /**
-   * Creates Custom lambda resource to update 3rd party providers on userpool
-   */
-  createHostedUIProviderCustomResource(): void {
-    // lambda function
-    this.hostedUIProvidersCustomResource = new lambda.CfnFunction(this, 'HostedUIProvidersCustomResource', {
-      code: {
-        zipFile: fs.readFileSync(hostedUIProviderLambdaFilePath, 'utf-8'),
-      },
-      handler: 'index.handler',
-      role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
-      timeout: 300,
-    });
-    this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole!);
-
-    // userPool client lambda policy
-    /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
-        # Depends on UserPool for Arn
-        # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
-     */
-    this.hostedUIProvidersCustomResourcePolicy = new iam.CfnPolicy(this, 'HostedUIProvidersCustomResourcePolicy', {
-      policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), 'hostedUIProvider']),
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: [
-              'cognito-idp:CreateIdentityProvider',
-              'cognito-idp:UpdateIdentityProvider',
-              'cognito-idp:ListIdentityProviders',
-              'cognito-idp:DeleteIdentityProvider',
-            ],
-            Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
-          },
-          {
-            Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolDomain'],
-            Resource: '*',
-          },
-        ],
-      },
-      roles: [cdk.Fn.ref('UserPoolClientRole')],
-    });
-    this.hostedUIProvidersCustomResourcePolicy.addDependency(this.hostedUIProvidersCustomResource);
-
-    // userPool Client Log policy
-
-    this.hostedUIProvidersCustomResourceLogPolicy = new iam.CfnPolicy(this, 'HostedUIProvidersCustomResourceLogPolicy', {
-      policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), 'hostedUIProviderLogPolicy']),
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-            Resource: cdk.Fn.sub('arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*', {
-              region: cdk.Fn.ref('AWS::Region'),
-              account: cdk.Fn.ref('AWS::AccountId'),
-              lambda: cdk.Fn.ref('HostedUIProvidersCustomResource'),
-            }),
-          },
-        ],
-      },
-      roles: [cdk.Fn.ref('UserPoolClientRole')],
-    });
-    this.hostedUIProvidersCustomResourceLogPolicy.addDependency(this.hostedUIProvidersCustomResourcePolicy);
-
-    // userPoolClient Custom Resource
-    this.hostedUIProvidersCustomResourceInputs = new cdk.CustomResource(this, 'HostedUIProvidersCustomResourceInputs', {
-      serviceToken: this.hostedUIProvidersCustomResource.attrArn,
-      resourceType: 'Custom::LambdaCallout',
-      properties: {
-        hostedUIProviderMeta: cdk.Fn.ref('hostedUIProviderMeta'),
-        hostedUIProviderCreds: cdk.Fn.ref('hostedUIProviderCreds'),
-        userPoolId: cdk.Fn.ref('UserPool'),
-      },
-    });
-    this.hostedUIProvidersCustomResourceInputs.node.addDependency(this.hostedUIProvidersCustomResourceLogPolicy);
-  }
-
-  /**
-   * creates OAuth customResource for Cognito
-   */
-  createOAuthCustomResource(): void {
-    // lambda function
-    this.oAuthCustomResource = new lambda.CfnFunction(this, 'OAuthCustomResource', {
-      code: {
-        zipFile: fs.readFileSync(oauthLambdaFilePath, 'utf-8'),
-      },
-      handler: 'index.handler',
-      role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
-      timeout: 300,
-    });
-
-    this.oAuthCustomResource.node.addDependency(this.hostedUICustomResourceInputs!.node!.defaultChild!);
-    this.oAuthCustomResource.node.addDependency(this.hostedUIProvidersCustomResourceInputs!.node!.defaultChild!);
-
-    // userPool client lambda policy
-    /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
-        # Depends on UserPool for Arn
-        # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
-     */
-    this.oAuthCustomResourcePolicy = new iam.CfnPolicy(this, 'OAuthCustomResourcePolicy', {
-      policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), 'OAuth']),
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: ['cognito-idp:UpdateUserPoolClient'],
-            Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
-          },
-        ],
-      },
-      roles: [cdk.Fn.ref('UserPoolClientRole')],
-    });
-    this.oAuthCustomResourcePolicy.addDependency(this.oAuthCustomResource);
-
-    // Oauth Log policy
-
-    this.oAuthCustomResourceLogPolicy = new iam.CfnPolicy(this, 'OAuthCustomResourceLogPolicy', {
-      policyName: cdk.Fn.join('-', [cdk.Fn.ref('UserPool'), 'OAuthLogPolicy']),
-      policyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-            Resource: cdk.Fn.sub('arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*', {
-              region: cdk.Fn.ref('AWS::Region'),
-              account: cdk.Fn.ref('AWS::AccountId'),
-              lambda: cdk.Fn.ref('OAuthCustomResource'),
-            }),
-          },
-        ],
-      },
-      roles: [cdk.Fn.ref('UserPoolClientRole')],
-    });
-    this.oAuthCustomResourceLogPolicy.addDependency(this.oAuthCustomResourcePolicy);
-
-    // oAuth Custom Resource
-    this.oAuthCustomResourceInputs = new cdk.CustomResource(this, 'OAuthCustomResourceInputs', {
-      serviceToken: this.oAuthCustomResource.attrArn,
-      resourceType: 'Custom::LambdaCallout',
-      properties: {
-        hostedUIProviderMeta: cdk.Fn.ref('hostedUIProviderMeta'),
-        oAuthMetadata: cdk.Fn.ref('oAuthMetadata'),
-        webClientId: cdk.Fn.ref('UserPoolClientWeb'),
-        nativeClientId: cdk.Fn.ref('UserPoolClient'),
-        userPoolId: cdk.Fn.ref('UserPool'),
-      },
-    });
-    this.oAuthCustomResourceInputs.node.addDependency(this.oAuthCustomResourceLogPolicy);
-  }
 
   /**
    * creates MFA customResource for Cognito
@@ -1161,8 +776,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         },
       ],
     });
-    // TODO
-    this.openIdLambdaRole!.node.addDependency(this.userPoolClientInputs!.node!.defaultChild!);
     // lambda function
     /**
      *   Lambda which sets MFA config values

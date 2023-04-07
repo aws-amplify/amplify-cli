@@ -28,6 +28,7 @@ import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 import { loadConfigurationForEnv } from './configuration-manager';
 import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { SSM } from './aws-utils/aws-ssm';
+import { CognitoUserPoolClientProvider } from './aws-utils/aws-cognito-client';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
 import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
@@ -96,7 +97,7 @@ function configure(context) {
   return configManager.configure(context);
 }
 
-async function getConfiguredAWSClient(context, category, action) {
+export async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
   category = category || 'missing';
   action = action || ['missing'];
@@ -133,6 +134,10 @@ async function openConsole(context) {
 
 export async function getConfiguredSSMClient(context) {
   return await SSM.getInstance(context);
+}
+
+export async function getConfiguredCognitoIdentityProviderClient(context) {
+  return await CognitoUserPoolClientProvider.getInstance(context);
 }
 
 export async function getConfiguredLocationServiceClient(context: $TSContext, options?: Record<string, unknown>) {
@@ -188,6 +193,7 @@ module.exports = {
   createDynamoDBService,
   resolveAppId,
   loadConfigurationForEnv,
+  getConfiguredCognitoIdentityProviderClient,
   getConfiguredSSMClient,
   updateEnv,
   getLocationSupportedRegion,
