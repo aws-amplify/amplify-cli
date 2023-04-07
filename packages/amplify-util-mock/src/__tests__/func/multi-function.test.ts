@@ -10,26 +10,6 @@ jest.mock('amplify-cli-core', () => ({
     getNumber: jest.fn(),
   },
 }));
-// jest.mock('../../utils/lambda/load-lambda-config', () => ({
-//   loadLambdaConfig: jest.fn(() => ({ handler: 'index.testHandle' })),
-// }));
-// jest.mock('amplify-cli-core', () => ({
-//   JSONUtilities: {
-//     readJson: jest.fn(),
-//   },
-//   pathManager: {
-//     getBackendDirPath: () => 'fake-backend-path',
-//   },
-//   stateManager: {
-//     getMeta: jest.fn().mockReturnValue({}),
-//   },
-// }));
-// jest.mock('@aws-amplify/amplify-category-function', () => ({
-//   getInvoker: jest.fn().mockResolvedValue(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 10))),
-//   getBuilder: jest.fn().mockReturnValue(() => {}),
-//   isMockable: jest.fn().mockReturnValue({ isMockable: true }),
-//   category: 'function',
-// }));
 
 const prompter_mock = prompter as jest.Mocked<typeof prompter>;
 prompter_mock.pick.mockResolvedValue(['func1', 'func2', 'func3']);
