@@ -24,7 +24,7 @@ batch:
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
-        image: aws/codebuild/windows-base:2019-2.0
+        image: aws/codebuild/windows-base:2019
     - identifier: test
       buildspec: codebuild_specs/test.yml
       env:
@@ -106,6 +106,6 @@ batch:
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
-        image: aws/codebuild/windows-base:2019-2.0
+        image: aws/codebuild/windows-base:2019
       depend-on:
         - upload_pkg_binaries
