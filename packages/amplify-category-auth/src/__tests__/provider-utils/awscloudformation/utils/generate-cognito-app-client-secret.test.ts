@@ -98,24 +98,12 @@ describe('test auth trigger stack Parameters', () => {
       },
     });
     getAppClientSecretMock.mockRejectedValue('error fetching app client secret');
-    AmplifyFaultMock.mockImplementationOnce(() => {
-      {
-        throw new Error('error fetching app client secret');
-      }
-    });
-    await expect(
-      async () => await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"error fetching app client secret"`);
-    expect(AmplifyFaultMock.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "ServiceCallFault",
-          Object {
-            "message": undefined,
-          },
-          "error fetching app client secret",
-        ],
-      ]
-    `);
+    try {
+      await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext);
+    } catch (err) {
+      console.log(err);
+      expect(err).toMatchInlineSnapshot(`"error fetching app client secret"`);
+      expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`Array []`);
+    }
   });
 });

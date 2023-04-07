@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyCategories, AmplifyFault, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getAuthResourceName } from '../../../utils/getAuthResourceName';
 import { MetaOutput } from '../import/types';
 import { getAppClientSecret } from './get-app-client-secret-sdk';
@@ -19,20 +19,10 @@ export const updateAppClientWithGeneratedSecret = async (context: $TSContext): P
       const userpoolId = authMetaOutput.UserPoolId;
       // no else case required as userpool client is default created with userPool when created through amplify
       if (clientId && userpoolId) {
-        try {
-          const appClientSecret = await getAppClientSecret(context, userpoolId, clientId);
-          if (appClientSecret) {
-            authMetaOutput.AppClientSecret = appClientSecret;
-            await context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, authResourceName, 'output', authMetaOutput);
-          }
-        } catch (error) {
-          throw new AmplifyFault(
-            'ServiceCallFault',
-            {
-              message: error.message,
-            },
-            error,
-          );
+        const appClientSecret = await getAppClientSecret(context, userpoolId, clientId);
+        if (appClientSecret) {
+          authMetaOutput.AppClientSecret = appClientSecret;
+          await context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, authResourceName, 'output', authMetaOutput);
         }
       }
     }
