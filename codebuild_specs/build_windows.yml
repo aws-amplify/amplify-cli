@@ -1,11 +1,11 @@
 version: 0.2
 env:
   shell: powershell.exe
-  imagePullCredentialsType: CODEBUILD
 phases:
   build:
     commands:
-      - source ./shared-scripts.sh && _buildWindows
+      - yarn run production-build
+      - yarn build-tests
 
 artifacts:
   files:
