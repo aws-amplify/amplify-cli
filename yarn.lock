@@ -9863,6 +9863,40 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+amplify-cli-core@4.0.1:
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-4.0.1.tgz#86167d3c54264448110c95ce872d6c338b911975"
+  integrity sha512-NkpAW74flRrXDIF+kXL7kd39gkqphTEJuqj8mLgbv/AfCl3lpC55QsYA4aMOmeRYoxd8f7RDcbAA3VoU3ldOdQ==
+  dependencies:
+    "@aws-amplify/amplify-cli-logger" "1.3.0"
+    "@aws-amplify/amplify-prompts" "2.6.6"
+    "@aws-amplify/graphql-transformer-interfaces" "^2.1.1"
+    "@yarnpkg/lockfile" "^1.1.0"
+    ajv "^6.12.6"
+    aws-cdk-lib "~2.68.0"
+    chalk "^4.1.1"
+    ci-info "^2.0.0"
+    cli-table3 "^0.6.0"
+    cloudform-types "^4.2.0"
+    colors "1.4.0"
+    dotenv "^8.2.0"
+    ejs "^3.1.7"
+    execa "^5.1.1"
+    fs-extra "^8.1.0"
+    globby "^11.0.3"
+    hjson "^3.2.1"
+    inquirer "^7.3.3"
+    js-yaml "^4.0.0"
+    lodash "^4.17.21"
+    node-fetch "^2.6.7"
+    open "^8.4.0"
+    ora "^4.0.3"
+    proxy-agent "^5.0.0"
+    semver "^7.3.5"
+    typescript-json-schema "~0.52.0"
+    which "^2.0.2"
+    yaml "^2.2.1"
+
 amplify-codegen@^3.4.1:
   version "3.4.1"
   resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.1.tgz#79c27a708cf034b29d6d4c1b70b918e0306e2d30"
