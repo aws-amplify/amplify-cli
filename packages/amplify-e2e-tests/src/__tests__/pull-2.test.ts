@@ -10,7 +10,7 @@ import {
   pullProject,
 } from '@aws-amplify/amplify-e2e-core';
 import { createIDPAndUserPoolWithOAuthSettings, getShortId, importSingleIdentityPoolAndUserPool } from '../import-helpers';
-import { AmplifyFrontend } from 'amplify-cli-core';
+import { AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify pull', () => {
   let initRoot: string;

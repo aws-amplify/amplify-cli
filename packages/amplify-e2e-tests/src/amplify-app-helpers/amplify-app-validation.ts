@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { AmplifyFrontend, pathManager } from 'amplify-cli-core';
+import { AmplifyFrontend, pathManager } from '@aws-amplify/amplify-cli-core';
 
 function validateProject(projRoot: string, platform: AmplifyFrontend) {
   expect(fs.existsSync(path.join(projRoot, 'amplify'))).toBe(true);

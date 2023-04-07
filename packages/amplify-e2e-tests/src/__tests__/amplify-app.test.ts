@@ -8,6 +8,7 @@ import {
   addIntegAccountInConfig,
 } from '../amplify-app-helpers/amplify-app-setup';
 import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from '@aws-amplify/amplify-e2e-core';
+import { AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 import {
   validateProject,
   validateProjectConfig,
@@ -17,7 +18,6 @@ import {
   validateAmplifyPush,
   validateFeatureFlags,
 } from '../amplify-app-helpers/amplify-app-validation';
-import { AmplifyFrontend } from 'amplify-cli-core';
 
 describe('amplify-app platform tests', () => {
   let projRoot: string;
