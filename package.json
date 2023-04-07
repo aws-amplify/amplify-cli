@@ -85,8 +85,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "lerna": "^6.4.1",
-    "strip-ansi": "^6.0.0",
-    "yargs": "^17.7.1"
+    "strip-ansi": "^6.0.0"
   },
   "workspaces": {
     "packages": [
@@ -112,7 +111,6 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^27.0.0",
     "@types/js-yaml": "^4.0.0",
-    "@types/yargs": "^17.0.22",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
     "@zkochan/cmd-shim": "^5.1.0",
