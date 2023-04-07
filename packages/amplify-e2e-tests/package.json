@@ -22,7 +22,7 @@
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
-    "smoketest": "DESTRUCTIVE=true jest --runInBand --testPathPattern='smoketest'"
+    "smoketest": "jest --runInBand --testPathPattern='smoketest'"
   },
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "3.0.1",
