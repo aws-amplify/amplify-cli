@@ -9,7 +9,7 @@ import {
   initJSProjectWithProfile,
   pullProject,
 } from '@aws-amplify/amplify-e2e-core';
-import { createIDPAndUserPoolWithOAuthSettings, getShortId, importIdentityPoolAndUserPool } from '../import-helpers';
+import { createIDPAndUserPoolWithOAuthSettings, getShortId, importSingleIdentityPoolAndUserPool } from '../import-helpers';
 import { AmplifyFrontend } from 'amplify-cli-core';
 
 describe('amplify pull', () => {
@@ -47,7 +47,7 @@ describe('amplify pull', () => {
       name: 'import',
       envName: 'integtest',
     });
-    await importIdentityPoolAndUserPool(importRoot, settings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await importSingleIdentityPoolAndUserPool(importRoot, settings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
     await amplifyPushAuth(importRoot);
 
     const appId = getAppId(importRoot);
