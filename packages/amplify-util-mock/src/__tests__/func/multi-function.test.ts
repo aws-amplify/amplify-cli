@@ -5,8 +5,21 @@ import { $TSAny } from 'amplify-cli-core';
 jest.mock('../../func');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('../../../../amplify-dynamodb-simulator');
+// jest.mock('amplify-cli-core', () => ({
+//   ...jest.requireActual('amplify-cli-core'),
+//   FeatureFlags: {
+//     getNumber: jest.fn(),
+//   },
+// }));
+
 jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+  ...(jest.requireActual('amplify-cli-core') as {}),
+  pathManager: {
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../../../../amplify-dynamodb-simulator'),
+    getAmplifyLibRoot: jest.fn().mockReturnValue(''),
+    getAWSCredentialsFilePath: jest.fn().mockReturnValue(''),
+    getAWSConfigFilePath: jest.fn().mockReturnValue(''),
+  },
   FeatureFlags: {
     getNumber: jest.fn(),
   },
