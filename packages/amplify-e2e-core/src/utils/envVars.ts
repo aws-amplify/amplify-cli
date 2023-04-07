@@ -49,7 +49,7 @@ export function getSocialProviders(getEnv = false): SocialProviders {
     APPLE_APP_ID,
     APPLE_TEAM_ID,
     APPLE_KEY_ID,
-    APPLE_PRIVATE_KEY_2,
+    APPLE_PRIVATE_KEY,
   }: any = getEnvVars();
 
   const missingVars = [];
@@ -80,7 +80,7 @@ export function getSocialProviders(getEnv = false): SocialProviders {
   if (!APPLE_KEY_ID) {
     missingVars.push('APPLE_KEY_ID');
   }
-  if (!APPLE_PRIVATE_KEY_2) {
+  if (!APPLE_PRIVATE_KEY) {
     missingVars.push('APPLE_PRIVATE_KEY');
   }
 
@@ -97,6 +97,6 @@ export function getSocialProviders(getEnv = false): SocialProviders {
     APPLE_APP_ID,
     APPLE_TEAM_ID,
     APPLE_KEY_ID,
-    APPLE_PRIVATE_KEY: APPLE_PRIVATE_KEY_2,
+    APPLE_PRIVATE_KEY,
   };
 }
