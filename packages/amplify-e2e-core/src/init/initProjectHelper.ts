@@ -68,7 +68,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine('javascript')
+      .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendLine(s.framework)
       .wait('Source Directory Path:')
