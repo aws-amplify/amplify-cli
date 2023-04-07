@@ -6,7 +6,13 @@ phases:
     commands:
       - node -v
       - npm -v
-      - n install 18
+      - nvm version
+      - nvm install 18.15.0
+      - nvm use 18.15.0
+      - nvm ls
+      - node --version
+      - npm --version
+      - npm install -g yarn
       - yarn run production-build
       - yarn build-tests
 
