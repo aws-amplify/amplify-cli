@@ -17,7 +17,7 @@ import {
   validateAmplifyPush,
   validateFeatureFlags,
 } from '../amplify-app-helpers/amplify-app-validation';
-import { AmplifyFrontend } from 'amplify-cli-core';
+import { AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify-app platform tests', () => {
   let projRoot: string;
