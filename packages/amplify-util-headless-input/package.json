@@ -19,8 +19,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "ajv": "^6.12.6",
-    "@aws-amplify/amplify-headless-interface": "1.17.1"
+    "@aws-amplify/amplify-headless-interface": "1.17.1",
+    "ajv": "^6.12.6"
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.5",
