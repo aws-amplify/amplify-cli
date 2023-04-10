@@ -64,7 +64,7 @@ describe('function start', () => {
 
   // NOTE: A warning from jest saying that async operations weren't stopped in the test is expected here
   // because the mock function is designed to keep running after the timeout to ensure that the timeout works
-  it.only('times out function execution at the default time', async () => {
+  it('times out function execution at the default time', async () => {
     getInvoker_mock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 11000)));
     context_stub.input.options.timeout = undefined;
     prompter_mock.pick.mockResolvedValue(['funcName']);
@@ -77,7 +77,7 @@ describe('function start', () => {
   it('times out function execution at the specified time', async () => {
     getInvoker_mock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 2000)));
     await start(context_stub);
-    expect(context_stub.print.info.mock.calls[0][0]).toMatchSnapshot();
+    expect(printer_mock.info.mock.calls[2][0]).toMatchSnapshot();
   });
 
   it('triggers a dev build before invoking', async () => {
@@ -128,23 +128,23 @@ describe('function start', () => {
       },
     });
 
-    inquirer_mock.prompt.mockResolvedValueOnce({ resourceName: 'func2' });
+    prompter_mock.pick.mockResolvedValue(['func2']);
 
     await start(context_stub_copy);
-
-    expect(inquirer_mock.prompt.mock.calls[0][0][0].choices).toStrictEqual(['func1', 'func2', 'func3']);
+    expect(prompter_mock.pick.mock.calls[0][1]).toStrictEqual(['func1', 'func2', 'func3']);
     expect(getBuilder_mock.mock.calls[0][1]).toBe('func2');
   });
 
   it('handles no options specified', async () => {
     const invoker = jest.fn().mockResolvedValue(null);
     getInvoker_mock.mockResolvedValueOnce(invoker);
-    inquirer_mock.prompt.mockResolvedValueOnce({ eventName: 'event.json' });
+    prompter_mock.input.mockResolvedValueOnce('event.json');
 
     const context_stub_copy = _.merge({}, context_stub);
     context_stub_copy.input.options = undefined;
     await start(context_stub_copy);
     expect(invoker.mock.calls.length).toBe(1);
-    expect(context_stub_copy.print.error.mock.calls.length).toBe(0);
+    expect(printer_mock.error.mock.calls.length).toBe(0);
+    // expect(context_stub_copy.print.error.mock.calls.length).toBe(0);
   });
 });

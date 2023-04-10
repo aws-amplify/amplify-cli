@@ -35,28 +35,26 @@ export async function mockAllCategories(context: $TSContext): Promise<void> {
         }
       }
     }
+    const mockableCategories = mockableResources
+      .map((r) =>
+        r.service.replace('AppSync', 'GraphQL API').replace('S3', 'Storage').replace(FunctionServiceName.LambdaFunction, 'Function'),
+      )
+      .filter((value, index, self) => self.indexOf(value) === index);
+
+    // Prompts users for categories
+    const selectedMockableCategory = await prompter.pick<'many', string>('Select the category', mockableCategories, {
+      returnSize: 'many',
+    });
 
     // Run the mock servers
-    const selectedMockableResources = await prompter.pick<'many', string>(
-      'Select the category',
-      mockableResources
-        .map((r) =>
-          r.service.replace('AppSync', 'GraphQL API').replace('S3', 'Storage').replace(FunctionServiceName.LambdaFunction, 'Function'),
-        )
-        .filter((value, index, self) => self.indexOf(value) === index),
-      {
-        returnSize: 'many',
-      },
-    );
-
     const serverPromises = [];
-    if (selectedMockableResources.find((service) => service === 'Function')) {
+    if (selectedMockableCategory.find((service) => service === 'Function')) {
       await startLambdaServer(context);
     }
-    if (selectedMockableResources.find((service) => service === 'GraphQL API')) {
+    if (selectedMockableCategory.find((service) => service === 'GraphQL API')) {
       serverPromises.push(startAppSyncServer(context));
     }
-    if (selectedMockableResources.find((service) => service === 'Storage')) {
+    if (selectedMockableCategory.find((service) => service === 'Storage')) {
       serverPromises.push(startS3Server(context));
     }
 
