@@ -167,6 +167,5 @@ describe('function start', () => {
     await start(context_stub_copy);
     expect(invoker.mock.calls.length).toBe(1);
     expect(printer_mock.error.mock.calls.length).toBe(0);
-    // expect(context_stub_copy.print.error.mock.calls.length).toBe(0);
   });
 });
