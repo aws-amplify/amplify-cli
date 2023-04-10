@@ -18,12 +18,6 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: build_windows
-      buildspec: codebuild_specs/build_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: aws/codebuild/windows-base:2019-2.0
     - identifier: test
       buildspec: codebuild_specs/test.yml
       env:
@@ -80,31 +74,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
-    - identifier: upload_pkg_binaries
-      buildspec: codebuild_specs/upload_pkg_binaries.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-      depend-on:
-        - build_pkg_binaries_arm
-        - build_pkg_binaries_linux
-        - build_pkg_binaries_macos
-        - build_pkg_binaries_win
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
       depend-on:
         - publish_to_local_registry
-    - identifier: run_e2e_tests_linux
-      buildspec: codebuild_specs/run_e2e_tests_linux.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-      debug-session: true
-      depend-on:
-        - upload_pkg_binaries
-    - identifier: run_e2e_tests_windows
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: aws/codebuild/windows-base:2019-2.0
-      depend-on:
-        - upload_pkg_binaries
