@@ -24,7 +24,7 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.0.1",
     "amplify-headless-interface": "1.17.1",
-    "aws-sdk": "^2.1350.0",
+    "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
     "dotenv": "^8.2.0",
     "execa": "^5.1.1",

@@ -76,7 +76,7 @@
     "amplify-nodejs-function-runtime-provider": "2.3.14",
     "amplify-python-function-runtime-provider": "2.4.14",
     "aws-cdk-lib": "~2.68.0",
-    "aws-sdk": "^2.1350.0",
+    "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",
