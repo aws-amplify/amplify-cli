@@ -64,7 +64,7 @@ const buildResource = async (resource: ResourceMeta): Promise<void> => {
 
   if (!fs.existsSync(targetDir)) {
     throw new AmplifyError('MissingResourceDirectoryError', {
-      message: `Could not find the directory for the resource "${resource.resourceName}"`,
+      message: `Could not find the directory for the resource "${resource.resourceName}" at ${targetDir}`,
       resolution: 'Please check if the resource directory exists in the backend directory.',
     });
   }

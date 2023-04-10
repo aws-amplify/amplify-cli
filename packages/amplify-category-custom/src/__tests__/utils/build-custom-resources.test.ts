@@ -84,7 +84,7 @@ describe('build custom resources scenarios', () => {
   it('should error if resource directory does not exist', async () => {
     jest.spyOn(fs, 'existsSync').mockReturnValue(false);
     const error = new AmplifyError('MissingResourceDirectoryError', {
-      message: 'Could not find the directory for the resource "mockresource1"',
+      message: 'Could not find the directory for the resource "mockresource1" at mockTargetDir/mockresource1.',
     });
     const wrapped = new AmplifyError(
       'InvalidCustomResourceError',
