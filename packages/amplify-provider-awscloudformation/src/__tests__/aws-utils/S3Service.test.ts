@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { createS3Service } from '../../aws-utils/S3Service';
 
 jest.mock('aws-sdk', () => {

@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { resolveAppId } from '../../utils/resolve-appId';
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;

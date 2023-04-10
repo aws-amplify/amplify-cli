@@ -4,7 +4,7 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB, setupSearchableMockResources } from '../__e2e__/utils';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import * as openSearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
-import { $TSAny, isWindowsPlatform } from 'amplify-cli-core';
+import { $TSAny, isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 } from 'uuid';

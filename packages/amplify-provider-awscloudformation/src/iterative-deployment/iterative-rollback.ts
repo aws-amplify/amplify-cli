@@ -7,7 +7,7 @@ import {
   DeploymentStepStatus,
   IDeploymentStateManager,
   JSONUtilities,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { DeploymentOp, DeploymentManager } from './deployment-manager';
 import { S3 } from '../aws-utils/aws-s3';
 import { formUserAgentParam } from '../aws-utils/user-agent';

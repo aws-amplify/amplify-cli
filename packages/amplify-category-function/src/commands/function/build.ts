@@ -1,11 +1,10 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { ServiceName } from '../..';
 import { categoryName } from '../../constants';
 import { PackageRequestMeta } from '../../provider-utils/awscloudformation/types/packaging-types';
 import { buildFunction } from '../../provider-utils/awscloudformation/utils/buildFunction';
 import { packageResource } from '../../provider-utils/awscloudformation/utils/package';
-import { AmplifyError } from 'amplify-cli-core';
 export const name = 'build';
 
 /**

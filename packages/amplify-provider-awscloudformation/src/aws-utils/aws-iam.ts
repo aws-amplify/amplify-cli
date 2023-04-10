@@ -3,7 +3,7 @@ import awstype from 'aws-sdk';
 import { IAM } from 'aws-sdk';
 import { AwsSdkConfig } from '../utils/auth-types.js';
 import { getAwsConfig } from '../configuration-manager';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 export class IAMClient {
   private static instance: IAMClient;

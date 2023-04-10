@@ -12,7 +12,7 @@ import {
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { categoryName } from '../../../constants';
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)

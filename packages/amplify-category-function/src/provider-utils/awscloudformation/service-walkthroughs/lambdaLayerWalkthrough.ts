@@ -1,4 +1,4 @@
-import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import inquirer, { InputQuestion } from 'inquirer';
 import _ from 'lodash';
 import { ServiceName } from '../utils/constants';

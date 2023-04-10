@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, pathManager, spinner, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, pathManager, spinner, stateManager } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
 import inquirer, { QuestionCollection } from 'inquirer';
 import { categoryName } from '../../../constants';

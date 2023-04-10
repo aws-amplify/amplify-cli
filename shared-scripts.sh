@@ -321,7 +321,7 @@ function _runE2ETestsLinux {
     #retry runE2eTest
     NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
 }
-function _runE2ETestsWin {
+function _runE2ETestsWindows {
     echo RUN E2E Tests Windows
 
     echo Git Enable Long Paths
@@ -335,15 +335,36 @@ function _runE2ETestsWin {
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
+    echo Rename the Packaged CLI to amplify
+    cd $CODEBUILD_SRC_DIR/out
+    cp amplify-pkg-win-x64.exe amplify.exe
+    
+    echo Move CLI Binary to alredy existing PATH
+    # This is a Hack to make sure the Amplify CLI is in the PATH
+    cp $CODEBUILD_SRC_DIR/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
+    _install_packaged_cli_win
+    # verify installation
+    amplify version
+
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     source $BASH_ENV
 
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
-    #should just fail here..
+
     cd packages/amplify-e2e-tests
+
+    _loadTestAccountCredentials
+
     retry runE2eTest
 }
 
 
+function _scanArtifacts {
+    if ! yarn ts-node .circleci/scan_artifacts_codebuild.ts; then
+        echo "Cleaning the repository"
+        git clean -fdx
+        exit 1
+    fi
+}

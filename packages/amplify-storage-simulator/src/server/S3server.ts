@@ -81,32 +81,46 @@ export class StorageServer extends EventEmitter {
   }
 
   private async handleRequestAll(request, response) {
-    // parsing the path and the request parameters
-    util.parseUrl(request, this.route);
+    try {
+      // parsing the path and the request parameters
+      util.parseUrl(request, this.route);
 
-    // create eventObj for thr trigger
+      // create eventObj for thr trigger
 
-    if (request.method === 'PUT') {
-      await this.handleRequestPut(request, response);
-    }
+      if (request.method === 'PUT') {
+        await this.handleRequestPut(request, response);
+      }
 
-    if (request.method === 'POST') {
-      await this.handleRequestPost(request, response);
-    }
+      if (request.method === 'POST') {
+        await this.handleRequestPost(request, response);
+      }
 
-    if (request.method === 'GET') {
-      await this.handleRequestGet(request, response);
-    }
+      if (request.method === 'GET') {
+        await this.handleRequestGet(request, response);
+      }
 
-    if (request.method === 'LIST') {
-      await this.handleRequestList(request, response);
-    }
+      if (request.method === 'LIST') {
+        await this.handleRequestList(request, response);
+      }
 
-    if (request.method === 'DELETE') {
-      // emit event for delete
-      const eventObj = this.createEvent(request);
-      this.emit('event', eventObj);
-      await this.handleRequestDelete(request, response);
+      if (request.method === 'DELETE') {
+        // emit event for delete
+        const eventObj = this.createEvent(request);
+        this.emit('event', eventObj);
+        await this.handleRequestDelete(request, response);
+      }
+    } catch (err) {
+      response.set('Content-Type', 'text/xml');
+      response.status(500);
+      response.send(
+        o2x({
+          '?xml version="1.0" encoding="utf-8"?': null,
+          Error: {
+            Code: 'InternalServerException',
+            Message: err.message,
+          },
+        }),
+      );
     }
   }
 

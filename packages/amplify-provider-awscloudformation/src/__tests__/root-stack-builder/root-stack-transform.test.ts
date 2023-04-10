@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { AmplifyRootStackTransform } from '../../root-stack-builder/root-stack-transform';
 
 jest.mock('amplify-cli-core');

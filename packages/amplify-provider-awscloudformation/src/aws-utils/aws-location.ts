@@ -1,4 +1,4 @@
-import { $TSObject } from 'amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 
 const defaultLocationRegion = 'us-east-1';
 const serviceRegionMap = {
