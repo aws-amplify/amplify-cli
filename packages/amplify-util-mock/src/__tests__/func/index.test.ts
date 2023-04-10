@@ -135,6 +135,28 @@ describe('function start', () => {
     expect(getBuilder_mock.mock.calls[0][1]).toBe('func2');
   });
 
+  it('project has multiple functions and we dont specify a specific function, prompts for function names', async () => {
+    const context_stub_copy = _.merge({}, context_stub);
+    delete context_stub_copy.input.subCommands;
+
+    stateManager_mock.getMeta.mockReturnValueOnce({
+      function: {
+        func1: {},
+        func2: {},
+        func3: {},
+      },
+    });
+
+    prompter_mock.pick.mockResolvedValue(['func1', 'func2', 'func3']);
+
+    await start(context_stub_copy);
+    expect(prompter_mock.pick.mock.calls[0][1]).toStrictEqual(['func1', 'func2', 'func3']);
+
+    expect(getBuilder_mock.mock.calls[0][1]).toBe('func1');
+    expect(getBuilder_mock.mock.calls[1][1]).toBe('func2');
+    expect(getBuilder_mock.mock.calls[2][1]).toBe('func3');
+  });
+
   it('handles no options specified', async () => {
     const invoker = jest.fn().mockResolvedValue(null);
     getInvoker_mock.mockResolvedValueOnce(invoker);
