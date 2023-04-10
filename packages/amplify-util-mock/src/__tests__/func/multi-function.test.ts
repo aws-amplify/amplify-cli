@@ -1,16 +1,12 @@
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { start as lambdaServerStart } from '../../func';
 import { $TSAny } from 'amplify-cli-core';
+import { getInvoker as invoker } from '@aws-amplify/amplify-category-function';
 
 jest.mock('../../func');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('../../../../amplify-dynamodb-simulator');
-// jest.mock('amplify-cli-core', () => ({
-//   ...jest.requireActual('amplify-cli-core'),
-//   FeatureFlags: {
-//     getNumber: jest.fn(),
-//   },
-// }));
+jest.mock('@aws-amplify/amplify-category-function');
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
@@ -28,6 +24,7 @@ jest.mock('amplify-cli-core', () => ({
 const prompter_mock = prompter as jest.Mocked<typeof prompter>;
 prompter_mock.pick.mockResolvedValue(['func1', 'func2', 'func3']);
 const lambdaServerStartMock = lambdaServerStart as jest.MockedFunction<typeof lambdaServerStart>;
+const invoker_mock = invoker as jest.MockedFunction<typeof invoker>;
 
 describe('multiple function start', () => {
   beforeEach(() => {
@@ -56,8 +53,18 @@ describe('multiple function start', () => {
     },
   };
 
-  it('prompts for multiple functions and selects the resource name', async () => {
+  it('checks if the lambda server and invoker has been called for all functions', async () => {
     await lambdaServerStart(context_stub);
     expect(lambdaServerStartMock).toBeCalledTimes(1);
+
+    //iterates over the function names and checks if invoker has been called
+    const resourceNames = Object.keys(context_stub.amplify.getMeta().function);
+    for (const resourceName of resourceNames.filter(Boolean)) {
+      invoker(context_stub, {
+        resourceName,
+        handler: '',
+      });
+      expect(invoker_mock).toBeCalled();
+    }
   });
 });
