@@ -14,8 +14,8 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 fsMock.existsSync.mockReturnValue(true);
 
 jest.mock('@aws-amplify/amplify-prompts');
-jest.mock('amplify-cli-core', () => {
-  const { stateManager } = jest.requireActual('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const { stateManager } = jest.requireActual('@aws-amplify/amplify-cli-core');
 
   return {
     JSONUtilities: {

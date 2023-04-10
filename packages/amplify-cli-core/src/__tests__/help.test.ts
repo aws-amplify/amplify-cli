@@ -1,4 +1,12 @@
-import { $TSContext, CommandInfo, runHelp, commandsInfo, lookUpCommand, lookUpSubcommand, parseHelpCommands } from 'amplify-cli-core';
+import {
+  $TSContext,
+  CommandInfo,
+  runHelp,
+  commandsInfo,
+  lookUpCommand,
+  lookUpSubcommand,
+  parseHelpCommands,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 describe('amplify help functions: ', () => {

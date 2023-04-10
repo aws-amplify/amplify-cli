@@ -1,7 +1,7 @@
 import { customDeploymentOptionsQuestion } from '../../utils/common-questions';
 import { addCDKWalkthrough } from '../../walkthroughs/cdk-walkthrough';
 import { addCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-walkthrough';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 export const name = 'add';
 

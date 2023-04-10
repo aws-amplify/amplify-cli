@@ -1,4 +1,12 @@
-import { $TSAny, $TSContext, AmplifyError, getPackageManager, JSONUtilities, pathManager, ResourceTuple } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  getPackageManager,
+  JSONUtilities,
+  pathManager,
+  ResourceTuple,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';

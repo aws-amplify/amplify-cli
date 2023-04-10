@@ -1,4 +1,4 @@
-import { DiagnoseReportUploadError } from 'amplify-cli-core';
+import { DiagnoseReportUploadError } from '@aws-amplify/amplify-cli-core';
 import fetch from 'node-fetch';
 
 /**

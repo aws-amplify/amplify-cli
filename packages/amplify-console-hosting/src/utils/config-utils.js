@@ -1,7 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 const fs = require('fs-extra');
 const path = require('path');
-const { pathManager, PathConstants, stateManager } = require('amplify-cli-core');
+const { pathManager, PathConstants, stateManager } = require('@aws-amplify/amplify-cli-core');
 const glob = require('glob');
 const constants = require('../constants/plugin-constants');
 const utils = require('../utils/amplify-context-utils');

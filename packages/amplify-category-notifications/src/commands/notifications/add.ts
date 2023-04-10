@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { ensurePinpointApp, isPinpointAppDeployed } from '../../pinpoint-helper';
 import { enableChannel } from '../../notifications-manager';

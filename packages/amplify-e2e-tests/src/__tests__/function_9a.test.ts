@@ -17,7 +17,6 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
-import _ from 'lodash';
 
 describe('nodejs', () => {
   describe('amplify add function with additional permissions', () => {

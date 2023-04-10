@@ -26,12 +26,12 @@
     "access": "public"
   },
   "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.0.1",
     "@aws-amplify/amplify-environment-parameters": "1.4.1",
     "@aws-amplify/amplify-function-plugin-interface": "1.10.0",
     "@aws-amplify/amplify-prompts": "2.6.6",
-    "amplify-cli-core": "4.0.1",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.1233.0",
+    "aws-sdk": "^2.1350.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
@@ -43,7 +43,6 @@
     "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",
     "lodash": "^4.17.21",
-    "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2"
   },

@@ -1,4 +1,4 @@
-import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 /**

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { $TSAny, DebugConfigValueNotSetError, projectNotInitializedError, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, DebugConfigValueNotSetError, projectNotInitializedError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Singleton class to handle debug values

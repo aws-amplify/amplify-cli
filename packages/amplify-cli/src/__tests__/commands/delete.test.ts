@@ -3,11 +3,11 @@
 //
 // https://stackoverflow.com/questions/46148169/stubbing-process-exit-with-jest
 
-import { UnknownArgumentError, AmplifyError } from 'amplify-cli-core';
+import { UnknownArgumentError, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify delete:', () => {
   const mockExit = jest.fn();
-  jest.mock('amplify-cli-core', () => ({
+  jest.mock('@aws-amplify/amplify-cli-core', () => ({
     exitOnNextTick: mockExit,
     UnknownArgumentError,
     AmplifyError,

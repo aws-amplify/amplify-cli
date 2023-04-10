@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { buildFunction, BuildRequestMeta } from './buildFunction';
 import { buildLayer } from './buildLayer';
 import { ServiceName } from './constants';

@@ -1,6 +1,6 @@
 import { constructContext } from '../../../context-manager';
 
-import { PluginCollection } from 'amplify-cli-core';
+import { PluginCollection } from '@aws-amplify/amplify-cli-core';
 import { constructMockPluginPlatform } from './mock-plugin-platform';
 
 import { CLIInput as CommandLineInput } from '../../../domain/command-input';

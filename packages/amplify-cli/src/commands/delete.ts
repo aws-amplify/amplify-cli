@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Execute the 'delete' command

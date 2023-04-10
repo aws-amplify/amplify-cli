@@ -5,7 +5,7 @@ import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
-import { $TSAny, $TSContext, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 const port = 20005; // port for S3
 

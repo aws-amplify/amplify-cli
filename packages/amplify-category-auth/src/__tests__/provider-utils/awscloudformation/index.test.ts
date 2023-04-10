@@ -2,8 +2,8 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { updateConfigOnEnvInit } from '../../../provider-utils/awscloudformation/index';
 
 jest.mock('@aws-amplify/amplify-environment-parameters');
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   JSONUtilities: {
     writeJson: jest.fn(),
     readJson: jest.fn(),

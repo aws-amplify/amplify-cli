@@ -27,7 +27,7 @@ parameters:
 executors:
   l_large: &linux-e2e-executor-large
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -35,7 +35,7 @@ executors:
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
   l_xlarge: &linux-e2e-executor-xlarge
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: xlarge
     environment:
@@ -82,7 +82,7 @@ jobs:
             equal:
               - docker:
                   - image: >-
-                      public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+                      public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
                 working_directory: ~/repo
                 resource_class: xlarge
                 environment:
@@ -95,7 +95,7 @@ jobs:
                 paths: .
   publish_to_local_registry:
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -186,7 +186,7 @@ jobs:
             ~/repo/packages/amplify-console-integration-tests/console-integration-reports
   cleanup_resources:
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: large
     environment:

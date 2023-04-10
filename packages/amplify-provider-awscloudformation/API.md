@@ -4,18 +4,21 @@
 
 ```ts
 
-import { $TSAny } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as AWS_2 from 'aws-sdk';
-import { IAmplifyResource } from 'amplify-cli-core';
-import { Template } from 'amplify-cli-core';
+import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
+import { Template } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export const cfnRootStackFileName = "root-cloudformation-stack.json";
 
 // @public (undocumented)
 export const deleteEnvironmentParametersFromService: (context: $TSContext, envName: string) => Promise<void>;
+
+// @public (undocumented)
+export type DownloadHandler = (keys: string[]) => Promise<PrimitiveRecord>;
 
 // Warning: (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
 //
@@ -28,7 +31,7 @@ export function getConfiguredLocationServiceClient(context: $TSContext, options?
 export function getConfiguredSSMClient(context: any): Promise<SSM>;
 
 // @public (undocumented)
-export const getEnvParametersDownloadHandler: (context: $TSContext) => Promise<(keys: string[]) => Promise<Record<string, string | number | boolean>>>;
+export const getEnvParametersDownloadHandler: (context: $TSContext) => Promise<DownloadHandler>;
 
 // @public (undocumented)
 export const getEnvParametersUploadHandler: (context: $TSContext) => Promise<(key: string, value: string | boolean | number) => Promise<void>>;
@@ -43,6 +46,9 @@ export const getLocationSupportedRegion: (region: string) => string;
 //
 // @public (undocumented)
 export function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string): Promise<AwsSdkConfig>;
+
+// @public (undocumented)
+export type PrimitiveRecord = Record<string, string | number | boolean>;
 
 // @public (undocumented)
 export const resolveAppId: (context: $TSContext) => string;

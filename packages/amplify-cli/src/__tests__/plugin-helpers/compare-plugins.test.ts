@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { PluginManifest, PluginInfo } from 'amplify-cli-core';
+import { PluginManifest, PluginInfo } from '@aws-amplify/amplify-cli-core';
 import { twoPluginsAreTheSame } from '../../plugin-helpers/compare-plugins';
 
 describe('compare-plugins', () => {
