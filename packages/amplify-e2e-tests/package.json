@@ -27,7 +27,7 @@
     "@aws-amplify/amplify-category-auth": "3.0.2-rc.4a4caf393.0",
     "@aws-amplify/amplify-e2e-core": "4.8.2-rc.4a4caf393.0",
     "@aws-amplify/amplify-opensearch-simulator": "1.2.4-rc.4a4caf393.0",
-    "@aws-amplify/graphql-transformer-core": "^1.2.0",
+    "@aws-amplify/graphql-transformer-core": "^1.2.1-ownerfield-pk-fix.0",
     "amplify-cli-core": "4.0.2-rc.4a4caf393.0",
     "amplify-dynamodb-simulator": "2.5.11-rc.4a4caf393.0",
     "amplify-headless-interface": "1.17.1",
