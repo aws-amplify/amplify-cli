@@ -534,7 +534,7 @@ export const getPinpointClient = async (
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const cred = await getConfiguredCredentials(context, envName);
 
-  const { amplifyMeta } = context.exeInfo;
+  const amplifyMeta = stateManager.getMeta();
   const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
 
   category = category || 'missing';
