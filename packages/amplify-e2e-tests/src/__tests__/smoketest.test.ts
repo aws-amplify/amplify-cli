@@ -6,20 +6,26 @@ import * as pty from 'node-pty';
 import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 
 export const NPM = {
-  install(pkgName: string, isGlobal: boolean = false) {
-    const args = ['install'];
-    if (isGlobal) {
-      args.push('-g');
-    }
-    args.push(pkgName);
-    execa.sync('npm', args, { stdio: 'inherit' });
+  install(pkgName: string, isGlobal: boolean = false): Promise<void> {
+    return new Promise((resolve) => {
+      const args = ['install'];
+      if (isGlobal) {
+        args.push('-g');
+      }
+      args.push(pkgName);
+      execa.sync('npm', args, { stdio: 'inherit' });
+      resolve();
+    });
   },
-  uninstall(pkgName: string, isGlobal: boolean = false) {
-    const args = ['uninstall', pkgName];
-    if (isGlobal) {
-      args.push('-g');
-    }
-    execa.sync('npm', args, { stdio: 'inherit' });
+  uninstall(pkgName: string, isGlobal: boolean = false): Promise<void> {
+    return new Promise((resolve) => {
+      const args = ['uninstall', pkgName];
+      if (isGlobal) {
+        args.push('-g');
+      }
+      execa.sync('npm', args, { stdio: 'inherit' });
+      resolve();
+    });
   },
 };
 
@@ -66,7 +72,7 @@ export class Amplify {
   }
   init = async () => {
     const args = ['init', '-y'];
-    return spawn('amplify', args, this.executionArgs);
+    return spawn('amplify', args, this.executionArgs).runAsync();
   };
   delete = async () => {
     const args = ['delete', '--force'];
@@ -194,74 +200,6 @@ type Todo @model {
 }
 `;
 
-const createCommands = (amplify: Amplify, cliVersion: string): Command[] => [
-  {
-    description: `Install Amplify CLI v${cliVersion}`,
-    run: async () => {
-      return new Promise<void>((resolve) => {
-        NPM.install(`@aws-amplify/cli@${cliVersion}`, true);
-        resolve();
-      });
-    },
-  },
-  {
-    description: 'Create an Amplify project',
-    run: () => amplify.init(),
-  },
-  {
-    description: 'Add an API to the Amplify project',
-    run: () => amplify.addApi(),
-  },
-  {
-    description: 'Get project status',
-    run: () => amplify.status(),
-  },
-  {
-    description: 'Add Auth to the Amplify project',
-    run: () => amplify.addAuth(),
-  },
-  {
-    description: 'Get project status',
-    run: () => amplify.status(),
-  },
-  {
-    description: 'Push the Amplify project',
-    run: () => amplify.push(),
-  },
-  {
-    description: 'Get project status',
-    run: () => amplify.status(),
-  },
-  {
-    description: 'Modify the GraphQL schema',
-    run: () => amplify.modifyGraphQlSchema(newGraphqlSchema),
-  },
-  {
-    description: 'Update Auth',
-    run: () => amplify.updateAuth(),
-  },
-  {
-    description: 'Push the Amplify project',
-    run: () => amplify.push(),
-  },
-  {
-    description: 'Add REST API',
-    run: () => amplify.addRestApi(),
-  },
-  {
-    description: 'Get project status',
-    run: () => amplify.status(),
-  },
-  {
-    description: 'Push the Amplify project',
-    run: () => amplify.push(),
-  },
-  {
-    description: 'Delete the Amplify project',
-    run: () => amplify.delete(),
-  },
-];
-
 function writeBanner(text: string) {
   const count = text.length;
   const textPadding = 3;
@@ -279,21 +217,86 @@ function writeBanner(text: string) {
   process.stdout.write('\n');
 }
 
-test('the test smokes', async () => {
-  const args = getArgs();
-  console.info(args.projectDirectory);
+describe('Release Smoke Tests', () => {
+  const createCommands = (amplify: Amplify, cliVersion: string): Command[] => [
+    {
+      description: `Install Amplify CLI v${cliVersion}`,
+      run: () => NPM.install(`@aws-amplify/cli@${cliVersion}`, true),
+    },
+    {
+      description: 'Create an Amplify project',
+      run: () => amplify.init(),
+    },
+    {
+      description: 'Add an API to the Amplify project',
+      run: () => amplify.addApi(),
+    },
+    {
+      description: 'Get project status',
+      run: () => amplify.status(),
+    },
+    {
+      description: 'Add Auth to the Amplify project',
+      run: () => amplify.addAuth(),
+    },
+    {
+      description: 'Get project status',
+      run: () => amplify.status(),
+    },
+    {
+      description: 'Push the Amplify project',
+      run: () => amplify.push(),
+    },
+    {
+      description: 'Get project status',
+      run: () => amplify.status(),
+    },
+    {
+      description: 'Modify the GraphQL schema',
+      run: () => amplify.modifyGraphQlSchema(newGraphqlSchema),
+    },
+    {
+      description: 'Update Auth',
+      run: () => amplify.updateAuth(),
+    },
+    {
+      description: 'Push the Amplify project',
+      run: () => amplify.push(),
+    },
+    {
+      description: 'Add REST API',
+      run: () => amplify.addRestApi(),
+    },
+    {
+      description: 'Get project status',
+      run: () => amplify.status(),
+    },
+    {
+      description: 'Push the Amplify project',
+      run: () => amplify.push(),
+    },
+    {
+      description: 'Delete the Amplify project',
+      run: () => amplify.delete(),
+    },
+  ];
+  test('An amplify project can be created without error', async () => {
+    const args = getArgs();
+    console.info(args.projectDirectory);
 
-  const amplify = new Amplify(args.projectDirectory);
-  createProjectDirectory(args.projectDirectory);
-  if (args.destructive) {
-    writeBanner('Deleting contents of ' + args.projectDirectory);
-    fs.emptyDirSync(args.projectDirectory);
-  }
-  assertEmpty(args.projectDirectory);
+    const amplify = new Amplify(args.projectDirectory);
+    createProjectDirectory(args.projectDirectory);
+    if (args.destructive) {
+      writeBanner('Deleting contents of ' + args.projectDirectory);
+      fs.emptyDirSync(args.projectDirectory);
+    }
+    assertEmpty(args.projectDirectory);
 
-  const commands = createCommands(amplify, args.cliVersion);
-  for (const command of commands) {
-    writeBanner(command.description);
-    await command.run();
-  }
+    const commands = createCommands(amplify, args.cliVersion);
+    for (const command of commands) {
+      writeBanner(command.description);
+      await command.run();
+    }
+    expect.assertions(0);
+  });
 });
