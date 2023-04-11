@@ -12,7 +12,7 @@ import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { getShortId } from '../../migration-helpers/utils';
 
 describe('pinpoint region migration from v10 to latest', () => {
-  const projectName = 'pinpointRegionMigration';
+  const projectName = 'pinpointMigration';
   let projectRoot: string;
 
   beforeAll(async () => {
@@ -21,7 +21,7 @@ describe('pinpoint region migration from v10 to latest', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir(projectName);
-    await initJSProjectWithProfileV10(projectRoot, { name: 'pinpointRegionMigration', disableAmplifyAppCreation: false });
+    await initJSProjectWithProfileV10(projectRoot, { name: 'pinpointMigration', disableAmplifyAppCreation: false });
     await addPinpointAnalytics(projectRoot, false);
     await amplifyPushWithoutCodegen(projectRoot);
   });

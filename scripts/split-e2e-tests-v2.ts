@@ -232,7 +232,7 @@ export const splitTestsV2 = function splitTests(
         const newSoloJob = createRandomJob(os);
         newSoloJob.tests.push(test);
         if (FORCE_REGION) {
-          newSoloJob.region = 'us-west-2';
+          newSoloJob.region = FORCE_REGION;
         }
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
@@ -244,7 +244,7 @@ export const splitTestsV2 = function splitTests(
       // add the test
       currentJob.tests.push(test);
       if (FORCE_REGION) {
-        currentJob.region = 'us-west-2';
+        currentJob.region = FORCE_REGION;
       }
       if (USE_PARENT) {
         currentJob.useParentAccount = true;
