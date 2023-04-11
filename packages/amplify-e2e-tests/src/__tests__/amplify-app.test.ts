@@ -8,6 +8,7 @@ import {
   addIntegAccountInConfig,
 } from '../amplify-app-helpers/amplify-app-setup';
 import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from '@aws-amplify/amplify-e2e-core';
+import { AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 import {
   validateProject,
   validateProjectConfig,
@@ -33,8 +34,8 @@ describe('amplify-app platform tests', () => {
 
   it('should set up an android project', async () => {
     await amplifyAppAndroid(projRoot);
-    validateProject(projRoot, 'android');
-    validateProjectConfig(projRoot, 'android');
+    validateProject(projRoot, AmplifyFrontend.android);
+    validateProjectConfig(projRoot, AmplifyFrontend.android);
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);
@@ -48,8 +49,8 @@ describe('amplify-app platform tests', () => {
       return;
     }
     await amplifyAppIos(projRoot);
-    validateProject(projRoot, 'ios');
-    validateProjectConfig(projRoot, 'ios');
+    validateProject(projRoot, AmplifyFrontend.ios);
+    validateProjectConfig(projRoot, AmplifyFrontend.ios);
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);
@@ -57,8 +58,8 @@ describe('amplify-app platform tests', () => {
 
   it('should set up a angular project', async () => {
     await amplifyAppAngular(projRoot);
-    validateProject(projRoot, 'javascript');
-    validateProjectConfig(projRoot, 'javascript', 'angular');
+    validateProject(projRoot, AmplifyFrontend.javascript);
+    validateProjectConfig(projRoot, AmplifyFrontend.javascript, 'angular');
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);
@@ -66,8 +67,8 @@ describe('amplify-app platform tests', () => {
 
   it('should set up a react project and run scripts', async () => {
     await amplifyAppReact(projRoot);
-    validateProject(projRoot, 'javascript');
-    validateProjectConfig(projRoot, 'javascript', 'react');
+    validateProject(projRoot, AmplifyFrontend.javascript);
+    validateProjectConfig(projRoot, AmplifyFrontend.javascript, 'react');
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);

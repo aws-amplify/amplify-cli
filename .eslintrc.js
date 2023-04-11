@@ -38,6 +38,7 @@ module.exports = {
     },
   },
   rules: {
+    '@typescript-eslint/switch-exhaustiveness-check': 'error',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': 'error',
