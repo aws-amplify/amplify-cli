@@ -1338,6 +1338,54 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
   });
 }
 
+export async function updateAuthAddUserGroupsAfterPull(
+  projectDir: string,
+  groupNames: string[],
+  settings?: {
+    testingWithLatestCodebase: boolean;
+  },
+): Promise<void> {
+  if (groupNames.length == 0) {
+    return undefined;
+  }
+  const testingWithLatestCodebase = settings?.testingWithLatestCodebase || false;
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
+
+  chain
+    .wait('What do you want to do?')
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Select any user pool groups you want to delete:')
+    .sendCarriageReturn()
+    .wait('Do you want to add another User Pool Group')
+    .sendConfirmYes()
+    .wait('Provide a name for your user pool group')
+    .send(groupNames[0])
+    .sendCarriageReturn();
+
+  if (groupNames.length > 1) {
+    let index = 1;
+    while (index < groupNames.length) {
+      chain
+        .wait('Do you want to add another User Pool Group')
+        .sendConfirmYes()
+        .wait('Provide a name for your user pool group')
+        .send(groupNames[index++])
+        .sendCarriageReturn();
+    }
+  }
+
+  return await chain
+    .wait('Do you want to add another User Pool Group')
+    .sendCarriageReturn()
+    .wait('Sort the user pool groups in order of preference')
+    .sendCarriageReturn()
+    .wait('"amplify publish" will build all your local backend and frontend resources')
+    .runAsync();
+}
+
 export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserPoolOnlyWithOAuthSettings): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })

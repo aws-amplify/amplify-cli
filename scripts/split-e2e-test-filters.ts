@@ -50,3 +50,4 @@ export const migrationFromV10Tests = [
   'src/__tests__/migration_tests_v10/scaffold.test.ts',
   'src/__tests__/migration_tests_v10/storage.migration.test.ts',
 ];
+export const migrationFromV11Tests = ['src/__tests__/migration_tests_v11/auth-app-client-secret-migration.test.ts'];
