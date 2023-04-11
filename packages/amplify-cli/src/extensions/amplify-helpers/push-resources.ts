@@ -98,7 +98,7 @@ export const pushResources = async (
   let continueToPush = !!context?.exeInfo?.inputParams?.yes || rebuild;
 
   if (!continueToPush) {
-    if (context.exeInfo?.iterativeRollback) {
+    if (context.exeInfo.iterativeRollback) {
       printer.info('The CLI will rollback the last known iterative deployment.');
     }
     await showBuildDirChangesMessage();
