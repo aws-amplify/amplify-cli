@@ -1119,9 +1119,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', props.resourceName);
     const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
     const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.OpenIdLambda?.Type === 'AWS::Lambda::Function';
-    const userPoolDomainCreatedInCloud = authCfnTemplate?.Resources?.OidcProviderResource?.Type === 'AWS::IAM::OIDCProvider';
+    const oidcProviderCreatedInCloud = authCfnTemplate?.Resources?.OidcProviderResource?.Type === 'AWS::IAM::OIDCProvider';
 
-    if (lambdaCalloutCreatedInCloud && !userPoolDomainCreatedInCloud) {
+    if (lambdaCalloutCreatedInCloud && !oidcProviderCreatedInCloud) {
       this.deleteExistingOpenIdLambdaCustomResource(props);
     }
 
