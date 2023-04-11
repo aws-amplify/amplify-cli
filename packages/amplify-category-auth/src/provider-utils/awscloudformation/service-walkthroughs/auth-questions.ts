@@ -8,6 +8,7 @@ import { Sort } from 'enquirer';
 import { AuthContext } from '../../../context';
 import { extractApplePrivateKey } from '../utils/extract-apple-private-key';
 import { authProviders, attributeProviderMap, capabilities } from '../assets/string-maps';
+import { AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 
 const category = 'auth';
 
@@ -398,7 +399,7 @@ const updateAdminQuery = async (context: AuthContext, userPoolGroupList: any[]):
   where key = name accepted by updateIdentityPool API call and value = id entered by user
 */
 /* eslint-disable no-param-reassign */
-export const identityPoolProviders = (coreAnswers: any, projectType: any): any => {
+export const identityPoolProviders = (coreAnswers: any, projectType: AmplifyFrontend): any => {
   coreAnswers.selectedParties = {};
   authProviders.forEach((provider: any) => {
     // don't send google value in cf if native project, since we need to make an openid provider
