@@ -10,7 +10,7 @@ import {
   getProjectMeta,
   getUserPool,
 } from '@aws-amplify/amplify-e2e-core';
-import { UpdateAuthRequest } from '@aws-amplify/amplify-headless-interface';
+import { UpdateAuthRequest } from 'amplify-headless-interface';
 import _ from 'lodash';
 
 const PROJECT_NAME = 'authTest';

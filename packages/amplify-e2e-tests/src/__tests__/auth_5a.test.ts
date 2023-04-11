@@ -14,7 +14,7 @@ import {
   AddAuthRequest,
   CognitoUserPoolSigninMethod,
   CognitoUserProperty,
-} from '@aws-amplify/amplify-headless-interface';
+} from 'amplify-headless-interface';
 
 const PROJECT_NAME = 'authTest';
 const defaultsSettings = {

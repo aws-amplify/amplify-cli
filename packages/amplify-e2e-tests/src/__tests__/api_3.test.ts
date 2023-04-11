@@ -17,7 +17,7 @@ import {
   updateApiSchema,
   updateHeadlessApi,
 } from '@aws-amplify/amplify-e2e-core';
-import { AddApiRequest, UpdateApiRequest } from '@aws-amplify/amplify-headless-interface';
+import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import { existsSync } from 'fs';
 import { readFileSync } from 'fs-extra';
 import { TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';

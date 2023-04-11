@@ -10,7 +10,7 @@ import {
   UpdateAuthRequest,
   UpdateStorageRequest,
   UpdateGeoRequest,
-} from '@aws-amplify/amplify-headless-interface';
+} from 'amplify-headless-interface';
 import execa, { ExecaChildProcess } from 'execa';
 import { getCLIPath } from '..';
 

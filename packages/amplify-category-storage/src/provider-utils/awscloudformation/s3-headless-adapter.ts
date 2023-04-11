@@ -6,7 +6,7 @@ import {
   PermissionGroups,
   S3Permissions,
   UpdateStorageRequest,
-} from '@aws-amplify/amplify-headless-interface';
+} from 'amplify-headless-interface';
 import { s3GetUserInput, S3UserInputs } from '../..';
 import { getAllDefaults as getDefaultS3UserInput } from './default-values/s3-defaults';
 import {
