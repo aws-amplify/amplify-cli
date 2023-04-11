@@ -1,6 +1,7 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import process from 'process';
 import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
+import path from 'path';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
@@ -14,6 +15,17 @@ jest.mock('amplify-cli-core', () => ({
   },
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue(__dirname),
+    getResourceCfnTemplatePath: jest.fn().mockImplementation(() => {
+      return path.join(
+        __dirname,
+        'amplify',
+        'backend',
+        'auth',
+        'extauth387063394_userpool_87063394',
+        'build',
+        'extauth387063394_userpool_87063394-cloudformation-template.json',
+      );
+    }),
   },
   JSONUtilities: {
     writeJson: jest.fn(),
