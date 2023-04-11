@@ -12,8 +12,6 @@
               "const aws = require('aws-sdk');",
               "let responseData = {};",
               "exports.handler = function(event, context) {",
-              "       response.send(event, context, response.FAILED, 'KABOOM');",
-              "       return;",
               "  try {",
               "    let authRoleName = event.ResourceProperties.authRoleName;",
               "    let unauthRoleName = event.ResourceProperties.unauthRoleName;",
