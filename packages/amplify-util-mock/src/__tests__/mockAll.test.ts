@@ -3,7 +3,7 @@ import { mockAllCategories } from '../mockAll';
 import { start as apiServerStart } from '../api';
 import { start as storageServerStart } from '../storage';
 import { start as lambdaServerStart } from '../func';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('../api');
 jest.mock('../storage');

@@ -136,7 +136,8 @@ describe('function start', () => {
   });
 
   it('project has multiple functions and we dont specify a specific function, prompts for function names', async () => {
-    const context_stub_copy = _.merge({}, context_stub);
+    // const context_stub_copy = _.merge({}, context_stub);
+    const context_stub_copy = { ...context_stub };
     delete context_stub_copy.input.subCommands;
 
     stateManager_mock.getMeta.mockReturnValueOnce({
@@ -162,8 +163,13 @@ describe('function start', () => {
     getInvoker_mock.mockResolvedValueOnce(invoker);
     prompter_mock.input.mockResolvedValueOnce('event.json');
 
-    const context_stub_copy = _.merge({}, context_stub);
+    const context_stub_copy = { ...context_stub };
     context_stub_copy.input.options = undefined;
+    stateManager_mock.getMeta.mockReturnValueOnce({
+      function: {
+        func1: {},
+      },
+    });
     await start(context_stub_copy);
     expect(invoker.mock.calls.length).toBe(1);
     expect(printer_mock.error.mock.calls.length).toBe(0);
