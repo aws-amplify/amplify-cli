@@ -4,7 +4,7 @@ import {
   CognitoUserPoolSigninMethod,
   CognitoUserProperty,
   UpdateAuthRequest,
-} from '@aws-amplify/amplify-headless-interface';
+} from 'amplify-headless-interface';
 import {
   getAddAuthRequestAdaptor,
   getUpdateAuthRequestAdaptor,

@@ -47,7 +47,7 @@ export const updateGeoRequestSchemaSupplier: VersionedSchemaSupplier = (version)
 const getSchema = async (type: string, category: string, version: number) => {
   try {
     return {
-      rootSchema: await import(`@aws-amplify/amplify-headless-interface/schemas/${category}/${version}/${type}.schema.json`),
+      rootSchema: await import(`amplify-headless-interface/schemas/${category}/${version}/${type}.schema.json`),
     };
   } catch (ex) {
     return undefined; // resolve the promise with void if the schema does not exist
