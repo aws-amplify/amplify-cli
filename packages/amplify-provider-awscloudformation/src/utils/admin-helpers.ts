@@ -43,8 +43,12 @@ export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: bo
   try {
     appState = await getAdminAppState(appId, 'us-east-1');
   } catch {
-    printer.warn('The region of this Amplify app could not be determined.');
-    fallbackRegion = await prompter.pick('Select the Amplify app region:', Object.keys(adminBackendMap));
+    try {
+      fallbackRegion = stateManager.getCurrentRegion();
+    } catch {
+      printer.warn('The region of this Amplify app could not be determined.');
+      fallbackRegion = await prompter.pick('Select the Amplify app region:', Object.keys(adminBackendMap));
+    }
   }
 
   if (appState && appState.appId && appState.region && appState.region !== 'us-east-1') {
@@ -87,7 +91,7 @@ async function getAdminAppState(appId: string, region: string): Promise<AppState
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const fetchOptions = httpProxy ? { agent: proxyAgent(httpProxy) } : {};
   const res = await fetch(`${appStateBaseUrl}/AppState/?appId=${appId}`, fetchOptions);
-  if (!res.ok) {
+  if (res.status >= 500) {
     throw new AmplifyFault('ServiceCallFault', {
       message: `AppState in region ${region} returned status ${res.status}`,
       details: `Status: [${res.statusText}]`,
