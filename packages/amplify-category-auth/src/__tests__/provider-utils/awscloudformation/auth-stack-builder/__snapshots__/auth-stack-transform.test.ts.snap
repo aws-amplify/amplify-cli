@@ -12,14 +12,6 @@ Object {
         "NONE",
       ],
     },
-    "ShouldOutputAppClientSecrets": Object {
-      "Fn::Equals": Array [
-        Object {
-          "Ref": "userpoolClientGenerateSecret",
-        },
-        true,
-      ],
-    },
   },
   "Description": "Amplify Cognito Stack for AWS Amplify CLI",
   "Outputs": Object {
@@ -33,15 +25,6 @@ Object {
       "Description": "The user pool app client id for web",
       "Value": Object {
         "Ref": "UserPoolClientWeb",
-      },
-    },
-    "AppClientSecret": Object {
-      "Condition": "ShouldOutputAppClientSecrets",
-      "Value": Object {
-        "Fn::GetAtt": Array [
-          "UserPoolClientInputs",
-          "appSecret",
-        ],
       },
     },
     "IdentityPoolId": Object {
@@ -188,9 +171,6 @@ Object {
   },
   "Resources": Object {
     "IdentityPool": Object {
-      "DependsOn": Array [
-        "UserPoolClientInputs",
-      ],
       "Properties": Object {
         "AllowUnauthenticatedIdentities": Object {
           "Ref": "allowUnauthenticatedIdentities",
@@ -361,149 +341,7 @@ Object {
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "UserPoolClientInputs": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "UserPoolClientLogPolicy",
-      ],
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "UserPoolClientLambda",
-            "Arn",
-          ],
-        },
-        "clientId": Object {
-          "Ref": "UserPoolClient",
-        },
-        "userpoolId": Object {
-          "Ref": "UserPool",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "UserPoolClientLambda": Object {
-      "DependsOn": Array [
-        "UserPoolClientRole",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then((res) => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch((err) => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "UserPoolClientRole",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs16.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "UserPoolClientLambdaPolicy": Object {
-      "DependsOn": Array [
-        "UserPoolClientLambda",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "cognito-idp:DescribeUserPoolClient",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "authde2c33facd_userpoolclient_lambda_iam_policy",
-        "Roles": Array [
-          Object {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "UserPoolClientLogPolicy": Object {
-      "DependsOn": Array [
-        "UserPoolClientLambdaPolicy",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  Object {
-                    "account": Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": Object {
-                      "Ref": "UserPoolClientLambda",
-                    },
-                    "region": Object {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "authde2c33facd_userpoolclient_lambda_log_policy",
-        "Roles": Array [
-          Object {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "UserPoolClientRole": Object {
-      "DependsOn": Array [
-        "UserPoolClient",
-      ],
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -587,14 +425,6 @@ Object {
         "NONE",
       ],
     },
-    "ShouldOutputAppClientSecrets": Object {
-      "Fn::Equals": Array [
-        Object {
-          "Ref": "userpoolClientGenerateSecret",
-        },
-        true,
-      ],
-    },
   },
   "Description": "Amplify Cognito Stack for AWS Amplify CLI",
   "Outputs": Object {
@@ -613,15 +443,6 @@ Object {
       "Description": "The user pool app client id for web",
       "Value": Object {
         "Ref": "UserPoolClientWeb",
-      },
-    },
-    "AppClientSecret": Object {
-      "Condition": "ShouldOutputAppClientSecrets",
-      "Value": Object {
-        "Fn::GetAtt": Array [
-          "UserPoolClientInputs",
-          "appSecret",
-        ],
       },
     },
     "AppleWebClient": Object {
@@ -1239,9 +1060,6 @@ exports.handler = (event, context, callback) => {
       "Type": "AWS::IAM::Policy",
     },
     "IdentityPool": Object {
-      "DependsOn": Array [
-        "UserPoolClientInputs",
-      ],
       "Properties": Object {
         "AllowUnauthenticatedIdentities": Object {
           "Ref": "allowUnauthenticatedIdentities",
@@ -1321,10 +1139,54 @@ exports.handler = (event, context, callback) => {
     "IdentityPoolRoleMap": Object {
       "DependsOn": Array [
         "IdentityPool",
+        "UserPoolClient",
+        "UserPoolClientWeb",
       ],
       "Properties": Object {
         "IdentityPoolId": Object {
           "Ref": "IdentityPool",
+        },
+        "RoleMappings": Object {
+          "UserPoolClientRoleMapping": Object {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": Object {
+              "Fn::Sub": Array [
+                "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${client}",
+                Object {
+                  "client": Object {
+                    "Ref": "UserPoolClient",
+                  },
+                  "region": Object {
+                    "Ref": "AWS::Region",
+                  },
+                  "userPool": Object {
+                    "Ref": "UserPool",
+                  },
+                },
+              ],
+            },
+            "Type": "Token",
+          },
+          "UserPoolWebClientRoleMapping": Object {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": Object {
+              "Fn::Sub": Array [
+                "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${webClient}",
+                Object {
+                  "region": Object {
+                    "Ref": "AWS::Region",
+                  },
+                  "userPool": Object {
+                    "Ref": "UserPool",
+                  },
+                  "webClient": Object {
+                    "Ref": "UserPoolClientWeb",
+                  },
+                },
+              ],
+            },
+            "Type": "Token",
+          },
         },
         "Roles": Object {
           "authenticated": Object {
@@ -1336,196 +1198,6 @@ exports.handler = (event, context, callback) => {
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-    },
-    "OAuthCustomResource": Object {
-      "DependsOn": Array [
-        "HostedUIProvidersCustomResourceInputs",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    let webClientId = event.ResourceProperties.webClientId;
-    let nativeClientId = event.ResourceProperties.nativeClientId;
-    let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    let oAuthMetadata = JSON.parse(event.ResourceProperties.oAuthMetadata);
-    let providerList = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-    providerList.push('COGNITO');
-    if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      let params = {
-        UserPoolId: userPoolId,
-        AllowedOAuthFlows: oAuthMetadata.AllowedOAuthFlows,
-        AllowedOAuthFlowsUserPoolClient: true,
-        AllowedOAuthScopes: oAuthMetadata.AllowedOAuthScopes,
-        CallbackURLs: oAuthMetadata.CallbackURLs,
-        LogoutURLs: oAuthMetadata.LogoutURLs,
-        SupportedIdentityProviders: providerList,
-      };
-      console.log(params);
-      let updateUserPoolClientPromises = [];
-      params.ClientId = webClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      params.ClientId = nativeClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      Promise.all(updateUserPoolClientPromises)
-        .then(() => {
-          response.send(event, context, response.SUCCESS, {});
-        })
-        .catch((err) => {
-          console.log(err.stack);
-          response.send(event, context, response.FAILED, { err });
-        });
-    }
-  } catch (err) {
-    console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "UserPoolClientRole",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs16.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "OAuthCustomResourceInputs": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "OAuthCustomResourceLogPolicy",
-      ],
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "OAuthCustomResource",
-            "Arn",
-          ],
-        },
-        "hostedUIProviderMeta": Object {
-          "Ref": "hostedUIProviderMeta",
-        },
-        "nativeClientId": Object {
-          "Ref": "UserPoolClient",
-        },
-        "oAuthMetadata": Object {
-          "Ref": "oAuthMetadata",
-        },
-        "userPoolId": Object {
-          "Ref": "UserPool",
-        },
-        "webClientId": Object {
-          "Ref": "UserPoolClientWeb",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "OAuthCustomResourceLogPolicy": Object {
-      "DependsOn": Array [
-        "OAuthCustomResourcePolicy",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  Object {
-                    "account": Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": Object {
-                      "Ref": "OAuthCustomResource",
-                    },
-                    "region": Object {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": Object {
-          "Fn::Join": Array [
-            "-",
-            Array [
-              Object {
-                "Ref": "UserPool",
-              },
-              "OAuthLogPolicy",
-            ],
-          ],
-        },
-        "Roles": Array [
-          Object {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "OAuthCustomResourcePolicy": Object {
-      "DependsOn": Array [
-        "OAuthCustomResource",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "cognito-idp:UpdateUserPoolClient",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": Object {
-          "Fn::Join": Array [
-            "-",
-            Array [
-              Object {
-                "Ref": "UserPool",
-              },
-              "OAuth",
-            ],
-          ],
-        },
-        "Roles": Array [
-          Object {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
     },
     "SNSRole": Object {
       "Properties": Object {
@@ -1794,149 +1466,7 @@ exports.handler = (event, context, callback) => {
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "UserPoolClientInputs": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "UserPoolClientLogPolicy",
-      ],
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "UserPoolClientLambda",
-            "Arn",
-          ],
-        },
-        "clientId": Object {
-          "Ref": "UserPoolClient",
-        },
-        "userpoolId": Object {
-          "Ref": "UserPool",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "UserPoolClientLambda": Object {
-      "DependsOn": Array [
-        "UserPoolClientRole",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then((res) => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch((err) => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "UserPoolClientRole",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs16.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "UserPoolClientLambdaPolicy": Object {
-      "DependsOn": Array [
-        "UserPoolClientLambda",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "cognito-idp:DescribeUserPoolClient",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "extaut87063394_userpoolclient_lambda_iam_policy",
-        "Roles": Array [
-          Object {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "UserPoolClientLogPolicy": Object {
-      "DependsOn": Array [
-        "UserPoolClientLambdaPolicy",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  Object {
-                    "account": Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": Object {
-                      "Ref": "UserPoolClientLambda",
-                    },
-                    "region": Object {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "extaut87063394_userpoolclient_lambda_log_policy",
-        "Roles": Array [
-          Object {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "UserPoolClientRole": Object {
-      "DependsOn": Array [
-        "UserPoolClient",
-      ],
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
