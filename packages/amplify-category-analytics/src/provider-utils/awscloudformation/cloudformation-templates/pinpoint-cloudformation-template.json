@@ -203,8 +203,6 @@
                 "const response = require('cfn-response');",
                 "const aws = require('aws-sdk');",
                 "exports.handler = function(event, context) {",
-                "    response.send(event, context, response.FAILED, { Error : 'KABOOM'});",
-                "    return;",
                 "    if (event.RequestType == 'Delete') {",
                 "      const stackID = event.StackId;",
                 "      const cloudFormationClient = new aws.CloudFormation({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
