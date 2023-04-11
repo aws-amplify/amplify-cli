@@ -25,7 +25,7 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
-import { loadConfigurationForEnv } from './configuration-manager';
+import { loadConfigurationForEnv, loadConfiguration, resolveRegion } from './configuration-manager';
 export { loadConfigurationForEnv, loadConfiguration, resolveRegion } from './configuration-manager';
 import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { SSM } from './aws-utils/aws-ssm';
@@ -199,4 +199,7 @@ module.exports = {
   getEnvParametersDownloadHandler,
   getEnvParametersUploadHandler,
   deleteEnvironmentParametersFromService,
+  formUserAgentParam,
+  loadConfiguration,
+  resolveRegion,
 };
