@@ -15,9 +15,7 @@ exports.handler = (event) => {
         }
 
         if (providerArn) {
-          await iam
-            .deleteOpenIDConnectProvider({ OpenIDConnectProviderArn: providerArn })
-            .promise();
+          await iam.deleteOpenIDConnectProvider({ OpenIDConnectProviderArn: providerArn }).promise();
         }
       });
   }
