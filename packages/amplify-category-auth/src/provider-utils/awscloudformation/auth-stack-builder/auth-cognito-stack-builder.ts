@@ -8,12 +8,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import {
-  hostedUILambdaFilePath,
-  hostedUIProviderLambdaFilePath,
-  mfaLambdaFilePath,
-  openIdLambdaFilePath,
-} from '../constants';
+import { hostedUILambdaFilePath, hostedUIProviderLambdaFilePath, mfaLambdaFilePath, openIdLambdaFilePath } from '../constants';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
 
