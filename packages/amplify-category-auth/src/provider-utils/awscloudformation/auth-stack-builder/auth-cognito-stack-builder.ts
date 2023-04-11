@@ -312,7 +312,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
-        props.dependsOn!.forEach((trigger) => {
+        props.dependsOn?.forEach((trigger) => {
           if (trigger.resourceName.includes('CreateAuthChallenge')) {
             this.userPool!.lambdaConfig = {
               createAuthChallenge: cdk.Fn.ref(`function${props.resourceName}${'CreateAuthChallenge'}Arn`),
@@ -398,7 +398,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         if (configureSMS) {
           this.userPool.enabledMfas = ['SMS_MFA'];
         }
-        if (!_.isEmpty(props.mfaTypes) && props.mfaTypes!.includes('TOTP')) {
+        if (!_.isEmpty(props.mfaTypes) && props.mfaTypes?.includes('TOTP')) {
           this.userPool.enabledMfas = [...(this.userPool.enabledMfas || []), 'SOFTWARE_TOKEN_MFA'];
         }
       }
@@ -412,8 +412,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         };
       }
 
-      if (configureSMS) {
-        this.userPool.addDependency(this.snsRole!);
+      if (configureSMS && this.snsRole) {
+        this.userPool.addDependency(this.snsRole);
       }
 
       // updating Lambda Config when FF is (break circular dependency : false)
@@ -649,7 +649,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUICustomResource.addDependency(this.userPoolClientRole!);
+
+    if (this.userPoolClientRole) {
+      this.hostedUICustomResource.addDependency(this.userPoolClientRole);
+    }
 
     // userPool client lambda policy
     /**
@@ -730,7 +733,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole!);
+
+    if (this.userPoolClientRole) {
+      this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole);
+    }
 
     // userPool client lambda policy
     /**
