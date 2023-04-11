@@ -9,9 +9,6 @@
     "test": "jest --logHeapUsage",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "keywords": [
     "amplify",
     "headless"
@@ -19,8 +16,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-amplify/amplify-headless-interface": "1.17.1",
-    "ajv": "^6.12.6"
+    "ajv": "^6.12.6",
+    "amplify-headless-interface": "1.17.1"
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.5",
