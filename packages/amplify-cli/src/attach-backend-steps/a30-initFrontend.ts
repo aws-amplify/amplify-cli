@@ -1,7 +1,6 @@
-import * as inquirer from 'inquirer';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
-import { ListQuestion } from 'inquirer';
+import { prompter, byValue } from '@aws-amplify/amplify-prompts';
 
 export async function initFrontend(context) {
   if (
@@ -49,15 +48,9 @@ async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
   }
 
   if (!frontend) {
-    const selectFrontendHandler: ListQuestion<{ selectedFrontendHandler: string }> = {
-      type: 'list',
-      name: 'selectedFrontendHandler',
-      message: "Choose the type of app that you're building",
-      choices: frontendPluginList,
-      default: suitableFrontend,
-    };
-    const answer = await inquirer.prompt(selectFrontendHandler);
-    frontend = answer.selectedFrontendHandler;
+    frontend = prompter.pick("Choose the type of app that you're building", frontendPluginList, {
+      initial: byValue(suitableFrontend),
+    });
   }
 
   return frontend;
