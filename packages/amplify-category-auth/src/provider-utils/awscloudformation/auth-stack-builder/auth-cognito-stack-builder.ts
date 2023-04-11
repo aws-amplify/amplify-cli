@@ -7,7 +7,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
-import Template from 'cloudform-types/types/template';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { hostedUILambdaFilePath, hostedUIProviderLambdaFilePath, mfaLambdaFilePath, openIdLambdaFilePath } from '../constants';
@@ -39,9 +38,6 @@ const authProvidersList: Record<string, string> = {
   // eslint-disable-next-line spellcheck/spell-checker
   'appleid.apple.com': 'appleAppId',
 };
-
-const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
-const { readJson } = JSONUtilities;
 
 /**
  *  default props for Auth Stack
