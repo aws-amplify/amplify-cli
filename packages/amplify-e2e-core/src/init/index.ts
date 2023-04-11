@@ -7,4 +7,3 @@ export * from './pull-headless';
 export * from './adminUI';
 export * from './overrideStack';
 export * from './non-interactive-init';
-export * from './amplifyMock';

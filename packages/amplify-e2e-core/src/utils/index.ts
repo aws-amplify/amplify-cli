@@ -12,8 +12,6 @@ export * from './api';
 export * from './appsync';
 export * from './envVars';
 export * from './getAppId';
-export * from './git-operations';
-export * from './graphql-client';
 export * from './headless';
 export * from './overrides';
 export * from './nexpect';
@@ -28,6 +26,7 @@ export * from './sleep';
 export * from './transformConfig';
 export * from './admin-ui';
 export * from './hooks';
+export * from './git-operations';
 export * from './help';
 
 /**
