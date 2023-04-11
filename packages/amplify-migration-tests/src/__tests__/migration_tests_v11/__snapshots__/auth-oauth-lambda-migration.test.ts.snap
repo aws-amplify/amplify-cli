@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify add auth... ...should init an Js project and add Oauth settings with userpool 1`] = `""`;
+
+exports[`amplify add auth... ...should init an Js project and add Oauth settings with userpool 2`] = `""`;

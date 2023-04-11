@@ -1,11 +1,17 @@
 import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { AmplifyAuthCognitoStack } from '../../../../provider-utils/awscloudformation/auth-stack-builder/auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from '../../../../provider-utils/awscloudformation/auth-stack-builder/stack-synthesizer';
 import {
   AttributeType,
   CognitoStackOptions,
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
+
+jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
+  JSONUtilities: {
+    parse: jest.fn().mockImplementation(JSON.parse),
+  },
+}));
 
 describe('generateCognitoStackResources', () => {
   const props: CognitoStackOptions = {
@@ -130,5 +136,29 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.userPoolClientWeb!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.userPoolClient!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.lambdaConfigPermissions).toHaveProperty('UserPoolPreSignupLambdaInvokePermission');
+  });
+
+  it('correctly adds oauth properties on userpool client when oauthMetaData is defined', () => {
+    const testApp = new cdk.App();
+    // eslint-disable-next-line spellcheck/spell-checker
+    const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTesting1', {
+      synthesizer: new AuthStackSynthesizer(),
+    });
+    const updatedProps: CognitoStackOptions = {
+      ...props,
+      oAuthMetadata:
+        '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"]}',
+    };
+    console.log(updatedProps);
+    cognitoStack.generateCognitoStackResources(updatedProps);
+    expect(cognitoStack.userPoolClientWeb).toHaveProperty('allowedOAuthFlows');
+    expect(cognitoStack.userPoolClientWeb).toHaveProperty('allowedOAuthScopes');
+    expect(cognitoStack.userPoolClientWeb).toHaveProperty('callbackUrLs');
+    expect(cognitoStack.userPoolClientWeb).toHaveProperty('logoutUrLs');
+
+    expect(cognitoStack.userPoolClient).toHaveProperty('allowedOAuthFlows');
+    expect(cognitoStack.userPoolClient).toHaveProperty('allowedOAuthScopes');
+    expect(cognitoStack.userPoolClient).toHaveProperty('callbackUrLs');
+    expect(cognitoStack.userPoolClient).toHaveProperty('logoutUrLs');
   });
 });
