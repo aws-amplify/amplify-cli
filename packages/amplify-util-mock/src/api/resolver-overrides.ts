@@ -51,7 +51,7 @@ export class ResolverOverrides {
       // deleted from last execution
       if (this.overrides.has(normalizedPath)) {
         const overriddenContent = this.contentMap.get(normalizedPath);
-        if (overriddenContent === resolver.content && !userOverriddenSlots.includes(path.basename(normalizedPath))) {
+        if (overriddenContent === resolver.content && !userOverriddenSlots?.includes(path.basename(normalizedPath))) {
           this.overrides.delete(normalizedPath);
         } else {
           r.content = overriddenContent;
