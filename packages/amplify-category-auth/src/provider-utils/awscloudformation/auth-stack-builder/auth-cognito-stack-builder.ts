@@ -7,11 +7,15 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
+import Template from 'cloudform-types/types/template';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { hostedUILambdaFilePath, hostedUIProviderLambdaFilePath, mfaLambdaFilePath, openIdLambdaFilePath } from '../constants';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
+
+const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
+const { readJson } = JSONUtilities;
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Amplify Cognito Stack for AWS Amplify CLI';
@@ -72,6 +76,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   hostedUICustomResourcePolicy?: iam.CfnPolicy;
   hostedUICustomResourceLogPolicy?: iam.CfnPolicy;
   hostedUICustomResourceInputs?: cdk.CustomResource;
+  hostedUIDomainResource?: cognito.CfnUserPoolDomain | undefined;
   // custom resource HostedUI Provider
   hostedUIProvidersCustomResource?: lambda.CfnFunction;
   hostedUIProvidersCustomResourcePolicy?: iam.CfnPolicy;
@@ -312,7 +317,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
-        props.dependsOn!.forEach((trigger) => {
+        props.dependsOn?.forEach((trigger) => {
           if (trigger.resourceName.includes('CreateAuthChallenge')) {
             this.userPool!.lambdaConfig = {
               createAuthChallenge: cdk.Fn.ref(`function${props.resourceName}${'CreateAuthChallenge'}Arn`),
@@ -398,7 +403,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         if (configureSMS) {
           this.userPool.enabledMfas = ['SMS_MFA'];
         }
-        if (!_.isEmpty(props.mfaTypes) && props.mfaTypes!.includes('TOTP')) {
+        if (!_.isEmpty(props.mfaTypes) && props.mfaTypes?.includes('TOTP')) {
           this.userPool.enabledMfas = [...(this.userPool.enabledMfas || []), 'SOFTWARE_TOKEN_MFA'];
         }
       }
@@ -412,8 +417,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         };
       }
 
-      if (configureSMS) {
-        this.userPool.addDependency(this.snsRole!);
+      if (configureSMS && this.snsRole) {
+        this.userPool.addDependency(this.snsRole);
       }
 
       // updating Lambda Config when FF is (break circular dependency : false)
@@ -473,7 +478,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       this.createBaseLambdaRole(props);
 
       if (props.hostedUIDomainName) {
-        this.createHostedUICustomResource();
+        this.createHostedUIDomainResource(props);
       }
 
       if (props.hostedUIProviderMeta) {
@@ -644,10 +649,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
-   * Creates custom lambda to update userPool client on Cognito
+   * Updates the custom lambda to delete existing userPool domain
    */
-  createHostedUICustomResource(): void {
-    // lambda function
+  deleteExistingHostedUICustomResource(): void {
     this.hostedUICustomResource = new lambda.CfnFunction(this, 'HostedUICustomResource', {
       code: {
         zipFile: fs.readFileSync(hostedUILambdaFilePath, 'utf-8'),
@@ -657,11 +661,14 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUICustomResource.addDependency(this.userPoolClientRole!);
+
+    if (this.userPoolClientRole) {
+      this.hostedUICustomResource.addDependency(this.userPoolClientRole);
+    }
 
     // userPool client lambda policy
     /**
-     *   # Sets userpool policy for the role that executes the Userpool Client Lambda
+     *  # Sets userpool policy for the role that executes the Userpool Client Lambda
         # Depends on UserPool for Arn
         # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
      */
@@ -672,7 +679,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: ['cognito-idp:CreateUserPoolDomain', 'cognito-idp:DescribeUserPool', 'cognito-idp:DeleteUserPoolDomain'],
+            Action: ['cognito-idp:DeleteUserPoolDomain'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
           {
@@ -738,7 +745,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole!);
+
+    if (this.userPoolClientRole) {
+      this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole);
+    }
 
     // userPool client lambda policy
     /**
@@ -1161,5 +1171,33 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         roles: [cdk.Fn.join('', [`${props.resourceName}${permission.trigger}`, '-', cdk.Fn.ref('env')])],
       });
     });
+  };
+
+  createHostedUIDomainResource = (props: CognitoStackOptions) => {
+    if (!props.hostedUIDomainName) {
+      return;
+    }
+
+    const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', props.resourceName);
+    const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
+    const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUICustomResource?.Type === 'AWS::Lambda::Function';
+    const userPoolDomainCreatedInCloud = authCfnTemplate?.Resources?.HostedUIDomainResource?.Type === 'AWS::Cognito::UserPoolDomain';
+
+    if (lambdaCalloutCreatedInCloud && !userPoolDomainCreatedInCloud) {
+      this.deleteExistingHostedUICustomResource();
+    }
+
+    this.hostedUIDomainResource = new cognito.CfnUserPoolDomain(this, 'HostedUIDomainResource', {
+      domain: cdk.Fn.conditionIf(
+        'ShouldNotCreateEnvResources',
+        cdk.Fn.ref('hostedUIDomainName'),
+        cdk.Fn.join('-', [cdk.Fn.ref('hostedUIDomainName'), cdk.Fn.ref('env')]),
+      ).toString(),
+      userPoolId: cdk.Fn.ref('UserPool'),
+    });
+
+    if (this.hostedUICustomResource) {
+      this.hostedUIDomainResource.addDependency(this.hostedUICustomResource);
+    }
   };
 }
