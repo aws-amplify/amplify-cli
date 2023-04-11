@@ -1,4 +1,12 @@
-import { $TSAny, $TSContext, AmplifyError, AmplifyFault, AMPLIFY_SUPPORT_DOCS, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  AMPLIFY_SUPPORT_DOCS,
+  JSONUtilities,
+  pathManager,
+} from '@aws-amplify/amplify-cli-core';
 import { DynamoDB, Template } from 'cloudform-types';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
@@ -22,6 +30,9 @@ import { addGSI, getGSIDetails, removeGSI } from './dynamodb-gsi-helpers';
 import { loadConfiguration } from '../configuration-manager';
 
 const ROOT_LEVEL = 'root';
+const RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME = '_root';
+const CONNECTION_STACK_NAME = 'ConnectionStack';
+const SEARCHABLE_STACK_NAME = 'SearchableStack';
 
 /**
  * Type for GQLResourceManagerProps
@@ -166,14 +177,24 @@ export class GraphQLResourceManager {
       fs.copySync(previousStepPath, stepPath);
       previousStepPath = stepPath;
 
-      const tables = this.templateState.getKeys();
+      const nestedStacks = this.templateState.getKeys().filter((k) => k !== RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME);
       const tableNames = [];
-      tables.forEach((tableName) => {
-        tableNames.push(tableNameMap.get(tableName));
-        const tableNameStackFilePath = path.join(stepPath, 'stacks', `${tableName}.json`);
-        fs.ensureDirSync(path.dirname(tableNameStackFilePath));
-        JSONUtilities.writeJson(tableNameStackFilePath, this.templateState.pop(tableName));
+      nestedStacks.forEach((stackName) => {
+        if (stackName !== CONNECTION_STACK_NAME && stackName !== SEARCHABLE_STACK_NAME) {
+          // Connection stack is not provisioning dynamoDB table and need to be filtered
+          tableNames.push(tableNameMap.get(stackName));
+        }
+        const nestedStackFilePath = path.join(stepPath, 'stacks', `${stackName}.json`);
+        fs.ensureDirSync(path.dirname(nestedStackFilePath));
+        JSONUtilities.writeJson(nestedStackFilePath, this.templateState.pop(stackName));
       });
+
+      // Update the root stack template when it is changed in template state
+      if (this.templateState.has(RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME)) {
+        const rootStackFilePath = path.join(stepPath, 'cloudformation-template.json');
+        fs.ensureDirSync(path.dirname(rootStackFilePath));
+        JSONUtilities.writeJson(rootStackFilePath, this.templateState.pop(RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME));
+      }
 
       const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states/${stepNumber}`;
       const deploymentStep: DeploymentOp = {
@@ -303,15 +324,67 @@ export class GraphQLResourceManager {
   };
 
   private tableRecreationManagement = (currentState: DiffableProject) => {
-    this.getTablesBeingReplaced().forEach((tableMeta) => {
+    const recreatedTables = this.getTablesBeingReplaced();
+    recreatedTables.forEach((tableMeta) => {
       const ddbStack = this.getStack(tableMeta.stackName, currentState);
       this.dropTemplateResources(ddbStack);
-
       // clear any other states created by GSI updates as dropping and recreating supersedes those changes
       this.clearTemplateState(tableMeta.stackName);
       this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbStack));
     });
+
+    /**
+     * When rebuild api, the root stack needs to change the reference to nested stack output values to temporary null placeholder value
+     * as there will be no output from nested stacks.
+     */
+    if (this.rebuildAllTables) {
+      const rootStack = this.getStack(ROOT_LEVEL, currentState);
+      const connectionStack = this.getStack(CONNECTION_STACK_NAME, currentState);
+      const searchableStack = this.getStack(SEARCHABLE_STACK_NAME, currentState);
+      const allRecreatedNestedStackNames = recreatedTables.map((tableMeta) => tableMeta.stackName);
+      // Drop resources and outputs for connection stack if existed
+      if (connectionStack) {
+        allRecreatedNestedStackNames.push(CONNECTION_STACK_NAME);
+        this.dropTemplateResources(connectionStack);
+        this.templateState.add(CONNECTION_STACK_NAME, JSONUtilities.stringify(connectionStack));
+      }
+      // Drop resources and outputs for searchable stack if existed
+      if (searchableStack) {
+        allRecreatedNestedStackNames.push(SEARCHABLE_STACK_NAME);
+        this.dropTemplateResourcesForSearchableStack(searchableStack);
+        this.templateState.add(SEARCHABLE_STACK_NAME, JSONUtilities.stringify(searchableStack));
+      }
+      // Update nested stack params in root stack
+      this.replaceRecreatedNestedStackParamsInRootStackTemplate(allRecreatedNestedStackNames, rootStack);
+      this.templateState.add(RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME, JSONUtilities.stringify(rootStack));
+    }
   };
+
+  /**
+   * Set recreated nested stack parameters to 'TemporaryPlaceholderValue' in root stack template
+   * @param recreatedNestedStackNames names of recreated stacks
+   * @param rootStack root stack template
+   */
+  private replaceRecreatedNestedStackParamsInRootStackTemplate(recreatedNestedStackNames: string[], rootStack: Template) {
+    recreatedNestedStackNames.forEach((stackName) => {
+      const stackParamsMap = rootStack.Resources[stackName].Properties.Parameters;
+      Object.keys(stackParamsMap).forEach((stackParamKey) => {
+        const paramObj = stackParamsMap[stackParamKey];
+        const paramObjKeys = Object.keys(paramObj);
+        if (paramObjKeys.length === 1 && paramObjKeys[0] === 'Fn::GetAtt') {
+          const paramObjValue = paramObj[paramObjKeys[0]];
+          if (
+            Array.isArray(paramObjValue) &&
+            paramObjValue.length === 2 &&
+            recreatedNestedStackNames.includes(paramObjValue[0]) &&
+            paramObjValue[1].startsWith('Outputs.')
+          ) {
+            stackParamsMap[stackParamKey] = 'TemporaryPlaceholderValue';
+          }
+        }
+      });
+    });
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getTablesBeingReplaced = (): any => {
@@ -379,6 +452,18 @@ export class GraphQLResourceManager {
     // CloudFormation requires at least one resource so setting a placeholder
     // https://stackoverflow.com/a/62991447/5283094
     template.Resources.PlaceholderNullResource = { Type: 'AWS::CloudFormation::WaitConditionHandle' };
+    template.Outputs = {};
+  };
+
+  /**
+   * Remove all outputs and resources except for search domain for searchable stack
+   * @param template stack CFN tempalte
+   */
+  private dropTemplateResourcesForSearchableStack = (template: Template): void => {
+    const OpenSearchDomainLogicalID = 'OpenSearchDomain';
+    const searchDomain = template.Resources[OpenSearchDomainLogicalID];
+    template.Resources = {};
+    template.Resources[OpenSearchDomainLogicalID] = searchDomain;
     template.Outputs = {};
   };
 

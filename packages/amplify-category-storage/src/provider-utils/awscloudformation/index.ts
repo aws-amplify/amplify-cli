@@ -6,12 +6,11 @@ import {
   $TSMeta,
   AmplifySupportedService,
   exitOnNextTick,
-  JSONUtilities,
   NotImplementedError,
   open,
   stateManager,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import _ from 'lodash';
 import { categoryName } from '../../constants';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
@@ -164,10 +163,8 @@ const isInHeadlessMode = (context: $TSContext) => {
 };
 
 const getHeadlessParams = (context: $TSContext) => {
-  const { inputParams } = context.exeInfo;
   try {
-    // If the input given is a string validate it using JSON parse
-    const { categories = {} } = typeof inputParams === 'string' ? JSONUtilities.parse(inputParams) : inputParams;
+    const { categories = {} } = context.exeInfo.inputParams;
     return categories.storage || {};
   } catch (err) {
     throw new Error(`Failed to parse storage headless parameters: ${err}`);
@@ -186,7 +183,7 @@ export const console = async (amplifyMeta: $TSMeta, provider: string, service: s
     }
     const { BucketName: bucket, Region: region } = s3Resource.output;
     const url = `https://s3.console.aws.amazon.com/s3/buckets/${bucket}?region=${region}`;
-    open(url, { wait: false });
+    await open(url, { wait: false });
   } else if (service === AmplifySupportedService.DYNAMODB) {
     type Pickchoice = { name: string; value: { tableName: string; region: string } };
     const tables: Pickchoice[] = Object.values<any>(amplifyMeta[categoryName])
@@ -202,6 +199,6 @@ export const console = async (amplifyMeta: $TSMeta, provider: string, service: s
     }
     const { tableName, region } = await prompter.pick<'one', Pickchoice['value']>('Select DynamoDB table to open on your browser', tables);
     const url = `https://${region}.console.aws.amazon.com/dynamodbv2/home?region=${region}#table?name=${tableName}&tab=overview`;
-    open(url, { wait: false });
+    await open(url, { wait: false });
   }
 };

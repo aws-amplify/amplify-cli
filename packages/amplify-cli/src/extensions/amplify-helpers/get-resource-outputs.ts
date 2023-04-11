@@ -1,4 +1,4 @@
-import { $TSMeta, AmplifyCategories, stateManager } from 'amplify-cli-core';
+import { $TSMeta, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Get the outputs of a resource

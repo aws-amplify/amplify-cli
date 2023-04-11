@@ -1,6 +1,15 @@
-import { $TSAny, AmplifyException, AmplifyFaultType, AmplifyFault, executeHooks, HooksMeta, isWindowsPlatform } from 'amplify-cli-core';
+import {
+  $TSAny,
+  AmplifyException,
+  AmplifyFaultType,
+  AmplifyFault,
+  executeHooks,
+  HooksMeta,
+  isWindowsPlatform,
+  AmplifyError,
+} from '@aws-amplify/amplify-cli-core';
 import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
-import { AmplifyPrinter, printer } from 'amplify-prompts';
+import { AmplifyPrinter, printer } from '@aws-amplify/amplify-prompts';
 import { reportError } from './commands/diagnose';
 import { isHeadlessCommand } from './context-manager';
 import { Context } from './domain/context';
@@ -18,6 +27,7 @@ export const init = (_context: Context): void => {
  * Handle exceptions
  */
 export const handleException = async (exception: unknown): Promise<void> => {
+  process.exitCode = 1;
   let amplifyException: AmplifyException;
 
   if (exception instanceof AmplifyException) {
@@ -152,7 +162,7 @@ const printHeadlessAmplifyException = (amplifyException: AmplifyException): void
 const unknownErrorToAmplifyException = (err: unknown): AmplifyException =>
   new AmplifyFault(unknownErrorTypeToAmplifyExceptionType(), {
     message: typeof err === 'object' && err !== null && 'message' in err ? (err as $TSAny).message : 'Unknown error',
-    resolution: mapUnknownErrorToResolution(),
+    resolution: genericFaultResolution,
   });
 
 const genericErrorToAmplifyException = (err: Error): AmplifyException =>
@@ -160,36 +170,42 @@ const genericErrorToAmplifyException = (err: Error): AmplifyException =>
     genericErrorTypeToAmplifyExceptionType(),
     {
       message: err.message,
-      resolution: mapGenericErrorToResolution(),
+      resolution: genericFaultResolution,
     },
     err,
   );
 
-const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException =>
-  new AmplifyFault(
+const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyException => {
+  if (!isWindowsPlatform() && err.code === 'EACCES') {
+    let path = err.path;
+    if (err.message.includes('/.amplify/')) {
+      path = '~/.amplify';
+    } else if (err.message.includes('/.aws/amplify/')) {
+      path = '~/.aws/amplify';
+    } else if (err.message.includes('/amplify/')) {
+      path = '<your amplify app directory>';
+    }
+    return new AmplifyError(
+      'FileSystemPermissionsError',
+      { message: err.message, resolution: `Try running 'sudo chown -R $(whoami):$(id -gn) ${path}' to fix this` },
+      err,
+    );
+  }
+  return new AmplifyFault(
     nodeErrorTypeToAmplifyExceptionType(),
     {
       message: err.message,
-      resolution: mapNodeErrorToResolution(err),
+      resolution: genericFaultResolution,
       code: err.code,
     },
     err,
   );
-
-const nodeErrorTypeToAmplifyExceptionType = (): AmplifyFaultType => 'UnknownNodeJSFault';
-const mapNodeErrorToResolution = (err: NodeJS.ErrnoException): string => {
-  if (!isWindowsPlatform() && err.code === 'EACCES' && err.message.includes('/.amplify/')) {
-    return `Try running 'sudo chown -R $(whoami):$(id -gn) ~/.amplify' to fix this`;
-  }
-  return `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
 };
 
+const nodeErrorTypeToAmplifyExceptionType = (): AmplifyFaultType => 'UnknownNodeJSFault';
 const genericErrorTypeToAmplifyExceptionType = (): AmplifyFaultType => 'UnknownFault';
-const mapGenericErrorToResolution = (): string =>
-  `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
-
 const unknownErrorTypeToAmplifyExceptionType = (): AmplifyFaultType => 'UnknownFault';
-const mapUnknownErrorToResolution = (): string =>
-  `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
+
+const genericFaultResolution = `Please report this issue at https://github.com/aws-amplify/amplify-cli/issues and include the project identifier from: 'amplify diagnose --send-report'`;
 
 const isNodeJsError = (err: Error): err is NodeJS.ErrnoException => (err as $TSAny).code !== undefined;

@@ -8,8 +8,8 @@ import {
   $TSMeta,
   AmplifyCategories,
   stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { getAnalyticsResources } from './analytics-helper';
 

@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext, $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import { loadFunctionParameters } from './loadFunctionParameters';
 import { ServiceName } from './constants';

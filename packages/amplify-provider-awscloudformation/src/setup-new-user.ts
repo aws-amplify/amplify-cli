@@ -1,4 +1,4 @@
-import { AmplifyError, open } from 'amplify-cli-core';
+import { AmplifyError, open } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import constants from './constants.js';
@@ -6,7 +6,7 @@ import * as systemConfigManager from './system-config-manager';
 import obfuscationUtil from './utility-obfuscate';
 
 import awsRegions from './aws-regions.js';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * setup new user entry point

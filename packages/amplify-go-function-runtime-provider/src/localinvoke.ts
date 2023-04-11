@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { $TSContext, pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
 import getPort from 'get-port';
-import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { executeCommand } from './runtime';
 import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from './constants';
 import execa, { ExecaChildProcess } from 'execa';

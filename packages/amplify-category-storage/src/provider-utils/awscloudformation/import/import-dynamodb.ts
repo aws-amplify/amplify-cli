@@ -1,6 +1,6 @@
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSAny, $TSContext, AmplifyCategories, AmplifyError, ServiceSelection, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyError, ServiceSelection, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { IDynamoDBService } from '@aws-amplify/amplify-util-import';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
@@ -448,7 +448,7 @@ const headlessImport = async (
   const tableExists = await dynamoDB.tableExists(resolvedEnvParams.tableName);
 
   if (!tableExists) {
-    throw new Error(importMessages.TableNotFound(resolvedEnvParams.tableName));
+    throw new AmplifyError('StorageImportError', { message: importMessages.TableNotFound(resolvedEnvParams.tableName) });
   }
 
   answers.tableDescription = await dynamoDB.getTableDetails(resolvedEnvParams.tableName);

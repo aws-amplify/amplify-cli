@@ -1,8 +1,8 @@
-import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
+import { $TSContext, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import type { CreateComponentData, Component, Theme, Form } from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getAppId, getEnvName } from '../commands/utils/environmentHelpers';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
 
@@ -12,6 +12,10 @@ import { getTransformerVersion } from '../commands/utils/featureFlags';
 export type StudioMetadata = {
   autoGenerateForms: boolean;
   autoGenerateViews: boolean;
+  formFeatureFlags: {
+    isRelationshipSupported: boolean;
+    isNonModelSupported: boolean;
+  };
 };
 
 /**
@@ -107,6 +111,10 @@ export default class AmplifyStudioClient {
     this.metadata = {
       autoGenerateForms: false,
       autoGenerateViews: false,
+      formFeatureFlags: {
+        isRelationshipSupported: false,
+        isNonModelSupported: false,
+      },
     };
   }
 
@@ -126,6 +134,10 @@ export default class AmplifyStudioClient {
       this.metadata = {
         autoGenerateForms: response.features?.autoGenerateForms === 'true',
         autoGenerateViews: response.features?.autoGenerateViews === 'true',
+        formFeatureFlags: {
+          isRelationshipSupported: response.features?.isRelationshipSupported === 'true',
+          isNonModelSupported: response.features?.isNonModelSupported === 'true',
+        },
       };
     } catch (err) {
       throw new Error(`Failed to load metadata: ${err.message}`);

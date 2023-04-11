@@ -1,5 +1,5 @@
-import { stateManager, open, $TSContext } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { stateManager, open, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 
 const providerName = 'awscloudformation';

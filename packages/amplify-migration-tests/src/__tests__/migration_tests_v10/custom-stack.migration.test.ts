@@ -1,4 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addCDKCustomResource,
   addCFNCustomResource,
@@ -25,19 +25,32 @@ describe('adding custom resources migration test', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, null, true);
     deleteProjectDir(projRoot);
   });
 
   it('add/update CDK and CFN custom resources', async () => {
     const cdkResourceName = `custom${uuid().split('-')[0]}`;
     const cfnResourceName = `custom${uuid().split('-')[0]}`;
+    const cfnResourceNameWithV10 = `custom${uuid().split('-')[0]}`;
 
     await initJSProjectWithProfileV10(projRoot, { name: 'customMigration', disableAmplifyAppCreation: false });
     const appId = getAppId(projRoot);
     expect(appId).toBeDefined();
 
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
+    await addCFNCustomResource(projRoot, { name: cfnResourceNameWithV10, promptForCategorySelection: true });
+    const srcCFNCustomResourceFilePath = path.join(__dirname, '..', '..', '..', 'custom-resources', 'custom-cfn-stack.json');
+    // adding a resource to custom cfn stack
+    const destCFNCustomResourceFilePath = path.join(
+      projRoot,
+      'amplify',
+      'backend',
+      'custom',
+      cfnResourceNameWithV10,
+      `${cfnResourceNameWithV10}-cloudformation-template.json`,
+    );
+    fs.copyFileSync(srcCFNCustomResourceFilePath, destCFNCustomResourceFilePath);
 
     // this is where we will write our custom cdk stack logic to
     const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
@@ -106,7 +119,7 @@ describe('adding custom resources migration test', () => {
       await amplifyPushAuth(projRoot2, usingLatestCode);
 
       // // Using latest code, add custom CFN and add dependency of custom CDK resource on the custom CFN
-      await addCFNCustomResource(projRoot2, { name: cfnResourceName, promptForCategorySelection: false }, usingLatestCode);
+      await addCFNCustomResource(projRoot2, { name: cfnResourceName, promptForCustomResourcesSelection: true }, usingLatestCode);
       const customCFNFilePath = path.join(
         projRoot2,
         'amplify',

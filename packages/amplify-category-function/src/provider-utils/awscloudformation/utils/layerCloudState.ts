@@ -1,12 +1,10 @@
-import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
-import ora from 'ora';
+import { $TSContext, exitOnNextTick, spinner } from '@aws-amplify/amplify-cli-core';
 import { LayerCfnLogicalNamePrefix } from './constants';
 // eslint-disable-next-line import/no-cycle
 import { isMultiEnvLayer } from './layerHelpers';
 import { LegacyPermissionEnum } from './layerMigrationUtils';
 import { LayerVersionMetadata, PermissionEnum } from './layerParams';
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 export class LayerCloudState {
   private static instances: Record<string, LayerCloudState> = {};
   private layerVersionsMetadata: LayerVersionMetadata[];
@@ -15,7 +13,6 @@ export class LayerCloudState {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
   static getInstance(layerName: string): LayerCloudState {
     if (!LayerCloudState.instances[layerName]) {
       LayerCloudState.instances[layerName] = new LayerCloudState();
@@ -24,7 +21,7 @@ export class LayerCloudState {
   }
 
   private async loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
-    const spinner = ora('Loading layer data from the cloud...').start();
+    spinner.start('Loading layer data from the cloud...');
     try {
       const { envName }: { envName: string } = context.amplify.getEnvInfo();
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
@@ -119,7 +116,6 @@ export class LayerCloudState {
     return this.layerVersionsMetadata;
   }
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
   public async getLayerVersionsFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
     return this.layerVersionsMetadata || this.loadLayerDataFromCloud(context, layerName);
   }

@@ -1,7 +1,6 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable import/no-cycle */
 import * as os from 'os';
 import * as path from 'path';
@@ -10,7 +9,7 @@ import * as ini from 'ini';
 
 import { spawnSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { gt } from 'semver';
 import { sleep } from '.';
 

@@ -1,8 +1,9 @@
 import path from 'path';
 import fs from 'fs-extra';
 import execa from 'execa';
-import { InvocationRequest } from 'amplify-function-plugin-interface';
-import { dotnetcore31, executableName } from '../constants';
+import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
+import { executableName } from '../constants';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export const invoke = async (request: InvocationRequest): Promise<string> => {
   const sourcePath = path.join(request.srcRoot, 'src');
@@ -13,7 +14,7 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
     tempDir = fs.mkdtempSync(path.join(request.srcRoot, 'amplify'));
     eventFile = path.join(tempDir, 'event.json');
     fs.writeFileSync(eventFile, request.event);
-    const lambdaTestTool = request.runtime === dotnetcore31 ? 'lambda-test-tool-3.1' : 'lambda-test-tool-6.0';
+    const lambdaTestTool = 'lambda-test-tool-6.0';
     const execPromise = execa(
       executableName,
       [lambdaTestTool, '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
@@ -25,6 +26,8 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
     execPromise.stderr?.pipe(process.stderr);
     execPromise.stdout?.pipe(process.stdout);
     result = await execPromise;
+  } catch (err) {
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Test failed, error message was ${err.message}` }, err);
   } finally {
     // Clean up
     if (tempDir && fs.existsSync(tempDir)) {
@@ -34,7 +37,7 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
   }
 
   if (result.exitCode !== 0) {
-    throw new Error(`Test failed, exit code was ${result.exitCode}`);
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Test failed, exit code was ${result.exitCode}` });
   }
 
   const { stdout } = result;

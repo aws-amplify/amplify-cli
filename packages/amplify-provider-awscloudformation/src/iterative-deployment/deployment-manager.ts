@@ -1,5 +1,5 @@
-import { $TSContext, AmplifyError, AmplifyFault, IDeploymentStateManager } from 'amplify-cli-core';
-import { AmplifySpinner, printer as promptsPrinter } from 'amplify-prompts';
+import { $TSContext, AmplifyError, AmplifyFault, IDeploymentStateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifySpinner, printer as promptsPrinter } from '@aws-amplify/amplify-prompts';
 import assert from 'assert';
 import * as aws from 'aws-sdk';
 import { ConfigurationOptions } from 'aws-sdk/lib/config-base';

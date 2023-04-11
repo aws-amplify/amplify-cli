@@ -1,5 +1,5 @@
-import { $TSContext, open } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, open } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { run } from '../setup-new-user';
 
 const context_stub = {
@@ -16,7 +16,7 @@ const context_stub = {
   },
 } as unknown as jest.Mocked<$TSContext>;
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   open: jest.fn().mockReturnValue(Promise.resolve()),
 }));
 jest.mock('inquirer', () => ({
@@ -33,7 +33,7 @@ jest.mock('../system-config-manager', () => ({
 }));
 jest.mock('../utility-obfuscate');
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const printerMock = printer as jest.Mocked<typeof printer>;
 
 describe('setupNewUser.run', () => {

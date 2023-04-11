@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable jsdoc/require-jsdoc */
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import { stateManager, open, $TSContext, $TSObject, AmplifyError } from 'amplify-cli-core';
+import { stateManager, open, $TSContext, $TSObject, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
 import { copyCfnTemplate, saveResourceParameters } from './utils/synthesize-resources';
@@ -60,7 +59,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
   // cloud deployed values.
   if (resource && resource.serviceType === 'imported') {
     let envSpecificParametersResult;
-    const { doServiceWalkthrough, succeeded, envSpecificParameters } = await importedAuthEnvInit(
+    const { doServiceWalkthrough, succeeded, resourceCleanupRequired, envSpecificParameters } = await importedAuthEnvInit(
       context,
       service,
       resource,
@@ -94,9 +93,12 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
         throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
       }
     } else if (succeeded) {
+      if (resourceCleanupRequired) {
+        // returning undefined as auth resource cleanup required
+        return {};
+      }
       envSpecificParametersResult = envSpecificParameters;
     } else {
-      // succeeded === false | undefined
       throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
     }
 
@@ -144,8 +146,8 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
       const missingParams: any[] = [];
       requiredParams.forEach((param: any) => {
-        if (Object.keys(mergedValues!).includes(param)) {
-          envParams[param] = mergedValues![param];
+        if (Object.keys(mergedValues ?? {}).includes(param)) {
+          envParams[param] = mergedValues?.[param];
         } else {
           missingParams.push(param);
         }

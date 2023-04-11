@@ -1,12 +1,14 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { projectHasAuth } from '../../provider-utils/awscloudformation/utils/project-has-auth';
 import { getSupportedServices } from '../../provider-utils/supported-services';
 import * as path from 'path';
+import { printAuthExistsWarning } from '../../provider-utils/awscloudformation/utils/print-auth-exists-warning';
 
 const category = 'auth';
 
 export const run = async (context: $TSContext) => {
-  if (projectHasAuth(context)) {
+  if (projectHasAuth()) {
+    printAuthExistsWarning(context);
     return undefined;
   }
   const servicesMetadata = getSupportedServices();

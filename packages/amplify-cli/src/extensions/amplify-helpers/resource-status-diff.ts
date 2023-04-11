@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as glob from 'glob';
 import chalk from 'chalk';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
-import { $TSAny, generateCustomPoliciesInTemplate, pathManager, readCFNTemplate } from 'amplify-cli-core';
+import { $TSAny, generateCustomPoliciesInTemplate, pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { Template } from 'cloudform-types';
 import { print } from './print';
 // eslint-disable-next-line import/no-cycle

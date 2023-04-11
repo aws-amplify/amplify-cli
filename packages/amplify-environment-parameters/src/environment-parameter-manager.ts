@@ -1,4 +1,4 @@
-import { AmplifyError, AmplifyFault, IAmplifyResource, pathManager, stateManager } from 'amplify-cli-core';
+import { AmplifyCategories, AmplifyError, AmplifyFault, IAmplifyResource, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { getParametersControllerInstance, IBackendParametersController } from './backend-config-parameters-controller';
 import { ResourceParameterManager } from './resource-parameter-manager';
@@ -168,6 +168,10 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
       ) {
         return;
       }
+      // filter out functions that have a missing deploymentBucketName and/or s3Key. These values will be regenerated on the next push
+      if (categoryName === AmplifyCategories.FUNCTION && (parameterName === 'deploymentBucketName' || parameterName === 's3Key')) {
+        return;
+      }
       if (!allEnvParams.has(`${categoryName}_${resourceName}_${parameterName}`)) {
         missingResourceParameters.push({ categoryName, resourceName, parameterName });
       }
@@ -178,15 +182,16 @@ class EnvironmentParameterManager implements IEnvironmentParameterManager {
 
   /**
    * Throw an error if expected parameters are missing
+   *
+   * If parameters are missing and appId and envName are specified, a specific error recovery message will be included
+   * Otherwise, a more generic error is thrown
    */
-  async verifyExpectedEnvParameters(resourceFilterList?: IAmplifyResource[]): Promise<void> {
-    const missingParameterNames = await this.getMissingParameters(resourceFilterList);
-
-    if (missingParameterNames.length > 0) {
-      throw new AmplifyError('MissingExpectedParameterError', {
-        message: `Expected parameter${missingParameterNames.length === 1 ? '' : 's'} ${missingParameterNames.join(', ')}`,
-      });
+  async verifyExpectedEnvParameters(resourceFilterList?: IAmplifyResource[], appId?: string, envName?: string): Promise<void> {
+    const missingParameters = await this.getMissingParameters(resourceFilterList);
+    if (missingParameters.length === 0) {
+      return;
     }
+    throw getMissingParametersError(missingParameters, appId, envName);
   }
 
   private serializeTPICategories(): Record<string, unknown> {
@@ -219,12 +224,14 @@ export type IEnvironmentParameterManager = {
   init: () => Promise<void>;
   removeResourceParamManager: (category: string, resource: string) => void;
   save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
-  verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<void>;
+  verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[], appId?: string, envName?: string) => Promise<void>;
 };
 
 export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
 export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
 
+const getFullParameterStorePath = (categoryName: string, resourceName: string, paramName: string, appId: string, envName: string) =>
+  `/amplify/${appId}/${envName}/${getParameterStoreKey(categoryName, resourceName, paramName)}`;
 const getParameterStoreKey = (categoryName: string, resourceName: string, paramName: string): string =>
   `AMPLIFY_${categoryName}_${resourceName}_${paramName}`;
 
@@ -238,4 +245,49 @@ type ResourceParameter = {
   categoryName: string;
   resourceName: string;
   parameterName: string;
+};
+
+const getMissingParametersError = (
+  missingParameters: ResourceParameter[],
+  appId: string | undefined,
+  envName: string | undefined,
+): AmplifyError => {
+  const message = `This environment is missing some parameter values.`;
+  const missingNames = missingParameters.map((param) => param.parameterName);
+  if (appId === undefined) {
+    return new AmplifyError('EnvironmentConfigurationError', {
+      message: `${message} Amplify AppId could not be determined for fetching missing parameters.`,
+      details: `[${missingNames}] ${missingNames.length > 1 ? 'do' : 'does'} not have values.`,
+      resolution: `Make sure your project is initialized using "amplify init"`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#amplify-init-parameters',
+    });
+  }
+
+  if (envName === undefined) {
+    return new AmplifyError('EnvironmentConfigurationError', {
+      message: `${message} A current environment name could not be determined for fetching missing parameters.`,
+      details: `[${missingNames}] ${missingNames.length > 1 ? 'do' : 'does'} not have values.`,
+      resolution: `Make sure your project is initialized using "amplify init"`,
+      link: 'https://docs.amplify.aws/cli/usage/headless/#amplify-init-parameters',
+    });
+  }
+
+  // appId and envName are specified so we can provide a specific error message
+
+  const missingParameterNames = missingParameters.map((param) => param.parameterName);
+
+  const missingFullPaths = missingParameters.map(({ resourceName, categoryName, parameterName }) =>
+    getFullParameterStorePath(categoryName, resourceName, parameterName, appId, envName),
+  );
+
+  const resolution =
+    `Run 'amplify push' interactively to specify values.\n` +
+    `Alternatively, manually add values in SSM ParameterStore for the following parameter names:\n\n` +
+    `${missingFullPaths.join('\n')}\n`;
+  return new AmplifyError('EnvironmentConfigurationError', {
+    message,
+    details: `[${missingParameterNames}] ${missingParameterNames.length > 1 ? 'do' : 'does'} not have values.`,
+    resolution,
+    link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
+  });
 };

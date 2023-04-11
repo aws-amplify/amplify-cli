@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifyFault, AmplifySupportedService, IContextPrint } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyFault, AmplifySupportedService, IContextPrint } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as configureKey from '../apns-key-config';
 import * as configureCertificate from '../apns-cert-config';
 
@@ -11,7 +11,7 @@ import { ChannelType } from '../notifications-backend-cfg-channel-api';
 const channelName = 'APNS';
 jest.mock('../apns-key-config');
 jest.mock('../apns-cert-config');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
 class NoErrorThrownError extends Error {}

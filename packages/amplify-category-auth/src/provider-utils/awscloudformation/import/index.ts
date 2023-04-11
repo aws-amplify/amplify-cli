@@ -1,5 +1,5 @@
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
-import { $TSAny, $TSContext, ServiceSelection, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
 import {
   IdentityProviderType,
@@ -7,7 +7,7 @@ import {
   UserPoolDescriptionType,
   UserPoolType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
@@ -29,6 +29,7 @@ import {
   ProviderUtils,
   ResourceParameters,
 } from './types';
+import { projectHasAuth } from '../utils/project-has-auth';
 
 // Currently the CLI only supports the output generation of these providers
 const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
@@ -960,7 +961,12 @@ export const importedAuthEnvInit = async (
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
   isInHeadlessMode: boolean,
   headlessParams: ImportAuthHeadlessParameters,
-): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
+): Promise<{
+  doServiceWalkthrough?: boolean;
+  succeeded?: boolean;
+  resourceCleanupRequired?: boolean;
+  envSpecificParameters?: EnvSpecificResourceParameters;
+}> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
   const identity = await providerUtils.createIdentityPoolService(context);
   const amplifyMeta = stateManager.getMeta();
@@ -1093,14 +1099,19 @@ export const importedAuthEnvInit = async (
     answers.userPool = await cognito.getUserPoolDetails(currentEnvSpecificParameters.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      context.print.error(
-        importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
-      );
-
-      error.stack = undefined;
+      if (projectHasAuth()) {
+        printer.warn(importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId));
+        printer.warn(`Unlink userPool: ${currentEnvSpecificParameters.userPoolName} using 'amplify remove auth'`);
+        return {
+          succeeded: true,
+          resourceCleanupRequired: true,
+        };
+      } else {
+        throw new AmplifyError('AuthImportError', {
+          message: importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
+        });
+      }
     }
-
-    throw error;
   }
 
   const validationResult = await validateUserPool(cognito, identity, questionParameters, answers, currentEnvSpecificParameters.userPoolId);
@@ -1182,7 +1193,7 @@ export const importedAuthEnvInit = async (
     answers.unauthRoleName = unauthRoleName;
   }
 
-  if (answers.userPool.MfaConfiguration !== 'OFF') {
+  if (answers.userPool?.MfaConfiguration !== 'OFF') {
     // Use try catch in case if there is no MFA configuration for the user pool
     try {
       answers.mfaConfiguration = await cognito.getUserPoolMfaConfig(answers.userPoolId!);
@@ -1218,7 +1229,7 @@ export const headlessImport = async (
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
   currentEnvSpecificParameters: EnvSpecificResourceParameters,
-): Promise<{ succeeded: boolean; envSpecificParameters: EnvSpecificResourceParameters }> => {
+): Promise<{ succeeded: boolean; resourceCleanupRequired?: boolean; envSpecificParameters?: EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const resolvedEnvParams =
     headlessParams.userPoolId || headlessParams.webClientId || headlessParams.nativeClientId || headlessParams.identityPoolId
@@ -1231,7 +1242,9 @@ export const headlessImport = async (
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
   if (resourceParameters.region && resourceParameters.region !== Region) {
-    throw new Error(importMessages.NewEnvDifferentRegion(resourceName, resourceParameters.region, Region));
+    throw new AmplifyError('AuthImportError', {
+      message: importMessages.NewEnvDifferentRegion(resourceName, resourceParameters.region, Region),
+    });
   }
 
   // Validate the parameters, generate the missing ones and import the resource.
@@ -1253,7 +1266,17 @@ export const headlessImport = async (
     answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
     if (error.name === 'ResourceNotFoundException') {
-      throw new Error(importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId));
+      if (projectHasAuth()) {
+        // returning silently in headless calls
+        printer.debug(`The previously configured Cognito User Pool: ${resolvedEnvParams.userPoolId} cannot be found.`);
+        return {
+          succeeded: true,
+          resourceCleanupRequired: true,
+        };
+      }
+      throw new AmplifyError('AuthImportError', {
+        message: importMessages.UserPoolNotFound(resolvedEnvParams.userPoolName, resolvedEnvParams.userPoolId),
+      });
     }
 
     throw error;
@@ -1269,20 +1292,26 @@ export const headlessImport = async (
   answers.appClientWeb = questionParameters.webClients?.find((c) => c.ClientId === resolvedEnvParams.webClientId);
 
   if (!answers.appClientWeb) {
-    throw new Error(importMessages.AppClientNotFound('Web', resolvedEnvParams.webClientId));
+    throw new AmplifyError('AuthImportError', {
+      message: importMessages.AppClientNotFound('Web', resolvedEnvParams.webClientId),
+    });
   }
 
   answers.appClientNative = questionParameters.nativeClients?.find((c) => c.ClientId === resolvedEnvParams.nativeClientId);
 
   if (!answers.appClientNative) {
-    throw new Error(importMessages.AppClientNotFound('Native', resolvedEnvParams.nativeClientId));
+    throw new AmplifyError('AuthImportError', {
+      message: importMessages.AppClientNotFound('Native', resolvedEnvParams.nativeClientId),
+    });
   }
 
   // Check OAuth config matching and enabled
   const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb, answers.appClientNative, false);
 
   if (!oauthResult.isValid) {
-    throw new Error(importMessages.OAuth.PropertiesAreNotMatching);
+    throw new AmplifyError('AuthImportError', {
+      message: importMessages.OAuth.PropertiesAreNotMatching,
+    });
   }
 
   // Store the results in the answer
@@ -1299,7 +1328,9 @@ export const headlessImport = async (
     );
 
     if (identityPools?.length !== 1) {
-      throw new Error(importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!));
+      throw new AmplifyError('AuthImportError', {
+        message: importMessages.IdentityPoolNotFound(resolvedEnvParams.identityPoolName!, resolvedEnvParams.identityPoolId!),
+      });
     }
 
     answers.identityPoolId = identityPools[0].identityPool.IdentityPoolId;

@@ -1,4 +1,13 @@
-import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
+import {
+  exitOnNextTick,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  LocalEnvInfo,
+} from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { prompt } from 'inquirer';
@@ -122,7 +131,7 @@ function doesAwsConfigExists(context: $TSContext) {
   if (stateManager.localAWSInfoExists()) {
     const envAwsInfo = stateManager.getLocalAWSInfo();
     if (envAwsInfo[envName]) {
-      context.exeInfo ??= {};
+      context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
       context.exeInfo.awsConfigInfo = envAwsInfo[envName];
       context.exeInfo.awsConfigInfo.config = envAwsInfo[envName];
       configExists = true;
@@ -542,6 +551,11 @@ function getConfigForEnv(context: $TSContext, envName: string) {
     configLevel: 'general',
     config: {},
   };
+  if (typeof context?.exeInfo?.inputParams?.awscloudformation === 'object') {
+    const config = context?.exeInfo?.inputParams?.awscloudformation;
+    projectConfigInfo.configLevel = config.configLevel || 'general';
+    projectConfigInfo.config = config;
+  }
   const dotConfigDirPath = pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
 
@@ -595,7 +609,7 @@ function removeProjectConfig(envName: string) {
 }
 
 export async function loadConfiguration(context: $TSContext): Promise<AwsSecrets> {
-  const { envName } = context.amplify.getEnvInfo();
+  const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
   const config = await loadConfigurationForEnv(context, envName);
   return config;
 }
@@ -859,7 +873,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   useProfile = useProfile ?? projectConfig?.config?.useProfile;
   profileName = profileName ?? projectConfig?.config?.profileName;
 
-  const generalCreds = projectConfig?.configLevel === 'general';
+  const generalCreds = projectConfig?.configLevel === 'general' || cfnParams?.configLevel === 'general';
 
   if (generalCreds) {
     return { type: 'general' };

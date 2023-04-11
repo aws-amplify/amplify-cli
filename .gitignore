@@ -38,6 +38,7 @@ packages/amplify-graphql-transformer-*/lib
 packages/amplify-cli/lib
 packages/amplify-cli-npm/lib
 packages/amplify-cli-core/lib
+packages/amplify-cli-core-vNext/lib
 packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
@@ -59,6 +60,7 @@ packages/amplify-migration-tests/lib
 packages/amplify-headless-interface/lib
 packages/amplify-provider-awscloudformation/lib
 packages/amplify-prompts/lib
+packages/amplify-prompts-vNext/lib
 packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
 packages/amplify-util-uibuilder/lib

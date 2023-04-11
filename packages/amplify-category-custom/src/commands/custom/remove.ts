@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const name = 'remove';
 

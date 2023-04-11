@@ -1,7 +1,7 @@
 import { AccessType, DataProvider, ResourceParameters } from '../service-utils/resourceParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';
-import { prompter, printer, byValue, byValues } from 'amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { prompter, printer, byValue, byValues } from '@aws-amplify/amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 export async function resourceAccessWalkthrough<T extends ResourceParameters & { groupPermissions: string[] }>(
   context: $TSContext,

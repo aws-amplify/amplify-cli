@@ -6,8 +6,8 @@ import {
   AmplifySupportedService,
   INotificationsResourceMeta,
   stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { IChannelAPIResponse, ChannelAction, INotificationsConfigStatus } from './channel-types';
 import { PinpointName } from './pinpoint-name';
 import { disableNotificationsChannel, enableNotificationsChannel, getChannelAvailability } from './notifications-backend-cfg-channel-api';

@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { LayerParameters } from './awscloudformation/utils/layerParams';
 
 export interface SupportedServices {

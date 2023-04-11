@@ -1,6 +1,6 @@
-import { $TSContext, $TSAny, AmplifyFault } from 'amplify-cli-core';
+import { $TSContext, $TSAny, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as pinpointHelper from './utils/pinpoint-helper';
 import * as kinesisHelper from './utils/kinesis-helper';
 import { migrationCheck } from './migrations';

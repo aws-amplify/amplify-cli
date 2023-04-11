@@ -1,4 +1,4 @@
-import { AmplifyFault, JSONUtilities } from 'amplify-cli-core';
+import { AmplifyFault, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { FileAssetSource, Stack, LegacyStackSynthesizer } from 'aws-cdk-lib';
 import { Template } from 'cloudform-types';
 import crypto from 'crypto';

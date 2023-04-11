@@ -1,4 +1,4 @@
-import { TypeDef, CLIInputSchemaGenerator, AmplifySupportedService } from 'amplify-cli-core';
+import { TypeDef, CLIInputSchemaGenerator, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
 
 //ResourceProvider TypeDefs
 const DDBStorageTypeDef: TypeDef = {

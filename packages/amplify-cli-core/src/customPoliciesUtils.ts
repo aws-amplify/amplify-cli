@@ -2,7 +2,7 @@ import { Fn, IAM, Template } from 'cloudform-types';
 import { pathManager, stateManager } from './state-manager';
 import Ajv from 'ajv';
 import * as _ from 'lodash';
-import { formatter, printer } from 'amplify-prompts';
+import { formatter, printer } from '@aws-amplify/amplify-prompts';
 import { JSONUtilities } from './jsonUtilities';
 import { CustomPoliciesFormatError } from './errors';
 import { $TSObject } from './index';
@@ -163,7 +163,7 @@ function resourceHasCustomPolicies(customPolicies: CustomIAMPolicies): boolean {
   const customPolicy = _.first(customPolicies);
 
   // if either there are no custom policies in the array or the defined policy is the default
-  if (!customPolicy || (customPolicy && customPolicy.Action.length === 0 && customPolicy.Resource.length == 0)) {
+  if (!customPolicy || (customPolicy && customPolicy.Action?.length === 0 && customPolicy.Resource.length == 0)) {
     return false;
   }
 

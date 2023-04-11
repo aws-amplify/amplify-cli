@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { loadConfigurationForEnv, resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';

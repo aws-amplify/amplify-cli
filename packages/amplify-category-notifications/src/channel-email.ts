@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, AmplifyError, AmplifyFault } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import ora from 'ora';

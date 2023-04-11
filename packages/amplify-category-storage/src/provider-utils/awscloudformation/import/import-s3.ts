@@ -7,8 +7,8 @@ import {
   ResourceAlreadyExistsError,
   ServiceSelection,
   stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';
 import Enquirer from 'enquirer';
@@ -440,7 +440,7 @@ const headlessImport = async (
   const bucketExists = await s3.bucketExists(resolvedEnvParams.bucketName);
 
   if (!bucketExists) {
-    throw new Error(importMessages.BucketNotFound(resolvedEnvParams.bucketName));
+    throw new AmplifyError('StorageImportError', { message: importMessages.BucketNotFound(resolvedEnvParams.bucketName) });
   }
 
   // Save the region as we need to store it in resource parameters

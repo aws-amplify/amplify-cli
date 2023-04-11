@@ -11,13 +11,13 @@ import {
   HooksMeta,
   AmplifyError,
   constants,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { CLIInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { saveAll as saveAllEnvParams, ServiceUploadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
@@ -257,5 +257,5 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
   }
 };
 
-// bump version to 10.8
+// bump version to 12.0
 //

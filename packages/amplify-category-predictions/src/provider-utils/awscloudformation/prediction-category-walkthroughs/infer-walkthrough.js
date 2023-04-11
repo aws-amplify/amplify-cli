@@ -1,8 +1,8 @@
 import inferAssets from '../assets/inferQuestions';
 import getAllDefaults from '../default-values/infer-defaults';
 import regionMapper from '../assets/regionMapping';
-import { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick, open } from 'amplify-cli-core';
-import { byValue, prompter } from 'amplify-prompts';
+import { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick, open } from '@aws-amplify/amplify-cli-core';
+import { byValue, prompter } from '@aws-amplify/amplify-prompts';
 
 const path = require('path');
 const fs = require('fs-extra');

@@ -1,6 +1,6 @@
 /* eslint-disable spellcheck/spell-checker */
-import { FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 // This is copy-pasta from the category api until they can expose the method to plugins
 

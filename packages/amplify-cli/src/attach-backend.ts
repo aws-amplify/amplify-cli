@@ -1,5 +1,13 @@
-import { $TSContext, AmplifyError, AmplifyFault, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import {
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  FeatureFlags,
+  LocalEnvInfo,
+  pathManager,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { postPullCodegen } from './amplify-service-helper';
@@ -193,7 +201,7 @@ const prepareContext = (context: $TSContext, inputParams): void => {
     projectConfig: {},
     localEnvInfo: {
       projectPath,
-    },
+    } as unknown as LocalEnvInfo,
     teamProviderInfo: {},
     existingTeamProviderInfo: stateManager.getTeamProviderInfo(projectPath, {
       throwIfNotExist: false,

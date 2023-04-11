@@ -217,10 +217,12 @@ export async function main() {
   }
 
   console.info(`Merging ${upstreamName}/${releaseBranch} into ${mergeBranch}`);
-  git.merge(`${upstreamName}/${releaseBranch}`, { message: 'chore: merge release commit from main to dev' });
-
-  if (!git.isCleanWorkingTree()) {
-    console.info('Resolve merge conflicts and commit merge, then run `yarn run finish-release --continue`');
+  try {
+    git.merge(`${upstreamName}/${releaseBranch}`, { message: 'chore: merge release commit from main to dev' });
+  } catch (e) {
+    console.info(
+      'Resolve merge conflicts and then finish the merge using `git merge --continue`.\nThen run `yarn run finish-release --continue`',
+    );
     process.exit(0);
   }
 

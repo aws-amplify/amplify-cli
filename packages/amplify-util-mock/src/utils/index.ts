@@ -9,8 +9,8 @@ import * as which from 'which';
 import * as execa from 'execa';
 import * as semver from 'semver';
 import _ from 'lodash';
-import { $TSContext, AmplifyFault } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 
 const minJavaVersion = '>=1.8 <= 2.0 ||  >=8.0';

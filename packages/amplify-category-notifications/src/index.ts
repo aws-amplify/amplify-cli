@@ -1,6 +1,6 @@
 import path from 'path';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as pinpointHelper from './pinpoint-helper';
 import * as multiEnvManager from './multi-env-manager';
 import { migrationCheck } from './migrations';

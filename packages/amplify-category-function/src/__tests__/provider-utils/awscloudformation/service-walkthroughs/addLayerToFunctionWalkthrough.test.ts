@@ -1,5 +1,5 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionDependency, LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { addLayersToFunctionWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/addLayerToFunctionWalkthrough';
 import {
   askCustomArnQuestion,
@@ -11,7 +11,7 @@ import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformati
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({

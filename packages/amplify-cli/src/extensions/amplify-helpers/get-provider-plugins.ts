@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 
 /**

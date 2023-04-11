@@ -3,9 +3,8 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
-/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -532,17 +531,14 @@ function protectAPI(settings: RestAPISettings, chain: ExecutionContext) {
         .sendKeyDown()
         .sendCarriageReturn() // Authenticated and Guest users
         .wait('What permissions do you want to grant to Authenticated users')
-        .sendCtrlA() // CRUD permissions for authenticated users
-        .sendCarriageReturn()
+        .selectAll() // CRUD permissions for authenticated users
         .wait('What permissions do you want to grant to Guest users')
-        .sendCtrlA() // CRUD permissions for guest users
-        .sendCarriageReturn();
+        .selectAll(); // CRUD permissions for guest users
     } else {
       chain
         .sendCarriageReturn() // Authenticated users only
         .wait('What permissions do you want to grant to Authenticated users')
-        .sendCtrlA() // CRUD permissions
-        .sendCarriageReturn();
+        .selectAll(); // CRUD permissions
     }
   } else {
     chain.sendNo();

@@ -5,7 +5,7 @@
  * WARNING: be extremely careful changing anything about how secrets are named in SSM! (AKA you should probably never change this).
  * This format is standardized with other Amplify Console SSM parameters and is expected by customer functions when fetching secrets at runtime
  */
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import * as path from 'path';
 
@@ -16,27 +16,27 @@ export const secretsPathAmplifyAppIdKey = 'secretsPathAmplifyAppId';
  *
  * If envName is not specified, the current env is assumed
  */
-export const getFullyQualifiedSecretName = (secretName: string, functionName: string, envName?: string) =>
-  `${getFunctionSecretPrefix(functionName, envName)}${secretName}`;
+export const getFullyQualifiedSecretName = (secretName: string, functionName: string, envName?: string, appId?: string) =>
+  `${getFunctionSecretPrefix(functionName, envName, appId)}${secretName}`;
 
 /**
  * Returns the SSM parameter name prefix for all secrets for the given function in the given env
  *
  * If envName is not specified, the current env is assumed
  */
-export const getFunctionSecretPrefix = (functionName: string, envName?: string) =>
-  path.posix.join(getEnvSecretPrefix(envName), `AMPLIFY_${functionName}_`);
+export const getFunctionSecretPrefix = (functionName: string, envName?: string, appId?: string) =>
+  path.posix.join(getEnvSecretPrefix(envName, appId), `AMPLIFY_${functionName}_`);
 
 /**
  * Returns the SSM parameter name prefix for all secrets in the given env.
  *
  * If envName is not specified, the current env is assumed
  */
-export const getEnvSecretPrefix = (envName: string = stateManager.getLocalEnvInfo()?.envName) => {
+export const getEnvSecretPrefix = (envName: string = stateManager.getCurrentEnvName(), appId: string = getAppId()) => {
   if (!envName) {
     throw new Error('Could not determine the current Amplify environment name. Try running `amplify env checkout`.');
   }
-  return path.posix.join('/amplify', getAppId(), envName);
+  return path.posix.join('/amplify', appId, envName);
 };
 
 // NOTE: Even though the following 2 functions are CFN specific, I'm putting them here to colocate all of the secret naming logic

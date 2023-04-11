@@ -1,5 +1,5 @@
-import { $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { category } from '../../constants';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { GeofenceCollectionParameters } from '../../service-utils/geofenceCollectionParams';
@@ -7,8 +7,8 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { updateGeofenceCollectionWalkthrough } from '../../service-walkthroughs/geofenceCollectionWalkthrough';
 import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('Geofence Collection walkthrough works as expected', () => {
   const projectName = 'mockProject';

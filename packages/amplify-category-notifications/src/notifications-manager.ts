@@ -1,6 +1,6 @@
 import sequential from 'promise-sequential';
-import { $TSAny, $TSContext, AmplifyError, stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as pinpointHelper from './pinpoint-helper';
 import { IChannelAPIResponse, NotificationsChannelAPIModule } from './channel-types';
 import { getPinpointAppStatusFromMeta } from './pinpoint-helper';

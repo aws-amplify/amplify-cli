@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import * as path from 'path';
-import { JSONUtilities } from 'amplify-cli-core';
-import { Template } from 'cloudform';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { Template } from 'cloudform-types';
 import { Diff, diff as getDiffs } from 'deep-diff';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';

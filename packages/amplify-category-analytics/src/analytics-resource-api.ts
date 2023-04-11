@@ -13,7 +13,7 @@ import {
   IPluginCapabilityAPIResponse,
   $TSAny,
   AmplifyError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { addResource } from './provider-utils/awscloudformation/index';
 import { analyticsPush } from './commands/analytics';
@@ -22,6 +22,7 @@ import { invokeNotificationsAPIGetAvailableChannelNames } from './plugin-client-
 import { pinpointHasInAppMessagingPolicy } from './utils/pinpoint-helper';
 import { getAnalyticsResources } from './utils/analytics-helper';
 import { analyticsMigrations } from './migrations';
+import { LocalEnvInfo } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Get all analytics resources. If resourceProviderService name is provided,
@@ -159,7 +160,7 @@ export const analyticsPushYes = async (context: $TSContext): Promise<void> => {
   const exeInfoClone = { ...context?.exeInfo };
   const parametersClone = { ...context?.parameters };
   try {
-    context.exeInfo ??= {};
+    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     context.exeInfo.inputParams = context.exeInfo.inputParams || {};
     context.exeInfo.inputParams.yes = true; // force yes to avoid prompts
     context.parameters = context.parameters || {};

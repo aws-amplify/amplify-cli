@@ -1,12 +1,12 @@
 /* eslint-disable spellcheck/spell-checker */
-import { $TSContext, $TSAny, AmplifyCategories, AmplifySupportedService, AmplifyFault } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { $TSContext, $TSAny, AmplifyCategories, AmplifySupportedService, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as channelFCM from '../channel-fcm';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
 import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
 const apiKey = 'ApiKey-abc123';
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
 class NoErrorThrownError extends Error {}

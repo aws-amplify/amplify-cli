@@ -9,8 +9,8 @@ import {
   pathManager,
   ResourceDoesNotExistError,
   stateManager,
-} from 'amplify-cli-core';
-import { alphanumeric, printer, prompter, Validator } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { alphanumeric, printer, prompter, Validator } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';

@@ -6,7 +6,7 @@ import { getEnvInfo } from '../extensions/amplify-helpers/get-env-info';
 import { displayConfigurationDefaults } from '../init-steps/s0-analyzeProject';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isContainersEnabled } from '../execution-manager';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 export async function analyzeProject(context) {
   context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {

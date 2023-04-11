@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as update from '../../commands/auth/update';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { AuthContext } from '../../context';
@@ -10,10 +10,10 @@ jest.mock('fs-extra', () => ({
   existsSync: () => true,
 }));
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
   FeatureFlags: {
     getBoolean: jest.fn().mockReturnValue(true),
   },

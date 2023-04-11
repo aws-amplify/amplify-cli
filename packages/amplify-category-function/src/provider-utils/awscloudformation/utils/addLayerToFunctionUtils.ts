@@ -1,5 +1,11 @@
-import { $TSContext, $TSMeta } from 'amplify-cli-core';
-import { ExternalLayer, FunctionDependency, FunctionRuntime, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
+import { $TSContext, $TSMeta } from '@aws-amplify/amplify-cli-core';
+import {
+  ExternalLayer,
+  FunctionDependency,
+  FunctionRuntime,
+  LambdaLayer,
+  ProjectLayer,
+} from '@aws-amplify/amplify-function-plugin-interface';
 import enquirer from 'enquirer';
 import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
 import _ from 'lodash';

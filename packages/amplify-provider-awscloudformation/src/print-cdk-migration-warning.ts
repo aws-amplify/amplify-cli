@@ -5,8 +5,8 @@ import {
   AmplifyNodePkgDetector,
   IAmplifyResource,
   pathManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -22,19 +22,23 @@ export type AmplifyWarning = {
  * print cdk migration warning if required
  */
 export const printCdkMigrationWarning = async (context: $TSContext): Promise<void> => {
-  const resourcesToBuild: IAmplifyResource[] = [];
-  const { allResources } = await context.amplify.getResourceStatus();
-  allResources.forEach((resource) => {
-    resourcesToBuild.push({
-      service: resource.service as string,
-      category: resource.category as string,
-      resourceName: resource.resourceName as string,
+  try {
+    const resourcesToBuild: IAmplifyResource[] = [];
+    const { allResources } = await context.amplify.getResourceStatus();
+    allResources.forEach((resource) => {
+      resourcesToBuild.push({
+        service: resource.service as string,
+        category: resource.category as string,
+        resourceName: resource.resourceName as string,
+      });
     });
-  });
-  // check for override.ts file enabled
-  const migrationString = getMigrationMessage(resourcesToBuild);
-  if (!_.isEmpty(migrationString)) {
-    printer.warn(migrationString);
+    // check for override.ts file enabled
+    const migrationString = getMigrationMessage(resourcesToBuild);
+    if (!_.isEmpty(migrationString)) {
+      printer.warn(migrationString);
+    }
+  } catch (error) {
+    // suppress error if cdk detection fails for some reason
   }
 };
 
@@ -65,7 +69,9 @@ const getOverridesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToS
 const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToSearch: string): AmplifyWarning | undefined => {
   let customResourcesWarningObject;
   const customResourceImpactedFiles = [];
-  const customCategoryResources = resourcesToBuild.filter((resource) => resource.category === AmplifyCategories.CUSTOM);
+  const customCategoryResources = resourcesToBuild.filter(
+    (resource) => resource.category === AmplifyCategories.CUSTOM && resource.service !== 'customCloudformation',
+  );
   customCategoryResources.forEach((resource) => {
     const targetDir = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {

@@ -1,6 +1,6 @@
 import { AmplifyCDKL1 } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from 'aws-cdk-lib';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import { Construct } from 'constructs';
 import { DdbAttrType } from '../cfn-template-utils';
 

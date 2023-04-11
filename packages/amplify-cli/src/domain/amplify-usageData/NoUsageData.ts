@@ -2,7 +2,7 @@
 import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { CLIInput } from '../command-input';
-import { IUsageData, IUsageDataPayload } from 'amplify-cli-core';
+import { IUsageData, IUsageDataPayload, ProjectSettings } from '@aws-amplify/amplify-cli-core';
 import { CLINoFlowReport } from './NoFlowReport';
 import { UsageDataPayload } from './UsageDataPayload';
 
@@ -28,7 +28,7 @@ export class NoUsageData implements IUsageData, IFlowData {
       error,
       state,
       '',
-      {},
+      {} as unknown as ProjectSettings,
       {},
       {},
       {

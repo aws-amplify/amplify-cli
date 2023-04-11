@@ -11,8 +11,8 @@ import {
   getMigrateResourceMessageForOverride,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { DDBStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import { AmplifyS3ResourceStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';

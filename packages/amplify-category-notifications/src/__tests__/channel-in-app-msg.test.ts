@@ -5,10 +5,10 @@ import {
   INotificationsResourceMeta,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import ora from 'ora';
 
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as channel from '../channel-in-app-msg';
 import * as ChannelCfg from '../notifications-backend-cfg-channel-api';
 import * as Meta from '../notifications-amplify-meta-api';
@@ -18,8 +18,8 @@ import { INotificationsResourceBackendConfig } from '../notifications-backend-cf
 import { buildPinpointChannelResponseSuccess, getPinpointAppStatusFromMeta } from '../pinpoint-helper';
 import * as analyticsClient from '../plugin-client-api-analytics';
 
-jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   stateManager: {
     getCurrentBackendConfig: jest.fn(),
     getCurrentEnvName: jest.fn(),

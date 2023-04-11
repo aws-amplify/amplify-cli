@@ -1,5 +1,5 @@
-import { $TSMeta } from 'amplify-cli-core';
-import { FunctionDependency } from 'amplify-function-plugin-interface';
+import { $TSMeta } from '@aws-amplify/amplify-cli-core';
+import { FunctionDependency } from '@aws-amplify/amplify-function-plugin-interface';
 import { lambdaLayerSetting, resourceAccessSetting, ServiceName } from './constants';
 
 export const consolidateDependsOnForLambda = (

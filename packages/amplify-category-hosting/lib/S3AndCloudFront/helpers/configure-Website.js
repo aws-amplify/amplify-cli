@@ -1,4 +1,4 @@
-const { prompter } = require('amplify-prompts');
+const { prompter } = require('@aws-amplify/amplify-prompts');
 const validateDocName = require('./validate-website-doc-name');
 
 async function configure(context) {

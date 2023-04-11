@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import execa from 'execa';
 import { EOL } from 'os';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getLogger } from '../logger/index';
 import { HooksMeta } from './hooksMeta';
 import { skipHooks } from './skipHooks';
@@ -11,7 +11,7 @@ import { defaultSupportedExt, hookFileSeparator } from './hooksConstants';
 import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { pathManager, stateManager } from '../state-manager';
 
-const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
+const logger = getLogger('@aws-amplify/amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
 /**
  *  runtime for hooks

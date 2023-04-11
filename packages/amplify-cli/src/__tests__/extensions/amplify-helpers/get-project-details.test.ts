@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { getProjectDetails } from '../../../extensions/amplify-helpers/get-project-details';
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
@@ -7,7 +7,7 @@ jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({
   getEnvInfo: jest.fn().mockReturnValue({ envName: 'test' }),
 }));
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   stateManager: {
     getLocalEnvInfo: jest.fn(),
     getProjectConfig: jest.fn(),

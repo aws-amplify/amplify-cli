@@ -1,9 +1,9 @@
 import { getProjectDetails } from './get-project-details';
-import { JSONUtilities, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext } from '@aws-amplify/amplify-cli-core';
 
 export function constructExeInfo(context: $TSContext) {
-  context.exeInfo = getProjectDetails();
-  context.exeInfo.inputParams = {};
+  const projectDetails = getProjectDetails();
+  context.exeInfo = { ...projectDetails, inputParams: {} };
 
   if (!context.parameters.options) {
     return;

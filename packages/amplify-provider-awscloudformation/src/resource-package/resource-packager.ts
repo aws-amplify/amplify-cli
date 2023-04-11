@@ -10,7 +10,7 @@ import {
   spinner,
   $TSAny,
   ApiCategoryFacade,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { Fn, Template } from 'cloudform-types';
 import * as path from 'path';
@@ -322,7 +322,7 @@ export abstract class ResourcePackager {
 
   // eslint-disable-next-line class-methods-use-this
   private getCfnTemplatePathsForResource(resource: ResourceDefinition): string[] {
-    const { cfnFiles } = getCfnFiles(resource.category, resource.resourceName, {
+    const { cfnFiles } = getCfnFiles(resource.category, resource.resourceName, false, {
       absolute: true,
     });
     return cfnFiles;

@@ -1,4 +1,4 @@
-import { AmplifyError, stateManager } from 'amplify-cli-core';
+import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as assert from 'assert';
 import { CognitoIdentity } from 'aws-sdk';
 import bodyParser from 'body-parser'; // eslint-disable-line
@@ -8,7 +8,7 @@ import http from 'http';
 import * as jose from 'jose';
 import _ from 'lodash';
 
-import { Printer } from 'amplify-prompts';
+import { Printer } from '@aws-amplify/amplify-prompts';
 import { AdminAuthPayload, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 /**

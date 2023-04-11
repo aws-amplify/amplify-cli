@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import * as opensearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
-import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform } from 'amplify-cli-core';
+import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -32,7 +32,7 @@ import { TableDescription } from 'aws-sdk/clients/dynamodb';
 import { querySearchable } from '../utils/opensearch';
 import { getMockOpensearchDataDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
@@ -129,8 +129,12 @@ export class APITest {
       );
     }
 
-    await this.appSyncSimulator.stop();
-    this.resolverOverrideManager.stop();
+    if (this.appSyncSimulator) {
+      await this.appSyncSimulator.stop();
+    }
+    if (this.resolverOverrideManager) {
+      this.resolverOverrideManager.stop();
+    }
   }
 
   private async runTransformer(context, parameters = {}) {
@@ -513,7 +517,7 @@ export class APITest {
       interval: 100,
       ignoreInitial: true,
       followSymlinks: false,
-      ignored: '**/build/**',
+      ignored: ['**/build/**', '**/*db-journal'],
       awaitWriteFinish: true,
     });
   }

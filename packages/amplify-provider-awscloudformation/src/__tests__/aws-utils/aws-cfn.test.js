@@ -62,7 +62,7 @@ describe('CloudFormation', () => {
   });
 
   describe('filterFailedStackEvents', () => {
-    test('that it does not filter stack events that are in eventToCategories map', async () => {
+    test('that it does not filter stack events that are in logicalResourceNames list', async () => {
       const eventsWithFailure = [
         {
           StackId: 'testStackId1',
@@ -79,17 +79,15 @@ describe('CloudFormation', () => {
       ];
 
       const eventMap = {
-        rootResources: [],
-        eventToCategories: new Map(),
-        categories: [],
+        logicalResourceNames: [],
       };
-      // Only testLogicalResourceId1 is in the eventToCategories Map
-      eventMap.eventToCategories.set('testLogicalResourceId1', 'testLogicalResourceId1-value');
+      // Only testLogicalResourceId1 is in the logicalResourceNames list
+      eventMap.logicalResourceNames.push('testLogicalResourceId1');
       const cfn = await new CloudFormation();
       cfn.eventMap = eventMap;
       const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);
 
-      // Only testStackId1 event should be returned since that's the only one in eventToCategories map
+      // Only testStackId1 event should be returned since that's the only one in logicalResourceNames list
       expect(filteredEvents).toEqual(eventsWithFailure.filter((e) => e.StackId == 'testStackId1'));
     });
 
@@ -104,11 +102,9 @@ describe('CloudFormation', () => {
       ];
 
       const eventMap = {
-        rootResources: [],
-        eventToCategories: new Map(),
-        categories: [],
+        logicalResourceNames: [],
       };
-      eventMap.eventToCategories.set('testLogicalResourceId1', 'testLogicalResourceId1-value');
+      eventMap.logicalResourceNames.push('testLogicalResourceId1');
       const cfn = await new CloudFormation();
       cfn.eventMap = eventMap;
       const filteredEvents = cfn.filterFailedStackEvents(eventsWithFailure);
@@ -150,6 +146,67 @@ describe('CloudFormation', () => {
 
       // Should not filter testStackId1 event that has a specific error message
       expect(filteredEvents).toEqual(eventsWithFailure.filter((e) => e.StackId == 'testStackId2'));
+    });
+  });
+
+  describe('getCustomStackIds', () => {
+    test('that it returns stack Ids when custom resources are present', async () => {
+      const eventsWithFailure = [
+        {
+          PhysicalResourceId: 'testStackId1',
+          LogicalResourceId: 'testLogicalResourceId1',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          ResourceStatusReason: 'Some valid reason',
+        },
+        {
+          PhysicalResourceId: 'testStackId2',
+          LogicalResourceId: 'testLogicalResourceId2',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          ResourceStatusReason: 'Some valid reason',
+        },
+      ];
+
+      const eventMap = {
+        rootResources: [
+          { category: 'custom-testLogicalResourceId1', key: 'testLogicalResourceId1' },
+          { category: 'storage-testLogicalResourceId1', key: 'testLogicalResourceId2' },
+        ],
+      };
+      const cfn = await new CloudFormation();
+      cfn.eventMap = eventMap;
+      const customStackIds = cfn.getCustomStackIds(eventsWithFailure);
+
+      // Only testStackId1 event should be returned since that's the only one that is a custom resource
+      expect(customStackIds).toEqual(['testStackId1']);
+    });
+
+    test('that it returns empty list when custom resources are not present', async () => {
+      const eventsWithFailure = [
+        {
+          PhysicalResourceId: 'testStackId1',
+          LogicalResourceId: 'testLogicalResourceId1',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          ResourceStatusReason: 'Some valid reason',
+        },
+        {
+          PhysicalResourceId: 'testStackId2',
+          LogicalResourceId: 'testLogicalResourceId2',
+          ResourceType: 'AWS::CloudFormation::Stack',
+          ResourceStatusReason: 'Some valid reason',
+        },
+      ];
+
+      const eventMap = {
+        rootResources: [
+          { category: 'auth-testLogicalResourceId1', key: 'testLogicalResourceId1' },
+          { category: 'storage-testLogicalResourceId1', key: 'testLogicalResourceId2' },
+        ],
+      };
+      const cfn = await new CloudFormation();
+      cfn.eventMap = eventMap;
+      const customStackIds = cfn.getCustomStackIds(eventsWithFailure);
+
+      expect(customStackIds).toEqual([]);
     });
   });
 });

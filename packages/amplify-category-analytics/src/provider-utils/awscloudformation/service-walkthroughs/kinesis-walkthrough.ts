@@ -11,8 +11,8 @@ import {
   exitOnNextTick,
   IAmplifyResource,
   ResourceDoesNotExistError,
-} from 'amplify-cli-core';
-import { alphanumeric, printer, prompter, integer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { alphanumeric, printer, prompter, integer } from '@aws-amplify/amplify-prompts';
 import os from 'os';
 import path from 'path';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
@@ -162,7 +162,11 @@ const configure = async (
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-    throw new Error(checkResult.errors.join(os.EOL));
+    throw new AmplifyError('ConfigurationError', {
+      message: 'The imported auth config is not compatible with the specified analytics config',
+      details: checkResult.errors.join(os.EOL),
+      resolution: 'Manually configure the imported auth resource according to the details above',
+    });
   }
 
   if (checkResult.errors && checkResult.errors.length > 0) {

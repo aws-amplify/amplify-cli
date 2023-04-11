@@ -88,7 +88,7 @@ export class YarnLockParser {
             this.dependenciesMap[packageName] = {};
             this.dependenciesMap[packageName][dependencyPkgKey] = lockFileDependenciesMap.dependencies[dependency];
           }
-          this.dfs(dependency, lockFileDependenciesMap, packageName);
+          this.dfs(dependency, lockFileDependenciesMap, packageName, new Set<string>());
         }
       }
     }
@@ -98,7 +98,11 @@ export class YarnLockParser {
   /**
    * traverses dependency tree
    */
-  private dfs(dependency: string, lockFileDependenciesMap: YarnLock, dependencyToSearch: string): void {
+  private dfs(dependency: string, lockFileDependenciesMap: YarnLock, dependencyToSearch: string, visited: Set<string>): void {
+    if (visited.has(dependency)) {
+      return;
+    }
+    visited.add(dependency);
     if (lockFileDependenciesMap.dependencies) {
       const dependencyPkgKey = dependency.substring(0, dependency.lastIndexOf('@'));
       const dependencyObj = lockFileDependenciesMap.dependencies[dependency];
@@ -116,7 +120,7 @@ export class YarnLockParser {
           }
           if (_.isEmpty(this.dependenciesMap[nestedDependency])) {
             // un visited node
-            this.dfs(nestedDependencyActual, lockFileDependenciesMap, dependencyToSearch);
+            this.dfs(nestedDependencyActual, lockFileDependenciesMap, dependencyToSearch, visited);
           }
         }
       }

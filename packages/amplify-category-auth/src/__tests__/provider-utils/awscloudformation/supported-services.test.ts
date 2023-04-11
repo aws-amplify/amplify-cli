@@ -1,4 +1,4 @@
-import { FeatureFlags } from 'amplify-cli-core';
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { getSupportedServices } from '../../../provider-utils/supported-services';
 
 describe('auth.forceAliasAttributes feature flag works', () => {

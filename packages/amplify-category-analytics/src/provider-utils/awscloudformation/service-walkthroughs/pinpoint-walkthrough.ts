@@ -5,8 +5,16 @@
 import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
-import { $TSContext, ResourceAlreadyExistsError, exitOnNextTick, AmplifyCategories, $TSAny, JSONUtilities } from 'amplify-cli-core';
-import { alphanumeric, printer, prompter } from 'amplify-prompts';
+import {
+  $TSContext,
+  ResourceAlreadyExistsError,
+  exitOnNextTick,
+  AmplifyCategories,
+  $TSAny,
+  JSONUtilities,
+  AmplifyError,
+} from '@aws-amplify/amplify-cli-core';
+import { alphanumeric, printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getNotificationsCategoryHasPinpointIfExists, getPinpointRegionMappings } from '../../../utils/pinpoint-helper';
 
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
@@ -21,7 +29,7 @@ const templateFileName = 'pinpoint-cloudformation-template.json';
  * @param defaultValuesFilename default values for given walkthrough
  * @returns resource
  */
-export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny): Promise<$TSAny> => {
+export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string): Promise<$TSAny> => {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
@@ -69,7 +77,11 @@ const configure = async (context: $TSContext, defaultValuesFilename: string): Pr
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-    throw new Error(checkResult.errors.join(os.EOL));
+    throw new AmplifyError('ConfigurationError', {
+      message: 'The imported auth config is not compatible with the specified analytics config',
+      details: checkResult.errors.join(os.EOL),
+      resolution: 'Manually configure the imported auth resource according to the details above',
+    });
   }
 
   if (checkResult.errors && checkResult.errors.length > 0) {

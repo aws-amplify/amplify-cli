@@ -4,7 +4,8 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'init',
     commandDescription: 'Initialize a new Amplify project',
-    commandUsage: 'amplify init [flags]',
+    commandUsage:
+      'amplify init [-y | --yes] [--amplify <payload>] [--envName <env-name>] [--debug] [--frontend <payload>] [--providers <payload>] [--categories <payload>] [--app <git-url>] [--permissions-boundary <ARN>]',
     commandFlags: [
       {
         short: 'y',
@@ -20,6 +21,16 @@ export const commandsInfo: Array<CommandInfo> = [
         short: '',
         long: 'frontend',
         flagDescription: "Information for the project's frontend application",
+      },
+      {
+        short: '',
+        long: 'envName',
+        flagDescription: 'Name of the environment for the Amplify project',
+      },
+      {
+        short: '',
+        long: 'debug',
+        flagDescription: 'Run the CLI in debug mode',
       },
       {
         short: '',
@@ -47,18 +58,24 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'configure',
     commandDescription: 'Configure the CLI to work with your AWS profile',
-    commandUsage: 'amplify configure <subcommand>',
+    commandUsage: 'amplify configure [subcommand]',
     commandFlags: [],
     subCommands: [
       {
         subCommand: 'project',
         subCommandDescription: 'Configure the attributes of your project',
-        subCommandUsage: 'amplify configure project [flags]',
+        subCommandUsage:
+          'amplify configure project [-y | --yes] [--debug] [--amplify <payload>] [--frontend <payload>] [--providers <payload>]',
         subCommandFlags: [
           {
             short: 'y',
             long: 'yes',
             flagDescription: 'Skip all interactive prompts by selecting default options',
+          },
+          {
+            short: '',
+            long: 'debug',
+            flagDescription: 'Run the CLI in debug mode',
           },
           {
             short: '',
@@ -94,12 +111,17 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'push',
     commandDescription: 'Provisions cloud resources with the latest local changes',
-    commandUsage: 'amplify push <category> [flags]',
+    commandUsage: 'amplify push [category] [--codegen] [--debug] [-f | --force] [-y | --yes] [--allow-destructive-graphql-schema-updates]',
     commandFlags: [
       {
         short: '',
         long: 'codegen',
         flagDescription: 'Configuration for GraphQL codegen',
+      },
+      {
+        short: '',
+        long: 'debug',
+        flagDescription: 'Run the CLI in debug mode',
       },
       {
         short: 'f',
@@ -116,17 +138,12 @@ export const commandsInfo: Array<CommandInfo> = [
         long: 'allow-destructive-graphql-schema-updates',
         flagDescription: 'Pushes schema changes that require removal or replacement of underlying tables',
       },
-      {
-        short: '',
-        long: 'headless',
-        flagDescription: 'Headless JSON payload',
-      },
     ],
     subCommands: [
       {
-        subCommand: '<category>',
+        subCommand: '[category]',
         subCommandDescription: 'Provisions cloud resources with the latest local changes for a single category',
-        subCommandUsage: 'amplify push <category> [flags]',
+        subCommandUsage: 'amplify push [category] [--codegen] [-f | --force] [-y | --yes] [--allow-destructive-graphql-schema-updates]',
         subCommandFlags: [],
       },
     ],
@@ -134,8 +151,24 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'pull',
     commandDescription: 'Fetch upstream backend changes from the cloud and updates the local environment',
-    commandUsage: 'amplify pull [flags]',
+    commandUsage:
+      'amplify pull [--appId <app-id>] [--envName <env-name>] [--debug] [-y | --yes] [--restore] [--amplify <payload>] [--frontend <payload>] [--providers <payload>] [--categories <payload>]',
     commandFlags: [
+      {
+        short: '',
+        long: 'appId <app-id>',
+        flagDescription: 'The unique identifier for the Amplify project',
+      },
+      {
+        short: '',
+        long: 'envName <env-name>',
+        flagDescription: 'Name of the environment for the Amplify project',
+      },
+      {
+        short: '',
+        long: 'debug',
+        flagDescription: 'Run the CLI in debug mode',
+      },
       {
         short: 'y',
         long: 'yes',
@@ -173,13 +206,24 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'add',
         subCommandDescription: 'Adds a new environment to your Amplify Project',
-        subCommandUsage: 'amplify env add',
-        subCommandFlags: [],
+        subCommandUsage: 'amplify env add [env-name] [-y | --yes] [--envName <env-name>]',
+        subCommandFlags: [
+          {
+            short: 'y',
+            long: 'yes',
+            flagDescription: 'Skip all interactive prompts by selecting default options',
+          },
+          {
+            short: '',
+            long: 'envName <env-name>',
+            flagDescription: 'Specify environment name',
+          },
+        ],
       },
       {
         subCommand: 'checkout <env-name>',
         subCommandDescription: 'Moves your environment to the environment specified in the command',
-        subCommandUsage: 'amplify env checkout <env-name> [flags]',
+        subCommandUsage: 'amplify env checkout <env-name> [--restore]',
         subCommandFlags: [
           {
             short: '',
@@ -191,7 +235,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'get',
         subCommandDescription: 'Displays and manages environment related information for your Amplify project',
-        subCommandUsage: 'amplify env get [flags]',
+        subCommandUsage: 'amplify env get [--name <env-name>] [--json]',
         subCommandFlags: [
           {
             short: '',
@@ -208,7 +252,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'import',
         subCommandDescription: 'Imports an existing Amplify project environment stack to your local backend',
-        subCommandUsage: 'amplify env import [flags]',
+        subCommandUsage: 'amplify env import [--name <env-name>] [--config <provider-configs>] [--awsInfo <aws-configs>]',
         subCommandFlags: [
           {
             short: '',
@@ -230,7 +274,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'list',
         subCommandDescription: 'Displays a list of all the environments in your Amplify project',
-        subCommandUsage: 'amplify env list [flags]',
+        subCommandUsage: 'amplify env list [--details] [--json]',
         subCommandFlags: [
           {
             short: '',
@@ -247,7 +291,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'pull',
         subCommandDescription: 'Pulls your environment with the current cloud environment',
-        subCommandUsage: 'amplify env pull [flags]',
+        subCommandUsage: 'amplify env pull [-y | --yes] [--restore]',
         subCommandFlags: [
           {
             short: 'y',
@@ -264,13 +308,24 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'remove',
         subCommandDescription: 'Removes an environment from the Amplify project',
-        subCommandUsage: 'amplify env remove',
-        subCommandFlags: [],
+        subCommandUsage: 'amplify env remove [env-name] [-y | --yes] [--envName <env-name>]',
+        subCommandFlags: [
+          {
+            short: 'y',
+            long: 'yes',
+            flagDescription: 'Skip all interactive prompts by selecting default options',
+          },
+          {
+            short: '',
+            long: 'envName <env-name>',
+            flagDescription: 'Specify environment name',
+          },
+        ],
       },
       {
         subCommand: 'update',
         subCommandDescription: 'Update the environment configuration',
-        subCommandUsage: 'amplify env update [flags]',
+        subCommandUsage: 'amplify env update [--permissions-boundary <IAM Policy ARN>]',
         subCommandFlags: [
           {
             short: '',
@@ -290,12 +345,17 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: '<category>',
         subCommandDescription: 'Adds a resource for an Amplify category in your local backend',
-        subCommandUsage: 'amplify add <category> [flags]',
+        subCommandUsage: 'amplify add <category> [--headless <payload>] [-y | --yes]',
         subCommandFlags: [
           {
             short: '',
             long: 'headless',
             flagDescription: 'Headless JSON payload',
+          },
+          {
+            short: 'y',
+            long: 'yes',
+            flagDescription: 'Skip all interactive prompts by selecting default options',
           },
         ],
       },
@@ -304,7 +364,7 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'status',
     commandDescription: 'Shows the state of local resources not yet pushed to the cloud',
-    commandUsage: 'amplify status [flags]',
+    commandUsage: 'amplify status [-v | --verbose]',
     commandFlags: [
       {
         short: 'v',
@@ -314,9 +374,69 @@ export const commandsInfo: Array<CommandInfo> = [
     ],
     subCommands: [
       {
-        subCommand: '<category>',
-        subCommandDescription: 'Shows the state of local resources not yet pushed to the cloud',
-        subCommandUsage: 'amplify status <category> [flags]',
+        subCommand: 'notifications',
+        subCommandDescription: 'Lists the enabled/disabled statuses of the available notification channels',
+        subCommandUsage: 'amplify notifications status',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'api',
+        subCommandDescription: 'Displays the current status of your API',
+        subCommandUsage: 'amplify api status [-acm <table-name>]',
+        subCommandFlags: [
+          {
+            short: 'acm',
+            long: '',
+            flagDescription: 'Displays the access control matrix',
+          },
+        ],
+      },
+      {
+        subCommand: 'auth',
+        subCommandDescription: 'Displays the current status of your auth resource',
+        subCommandUsage: 'amplify auth status',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'custom',
+        subCommandDescription: 'Displays the current status of your custom resource',
+        subCommandUsage: 'amplify custom status',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'storage',
+        subCommandDescription: 'Displays the current status of your storage resource',
+        subCommandUsage: 'amplify storage status',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'analytics',
+        subCommandDescription: 'Displays the current status of your analytics resource',
+        subCommandUsage: 'amplify analytics status',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'function',
+        subCommandDescription: 'Displays the current status of your function resource',
+        subCommandUsage: 'amplify function status',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'hosting',
+        subCommandDescription: 'Displays the current status of your hosting',
+        subCommandUsage: 'amplify hosting status',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'interactions',
+        subCommandDescription: 'Displays the current status of your interactions resource',
+        subCommandUsage: 'amplify interactions status',
+        subCommandFlags: [],
+      },
+      {
+        subCommand: 'predictions',
+        subCommandDescription: 'Displays the current status of your predictions resource',
+        subCommandUsage: 'amplify predictions status',
         subCommandFlags: [],
       },
     ],
@@ -324,7 +444,7 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'plugin',
     commandDescription: 'Configure Amplify plugins',
-    commandUsage: 'amplify pluigin <subcommand>',
+    commandUsage: 'amplify plugin <subcommand>',
     commandFlags: [],
     subCommands: [
       {
@@ -380,12 +500,17 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: '<category>',
         subCommandDescription: 'Update resource for an Amplify category in your local backend',
-        subCommandUsage: 'amplify update <category> [flags]',
+        subCommandUsage: 'amplify update <category> [--headless <payload>] [-y | --yes]',
         subCommandFlags: [
           {
             short: '',
             long: 'headless',
             flagDescription: 'Headless JSON payload',
+          },
+          {
+            short: 'y',
+            long: 'yes',
+            flagDescription: 'Skip all interactive prompts by selecting default options',
           },
         ],
       },
@@ -394,7 +519,8 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'publish',
     commandDescription: 'Executes amplify push and hosts the frontend app',
-    commandUsage: 'amplify publish [flags]',
+    commandUsage:
+      'amplify publish [-y | --yes] [--codegen] [-f | --force] [--allow-destructive-graphql-schema-updates] [-c | --invalidateCloudFront]',
     commandFlags: [
       {
         short: 'y',
@@ -433,7 +559,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: '<category>',
         subCommandDescription: 'Removes a resource for an Amplify category in your local backend',
-        subCommandUsage: 'amplify remove <category> [flags]',
+        subCommandUsage: 'amplify remove <category> [--headless <payload>] [-y | --yes]',
         subCommandFlags: [
           {
             short: '',
@@ -449,12 +575,19 @@ export const commandsInfo: Array<CommandInfo> = [
     commandDescription: 'Opens the web console for the selected cloud resource',
     commandUsage: 'amplify console <category>',
     commandFlags: [],
-    subCommands: [],
+    subCommands: [
+      {
+        subCommand: '<category>',
+        subCommandDescription: 'Removes a resource for an Amplify category in your local backend',
+        subCommandUsage: 'amplify console <category>',
+        subCommandFlags: [],
+      },
+    ],
   },
   {
     command: 'delete',
     commandDescription: 'Delete the Amplify project',
-    commandUsage: 'amplify delete [flags]',
+    commandUsage: 'amplify delete [-y | --yes] [-f | --force]',
     commandFlags: [
       {
         short: 'y',
@@ -479,7 +612,7 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'import',
     commandDescription: 'Imports existing resources to your local backend',
-    commandUsage: 'amplify import <subcommand> [flags]',
+    commandUsage: 'amplify import <subcommand> [--headless <payload>]',
     commandFlags: [
       {
         short: '',
@@ -491,19 +624,35 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'auth',
         subCommandDescription: 'Imports an existing auth resource to your local backend',
-        subCommandUsage: 'amplify import auth [flags]',
+        subCommandUsage: 'amplify import auth',
         subCommandFlags: [],
       },
       {
         subCommand: 'env',
         subCommandDescription: 'Imports an existing Amplify project environment stack to your local backend',
-        subCommandUsage: 'amplify import env [flags]',
-        subCommandFlags: [],
+        subCommandUsage: 'amplify import env [--name <env-name>] [--config <env-config>] [--awsInfo <env-aws-info>]',
+        subCommandFlags: [
+          {
+            short: '',
+            long: 'name',
+            flagDescription: 'Name of the environment to import',
+          },
+          {
+            short: '',
+            long: 'config',
+            flagDescription: 'Path to the environment configuration file',
+          },
+          {
+            short: '',
+            long: 'awsInfo',
+            flagDescription: 'Path to the environment AWS configuration file',
+          },
+        ],
       },
       {
         subCommand: 'storage',
         subCommandDescription: 'Imports an existing storage resource to your local backend',
-        subCommandUsage: 'amplify import storage [flags]',
+        subCommandUsage: 'amplify import storage',
         subCommandFlags: [],
       },
     ],
@@ -543,7 +692,7 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'diagnose',
     commandDescription: 'Capture non-sensitive Amplify backend metadata for debugging purposes',
-    commandUsage: 'amplify diagnose [flags]',
+    commandUsage: 'amplify diagnose [--send-report] [--auto-send-off] [--auto-send-on]',
     commandFlags: [
       {
         short: '',
@@ -566,7 +715,7 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'logout',
     commandDescription: 'Logs out of Amplify Studio',
-    commandUsage: 'amplify logout [flags]',
+    commandUsage: 'amplify logout [--appId <appId>]',
     commandFlags: [
       {
         short: '',
@@ -579,7 +728,7 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'export',
     commandDescription: 'Export Amplify CLI-generated backend as a Cloud Development Kit (CDK) stack',
-    commandUsage: 'amplify export [flags]',
+    commandUsage: 'amplify export [--out <path>]',
     commandFlags: [
       {
         short: '',
@@ -606,7 +755,7 @@ export const commandsInfo: Array<CommandInfo> = [
   {
     command: 'mock',
     commandDescription: 'Run mock server for testing categories locally',
-    commandUsage: 'amplify mock <subcommand>',
+    commandUsage: 'amplify mock [subcommand]',
     commandFlags: [],
     subCommands: [
       {
@@ -624,7 +773,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         subCommand: 'function',
         subCommandDescription: 'Run mock server for testing functions locally',
-        subCommandUsage: 'amplify mock function [flags]',
+        subCommandUsage: 'amplify mock function [--event <path-to-json-file>] [--timeout <number-of-seconds>]',
         subCommandFlags: [
           {
             short: '',
@@ -801,12 +950,6 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommandFlags: [],
       },
       {
-        subCommand: 'push',
-        subCommandDescription: 'Provisions cloud resources with the latest local changes',
-        subCommandUsage: 'amplify storage override',
-        subCommandFlags: [],
-      },
-      {
         subCommand: 'console',
         subCommandDescription: 'Opens the web console for the storage category',
         subCommandUsage: 'amplify storage console',
@@ -898,12 +1041,6 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommand: 'console',
         subCommandDescription: 'Opens the web console for the auth category',
         subCommandUsage: 'amplify auth console',
-        subCommandFlags: [],
-      },
-      {
-        subCommand: 'push',
-        subCommandDescription: 'Provisions cloud resources with the latest local changes',
-        subCommandUsage: 'amplify auth push',
         subCommandFlags: [],
       },
     ],

@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import { IChannelAvailability, ChannelConfigDeploymentType, IChannelViewInfo } from './channel-types';
 import { getNotificationsAppConfig } from './notifications-backend-cfg-api';

@@ -2,8 +2,8 @@
  * Contains all of the logic for the various secret prompts
  */
 
-import { ResourceName } from 'amplify-cli-core';
-import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from 'amplify-function-plugin-interface';
+import { ResourceName } from '@aws-amplify/amplify-cli-core';
+import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from '@aws-amplify/amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
 import { getStoredEnvironmentVariables } from '../utils/environmentVariablesHelper';

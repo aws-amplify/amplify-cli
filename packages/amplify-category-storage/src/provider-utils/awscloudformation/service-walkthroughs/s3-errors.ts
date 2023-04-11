@@ -1,6 +1,6 @@
-import { ResourceDoesNotExistError, ResourceAlreadyExistsError, $TSContext, ConfigurationError } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, ResourceAlreadyExistsError, $TSContext, ConfigurationError } from '@aws-amplify/amplify-cli-core';
 
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export async function printErrorNoResourcesToUpdate(context: $TSContext) {
   const errMessage = 'No resources to update. You need to add a resource.';

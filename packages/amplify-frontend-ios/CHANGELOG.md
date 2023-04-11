@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.3-rc.e9e0d157d.0...@aws-amplify/amplify-frontend-ios@3.6.3) (2023-03-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
+
+
+
+
+
+## [3.6.3-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.2...@aws-amplify/amplify-frontend-ios@3.6.3-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+
+
+
+
+
+## [3.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.1...@aws-amplify/amplify-frontend-ios@3.6.2) (2023-03-13)
+
+
+### Bug Fixes
+
+* **amplify-frontend-ios:** xcode scirpt binary path resolves correctly ([#12145](https://github.com/aws-amplify/amplify-cli/issues/12145)) ([00b569a](https://github.com/aws-amplify/amplify-cli/commit/00b569a2c2c37d17ca8eadb4393482b0d1f0294d))
+* replace .set with .setWith ([#12113](https://github.com/aws-amplify/amplify-cli/issues/12113)) ([f5e3b2e](https://github.com/aws-amplify/amplify-cli/commit/f5e3b2e958ac8205a624bf13c62569f596e7791c))
+
+
+
+
+
 ## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.0...@aws-amplify/amplify-frontend-ios@3.6.1) (2023-02-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-ios

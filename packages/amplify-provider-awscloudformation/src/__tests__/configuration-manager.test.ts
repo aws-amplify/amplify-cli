@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -6,7 +6,7 @@ import * as configManager from '../configuration-manager';
 import { loadConfigurationForEnv } from '../configuration-manager';
 import { mocked } from 'ts-jest/utils';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('fs-extra');
 jest.mock('../system-config-manager');
 

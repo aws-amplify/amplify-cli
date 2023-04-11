@@ -1,5 +1,4 @@
-/* eslint-disable jsdoc/require-jsdoc */
-import { $TSAny, $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
   addAuthUserPoolOnlyWithOAuth,

@@ -1,11 +1,11 @@
-import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   notifyFieldAuthSecurityChange,
   notifyListQuerySecurityChange,
   notifySecurityEnhancement,
 } from '../extensions/amplify-helpers/auth-notifications';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 // eslint-disable-next-line spellcheck/spell-checker

@@ -1,7 +1,6 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as util from '../util';
 
 export const removeDotConfigDir = (projectRootDirPath: string): void => {

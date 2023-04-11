@@ -1,7 +1,7 @@
 const path = require('path');
 const minimatch = require('minimatch');
 const fs = require('fs-extra');
-const { prompter, byValue } = require('amplify-prompts');
+const { prompter, byValue } = require('@aws-amplify/amplify-prompts');
 
 const PublishIgnoreFileName = 'amplifyPublishIgnore.json';
 

@@ -1,6 +1,16 @@
 import sequential from 'promise-sequential';
-import { ManuallyTimedCodePath, stateManager, $TSAny, $TSMeta, $TSContext, AmplifyFault, constants, spinner } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import {
+  ManuallyTimedCodePath,
+  stateManager,
+  $TSAny,
+  $TSMeta,
+  $TSContext,
+  AmplifyFault,
+  constants,
+  spinner,
+  LocalEnvInfo,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
 
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
@@ -121,7 +131,7 @@ export const initializeEnv = async (
 
     const projectDetails = context.amplify.getProjectDetails();
 
-    context.exeInfo ??= {};
+    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     Object.assign(context.exeInfo, projectDetails);
 
     try {

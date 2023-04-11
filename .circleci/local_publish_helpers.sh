@@ -80,22 +80,22 @@ function generatePkgCli {
   cp package.json ../build/node_modules/package.json
 
   if [[ "$@" =~ 'arm' ]]; then
-    npx pkg --no-bytecode --public-packages "*" --public -t node14-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
+    npx pkg --no-bytecode --public-packages "*" --public -t node18-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
     tar -czvf ../out/amplify-pkg-linux-arm64.tgz ../out/amplify-pkg-linux-arm64
   fi
 
   if [[ "$@" =~ 'linux' ]]; then
-    npx pkg -t node14-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
+    npx pkg -t node18-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
     tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
   fi
 
   if [[ "$@" =~ 'macos' ]]; then
-    npx pkg -t node14-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
+    npx pkg -t node18-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
     tar -czvf ../out/amplify-pkg-macos-x64.tgz ../out/amplify-pkg-macos-x64
   fi
 
   if [[ "$@" =~ 'win' ]]; then
-    npx pkg -t node14-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
+    npx pkg -t node18-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
     tar -czvf ../out/amplify-pkg-win-x64.tgz ../out/amplify-pkg-win-x64.exe
   fi
 
@@ -273,9 +273,9 @@ function runE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --forceExit --no-cache --maxWorkers=3 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --forceExit --no-cache --maxWorkers=3 $TEST_SUITE
+        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
     fi
 }
 

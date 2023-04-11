@@ -1,5 +1,5 @@
-import { pathManager, JSONUtilities, $TSContext, $TSAny } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { pathManager, JSONUtilities, $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import path from 'path';
 import rangeSubset from 'semver/ranges/subset';

@@ -3,7 +3,16 @@ import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
 import { coerce, lt } from 'semver';
-import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny, MigrationInfo } from 'amplify-cli-core';
+import {
+  pathManager,
+  stateManager,
+  $TSObject,
+  $TSContext,
+  JSONUtilities,
+  $TSAny,
+  MigrationInfo,
+  LocalEnvInfo,
+} from '@aws-amplify/amplify-cli-core';
 import { makeId } from './extensions/amplify-helpers/make-id';
 import { amplifyCLIConstants } from './extensions/amplify-helpers/constants';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
@@ -234,11 +243,12 @@ const generateNewProjectConfig = (projectConfig: $TSAny): $TSAny => {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const generateLocalEnvInfo = (projectConfig: $TSAny) => ({
-  projectPath: projectConfig.projectPath,
-  defaultEditor: projectConfig.defaultEditor,
-  envName: 'NONE',
-});
+const generateLocalEnvInfo = (projectConfig: $TSAny) =>
+  ({
+    projectPath: projectConfig.projectPath,
+    defaultEditor: projectConfig.defaultEditor,
+    envName: 'NONE',
+  } as unknown as LocalEnvInfo);
 
 const generateLocalAwsInfo = (projectPath: string): $TSAny => {
   let newAwsInfo;

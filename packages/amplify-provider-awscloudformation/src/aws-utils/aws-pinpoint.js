@@ -1,5 +1,5 @@
 const aws = require('aws-sdk');
-const { FeatureFlags } = require('amplify-cli-core');
+const { FeatureFlags } = require('@aws-amplify/amplify-cli-core');
 const proxyAgent = require('proxy-agent');
 const configurationManager = require('../configuration-manager');
 const { formUserAgentParam } = require('./user-agent');

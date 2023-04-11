@@ -1,8 +1,8 @@
-const chalk = require('chalk');
 const { command: executeCommand } = require('execa');
 const fs = require('fs-extra');
 const path = require('path');
 const archiver = require('archiver');
+const { AmplifyError } = require('@aws-amplify/amplify-cli-core');
 
 const DIR_NOT_FOUND_ERROR_MESSAGE = 'Please ensure your build artifacts path exists.';
 
@@ -37,32 +37,28 @@ function zipFile(sourceDir, destFilePath, extraFiles) {
   });
 }
 
-function run(command, projectDirectory) {
+async function run(command, projectDirectory) {
   if (!command) {
-    throw new Error('Missing build command');
+    throw new AmplifyError('ProjectBuildCommandError', {
+      message: `Missing build command: ${command}`,
+      resolution: 'Run `amplify configure project` to set the build command.',
+      link: 'https://docs.amplify.aws/cli/start/workflows/#amplify-configure-project',
+    });
   }
 
-  return new Promise((resolve, reject) => {
-    const execution = executeCommand(command, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
-
-    let rejectFlag = false;
-    void execution.on('exit', (code) => {
-      if (code === 0) {
-        resolve();
-      } else if (!rejectFlag) {
-        rejectFlag = true;
-        reject(code);
-      }
-    });
-
-    void execution.on('error', (err) => {
-      console.log(chalk.red('command execution terminated with error'));
-      if (!rejectFlag) {
-        rejectFlag = true;
-        reject(err);
-      }
-    });
-  });
+  try {
+    await executeCommand(command, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
+  } catch (cause) {
+    throw new AmplifyError(
+      `ProjectBuildCommandError`,
+      {
+        message: `Build command "${command}" exited with failure`,
+        resolution: 'Check the console output for more information, or run `amplify configure project` to change the build command.',
+        link: 'https://docs.amplify.aws/cli/start/workflows/#amplify-configure-project',
+      },
+      cause,
+    );
+  }
 }
 
 module.exports = {

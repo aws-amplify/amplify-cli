@@ -1,5 +1,5 @@
-import { $TSAny } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { validateFilePath } from './validate-filepath';
 import { run as p8decoderRun } from './apns-cert-p8decoder';
 /**

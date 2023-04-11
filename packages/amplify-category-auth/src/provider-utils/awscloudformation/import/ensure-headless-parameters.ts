@@ -1,4 +1,4 @@
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { ResourceParameters, ImportAuthHeadlessParameters, EnvSpecificResourceParameters } from './types';
 
 export const ensureHeadlessParameters = (

@@ -1,5 +1,5 @@
-import { stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { Context } from '../domain/context';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 

@@ -8,7 +8,7 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionConte
 import { VelocityTemplateSimulator, AppSyncVTLContext, getJWTToken } from '../../velocity';
 import { featureFlags } from './test-helper';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const USER_POOL_ID = 'us-fake-1ID';
 
@@ -1574,8 +1574,8 @@ describe('with identity claim feature flag disabled', () => {
       expect(listAuthVTLRequest.stash.authFilter).toEqual(
         expect.objectContaining({
           or: expect.arrayContaining([
-            expect.objectContaining({ child: { eq: ownerRequest.jwt['cognito:username'] } }),
-            expect.objectContaining({ parent: { eq: ownerRequest.jwt['cognito:username'] } }),
+            expect.objectContaining({ child: { in: expect.arrayContaining([ownerRequest.jwt['cognito:username']]) } }),
+            expect.objectContaining({ parent: { in: expect.arrayContaining([ownerRequest.jwt['cognito:username']]) } }),
           ]),
         }),
       );

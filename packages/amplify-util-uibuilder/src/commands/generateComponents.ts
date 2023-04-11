@@ -1,8 +1,8 @@
 /* eslint-disable spellcheck/spell-checker */
 import { StudioSchema } from '@aws-amplify/codegen-ui';
 import ora from 'ora';
-import { printer } from 'amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyStudioClient } from '../clients';
 import {
   notifyMissingPackages,
@@ -32,7 +32,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       studioClient.listComponents(),
       studioClient.listThemes(),
       studioClient.listForms(),
-      getAmplifyDataSchema(studioClient),
+      studioClient.isGraphQLSupported ? getAmplifyDataSchema(context) : Promise.resolve(undefined),
     ]);
 
     const nothingWouldAutogenerate = !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported;
@@ -51,6 +51,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
         formSchemas.entities,
         dataSchema,
         studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported,
+        studioClient.metadata.formFeatureFlags,
       ),
     };
 

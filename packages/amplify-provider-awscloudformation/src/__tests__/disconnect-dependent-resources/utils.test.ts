@@ -5,7 +5,7 @@ import {
   prependDeploymentSteps,
   uploadTempFuncDeploymentFiles,
 } from '../../disconnect-dependent-resources/utils';
-import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from 'amplify-cli-core';
+import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { S3 } from '../../aws-utils/aws-s3';
 import { CloudFormation } from 'aws-sdk';
@@ -14,7 +14,7 @@ import Template from 'cloudform-types/types/template';
 import { DeploymentOp, DeploymentStep } from '../../iterative-deployment';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../utils/amplify-resource-state-utils');
 
 const fs_mock = fs as jest.Mocked<typeof fs>;

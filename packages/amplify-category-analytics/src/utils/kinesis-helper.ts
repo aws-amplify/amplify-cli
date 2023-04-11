@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * opens resource in AWS console

@@ -1,9 +1,7 @@
-// disabling eslint until this file is migrated to TS
-/* eslint-disable */
 const constants = require('../constants/plugin-constants');
 const pathManager = require('../utils/path-manager');
 const fs = require('fs-extra');
-const { stateManager } = require('amplify-cli-core');
+const { stateManager } = require('@aws-amplify/amplify-cli-core');
 
 function getAppIdForCurrEnv() {
   return stateManager.getMeta()?.providers?.awscloudformation?.[constants.APPID_KEY];
@@ -48,4 +46,3 @@ module.exports = {
   getRegionForCurrEnv,
   getMetaInfo,
 };
-/* eslint-enable */

@@ -1,6 +1,14 @@
 import * as path from 'path';
-import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import {
+  ViewResourceTableParams,
+  CLIParams,
+  $TSAny,
+  $TSContext,
+  pathManager,
+  stateManager,
+  ApiCategoryFacade,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { readProjectSchema } from 'graphql-transformer-core';
 
 /**

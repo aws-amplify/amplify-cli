@@ -15,7 +15,7 @@ import {
   createNewDynamoDBForCrudTemplate,
   addKinesis,
 } from '@aws-amplify/amplify-e2e-core';
-import { AmplifyCategories, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { AmplifyCategories, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 
 describe('dotnet function tests', () => {
   const helloWorldSuccessObj = {
