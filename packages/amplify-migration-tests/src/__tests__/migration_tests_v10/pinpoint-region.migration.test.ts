@@ -35,6 +35,7 @@ describe('pinpoint region migration from v10 to latest', () => {
   it('should add notifications using us-east-1 region client to match original pinpoint resource', async () => {
     const settings = { resourceName: `notification${getShortId()}` };
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
+    await addNotificationChannel(projectRoot, settings, 'SMS', true, true, true);
     await amplifyPushAuth(projectRoot, true);
   });
 });
