@@ -30,7 +30,8 @@ export function doAdminTokensExist(appId: string): boolean {
 /**
   This logic queries AppState in the us-east-1 region which acts as a "global" region for all AppState data. The response of this query
   is used to determine the "actual" region of the app and then query AppState in that region.
-  If AppState is unavailable in the us-east-1 region for some reason, we fallback to prompting for the Amplify app region
+  If AppState is unavailable in the us-east-1 region for some reason, we fallback looking for a region in amplify-meta.json.
+  If amplify-meta.json is not present, we prompt for a region.
 */
 export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: boolean; region: string; userPoolID: string }> {
   if (!appId) {
