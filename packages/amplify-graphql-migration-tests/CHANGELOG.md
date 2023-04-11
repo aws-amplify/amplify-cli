@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.2-rc.4a4caf393.0...amplify-graphql-migration-tests@2.4.2) (2023-04-11)
+
+
+### Bug Fixes
+
+* api hotfix for ownerfield as pk ([#12422](https://github.com/aws-amplify/amplify-cli/issues/12422)) ([fe4347a](https://github.com/aws-amplify/amplify-cli/commit/fe4347a21f7ec45930332e053df9dfe8f526f2c9))
+
+
+
+
+
+## [2.4.2-rc.4a4caf393.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.1...amplify-graphql-migration-tests@2.4.2-rc.4a4caf393.0) (2023-04-04)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
 ## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.1-rc.e9e0d157d.0...amplify-graphql-migration-tests@2.4.1) (2023-03-23)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests
