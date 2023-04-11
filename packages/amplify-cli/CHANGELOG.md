@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.4-rc.4a4caf393.0...@aws-amplify/cli-internal@11.0.4) (2023-04-11)
+
+
+### Bug Fixes
+
+* api hotfix for ownerfield as pk ([#12422](https://github.com/aws-amplify/amplify-cli/issues/12422)) ([fe4347a](https://github.com/aws-amplify/amplify-cli/commit/fe4347a21f7ec45930332e053df9dfe8f526f2c9))
+
+
+
+
+
 ## [11.0.4-rc.4a4caf393.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3...@aws-amplify/cli-internal@11.0.4-rc.4a4caf393.0) (2023-04-04)
 
 
