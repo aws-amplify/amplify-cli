@@ -14,7 +14,12 @@ import {
   FeatureFlags,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { invokeAnalyticsAPICreateResource, invokeAnalyticsAPIGetResources, invokeAnalyticsPush } from './plugin-client-api-analytics';
+import {
+  invokeAnalyticsAPICreateResource,
+  invokeAnalyticsAPIGetResources,
+  invokeAnalyticsGetPinpointRegionMapping,
+  invokeAnalyticsPush,
+} from './plugin-client-api-analytics';
 import * as authHelper from './auth-helper';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
@@ -536,7 +541,7 @@ export const getPinpointClient = async (
   action = action || 'missing';
   const userAgentAction = `${category}:${action}`;
   const defaultOptions = {
-    region: pinpointApp?.Region ?? mapServiceRegion(cred?.region || resolveRegion()),
+    region: pinpointApp?.Region ?? (await mapServiceRegion(context, cred?.region || resolveRegion())),
     customUserAgent: formUserAgentParam(context, userAgentAction),
   };
 
@@ -551,40 +556,12 @@ export const getPinpointClient = async (
   return new aws.Pinpoint({ ...cred, ...defaultOptions });
 };
 
-export const mapServiceRegion = (region: string): string => {
-  const serviceRegionMap = getPinpointRegionMapping();
+export const mapServiceRegion = async (context: $TSContext, region: string): Promise<string> => {
+  const serviceRegionMap = await invokeAnalyticsGetPinpointRegionMapping(context);
   if (serviceRegionMap[region]) {
     return serviceRegionMap[region];
   }
   return defaultPinpointRegion;
-};
-
-export const getPinpointRegionMapping = (): { [key: string]: string } => {
-  const latestPinpointRegions = FeatureFlags.getNumber('latestRegionSupport.pinpoint');
-
-  return {
-    'us-east-1': 'us-east-1',
-    'us-east-2': latestPinpointRegions ? 'us-east-2' : 'us-east-1',
-    'sa-east-1': 'us-east-1',
-    'ca-central-1': latestPinpointRegions >= 1 ? 'ca-central-1' : 'us-east-1',
-    'us-west-1': 'us-west-2',
-    'us-west-2': 'us-west-2',
-    'cn-north-1': 'us-west-2',
-    'cn-northwest-1': 'us-west-2',
-    'ap-south-1': latestPinpointRegions >= 1 ? 'ap-south-1' : 'us-east-1',
-    'ap-northeast-3': 'us-west-2',
-    'ap-northeast-2': latestPinpointRegions >= 1 ? 'ap-northeast-2' : 'us-east-1',
-    'ap-southeast-1': latestPinpointRegions >= 1 ? 'ap-southeast-1' : 'us-east-1',
-    'ap-southeast-2': latestPinpointRegions >= 1 ? 'ap-southeast-2' : 'us-east-1',
-    'ap-northeast-1': latestPinpointRegions >= 1 ? 'ap-northeast-1' : 'us-east-1',
-    'eu-central-1': 'eu-central-1',
-    'eu-north-1': 'eu-central-1',
-    'eu-south-1': 'eu-central-1',
-    'eu-west-1': 'eu-west-1',
-    'eu-west-2': latestPinpointRegions >= 1 ? 'eu-west-2' : 'eu-west-1',
-    'eu-west-3': 'eu-west-1',
-    'me-south-1': 'ap-south-1',
-  };
 };
 
 /**

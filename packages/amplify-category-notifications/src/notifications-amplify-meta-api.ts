@@ -191,7 +191,7 @@ export const addPartialNotificationsAppMeta = async (context: $TSContext, notifi
       message: `Invalid Region for project`,
     });
   }
-  const pinpointRegion = mapServiceRegion(applicationRegion);
+  const pinpointRegion = await mapServiceRegion(context, applicationRegion);
   // update amplify-meta with notifications metadata
   return constructPartialNotificationsAppMeta(updatedAmplifyMeta, notificationResourceName, pinpointRegion);
 };
