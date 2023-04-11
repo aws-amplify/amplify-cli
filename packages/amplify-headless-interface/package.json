@@ -1,5 +1,5 @@
 {
-  "name": "amplify-headless-interface",
+  "name": "@aws-amplify/amplify-headless-interface",
   "version": "1.17.1",
   "description": "interfaces for amplify headless mode payloads",
   "main": "lib/index.js",
@@ -8,6 +8,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "generateSchemas": "ts-node ./scripts/generateSchemas.ts",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "amplify",

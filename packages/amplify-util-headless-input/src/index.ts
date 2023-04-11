@@ -10,7 +10,7 @@ import {
   UpdateStorageRequest,
   AddGeoRequest,
   UpdateGeoRequest,
-} from 'amplify-headless-interface';
+} from '@aws-amplify/amplify-headless-interface';
 import { HeadlessInputValidator } from './HeadlessInputValidator';
 import {
   addApiRequestSchemaSupplier,

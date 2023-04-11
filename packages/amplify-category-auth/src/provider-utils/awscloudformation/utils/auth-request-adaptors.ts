@@ -14,7 +14,7 @@ import {
   CognitoUserPoolModification,
   CognitoIdentityPoolModification,
   CognitoAutoVerifiedAttributesConfiguration,
-} from 'amplify-headless-interface';
+} from '@aws-amplify/amplify-headless-interface';
 import { isEmpty, merge } from 'lodash';
 import { pascalCase } from 'change-case';
 import { AmplifyFrontend, FeatureFlags } from '@aws-amplify/amplify-cli-core';
