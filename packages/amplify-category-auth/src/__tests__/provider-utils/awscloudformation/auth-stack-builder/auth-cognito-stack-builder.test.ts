@@ -149,7 +149,6 @@ describe('generateCognitoStackResources', () => {
       oAuthMetadata:
         '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"]}',
     };
-    console.log(updatedProps);
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPoolClientWeb).toHaveProperty('allowedOAuthFlows');
     expect(cognitoStack.userPoolClientWeb).toHaveProperty('allowedOAuthScopes');
