@@ -8,19 +8,15 @@ import {
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
-<<<<<<< HEAD
   JSONUtilities: {
     parse: jest.fn().mockImplementation(JSON.parse),
-=======
-  pathManager: {
-    getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
-    getResourceCfnTemplatePath: jest.fn().mockReturnValue('cfn-template-path.json'),
-  },
-  JSONUtilities: {
     readJson: jest.fn().mockReturnValue({
       Resources: {},
     }),
->>>>>>> feat/replace-lambda-callouts
+  },
+  pathManager: {
+    getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
+    getResourceCfnTemplatePath: jest.fn().mockReturnValue('cfn-template-path.json'),
   },
 }));
 
@@ -172,7 +168,7 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.userPoolClient).toHaveProperty('callbackUrLs');
     expect(cognitoStack.userPoolClient).toHaveProperty('logoutUrLs');
   });
-  
+
   it('adds correct oidc dependencies', async () => {
     const testApp = new cdk.App();
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
