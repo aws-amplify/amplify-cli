@@ -31,7 +31,7 @@
     "@aws-amplify/amplify-function-plugin-interface": "1.10.0",
     "@aws-amplify/amplify-prompts": "2.6.7",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.1350.0",
+    "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
