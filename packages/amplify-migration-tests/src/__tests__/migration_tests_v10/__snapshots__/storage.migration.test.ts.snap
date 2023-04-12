@@ -17,11 +17,13 @@ Conditions
 [-] Condition ShouldOutputAppClientSecrets: {\\"Fn::Equals\\":[{\\"Ref\\":\\"userpoolClientGenerateSecret\\"},true]}
 
 Resources
-[-] AWS::IAM::Role UserPoolClientRole destroy
 [-] AWS::Lambda::Function UserPoolClientLambda destroy
 [-] AWS::IAM::Policy UserPoolClientLambdaPolicy destroy
 [-] AWS::IAM::Policy UserPoolClientLogPolicy destroy
 [-] Custom::LambdaCallout UserPoolClientInputs destroy
+[~] AWS::IAM::Role UserPoolClientRole 
+ └─ [-] DependsOn
+     └─ [\\"UserPoolClient\\"]
 [~] AWS::Cognito::IdentityPool IdentityPool 
  └─ [-] DependsOn
      └─ [\\"UserPoolClientInputs\\"]
@@ -52,11 +54,13 @@ Conditions
 [-] Condition ShouldOutputAppClientSecrets: {\\"Fn::Equals\\":[{\\"Ref\\":\\"userpoolClientGenerateSecret\\"},true]}
 
 Resources
-[-] AWS::IAM::Role UserPoolClientRole destroy
 [-] AWS::Lambda::Function UserPoolClientLambda destroy
 [-] AWS::IAM::Policy UserPoolClientLambdaPolicy destroy
 [-] AWS::IAM::Policy UserPoolClientLogPolicy destroy
 [-] Custom::LambdaCallout UserPoolClientInputs destroy
+[~] AWS::IAM::Role UserPoolClientRole 
+ └─ [-] DependsOn
+     └─ [\\"UserPoolClient\\"]
 [~] AWS::Cognito::IdentityPool IdentityPool 
  └─ [-] DependsOn
      └─ [\\"UserPoolClientInputs\\"]
