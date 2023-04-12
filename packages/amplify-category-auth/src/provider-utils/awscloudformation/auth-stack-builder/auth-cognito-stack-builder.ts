@@ -650,15 +650,15 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
-   * creates OAuth customResource for Cognito
+   * updates  cognito userpool client with OAuth settings
    */
   updateUserPoolClientWithOAuthSettings = (props: CognitoStackOptions): void => {
     const oAuthMetaData = JSONUtilities.parse<OAuthMetaData>(props.oAuthMetadata);
     let hostedUIProviderMeta;
-    let supportedIdentityProviders = [];
+    let supportedIdentityProviders: string[] = [];
     if (!_.isEmpty(props.hostedUIProviderMeta)) {
-      hostedUIProviderMeta = JSONUtilities.parse<Array<any>>(props.hostedUIProviderMeta);
-      supportedIdentityProviders = hostedUIProviderMeta.map((provider: { ProviderName: any }) => provider.ProviderName);
+      hostedUIProviderMeta = JSONUtilities.parse<Array<$TSAny>>(props.hostedUIProviderMeta);
+      supportedIdentityProviders = hostedUIProviderMeta.map((provider: { ProviderName: string }) => provider.ProviderName);
     }
     supportedIdentityProviders.push('COGNITO');
     if (this.userPoolClient) {
