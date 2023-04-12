@@ -7,6 +7,7 @@ import {
   HooksMeta,
   isWindowsPlatform,
   AmplifyError,
+  AmplifyErrorType,
 } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { AmplifyPrinter, printer } from '@aws-amplify/amplify-prompts';
@@ -39,6 +40,8 @@ export const handleException = async (exception: unknown): Promise<void> => {
   } else {
     amplifyException = genericErrorToAmplifyException(exception);
   }
+
+  amplifyException = commonExceptionsToAmplifyError(amplifyException);
 
   const deepestException = getDeepestAmplifyException(amplifyException);
   if (context && isHeadlessCommand(context)) {
@@ -200,6 +203,54 @@ const nodeErrorToAmplifyException = (err: NodeJS.ErrnoException): AmplifyExcepti
     },
     err,
   );
+};
+
+type CommonExceptionEntry = {
+  messageIndicator: RegExp;
+  amplifyErrorType: AmplifyErrorType;
+  newMessage?: string;
+  resolution: string;
+};
+
+const commonExceptions: CommonExceptionEntry[] = [
+  {
+    messageIndicator: /The provided token has expired./,
+    amplifyErrorType: 'TokenError',
+    newMessage: 'Your AWS access tokens have expired.',
+    resolution: 'Please refresh your tokens.',
+  },
+  {
+    messageIndicator:
+      /(The AWS Access Key Id you provided does not exist in our records.|The request signature we calculated does not match the signature you provided.|The provided token is malformed or otherwise invalid.)/,
+    amplifyErrorType: 'TokenError',
+    newMessage: 'Your AWS tokens are invalid.',
+    resolution: 'Please refresh your tokens.',
+  },
+  {
+    messageIndicator: /is not authorized to perform/,
+    amplifyErrorType: 'PermissionsError',
+    resolution: 'Please update the permissions.',
+  },
+  {
+    messageIndicator: /Rate Exceeded/,
+    amplifyErrorType: 'RateExceededError',
+    resolution: 'Please try again.',
+  },
+];
+
+const commonExceptionsToAmplifyError = (err: AmplifyException): AmplifyException => {
+  if (err.options?.message) {
+    const oldMessage = err.options.message;
+    for (const commonException of commonExceptions) {
+      if (oldMessage.match(commonException.messageIndicator)) {
+        return new AmplifyError(commonException.amplifyErrorType, {
+          message: commonException.newMessage ? commonException.newMessage : oldMessage,
+          resolution: commonException.resolution,
+        });
+      }
+    }
+  }
+  return err;
 };
 
 const nodeErrorTypeToAmplifyExceptionType = (): AmplifyFaultType => 'UnknownNodeJSFault';
