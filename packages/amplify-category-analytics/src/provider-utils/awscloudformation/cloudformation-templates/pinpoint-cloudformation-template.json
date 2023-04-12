@@ -230,7 +230,7 @@
                 "            }",
                 "            response.send(event, context, response.SUCCESS, {'message': `Successfully deleted pinpoint project`});",
                 "        } catch (e) {",
-                "            if (e.code !== 'ParameterNotFound') {",
+                "            if (e.name !== 'NotFoundException') {",
                 "                response.send(event, context, response.FAILED, {'message': `Failed to deleted Pinpoint project`, 'exception': e});",
                 "            } else {",
                 "                response.send(event, context, response.SUCCESS, {'message': `Successfully deleted pinpoint project`});",
