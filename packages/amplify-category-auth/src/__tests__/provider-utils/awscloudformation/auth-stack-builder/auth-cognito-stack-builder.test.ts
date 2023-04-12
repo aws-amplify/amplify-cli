@@ -8,8 +8,19 @@ import {
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
+<<<<<<< HEAD
   JSONUtilities: {
     parse: jest.fn().mockImplementation(JSON.parse),
+=======
+  pathManager: {
+    getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
+    getResourceCfnTemplatePath: jest.fn().mockReturnValue('cfn-template-path.json'),
+  },
+  JSONUtilities: {
+    readJson: jest.fn().mockReturnValue({
+      Resources: {},
+    }),
+>>>>>>> feat/replace-lambda-callouts
   },
 }));
 
@@ -74,7 +85,8 @@ describe('generateCognitoStackResources', () => {
     permissions: [],
     // eslint-disable-next-line spellcheck/spell-checker
     authTriggerConnections: [{ triggerType: 'PreSignUp', lambdaFunctionName: 'issue96802f106de32f106de3PreSignup' }],
-    authProviders: [],
+    authProviders: ['accounts.google.com'],
+    audiences: ['xxxgoogleClientIdxxx'],
   };
 
   it('adds correct preSignUp  lambda config and permissions', () => {
@@ -159,5 +171,22 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.userPoolClient).toHaveProperty('allowedOAuthScopes');
     expect(cognitoStack.userPoolClient).toHaveProperty('callbackUrLs');
     expect(cognitoStack.userPoolClient).toHaveProperty('logoutUrLs');
+  });
+  
+  it('adds correct oidc dependencies', async () => {
+    const testApp = new cdk.App();
+    const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
+
+    await cognitoStack.generateCognitoStackResources(props);
+
+    expect(cognitoStack.openIdcResource).toBeDefined();
+
+    expect(cognitoStack.openIdcResource!.cfnResourceType).toEqual('AWS::IAM::OIDCProvider');
+    expect(cognitoStack.openIdcResource!.clientIdList).toContain('xxxgoogleClientIdxxx');
+    expect(cognitoStack.openIdcResource!.url).toEqual('https://accounts.google.com');
+
+    const identityPoolDeps = cognitoStack.identityPool?.obtainResourceDependencies().map((d) => d.cfnResourceType);
+
+    expect(identityPoolDeps).toContain('AWS::IAM::OIDCProvider');
   });
 });
