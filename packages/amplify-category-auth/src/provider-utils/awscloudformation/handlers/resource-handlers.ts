@@ -99,9 +99,9 @@ export const getUpdateAuthHandler = (context: AuthContext) => async (request: Se
   )(request);
   const resources = stateManager.getMeta();
   if (resources.auth.userPoolGroups) {
-    await updateUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
+    await updateUserPoolGroups(context, requestWithDefaults.resourceName, requestWithDefaults.userPoolGroupList);
   } else {
-    await createUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
+    await createUserPoolGroups(context, requestWithDefaults.resourceName, requestWithDefaults.userPoolGroupList);
   }
   if (
     (!requestWithDefaults.updateFlow && !requestWithDefaults.thirdPartyAuth) ||

@@ -1,11 +1,14 @@
-import { addAuthUserPoolOnlyWithOAuth, amplifyPushAuth, AddAuthUserPoolOnlyWithOAuthSettings } from '@aws-amplify/amplify-e2e-core';
-import { v4 as uuid } from 'uuid';
-
+import {
+  addAuthUserPoolOnlyWithOAuth,
+  amplifyPushAuth,
+  AddAuthUserPoolOnlyWithOAuthSettings,
+  generateRandomShortId,
+} from '@aws-amplify/amplify-e2e-core';
 /**
  * sets up a project with auth (UserPool only or UserPool & IdentityPool)
  */
 export const setupOgProjectWithAuth = async (ogProjectRoot: string, ogProjectSettings: { name: string }): Promise<void> => {
-  const ogShortId = getShortId();
+  const ogShortId = generateRandomShortId();
   await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, createUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId));
   await amplifyPushAuth(ogProjectRoot);
 };
@@ -31,14 +34,4 @@ const createUserPoolWithOAuthSettings = (projectPrefix: string, shortId: string)
     appleAppPrivateKey:
       '----BEGIN PRIVATE KEY----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----',
   };
-};
-
-/**
- *  generates a uuid
- */
-
-export const getShortId = (): string => {
-  const [shortId] = uuid().split('-');
-
-  return shortId;
 };
