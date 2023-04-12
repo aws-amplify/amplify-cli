@@ -330,7 +330,7 @@
                                     "            } else {",
                                     "                responseData = await rekognition.send(new CreateCollectionCommand(params));",
                                     "                console.log('responseData' + JSON.stringify(responseData)); console.log(collectionId);",
-                                    "                let s3 = new S3Client({ region: event.ResourceProperties.region });",
+                                    "                let s3 = new S3Client({});",
                                     "                let params = {",
                                     "                    Bucket: event.ResourceProperties.bucketName,",
                                     "                    Key: 'protected/predictions/index-faces/admin/'",
