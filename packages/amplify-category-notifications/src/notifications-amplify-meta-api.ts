@@ -10,12 +10,12 @@ import {
   $TSMeta,
   $TSContext,
   INotificationsResourceMeta,
-  pathManager,
   AmplifyError,
 } from '@aws-amplify/amplify-cli-core';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { invokeGetLastPushTimeStamp } from './plugin-client-api-analytics';
 import { getAvailableChannels } from './notifications-backend-cfg-channel-api';
+import { mapServiceRegion } from './pinpoint-helper';
 
 /**
  * Set output.channel.Enabled to true/false
@@ -78,8 +78,6 @@ const oneAtATimeJenkinsHash = (keyString: string): string => {
   // 4,294,967,295 is FFFFFFFF, the maximum 32 bit unsigned integer value, used here as a mask.
   return (((hash + (hash << 15)) & 4294967295) >>> 0).toString(16);
 };
-
-const PINPOINT_PROVIDER_NAME = 'awscloudformation';
 
 /**
  * Get Notifications App from 'notifications' category  of amplify-meta.json
@@ -176,24 +174,6 @@ export const getDisabledChannelsFromAmplifyMeta = async (amplifyMeta?: $TSMeta):
 };
 
 /**
- * Given the application region, get the closest pinpoint region
- * @param context  application context
- * @returns pinpoint region
- */
-export const getPinpointRegionMapping = async (context: $TSContext): Promise<string | undefined> => {
-  const projectPath = pathManager.findProjectRoot();
-  const applicationRegion = stateManager.getCurrentRegion(projectPath);
-  if (!applicationRegion) {
-    throw new AmplifyError('ConfigurationError', {
-      message: `Invalid Region for project at ${projectPath}`,
-    });
-  }
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context)[PINPOINT_PROVIDER_NAME]);
-  const regionMapping: Record<string, string> = providerPlugin.getPinpointRegionMapping();
-  return applicationRegion in regionMapping ? regionMapping[applicationRegion] : undefined;
-};
-
-/**
  * Create partial Notifications resource in Amplify Meta. The fields will be populated in post-push state
  * @param context
  * @param notificationResourceName
@@ -205,7 +185,13 @@ export const getPinpointRegionMapping = async (context: $TSContext): Promise<str
  */
 export const addPartialNotificationsAppMeta = async (context: $TSContext, notificationResourceName: string): Promise<$TSMeta> => {
   const updatedAmplifyMeta = await stateManager.getMeta();
-  const pinpointRegion = await getPinpointRegionMapping(context);
+  const applicationRegion = stateManager.getCurrentRegion();
+  if (!applicationRegion) {
+    throw new AmplifyError('ConfigurationError', {
+      message: `Invalid Region for project`,
+    });
+  }
+  const pinpointRegion = await mapServiceRegion(context, applicationRegion);
   // update amplify-meta with notifications metadata
   return constructPartialNotificationsAppMeta(updatedAmplifyMeta, notificationResourceName, pinpointRegion);
 };

@@ -1,5 +1,5 @@
 import sequential from 'promise-sequential';
-import { $TSAny, $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as pinpointHelper from './pinpoint-helper';
 import { IChannelAPIResponse, NotificationsChannelAPIModule } from './channel-types';
@@ -25,7 +25,7 @@ export const enableChannel = async (context: $TSContext, channelName: string): P
       resolution: `Select a valid notification channel from the list: ${getAvailableChannels().join(', ')}`,
     });
   }
-  context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
+  context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'update', envName);
   const channelActionHandler = await import(getChannelHandlerPath(channelName));
   return channelActionHandler.enable(context);
 };
@@ -36,7 +36,7 @@ export const enableChannel = async (context: $TSContext, channelName: string): P
 export const disableChannel = async (context: $TSContext, channelName: string): Promise<IChannelAPIResponse | undefined> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   if (isValidChannel(channelName)) {
-    context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
+    context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'update', envName);
     const channelActionHandler = await import(getChannelHandlerPath(channelName));
     return channelActionHandler.disable(context);
   }
@@ -88,7 +88,7 @@ export const configureChannel = async (context: $TSContext, channelName: string)
   const pinpointAppStatus = await getPinpointAppStatusFromMeta(context, notificationsMeta, envName);
 
   if (channelName in ChannelType) {
-    context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
+    context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'update', envName);
     if (context.exeInfo.serviceMeta.mobileHubMigrated === true) {
       printer.error('No resources to update.');
       return undefined;
@@ -106,7 +106,7 @@ export const configureChannel = async (context: $TSContext, channelName: string)
 export const pullAllChannels = async (context: $TSContext, pinpointApp: $TSAny): Promise<Array<IChannelAPIResponse>> => {
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
   const pullTasks: Array<$TSAny> = [];
-  context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, 'update', envName);
+  context.exeInfo.pinpointClient = await pinpointHelper.getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'update', envName);
 
   for (const channelName of Object.keys(ChannelType)) {
     const channelActionHandler: NotificationsChannelAPIModule = await import(getChannelHandlerPath(channelName));
