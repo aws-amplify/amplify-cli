@@ -19,8 +19,8 @@ jest.mock('@aws-amplify/amplify-prompts', () => ({
   },
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   stateManager: {
     getMeta: jest.fn().mockReturnValue({
       auth: {

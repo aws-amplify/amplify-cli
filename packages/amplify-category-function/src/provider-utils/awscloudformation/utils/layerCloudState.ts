@@ -1,4 +1,4 @@
-import { AmplifyError, $TSContext, exitOnNextTick, spinner } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, exitOnNextTick, spinner } from '@aws-amplify/amplify-cli-core';
 import { LayerCfnLogicalNamePrefix } from './constants';
 // eslint-disable-next-line import/no-cycle
 import { isMultiEnvLayer } from './layerHelpers';
@@ -40,12 +40,6 @@ export class LayerCloudState {
       } else {
         spinner.stop();
         return [];
-      }
-      if (layerVersionList.length === 0) {
-        const missingLayers = layerStacks.map(({ LogicalResourceId }) => `    * ${LogicalResourceId}\n`);
-        throw new AmplifyError('LambdaLayerNotFoundError', {
-          message: `No versions were found for the Lambda Layer. Were they deleted on the AWS Lambda Console?\n\nThe following layers were not found:\n${missingLayers}`,
-        });
       }
 
       layerVersionList.forEach((layerVersion: LayerVersionMetadata) => {

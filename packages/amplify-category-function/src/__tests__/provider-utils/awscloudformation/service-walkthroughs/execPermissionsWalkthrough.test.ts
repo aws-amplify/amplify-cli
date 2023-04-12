@@ -15,7 +15,7 @@ const backendDirPathStub = 'backendDirPath';
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/cloudformationHelpers');
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   stateManager: {
     getMeta: jest.fn(),
   },
@@ -93,7 +93,7 @@ test('check CFN resources', async () => {
 
 test('env resources for CFN for DDB table and api', async () => {
   const contextStub = {
-    ...jest.requireActual('amplify-cli-core'),
+    ...jest.requireActual('@aws-amplify/amplify-cli-core'),
     print: {
       info: () => jest.fn,
     },
@@ -110,7 +110,7 @@ test('env resources for CFN for DDB table and api', async () => {
 
 test('env resources for CFN for auth and storage for api', async () => {
   const contextStub = {
-    ...jest.requireActual('amplify-cli-core'),
+    ...jest.requireActual('@aws-amplify/amplify-cli-core'),
     print: {
       info: () => jest.fn,
     },

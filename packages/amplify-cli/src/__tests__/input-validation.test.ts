@@ -1,5 +1,5 @@
 import { verifyInput } from '../input-manager';
-import { PluginPlatform } from 'amplify-cli-core';
+import { PluginPlatform } from '@aws-amplify/amplify-cli-core';
 import { CLIInput as CommandLineInput } from '../domain/command-input';
 
 describe('input validation tests', () => {

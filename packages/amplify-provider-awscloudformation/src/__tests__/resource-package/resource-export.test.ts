@@ -25,7 +25,7 @@ const mockMeta = jest.fn(() => {
   };
 });
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta = mockMeta;
 stateManager_mock.getTeamProviderInfo = jest.fn().mockReturnValue({});

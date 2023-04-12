@@ -3,7 +3,7 @@ import { SSM } from '../../../aws-utils/aws-ssm';
 import type { SSM as SSMType } from 'aws-sdk';
 import { getEnvParametersDownloadHandler, getEnvParametersUploadHandler } from '../../../utils/ssm-utils/env-parameter-ssm-helpers';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../aws-utils/aws-ssm');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;

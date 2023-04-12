@@ -1,6 +1,6 @@
 import { downloadZip } from '../zip-util';
 import { run } from '../initialize-env';
-import { $TSContext, AmplifyException } from 'amplify-cli-core';
+import { $TSContext, AmplifyException } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('../aws-utils/aws-s3');
 jest.mock('../zip-util');

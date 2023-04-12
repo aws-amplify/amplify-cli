@@ -12,6 +12,7 @@ export {
   analyticsPluginAPICreateResource,
   analyticsPluginAPIToggleNotificationChannel,
   analyticsPluginAPIPinpointHasInAppMessagingPolicy,
+  analyticsGetPinpointRegionMapping,
   analyticsPluginAPIMigrations,
   analyticsPluginAPIPostPush,
   analyticsPluginAPIPush,

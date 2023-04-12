@@ -1,4 +1,4 @@
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import * as os from 'os';
 import { SerializableError } from '../domain/amplify-usageData/SerializableError';
 

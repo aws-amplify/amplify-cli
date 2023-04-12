@@ -1,7 +1,7 @@
 import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { AmplifyRootStackTransform } from '../../root-stack-builder/root-stack-transform';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 
 JSONUtilitiesMock.stringify.mockImplementation((data, __) => JSON.stringify(data, null, 2));

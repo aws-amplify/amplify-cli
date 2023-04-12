@@ -5,7 +5,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 jest.mock('fs-extra');
 jest.mock('../../../../provider-utils/awscloudformation/utils/loadFunctionParameters');
 jest.mock('path');
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),

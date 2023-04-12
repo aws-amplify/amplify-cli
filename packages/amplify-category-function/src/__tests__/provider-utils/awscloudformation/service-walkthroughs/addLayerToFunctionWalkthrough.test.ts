@@ -11,7 +11,7 @@ import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformati
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({

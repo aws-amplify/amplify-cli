@@ -261,7 +261,7 @@ export const deletePinpointAppForEnv = async (context: $TSContext, envName: stri
     const params = {
       ApplicationId: pinpointApp.Id,
     };
-    const pinpointClient = await getPinpointClient(context, 'delete', envName);
+    const pinpointClient = await getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'delete', envName);
 
     await authHelper.deleteRolePolicy(context);
     return pinpointClient

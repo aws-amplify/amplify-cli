@@ -1,10 +1,10 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { Printer, printer } from '@aws-amplify/amplify-prompts';
 import { run } from '../../commands/storage/console';
 import * as providerController from '../../provider-utils/awscloudformation/index';
 
 jest.mock('../../provider-utils/awscloudformation/index');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
 
 const providerControllerMock = providerController as jest.Mocked<typeof providerController>;

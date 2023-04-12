@@ -9,7 +9,7 @@ import * as ini from 'ini';
 
 import { spawnSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { gt } from 'semver';
 import { sleep } from '.';
 

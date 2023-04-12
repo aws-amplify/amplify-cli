@@ -8,8 +8,8 @@ const permissionsBoundaryArn = 'arn:aws:iam::123456789012:policy/some-policy-nam
 const argName = 'permissions-boundary';
 const envName = 'newEnvName';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   stateManager: {
     getLocalEnvInfo: jest.fn(),
   },

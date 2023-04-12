@@ -6,7 +6,7 @@ import glob from 'glob';
 import { coerce, lt } from 'semver';
 import { Context } from './domain/context';
 import { ConfirmQuestion } from 'inquirer';
-import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
+import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import Resource from 'cloudform-types/types/resource';
 import Lambda from 'cloudform-types/types/lambda';
 

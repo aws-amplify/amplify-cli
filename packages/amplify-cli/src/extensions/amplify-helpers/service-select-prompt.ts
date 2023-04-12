@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, exitOnNextTick, ResourceDoesNotExistError, ServiceSelection } from 'amplify-cli-core';
+import { $TSAny, $TSContext, exitOnNextTick, ResourceDoesNotExistError, ServiceSelection } from '@aws-amplify/amplify-cli-core';
 import * as inquirer from 'inquirer';
 
 import { getProjectConfig } from './get-project-config';

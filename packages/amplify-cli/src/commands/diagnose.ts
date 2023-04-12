@@ -1,4 +1,4 @@
-import { stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError } from 'amplify-cli-core';
+import { stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError } from '@aws-amplify/amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';

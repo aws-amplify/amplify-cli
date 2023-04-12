@@ -73,7 +73,7 @@ export function authConfigPull(
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine(s.appType)
+      .sendLine('javascript')
       .wait('What javascript framework are you using')
       .sendLine(s.framework)
       .wait('Source Directory Path:')

@@ -9,7 +9,7 @@ import {
   getAddAuthRequestAdaptor,
   getUpdateAuthRequestAdaptor,
 } from '../../../../provider-utils/awscloudformation/utils/auth-request-adaptors';
-import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
+import { AmplifyFrontend, FeatureFlags } from '@aws-amplify/amplify-cli-core';
 
 describe('get add auth request adaptor', () => {
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('get add auth request adaptor', () => {
         },
       };
 
-      expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+      expect(getAddAuthRequestAdaptor(AmplifyFrontend.javascript)(addAuthRequest)).toMatchSnapshot();
     });
   });
   it('translates request with aliasAttributes', () => {
@@ -53,7 +53,7 @@ describe('get add auth request adaptor', () => {
       },
     };
 
-    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+    expect(getAddAuthRequestAdaptor(AmplifyFrontend.javascript)(addAuthRequest)).toMatchSnapshot();
   });
   it('translates request without aliasAttributes', () => {
     FeatureFlags.getBoolean = () => true;
@@ -75,7 +75,7 @@ describe('get add auth request adaptor', () => {
       },
     };
 
-    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+    expect(getAddAuthRequestAdaptor(AmplifyFrontend.javascript)(addAuthRequest)).toMatchSnapshot();
   });
 
   it('translates request with autoVerifiedAttributes', () => {
@@ -104,7 +104,7 @@ describe('get add auth request adaptor', () => {
       },
     };
 
-    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+    expect(getAddAuthRequestAdaptor(AmplifyFrontend.javascript)(addAuthRequest)).toMatchSnapshot();
   });
 });
 
@@ -122,7 +122,7 @@ describe('get update auth request adaptor', () => {
         },
       };
 
-      expect(getUpdateAuthRequestAdaptor('javascript', ['required_attribute'])(updateAuthRequest)).toMatchSnapshot();
+      expect(getUpdateAuthRequestAdaptor(AmplifyFrontend.javascript, ['required_attribute'])(updateAuthRequest)).toMatchSnapshot();
     });
   });
 });

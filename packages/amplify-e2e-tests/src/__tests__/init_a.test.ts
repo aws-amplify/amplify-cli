@@ -14,7 +14,7 @@ import {
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 import { SandboxApp } from '../types/SandboxApp';
 

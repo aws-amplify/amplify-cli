@@ -1,4 +1,4 @@
-import { $TSContext, LocalEnvInfo } from 'amplify-cli-core';
+import { $TSContext, LocalEnvInfo } from '@aws-amplify/amplify-cli-core';
 import { constructInputParams } from '../amplify-service-helper';
 import { Context } from '../domain/context';
 import { raisePostEnvAddEvent, raisePrePushEvent } from '../execution-manager';

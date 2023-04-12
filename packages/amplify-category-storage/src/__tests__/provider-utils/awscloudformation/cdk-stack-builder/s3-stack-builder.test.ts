@@ -2,7 +2,7 @@
 
 /* These tests test the AmplifyS3ResourceStackTransform and run the cdk builder tool which is used within this file */
 import * as uuid from 'uuid';
-import { $TSContext, CLISubCommandType, stateManager, buildOverrideDir, pathManager } from 'amplify-cli-core';
+import { $TSContext, CLISubCommandType, stateManager, buildOverrideDir, pathManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { AmplifyS3ResourceStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
 import {
@@ -37,7 +37,7 @@ const mockContext = {
   },
 } as unknown as $TSContext;
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 stateManagerMock.getMeta.mockReturnValue({

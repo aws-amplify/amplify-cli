@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 import { Context } from '../domain/context';
 import { getPath } from './getPath';

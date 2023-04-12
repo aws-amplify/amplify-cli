@@ -25,6 +25,18 @@ const getError = async <TError>(call: () => unknown): Promise<TError> => {
   }
 };
 
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  return {
+    ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
+    FeatureFlags: {
+      getBoolean: jest.fn(),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+  };
+});
+
 describe('channel-APNS', () => {
   const mockServiceOutput: $TSAny = {};
   const mockChannelOutput = { Enabled: true };

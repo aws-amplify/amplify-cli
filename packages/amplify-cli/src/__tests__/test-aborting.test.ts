@@ -10,8 +10,8 @@ describe('test SIGINT with execute', () => {
     const input = { argv: ['/usr/local/bin/node', '/usr/local/bin/amplify-dev', '-v'], options: { v: true } };
     const mockExit = jest.fn();
 
-    jest.setMock('amplify-cli-core', {
-      ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+    jest.setMock('@aws-amplify/amplify-cli-core', {
+      ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
       JSONUtilities: {
         readJson: jest.fn().mockReturnValue({
           name: 'cli',

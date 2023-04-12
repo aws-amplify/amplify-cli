@@ -13,8 +13,8 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as $TSObject),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as $TSObject),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
     getResourceOverrideFilePath: jest.fn().mockReturnValue('mockDirPath/override.ts'),

@@ -6,8 +6,8 @@ import * as lambdaInvoke from '../../api/lambda-invoke';
 import { getMockSearchableTriggerDirectory } from '../../utils';
 import { ConfigOverrideManager } from '../../utils/config-override';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
   pathManager: {
     getAmplifyMetaFilePath: jest.fn(),
     getAWSCredentialsFilePath: jest.fn(),

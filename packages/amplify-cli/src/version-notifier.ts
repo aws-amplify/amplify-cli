@@ -1,4 +1,4 @@
-import { JSONUtilities, $TSAny, isPackaged } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny, isPackaged } from '@aws-amplify/amplify-cli-core';
 import { default as updateNotifier } from 'update-notifier';
 import path from 'path';
 import chalk from 'chalk';

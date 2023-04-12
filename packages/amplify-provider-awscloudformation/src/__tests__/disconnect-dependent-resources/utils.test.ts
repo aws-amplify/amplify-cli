@@ -14,7 +14,7 @@ import Template from 'cloudform-types/types/template';
 import { DeploymentOp, DeploymentStep } from '../../iterative-deployment';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../utils/amplify-resource-state-utils');
 
 const fs_mock = fs as jest.Mocked<typeof fs>;

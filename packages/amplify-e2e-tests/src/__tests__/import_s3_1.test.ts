@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithDefault,
   addFunction,

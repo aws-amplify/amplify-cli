@@ -1,9 +1,9 @@
 import { copyBatch } from '../../../extensions/amplify-helpers/copy-batch';
-import { JSONUtilities, $TSContext, $TSCopyJob } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext, $TSCopyJob } from '@aws-amplify/amplify-cli-core';
 
 let exists = false;
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const context_stub = {
   prompt: {

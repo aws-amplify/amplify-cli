@@ -1,4 +1,4 @@
-import { $TSContext, IAmplifyResource, stateManager, constants } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource, stateManager, constants } from '@aws-amplify/amplify-cli-core';
 import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getChangedResources, getAllResources } from '../commands/build';

@@ -1,7 +1,7 @@
 import { getAppSyncApiConfig, getApiKeyConfig, apiKeyIsActive } from '../../utils/api-key-helpers';
 
-jest.mock('amplify-cli-core', () => {
-  const original = jest.requireActual('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  const original = jest.requireActual('@aws-amplify/amplify-cli-core');
   const amplifyMeta = {
     api: {
       myapp: {

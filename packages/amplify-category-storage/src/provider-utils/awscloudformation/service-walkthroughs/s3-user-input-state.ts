@@ -9,7 +9,7 @@ import {
   exitOnNextTick,
   JSONUtilities,
   pathManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -434,6 +434,7 @@ export class S3InputState {
   }
 
   public static getTriggerLambdaPermissionsFromInputPermission(triggerPermissions: S3PermissionType) {
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (triggerPermissions) {
       case S3PermissionType.CREATE_AND_UPDATE: //PUT, POST, and COPY
         return S3TriggerEventType.OBJ_PUT_POST_COPY;
