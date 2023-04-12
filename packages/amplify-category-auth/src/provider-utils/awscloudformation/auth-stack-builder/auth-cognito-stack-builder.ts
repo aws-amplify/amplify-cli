@@ -1,6 +1,5 @@
-import { $TSAny, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager, Template } from '@aws-amplify/amplify-cli-core';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import Template from 'cloudform-types/types/template';
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -473,6 +472,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       this.createBaseLambdaRole(props);
 
+      if (props.oAuthMetadata) {
+        this.updateUserPoolClientWithOAuthSettings(props);
+      }
+
       if (props.hostedUIDomainName) {
         this.createHostedUIDomainResource(props);
       }
@@ -647,6 +650,36 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
+   * updates  cognito userpool client with OAuth settings
+   */
+  updateUserPoolClientWithOAuthSettings = (props: CognitoStackOptions): void => {
+    const oAuthMetaData = JSONUtilities.parse<OAuthMetaData>(props.oAuthMetadata);
+    let hostedUIProviderMeta;
+    let supportedIdentityProviders: string[] = [];
+    if (!_.isEmpty(props.hostedUIProviderMeta)) {
+      hostedUIProviderMeta = JSONUtilities.parse<Array<$TSAny>>(props.hostedUIProviderMeta);
+      supportedIdentityProviders = hostedUIProviderMeta.map((provider: { ProviderName: string }) => provider.ProviderName);
+    }
+    supportedIdentityProviders.push('COGNITO');
+    if (this.userPoolClient) {
+      this.userPoolClient.allowedOAuthFlowsUserPoolClient = true;
+      this.userPoolClient.allowedOAuthScopes = oAuthMetaData?.AllowedOAuthScopes;
+      this.userPoolClient.allowedOAuthFlows = oAuthMetaData?.AllowedOAuthFlows;
+      this.userPoolClient.callbackUrLs = oAuthMetaData?.CallbackURLs;
+      this.userPoolClient.logoutUrLs = oAuthMetaData?.LogoutURLs;
+      this.userPoolClient.supportedIdentityProviders = supportedIdentityProviders;
+    }
+    if (this.userPoolClientWeb) {
+      this.userPoolClientWeb.allowedOAuthFlowsUserPoolClient = true;
+      this.userPoolClientWeb.allowedOAuthScopes = oAuthMetaData?.AllowedOAuthScopes;
+      this.userPoolClientWeb.allowedOAuthFlows = oAuthMetaData?.AllowedOAuthFlows;
+      this.userPoolClientWeb.callbackUrLs = oAuthMetaData?.CallbackURLs;
+      this.userPoolClientWeb.logoutUrLs = oAuthMetaData?.LogoutURLs;
+      this.userPoolClientWeb.supportedIdentityProviders = supportedIdentityProviders;
+    }
+  };
+
+  /**
    * Updates the custom lambda to delete existing userPool domain
    */
   deleteExistingHostedUICustomResource(): void {
@@ -813,6 +846,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
     });
     this.hostedUIProvidersCustomResourceInputs.node.addDependency(this.hostedUIProvidersCustomResourceLogPolicy);
+    // this can be removed when hostedUI Custom resource is removed
+    this.userPoolClient?.node.addDependency(this.hostedUIProvidersCustomResourceInputs);
+    this.userPoolClientWeb?.node.addDependency(this.hostedUIProvidersCustomResourceInputs);
   }
 
   /**
@@ -1199,3 +1235,12 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
   };
 }
+
+type OAuthMetaData = {
+  AllowedOAuthFlows?: Array<string>;
+  AllowedOAuthFlowsUserPoolClient?: boolean;
+  AllowedOAuthScopes?: Array<string>;
+  CallbackURLs?: Array<string>;
+  LogoutURLs?: Array<string>;
+  SupportedIdentityProviders?: Array<string>;
+};

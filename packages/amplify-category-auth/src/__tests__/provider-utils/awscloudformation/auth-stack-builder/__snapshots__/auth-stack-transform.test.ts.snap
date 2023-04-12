@@ -1441,19 +1441,44 @@ exports.handler = (event, context, callback) => {
     },
     "UserPoolClient": Object {
       "DependsOn": Array [
+        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": Object {
+        "AllowedOAuthFlows": Array [
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": Array [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": Array [
+          "https://localhost:3000/",
+        ],
         "ClientName": "extaut87063394_app_client",
         "GenerateSecret": Object {
           "Ref": "userpoolClientGenerateSecret",
         },
+        "LogoutURLs": Array [
+          "https://localhost:3000/",
+        ],
         "ReadAttributes": Object {
           "Ref": "userpoolClientReadAttributes",
         },
         "RefreshTokenValidity": Object {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
+        "SupportedIdentityProviders": Array [
+          "Facebook",
+          "Google",
+          "LoginWithAmazon",
+          "SignInWithApple",
+          "COGNITO",
+        ],
         "TokenValidityUnits": Object {
           "RefreshToken": "days",
         },
@@ -1518,16 +1543,41 @@ exports.handler = (event, context, callback) => {
     },
     "UserPoolClientWeb": Object {
       "DependsOn": Array [
+        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": Object {
+        "AllowedOAuthFlows": Array [
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": Array [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": Array [
+          "https://localhost:3000/",
+        ],
         "ClientName": "extaut87063394_app_clientWeb",
+        "LogoutURLs": Array [
+          "https://localhost:3000/",
+        ],
         "ReadAttributes": Object {
           "Ref": "userpoolClientReadAttributes",
         },
         "RefreshTokenValidity": Object {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
+        "SupportedIdentityProviders": Array [
+          "Facebook",
+          "Google",
+          "LoginWithAmazon",
+          "SignInWithApple",
+          "COGNITO",
+        ],
         "TokenValidityUnits": Object {
           "RefreshToken": "days",
         },

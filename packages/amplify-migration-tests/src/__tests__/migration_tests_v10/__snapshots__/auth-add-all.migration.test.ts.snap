@@ -21,13 +21,23 @@ IAM Statement Changes
 ┌───┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬────────┬────────────────────────────────────┬───────────────────────────┬───────────┐
 │   │ Resource                                                                                                                                                                                      │ Effect │ Action                             │ Principal                 │ Condition │
 ├───┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
+│ - │ \${UserPool.Arn}                                                                                                                                                                               │ Allow  │ cognito-idp:DescribeUserPoolClient │ AWS:\${UserPoolClientRole} │           │
 │ - │ \${UserPool.Arn}                                                                                                                                                                               │ Allow  │ cognito-idp:CreateUserPoolDomain   │ AWS:\${UserPoolClientRole} │           │
 │   │                                                                                                                                                                                               │        │ cognito-idp:DeleteUserPoolDomain   │                           │           │
 │   │                                                                                                                                                                                               │        │ cognito-idp:DescribeUserPool       │                           │           │
+│ - │ \${UserPool.Arn}                                                                                                                                                                               │ Allow  │ cognito-idp:UpdateUserPoolClient   │ AWS:\${UserPoolClientRole} │           │
 ├───┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
 │ - │ *                                                                                                                                                                                             │ Allow  │ cognito-idp:DescribeUserPoolDomain │ AWS:\${UserPoolClientRole} │           │
 ├───┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
 │ - │ {\\"Fn::Sub\\":[\\"arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*\\",{\\"region\\":\\"\${AWS::Region}\\",\\"account\\":\\"\${AWS::AccountId}\\",\\"lambda\\":\\"\${HostedUICustomResource}\\"}]} │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
+│   │                                                                                                                                                                                               │        │ logs:CreateLogStream               │                           │           │
+│   │                                                                                                                                                                                               │        │ logs:PutLogEvents                  │                           │           │
+├───┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
+│ - │ {\\"Fn::Sub\\":[\\"arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*\\",{\\"region\\":\\"\${AWS::Region}\\",\\"account\\":\\"\${AWS::AccountId}\\",\\"lambda\\":\\"\${OAuthCustomResource}\\"}]}    │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
+│   │                                                                                                                                                                                               │        │ logs:CreateLogStream               │                           │           │
+│   │                                                                                                                                                                                               │        │ logs:PutLogEvents                  │                           │           │
+├───┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
+│ - │ {\\"Fn::Sub\\":[\\"arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*\\",{\\"region\\":\\"\${AWS::Region}\\",\\"account\\":\\"\${AWS::AccountId}\\",\\"lambda\\":\\"\${UserPoolClientLambda}\\"}]}   │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
 │   │                                                                                                                                                                                               │        │ logs:CreateLogStream               │                           │           │
 │   │                                                                                                                                                                                               │        │ logs:PutLogEvents                  │                           │           │
 └───┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴────────┴────────────────────────────────────┴───────────────────────────┴───────────┘
@@ -40,66 +50,64 @@ Parameters
 [-] Parameter appleAppId: {\\"Type\\":\\"String\\"}
 [~] Parameter hostedUIProviderCreds: {\\"Type\\":\\"String\\"} to {\\"Type\\":\\"String\\",\\"NoEcho\\":true}
 
+Conditions
+[-] Condition ShouldOutputAppClientSecrets: {\\"Fn::Equals\\":[{\\"Ref\\":\\"userpoolClientGenerateSecret\\"},true]}
+
 Resources
+[-] AWS::Lambda::Function UserPoolClientLambda destroy
+[-] AWS::IAM::Policy UserPoolClientLambdaPolicy destroy
+[-] AWS::IAM::Policy UserPoolClientLogPolicy destroy
+[-] Custom::LambdaCallout UserPoolClientInputs destroy
 [-] AWS::Lambda::Function HostedUICustomResource destroy
 [-] AWS::IAM::Policy HostedUICustomResourcePolicy destroy
 [-] AWS::IAM::Policy HostedUICustomResourceLogPolicy destroy
 [-] Custom::LambdaCallout HostedUICustomResourceInputs destroy
+[-] AWS::Lambda::Function OAuthCustomResource destroy
+[-] AWS::IAM::Policy OAuthCustomResourcePolicy destroy
+[-] AWS::IAM::Policy OAuthCustomResourceLogPolicy destroy
+[-] Custom::LambdaCallout OAuthCustomResourceInputs destroy
 [+] AWS::Cognito::UserPoolDomain HostedUIDomainResource 
-[~] AWS::Lambda::Function UserPoolClientLambda 
- ├─ [~] Code
- │   └─ [~] .ZipFile:
- │       ├─ [-] const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then(res => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch(err => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
-
- │       └─ [+] const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then((res) => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch((err) => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
-
- └─ [~] Runtime
-     ├─ [-] nodejs14.x
-     └─ [+] nodejs16.x
+[~] AWS::Cognito::UserPoolClient UserPoolClientWeb 
+ ├─ [+] AllowedOAuthFlows
+ │   └─ [\\"code\\"]
+ ├─ [+] AllowedOAuthFlowsUserPoolClient
+ │   └─ true
+ ├─ [+] AllowedOAuthScopes
+ │   └─ [\\"phone\\",\\"email\\",\\"openid\\",\\"profile\\",\\"aws.cognito.signin.user.admin\\"]
+ ├─ [+] CallbackURLs
+ │   └─ [\\"https://signin1/\\"]
+ ├─ [+] LogoutURLs
+ │   └─ [\\"https://signout1/\\"]
+ ├─ [+] SupportedIdentityProviders
+ │   └─ [\\"Facebook\\",\\"Google\\",\\"LoginWithAmazon\\",\\"SignInWithApple\\",\\"COGNITO\\"]
+ └─ [~] DependsOn
+     └─ @@ -1,3 +1,4 @@
+        [ ] [
+        [+]   \\"HostedUIProvidersCustomResourceInputs\\",
+        [ ]   \\"UserPool\\"
+        [ ] ]
+[~] AWS::Cognito::UserPoolClient UserPoolClient 
+ ├─ [+] AllowedOAuthFlows
+ │   └─ [\\"code\\"]
+ ├─ [+] AllowedOAuthFlowsUserPoolClient
+ │   └─ true
+ ├─ [+] AllowedOAuthScopes
+ │   └─ [\\"phone\\",\\"email\\",\\"openid\\",\\"profile\\",\\"aws.cognito.signin.user.admin\\"]
+ ├─ [+] CallbackURLs
+ │   └─ [\\"https://signin1/\\"]
+ ├─ [+] LogoutURLs
+ │   └─ [\\"https://signout1/\\"]
+ ├─ [+] SupportedIdentityProviders
+ │   └─ [\\"Facebook\\",\\"Google\\",\\"LoginWithAmazon\\",\\"SignInWithApple\\",\\"COGNITO\\"]
+ └─ [~] DependsOn
+     └─ @@ -1,3 +1,4 @@
+        [ ] [
+        [+]   \\"HostedUIProvidersCustomResourceInputs\\",
+        [ ]   \\"UserPool\\"
+        [ ] ]
+[~] AWS::IAM::Role UserPoolClientRole 
+ └─ [-] DependsOn
+     └─ [\\"UserPoolClient\\"]
 [~] AWS::Lambda::Function HostedUIProvidersCustomResource 
  ├─ [~] Code
  │   └─ [~] .ZipFile:
@@ -316,104 +324,9 @@ exports.handler = (event, context, callback) => {
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
-[~] AWS::Lambda::Function OAuthCustomResource 
- ├─ [~] Code
- │   └─ [~] .ZipFile:
- │       ├─ [-] const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    let webClientId = event.ResourceProperties.webClientId;
-    let nativeClientId = event.ResourceProperties.nativeClientId;
-    let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    let oAuthMetadata = JSON.parse(event.ResourceProperties.oAuthMetadata);
-    let providerList = hostedUIProviderMeta.map(provider => provider.ProviderName);
-    providerList.push('COGNITO');
-    if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      let params = {
-        UserPoolId: userPoolId,
-        AllowedOAuthFlows: oAuthMetadata.AllowedOAuthFlows,
-        AllowedOAuthFlowsUserPoolClient: true,
-        AllowedOAuthScopes: oAuthMetadata.AllowedOAuthScopes,
-        CallbackURLs: oAuthMetadata.CallbackURLs,
-        LogoutURLs: oAuthMetadata.LogoutURLs,
-        SupportedIdentityProviders: providerList,
-      };
-      console.log(params);
-      let updateUserPoolClientPromises = [];
-      params.ClientId = webClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      params.ClientId = nativeClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      Promise.all(updateUserPoolClientPromises)
-        .then(() => {
-          response.send(event, context, response.SUCCESS, {});
-        })
-        .catch(err => {
-          console.log(err.stack);
-          response.send(event, context, response.FAILED, { err });
-        });
-    }
-  } catch (err) {
-    console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
-  }
-};
-
- │       └─ [+] const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    let webClientId = event.ResourceProperties.webClientId;
-    let nativeClientId = event.ResourceProperties.nativeClientId;
-    let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    let oAuthMetadata = JSON.parse(event.ResourceProperties.oAuthMetadata);
-    let providerList = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-    providerList.push('COGNITO');
-    if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      let params = {
-        UserPoolId: userPoolId,
-        AllowedOAuthFlows: oAuthMetadata.AllowedOAuthFlows,
-        AllowedOAuthFlowsUserPoolClient: true,
-        AllowedOAuthScopes: oAuthMetadata.AllowedOAuthScopes,
-        CallbackURLs: oAuthMetadata.CallbackURLs,
-        LogoutURLs: oAuthMetadata.LogoutURLs,
-        SupportedIdentityProviders: providerList,
-      };
-      console.log(params);
-      let updateUserPoolClientPromises = [];
-      params.ClientId = webClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      params.ClientId = nativeClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      Promise.all(updateUserPoolClientPromises)
-        .then(() => {
-          response.send(event, context, response.SUCCESS, {});
-        })
-        .catch((err) => {
-          console.log(err.stack);
-          response.send(event, context, response.FAILED, { err });
-        });
-    }
-  } catch (err) {
-    console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
-  }
-};
-
- └─ [~] Runtime
-     ├─ [-] nodejs14.x
-     └─ [+] nodejs16.x
+[~] AWS::Cognito::IdentityPool IdentityPool 
+ └─ [-] DependsOn
+     └─ [\\"UserPoolClientInputs\\"]
 [~] AWS::Cognito::IdentityPoolRoleAttachment IdentityPoolRoleMap 
  ├─ [+] RoleMappings
  │   └─ {\\"UserPoolClientRoleMapping\\":{\\"AmbiguousRoleResolution\\":\\"AuthenticatedRole\\",\\"IdentityProvider\\":{\\"Fn::Sub\\":[\\"cognito-idp.\${region}.amazonaws.com/\${userPool}:\${client}\\",{\\"region\\":{\\"Ref\\":\\"AWS::Region\\"},\\"userPool\\":{\\"Ref\\":\\"UserPool\\"},\\"client\\":{\\"Ref\\":\\"UserPoolClient\\"}}]},\\"Type\\":\\"Token\\"},\\"UserPoolWebClientRoleMapping\\":{\\"AmbiguousRoleResolution\\":\\"AuthenticatedRole\\",\\"IdentityProvider\\":{\\"Fn::Sub\\":[\\"cognito-idp.\${region}.amazonaws.com/\${userPool}:\${webClient}\\",{\\"region\\":{\\"Ref\\":\\"AWS::Region\\"},\\"userPool\\":{\\"Ref\\":\\"UserPool\\"},\\"webClient\\":{\\"Ref\\":\\"UserPoolClientWeb\\"}}]},\\"Type\\":\\"Token\\"}}
@@ -427,6 +340,7 @@ exports.handler = (event, context, callback) => {
         [ ] ]
 
 Outputs
+[-] Output AppClientSecret: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"UserPoolClientInputs\\",\\"appSecret\\"]},\\"Condition\\":\\"ShouldOutputAppClientSecrets\\"}
 [-] Output GoogleWebClient: {\\"Value\\":{\\"Ref\\":\\"googleClientId\\"}}
 [-] Output FacebookWebClient: {\\"Value\\":{\\"Ref\\":\\"facebookAppId\\"}}
 [-] Output AmazonWebClient: {\\"Value\\":{\\"Ref\\":\\"amazonAppId\\"}}
