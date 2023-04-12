@@ -30,8 +30,8 @@ describe('amplify add auth...', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('...should init an Js project and add Oauth settings with userpool', async () => {
