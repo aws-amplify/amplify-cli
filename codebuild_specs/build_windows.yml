@@ -13,6 +13,7 @@ phases:
       # - node --version
       # - npm --version
       - npm install -g yarn
+      - npm install -g node-gyp
       - yarn run production-build
       - yarn build-tests
 
