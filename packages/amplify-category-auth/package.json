@@ -50,7 +50,7 @@
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2",
-    "vm2": "^3.9.8"
+    "vm2": "^3.9.16"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.1",
