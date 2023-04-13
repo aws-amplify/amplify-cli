@@ -160,6 +160,7 @@ export type AmplifyErrorType =
   | 'PushResourcesError'
   | 'RegionNotAvailableError'
   | 'RemoveNotificationAppError'
+  | 'ResourceAddFault'
   | 'ResourceAlreadyExistsError'
   | 'ResourceCountLimitExceedError'
   | 'ResourceDoesNotExistError'
