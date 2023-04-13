@@ -1,6 +1,7 @@
 import {
   $TSContext,
   AmplifyError,
+  AmplifyFault,
   exitOnNextTick,
   pathManager,
   promptConfirmationRemove,
@@ -51,9 +52,7 @@ export async function removeResource(
     !amplifyMeta[category] ||
     Object.keys(amplifyMeta[category]).filter((r) => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
   ) {
-    printer.error('No resources added for this category');
-    await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
-    exitOnNextTick(1);
+    throw new AmplifyError('ResourceRemoveError', { message: 'No resources added for this category' });
   }
 
   let enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category]).filter(
@@ -62,10 +61,7 @@ export async function removeResource(
 
   if (resourceName) {
     if (!enabledCategoryResources.includes(resourceName)) {
-      const errMessage = `Resource ${resourceName} has not been added to ${category}`;
-      printer.error(errMessage);
-      await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-      exitOnNextTick(1);
+      throw new AmplifyError('ResourceRemoveError', { message: `Resource ${resourceName} has not been added to ${category}` });
     }
   } else {
     if (options.serviceSuffix) {
@@ -113,12 +109,13 @@ export async function removeResource(
   try {
     return await deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
-    if (err.stack) {
-      printer.info(err.stack);
-    }
-    printer.error('An error occurred when removing the resources from the local directory');
-    await context.usageData.emitError(err);
-    process.exitCode = 1;
+    throw new AmplifyFault(
+      'ResourceRemoveFault',
+      {
+        message: 'An error occurred when removing the resources from the local directory',
+      },
+      err,
+    );
   }
   return undefined;
 }
