@@ -13,7 +13,7 @@ function storeCache {
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
     echo writing cache to $s3Path
     # zip contents and upload to s3
-    if ! (cd $localPath && tar -cvzf cache.tar . && aws s3 cp cache.tar $s3Path); then
+    if ! (cd $localPath && tar -cvzf cache.tar . && ls && aws s3 cp cache.tar $s3Path); then
         echo Something went wrong storing the cache.
     fi
     echo done writing cache
@@ -102,8 +102,11 @@ function _buildWindows {
     echo Windows Build
     # yarn run production-build
     # yarn build-tests
+    ls $CODEBUILD_SRC_DIR
+    ls $HOME
+    ls $CODEBUILD_SRC_DIR\\..
     storeCache $CODEBUILD_SRC_DIR repo-windows
-    storeCache $HOME/.cache .cache-windows
+    storeCache $HOME\\.cache .cache-windows
 }
 function _testLinux {
     echo Run Test

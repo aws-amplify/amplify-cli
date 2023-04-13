@@ -3,4 +3,4 @@
 # set exit on error to true
 set -e
 
-source ./shared-scripts.sh && _buildWindows
+source ./shared-scripts-windows.sh && _buildWindows
