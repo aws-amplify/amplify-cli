@@ -6,7 +6,7 @@ phases:
     commands:
       - node --version
       - npm --version
-      - . ./shared-scripts
+      - . ./shared-scripts.sh
       - yarn run production-build
       - yarn build-tests
 
