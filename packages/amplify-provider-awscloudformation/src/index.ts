@@ -9,12 +9,12 @@ const configManager = require('./configuration-manager');
 const setupNewUser = require('./setup-new-user');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const aws = require('./aws-utils/aws');
-const pinpoint = require('./aws-utils/aws-pinpoint');
 const { getLexRegionMapping } = require('./aws-utils/aws-lex');
 const amplifyService = require('./aws-utils/aws-amplify');
 const consoleCommand = require('./console');
 const { loadResourceParameters, saveResourceParameters } = require('./resourceParams');
-const { formUserAgentParam } = require('./aws-utils/user-agent');
+import { formUserAgentParam } from './aws-utils/user-agent';
+export { formUserAgentParam } from './aws-utils/user-agent';
 const predictionsRegionMap = require('./aws-predictions-regions');
 
 import { adminLoginFlow } from './admin-login';
@@ -25,18 +25,18 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
-import { loadConfigurationForEnv } from './configuration-manager';
+import { loadConfigurationForEnv, loadConfiguration, resolveRegion } from './configuration-manager';
+export { loadConfigurationForEnv, loadConfiguration, resolveRegion } from './configuration-manager';
 import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { SSM } from './aws-utils/aws-ssm';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
-import { $TSContext, ApiCategoryFacade } from 'amplify-cli-core';
+import { $TSContext, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import * as resourceExport from './export-resources';
 import * as exportUpdateMeta from './export-update-amplify-meta';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
-export { loadConfigurationForEnv } from './configuration-manager';
 export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { updateEnv } from './update-env';
 
@@ -112,14 +112,6 @@ async function getConfiguredAWSClient(context, category, action) {
   return aws;
 }
 
-function getConfiguredPinpointClient(context, category, action, envName) {
-  return pinpoint.getConfiguredPinpointClient(context, category, action, envName);
-}
-
-function getPinpointRegionMapping() {
-  return pinpoint.getPinpointRegionMapping();
-}
-
 function getConfiguredAmplifyClient(context, category, action, options = {}) {
   return amplifyService.getConfiguredAmplifyClient(context, options);
 }
@@ -173,9 +165,7 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
-  getPinpointRegionMapping,
   getLexRegionMapping,
-  getConfiguredPinpointClient,
   getConfiguredAmplifyClient,
   showHelpfulLinks,
   deleteEnv,
@@ -209,4 +199,7 @@ module.exports = {
   getEnvParametersDownloadHandler,
   getEnvParametersUploadHandler,
   deleteEnvironmentParametersFromService,
+  formUserAgentParam,
+  loadConfiguration,
+  resolveRegion,
 };

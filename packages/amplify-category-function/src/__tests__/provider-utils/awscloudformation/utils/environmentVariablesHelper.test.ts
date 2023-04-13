@@ -1,9 +1,9 @@
-import { stateManager, JSONUtilities, $TSContext, pathManager } from 'amplify-cli-core';
+import { stateManager, JSONUtilities, $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as envVarHelper from '../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper';
 import * as uuid from 'uuid';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('uuid');
 

@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext, $TSObject } from '@aws-amplify/amplify-cli-core';
 import { IDynamoDBService, IS3Service } from '@aws-amplify/amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';
 import { TableDescription } from 'aws-sdk/clients/dynamodb';

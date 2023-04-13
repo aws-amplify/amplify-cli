@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { $TSMeta, $TSAny } from 'amplify-cli-core';
+import { $TSMeta, $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as uuid from 'uuid';
 
 /**

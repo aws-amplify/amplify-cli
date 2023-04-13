@@ -1,4 +1,4 @@
-import { $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
+import { $TSContext, convertNumBytes, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
 import { FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { packageLayer } from '../../../../provider-utils/awscloudformation/utils/packageLayer';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';
@@ -6,7 +6,7 @@ import { LayerCloudState } from '../../../../provider-utils/awscloudformation/ut
 import { loadLayerConfigurationFile } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoader');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');

@@ -1,7 +1,7 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import * as inquirer from 'inquirer';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
+import { byValue, prompter } from '@aws-amplify/amplify-prompts';
 
 /**
  * Initializes the frontend
@@ -63,15 +63,9 @@ const getFrontendHandler = async (context: $TSContext, frontendPlugins: $TSAny, 
   }
 
   if (!frontend) {
-    const selectFrontendHandler: inquirer.ListQuestion = {
-      type: 'list',
-      name: 'selectedFrontendHandler',
-      message: "Choose the type of app that you're building",
-      choices: frontendPluginList,
-      default: suitableFrontend,
-    };
-    const answer = await inquirer.prompt(selectFrontendHandler);
-    frontend = answer.selectedFrontendHandler;
+    frontend = prompter.pick("Choose the type of app that you're building", frontendPluginList, {
+      initial: byValue(suitableFrontend),
+    });
   }
 
   return frontend;

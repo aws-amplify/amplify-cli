@@ -11,7 +11,7 @@ import {
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify add analytics', () => {
   let projRoot: string;

@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { extractArgs } from './extractArgs';
 
 /**

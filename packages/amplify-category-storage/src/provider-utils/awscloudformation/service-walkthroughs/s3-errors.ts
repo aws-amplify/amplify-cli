@@ -1,4 +1,4 @@
-import { ResourceDoesNotExistError, ResourceAlreadyExistsError, $TSContext, ConfigurationError } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, ResourceAlreadyExistsError, $TSContext, ConfigurationError } from '@aws-amplify/amplify-cli-core';
 
 import { printer } from '@aws-amplify/amplify-prompts';
 

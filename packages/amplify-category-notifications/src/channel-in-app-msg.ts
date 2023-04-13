@@ -13,7 +13,7 @@ import {
   IPluginCapabilityAPIResponse,
   NotificationChannels,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';

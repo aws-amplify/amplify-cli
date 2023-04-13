@@ -101,7 +101,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
       .wait('Choose your default editor:')
       .sendLine(settings.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine(settings.appType)
+      .sendLine('javascript')
       .wait('What javascript framework are you using')
       .sendLine(settings.framework)
       .wait('Source Directory Path:')

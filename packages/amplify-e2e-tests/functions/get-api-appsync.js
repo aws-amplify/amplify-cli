@@ -1,9 +1,9 @@
 // /* eslint-disable no-console */
-const AWS = require('aws-sdk');
+const { AppSyncClient, GetGraphqlApiCommand } = require('@aws-sdk/client-appsync');
 
 const getGqlApi = async (idKey) => {
-  const appsync = new AWS.AppSync({ region: process.env.REGION });
-  return await appsync.getGraphqlApi({ apiId: process.env[idKey] }).promise();
+  const appsync = new AppSyncClient({ region: process.env.REGION });
+  return await appsync.send(new GetGraphqlApiCommand({ apiId: process.env[idKey] }));
 };
 
 exports.handler = async (event) => {

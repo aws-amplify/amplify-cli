@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifyFault, AmplifySupportedService, IContextPrint } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyCategories, AmplifyFault, AmplifySupportedService, IContextPrint } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as configureKey from '../apns-key-config';
 import * as configureCertificate from '../apns-cert-config';
@@ -24,6 +24,18 @@ const getError = async <TError>(call: () => unknown): Promise<TError> => {
     return error as TError;
   }
 };
+
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  return {
+    ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
+    FeatureFlags: {
+      getBoolean: jest.fn(),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+  };
+});
 
 describe('channel-APNS', () => {
   const mockServiceOutput: $TSAny = {};

@@ -1,6 +1,6 @@
 const path = require('path');
 const _ = require('lodash');
-const { AngularConfigNotFoundError, exitOnNextTick, JSONUtilities } = require('amplify-cli-core');
+const { AngularConfigNotFoundError, exitOnNextTick, JSONUtilities } = require('@aws-amplify/amplify-cli-core');
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 

@@ -1,4 +1,4 @@
-import { GetPackageAssetPaths } from 'amplify-cli-core';
+import { GetPackageAssetPaths } from '@aws-amplify/amplify-cli-core';
 import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import { layerPythonPipFile, relativeShimPath } from './constants';

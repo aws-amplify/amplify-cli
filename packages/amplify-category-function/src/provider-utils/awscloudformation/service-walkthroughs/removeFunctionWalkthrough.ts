@@ -1,4 +1,4 @@
-import { $TSAny, stateManager, getAmplifyResourceByCategories, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, stateManager, getAmplifyResourceByCategories, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import { categoryName } from '../../../constants';

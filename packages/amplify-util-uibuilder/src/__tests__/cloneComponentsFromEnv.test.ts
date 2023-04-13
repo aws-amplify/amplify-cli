@@ -9,7 +9,7 @@ jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
 }));
 jest.mock('../commands/utils/extractArgs');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const mockedComponentExport = jest.fn((envName: string) => {
   if (envName === 'newEnvName') {
@@ -53,6 +53,10 @@ describe('can clone components to new environment', () => {
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
           },
         }),
       }),

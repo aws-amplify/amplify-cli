@@ -1,6 +1,6 @@
 import { getUserPoolGroupList } from '../../../extensions/amplify-helpers/get-userpoolgroup-list';
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getBackendDirPath: jest.fn().mockImplementation(() => ''),
   },

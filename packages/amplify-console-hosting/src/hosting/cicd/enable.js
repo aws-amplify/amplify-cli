@@ -1,4 +1,4 @@
-const { open } = require('amplify-cli-core');
+const { open } = require('@aws-amplify/amplify-cli-core');
 const fs = require('fs-extra');
 const utils = require('../../utils/amplify-context-utils');
 const questions = require('../../modules/questions/question-generator');

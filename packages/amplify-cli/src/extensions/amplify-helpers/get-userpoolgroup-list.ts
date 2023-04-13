@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 
 export function getUserPoolGroupList(): $TSAny[] {

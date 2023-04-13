@@ -6,7 +6,7 @@ jest.mock('inquirer', () => ({
   },
 }));
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),

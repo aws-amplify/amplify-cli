@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import { amplifyCLIConstants } from './constants';
 import { leaveBreadcrumbs } from './leave-breadcrumbs';
 

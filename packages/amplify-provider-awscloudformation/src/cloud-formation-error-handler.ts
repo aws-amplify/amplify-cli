@@ -1,4 +1,4 @@
-import { $TSAny, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { deserializeErrorMessages, CFNErrorMessage, CFNErrorMessages } from './aws-utils/cloudformation-error-serializer';
 
 const s3Indicator = '(AWS::S3::Bucket)';
@@ -38,9 +38,29 @@ export const handleCloudFormationError = (err: Error & { details?: string }): vo
     );
   }
 
+  throwIfAllErrorsAreFromCustomResources(err);
+
   if (err?.details?.includes(s3Indicator)) {
     handleS3Error(err);
   }
 
   throw err;
+};
+
+const throwIfAllErrorsAreFromCustomResources = (err: Error & { details?: string }) => {
+  const deserializedErrorMessages: CFNErrorMessages = deserializeErrorMessages(err.details);
+  const onlyCustomResourceError =
+    deserializedErrorMessages?.messages.length > 0 &&
+    deserializedErrorMessages.messages.every((cfnError: CFNErrorMessage) => cfnError.isCustomResource);
+  if (onlyCustomResourceError) {
+    throw new AmplifyError(
+      'InvalidCustomResourceError',
+      {
+        message: 'CFN Deployment failed for custom resources.',
+        details: err.details,
+      },
+      err,
+    );
+  }
+  // else let the calling function throw the original error
 };

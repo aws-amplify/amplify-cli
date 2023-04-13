@@ -4,12 +4,12 @@
 
 ```ts
 
-import { $TSAny } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as AWS_2 from 'aws-sdk';
-import { IAmplifyResource } from 'amplify-cli-core';
-import { Template } from 'amplify-cli-core';
+import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
+import { Template } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export const cfnRootStackFileName = "root-cloudformation-stack.json";
@@ -19,6 +19,9 @@ export const deleteEnvironmentParametersFromService: (context: $TSContext, envNa
 
 // @public (undocumented)
 export type DownloadHandler = (keys: string[]) => Promise<PrimitiveRecord>;
+
+// @public (undocumented)
+export function formUserAgentParam(context: any, userAgentAction: any): string;
 
 // Warning: (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
 //
@@ -42,6 +45,11 @@ export const getLocationRegionMapping: () => $TSObject;
 // @public (undocumented)
 export const getLocationSupportedRegion: (region: string) => string;
 
+// Warning: (ae-forgotten-export) The symbol "AwsSecrets" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function loadConfiguration(context: $TSContext): Promise<AwsSecrets>;
+
 // Warning: (ae-forgotten-export) The symbol "AwsSdkConfig" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -52,6 +60,9 @@ export type PrimitiveRecord = Record<string, string | number | boolean>;
 
 // @public (undocumented)
 export const resolveAppId: (context: $TSContext) => string;
+
+// @public (undocumented)
+export function resolveRegion(): string;
 
 // @public (undocumented)
 export const rootStackFileName = "root-cloudformation-stack.json";
