@@ -2,7 +2,6 @@ import { $TSAny, stateManager } from '@aws-amplify/amplify-cli-core';
 import { start } from '../../func';
 import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
 import _ from 'lodash';
-import * as inquirer from 'inquirer';
 import { prompter, printer } from '@aws-amplify/amplify-prompts';
 
 jest.mock('../../utils/lambda/load-lambda-config', () => ({
@@ -26,10 +25,7 @@ jest.mock('@aws-amplify/amplify-category-function', () => ({
   category: 'function',
 }));
 
-jest.mock('inquirer');
 jest.mock('@aws-amplify/amplify-prompts');
-
-const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 
 const getInvoker_mock = getInvoker as jest.MockedFunction<typeof getInvoker>;
 const getBuilder_mock = getBuilder as jest.MockedFunction<typeof getBuilder>;
