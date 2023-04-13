@@ -187,6 +187,7 @@ export type AmplifyFaultType =
   | 'AuthCategoryFault'
   | 'BackendDeleteFault'
   | 'BackendPullFault'
+  | 'CloudFormationTemplateFault'
   | 'ConfigurationFault'
   | 'ConfigurationFault'
   | 'DeploymentFault'
