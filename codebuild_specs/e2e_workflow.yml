@@ -22,7 +22,7 @@ batch:
       buildspec: codebuild_specs/build_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_MEDIUM
+        compute-type: BUILD_GENERAL1_LARGE
         image: 699633303769.dkr.ecr.us-east-1.amazonaws.com/testing-stack-local-amplifyclie2eecrc5fd2bba-p70qnfyh3hz2:windows2019-1.0.0-3
     # - identifier: test
     #   buildspec: codebuild_specs/test.yml
