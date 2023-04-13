@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-replace-lambda-callouts.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.4.1...@aws-amplify/amplify-migration-tests@5.5.0-replace-lambda-callouts.0) (2023-04-13)
+
+
+### Bug Fixes
+
+* custom resource tests ([#12253](https://github.com/aws-amplify/amplify-cli/issues/12253)) ([ecd4d76](https://github.com/aws-amplify/amplify-cli/commit/ecd4d76e1fc4cad97d3a2e762f17a0f1585aef7e))
+* removes userPool client lambda and update appclient secret ([#12376](https://github.com/aws-amplify/amplify-cli/issues/12376)) ([a391baf](https://github.com/aws-amplify/amplify-cli/commit/a391baf5cb0241052638e780a737691e08f4d9bf))
+* stops cdk v1 warning for non cdk custom resource ([#12241](https://github.com/aws-amplify/amplify-cli/issues/12241)) ([6a3d08c](https://github.com/aws-amplify/amplify-cli/commit/6a3d08cc368383a14da9b261e1b9d2be444c44a9))
+
+
+### Features
+
+*  replace role map lambda with cfn code ([#12231](https://github.com/aws-amplify/amplify-cli/issues/12231)) ([0bd9dd1](https://github.com/aws-amplify/amplify-cli/commit/0bd9dd1bd89af187354c3358dae61b170ad5e5c8))
+* replace hosted ui lambda with user pool domain cfn code ([#12274](https://github.com/aws-amplify/amplify-cli/issues/12274)) ([d660adc](https://github.com/aws-amplify/amplify-cli/commit/d660adcbd55afcd38b59e148e172eea7e5d22c6c))
+* replace oauth lambda with cfn ([#12442](https://github.com/aws-amplify/amplify-cli/issues/12442)) ([ceca069](https://github.com/aws-amplify/amplify-cli/commit/ceca0699e17e3de27056ca7179cd56c8420e83c1))
+
+
+
+
+
 ## [5.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.4.2-rc.e9e0d157d.0...@aws-amplify/amplify-migration-tests@5.4.2) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

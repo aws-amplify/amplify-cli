@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.18-replace-lambda-callouts.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.16...amplify-java-function-template-provider@1.5.18-replace-lambda-callouts.0) (2023-04-13)
+
+
+### Bug Fixes
+
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+
+
+
+
+
 ## [1.5.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.17-rc.e9e0d157d.0...amplify-java-function-template-provider@1.5.17) (2023-03-23)
 
 **Note:** Version bump only for package amplify-java-function-template-provider

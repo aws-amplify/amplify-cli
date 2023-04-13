@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0-replace-lambda-callouts.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.0...@aws-amplify/amplify-e2e-core@4.9.0-replace-lambda-callouts.0) (2023-04-13)
+
+
+### Bug Fixes
+
+* **api:** add null placeholder for nested stack during api rebuild ([#11460](https://github.com/aws-amplify/amplify-cli/issues/11460)) ([33f9b34](https://github.com/aws-amplify/amplify-cli/commit/33f9b3415ce73d5318bb065f3e970daa90b8b8f1))
+* custom resource tests ([#12253](https://github.com/aws-amplify/amplify-cli/issues/12253)) ([ecd4d76](https://github.com/aws-amplify/amplify-cli/commit/ecd4d76e1fc4cad97d3a2e762f17a0f1585aef7e))
+* export storage types bug ([#12146](https://github.com/aws-amplify/amplify-cli/issues/12146)) ([9531ed2](https://github.com/aws-amplify/amplify-cli/commit/9531ed22575347aeae821d4cff6f1ca48d031a38))
+* invalid method call in interactions walkthrough ([#12108](https://github.com/aws-amplify/amplify-cli/issues/12108)) ([2d3b3b6](https://github.com/aws-amplify/amplify-cli/commit/2d3b3b6f6a343a5895acf4c51b26f7104e0fc794))
+
+
+### Features
+
+*  replace role map lambda with cfn code ([#12231](https://github.com/aws-amplify/amplify-cli/issues/12231)) ([0bd9dd1](https://github.com/aws-amplify/amplify-cli/commit/0bd9dd1bd89af187354c3358dae61b170ad5e5c8))
+* replace hosted ui lambda with user pool domain cfn code ([#12274](https://github.com/aws-amplify/amplify-cli/issues/12274)) ([d660adc](https://github.com/aws-amplify/amplify-cli/commit/d660adcbd55afcd38b59e148e172eea7e5d22c6c))
+
+
+
+
+
 ## [4.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.1-rc.e9e0d157d.0...@aws-amplify/amplify-e2e-core@4.8.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core

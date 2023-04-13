@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0-replace-lambda-callouts.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.0...amplify-e2e-tests@4.1.0-replace-lambda-callouts.0) (2023-04-13)
+
+
+### Bug Fixes
+
+* **api:** add null placeholder for nested stack during api rebuild ([#11460](https://github.com/aws-amplify/amplify-cli/issues/11460)) ([33f9b34](https://github.com/aws-amplify/amplify-cli/commit/33f9b3415ce73d5318bb065f3e970daa90b8b8f1))
+* broken build ([#12220](https://github.com/aws-amplify/amplify-cli/issues/12220)) ([8dad1f3](https://github.com/aws-amplify/amplify-cli/commit/8dad1f3386ddc74f1956da429c1f905ba3dcb4b3))
+* custom resource tests ([#12253](https://github.com/aws-amplify/amplify-cli/issues/12253)) ([ecd4d76](https://github.com/aws-amplify/amplify-cli/commit/ecd4d76e1fc4cad97d3a2e762f17a0f1585aef7e))
+* export storage types bug ([#12146](https://github.com/aws-amplify/amplify-cli/issues/12146)) ([9531ed2](https://github.com/aws-amplify/amplify-cli/commit/9531ed22575347aeae821d4cff6f1ca48d031a38))
+* fix failing custom storage e2e test ([#12222](https://github.com/aws-amplify/amplify-cli/issues/12222)) ([b2ee7b6](https://github.com/aws-amplify/amplify-cli/commit/b2ee7b645f15f85d1f4e6e238c62c163e35d2f58))
+* generate model introspection regardless of studio and datastore ([#12258](https://github.com/aws-amplify/amplify-cli/issues/12258)) ([8056b01](https://github.com/aws-amplify/amplify-cli/commit/8056b01ac144268797ff40e734a04fd7b665872f))
+* invalid method call in interactions walkthrough ([#12108](https://github.com/aws-amplify/amplify-cli/issues/12108)) ([2d3b3b6](https://github.com/aws-amplify/amplify-cli/commit/2d3b3b6f6a343a5895acf4c51b26f7104e0fc794))
+* removes userPool client lambda and update appclient secret ([#12376](https://github.com/aws-amplify/amplify-cli/issues/12376)) ([a391baf](https://github.com/aws-amplify/amplify-cli/commit/a391baf5cb0241052638e780a737691e08f4d9bf))
+* windows test failing on long paths ([#12229](https://github.com/aws-amplify/amplify-cli/issues/12229)) ([ddd9295](https://github.com/aws-amplify/amplify-cli/commit/ddd9295e2e084860c7d8b83487b36c5047865321))
+* windows test failing on long paths (typo in test) ([#12238](https://github.com/aws-amplify/amplify-cli/issues/12238)) ([b2a768a](https://github.com/aws-amplify/amplify-cli/commit/b2a768ae1a84bd2dc4cd8011d88226534aa45bf2))
+
+
+### Features
+
+*  replace role map lambda with cfn code ([#12231](https://github.com/aws-amplify/amplify-cli/issues/12231)) ([0bd9dd1](https://github.com/aws-amplify/amplify-cli/commit/0bd9dd1bd89af187354c3358dae61b170ad5e5c8))
+* replace hosted ui lambda with user pool domain cfn code ([#12274](https://github.com/aws-amplify/amplify-cli/issues/12274)) ([d660adc](https://github.com/aws-amplify/amplify-cli/commit/d660adcbd55afcd38b59e148e172eea7e5d22c6c))
+
+
+
+
+
 ## [4.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.1-rc.e9e0d157d.0...amplify-e2e-tests@4.0.1) (2023-03-23)
 
 **Note:** Version bump only for package amplify-e2e-tests

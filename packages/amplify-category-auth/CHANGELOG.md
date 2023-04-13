@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-replace-lambda-callouts.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.0...@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts.0) (2023-04-13)
+
+
+### Bug Fixes
+
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+* removes userPool client lambda and update appclient secret ([#12376](https://github.com/aws-amplify/amplify-cli/issues/12376)) ([a391baf](https://github.com/aws-amplify/amplify-cli/commit/a391baf5cb0241052638e780a737691e08f4d9bf))
+
+
+### Features
+
+*  replace role map lambda with cfn code ([#12231](https://github.com/aws-amplify/amplify-cli/issues/12231)) ([0bd9dd1](https://github.com/aws-amplify/amplify-cli/commit/0bd9dd1bd89af187354c3358dae61b170ad5e5c8))
+* replace hosted ui lambda with user pool domain cfn code ([#12274](https://github.com/aws-amplify/amplify-cli/issues/12274)) ([d660adc](https://github.com/aws-amplify/amplify-cli/commit/d660adcbd55afcd38b59e148e172eea7e5d22c6c))
+* replace lambda callout with oidc cfn code ([#12404](https://github.com/aws-amplify/amplify-cli/issues/12404)) ([fe5c34f](https://github.com/aws-amplify/amplify-cli/commit/fe5c34f111a7aa3c895d499d16a61c2786edefb8))
+* replace oauth lambda with cfn ([#12442](https://github.com/aws-amplify/amplify-cli/issues/12442)) ([ceca069](https://github.com/aws-amplify/amplify-cli/commit/ceca0699e17e3de27056ca7179cd56c8420e83c1))
+
+
+### Reverts
+
+* readd the hosted ui lambdas and the base role for the lambda callouts ([#12426](https://github.com/aws-amplify/amplify-cli/issues/12426)) ([d83ac11](https://github.com/aws-amplify/amplify-cli/commit/d83ac111b83e374b23b39a8dcfd83ea96943dc99))
+
+
+
+
+
 ## [3.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.1-rc.e9e0d157d.0...@aws-amplify/amplify-category-auth@3.0.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
