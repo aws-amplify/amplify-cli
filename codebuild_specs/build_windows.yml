@@ -6,10 +6,7 @@ phases:
     commands:
       - node --version
       - npm --version
-      - bash ./shared-scripts.sh
-      - bash _buildWindows
-      - yarn run production-build
-      - yarn build-tests
+      - bash ./build-windows.sh
 
 artifacts:
   files:
