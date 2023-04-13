@@ -26,7 +26,8 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
     throw new AmplifyFault('CloudFormationTemplateFault', {
       message: `No CloudFormation template found at ${filePath}`,
       resolution: `Ensure the file exists and is a valid CloudFormation template.
-      File path should match the following pattern: '<projectRoot>/amplify/backend/<category>/<resourceName>/<resourceName>-cloudformation-template.json' where <resourceName> should match the value from <projectRoot>/amplify/team-provider-info.json.`,
+File path should match the following pattern: '<projectRoot>/amplify/backend/<category>/<resourceName>/<resourceName>-cloudformation-template.json' where <resourceName> should match the value from <projectRoot>/amplify/team-provider-info.json.
+If the resource directory was manually removed, run 'amplify remove <category>' to remove the resource from the project.`,
     });
   }
   const fileContent = fs.readFileSync(filePath, 'utf8');

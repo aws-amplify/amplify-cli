@@ -1,5 +1,6 @@
 import {
   $TSContext,
+  AmplifyError,
   exitOnNextTick,
   pathManager,
   promptConfirmationRemove,
@@ -130,11 +131,10 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
       if (resourceItem.dependsOn) {
         resourceItem.dependsOn.forEach((dependsOnItem) => {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
-            printer.error('Resource cannot be removed because it has a dependency on another resource');
-            printer.error(`Dependency: ${resourceItem.service} - ${resourceItem.resourceName}`);
-            const error = new Error('Resource cannot be removed because it has a dependency on another resource');
-            error.stack = undefined;
-            throw error;
+            throw new AmplifyError('ResourceRemoveError', {
+              message: 'Resource cannot be removed because it has a dependency on another resource',
+              details: `Dependency: ${resourceItem.service} - ${resourceItem.resourceName}. Run 'amplify remove ${resourceItem.service} ${resourceItem.resourceName}' to remove the dependency first.`,
+            });
           }
         });
       }

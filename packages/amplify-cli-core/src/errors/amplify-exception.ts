@@ -165,6 +165,7 @@ export type AmplifyErrorType =
   | 'ResourceDoesNotExistError'
   | 'ResourceInUseError'
   | 'ResourceNotReadyError'
+  | 'ResourceRemoveError'
   | 'SchemaNotFoundError'
   | 'SchemaValidationError'
   | 'SearchableMockProcessError'
