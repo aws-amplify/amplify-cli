@@ -7,7 +7,7 @@ phases:
       - node --version
       - npm --version
       - . ./shared-scripts.sh
-      - _buildWindows
+      - . _buildWindows
       - yarn run production-build
       - yarn build-tests
 
