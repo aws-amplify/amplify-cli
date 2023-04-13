@@ -4,16 +4,8 @@ env:
 phases:
   build:
     commands:
-      # - node -v
-      # - npm -v
-      # - nvm version
-      # - nvm install 18.15.0
-      # - nvm use 18.15.0
-      # - nvm ls
-      # - node --version
-      # - npm --version
-      - npm install -g yarn
-      - npm install -g node-gyp
+      - node --version
+      - npm --version
       - yarn run production-build
       - yarn build-tests
 
