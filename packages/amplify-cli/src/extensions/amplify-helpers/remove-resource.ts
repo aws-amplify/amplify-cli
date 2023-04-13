@@ -8,7 +8,7 @@ import {
   ResourceDoesNotExistError,
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
 import { removeResourceParameters } from './envResourceParams';
@@ -71,17 +71,7 @@ export async function removeResource(
         return { name: `${resource} ${suffix}`, value: resource };
       });
     }
-    const question = [
-      {
-        name: 'resource',
-        message: 'Choose the resource you would want to remove',
-        type: 'list',
-        choices: enabledCategoryResources,
-      },
-    ];
-    const answer = await inquirer.prompt(question);
-
-    resourceName = answer.resource as string;
+    resourceName = await prompter.pick<'one', string>('Choose the resource you would want to remove', enabledCategoryResources);
   }
 
   if (resourceNameCallback) {
@@ -111,13 +101,10 @@ export async function removeResource(
   } catch (err) {
     throw new AmplifyFault(
       'ResourceRemoveFault',
-      {
-        message: 'An error occurred when removing the resources from the local directory',
-      },
+      { message: 'An error occurred when removing the resources from the local directory' },
       err,
     );
   }
-  return undefined;
 }
 
 const deleteResourceFiles = async (context: $TSContext, category: string, resourceName: string, resourceDir: string, force = false) => {
@@ -130,7 +117,7 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
             throw new AmplifyError('ResourceRemoveError', {
               message: 'Resource cannot be removed because it has a dependency on another resource',
-              details: `Dependency: ${resourceItem.service} - ${resourceItem.resourceName}. Run 'amplify remove ${resourceItem.service} ${resourceItem.resourceName}' to remove the dependency first.`,
+              details: `Dependency: ${resourceItem.service} - ${resourceItem.resourceName}. Remove the dependency first.`,
             });
           }
         });

@@ -53,8 +53,12 @@ export const run = async (context: $TSContext): Promise<void> => {
       await functionSecretsManager.deleteAllFunctionSecrets(resourceName);
     }
   } catch (e) {
-    throw new AmplifyFault('ResourceRemoveFault', {
-      message: 'An error occurred when removing the function resource',
-    });
+    throw new AmplifyFault(
+      'ResourceRemoveFault',
+      {
+        message: 'An error occurred when removing the function resource',
+      },
+      e,
+    );
   }
 };
