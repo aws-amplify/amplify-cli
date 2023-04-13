@@ -6,6 +6,9 @@ phases:
     commands:
       - node --version
       - npm --version
+      - sh source ./shared-scripts && _buildWindows
+      - bash
+      - source ./shared-scripts && _buildWindows
       - yarn run production-build
       - yarn build-tests
 
