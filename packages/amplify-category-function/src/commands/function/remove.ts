@@ -48,6 +48,8 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   try {
     await amplify.removeResource(context, categoryName, resourceName, undefined, resourceNameCallback);
+    // if the resource has not been pushed and it has secrets, we need to delete them now
+    // otherwise we will orphan the secrets in the cloud
     if (!isFunctionPushed(resourceName) && hasSecrets) {
       const functionSecretsManager = await FunctionSecretsStateManager.getInstance(context);
       await functionSecretsManager.deleteAllFunctionSecrets(resourceName);
