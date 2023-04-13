@@ -3,6 +3,9 @@
 # set exit on error to true
 set -e
 
+export MSYS_NO_PATHCONV=1
+export MSYS2_ARG_CONV_EXCL="*"
+
 # We have custom caching for our CodeBuild pipelines
 # which allows us to share caches with jobs in the same batch
 
@@ -13,7 +16,7 @@ function storeCache {
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
     echo writing cache to $s3Path
     # zip contents and upload to s3
-    if ! (cd $localPath && tar -cvzf cache.tar . && ls && !MSYS_NO_PATHCONV=1 aws s3 cp "cache.tar" "$s3Path"); then
+    if ! (cd $localPath && tar -cvzf cache.tar . && ls && aws s3 cp cache.tar $s3Path); then
         echo Something went wrong storing the cache.
     fi
     echo done writing cache
