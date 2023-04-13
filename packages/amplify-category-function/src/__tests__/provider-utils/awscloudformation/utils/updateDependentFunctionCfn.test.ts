@@ -14,7 +14,7 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/loadFunctionParame
 jest.mock('path');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/lambda-walkthrough');
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),

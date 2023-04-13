@@ -10,7 +10,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import { isWindowsPlatform } from 'amplify-cli-core';
+import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify init d', () => {
   let projRoot: string;

@@ -1,4 +1,12 @@
-import { $TSAny, isCI, CommandLineInput, InputOptions, IUsageDataPayload, ProjectSettings, TimedCodePath } from 'amplify-cli-core';
+import {
+  $TSAny,
+  isCI,
+  CommandLineInput,
+  InputOptions,
+  IUsageDataPayload,
+  ProjectSettings,
+  TimedCodePath,
+} from '@aws-amplify/amplify-cli-core';
 import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
 import * as os from 'os';
 import { SerializableError } from './SerializableError';

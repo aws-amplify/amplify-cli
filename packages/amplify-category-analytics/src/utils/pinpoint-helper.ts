@@ -8,6 +8,7 @@ import {
   $TSMeta,
   AmplifyCategories,
   stateManager,
+  FeatureFlags,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
@@ -125,21 +126,43 @@ export const getNotificationsCategoryHasPinpointIfExists = (): PinpointApp | und
 /**
  * returns provider pinpoint region mapping
  */
-export const getPinpointRegionMappings = async (context: $TSContext): Promise<Record<string, $TSAny>> => {
+export const getPinpointRegionMappings = async (): Promise<Record<string, $TSAny>> => {
   const Mappings: Record<string, $TSAny> = {
     RegionMapping: {},
   };
-  const regionMapping: $TSAny = await context.amplify.invokePluginMethod(
-    context,
-    'awscloudformation',
-    undefined,
-    'getPinpointRegionMapping',
-    [],
-  );
+  const regionMapping = getPinpointRegionMapping();
   Object.keys(regionMapping).forEach((region) => {
     Mappings.RegionMapping[region] = {
       pinpointRegion: regionMapping[region],
     };
   });
   return Mappings;
+};
+
+export const getPinpointRegionMapping = (): { [key: string]: string } => {
+  const latestPinpointRegions = FeatureFlags.getNumber('latestRegionSupport.pinpoint');
+
+  return {
+    'us-east-1': 'us-east-1',
+    'us-east-2': latestPinpointRegions ? 'us-east-2' : 'us-east-1',
+    'sa-east-1': 'us-east-1',
+    'ca-central-1': latestPinpointRegions >= 1 ? 'ca-central-1' : 'us-east-1',
+    'us-west-1': 'us-west-2',
+    'us-west-2': 'us-west-2',
+    'cn-north-1': 'us-west-2',
+    'cn-northwest-1': 'us-west-2',
+    'ap-south-1': latestPinpointRegions >= 1 ? 'ap-south-1' : 'us-east-1',
+    'ap-northeast-3': 'us-west-2',
+    'ap-northeast-2': latestPinpointRegions >= 1 ? 'ap-northeast-2' : 'us-east-1',
+    'ap-southeast-1': latestPinpointRegions >= 1 ? 'ap-southeast-1' : 'us-east-1',
+    'ap-southeast-2': latestPinpointRegions >= 1 ? 'ap-southeast-2' : 'us-east-1',
+    'ap-northeast-1': latestPinpointRegions >= 1 ? 'ap-northeast-1' : 'us-east-1',
+    'eu-central-1': 'eu-central-1',
+    'eu-north-1': 'eu-central-1',
+    'eu-south-1': 'eu-central-1',
+    'eu-west-1': 'eu-west-1',
+    'eu-west-2': latestPinpointRegions >= 1 ? 'eu-west-2' : 'eu-west-1',
+    'eu-west-3': 'eu-west-1',
+    'me-south-1': 'ap-south-1',
+  };
 };

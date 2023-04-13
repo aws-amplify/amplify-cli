@@ -5,7 +5,7 @@ import { S3 } from '../aws-utils/aws-s3';
 
 jest.mock('fs-extra');
 jest.mock('../aws-utils/aws-s3');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('graphql-transformer-core');
 jest.mock('../utils/admin-helpers');
 

@@ -16,7 +16,7 @@ const context_stub = {
   },
 } as unknown as jest.Mocked<$TSContext>;
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   open: jest.fn().mockReturnValue(Promise.resolve()),
 }));
 jest.mock('inquirer', () => ({

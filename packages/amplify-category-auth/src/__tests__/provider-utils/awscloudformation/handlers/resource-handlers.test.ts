@@ -18,7 +18,7 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/message-printer');
 // eslint-disable-next-line spellcheck/spell-checker
 jest.mock('../../../../provider-utils/awscloudformation/utils/amplify-meta-updaters');
 jest.mock('../../../../provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const getSupportedServicesMock = getSupportedServices as jest.MockedFunction<typeof getSupportedServices>;
 getSupportedServicesMock.mockReturnValue({

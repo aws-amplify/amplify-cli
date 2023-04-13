@@ -1,4 +1,4 @@
-import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks } from 'amplify-cli-core';
+import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks } from '@aws-amplify/amplify-cli-core';
 import { CLIInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { printer } from '@aws-amplify/amplify-prompts';

@@ -11,7 +11,7 @@ import {
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
-import { JSONUtilities, readCFNTemplate } from 'amplify-cli-core';
+import { JSONUtilities, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify export backend', () => {
   let projRoot: string;

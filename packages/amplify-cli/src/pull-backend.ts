@@ -1,4 +1,4 @@
-import { exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import { exitOnNextTick, stateManager, $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { initializeEnv } from './initialize-env';
 import { postPullCodegen } from './amplify-service-helper';
 import { printer } from '@aws-amplify/amplify-prompts';

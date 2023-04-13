@@ -4,6 +4,18 @@ import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from 
 import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
 import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  return {
+    ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
+    FeatureFlags: {
+      getBoolean: jest.fn(),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+  };
+});
+
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 

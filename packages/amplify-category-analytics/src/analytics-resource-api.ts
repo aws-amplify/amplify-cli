@@ -19,7 +19,7 @@ import { addResource } from './provider-utils/awscloudformation/index';
 import { analyticsPush } from './commands/analytics';
 import { invokeAuthPush } from './plugin-client-api-auth';
 import { invokeNotificationsAPIGetAvailableChannelNames } from './plugin-client-api-notifications';
-import { pinpointHasInAppMessagingPolicy } from './utils/pinpoint-helper';
+import { getPinpointRegionMapping, pinpointHasInAppMessagingPolicy } from './utils/pinpoint-helper';
 import { getAnalyticsResources } from './utils/analytics-helper';
 import { analyticsMigrations } from './migrations';
 import { LocalEnvInfo } from '@aws-amplify/amplify-cli-core';
@@ -341,3 +341,5 @@ export const analyticsPluginAPIPinpointHasInAppMessagingPolicy = async (context:
  * Exposes the analytics migration API
  */
 export const analyticsPluginAPIMigrations = (context: $TSContext): Promise<void> => analyticsMigrations(context);
+
+export const analyticsGetPinpointRegionMapping = (): Record<string, string> => getPinpointRegionMapping();

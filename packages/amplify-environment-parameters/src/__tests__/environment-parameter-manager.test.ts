@@ -1,7 +1,7 @@
-import { pathManager, stateManager, AmplifyError } from 'amplify-cli-core';
+import { pathManager, stateManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { IEnvironmentParameterManager, saveAll } from '../environment-parameter-manager';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const testEnv = 'testEnv';
 stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: testEnv });

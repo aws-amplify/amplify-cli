@@ -1,4 +1,4 @@
-import { $TSContext, isPackaged, pathManager } from 'amplify-cli-core';
+import { $TSContext, isPackaged, pathManager } from '@aws-amplify/amplify-cli-core';
 import fetch from 'node-fetch';
 import { gt } from 'semver';
 import * as path from 'path';

@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { checkStorageAuthenticationRequirements } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-auth-api';
 
 describe('checkStorageAuthenticationRequirements', () => {

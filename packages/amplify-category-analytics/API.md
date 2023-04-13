@@ -12,6 +12,9 @@ import { IPluginCapabilityAPIResponse } from '@aws-amplify/amplify-cli-core';
 import { NotificationChannels } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
+export const analyticsGetPinpointRegionMapping: () => Record<string, string>;
+
+// @public (undocumented)
 export const analyticsPluginAPICreateResource: (context: $TSContext, resourceProviderServiceName: string) => Promise<IAmplifyResource>;
 
 // @public (undocumented)

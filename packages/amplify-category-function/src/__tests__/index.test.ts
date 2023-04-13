@@ -6,7 +6,7 @@ import { getLocalFunctionSecretNames } from '../provider-utils/awscloudformation
 import { getAppId, secretsPathAmplifyAppIdKey } from '../provider-utils/awscloudformation/secrets/secretName';
 
 jest.mock('promise-sequential');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 jest.mock('../provider-utils/awscloudformation/secrets/functionSecretsStateManager');
 jest.mock('../provider-utils/awscloudformation/secrets/secretName');

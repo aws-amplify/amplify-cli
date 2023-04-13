@@ -1,4 +1,4 @@
-import { $TSAny, projectNotInitializedError } from 'amplify-cli-core';
+import { $TSAny, projectNotInitializedError } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 import * as path from 'path';

@@ -5,7 +5,7 @@ import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation
 import { zipPackage } from '../../../../provider-utils/awscloudformation/utils/zipResource';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoader');
 jest.mock('../../../../provider-utils/awscloudformation/utils/zipResource');
 
