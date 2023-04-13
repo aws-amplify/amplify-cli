@@ -44,7 +44,7 @@ export class AmplifyRootStackTransform {
 
     // apply override on Amplify Object having CDK Constructs for Root Stack
     // enabling overrides for hosting when forcepush flag is used with init
-    if (context.input.command !== 'init' || (context.input.command !== 'init' && context?.input?.options?.forcePush === true)) {
+    if (context.input.command !== 'init' || (context.input.command === 'init' && context?.input?.options?.forcePush === true)) {
       await this.applyOverride();
     }
 
