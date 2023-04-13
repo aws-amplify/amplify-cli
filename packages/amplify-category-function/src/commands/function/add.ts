@@ -21,7 +21,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     const providerController = servicesMetadata[result.service].providerController;
     if (!providerController) {
       printer.error('Provider not configured for this category');
-      return undefined;
+      return;
     }
     await providerController.addResource(context, categoryName, result.service, options);
     printer.blankLine();
