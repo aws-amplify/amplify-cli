@@ -16,9 +16,9 @@ node -v
 npm -v
 yarn -v
 
-# source ./scripts-windows/shared-scripts-windows.sh
+source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
 
-# _setShell
+_setShell
 
 yarn run production-build
 yarn build-tests
