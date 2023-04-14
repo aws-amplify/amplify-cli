@@ -127,6 +127,7 @@ RUN git clone https://github.com/tj/n $N_SRC_DIR \
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
 
+
 #go
 RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
 ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH"
@@ -144,9 +145,7 @@ ENV DOTNET_ROOT="/root/.dotnet"
 # Add .NET Core 6 Global Tools install folder to PATH
 RUN  /usr/local/bin/dotnet-install.sh -v $DOTNET_6_SDK_VERSION \
      && dotnet --list-sdks \
-     && rm -rf /tmp/* \
-     && dotnet tool install -g amazon.lambda.tools \
-     && dotnet tool install -g amazon.lambda.testtool-6.0
+     && rm -rf /tmp/*
 
 # Trigger the population of the local package cache
 ENV NUGET_XMLDOC_MODE skip
@@ -157,6 +156,9 @@ RUN set -ex \
     && cd .. \
     && rm -rf warmup \
     && rm -rf /tmp/NuGetScratch
+
+RUN dotnet tool install -g amazon.lambda.tools && \
+    dotnet tool install -g amazon.lambda.testtool-6.0
 
 # Install Powershell Core
 # See instructions at https://docs.microsoft.com/en-us/powershell/scripting/setup/installing-powershell-core-on-linux
@@ -189,7 +191,7 @@ RUN  n $NODE_18_VERSION && npm install --save-dev -g -f grunt && npm install --s
 
 #****************      CYPRESS TOOLS   ****************************************************
 
-RUN apt-get install libgtk2.0-0 libgtk-3-0 libbm-dev libnotify-dev libconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+# RUN apt-get install libgtk2.0-0 libgtk-3-0 libbm-dev libnotify-dev libconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
 #****************      END CYPRESS TOOLS     ****************************************************
 
