@@ -134,7 +134,7 @@ describe('test amplify remove function', () => {
       runtime,
     );
 
-    await removeLayerVersion(projRoot, { removeNoLayerVersions: true }, [1, 2], [1, 2]);
+    await removeLayerVersion(projRoot, { removeNoLayerVersions: true, multipleResources: true }, [1, 2], [1, 2]);
     validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
 
     await removeFunction(projRoot, fnName1);
