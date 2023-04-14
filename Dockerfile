@@ -146,7 +146,9 @@ ENV DOTNET_ROOT="/root/.dotnet"
 # Add .NET Core 6 Global Tools install folder to PATH
 RUN  /usr/local/bin/dotnet-install.sh -v $DOTNET_6_SDK_VERSION \
      && dotnet --list-sdks \
-     && rm -rf /tmp/*
+     && rm -rf /tmp/* \
+     && dotnet tool install -g amazon.lambda.tools \
+     && dotnet tool install -g amazon.lambda.testtool-6.0
 
 # Trigger the population of the local package cache
 ENV NUGET_XMLDOC_MODE skip
