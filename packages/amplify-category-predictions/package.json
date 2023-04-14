@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-predictions",
-  "version": "5.0.4",
+  "version": "5.0.3",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",
