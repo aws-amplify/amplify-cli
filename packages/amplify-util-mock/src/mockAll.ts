@@ -1,9 +1,14 @@
 import { start as startAppSyncServer } from './api';
 import { start as startS3Server } from './storage';
+import { start as startLambdaServer } from './func';
+
 import { ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
+import { prompter } from '@aws-amplify/amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+
 const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', FunctionServiceName.LambdaFunction];
 
-export async function mockAllCategories(context: any) {
+export async function mockAllCategories(context: $TSContext): Promise<void> {
   const resources = await context.amplify.getResourceStatus();
   const mockableResources = resources.allResources.filter(
     (resource) => resource.service && MOCK_SUPPORTED_CATEGORY.includes(resource.service),
@@ -30,14 +35,29 @@ export async function mockAllCategories(context: any) {
         }
       }
     }
+    const mockableCategories = mockableResources
+      .map((r) =>
+        r.service.replace('AppSync', 'GraphQL API').replace('S3', 'Storage').replace(FunctionServiceName.LambdaFunction, 'Function'),
+      )
+      .filter((value, index, self) => self.indexOf(value) === index);
+
+    // Prompts users for categories
+    const selectedMockableCategory = await prompter.pick<'many', string>('Select the category', mockableCategories, {
+      returnSize: 'many',
+    });
+
     // Run the mock servers
     const serverPromises = [];
-    if (mockableResources.find((r) => r.service === 'AppSync')) {
+    if (selectedMockableCategory.find((service) => service === 'Function')) {
+      await startLambdaServer(context);
+    }
+    if (selectedMockableCategory.find((service) => service === 'GraphQL API')) {
       serverPromises.push(startAppSyncServer(context));
     }
-    if (mockableResources.find((r) => r.service === 'S3')) {
+    if (selectedMockableCategory.find((service) => service === 'Storage')) {
       serverPromises.push(startS3Server(context));
     }
+
     await Promise.all(serverPromises);
   } else {
     context.print.info('No resource in project can be mocked locally.');
