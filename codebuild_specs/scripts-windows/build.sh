@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# set exit on error to true
+set -e
+
+echo $CODEBUILD_SRC_DIR
+echo $APPLE_KEY_ID
+
+node -v
+npm -v
+yarn -v
+npm i -g yarn
+
+export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
+export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify.exe
+
+source ./shared-scripts-windows.sh
+
+_setShell
+
+yarn run production-build
+yarn build-tests
+ls $CODEBUILD_SRC_DIR
+ls $HOME
+ls $CODEBUILD_SRC_DIR/..
+
+# storeCache $CODEBUILD_SRC_DIR repo-windows
+# storeCache $HOME/.cache .cache-windows
+
+loadCache all-binaries $CODEBUILD_SRC_DIR/out
