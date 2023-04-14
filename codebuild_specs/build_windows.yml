@@ -5,7 +5,7 @@ phases:
   build:
     commands:
       - yarn run production-build
-      - bash .save-build-windows.sh
+      - bash ./save-build-windows.sh
 
 artifacts:
   files:
