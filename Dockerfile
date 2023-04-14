@@ -116,8 +116,6 @@ ENV PATH "/root/.dotnet/:/root/.dotnet/tools/:$PATH"
 RUN set -ex  \
 && wget -qO /usr/local/bin/dotnet-install.sh https://dot.net/v1/dotnet-install.sh \
 && chmod +x /usr/local/bin/dotnet-install.sh \
-&& dotnet tool install -g amazon.lambda.tools \
-&& dotnet tool install -g amazon.lambda.testtool-6.0
 
 #nodejs
 ARG SRC_DIR="/usr/src"
