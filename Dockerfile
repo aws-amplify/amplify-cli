@@ -11,7 +11,7 @@ RUN set -ex \
     && apt-get install software-properties-common -y -qq --no-install-recommends \
     && apt-add-repository -y ppa:git-core/ppa \
     && apt-get update \
-    && sudo apt-get install -y \
+    && apt-get install -y \
       xdg-utils \
       libatk-bridge2.0-0 \
       libgtk-3.0 \
@@ -191,7 +191,7 @@ RUN  n $NODE_18_VERSION && npm install --save-dev -g -f grunt && npm install --s
 
 #****************      CYPRESS TOOLS   ****************************************************
 
-RUN sudo apt-get install libgtk2.0-0 libgtk-3-0 libbm-dev libnotify-dev libconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+RUN apt-get install libgtk2.0-0 libgtk-3-0 libbm-dev libnotify-dev libconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
 #****************      END CYPRESS TOOLS     ****************************************************
 
