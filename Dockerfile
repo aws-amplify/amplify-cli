@@ -12,6 +12,7 @@ RUN set -ex \
     && apt-add-repository -y ppa:git-core/ppa \
     && apt-get update \
     && apt-get install git=1:2.* -y -qq --no-install-recommends \
+    && apt-get install -y lsof
     && git version \
     && apt-get install -y -qq --no-install-recommends openssh-client \
     && mkdir ~/.ssh \
