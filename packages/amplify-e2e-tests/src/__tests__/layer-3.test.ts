@@ -1,35 +1,24 @@
 import {
   addFunction,
   addLayer,
-  addOptData,
-  amplifyPull,
   amplifyPushAuth,
   amplifyPushLayer,
-  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   ExecutionContext,
-  getAppId,
   getCurrentLayerArnFromMeta,
   getProjectConfig,
   getProjectMeta,
   initJSProjectWithProfile,
-  LayerPermission,
-  LayerPermissionChoice,
-  LayerPermissionName,
   LayerRuntime,
   removeFunction,
-  removeLayer,
   removeLayerVersion,
-  updateLayer,
   updateOptData,
   validateLayerDir,
   validateLayerMetadata,
-  validatePushedVersion,
 } from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { addEnvironment, checkoutEnvironment, listEnvironment } from '../environment/env';
 
 describe('test amplify remove function', () => {
   let projRoot: string;
