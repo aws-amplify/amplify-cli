@@ -4,9 +4,8 @@ env:
 phases:
   build:
     commands:
-      - node --version
-      - npm --version
-      - (bash source ./shared-scripts-windows.sh) -and (bash _buildWindows)
+      - bash source ./shared-scripts-windows.sh
+      - bash _buildWindows
 
 artifacts:
   files:
