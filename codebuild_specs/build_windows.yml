@@ -6,8 +6,10 @@ phases:
     commands:
       - node --version
       - npm --version
-      - npm install -g yarn
-      - bash ./build-windows.sh
+      - yarn -v
+      - yarn run production-build
+      - yarn build-tests
+      - bash ./save-build-windows.sh
 
 artifacts:
   files:

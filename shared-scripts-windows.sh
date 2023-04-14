@@ -93,17 +93,16 @@ function _setShell {
     echo Setting Shell
     yarn config set script-shell $(which bash)
 }
-function _buildLinux {
-    _setShell
-    echo Linux Build
-    yarn run production-build
-    yarn build-tests
+function _saveBuildWindows {
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
 function _buildWindows {
     _setShell
     echo Windows Build
+    node --version
+    npm --version
+    npm i -g yarn
     yarn run production-build
     yarn build-tests
     ls $CODEBUILD_SRC_DIR
