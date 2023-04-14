@@ -24,7 +24,5 @@ ls $CODEBUILD_SRC_DIR
 ls $HOME
 ls $CODEBUILD_SRC_DIR/..
 
-# storeCache $CODEBUILD_SRC_DIR repo-windows
-# storeCache $HOME/.cache .cache-windows
-
-loadCache all-binaries $CODEBUILD_SRC_DIR/out
+storeCache $CODEBUILD_SRC_DIR repo-windows
+storeCache $HOME/.cache .cache-windows

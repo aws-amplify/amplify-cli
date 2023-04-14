@@ -4,8 +4,7 @@ env:
 phases:
   build:
     commands:
-      - yarn run production-build
-      - yarn run build-tests
+      - bash ./codebuild_specs/scripts-windows/build.sh
 
 artifacts:
   files:
