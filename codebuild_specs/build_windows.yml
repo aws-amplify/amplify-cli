@@ -1,9 +1,10 @@
 version: 0.2
 env:
-  shell: bash
+  shell: powershell.exe
 phases:
   build:
     commands:
+      - bash
       - source ./shared-scripts-windows.sh
       - _buildWindows
 
