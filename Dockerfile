@@ -115,9 +115,9 @@ RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscli
 ENV PATH "/root/.dotnet/:/root/.dotnet/tools/:$PATH"
 RUN set -ex  \
 && wget -qO /usr/local/bin/dotnet-install.sh https://dot.net/v1/dotnet-install.sh \
-&& chmod +x /usr/local/bin/dotnet-install.sh && \
-dotnet tool install -g amazon.lambda.tools && \
-dotnet tool install -g amazon.lambda.testtool-6.0
+&& chmod +x /usr/local/bin/dotnet-install.sh \
+&& dotnet tool install -g amazon.lambda.tools \
+&& dotnet tool install -g amazon.lambda.testtool-6.0
 
 #nodejs
 ARG SRC_DIR="/usr/src"
@@ -128,7 +128,6 @@ RUN git clone https://github.com/tj/n $N_SRC_DIR \
 #python
 RUN curl https://pyenv.run | bash
 ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
-
 
 #go
 RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
