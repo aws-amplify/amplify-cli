@@ -3,6 +3,7 @@
 # set exit on error to true
 set -e
 
+# The flags address the issue here: https://github.com/boto/botocore/issues/1716
 export MSYS_NO_PATHCONV=1
 export MSYS2_ARG_CONV_EXCL="*"
 
@@ -103,8 +104,8 @@ function _buildLinux {
 function _buildWindows {
     _setShell
     echo Windows Build
-    # yarn run production-build
-    # yarn build-tests
+    yarn run production-build
+    yarn build-tests
     ls $CODEBUILD_SRC_DIR
     ls $HOME
     ls $CODEBUILD_SRC_DIR/..
