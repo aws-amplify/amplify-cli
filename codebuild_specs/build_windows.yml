@@ -4,9 +4,7 @@ env:
 phases:
   build:
     commands:
-      - bash
-      - source ./shared-scripts-windows.sh
-      - _buildWindows
+      - (bash source ./shared-scripts-windows.sh) -and (bash _buildWindows)
 
 artifacts:
   files:
