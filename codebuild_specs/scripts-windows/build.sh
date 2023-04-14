@@ -3,6 +3,9 @@
 # set exit on error to true
 set -e
 
+export MSYS_NO_PATHCONV=1
+export MSYS2_ARG_CONV_EXCL="*"
+
 echo $CODEBUILD_SRC_DIR
 echo $APPLE_KEY_ID
 
