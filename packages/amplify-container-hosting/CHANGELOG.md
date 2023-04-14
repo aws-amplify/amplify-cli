@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.3-rc.1f645ca848.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.1...@aws-amplify/amplify-container-hosting@2.6.3-rc.1f645ca848.0) (2023-04-14)
+
+
+### Bug Fixes
+
+* **api:** bump api with ownerfield hotfix of 5.1.1 ([dacff4a](https://github.com/aws-amplify/amplify-cli/commit/dacff4ac65fc10d32ab3effbb61c604343f0a1a0))
+
+
+
+
+
 ## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.1-rc.e9e0d157d.0...@aws-amplify/amplify-container-hosting@2.6.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-container-hosting

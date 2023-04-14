@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.5-rc.1f645ca848.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3...@aws-amplify/cli-internal@11.0.5-rc.1f645ca848.0) (2023-04-14)
+
+
+### Bug Fixes
+
+* **api:** bump api with ownerfield hotfix of 5.1.1 ([dacff4a](https://github.com/aws-amplify/amplify-cli/commit/dacff4ac65fc10d32ab3effbb61c604343f0a1a0))
+
+
+
+
+
 ## [11.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli-internal@11.0.3) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

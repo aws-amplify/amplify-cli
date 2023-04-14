@@ -1,6 +1,6 @@
 {
   "name": "amplify-headless-interface",
-  "version": "1.17.2",
+  "version": "1.17.3-rc.1f645ca848.0",
   "description": "interfaces for amplify headless mode payloads",
   "main": "lib/index.js",
   "scripts": {
