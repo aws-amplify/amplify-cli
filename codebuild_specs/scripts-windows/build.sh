@@ -15,11 +15,10 @@ echo $AMPLIFY_DIR
 node -v
 npm -v
 yarn -v
-npm i -g yarn
 
-source ./scripts-windows/shared-scripts-windows.sh
+# source ./scripts-windows/shared-scripts-windows.sh
 
-_setShell
+# _setShell
 
 yarn run production-build
 yarn build-tests
