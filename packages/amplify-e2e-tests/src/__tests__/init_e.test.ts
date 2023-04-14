@@ -1,25 +1,24 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import {
-  initJSProjectWithProfile,
-  deleteProject,
   amplifyOverrideRoot,
   amplifyPushOverride,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
-  getProjectMeta,
-  replaceOverrideFileWithProjectInfo,
-  getProjectConfig,
-  gitInit,
-  gitCommitAll,
-  gitCleanFdx,
-  nonInteractiveInitWithForcePushAttach,
   getAmplifyInitConfig,
+  getProjectMeta,
+  gitCleanFdx,
+  gitCommitAll,
+  gitInit,
+  initJSProjectWithProfile,
   listRolePolicies,
+  nonInteractiveInitWithForcePushAttach,
+  replaceOverrideFileWithProjectInfo,
 } from '@aws-amplify/amplify-e2e-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 import { addEnvironment } from '../environment/env';
 
