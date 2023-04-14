@@ -4,7 +4,8 @@ env:
 phases:
   build:
     commands:
-      - (bash source ./shared-scripts-windows.sh) -and (bash _buildWindows)
+      - yarn run production-build
+      - bash .save-build-windows.sh
 
 artifacts:
   files:
