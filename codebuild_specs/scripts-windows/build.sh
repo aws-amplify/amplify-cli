@@ -23,5 +23,7 @@ _setShell
 yarn run production-build
 yarn build-tests
 
+
+source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
 storeCache $CODEBUILD_SRC_DIR repo-windows
 storeCache $HOME/.cache .cache-windows
