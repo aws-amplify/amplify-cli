@@ -71,12 +71,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   hostedUICustomResourcePolicy?: iam.CfnPolicy;
   hostedUICustomResourceLogPolicy?: iam.CfnPolicy;
   hostedUICustomResourceInputs?: cdk.CustomResource;
-  hostedUIDomainResource?: cognito.CfnUserPoolDomain | undefined;
+  hostedUIDomainResource?: cognito.CfnUserPoolDomain;
   // custom resource HostedUI Provider
   hostedUIProvidersCustomResource?: lambda.CfnFunction;
   hostedUIProvidersCustomResourcePolicy?: iam.CfnPolicy;
   hostedUIProvidersCustomResourceLogPolicy?: iam.CfnPolicy;
   hostedUIProvidersCustomResourceInputs?: cdk.CustomResource;
+  hostedUIProviderResources: cognito.CfnUserPoolIdentityProvider[];
   // custom resource MFA
   mfaLambda?: lambda.CfnFunction;
   mfaLogPolicy?: iam.CfnPolicy;
@@ -99,6 +100,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
     this.lambdaConfigPermissions = {};
     this.lambdaTriggerPermissions = {};
+    this.hostedUIProviderResources = [];
   }
 
   /**
@@ -481,7 +483,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (props.hostedUIProviderMeta) {
-        this.createHostedUIProviderCustomResource();
+        this.createHostedUIProvidersResources(props);
       }
 
       if (!props.useEnabledMfas && props.mfaConfiguration !== 'OFF') {
@@ -1234,6 +1236,72 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       this.hostedUIDomainResource.addDependency(this.hostedUICustomResource);
     }
   };
+
+  createHostedUIProvidersResources = (props: CognitoStackOptions) => {
+    if (!props.hostedUIProviderMeta) {
+      return;
+    }
+
+    const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', props.resourceName);
+    const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
+    const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProvidersCustomResource?.Type === 'AWS::Lambda::Function';
+    const providerCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider';
+
+    if (lambdaCalloutCreatedInCloud && !providerCreatedInCloud) {
+      this.createHostedUIProviderCustomResource();
+    }
+
+    JSON.parse(props.hostedUIProviderMeta).forEach((providerMeta: any) => {
+      if (props.hostedUIProviderCreds) {
+        if (providerMeta.ProviderName === 'SignInWithApple') {
+          this.createHostedUIAppleProviderResource(providerMeta);
+        } else {
+          this.createHostedUIProviderResource(providerMeta);
+        }
+      }
+    });
+  }
+
+  createHostedUIProviderResource = (providerMeta: {
+    ProviderName: string,
+    authorize_scopes: string,
+    AttributeMapping: { key: string },
+  }) => {
+    const providerName = providerMeta.ProviderName.toLowerCase();
+    const resourceParams: cognito.CfnUserPoolIdentityProviderProps = {
+      attributeMapping: providerMeta.AttributeMapping,
+      providerDetails: {
+        authorize_scopes: cdk.Fn.ref(`${providerName}AuthorizeScopes`),
+        client_id: cdk.Fn.ref(`${providerName}AppIdUserPool`),
+        client_secret: cdk.Fn.ref(`${providerName}AppSecretUserPool`),
+      },
+      providerName: providerMeta.ProviderName,
+      providerType: providerMeta.ProviderName,
+      userPoolId: cdk.Fn.ref('UserPool'),
+    };
+
+    const provider = new cognito.CfnUserPoolIdentityProvider(this, `HostedUI${providerMeta.ProviderName}ProviderResource`, resourceParams);
+    this.hostedUIProviderResources.push(provider);
+  }
+
+  createHostedUIAppleProviderResource = (providerMeta: any) => {
+    const resourceParams: cognito.CfnUserPoolIdentityProviderProps = {
+      attributeMapping: providerMeta.AttributeMapping,
+      providerDetails: {
+        authorize_scopes: cdk.Fn.ref('signinwithappleAuthorizeScopes'),
+        client_id: cdk.Fn.ref('signinwithappleClientIdUserPool'),
+        key_id: cdk.Fn.ref('signinwithappleKeyIdUserPool'),
+        private_key: cdk.Fn.ref('signinwithapplePrivateKeyUserPool'),
+        team_id: cdk.Fn.ref('signinwithappleTeamIdUserPool'),
+      },
+      providerName: providerMeta.ProviderName,
+      providerType: providerMeta.ProviderName,
+      userPoolId: cdk.Fn.ref('UserPool'),
+    };
+
+    const provider = new cognito.CfnUserPoolIdentityProvider(this, `HostedUI${providerMeta.ProviderName}ProviderResource`, resourceParams);
+    this.hostedUIProviderResources.push(provider);
+  }
 }
 
 type OAuthMetaData = {

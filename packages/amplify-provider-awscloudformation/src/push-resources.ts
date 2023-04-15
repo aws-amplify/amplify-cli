@@ -1181,6 +1181,29 @@ export const formNestedStack = async (
             parameters.unauthRoleName = unauthRoleName || { Ref: 'UnauthRoleName' }; // if only a user pool is imported, we ref the root stack UnauthRoleName because the child stacks still need this parameter
           }
         }
+
+        if (category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds != '[]') {
+          const providerCreds = JSON.parse(parameters.hostedUIProviderCreds);
+
+          providerCreds.forEach((provider) => {
+            const { ProviderName } = provider;
+            if (ProviderName === 'SignInWithApple') {
+              parameters.signinwithappleClientIdUserPool = provider.client_id;
+              parameters.signinwithappleKeyIdUserPool = provider.key_id;
+              parameters.signinwithapplePrivateKeyUserPool = provider.private_key;
+              parameters.signinwithappleTeamIdUserPool = provider.team_id;
+            } else {
+              const varName = ProviderName.toLowerCase();
+              const authorizeScopes = JSON.parse(parameters.hostedUIProviderMeta)
+                .find((p) => p.ProviderName === ProviderName)?.authorize_scopes;
+
+              parameters[`${varName}AuthorizeScopes`] = authorizeScopes;
+              parameters[`${varName}AppIdUserPool`] = provider.client_id;
+              parameters[`${varName}AppSecretUserPool`] = provider.client_secret;
+            }
+          });
+        }
+
         if (resourceDetails.providerMetadata) {
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
 
