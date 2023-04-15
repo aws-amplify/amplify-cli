@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0-replace-lambda-callouts.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.4-replace-lambda-callouts.0...@aws-amplify/amplify-provider-awscloudformation@8.1.0-replace-lambda-callouts.0) (2023-04-15)
+
+
+### Features
+
+* create social providers with cfn when lambda callout does not exist ([e507529](https://github.com/aws-amplify/amplify-cli/commit/e507529e4324bce4161e9a3a3c1106eec843b672))
+
+
+
+
+
 ## [8.0.4-replace-lambda-callouts.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.2...@aws-amplify/amplify-provider-awscloudformation@8.0.4-replace-lambda-callouts.0) (2023-04-13)
 
 

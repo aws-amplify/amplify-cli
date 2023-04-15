@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-provider-awscloudformation",
-  "version": "8.0.4-replace-lambda-callouts.0",
+  "version": "8.1.0-replace-lambda-callouts.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",

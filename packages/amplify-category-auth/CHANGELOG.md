@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-replace-lambda-callouts.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts.0...@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts.1) (2023-04-15)
+
+
+### Bug Fixes
+
+* change template write to check if prop exists ([f7378f7](https://github.com/aws-amplify/amplify-cli/commit/f7378f7d535f6ee590dc303abddfe48983403c12))
+
+
+### Features
+
+* create social providers with cfn when lambda callout does not exist ([e507529](https://github.com/aws-amplify/amplify-cli/commit/e507529e4324bce4161e9a3a3c1106eec843b672))
+* replace lambda code with deleting resources ([62fa7cc](https://github.com/aws-amplify/amplify-cli/commit/62fa7cc1a8b33997f006a0dd5cee8fa16ad4176b))
+
+
+
+
+
 # [3.1.0-replace-lambda-callouts.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.0...@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts.0) (2023-04-13)
 
 

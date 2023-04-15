@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.1.0-replace-lambda-callouts.0",
+  "version": "3.1.0-replace-lambda-callouts.1",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
