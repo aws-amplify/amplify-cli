@@ -557,16 +557,18 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         'hostedUIProviderCreds',
       );
     }
-
+    debugger;
     JSON.parse(props.hostedUIProviderMeta || '[]').forEach(({ ProviderName }: { ProviderName: string }) => {
       socialSignInKeys[ProviderName].forEach((key: string) => {
-        this._authTemplateObj.addCfnParameter(
-          {
-            type: 'String',
-            noEcho: true,
-          },
-          key,
-        );
+        if (!Object.keys(props).includes(key)) {
+          this._authTemplateObj.addCfnParameter(
+            {
+              type: 'String',
+              noEcho: true,
+            },
+            key,
+          );
+        }
       });
     });
   };
