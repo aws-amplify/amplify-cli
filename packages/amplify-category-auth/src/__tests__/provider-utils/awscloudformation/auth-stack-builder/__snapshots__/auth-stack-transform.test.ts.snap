@@ -593,10 +593,18 @@ Object {
     "facebookAppSecretUserPool": Object {
       "Type": "String",
     },
+    "facebookAuthorizeScopes": Object {
+      "NoEcho": true,
+      "Type": "String",
+    },
     "googleAppIdUserPool": Object {
       "Type": "String",
     },
     "googleAppSecretUserPool": Object {
+      "Type": "String",
+    },
+    "googleAuthorizeScopes": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "googleClientId": Object {
@@ -622,6 +630,10 @@ Object {
       "Type": "String",
     },
     "loginwithamazonAppSecretUserPool": Object {
+      "Type": "String",
+    },
+    "loginwithamazonAuthorizeScopes": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "mfaConfiguration": Object {
@@ -664,6 +676,10 @@ Object {
       "Type": "String",
     },
     "sharedId": Object {
+      "Type": "String",
+    },
+    "signinwithappleAuthorizeScopes": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "signinwithappleClientIdUserPool": Object {
@@ -806,258 +822,110 @@ Object {
       },
       "Type": "AWS::Cognito::UserPoolDomain",
     },
-    "HostedUIProvidersCustomResource": Object {
-      "DependsOn": Array [
-        "UserPoolClientRole",
-      ],
+    "HostedUIFacebookProviderResource": Object {
       "Properties": Object {
-        "Code": Object {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    let hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
-    if (hostedUIProviderCreds.length === 0) {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      let getRequestParams = (providerName) => {
-        let providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);
-        let providerMeta = hostedUIProviderMeta[providerMetaIndex];
-        let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);
-        let providerCreds = hostedUIProviderCreds[providerCredsIndex];
-        let requestParams = {
-          ProviderName: providerMeta.ProviderName,
-          UserPoolId: userPoolId,
-          AttributeMapping: providerMeta.AttributeMapping,
-        };
-        if (providerMeta.ProviderName === 'SignInWithApple') {
-          if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
-            requestParams.ProviderDetails = {
-              client_id: providerCreds.client_id,
-              team_id: providerCreds.team_id,
-              key_id: providerCreds.key_id,
-              private_key: providerCreds.private_key,
-              authorize_scopes: providerMeta.authorize_scopes,
-            };
-          } else {
-            requestParams = null;
-          }
-        } else {
-          if (providerCreds.client_id && providerCreds.client_secret) {
-            requestParams.ProviderDetails = {
-              client_id: providerCreds.client_id,
-              client_secret: providerCreds.client_secret,
-              authorize_scopes: providerMeta.authorize_scopes,
-            };
-          } else {
-            requestParams = null;
-          }
-        }
-        return requestParams;
-      };
-      let createIdentityProvider = (providerName) => {
-        let requestParams = getRequestParams(providerName);
-        if (!requestParams) {
-          return Promise.resolve();
-        }
-        requestParams.ProviderType = requestParams.ProviderName;
-        return identity.createIdentityProvider(requestParams).promise();
-      };
-      let updateIdentityProvider = (providerName) => {
-        let requestParams = getRequestParams(providerName);
-        if (!requestParams) {
-          return Promise.resolve();
-        }
-        return identity.updateIdentityProvider(requestParams).promise();
-      };
-      let deleteIdentityProvider = (providerName) => {
-        let params = { ProviderName: providerName, UserPoolId: userPoolId };
-        return identity.deleteIdentityProvider(params).promise();
-      };
-      let providerPromises = [];
-      identity
-        .listIdentityProviders({ UserPoolId: userPoolId, MaxResults: 60 })
-        .promise()
-        .then((result) => {
-          console.log(result);
-          let providerList = result.Providers.map((provider) => provider.ProviderName);
-          let providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-          hostedUIProviderMeta.forEach((providerMetadata) => {
-            if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
-              providerPromises.push(updateIdentityProvider(providerMetadata.ProviderName));
-            } else {
-              providerPromises.push(createIdentityProvider(providerMetadata.ProviderName));
-            }
-          });
-          providerList.forEach((provider) => {
-            if (providerListInParameters.indexOf(provider) < 0) {
-              providerPromises.push(deleteIdentityProvider(provider));
-            }
-          });
-          return Promise.all(providerPromises);
-        })
-        .then(() => {
-          response.send(event, context, response.SUCCESS, {});
-        })
-        .catch((err) => {
-          console.log(err.stack);
-          response.send(event, context, response.FAILED, { err });
-        });
-    }
-  } catch (err) {
-    console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
-  }
-};
-",
+        "AttributeMapping": Object {
+          "email": "email",
+          "username": "id",
         },
-        "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "UserPoolClientRole",
-            "Arn",
-          ],
+        "ProviderDetails": Object {
+          "authorize_scopes": Object {
+            "Ref": "facebookAuthorizeScopes",
+          },
+          "client_id": Object {
+            "Ref": "facebookAppIdUserPool",
+          },
+          "client_secret": Object {
+            "Ref": "facebookAppSecretUserPool",
+          },
         },
-        "Runtime": "nodejs16.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "HostedUIProvidersCustomResourceInputs": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "HostedUIProvidersCustomResourceLogPolicy",
-      ],
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "HostedUIProvidersCustomResource",
-            "Arn",
-          ],
-        },
-        "hostedUIProviderCreds": Object {
-          "Ref": "hostedUIProviderCreds",
-        },
-        "hostedUIProviderMeta": Object {
-          "Ref": "hostedUIProviderMeta",
-        },
-        "userPoolId": Object {
+        "ProviderName": "Facebook",
+        "ProviderType": "Facebook",
+        "UserPoolId": Object {
           "Ref": "UserPool",
         },
       },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
-    "HostedUIProvidersCustomResourceLogPolicy": Object {
-      "DependsOn": Array [
-        "HostedUIProvidersCustomResourcePolicy",
-      ],
+    "HostedUIGoogleProviderResource": Object {
       "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  Object {
-                    "account": Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": Object {
-                      "Ref": "HostedUIProvidersCustomResource",
-                    },
-                    "region": Object {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
+        "AttributeMapping": Object {
+          "email": "email",
+          "username": "sub",
         },
-        "PolicyName": Object {
-          "Fn::Join": Array [
-            "-",
-            Array [
-              Object {
-                "Ref": "UserPool",
-              },
-              "hostedUIProviderLogPolicy",
-            ],
-          ],
-        },
-        "Roles": Array [
-          Object {
-            "Ref": "UserPoolClientRole",
+        "ProviderDetails": Object {
+          "authorize_scopes": Object {
+            "Ref": "googleAuthorizeScopes",
           },
-        ],
+          "client_id": Object {
+            "Ref": "googleAppIdUserPool",
+          },
+          "client_secret": Object {
+            "Ref": "googleAppSecretUserPool",
+          },
+        },
+        "ProviderName": "Google",
+        "ProviderType": "Google",
+        "UserPoolId": Object {
+          "Ref": "UserPool",
+        },
       },
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
-    "HostedUIProvidersCustomResourcePolicy": Object {
-      "DependsOn": Array [
-        "HostedUIProvidersCustomResource",
-      ],
+    "HostedUILoginWithAmazonProviderResource": Object {
       "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "cognito-idp:CreateIdentityProvider",
-                "cognito-idp:UpdateIdentityProvider",
-                "cognito-idp:ListIdentityProviders",
-                "cognito-idp:DeleteIdentityProvider",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-            Object {
-              "Action": Array [
-                "cognito-idp:DescribeUserPoolDomain",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
+        "AttributeMapping": Object {
+          "email": "email",
+          "username": "user_id",
         },
-        "PolicyName": Object {
-          "Fn::Join": Array [
-            "-",
-            Array [
-              Object {
-                "Ref": "UserPool",
-              },
-              "hostedUIProvider",
-            ],
-          ],
-        },
-        "Roles": Array [
-          Object {
-            "Ref": "UserPoolClientRole",
+        "ProviderDetails": Object {
+          "authorize_scopes": Object {
+            "Ref": "loginwithamazonAuthorizeScopes",
           },
-        ],
+          "client_id": Object {
+            "Ref": "loginwithamazonAppIdUserPool",
+          },
+          "client_secret": Object {
+            "Ref": "loginwithamazonAppSecretUserPool",
+          },
+        },
+        "ProviderName": "LoginWithAmazon",
+        "ProviderType": "LoginWithAmazon",
+        "UserPoolId": Object {
+          "Ref": "UserPool",
+        },
       },
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
+    },
+    "HostedUISignInWithAppleProviderResource": Object {
+      "Properties": Object {
+        "AttributeMapping": Object {
+          "email": "email",
+        },
+        "ProviderDetails": Object {
+          "authorize_scopes": Object {
+            "Ref": "signinwithappleAuthorizeScopes",
+          },
+          "client_id": Object {
+            "Ref": "signinwithappleClientIdUserPool",
+          },
+          "key_id": Object {
+            "Ref": "signinwithappleKeyIdUserPool",
+          },
+          "private_key": Object {
+            "Ref": "signinwithapplePrivateKeyUserPool",
+          },
+          "team_id": Object {
+            "Ref": "signinwithappleTeamIdUserPool",
+          },
+        },
+        "ProviderName": "SignInWithApple",
+        "ProviderType": "SignInWithApple",
+        "UserPoolId": Object {
+          "Ref": "UserPool",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
     "IdentityPool": Object {
       "Properties": Object {
