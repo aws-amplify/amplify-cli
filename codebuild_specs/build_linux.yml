@@ -4,8 +4,6 @@ env:
 phases:
   build:
     commands:
-      - echo CODECOV
-      - echo $CODECOV_TOKEN
       - source ./shared-scripts.sh && _buildLinux
 
 artifacts:
