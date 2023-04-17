@@ -158,6 +158,7 @@ export type AmplifyErrorType =
   | 'ProjectNotFoundError'
   | 'ProjectNotInitializedError'
   | 'PushResourcesError'
+  | 'RateError'
   | 'RegionNotAvailableError'
   | 'RemoveNotificationAppError'
   | 'ResourceAlreadyExistsError'
@@ -174,6 +175,7 @@ export type AmplifyErrorType =
   | 'StackStateError'
   | 'StorageImportError'
   | 'TransformerContractError'
+  | 'TokenError'
   | 'UnknownDirectiveError'
   | 'UnsupportedLockFileTypeError'
   | 'UserInputError';
