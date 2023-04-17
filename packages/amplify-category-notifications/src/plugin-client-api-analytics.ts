@@ -12,7 +12,7 @@ import {
   IAnalyticsResource,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 
 /**
  * Get all analytics resources. If resourceProviderService name is provided,
@@ -97,3 +97,9 @@ export const invokeAnalyticsPinpointHasInAppMessagingPolicy = async (context: $T
  */
 export const invokeAnalyticsMigrations = async (context: $TSContext): Promise<void> =>
   context.amplify.invokePluginMethod(context, 'analytics', undefined, 'analyticsPluginAPIMigrations', [context]);
+
+/**
+ * invoke analytics plugin migrations
+ */
+export const invokeAnalyticsGetPinpointRegionMapping = async (context: $TSContext): Promise<Record<string, string>> =>
+  context.amplify.invokePluginMethod(context, 'analytics', undefined, 'analyticsGetPinpointRegionMapping', []);

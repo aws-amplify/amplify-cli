@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getProjectMeta } from './get-project-meta';
 
 const errAuthMissingIAM = `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`;

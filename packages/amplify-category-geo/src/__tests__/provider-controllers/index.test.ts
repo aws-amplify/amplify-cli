@@ -1,7 +1,7 @@
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { projectHasAuth } from '../../provider-controllers/index';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 describe('auth category dependency check', () => {
   beforeEach(() => {

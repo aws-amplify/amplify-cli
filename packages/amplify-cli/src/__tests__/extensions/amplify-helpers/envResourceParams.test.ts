@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext } from 'amplify-cli-core';
+import { pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import {
   saveEnvResourceParameters,
@@ -9,7 +9,7 @@ import {
 } from '../../../extensions/amplify-helpers/envResourceParams';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: { getTeamProviderInfoFilePath: jest.fn() },
   stateManager: {
     getTeamProviderInfo: jest.fn(),

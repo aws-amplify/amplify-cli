@@ -1,6 +1,6 @@
 import { promptConsoleSupportedCategory } from './provider-utils/supportedPredictions';
 import { prompter } from '@aws-amplify/amplify-prompts';
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 
 const predictionsConsole = require('./provider-utils/awscloudformation/index');
 const path = require('path');

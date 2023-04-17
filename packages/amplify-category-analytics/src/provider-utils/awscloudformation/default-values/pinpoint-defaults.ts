@@ -1,4 +1,4 @@
-import { $TSAny, $TSMeta } from 'amplify-cli-core';
+import { $TSAny, $TSMeta } from '@aws-amplify/amplify-cli-core';
 import * as uuid from 'uuid';
 
 /**

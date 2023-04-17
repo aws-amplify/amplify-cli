@@ -1,4 +1,4 @@
-const { FeatureFlags } = require('amplify-cli-core');
+const { FeatureFlags } = require('@aws-amplify/amplify-cli-core');
 const latestTranslateRegions = FeatureFlags.getNumber('latestRegionSupport.translate');
 const latestTranscribeRegions = FeatureFlags.getNumber('latestRegionSupport.transcribe');
 const latestRekognitionRegions = FeatureFlags.getNumber('latestRegionSupport.rekognition');

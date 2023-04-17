@@ -1,11 +1,18 @@
-import { $TSContext, $TSObject, stateManager, generateOverrideSkeleton, pathManager, AmplifySupportedService } from 'amplify-cli-core';
+import {
+  $TSContext,
+  $TSObject,
+  stateManager,
+  generateOverrideSkeleton,
+  pathManager,
+  AmplifySupportedService,
+} from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/storage/override';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import path from 'path';
 import { DynamoDBInputState } from '../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import { S3InputState } from '../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('path');
 jest.mock('../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');

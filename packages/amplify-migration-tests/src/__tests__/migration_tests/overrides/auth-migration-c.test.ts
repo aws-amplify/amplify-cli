@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable jest/no-standalone-expect */
 
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithRecaptchaTrigger,
   amplifyPushAuth,
@@ -16,7 +16,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { versionCheck, allowedVersionsToMigrateFrom, initAndroidProjectWithProfile } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom, initAndroidProjectWithProfileInquirer } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
@@ -43,7 +43,7 @@ describe('amplify auth migration c', () => {
   });
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update', async () => {
-    await initAndroidProjectWithProfile(projRoot, defaultSettings);
+    await initAndroidProjectWithProfileInquirer(projRoot, defaultSettings);
     await addAuthWithRecaptchaTrigger(projRoot);
     await amplifyPushAuthV5V6(projRoot);
     let meta = getAwsAndroidConfig(projRoot);

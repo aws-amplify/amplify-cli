@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { lambdaEventSourceHandler, lambdaFunctionHandler } from './lambda';
 import { CloudFormationResource, ProcessedLambdaFunction } from '../stack/types';
 import { CloudFormationParseContext } from '../types';

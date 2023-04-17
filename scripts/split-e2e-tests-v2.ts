@@ -1,5 +1,5 @@
 import { CircleCIConfig, WorkflowJob } from './cci-types';
-import { FORCE_US_WEST_2, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
+import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 import { AWS_REGIONS_TO_RUN_TESTS as regions, getTestFiles } from './cci-utils';
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
@@ -225,14 +225,14 @@ export const splitTestsV2 = function splitTests(
       if (shouldFilterWindowsTests && os === 'w' && !WINDOWS_SMOKE_TESTS.includes(test)) {
         continue; // skip this test
       }
-      const US_WEST_2 = FORCE_US_WEST_2.find((t) => test.startsWith(t));
+      const FORCE_REGION = FORCE_REGION_MAP.get(test);
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
         const newSoloJob = createRandomJob(os);
         newSoloJob.tests.push(test);
-        if (US_WEST_2) {
-          newSoloJob.region = 'us-west-2';
+        if (FORCE_REGION) {
+          newSoloJob.region = FORCE_REGION;
         }
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
@@ -243,8 +243,8 @@ export const splitTestsV2 = function splitTests(
 
       // add the test
       currentJob.tests.push(test);
-      if (US_WEST_2) {
-        currentJob.region = 'us-west-2';
+      if (FORCE_REGION) {
+        currentJob.region = FORCE_REGION;
       }
       if (USE_PARENT) {
         currentJob.useParentAccount = true;

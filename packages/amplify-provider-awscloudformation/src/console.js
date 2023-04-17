@@ -1,4 +1,4 @@
-const { open } = require('amplify-cli-core');
+const { open } = require('@aws-amplify/amplify-cli-core');
 const constants = require('./constants');
 
 async function run(context) {

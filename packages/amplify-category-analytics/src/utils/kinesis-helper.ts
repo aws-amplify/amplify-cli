@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 /**

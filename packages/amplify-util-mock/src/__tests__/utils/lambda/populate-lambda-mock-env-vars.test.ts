@@ -1,12 +1,12 @@
 import { loadConfigurationForEnv } from '@aws-amplify/amplify-provider-awscloudformation';
 import { ProcessedLambdaFunction } from '../../../CFNParser/stack/types';
 import { populateLambdaMockEnvVars } from '../../../utils/lambda/populate-lambda-mock-env-vars';
-import { stateManager, pathManager, $TSContext } from 'amplify-cli-core';
+import { stateManager, pathManager, $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 
 jest.mock('@aws-amplify/amplify-provider-awscloudformation');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('dotenv');
 
 const loadConfigurationForEnv_mock = loadConfigurationForEnv as jest.MockedFunction<typeof loadConfigurationForEnv>;

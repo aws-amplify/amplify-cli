@@ -1,11 +1,11 @@
 import { openConsole, isMockable } from '../../../provider-utils/awscloudformation';
 import { ServiceName } from '../../../provider-utils/awscloudformation/utils/constants';
-import { open, $TSContext, stateManager } from 'amplify-cli-core';
+import { open, $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { buildFunction } from '../../../provider-utils/awscloudformation/utils/buildFunction';
 import { getBuilder } from '../../..';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({
   providers: {

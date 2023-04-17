@@ -1,4 +1,4 @@
-import { pathManager, readCFNTemplate, writeCFNTemplate, generateCustomPoliciesInTemplate } from 'amplify-cli-core';
+import { pathManager, readCFNTemplate, writeCFNTemplate, generateCustomPoliciesInTemplate } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';

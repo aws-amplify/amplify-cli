@@ -4,7 +4,7 @@ import { projectHasAuth } from '../../../../provider-utils/awscloudformation/uti
 import { getAuthResourceName } from '../../../../utils/getAuthResourceName';
 import { getAppClientSecret } from '../../../../provider-utils/awscloudformation/utils/get-app-client-secret-sdk';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/project-has-auth');
 jest.mock('../../../../utils/getAuthResourceName');
 jest.mock('../../../../provider-utils/awscloudformation/utils/get-app-client-secret-sdk');

@@ -4,7 +4,7 @@ import { updateUserPoolGroups } from '../../../../provider-utils/awscloudformati
 import { createAdminAuthFunction } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
 import * as path from 'path';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('fs-extra');
 jest.mock('../../../../provider-utils/awscloudformation/utils/generate-user-pool-group-stack-template');
 

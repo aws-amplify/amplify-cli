@@ -2,11 +2,13 @@ import { getChangedResources } from '../../commands/build';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { verifyExpectedEnvParams } from '../../utils/verify-expected-env-params';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('../../commands/build');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('@aws-amplify/amplify-environment-parameters');
+jest.mock('@aws-amplify/amplify-provider-awscloudformation');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const getResourcesMock = getChangedResources as jest.MockedFunction<typeof getChangedResources>;
 const ensureEnvParamManagerMock = ensureEnvParamManager as jest.MockedFunction<typeof ensureEnvParamManager>;
@@ -62,7 +64,7 @@ describe('verifyExpectedEnvParams', () => {
   });
   it('filters parameters based on category and resourceName if specified', async () => {
     await verifyExpectedEnvParams(contextStub, 'storage');
-    expect(verifyExpectedEnvParametersMock).toHaveBeenCalledWith([resourceList[0]]);
+    expect(verifyExpectedEnvParametersMock).toHaveBeenCalledWith([resourceList[0]], undefined, undefined);
   });
 
   it('calls verify expected parameters if in non-interactive mode', async () => {

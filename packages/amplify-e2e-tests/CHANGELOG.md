@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.1...amplify-e2e-tests@4.0.3) (2023-04-14)
+
+
+### Bug Fixes
+
+* **api:** bump api with ownerfield hotfix of 5.1.1 ([dacff4a](https://github.com/aws-amplify/amplify-cli/commit/dacff4ac65fc10d32ab3effbb61c604343f0a1a0))
+
+
+
+
+
 ## [4.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.1-rc.e9e0d157d.0...amplify-e2e-tests@4.0.1) (2023-03-23)
 
 **Note:** Version bump only for package amplify-e2e-tests

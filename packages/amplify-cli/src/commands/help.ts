@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { runHelp, commandsInfo } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { runHelp, commandsInfo } from '@aws-amplify/amplify-cli-core';
 
 /**
  * displays amplify help menu

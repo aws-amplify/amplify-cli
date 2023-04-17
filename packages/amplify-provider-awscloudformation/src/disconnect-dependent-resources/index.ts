@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { CloudFormation } from 'aws-sdk';
 import * as fs from 'fs-extra';
 import { S3 } from '../aws-utils/aws-s3';

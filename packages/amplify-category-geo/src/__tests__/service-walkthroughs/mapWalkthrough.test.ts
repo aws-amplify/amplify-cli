@@ -7,7 +7,7 @@ import { category } from '../../constants';
 import { createMapWalkthrough, updateMapWalkthrough } from '../../service-walkthroughs/mapWalkthrough';
 import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
 
 describe('Map walkthrough works as expected', () => {

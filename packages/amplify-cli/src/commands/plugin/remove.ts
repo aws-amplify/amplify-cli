@@ -1,7 +1,7 @@
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
 import { removePluginPackage, confirmAndScan } from '../../plugin-manager';
-import { PluginPlatform, constants, PluginInfo } from 'amplify-cli-core';
+import { PluginPlatform, constants, PluginInfo } from '@aws-amplify/amplify-cli-core';
 import { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
 
 export const run = async (context: Context) => {

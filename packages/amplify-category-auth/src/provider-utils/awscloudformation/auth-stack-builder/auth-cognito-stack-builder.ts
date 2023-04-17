@@ -412,8 +412,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         };
       }
 
-      if (configureSMS && this.snsRole) {
-        this.userPool.addDependency(this.snsRole);
+      if (configureSMS) {
+        this.userPool.addDependency(this.snsRole!);
       }
 
       // updating Lambda Config when FF is (break circular dependency : false)
@@ -692,10 +692,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-
-    if (this.userPoolClientRole) {
-      this.hostedUICustomResource.addDependency(this.userPoolClientRole);
-    }
+    this.hostedUICustomResource.addDependency(this.userPoolClientRole!);
 
     // userPool client lambda policy
     /**
@@ -776,10 +773,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-
-    if (this.userPoolClientRole) {
-      this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole);
-    }
+    this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole!);
 
     // userPool client lambda policy
     /**

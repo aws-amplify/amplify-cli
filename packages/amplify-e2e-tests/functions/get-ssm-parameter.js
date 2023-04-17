@@ -1,12 +1,13 @@
-const aws = require('aws-sdk');
+const { GetParameterCommand, SSMClient } = require('@aws-sdk/client-ssm');
 
 exports.handler = async (event) => {
   const { secretName } = event;
-  const { Parameter } = await new aws.SSM()
-    .getParameter({
+  const ssmClient = new SSMClient({ region: process.env.AWS_REGION });
+  const { Parameter } = await ssmClient.send(
+    new GetParameterCommand({
       Name: secretName,
       WithDecryption: true,
-    })
-    .promise();
+    }),
+  );
   return Parameter;
 };

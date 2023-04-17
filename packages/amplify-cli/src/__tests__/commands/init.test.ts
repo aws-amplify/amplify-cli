@@ -1,4 +1,4 @@
-import { $TSContext, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
@@ -7,7 +7,7 @@ import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('child_process');
 jest.mock('fs-extra');
 jest.mock('which');
@@ -87,7 +87,7 @@ describe('amplify init:', () => {
     pluginPlatform: {},
   } as unknown as $TSContext;
 
-  jest.mock('amplify-cli-core', () => ({
+  jest.mock('@aws-amplify/amplify-cli-core', () => ({
     exitOnNextTick: jest.fn(),
     JSONUtilities: {
       readJSON: mockReadJson,

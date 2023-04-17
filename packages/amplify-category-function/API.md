@@ -4,12 +4,12 @@
 
 ```ts
 
-import { $TSAny } from 'amplify-cli-core';
-import { $TSContext } from 'amplify-cli-core';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
-import { ResourceTuple } from 'amplify-cli-core';
+import { ResourceTuple } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export const add: (context: any, providerName: any, service: any, parameters: any) => Promise<string>;

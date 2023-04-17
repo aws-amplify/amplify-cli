@@ -6,8 +6,8 @@ import {
   CognitoStackOptions,
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   JSONUtilities: {
     parse: jest.fn().mockImplementation(JSON.parse),
     readJson: jest.fn().mockReturnValue({

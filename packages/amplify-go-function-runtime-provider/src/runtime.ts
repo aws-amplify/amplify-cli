@@ -14,7 +14,7 @@ import glob from 'glob';
 import path from 'path';
 import { SemVer, coerce, gte, lt } from 'semver';
 import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 const executableName = 'go';
 const minimumVersion = <SemVer>coerce('1.0');

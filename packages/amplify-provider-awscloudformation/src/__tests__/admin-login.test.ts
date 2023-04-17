@@ -1,8 +1,8 @@
-import { $TSContext, $TSAny } from 'amplify-cli-core';
+import { $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as adminLogin from '../admin-login';
 import { AmplifySpinner } from '@aws-amplify/amplify-prompts';
 
-jest.mock('amplify-cli-core', () => {
+jest.mock('@aws-amplify/amplify-cli-core', () => {
   return {
     open: jest.fn().mockReturnValue(Promise.reject('some spawn error')),
   };

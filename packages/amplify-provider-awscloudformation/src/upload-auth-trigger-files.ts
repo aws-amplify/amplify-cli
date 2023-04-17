@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
+import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
 
 /**
  * uploads Cognito auth trigger files (code and assets needed for trigger to execute)

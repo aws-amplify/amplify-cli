@@ -7,7 +7,7 @@ import {
   ResourceAlreadyExistsError,
   ServiceSelection,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';

@@ -1,4 +1,4 @@
-import { $TSAny, AmplifyError, stateManager } from 'amplify-cli-core';
+import { $TSAny, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * returns the current environment info

@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyError, AmplifyFrontend, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import extract from 'extract-zip';
 import * as fs from 'fs-extra';
@@ -36,7 +36,7 @@ export const downloadAPIModels = async (context: $TSContext, allResources: $TSOb
   return sequential(promises);
 };
 
-const extractAPIModel = async (context: $TSContext, resource: $TSObject, framework: string): Promise<void> => {
+const extractAPIModel = async (context: $TSContext, resource: $TSObject, framework: AmplifyFrontend): Promise<void> => {
   const apigw = await APIGateway.getInstance(context);
   const apigwParams = getAPIGWRequestParams(resource, framework);
 
@@ -59,12 +59,12 @@ const extractAPIModel = async (context: $TSContext, resource: $TSObject, framewo
   fs.removeSync(tempDir);
 };
 
-const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string): void => {
+const copyFilesToSrc = (context: $TSContext, apiName: string, framework: AmplifyFrontend): void => {
   const backendDir = pathManager.getBackendDirPath();
   const tempDir = `${backendDir}/.temp`;
 
   switch (framework) {
-    case 'android':
+    case AmplifyFrontend.android:
       {
         const generatedSrc = `${tempDir}/${apiName}-Artifact-1.0/src/main/java`;
 
@@ -75,7 +75,7 @@ const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string)
         fs.copySync(generatedSrc, target);
       }
       break;
-    case 'ios':
+    case AmplifyFrontend.ios:
       {
         const generatedSrc = `${tempDir}/aws-apigateway-ios-swift/generated-src`;
 
@@ -93,7 +93,7 @@ const copyFilesToSrc = (context: $TSContext, apiName: string, framework: string)
   }
 };
 
-const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny => {
+const getAPIGWRequestParams = (resource: $TSObject, framework: AmplifyFrontend): $TSAny => {
   const apiUrl = resource.output.RootUrl;
   const apiName = resource.output.ApiName;
   const firstSplit = apiUrl.split('/');
@@ -103,7 +103,7 @@ const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny =
   const apiId = secondSplit[0];
 
   switch (framework) {
-    case 'android':
+    case AmplifyFrontend.android:
       return {
         restApiId: apiId,
         sdkType: framework,
@@ -116,7 +116,7 @@ const getAPIGWRequestParams = (resource: $TSObject, framework: string): $TSAny =
         },
       };
 
-    case 'ios':
+    case AmplifyFrontend.ios:
       return {
         restApiId: apiId,
         sdkType: 'swift',
