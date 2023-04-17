@@ -57,8 +57,7 @@ export function removeAnalytics(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
-      .send('j')
-      .sendCarriageReturn()
+      .wait('Only one option for')
       .wait('Are you sure you want to delete the resource?')
       .send('y')
       .sendCarriageReturn()
