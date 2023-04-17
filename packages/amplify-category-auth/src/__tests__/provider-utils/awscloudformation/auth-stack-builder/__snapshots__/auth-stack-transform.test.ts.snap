@@ -1309,7 +1309,6 @@ Object {
     },
     "UserPoolClient": Object {
       "DependsOn": Array [
-        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": Object {
@@ -1411,7 +1410,6 @@ Object {
     },
     "UserPoolClientWeb": Object {
       "DependsOn": Array [
-        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": Object {
