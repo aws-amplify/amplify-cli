@@ -11,8 +11,22 @@ RUN set -ex \
     && apt-get install software-properties-common -y -qq --no-install-recommends \
     && apt-add-repository -y ppa:git-core/ppa \
     && apt-get update \
+    && apt-get install -y \
+      xdg-utils \
+      libatk-bridge2.0-0 \
+      libgtk-3.0 \
+      libasound2 \
+      lsof \
+      sudo \
+      tcl \
+      expect \
+      zip \
+      jq \
+      groff \
+      less \
+      tree \
+      nano \
     && apt-get install git=1:2.* -y -qq --no-install-recommends \
-    && apt-get install -y lsof
     && git version \
     && apt-get install -y -qq --no-install-recommends openssh-client \
     && mkdir ~/.ssh \
@@ -21,6 +35,7 @@ RUN set -ex \
     && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
+    
     && apt-get install -y -qq --no-install-recommends \
           apt-utils asciidoc autoconf automake build-essential bzip2 \
           bzr curl dirmngr docbook-xml docbook-xsl dpkg-dev \
@@ -142,6 +157,9 @@ RUN set -ex \
     && rm -rf warmup \
     && rm -rf /tmp/NuGetScratch
 
+RUN dotnet tool install -g amazon.lambda.tools && \
+    dotnet tool install -g amazon.lambda.testtool-6.0
+
 # Install Powershell Core
 # See instructions at https://docs.microsoft.com/en-us/powershell/scripting/setup/installing-powershell-core-on-linux
 ARG POWERSHELL_VERSION=7.2.8
@@ -169,6 +187,7 @@ RUN  n $NODE_18_VERSION && npm install --save-dev -g -f grunt && npm install --s
      && cd / && rm -rf $N_SRC_DIR && rm -rf /tmp/*
 
 #****************      END NODEJS     ****************************************************
+
 
 #**************** PYTHON *****************************************************
 # inspired by: https://github.com/aws/aws-codebuild-docker-images/blob/9282872af78aeb1b5df3010ed3872c40f3d0f056/al2/x86_64/standard/2.0/Dockerfile
