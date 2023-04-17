@@ -20406,6 +20406,7 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
 
 pkg-fetch@3.4.2, "pkg-fetch@https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff":
   version "3.4.2"
+  uid ad4a21feb533d338bf951e7ba28cea7256aedeff
   resolved "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
   dependencies:
     chalk "^4.1.2"
@@ -24213,9 +24214,9 @@ unc-path-regex@^0.1.2:
   integrity sha512-eXL4nmJT7oCpkZsHZUOJo8hcX3GbsiDOa0Qu9F646fi8dT3XuSVopVqAcEiVzSKKH7UoDti23wNX3qGFxcW5Qg==
 
 undici@^4.9.3, undici@^5.8.0:
-  version "5.21.0"
-  resolved "https://registry.npmjs.org/undici/-/undici-5.21.0.tgz#b00dfc381f202565ab7f52023222ab862bb2494f"
-  integrity sha512-HOjK8l6a57b2ZGXOcUsI5NLfoTrfmbOl90ixJDl0AEFG4wgHNDQxtZy15/ZQp7HhjkpaGlp/eneMgtsu1dIlUA==
+  version "5.21.2"
+  resolved "https://registry.npmjs.org/undici/-/undici-5.21.2.tgz#329f628aaea3f1539a28b9325dccc72097d29acd"
+  integrity sha512-f6pTQ9RF4DQtwoWSaC42P/NKlUjvezVvd9r155ohqkwFNRyBKM3f3pcty3ouusefNRyM25XhIQEbeQ46sZDJfQ==
   dependencies:
     busboy "^1.6.0"
 
@@ -24597,9 +24598,9 @@ verror@1.10.0:
     extsprintf "^1.2.0"
 
 vm2@^3.9.3, vm2@^3.9.8:
-  version "3.9.11"
-  resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.11.tgz#a880f510a606481719ec3f9803b940c5805a06fe"
-  integrity sha512-PFG8iJRSjvvBdisowQ7iVF580DXb1uCIiGaXgm7tynMR1uTBlv7UJlB1zdv5KJ+Tmq1f0Upnj3fayoEOPpCBKg==
+  version "3.9.16"
+  resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.16.tgz#0fbc2a265f7bf8b837cea6f4a908f88a3f93b8e6"
+  integrity sha512-3T9LscojNTxdOyG+e8gFeyBXkMlOBYDoF6dqZbj+MPVHi9x10UfiTAJIobuchRCp3QvC+inybTbMJIUrLsig0w==
   dependencies:
     acorn "^8.7.0"
     acorn-walk "^8.2.0"
