@@ -161,7 +161,7 @@ exports.handler = function(event, context) {
         "voiceId": "<%- props.outputVoice %>",
         <% } %>
         <% if(props.sessionTimeout) { %>
-        "idleSessionTTLInSeconds": "<%- props.sessionTimeout*60 %>"
+        "idleSessionTTLInSeconds": <%- props.sessionTimeout*60 %>
         <% } %>
     };
 
