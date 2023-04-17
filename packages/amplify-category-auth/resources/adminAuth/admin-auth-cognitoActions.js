@@ -40,7 +40,7 @@ async function addUserToGroup(username, groupname) {
   console.log(`Attempting to add ${username} to ${groupname}`);
 
   try {
-    const result = await cognitoIdentityProviderClient.send(new AdminAddUserToGroupCommand(params));
+    await cognitoIdentityProviderClient.send(new AdminAddUserToGroupCommand(params));
     console.log(`Success adding ${username} to ${groupname}`);
     return {
       message: `Success adding ${username} to ${groupname}`,
@@ -61,7 +61,7 @@ async function removeUserFromGroup(username, groupname) {
   console.log(`Attempting to remove ${username} from ${groupname}`);
 
   try {
-    const result = await cognitoIdentityProviderClient.send(new AdminRemoveUserFromGroupCommand(params));
+    await cognitoIdentityProviderClient.send(new AdminRemoveUserFromGroupCommand(params));
     console.log(`Removed ${username} from ${groupname}`);
     return {
       message: `Removed ${username} from ${groupname}`,
@@ -80,7 +80,7 @@ async function confirmUserSignUp(username) {
   };
 
   try {
-    const result = await cognitoIdentityProviderClient.send(new AdminConfirmSignUpCommand(params));
+    await cognitoIdentityProviderClient.send(new AdminConfirmSignUpCommand(params));
     console.log(`Confirmed ${username} registration`);
     return {
       message: `Confirmed ${username} registration`,
@@ -98,7 +98,7 @@ async function disableUser(username) {
   };
 
   try {
-    const result = await cognitoIdentityProviderClient.send(new AdminDisableUserCommand(params));
+    await cognitoIdentityProviderClient.send(new AdminDisableUserCommand(params));
     console.log(`Disabled ${username}`);
     return {
       message: `Disabled ${username}`,
@@ -116,7 +116,7 @@ async function enableUser(username) {
   };
 
   try {
-    const result = await cognitoIdentityProviderClient.send(new AdminEnableUserCommand(params));
+    await cognitoIdentityProviderClient.send(new AdminEnableUserCommand(params));
     console.log(`Enabled ${username}`);
     return {
       message: `Enabled ${username}`,
@@ -246,7 +246,7 @@ async function signUserOut(username) {
   console.log(`Attempting to signout ${username}`);
 
   try {
-    const result = await cognitoIdentityProviderClient.send(new AdminUserGlobalSignOutCommand(params));
+    await cognitoIdentityProviderClient.send(new AdminUserGlobalSignOutCommand(params));
     console.log(`Signed out ${username} from all devices`);
     return {
       message: `Signed out ${username} from all devices`,
