@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/custom/remove';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 describe('remove custom resource command tests', () => {
   let mockContext: $TSContext;

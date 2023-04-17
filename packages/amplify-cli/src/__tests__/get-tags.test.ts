@@ -1,4 +1,4 @@
-import { HydrateTags } from 'amplify-cli-core';
+import { HydrateTags } from '@aws-amplify/amplify-cli-core';
 import { Context } from '../domain/context';
 import { getTags } from '../extensions/amplify-helpers/get-tags';
 
@@ -11,7 +11,7 @@ describe('getTags', () => {
       envName: 'bar',
     },
   };
-  jest.setMock('amplify-cli-core', {
+  jest.setMock('@aws-amplify/amplify-cli-core', {
     pathManager: {
       findProjectRoot: jest.fn().mockResolvedValue('mockProjectRoot'),
     },

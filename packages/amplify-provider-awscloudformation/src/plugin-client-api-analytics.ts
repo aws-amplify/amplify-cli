@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Post-Push update to Analytics resource. Notifies all dependent resources to update their metadata.

@@ -9,7 +9,7 @@ const ValidationError = require('../error/validation-error').default;
 const clientFactory = require('../utils/client-factory');
 const tableUtils = require('../utils/table-utils');
 const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
-const { spinner } = require('amplify-cli-core');
+const { spinner } = require('@aws-amplify/amplify-cli-core');
 
 const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';

@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 import { functionParametersFileName } from './constants';

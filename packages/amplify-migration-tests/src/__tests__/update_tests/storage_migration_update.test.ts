@@ -1,4 +1,4 @@
-import { $TSObject } from 'amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithDefault,
   addDDBWithTrigger,

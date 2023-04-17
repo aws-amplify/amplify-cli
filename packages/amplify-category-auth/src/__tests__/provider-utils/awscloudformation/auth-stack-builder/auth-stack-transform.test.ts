@@ -3,8 +3,8 @@ import process from 'process';
 import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import path from 'path';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   stateManager: {
     getLocalEnvInfo: jest.fn().mockReturnValue('testenv'),
     getMeta: jest.fn().mockReturnValue({

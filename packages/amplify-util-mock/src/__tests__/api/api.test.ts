@@ -1,13 +1,13 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, AmplifyFault, pathManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, pathManager } from '@aws-amplify/amplify-cli-core';
 import { APITest } from '../../api/api';
 import * as lambdaInvoke from '../../api/lambda-invoke';
 import { getMockSearchableTriggerDirectory } from '../../utils';
 import { ConfigOverrideManager } from '../../utils/config-override';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
   pathManager: {
     getAmplifyMetaFilePath: jest.fn(),
     getAWSCredentialsFilePath: jest.fn(),
@@ -82,8 +82,8 @@ describe('Test Mock API methods', () => {
     } as unknown as $TSContext;
 
     const testApi = new APITest();
-    const testApiStartPromise = testApi.start(mockContext);
 
+    const testApiStartPromise = testApi.start(mockContext);
     await expect(testApiStartPromise).rejects.toThrow(
       new AmplifyFault('MockProcessFault', {
         message: 'Failed to start API Mocking.. Reason: No AppSync API is added to the project',

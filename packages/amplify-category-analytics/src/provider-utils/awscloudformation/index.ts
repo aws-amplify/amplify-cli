@@ -3,7 +3,7 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable spellcheck/spell-checker */
 
-import { $TSAny, $TSContext, exitOnNextTick, NotImplementedError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, exitOnNextTick, NotImplementedError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 /**

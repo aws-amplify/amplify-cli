@@ -1,7 +1,7 @@
 import readline from 'readline';
 import { Context } from '../domain/context';
 import { normalizeInputParams } from '../input-params-manager';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 const headlessPayloadReadTimeoutMilliseconds = 2000;
 

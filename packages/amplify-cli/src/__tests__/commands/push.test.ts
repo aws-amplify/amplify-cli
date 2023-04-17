@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run as pushCommand } from '../../commands/push';
 import * as updateTrackedFilesModule from '../../extensions/amplify-helpers/update-tracked-files';
 import * as currentCloudBackendUtilsModule from '../../extensions/amplify-helpers/current-cloud-backend-utils';

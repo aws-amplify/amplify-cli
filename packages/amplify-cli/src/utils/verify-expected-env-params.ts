@@ -1,7 +1,8 @@
-import { $TSContext, IAmplifyResource, stateManager, constants } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource, stateManager, constants } from '@aws-amplify/amplify-cli-core';
 import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getChangedResources, getAllResources } from '../commands/build';
+import { resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';
 
 export const verifyExpectedEnvParams = async (context: $TSContext, category?: string, resourceName?: string) => {
   const envParamManager = stateManager.localEnvInfoExists()
@@ -27,7 +28,16 @@ export const verifyExpectedEnvParams = async (context: $TSContext, category?: st
   });
 
   if (context?.exeInfo?.inputParams?.yes || context?.exeInfo?.inputParams?.headless) {
-    await envParamManager.verifyExpectedEnvParameters(parametersToCheck);
+    let appId: string | undefined = undefined;
+    try {
+      appId = resolveAppId(context);
+    } catch {
+      // If AppId can't be resolved, this only affects the error message of verifyExpectedEnvParameters in the case that parameters are
+      // actually missing. So we let appId be undefined here and verifyExpectedEnvParameters will print a different error message based
+      // on the information available to it
+    }
+    const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
+    await envParamManager.verifyExpectedEnvParameters(parametersToCheck, appId, envName);
   } else {
     const missingParameters = await envParamManager.getMissingParameters(parametersToCheck);
     if (missingParameters.length > 0) {

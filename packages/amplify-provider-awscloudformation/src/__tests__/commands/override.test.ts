@@ -1,8 +1,8 @@
 import { run } from '../../commands/awscloudformation/override';
-import { $TSContext, generateOverrideSkeleton } from 'amplify-cli-core';
+import { $TSContext, generateOverrideSkeleton } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockPath'),
   },

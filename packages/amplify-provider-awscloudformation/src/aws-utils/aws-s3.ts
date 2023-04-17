@@ -6,7 +6,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager } from '@aws-amplify/amplify-cli-core';
 
 import _ from 'lodash';
 

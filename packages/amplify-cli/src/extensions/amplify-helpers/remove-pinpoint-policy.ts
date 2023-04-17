@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { pathManager, JSONUtilities, $TSAny } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 
 const pinpointTemplateFileName = 'pinpoint-cloudformation-template.json';

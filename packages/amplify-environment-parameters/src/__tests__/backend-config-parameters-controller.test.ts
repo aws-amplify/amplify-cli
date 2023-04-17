@@ -1,7 +1,7 @@
-import { stateManager, AmplifyError } from 'amplify-cli-core';
+import { stateManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { IBackendParametersController } from '../backend-config-parameters-controller';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
 

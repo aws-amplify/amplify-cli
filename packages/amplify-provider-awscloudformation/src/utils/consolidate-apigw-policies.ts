@@ -11,7 +11,7 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as path from 'path';

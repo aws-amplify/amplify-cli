@@ -2,8 +2,8 @@ import { printSMSSandboxWarning } from '../../../../provider-utils/awscloudforma
 import { BannerMessage } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import os from 'os';
-jest.mock('amplify-cli-core');
 
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
 
 describe('printSMSSandboxWarning', () => {

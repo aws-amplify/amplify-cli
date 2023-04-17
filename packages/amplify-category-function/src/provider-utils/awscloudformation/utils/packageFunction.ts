@@ -1,4 +1,4 @@
-import { AmplifyError, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
+import { AmplifyError, convertNumBytes, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
 import { LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';

@@ -17,7 +17,7 @@ import {
 } from 'amplify-headless-interface';
 import { isEmpty, merge } from 'lodash';
 import { pascalCase } from 'change-case';
-import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
+import { AmplifyFrontend, FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { identityPoolProviders, userPoolProviders } from '../service-walkthroughs/auth-questions';
 import { authProviders as authProviderList } from '../assets/string-maps';
 import {
@@ -35,15 +35,14 @@ import {
   AutoVerifiedAttributesResult,
 } from '../service-walkthrough-types/cognito-user-input-types';
 
-export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
+export type AddAuthRequestAdaptorFactory = (projectType: AmplifyFrontend) => AddAuthRequestAdaptor;
 
 export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestionHeadlessResult;
 /**
  * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguration output format
- * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
 export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory =
-  (projectType) =>
+  (projectType: AmplifyFrontend) =>
   ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {
     const userPoolConfig = cognitoConfig.userPoolConfiguration;
     const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
@@ -58,7 +57,7 @@ export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory =
   };
 
 export const getUpdateAuthRequestAdaptor =
-  (projectType: string, requiredAttributes: string[]) =>
+  (projectType: AmplifyFrontend, requiredAttributes: string[]) =>
   ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
     const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
     return {
@@ -87,7 +86,7 @@ const immutableAttributeAdaptor = (
 });
 
 const mutableAttributeAdaptor = (
-  projectType: string,
+  projectType: AmplifyFrontend,
   requiredAttributes: string[],
   userPoolConfig: CognitoUserPoolConfiguration | CognitoUserPoolModification,
   includeIdentityPool: boolean,
@@ -170,7 +169,7 @@ const socialProviderMap = (
 
 // converts the identity pool config to the existing format
 const mutableIdentityPoolMap = (
-  projectType: string,
+  projectType: AmplifyFrontend,
   idPoolConfig?: CognitoIdentityPoolConfiguration | CognitoIdentityPoolModification,
 ): IdentityPoolResult => {
   if (!idPoolConfig) {
@@ -280,7 +279,7 @@ const aliasAttributeMap: Record<CognitoUserAliasAttributes, AliasAttributes> = {
   [CognitoUserAliasAttributes.PHONE_NUMBER]: AttributeType.PHONE_NUMBER,
 };
 
-const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'APPLE', projectType: string): string => {
+const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'APPLE', projectType: AmplifyFrontend): string => {
   switch (provider) {
     case 'FACEBOOK':
       return 'facebookAppId';
@@ -288,11 +287,12 @@ const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'AP
       return 'amazonAppId';
     case 'GOOGLE':
       switch (projectType) {
-        case 'ios':
+        case AmplifyFrontend.ios:
           return 'googleIos';
-        case 'android':
+        case AmplifyFrontend.android:
           return 'googleAndroid';
-        case 'javascript':
+        case AmplifyFrontend.javascript:
+        case AmplifyFrontend.flutter:
           return 'googleClientId';
         default:
           throw new Error(`Unknown project type [${projectType}] when mapping federation type`);

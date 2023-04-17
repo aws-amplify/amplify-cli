@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { analyzeProject } from '../config-steps/c0-analyzeProject';
 import { configFrontendHandler } from '../config-steps/c1-configFrontend';
 import { configProviders } from '../config-steps/c2-configProviders';

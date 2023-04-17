@@ -1,6 +1,6 @@
 import { externalAuthEnable } from '@aws-amplify/amplify-category-auth';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { mergeDeploymentSecrets, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
+import { mergeDeploymentSecrets, PathConstants, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
 import { Context } from '../domain/context';
 import { getRootStackId } from '../extensions/amplify-helpers/get-root-stack-id';

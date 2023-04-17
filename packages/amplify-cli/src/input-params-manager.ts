@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { $TSAny, $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Normalizes the input parameters

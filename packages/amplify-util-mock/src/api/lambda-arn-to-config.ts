@@ -1,5 +1,5 @@
 import { keys } from 'lodash';
-import { $TSAny, $TSContext, stateManager, ApiCategoryFacade, getGraphQLTransformerFunctionDocLink } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager, ApiCategoryFacade, getGraphQLTransformerFunctionDocLink } from '@aws-amplify/amplify-cli-core';
 import _ = require('lodash');
 import { ServiceName } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';

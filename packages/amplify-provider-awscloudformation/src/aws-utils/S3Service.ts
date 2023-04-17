@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyFault } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
 import { S3 } from 'aws-sdk';
 import { Bucket } from 'aws-sdk/clients/s3';

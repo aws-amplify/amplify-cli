@@ -1,6 +1,6 @@
 import { showHelp } from './show-help';
 import { listCategories } from './list-categories';
-import { isPackaged } from 'amplify-cli-core';
+import { isPackaged } from '@aws-amplify/amplify-cli-core';
 
 export function showAllHelp(context) {
   context.print.info('');

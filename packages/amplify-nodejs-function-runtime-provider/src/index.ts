@@ -15,7 +15,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
         runtime: {
           name: 'NodeJS',
           value: 'nodejs',
-          cloudTemplateValue: 'nodejs16.x',
+          cloudTemplateValue: 'nodejs18.x',
           defaultHandler: 'index.handler',
           layerExecutablePath: 'nodejs',
           layerDefaultFiles: [

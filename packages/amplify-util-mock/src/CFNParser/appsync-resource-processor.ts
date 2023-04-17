@@ -8,7 +8,7 @@ import {
 import { AppSyncAPIKeyProcessedResource, AppSyncAPIProcessedResource } from './resource-processors/appsync';
 import { processCloudFormationStack } from './stack/index';
 import { CloudFormationTemplateFetcher, CloudFormationTemplate } from './stack/types';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 
 const CFN_DEFAULT_PARAMS = {
