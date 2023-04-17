@@ -69,7 +69,7 @@ describe('upload Studio CMS assets on push of Studio enabled project', () => {
 
   it('able to generate and upload Codegen model artifacts for schema with connected PK', async () => {
     // eslint-disable-next-line spellcheck/spell-checker
-    const name = 'studiocmstestwithconnectedpk';
+    const name = 'pkmodelgen';
     const schemaName = 'modelgen/schema_with_connected_pk.graphql';
     const defaultsSettings = {
       disableAmplifyAppCreation: false,
