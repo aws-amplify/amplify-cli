@@ -53,6 +53,7 @@
     "vm2": "^3.9.8"
   },
   "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.303.0",
     "@types/mime-types": "^2.1.1",
     "cloudform-types": "^4.2.0",
     "rimraf": "^3.0.2"
