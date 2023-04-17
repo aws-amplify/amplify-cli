@@ -75,18 +75,18 @@
     constructs "^10.0.5"
     fs-extra "^8.1.0"
     graphql "^15.5.0"
-    graphql-auth-transformer "7.2.52"
-    graphql-connection-transformer "5.2.51"
-    graphql-dynamodb-transformer "7.2.51"
-    graphql-elasticsearch-transformer "5.2.52"
-    graphql-function-transformer "3.3.42"
-    graphql-http-transformer "5.2.51"
-    graphql-key-transformer "3.2.51"
-    graphql-predictions-transformer "3.2.51"
+    graphql-auth-transformer "7.2.51"
+    graphql-connection-transformer "5.2.50"
+    graphql-dynamodb-transformer "7.2.50"
+    graphql-elasticsearch-transformer "5.2.51"
+    graphql-function-transformer "3.3.41"
+    graphql-http-transformer "5.2.50"
+    graphql-key-transformer "3.2.50"
+    graphql-predictions-transformer "3.2.50"
     graphql-relational-schema-transformer "2.21.16"
     graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
-    graphql-versioned-transformer "5.2.51"
+    graphql-transformer-core "8.0.1"
+    graphql-versioned-transformer "5.2.50"
     import-from "^3.0.0"
     import-global "^0.1.0"
     inquirer "^7.3.3"
@@ -141,7 +141,25 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.4.0", "@aws-amplify/appsync-modelgen-plugin@^2.4.0":
+"@aws-amplify/appsync-modelgen-plugin@2.4.1":
+  version "2.4.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.1.tgz#51893824c8fa65fed1b95e8bcb46a6bdd60b0693"
+  integrity sha512-qxdZNq2UmKeczwz1OKkYRfmfPHoPYFNwwBV+S59raX+9c3uaemBo0bmeTf52yKdNiova1ZzHoqGagAgGU9ZfBw==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^1.18.8"
+    "@graphql-codegen/visitor-plugin-common" "^1.22.0"
+    "@graphql-tools/utils" "^6.0.18"
+    "@types/node" "^12.12.6"
+    "@types/pluralize" "0.0.29"
+    chalk "^3.0.0"
+    change-case "^4.1.1"
+    dart-style "1.3.2-dev"
+    lower-case-first "^2.0.1"
+    pluralize "^8.0.0"
+    strip-indent "^3.0.0"
+    ts-dedent "^1.1.0"
+
+"@aws-amplify/appsync-modelgen-plugin@^2.4.0":
   version "2.4.0"
   resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.0.tgz#0448d2d5938f7fa411ff34bb5b525e17f050bf30"
   integrity sha512-cOXsQ9qcvc7q31riKJL7kYYQFpriFws6rAO2GG7xRwT+0Dqn5LACSAgPHXBMx8vXI4nQcEYZ/EtxTchD845U6Q==
@@ -9065,12 +9083,12 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.1.tgz#79c27a708cf034b29d6d4c1b70b918e0306e2d30"
-  integrity sha512-F1O+daslPHcARzM77qoytmQqVorTjmbAVfH0cWa9OHUh8co4/Wm9VGVnBN1EShsgo/G3pZtE9BiAO4XoRa5BCw==
+amplify-codegen@^3.4.0:
+  version "3.4.2"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.2.tgz#bae6c1edcf2df07de1ceebd326971e5af8fa16c6"
+  integrity sha512-6N87EvsQ5Q299vw2Ys5yOuLvssvGv2hDm1AkPG3mTVPGQlqj7ObA/eh9a0xvv3t+3IAOn8z5n85dZAJ1qKO/sQ==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.4.0"
+    "@aws-amplify/appsync-modelgen-plugin" "2.4.1"
     "@aws-amplify/graphql-docs-generator" "3.0.3"
     "@aws-amplify/graphql-types-generator" "3.0.1"
     "@graphql-codegen/core" "2.6.6"
@@ -9727,7 +9745,7 @@ aws-sdk-mock@^5.8.0:
     sinon "^14.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.1231.0, aws-sdk@^2.1350.0:
+aws-sdk@^2.1231.0, aws-sdk@^2.1233.0, aws-sdk@^2.1350.0:
   version "2.1350.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1350.0.tgz#e538768b842a345db63f2cd0dfa8c7c60e0d8e78"
   integrity sha512-b0BHug2iCtIsKgstj3FEyZYZCv8RZnie5vUQzkw0rr581Z6DOcJof7gGn19E6mPQp1l4j0d274SjvdFQS4JCMw==
@@ -14688,7 +14706,7 @@ graphql-transformer-common@4.24.5:
     md5 "^2.2.1"
     pluralize "8.0.0"
 
-graphql-transformer-core@8.0.2, graphql-transformer-core@^8.0.2:
+graphql-transformer-core@8.0.2, graphql-transformer-core@^8.0.1, graphql-transformer-core@^8.0.2:
   version "8.0.2"
   resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-8.0.2.tgz#b7e689f098f88aaca7e9a5cfec449ef468ee2c31"
   integrity sha512-OUUpypHQGaNrhncjZCMoERdidoY26I+AgI76ItD9A4KfWNjAxauaCj3Mpzk2HQFs/Nd1z1KGSe5H6ySuy3Brbw==
@@ -19488,7 +19506,6 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
 
 pkg-fetch@3.4.2, "pkg-fetch@https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff":
   version "3.4.2"
-  uid ad4a21feb533d338bf951e7ba28cea7256aedeff
   resolved "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
   dependencies:
     chalk "^4.1.2"
@@ -23674,7 +23691,7 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vm2@^3.9.3, vm2@^3.9.8, vm2@^3.9.16:
+vm2@^3.9.16, vm2@^3.9.3, vm2@^3.9.8:
   version "3.9.16"
   resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.16.tgz#0fbc2a265f7bf8b837cea6f4a908f88a3f93b8e6"
   integrity sha512-3T9LscojNTxdOyG+e8gFeyBXkMlOBYDoF6dqZbj+MPVHi9x10UfiTAJIobuchRCp3QvC+inybTbMJIUrLsig0w==
