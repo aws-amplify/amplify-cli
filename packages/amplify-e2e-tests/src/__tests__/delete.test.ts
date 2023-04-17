@@ -61,7 +61,7 @@ describe('amplify delete', () => {
     await pushToCloud(projRoot);
     const amplifyMeta = getProjectMeta(projRoot);
     const pinpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
-    const pinpointRegion = amplifyMeta.analytics[pinpointResourceName].Region;
+    const pinpointRegion = amplifyMeta.analytics[pinpointResourceName].output.Region;
     let pinpointAppExists = await pinpointAppExist(pinpointAppId, pinpointRegion);
     expect(pinpointAppExists).toBeTruthy();
     await amplifyDelete(projRoot);
