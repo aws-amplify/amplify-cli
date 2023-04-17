@@ -38,6 +38,9 @@
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
   },
+  "devDependencies": {
+    "@aws-sdk/client-location": "^3.303.0"
+  },
   "jest": {
     "collectCoverage": true,
     "collectCoverageFrom": [
