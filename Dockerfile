@@ -189,13 +189,6 @@ RUN  n $NODE_18_VERSION && npm install --save-dev -g -f grunt && npm install --s
 #****************      END NODEJS     ****************************************************
 
 
-#****************      CYPRESS TOOLS   ****************************************************
-
-# RUN apt-get install libgtk2.0-0 libgtk-3-0 libbm-dev libnotify-dev libconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-
-#****************      END CYPRESS TOOLS     ****************************************************
-
-
 #**************** PYTHON *****************************************************
 # inspired by: https://github.com/aws/aws-codebuild-docker-images/blob/9282872af78aeb1b5df3010ed3872c40f3d0f056/al2/x86_64/standard/2.0/Dockerfile
 ENV PYTHON_38_VERSION="3.8.10"
