@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-replace-lambda-callouts.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts.1...@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts.2) (2023-04-17)
+
+
+### Bug Fixes
+
+* remove debugger from auth ([49ee8da](https://github.com/aws-amplify/amplify-cli/commit/49ee8da1316845ea1790de3ce1018cd199a5deae))
+
+
+
+
+
 # [3.1.0-replace-lambda-callouts.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts.0...@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts.1) (2023-04-15)
 
 

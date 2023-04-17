@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "11.0.4-replace-lambda-callouts.1",
+  "version": "11.0.4-replace-lambda-callouts.2",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "tar-stream": "^2.2.0"
   },
   "devDependencies": {
-    "@aws-amplify/cli-internal": "11.0.4-replace-lambda-callouts.1",
+    "@aws-amplify/cli-internal": "11.0.4-replace-lambda-callouts.2",
     "@types/tar": "^6.1.1",
     "rimraf": "^3.0.2"
   }

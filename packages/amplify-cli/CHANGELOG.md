@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.4-replace-lambda-callouts.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.4-replace-lambda-callouts.1...@aws-amplify/cli-internal@11.0.4-replace-lambda-callouts.2) (2023-04-17)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 ## [11.0.4-replace-lambda-callouts.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.4-replace-lambda-callouts.0...@aws-amplify/cli-internal@11.0.4-replace-lambda-callouts.1) (2023-04-15)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

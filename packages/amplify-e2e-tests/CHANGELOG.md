@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0-replace-lambda-callouts.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.0-replace-lambda-callouts.1...amplify-e2e-tests@4.1.0-replace-lambda-callouts.2) (2023-04-17)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 # [4.1.0-replace-lambda-callouts.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.0-replace-lambda-callouts.0...amplify-e2e-tests@4.1.0-replace-lambda-callouts.1) (2023-04-15)
 
 **Note:** Version bump only for package amplify-e2e-tests

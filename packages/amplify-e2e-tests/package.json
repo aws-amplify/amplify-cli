@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.1.0-replace-lambda-callouts.1",
+  "version": "4.1.0-replace-lambda-callouts.2",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "3.1.0-replace-lambda-callouts.1",
+    "@aws-amplify/amplify-category-auth": "3.1.0-replace-lambda-callouts.2",
     "@aws-amplify/amplify-e2e-core": "4.9.0-replace-lambda-callouts.0",
     "@aws-amplify/amplify-opensearch-simulator": "1.2.4-replace-lambda-callouts.0",
     "@aws-amplify/graphql-transformer-core": "^1.2.0",
