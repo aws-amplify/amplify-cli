@@ -1,6 +1,14 @@
 import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from 'amplify-cli-core';
-import { StudioComponent, StudioTheme, GenericDataSchema, StudioForm, StudioSchema, checkIsSupportedAsForm, FormFeatureFlags } from '@aws-amplify/codegen-ui';
+import {
+  StudioComponent,
+  StudioTheme,
+  GenericDataSchema,
+  StudioForm,
+  StudioSchema,
+  checkIsSupportedAsForm,
+  FormFeatureFlags,
+} from '@aws-amplify/codegen-ui';
 import { createUiBuilderComponent, createUiBuilderForm, createUiBuilderTheme, generateBaseForms } from './codegenResources';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 
