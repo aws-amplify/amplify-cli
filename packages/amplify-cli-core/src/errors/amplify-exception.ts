@@ -175,7 +175,6 @@ export type AmplifyErrorType =
   | 'StackStateError'
   | 'StorageImportError'
   | 'TransformerContractError'
-  | 'TokenError'
   | 'UnknownDirectiveError'
   | 'UnsupportedLockFileTypeError'
   | 'UserInputError';
