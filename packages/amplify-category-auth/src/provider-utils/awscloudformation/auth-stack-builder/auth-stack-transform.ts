@@ -557,7 +557,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         'hostedUIProviderCreds',
       );
     }
-    debugger;
+
     JSON.parse(props.hostedUIProviderMeta || '[]').forEach(({ ProviderName }: { ProviderName: string }) => {
       socialSignInKeys[ProviderName].forEach((key: string) => {
         if (!Object.keys(props).includes(key)) {
