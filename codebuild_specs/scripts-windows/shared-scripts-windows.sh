@@ -108,7 +108,7 @@ function _build {
 function _saveBuild {
     _lsOut
     storeCache $CODEBUILD_SRC_DIR repo-windows
-    storeCache $HOME/.cache .cache-windows
+    storeCache $HOME/AppData/Local/Yarn/Cache/v6 .cache-windows
 }
 function _install_packaged_cli_win {
     echo Install Amplify Packaged CLI to PATH
@@ -129,7 +129,7 @@ function _runE2ETestsWindows {
     git config --global core.longpaths true
 
     loadCache repo-windows $CODEBUILD_SRC_DIR
-    loadCache .cache-windows $HOME/.cache
+    loadCache .cache-windows $HOME/AppData/Local/Yarn/Cache/v6
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
