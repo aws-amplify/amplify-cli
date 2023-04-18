@@ -68,7 +68,7 @@
     "@aws-amplify/graphql-transformer-core": "1.1.2-ownerfield-pk-fix.0",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "amplify-cli-core": "4.0.3",
-    "amplify-codegen": "3.4.0",
+    "amplify-codegen": "3.4.2",
     "amplify-dotnet-function-runtime-provider": "1.7.6",
     "amplify-go-function-runtime-provider": "2.3.16",
     "amplify-java-function-runtime-provider": "2.3.16",
