@@ -26,7 +26,6 @@ phases:
   build:
     commands:
       # - yarn config set script-shell $(which bash)
-      - bash export CODEBUILD_SOURCE_VERSION=f421b4b1d41cd1d38fbb53bd34da7f6e67c302f6
       - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
       - yarn run production-build
       - yarn run build-tests

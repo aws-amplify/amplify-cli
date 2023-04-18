@@ -2,6 +2,7 @@
 
 source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
 
+export CODEBUILD_SOURCE_VERSION=f421b4b1d41cd1d38fbb53bd34da7f6e67c302f6
 loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 loadCache all-binaries $CODEBUILD_SRC_DIR/out
 loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
