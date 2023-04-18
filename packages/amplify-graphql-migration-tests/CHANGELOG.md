@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.4-rc.374a34c65a.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.3...amplify-graphql-migration-tests@2.4.4-rc.374a34c65a.0) (2023-04-18)
+
+
+### Bug Fixes
+
+* fixes unit test and pin gql transformer v1 version ([bfeb9c4](https://github.com/aws-amplify/amplify-cli/commit/bfeb9c421c90a8afced1c89d6430d66705e49a35))
+
+
+
+
+
 ## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.1...amplify-graphql-migration-tests@2.4.3) (2023-04-14)
 
 
