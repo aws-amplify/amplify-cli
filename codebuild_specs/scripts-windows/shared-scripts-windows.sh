@@ -92,8 +92,8 @@ function _lsOut {
     ls ..
     ls ~
     ls $HOME
-    ls $HOME\..
-    ls $HOME\..\..
+    ls $HOME\\..
+    ls $HOME\\..\\..
 }
 function _setShell {
     echo Setting Shell
