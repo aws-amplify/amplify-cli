@@ -1,0 +1,10 @@
+type Post @model {
+  postId: ID! @primaryKey
+  node: PostNode! @belongsTo(fields: ["postId"])
+  title: String!
+}
+
+type PostNode @model {
+  id: ID!
+  post: Post! @hasOne
+}
