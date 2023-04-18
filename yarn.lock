@@ -14465,17 +14465,6 @@ graphql-auth-transformer@7.2.51:
     graphql-transformer-common "4.24.5"
     graphql-transformer-core "8.0.1"
 
-graphql-auth-transformer@^7.2.52:
-  version "7.2.52"
-  resolved "https://registry.npmjs.org/graphql-auth-transformer/-/graphql-auth-transformer-7.2.52.tgz#229914bf90bb43eb5630d792ba000f2d07b107bd"
-  integrity sha512-vgE0iYMFqB/xgSr/oBL97N3MLgcZg5iRFk16hLiHvK1Nf0ZRg5p96BdLo9z1DL2bFHBpAt72YspnkSm2u+2FPQ==
-  dependencies:
-    graphql "^15.5.0"
-    graphql-connection-transformer "5.2.51"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
-
 graphql-config@^2.2.1:
   version "2.2.2"
   resolved "https://registry.npmjs.org/graphql-config/-/graphql-config-2.2.2.tgz#a4b577826bba9b83e7b0f6cd617be43ca67da045"
@@ -14517,19 +14506,6 @@ graphql-connection-transformer@5.2.50:
     graphql-transformer-common "4.24.5"
     graphql-transformer-core "8.0.1"
 
-graphql-connection-transformer@5.2.51, graphql-connection-transformer@^5.2.51:
-  version "5.2.51"
-  resolved "https://registry.npmjs.org/graphql-connection-transformer/-/graphql-connection-transformer-5.2.51.tgz#c7172e18b1f0ff1b172df5c6ea3b6d97a675efd2"
-  integrity sha512-2TSGvpe75IK+vdY2VSgyDdiwBLwNNc+E6ZcETcGiypV2gS/ywCDQ0tQyIyeiGeUt9daTddaPZAYepBdJCgCxnA==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-dynamodb-transformer "7.2.51"
-    graphql-key-transformer "3.2.51"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
-
 graphql-dynamodb-transformer@7.2.50:
   version "7.2.50"
   resolved "https://registry.npmjs.org/graphql-dynamodb-transformer/-/graphql-dynamodb-transformer-7.2.50.tgz#49761a366deed45d2f2bffc1b07b7704ba0aba9e"
@@ -14544,20 +14520,6 @@ graphql-dynamodb-transformer@7.2.50:
     md5 "^2.2.1"
     pluralize "^8.0.0"
 
-graphql-dynamodb-transformer@7.2.51, graphql-dynamodb-transformer@^7.2.51:
-  version "7.2.51"
-  resolved "https://registry.npmjs.org/graphql-dynamodb-transformer/-/graphql-dynamodb-transformer-7.2.51.tgz#acbea8446b2e7908e253e8950cd2a97847fd3d54"
-  integrity sha512-mDJxlzHiSxONKbgpUcckFm2qzAAhn9bOZkJZJ9os/2SOu/ttatZ0/6+YXBj/jnBEnkWhQv29CIQWaBlIrdh2Ig==
-  dependencies:
-    "@types/pluralize" "^0.0.29"
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
-    md5 "^2.2.1"
-    pluralize "^8.0.0"
-
 graphql-elasticsearch-transformer@5.2.51:
   version "5.2.51"
   resolved "https://registry.npmjs.org/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.51.tgz#a7f604426334fc1150f0805643cf301580085b23"
@@ -14568,17 +14530,6 @@ graphql-elasticsearch-transformer@5.2.51:
     graphql-mapping-template "4.20.8"
     graphql-transformer-common "4.24.5"
     graphql-transformer-core "8.0.1"
-
-graphql-elasticsearch-transformer@^5.2.52:
-  version "5.2.52"
-  resolved "https://registry.npmjs.org/graphql-elasticsearch-transformer/-/graphql-elasticsearch-transformer-5.2.52.tgz#4024b9fc9634e97f6c956c08cec66f196a8a85cb"
-  integrity sha512-T1Y59glJbI2q1pV+lJDb7irgCNK3IDbdvUXYB/6JGUgE50XhsSuJ77yErxW4Yb3BisSGB1lVfSa0FCFrE33o/A==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
 
 graphql-function-transformer@3.3.41:
   version "3.3.41"
@@ -14591,17 +14542,6 @@ graphql-function-transformer@3.3.41:
     graphql-transformer-common "4.24.5"
     graphql-transformer-core "8.0.1"
 
-graphql-function-transformer@^3.3.42:
-  version "3.3.42"
-  resolved "https://registry.npmjs.org/graphql-function-transformer/-/graphql-function-transformer-3.3.42.tgz#6440c9b0cd24ea6e68fb200d4dd2bcf9a945cff5"
-  integrity sha512-uLM5cDqvK9Mk0W9VHTpmYZGmG1DBiOMwk47l4qcfVk/jav9H+efhHS+a87TOB9Dk6iqIWOz5KZZSrXB4oVQmPg==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
-
 graphql-http-transformer@5.2.50:
   version "5.2.50"
   resolved "https://registry.npmjs.org/graphql-http-transformer/-/graphql-http-transformer-5.2.50.tgz#23916356c6d412f6041775b0cf3fadb9d4a889f5"
@@ -14612,17 +14552,6 @@ graphql-http-transformer@5.2.50:
     graphql-mapping-template "4.20.8"
     graphql-transformer-common "4.24.5"
     graphql-transformer-core "8.0.1"
-
-graphql-http-transformer@^5.2.51:
-  version "5.2.51"
-  resolved "https://registry.npmjs.org/graphql-http-transformer/-/graphql-http-transformer-5.2.51.tgz#1581949846dd021a025a0e4f16aa819b04668e81"
-  integrity sha512-HAeadxbfI8pa6ihxK8iAGpwIWyMvcNoWgkFKMc+78aWsRPj7J0thwccVC16s78QIt9sIhib8pw3KgKw1CG3zpA==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
 
 graphql-import@^0.7.1:
   version "0.7.1"
@@ -14648,19 +14577,6 @@ graphql-key-transformer@3.2.50:
     graphql-mapping-template "4.20.8"
     graphql-transformer-common "4.24.5"
     graphql-transformer-core "8.0.1"
-    lodash "^4.17.21"
-
-graphql-key-transformer@3.2.51, graphql-key-transformer@^3.2.51:
-  version "3.2.51"
-  resolved "https://registry.npmjs.org/graphql-key-transformer/-/graphql-key-transformer-3.2.51.tgz#dfeca355d5c65f5795cdec0e9e7cf2cf5eef1264"
-  integrity sha512-cdJyaHNrFYJSd21TSgfxP4vqpZZeJE0k1Ai7xu9jcKBMcBPhHyqUvzxcLyikeBfz62HDRB4u5Sv0LLs2/VY+ag==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-dynamodb-transformer "7.2.51"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
     lodash "^4.17.21"
 
 graphql-language-service-interface@^2.10.2:
@@ -14724,17 +14640,6 @@ graphql-predictions-transformer@3.2.50:
     graphql-transformer-common "4.24.5"
     graphql-transformer-core "8.0.1"
 
-graphql-predictions-transformer@^3.2.51:
-  version "3.2.51"
-  resolved "https://registry.npmjs.org/graphql-predictions-transformer/-/graphql-predictions-transformer-3.2.51.tgz#addfe0c57a041341c6d74745963df34e98a770f2"
-  integrity sha512-5m2xorPX9CdaknX31t1iG6UAJIrghHZsWh7InXgHpN3PgjMWlZiIlKBe7pr0Pm+CwkR4eOLRKyGswXoi4WNJQg==
-  dependencies:
-    cloudform-types "^4.2.0"
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
-
 graphql-relational-schema-transformer@2.21.16:
   version "2.21.16"
   resolved "https://registry.npmjs.org/graphql-relational-schema-transformer/-/graphql-relational-schema-transformer-2.21.16.tgz#2896793099b62a8844f2e60efc73274bd83545f0"
@@ -14797,7 +14702,7 @@ graphql-transformer-core@8.0.1:
     graphql-transformer-common "4.24.5"
     lodash "^4.17.21"
 
-graphql-transformer-core@8.0.2, graphql-transformer-core@^8.0.1, graphql-transformer-core@^8.0.2:
+graphql-transformer-core@^8.0.1:
   version "8.0.2"
   resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-8.0.2.tgz#b7e689f098f88aaca7e9a5cfec449ef468ee2c31"
   integrity sha512-OUUpypHQGaNrhncjZCMoERdidoY26I+AgI76ItD9A4KfWNjAxauaCj3Mpzk2HQFs/Nd1z1KGSe5H6ySuy3Brbw==
@@ -14820,16 +14725,6 @@ graphql-versioned-transformer@5.2.50:
     graphql-mapping-template "4.20.8"
     graphql-transformer-common "4.24.5"
     graphql-transformer-core "8.0.1"
-
-graphql-versioned-transformer@^5.2.51:
-  version "5.2.51"
-  resolved "https://registry.npmjs.org/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.51.tgz#90dea9cb636f744fb46a96ab8e65d8e107541dbe"
-  integrity sha512-82ABpFMEHrIfWJ4AATPHecB8BFKoS1oM7asfIQxS1btIEWTaW9FE2g+umDWc5e33tVYO7FQOwzwTaPHXVpXRrw==
-  dependencies:
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.8"
-    graphql-transformer-common "4.24.5"
-    graphql-transformer-core "8.0.2"
 
 graphql-ws@^5.4.1:
   version "5.5.5"
