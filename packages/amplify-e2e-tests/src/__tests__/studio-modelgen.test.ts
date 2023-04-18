@@ -11,6 +11,9 @@ import {
   updateApiSchema,
   getDeploymentBucketObject,
   getProjectConfig,
+  addFeatureFlag,
+  generateModels,
+  generateModelIntrospection
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('upload Studio CMS assets on push of Studio enabled project', () => {
@@ -77,6 +80,7 @@ describe('upload Studio CMS assets on push of Studio enabled project', () => {
     };
     // init an android project to check that studio modelgen generates JS types even with other frontend config
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'respectprimarykeyattributesonconnectionfield', false);
 
     const originalProjectConfig = getProjectConfig(projRoot);
 
@@ -94,6 +98,8 @@ describe('upload Studio CMS assets on push of Studio enabled project', () => {
 
     await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 2 });
     await updateApiSchema(projRoot, name, schemaName);
+    await expect(generateModels(projRoot)).resolves.not.toThrow();
+    await expect(generateModelIntrospection(projRoot)).resolves.not.toThrow();
     await amplifyPush(projRoot);
 
     // expect CMS assets to be present in S3
