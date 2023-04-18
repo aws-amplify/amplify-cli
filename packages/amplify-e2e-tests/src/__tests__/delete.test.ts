@@ -60,12 +60,13 @@ describe('amplify delete', () => {
     const pinpointResourceName = await addPinpointAnalytics(projRoot);
     await pushToCloud(projRoot);
     const amplifyMeta = getProjectMeta(projRoot);
-    const pintpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
-    let pinpointAppExists = await pinpointAppExist(pintpointAppId);
+    const pinpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
+    const pinpointRegion = amplifyMeta.analytics[pinpointResourceName].output.Region;
+    let pinpointAppExists = await pinpointAppExist(pinpointAppId, pinpointRegion);
     expect(pinpointAppExists).toBeTruthy();
     await amplifyDelete(projRoot);
     await timeout(4 * 1000);
-    pinpointAppExists = await pinpointAppExist(pintpointAppId);
+    pinpointAppExists = await pinpointAppExist(pinpointAppId, pinpointRegion);
     expect(pinpointAppExists).toBeFalsy();
   });
 

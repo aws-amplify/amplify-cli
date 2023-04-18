@@ -3,26 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [11.0.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.4-rc.4a4caf393.0...@aws-amplify/cli-internal@11.0.4) (2023-04-11)
+## [11.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3...@aws-amplify/cli-internal@11.0.5) (2023-04-14)
 
 
 ### Bug Fixes
 
-* api hotfix for ownerfield as pk ([#12422](https://github.com/aws-amplify/amplify-cli/issues/12422)) ([fe4347a](https://github.com/aws-amplify/amplify-cli/commit/fe4347a21f7ec45930332e053df9dfe8f526f2c9))
-
-
-
-
-
-## [11.0.4-rc.4a4caf393.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.0.3...@aws-amplify/cli-internal@11.0.4-rc.4a4caf393.0) (2023-04-04)
-
-
-### Bug Fixes
-
-* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
-* env param fail-fast checks don't fatal on missing appId or envName ([#12373](https://github.com/aws-amplify/amplify-cli/issues/12373)) ([4a4caf3](https://github.com/aws-amplify/amplify-cli/commit/4a4caf39320276215a882bc829bb459bd7896ae9))
-* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
-* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+* **api:** bump api with ownerfield hotfix of 5.1.1 ([dacff4a](https://github.com/aws-amplify/amplify-cli/commit/dacff4ac65fc10d32ab3effbb61c604343f0a1a0))
 
 
 
