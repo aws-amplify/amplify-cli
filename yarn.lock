@@ -141,7 +141,25 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.4.0", "@aws-amplify/appsync-modelgen-plugin@^2.4.0":
+"@aws-amplify/appsync-modelgen-plugin@2.4.1":
+  version "2.4.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.1.tgz#51893824c8fa65fed1b95e8bcb46a6bdd60b0693"
+  integrity sha512-qxdZNq2UmKeczwz1OKkYRfmfPHoPYFNwwBV+S59raX+9c3uaemBo0bmeTf52yKdNiova1ZzHoqGagAgGU9ZfBw==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^1.18.8"
+    "@graphql-codegen/visitor-plugin-common" "^1.22.0"
+    "@graphql-tools/utils" "^6.0.18"
+    "@types/node" "^12.12.6"
+    "@types/pluralize" "0.0.29"
+    chalk "^3.0.0"
+    change-case "^4.1.1"
+    dart-style "1.3.2-dev"
+    lower-case-first "^2.0.1"
+    pluralize "^8.0.0"
+    strip-indent "^3.0.0"
+    ts-dedent "^1.1.0"
+
+"@aws-amplify/appsync-modelgen-plugin@^2.4.0":
   version "2.4.0"
   resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.0.tgz#0448d2d5938f7fa411ff34bb5b525e17f050bf30"
   integrity sha512-cOXsQ9qcvc7q31riKJL7kYYQFpriFws6rAO2GG7xRwT+0Dqn5LACSAgPHXBMx8vXI4nQcEYZ/EtxTchD845U6Q==
@@ -9065,12 +9083,12 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@3.4.0:
-  version "3.4.0"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.0.tgz#f2d1e813137996b31fc7a73dba39245fb46479fe"
-  integrity sha512-PQ4GX7c18OK5vaw5aahLO6H3QBTP+lvTG85CgO/SjbwjNeSzI8TL67Hat40q11ys4K+ZFnMB8S8sgyxmWFNdyg==
+amplify-codegen@3.4.2:
+  version "3.4.2"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.2.tgz#bae6c1edcf2df07de1ceebd326971e5af8fa16c6"
+  integrity sha512-6N87EvsQ5Q299vw2Ys5yOuLvssvGv2hDm1AkPG3mTVPGQlqj7ObA/eh9a0xvv3t+3IAOn8z5n85dZAJ1qKO/sQ==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.4.0"
+    "@aws-amplify/appsync-modelgen-plugin" "2.4.1"
     "@aws-amplify/graphql-docs-generator" "3.0.3"
     "@aws-amplify/graphql-types-generator" "3.0.1"
     "@graphql-codegen/core" "2.6.6"
