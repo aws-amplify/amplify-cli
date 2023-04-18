@@ -13,7 +13,7 @@ import {
   getProjectConfig,
   addFeatureFlag,
   generateModels,
-  generateModelIntrospection
+  generateModelIntrospection,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('upload Studio CMS assets on push of Studio enabled project', () => {
