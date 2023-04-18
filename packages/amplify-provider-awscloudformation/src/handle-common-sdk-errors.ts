@@ -10,7 +10,7 @@ type CommonExceptionEntry = {
 const commonExceptions: CommonExceptionEntry[] = [
   {
     messageIndicator: /Rate Exceeded/,
-    amplifyErrorType: 'RateError',
+    amplifyErrorType: 'APIRateExceededError',
     resolution: 'Try again later.',
   },
   {
