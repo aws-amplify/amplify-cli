@@ -25,9 +25,5 @@ env:
 phases:
   build:
     commands:
-      - export NODE_OPTIONS=--max-old-space-size=8096
-      - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
-      - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
-      - echo $AMPLIFY_DIR
-      - echo $AMPLIFY_PATH
-      - source ./shared-scripts.sh && _runE2ETestsWindows
+      # - source ./shared-scripts.sh && _runE2ETestsWindows
+      - bash ./codebuild_specs/scripts-windows/run-e2e-windows.sh

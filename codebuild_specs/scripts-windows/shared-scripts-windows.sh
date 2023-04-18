@@ -88,12 +88,17 @@ function _loadTestAccountCredentials {
 
 
 
-
+function _lsOut {
+    ls ..
+    ls ~
+    ls $HOME
+    ls $HOME\..
+    ls $HOME\..\..
+}
 function _setShell {
     echo Setting Shell
     yarn config set script-shell $(which bash)
 }
-
 function _build {
     _setShell
     echo Windows Build
@@ -101,18 +106,18 @@ function _build {
     yarn build-tests
 }
 function _saveBuild {
-    storeCache $CODEBUILD_SRC_DIR repo
-    storeCache $HOME/.cache .cache
+    storeCache $CODEBUILD_SRC_DIR repo-windows
+    storeCache $HOME\.cache .cache-windows
 }
 function _install_packaged_cli_win {
     echo Install Amplify Packaged CLI to PATH
     # rename the command to amplify
-    cd $CODEBUILD_SRC_DIR/out
+    cd $CODEBUILD_SRC_DIR\out
     cp amplify-pkg-win-x64.exe amplify.exe
 
     echo Move to CLI Binary to already existing PATH
     # This is a Hack to make sure the Amplify CLI is in the PATH
-    cp $CODEBUILD_SRC_DIR/out/amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
+    cp $CODEBUILD_SRC_DIR\out\amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
 }
 function _runE2ETestsWindows {
     echo RUN E2E Tests Windows

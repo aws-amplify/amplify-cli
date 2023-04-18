@@ -18,22 +18,14 @@ node -v
 npm -v
 yarn -v
 
+source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
+_setShell
+_build
+
 ls ..
 ls ~
 ls $HOME
-ls ..\\$HOME
+ls $HOME\..
+ls $HOME\..\..
 
-source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
-
-_setShell
-
-yarn run production-build
-yarn build-tests
-
-ls ..
-ls ~
-ls ~/.cache/
-
-source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
-storeCache $CODEBUILD_SRC_DIR repo-windows
-storeCache $HOME/.cache .cache-windows
+_saveBuild
