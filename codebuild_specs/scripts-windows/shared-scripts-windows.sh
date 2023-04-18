@@ -17,6 +17,9 @@ function storeCache {
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
     echo writing cache to $s3Path
     # zip contents and upload to s3
+    # if ! (cd $localPath && tar -czf cache.tar . && ls && aws s3 cp cache.tar $s3Path); then
+    #     echo Something went wrong storing the cache.
+    # fi
     if ! (cd $localPath && tar -czf cache.tar . && ls && aws s3 cp cache.tar $s3Path); then
         echo Something went wrong storing the cache.
     fi
@@ -50,10 +53,10 @@ function loadCache {
     fi
     tar --help
     # load cache and unzip it
-    # if ! (cd $localPath && aws s3 cp $s3Path cache.tar && ls && tar --skip-old-files -xzf cache.tar); then
+    # if ! (cd $localPath && aws s3 cp $s3Path cache.tar && ls && tar -xzkf cache.tar); then
     #     echo "Something went wrong fetching the cache. Continuing anyway."
     # fi
-    if ! (cd $localPath && aws s3 cp $s3Path - | tar xzf -); then
+    if ! (cd $localPath && aws s3 cp $s3Path - | tar xzkf -); then
         echo "Something went wrong fetching the cache. Continuing anyway."
     fi
     echo done loading cache
