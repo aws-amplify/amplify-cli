@@ -51,7 +51,7 @@ function loadCache {
         echo "Cache not found."
         exit 0
     fi
-    tar --help
+    # tar --help
     # load cache and unzip it
     # if ! (cd $localPath && aws s3 cp $s3Path cache.tar && ls && tar -xzkf cache.tar); then
     #     echo "Something went wrong fetching the cache. Continuing anyway."
