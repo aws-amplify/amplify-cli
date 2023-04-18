@@ -12,7 +12,7 @@ export AMPLIFY_PATH=$CODEBUILD_SRC_DIR\\out\\amplify.exe
 source .circleci/local_publish_helpers.sh
 source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
 
-source $BASH_ENV
+# source $BASH_ENV
 
 amplify version
 
