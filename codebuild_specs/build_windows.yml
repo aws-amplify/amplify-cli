@@ -4,7 +4,7 @@ env:
 phases:
   build:
     commands:
-      - yarn config set script-shell $(which bash)
+      # - yarn config set script-shell $(which bash)
       - yarn run production-build
       - yarn run build-tests
       - bash ./codebuild_specs/scripts-windows/save-build-windows.sh
