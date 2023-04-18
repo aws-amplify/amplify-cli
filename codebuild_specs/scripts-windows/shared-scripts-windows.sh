@@ -113,12 +113,14 @@ function _saveBuild {
 function _install_packaged_cli_win {
     echo Install Amplify Packaged CLI to PATH
     # rename the command to amplify
-    cd $CODEBUILD_SRC_DIR\out
+    cd $CODEBUILD_SRC_DIR/out
     cp amplify-pkg-win-x64.exe amplify.exe
 
     echo Move to CLI Binary to already existing PATH
     # This is a Hack to make sure the Amplify CLI is in the PATH
-    cp $CODEBUILD_SRC_DIR\out\amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
+    cp $CODEBUILD_SRC_DIR/out/amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
+    # reset working directory
+    cd $CODEBUILD_SRC_DIR
 }
 function _runE2ETestsWindows {
     echo RUN E2E Tests Windows
