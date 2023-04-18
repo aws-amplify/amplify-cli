@@ -52,7 +52,7 @@ function loadCache {
     # if ! (cd $localPath && aws s3 cp $s3Path cache.tar && ls && tar --skip-old-files -xzf cache.tar); then
     #     echo "Something went wrong fetching the cache. Continuing anyway."
     # fi
-    if ! (cd $localPath && aws s3 cp $s3Path - | tar -xz --skip-old-files); then
+    if ! (cd $localPath && aws s3 cp $s3Path - | tar xzf -); then
         echo "Something went wrong fetching the cache. Continuing anyway."
     fi
     echo done loading cache
