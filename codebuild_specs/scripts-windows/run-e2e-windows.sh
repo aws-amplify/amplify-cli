@@ -18,7 +18,7 @@ node -v
 npm -v
 yarn -v
 
-source .\codebuild_specs\scripts-windows\shared-scripts-windows.sh
+source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
 
 _setShell
 _build
