@@ -29,6 +29,7 @@ phases:
       - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
       - yarn run production-build
       - yarn run build-tests
+      - yarn cache dir
       # - bash ./codebuild_specs/scripts-windows/save-build-windows.sh
       # - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
       - bash ./codebuild_specs/scripts-windows/rename-packaged-cli.sh
