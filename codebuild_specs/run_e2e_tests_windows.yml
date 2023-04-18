@@ -31,12 +31,12 @@ phases:
       - yarn run build-tests
       # - bash ./codebuild_specs/scripts-windows/save-build-windows.sh
       # - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
-      - echo Rename the Packaged CLI to amplify
-      - cd $CODEBUILD_SRC_DIR\out
-      - cp amplify-pkg-win-x64.exe amplify.exe
-      - echo Move CLI Binary to alredy existing PATH
+      - bash echo Rename the Packaged CLI to amplify
+      - bash cd $CODEBUILD_SRC_DIR\out
+      - bash cp amplify-pkg-win-x64.exe amplify.exe
+      - bash echo Move CLI Binary to alredy existing PATH
       # This is a Hack to make sure the Amplify CLI is in the PATH
-      - cp $CODEBUILD_SRC_DIR\out\amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
+      - bash cp $CODEBUILD_SRC_DIR\out\amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
       # verify installation
       - bash amplify version
       - bash ./codebuild_specs/scripts-windows/run-e2e-windows.sh
