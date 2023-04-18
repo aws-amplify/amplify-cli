@@ -106,8 +106,9 @@ function _build {
     yarn build-tests
 }
 function _saveBuild {
+    _lsOut
     storeCache $CODEBUILD_SRC_DIR repo-windows
-    storeCache $HOME\\.cache .cache-windows
+    storeCache $HOME/.cache .cache-windows
 }
 function _install_packaged_cli_win {
     echo Install Amplify Packaged CLI to PATH
