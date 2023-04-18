@@ -56,15 +56,15 @@
     "@aws-amplify/graphql-transformer-migrator": "2.1.2-ownerfield-pk-fix.0",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "fs-extra": "^8.1.0",
-    "graphql-auth-transformer": "^7.2.52",
-    "graphql-connection-transformer": "^5.2.51",
-    "graphql-dynamodb-transformer": "^7.2.51",
-    "graphql-elasticsearch-transformer": "^5.2.52",
-    "graphql-function-transformer": "^3.3.42",
-    "graphql-http-transformer": "^5.2.51",
-    "graphql-key-transformer": "^3.2.51",
-    "graphql-predictions-transformer": "^3.2.51",
-    "graphql-transformer-core": "^8.0.2",
-    "graphql-versioned-transformer": "^5.2.51"
+    "graphql-auth-transformer": "7.2.51",
+    "graphql-connection-transformer": "5.2.50",
+    "graphql-dynamodb-transformer": "7.2.50",
+    "graphql-elasticsearch-transformer": "5.2.51",
+    "graphql-function-transformer": "3.3.41",
+    "graphql-http-transformer": "5.2.50",
+    "graphql-key-transformer": "3.2.50",
+    "graphql-predictions-transformer": "3.2.50",
+    "graphql-transformer-core": "8.0.1",
+    "graphql-versioned-transformer": "5.2.50"
   }
 }
