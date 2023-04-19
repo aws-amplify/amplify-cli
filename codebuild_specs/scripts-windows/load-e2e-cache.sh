@@ -2,7 +2,7 @@
 
 source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
 
-export CODEBUILD_SOURCE_VERSION=e1dce3fd6083503048f8d6eec3c09cf1b5d8a007
+# export CODEBUILD_SOURCE_VERSION=e1dce3fd6083503048f8d6eec3c09cf1b5d8a007
 loadCache repo-windows $CODEBUILD_SRC_DIR
 loadCache .cache-windows $HOME/AppData/Local/Yarn/Cache/v6
 
