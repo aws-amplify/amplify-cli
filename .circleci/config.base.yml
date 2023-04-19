@@ -916,6 +916,7 @@ jobs:
       - run:
           name: Run smoketest against @aws-amplify@latest
           command: |
+            changeNpmGlobalPath
             yarn smoketest@latest
   github_release:
     <<: *linux-e2e-executor-large
