@@ -125,47 +125,18 @@ function _install_packaged_cli_win {
 
     echo Move to CLI Binary to already existing PATH
     # This is a Hack to make sure the Amplify CLI is in the PATH
-    cp $CODEBUILD_SRC_DIR/out/amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
+    echo $HOME/AppData/Local
+    ls $HOME/AppData/Local
+    echo $HOME/AppData/Local/Microsoft
+    ls $HOME/AppData/Local/Microsoft
+    echo $HOME/AppData/Local/Microsoft/WindowsApps
+    ls $HOME/AppData/Local/Microsoft/WindowsApps
+
+    cp $CODEBUILD_SRC_DIR/out/amplify.exe $HOME/AppData/Local/Microsoft/WindowsApps
+    ls $HOME/AppData/Local/Microsoft/WindowsApps
+    
     # reset working directory
     cd $CODEBUILD_SRC_DIR
-}
-function _runE2ETestsWindows {
-    echo RUN E2E Tests Windows
-
-    echo Git Enable Long Paths
-    git config --global core.longpaths true
-
-    loadCache repo-windows $CODEBUILD_SRC_DIR
-    loadCache .cache-windows $HOME/AppData/Local/Yarn/Cache/v6
-    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-
-    loadCache all-binaries $CODEBUILD_SRC_DIR/out
-    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
-    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
-
-    echo Rename the Packaged CLI to amplify
-    cd $CODEBUILD_SRC_DIR/out
-    cp amplify-pkg-win-x64.exe amplify.exe
-    
-    echo Move CLI Binary to alredy existing PATH
-    # This is a Hack to make sure the Amplify CLI is in the PATH
-    cp $CODEBUILD_SRC_DIR/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
-    _install_packaged_cli_win
-    # verify installation
-    amplify version
-
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
-    source $BASH_ENV
-
-    setNpmRegistryUrlToLocal
-    changeNpmGlobalPath
-    amplify version
-
-    cd packages/amplify-e2e-tests
-
-    _loadTestAccountCredentials
-
-    retry runE2eTest
 }
 
 
