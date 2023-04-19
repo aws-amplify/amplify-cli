@@ -1303,14 +1303,7 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-      - smoketest:
-          context: github-publish
-          requires:
-            - deploy
-          filters:
-            branches:
-              only:
-                - release
+      - smoketest: {}
       - github_release:
           context: github-publish
           requires:
