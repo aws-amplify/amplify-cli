@@ -894,6 +894,19 @@ jobs:
           name: Sanity check install
           command: |
             amplify version
+  smoketest:
+    <<: *linux-e2e-executor-large
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Publish Amplify CLI GitHub release
+          command: |
+            yarn smoketest@latest
   github_release:
     <<: *linux-e2e-executor-large
     steps:
@@ -1290,6 +1303,14 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - smoketest:
+          context: github-publish
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - release
       - github_release:
           context: github-publish
           requires:
