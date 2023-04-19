@@ -1080,6 +1080,7 @@ workflows:
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
+                - /smoketest\/.*/
           context:
             - e2e-auth-credentials
             - e2e-test-context
