@@ -896,6 +896,10 @@ jobs:
             amplify version
   smoketest:
     <<: *linux-e2e-executor-large
+    parameters:
+      os:
+        type: executor
+        default: l_large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -907,14 +911,12 @@ jobs:
           key: amplify-build-artifact-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - rename_binary_for_windows:
-          os: << parameters.os >>
       - install_packaged_cli:
           os: << parameters.os >>
       - run:
-          name: Run smoketest against @aws-amplify@<< parameters.os >>
+          name: Run smoketest against @aws-amplify@latest
           command: |
-            CLI_VERSION=<< parameters.os >> yarn smoketest
+            yarn smoketest@latest
   github_release:
     <<: *linux-e2e-executor-large
     steps:
