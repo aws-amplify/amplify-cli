@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as pty from 'node-pty';
 import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+jest.retryTimes(0);
 
 export const NPM = {
   install(pkgName: string, isGlobal: boolean = false): Promise<void> {
@@ -141,13 +142,14 @@ export class Amplify {
       .runAsync();
   };
   addRestApi = () => {
-    return spawn('amplify', ['add', 'api'], this.executionArgs)
+    return spawn('amplify', ['add', 'api'], { ...this.executionArgs, noOutputTimeout: 3000 })
       .wait('Select from one of the below mentioned services')
       .sendKeyDown()
       .sendCarriageReturn()
       .wait('Provide a friendly name')
+      .delay(500)
       .sendCarriageReturn()
-      .wait('Provide a path (e.g. /book/{isbn}):')
+      .wait('Provide a path')
       .sendCarriageReturn()
       .wait('Choose a Lambda source')
       .sendCarriageReturn()
@@ -158,13 +160,14 @@ export class Amplify {
       .wait('Choose the function template that you want to use:')
       .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
-      .sendNo()
+      .sendLine('n')
       .wait('Do you want to edit the local lambda function now?')
-      .sendNo()
+      .sendLine('n')
       .wait('Restrict API access?')
-      .sendCarriageReturn()
+      .sendLine('n')
       .wait('Do you want to add another path?')
       .sendNo()
+
       .runAsync();
   };
   status = () => {
@@ -175,7 +178,6 @@ export class Amplify {
       const [apiName] = fs.readdirSync(path.join(this.executionArgs.cwd, 'amplify', 'backend', 'api'));
       const targetPath = path.join(this.executionArgs.cwd, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
       fs.writeFileSync(targetPath, schema);
-      console.info('Wrote to', targetPath);
       return Promise.resolve(0);
     } catch (e) {
       return Promise.reject(1);
@@ -203,7 +205,7 @@ type Todo @model {
 function writeBanner(text: string) {
   const count = text.length;
   const textPadding = 3;
-  console.log('\n');
+  process.stdout.write('\n');
   process.stdout.write('#'.repeat(count + 2 + textPadding * 2));
   process.stdout.write('\n');
   process.stdout.write(`#${' '.repeat(count + textPadding * 2)}#`);
@@ -282,7 +284,6 @@ describe('Release Smoke Tests', () => {
   ];
   test('An amplify project can be created without error', async () => {
     const args = getArgs();
-    console.info(args.projectDirectory);
 
     const amplify = new Amplify(args.projectDirectory);
     createProjectDirectory(args.projectDirectory);
@@ -297,6 +298,5 @@ describe('Release Smoke Tests', () => {
       writeBanner(command.description);
       await command.run();
     }
-    expect.assertions(0);
   });
 });
