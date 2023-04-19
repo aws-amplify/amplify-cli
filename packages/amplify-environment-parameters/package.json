@@ -19,7 +19,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "yarn generate-schemas && tsc",
+    "build": "pnpm generate-schemas && tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules src/schemas",
     "test": "jest --logHeapUsage",
@@ -32,6 +32,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.149",
     "aws-sdk": "^2.1354.0",
     "mkdirp": "^1.0.4",
     "ts-json-schema-generator": "~1.1.2"

@@ -21,8 +21,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "yarn jest",
-    "test-ci": "yarn jest --ci",
+    "test": "pnpm jest",
+    "test-ci": "pnpm jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
@@ -76,6 +76,7 @@
     "@types/columnify": "^1.5.0",
     "@types/deep-diff": "^1.0.0",
     "@types/folder-hash": "^4.0.1",
+    "@types/fs-extra": "^8.0.1",
     "@types/lodash.throttle": "^4.1.6",
     "@types/node": "^12.12.6",
     "@types/uuid": "^8.0.0"

@@ -4,7 +4,7 @@
   "description": "amplify-cli front-end plugin for JavaScript projects",
   "scripts": {
     "test": "jest --logHeapUsage",
-    "test-watch": "yarn test --watch"
+    "test-watch": "pnpm test --watch"
   },
   "repository": {
     "type": "git",

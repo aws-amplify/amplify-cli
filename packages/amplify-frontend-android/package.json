@@ -20,7 +20,7 @@
   },
   "scripts": {
     "test": "jest --logHeapUsage",
-    "test-watch": "yarn test --watch"
+    "test-watch": "pnpm test --watch"
   },
   "dependencies": {
     "fs-extra": "^8.1.0",

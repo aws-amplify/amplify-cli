@@ -18,7 +18,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && yarn copy-templates",
+    "build": "tsc && pnpm copy-templates",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
     "copy-templates": "copyfiles -u 4 src/provider-utils/awscloudformation/cloudformation-templates/* lib/provider-utils/awscloudformation/cloudformation-templates/ && copyfiles -u 4 src/provider-utils/awscloudformation/triggers/**/*.ejs lib/provider-utils/awscloudformation/triggers/",

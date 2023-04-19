@@ -1,6 +1,6 @@
 import opn from 'open';
 import { ChildProcess } from 'child_process';
-import { isCI } from '..';
+import { isCI, $TSAny } from '..';
 
 /**
  * Helper function to Open stuff like URLs, files, executables. Cross-platform and opens only if its run in non-ci environmets
@@ -23,7 +23,7 @@ export const open = async (target: string, options: opn.Options): Promise<ChildP
   return Promise.resolve(childProcess);
 };
 
-const handleOpenError = (err: Error, target: string) => {
+const handleOpenError = (err: $TSAny, target: string) => {
   console.error(`Unable to open ${target}: ${err.message}`);
   if ('code' in err && err['code'] === 'ENOENT') {
     console.warn('Have you installed `xdg-utils` on your machine?');

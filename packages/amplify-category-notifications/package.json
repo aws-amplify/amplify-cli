@@ -19,6 +19,7 @@
     "access": "public"
   },
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
@@ -61,5 +62,10 @@
       "json",
       "html"
     ]
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/lodash": "^4.14.149",
+    "@types/promise-sequential": "^1.1.0"
   }
 }

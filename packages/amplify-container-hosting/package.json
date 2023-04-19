@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test-ci": "yarn jest --ci",
+    "test-ci": "pnpm jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
     "test": "jest --logHeapUsage --coverage --passWithNoTests",

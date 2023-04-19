@@ -60,5 +60,10 @@
       "json",
       "node"
     ]
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/lodash": "^4.14.149",
+    "@types/uuid": "^9.0.1"
   }
 }
