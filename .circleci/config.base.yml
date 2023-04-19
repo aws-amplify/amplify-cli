@@ -916,6 +916,8 @@ jobs:
       - run:
           name: Run smoketest against @aws-amplify@latest
           command: |
+            source .circleci/local_publish_helpers.sh
+            source $BASH_ENV
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             amplify version
