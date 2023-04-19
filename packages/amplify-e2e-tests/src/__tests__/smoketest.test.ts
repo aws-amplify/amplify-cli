@@ -222,7 +222,7 @@ function writeBanner(text: string) {
 describe('Release Smoke Tests', () => {
   const createCommands = (amplify: Amplify, cliVersion: string): Command[] => [
     {
-      description: `Install Amplify CLI v${cliVersion}`,
+      description: `Install @aws-amplify/cli@${cliVersion}`,
       run: () => NPM.install(`@aws-amplify/cli@${cliVersion}`, true),
     },
     {
