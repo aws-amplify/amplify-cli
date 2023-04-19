@@ -1,20 +1,24 @@
 const response = require('./cfn-response');
-const aws = require('aws-sdk');
-const iam = new aws.IAM();
-const lambdaClient = new aws.Lambda({ apiVersion: '2017-04-19' });
+const { IAMClient, CreateServiceLinkedRoleCommand, GetRoleCommand } = require('@aws-sdk/client-iam');
+const { LambdaClient, AddPermissionCommand} = require('@aws-sdk/client-lambda');
+const { LexModelBuildingServiceClient, DeleteBotCommand, GetSlotTypeCommand, PutSlotTypeCommand, GetIntentCommand,
+PutIntentCommand, GetBotCommand, PutBotCommand
+} = require('@aws-sdk/client-lex-model-building-service');
+const iamClient = new IAMClient({});
+const lambdaClient = new LambdaClient({});
 exports.handler = function(event, context) {
-    const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19', region: event.ResourceProperties.lexRegion });
-    if (event.RequestType == 'Delete') {
+    const lex = new LexModelBuildingServiceClient({ region: event.ResourceProperties.lexRegion });
+    if (event.RequestType === 'Delete') {
         let botName = "<%- props.botName %>";
         if(process.env.ENV && process.env.ENV !== "NONE") {
             botName = botName + '_' + process.env.ENV;
         }
-        lex.deleteBot({name: botName}).promise()
+        lex.send(new DeleteBotCommand({name: botName}))
         .then(() => {
             response.send(event, context, response.SUCCESS);
         })
         .catch((err) => {
-            if (err.code !== 'ParameterNotFound') {
+            if (err.name !== 'NotFoundException') {
                 response.send(event, context, response.FAILED);
             } else {
                 response.send(event, context, response.SUCCESS);
@@ -157,7 +161,7 @@ exports.handler = function(event, context) {
         "voiceId": "<%- props.outputVoice %>",
         <% } %>
         <% if(props.sessionTimeout) { %>
-        "idleSessionTTLInSeconds": "<%- props.sessionTimeout*60 %>"
+        "idleSessionTTLInSeconds": <%- props.sessionTimeout*60 %>
         <% } %>
     };
 
@@ -190,13 +194,13 @@ function checkAndCreateLexServiceRole() {
 
 function createNewLexServiceRole() {
 
-    // Lex service automatically creates the needed polcies and truust relationships
+    // Lex service automatically creates the needed policies and trust relationships
     const params = {
       AWSServiceName: 'lex.amazonaws.com',
       Description: 'Allows Amazon Lex to create and manage voice enabled bots on your behalf'
     };
 
-    return iam.createServiceLinkedRole(params).promise();
+    return iamClient.send(new CreateServiceLinkedRoleCommand(params));
 
 }
 
@@ -207,7 +211,7 @@ function checkIfLexServiceRoleExists() {
         RoleName: "AWSServiceRoleForLexBots"
     };
 
-    return iam.getRole(params).promise()
+    return iamClient.send(new GetRoleCommand(params))
     .then((result) => {
         rolePresent = true;
         return rolePresent;
@@ -226,7 +230,7 @@ function getSlotTypes(newSlotTypeParams, lex){
             'version': '$LATEST'
         };
         tasks.push(
-            lex.getSlotType(params).promise()
+            lex.send(new GetSlotTypeCommand(params))
             .then((data)=>{
                 slotType['checksum'] = data.checksum;
             })
@@ -241,7 +245,7 @@ function putSlotTypes(newSlotTypeParams, lex){
     const tasks = [];
     newSlotTypeParams.forEach( slotType => {
         tasks.push(
-            lex.putSlotType(slotType).promise()
+            lex.send(new PutSlotTypeCommand(slotType))
             .then((data)=>{
                 console.log(data);
             })
@@ -262,7 +266,7 @@ function getIntents(intentParams, lex){
             'name': intent.name
         };
         tasks.push(
-            lex.getIntent(params).promise()
+            lex.send(new GetIntentCommand(params))
             .then((data)=>{
                 intent['checksum'] = data.checksum;
             })
@@ -280,7 +284,7 @@ function putIntents(intentParams, lex){
             ensureLambdaFunctionAccess(intent)
             .then(()=>{
                 delete intent.fulfillmentLambda;
-                return lex.putIntent(intent).promise();
+                return lex.send(new PutIntentCommand(intent));
             })
             .then((data)=>{
                 console.log(data);
@@ -311,7 +315,7 @@ function ensureLambdaFunctionAccess(intent){
             SourceArn: `arn:aws:lex:${region}:${accountId}:intent:${intent.name}:*`,
         }
 
-        return lambdaClient.addPermission(params).promise()
+        return lambdaClient.send(new AddPermissionCommand(params))
                 .then((data)=>{
                     console.log(data);
                     return data;
@@ -330,7 +334,7 @@ function getBot(botParams, lex){
         'name': botParams.name,
         'versionOrAlias': '$LATEST'
     };
-    return  lex.getBot(params).promise()
+    return  lex.send(new GetBotCommand(params))
             .then((data)=>{
                 botParams['checksum'] = data.checksum;
             })
@@ -339,7 +343,7 @@ function getBot(botParams, lex){
 }
 
 function putBot(botParams, lex){
-    return lex.putBot(botParams).promise()
+    return lex.send(new PutBotCommand(botParams))
             .then((data)=>{
                 console.log(data);
                 return data;

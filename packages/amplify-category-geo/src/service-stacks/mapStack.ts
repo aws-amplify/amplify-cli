@@ -94,7 +94,7 @@ export class MapStack extends BaseStack {
     const customMapLambda = new lambda.Function(this, 'CustomMapLambda', {
       code: lambda.Code.fromInline(customMapLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_16_X,
+      runtime: Runtime.NODEJS_18_X,
       timeout: Duration.seconds(300),
     });
     customMapLambda.addToRolePolicy(geoCreateMapStatement);

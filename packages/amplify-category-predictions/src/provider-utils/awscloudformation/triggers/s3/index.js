@@ -1,4 +1,4 @@
-const AWS = require('aws-sdk'); //eslint-disable-line
+const { RekognitionClient, DeleteFacesCommand, IndexFacesCommand, ListFacesCommand } = require('@aws-sdk/client-rekognition');
 const querystring = require('querystring');
 
 async function deleteImageIndex(rekognition, result, externalImageID) {
@@ -11,7 +11,7 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
         FaceIds: [result.Faces[i].FaceId],
       };
 
-      const result1 = await rekognition.deleteFaces(params1).promise();
+      const result1 = await rekognition.send(new DeleteFacesCommand(params1));
 
       if (result1.DeletedFaces) {
         console.log('deleted faces from collection successfully');
@@ -28,13 +28,9 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
 }
 
 exports.handler = async (event) => {
-  AWS.config.update({
-    region: event.Records[0].awsRegion,
-  });
-
   const numberOfRecords = event.Records.length;
   console.log(numberOfRecords);
-  const rekognition = new AWS.Rekognition();
+  const rekognition = new RekognitionClient({ region: event.Records[0].awsRegion });
   for (let j = 0; j < numberOfRecords; j++) {
     const key = event.Records[j].s3.object.key;
     const decodeKey = Object.keys(querystring.parse(key))[0];
@@ -60,7 +56,7 @@ exports.handler = async (event) => {
         },
       };
 
-      const result = await rekognition.indexFaces(params1).promise();
+      const result = await rekognition.send(new IndexFacesCommand(params1));
 
       if (result.FaceRecords) {
         console.log('Indexed image successfully');
@@ -74,7 +70,7 @@ exports.handler = async (event) => {
         MaxResults: 1000,
       };
 
-      let result = await rekognition.listFaces(params).promise();
+      let result = await rekognition.send(new ListFacesCommand(params));
       let resultDeleted = await deleteImageIndex(rekognition, result, externalImageId);
 
       while (!resultDeleted && result.NextToken) {
@@ -83,7 +79,7 @@ exports.handler = async (event) => {
           MaxResults: 1000,
           NextToken: result.NextToken,
         };
-        result = await rekognition.listFaces(params).promise();
+        result = await rekognition.send(new ListFacesCommand(params));
         resultDeleted = await deleteImageIndex(rekognition, result, externalImageId);
       }
 
