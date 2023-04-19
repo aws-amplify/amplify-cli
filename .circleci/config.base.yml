@@ -900,13 +900,21 @@ jobs:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
-          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-build-artifact-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - rename_binary_for_windows:
+          os: << parameters.os >>
+      - install_packaged_cli:
+          os: << parameters.os >>
       - run:
-          name: Publish Amplify CLI GitHub release
+          name: Run smoketest against @aws-amplify@<< parameters.os >>
           command: |
-            yarn smoketest@latest
+            CLI_VERSION=<< parameters.os >> yarn smoketest
   github_release:
     <<: *linux-e2e-executor-large
     steps:
@@ -1303,7 +1311,9 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-      - smoketest: {}
+      - smoketest:
+          requires:
+            - upload_pkg_binaries
       - github_release:
           context: github-publish
           requires:
