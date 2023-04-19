@@ -89,10 +89,6 @@
   "workspaces": {
     "packages": [
       "packages/*"
-    ],
-    "nohoist": [
-      "@aws-amplify/cli-internal/amplify-codegen",
-      "@aws-amplify/cli-internal/@aws-amplify/amplify-category-api"
     ]
   },
   "devDependencies": {
@@ -135,8 +131,8 @@
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-report": "^3.0.0",
     "istanbul-reports": "^3.1.5",
-    "jest": "^27.0.0",
-    "jest-circus": "^27.0.0",
+    "jest": "^29.0.0",
+    "jest-circus": "^29.0.0",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
     "lnk": "1.1.0",
@@ -145,20 +141,14 @@
     "pkg": "^5.8.1",
     "prettier": "^2.8.4",
     "rimraf": "^3.0.0",
-    "ts-jest": "^27.0.0",
+    "ts-jest": "^29.0.0",
     "ts-node": "^8.10.1",
     "typescript": "^4.9.4"
   },
-  "resolutions": {
-    "**/aws-sdk": "^2.1354.0",
-    "**/cross-fetch": "^2.2.6",
-    "**/glob-parent": "^6.0.2",
-    "**/got": "^11.8.5",
-    "**/istanbul/async": "^2.6.4",
-    "**/jake/async": "^2.6.4",
-    "**/json5": "^2.2.3",
-    "**/nth-check": "^2.0.1",
-    "**/undici": "^5.8.0",
-    "**/pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
-  }
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  },
+  "packageManager": "yarn@3.5.0"
 }

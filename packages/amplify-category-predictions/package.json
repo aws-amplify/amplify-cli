@@ -34,5 +34,10 @@
   },
   "devDependencies": {
     "@aws-sdk/client-rekognition": "^3.303.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

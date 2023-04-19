@@ -66,6 +66,13 @@
     "@types/ws": "^8.2.2",
     "jsonwebtoken": "^9.0.0"
   },
+  "packageExtensions": {
+    "graphql-iso-date": {
+      "peerDependencies": {
+        "graphql": "^15.8.0"
+      }
+    }
+  },
   "jest": {
     "testRunner": "jest-circus/runner",
     "transform": {
@@ -85,6 +92,11 @@
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

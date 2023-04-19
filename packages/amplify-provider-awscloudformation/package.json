@@ -21,8 +21,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "yarn jest",
-    "test-ci": "yarn jest --ci",
+    "test": "jest --logHeapUsage",
+    "test-ci": "jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
@@ -99,5 +99,10 @@
       "node"
     ],
     "collectCoverage": true
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

@@ -1,0 +1,1131 @@
+➤ YN0000: ┌ Resolution step
+➤ YN0060: │ @yarnpkg/plugin-interactive-tools@npm:4.0.0-rc.42 [70f60] provides react (pa50d8) with version 16.14.0, which doesn't satisfy what ink and some of its descendants request
+➤ YN0060: │ @yarnpkg/plugin-version@npm:4.0.0-rc.42 [70f60] provides react (p6c738) with version 16.14.0, which doesn't satisfy what ink and some of its descendants request
+➤ YN0000: │ Some peer dependencies are incorrectly met; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code
+➤ YN0000: └ Completed in 2s 502ms
+➤ YN0000: ┌ Fetch step
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Link step
+➤ YN0000: └ Completed in 0s 510ms
+➤ YN0000: Done with warnings in 3s 96ms
+
+➤ YN0000: Found 73 package(s) to process
+➤ YN0000: For a grand total of 2188 file(s) to validate
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/package.json
+➤ YN0000: │ Resolving lerna@^6.4.1 errored with lerna@^6.4.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving strip-ansi@^6.0.0 errored with strip-ansi@^6.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @babel/cli@^7.10.5 errored with @babel/cli@^7.10.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving @babel/core@^7.10.5 errored with @babel/core@^7.10.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving @babel/plugin-proposal-numeric-separator@^7.10.4 errored with @babel/plugin-proposal-numeric-separator@^7.10.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving @babel/plugin-transform-modules-commonjs@7.10.4 errored with @babel/plugin-transform-modules-commonjs@7.10.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving @babel/plugin-transform-typescript@7.10.5 errored with @babel/plugin-transform-typescript@7.10.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving @commitlint/cli@^16.2.3 errored with @commitlint/cli@^16.2.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving @commitlint/config-conventional@^16.2.1 errored with @commitlint/config-conventional@^16.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @commitlint/config-lerna-scopes@^16.2.2 errored with @commitlint/config-lerna-scopes@^16.2.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @commitlint/cz-commitlint@^16.2.3 errored with @commitlint/cz-commitlint@^16.2.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving @commitlint/prompt@^16.2.3 errored with @commitlint/prompt@^16.2.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving @microsoft/api-extractor@^7.33.5 errored with @microsoft/api-extractor@^7.33.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/glob@^7.1.1 errored with @types/glob@^7.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/jest@^27.0.0 errored with @types/jest@^27.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/js-yaml@^4.0.0 errored with @types/js-yaml@^4.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @typescript-eslint/eslint-plugin@^5.34.0 errored with @typescript-eslint/eslint-plugin@^5.34.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @typescript-eslint/parser@^5.34.0 errored with @typescript-eslint/parser@^5.34.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @zkochan/cmd-shim@^5.1.0 errored with @zkochan/cmd-shim@^5.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving babel-eslint@^10.1.0 errored with babel-eslint@^10.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving babel-loader@^8.3.0 errored with babel-loader@^8.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving codecov@^3.7.0 errored with codecov@^3.7.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving copyfiles@^2.2.0 errored with copyfiles@^2.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint@^7.19.0 errored with eslint@^7.19.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-config-airbnb@^18.0.1 errored with eslint-config-airbnb@^18.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-config-prettier@^8.5.0 errored with eslint-config-prettier@^8.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-import-resolver-typescript@^2.0.0 errored with eslint-import-resolver-typescript@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-plugin-cypress@^2.12.1 errored with eslint-plugin-cypress@^2.12.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-plugin-import@^2.22.1 errored with eslint-plugin-import@^2.22.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-plugin-jest@^27.0.0 errored with eslint-plugin-jest@^27.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-plugin-jsx-a11y@^6.5.1 errored with eslint-plugin-jsx-a11y@^6.5.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-plugin-package-json-dependencies@^1.0.17 errored with eslint-plugin-package-json-dependencies@^1.0.17 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-plugin-prefer-arrow@^1.2.3 errored with eslint-plugin-prefer-arrow@^1.2.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-plugin-react@^7.29.4 errored with eslint-plugin-react@^7.29.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-plugin-spellcheck@^0.0.17 errored with eslint-plugin-spellcheck@^0.0.17 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving husky@^3.1.0 errored with husky@^3.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving istanbul-lib-coverage@^3.2.0 errored with istanbul-lib-coverage@^3.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving istanbul-lib-report@^3.0.0 errored with istanbul-lib-report@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving istanbul-reports@^3.1.5 errored with istanbul-reports@^3.1.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving jest@^27.0.0 errored with jest@^27.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving jest-circus@^27.0.0 errored with jest-circus@^27.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving jest-junit@^12.0.0 errored with jest-junit@^12.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving js-yaml@^4.0.0 errored with js-yaml@^4.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving lnk@1.1.0 errored with lnk@1.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving npm-check-updates@^16.1.0 errored with npm-check-updates@^16.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving pkg@^5.8.1 errored with pkg@^5.8.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving prettier@^2.8.4 errored with prettier@^2.8.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.0 errored with rimraf@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ts-jest@^27.0.0 errored with ts-jest@^27.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ts-node@^8.10.1 errored with ts-node@^8.10.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.9.4 errored with typescript@^4.9.4 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 217ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/pkg/package.json
+➤ YN0000: │ Resolving @aws-amplify/cli-internal@latest errored with @aws-amplify/cli-internal@latest isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/scripts/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/collect-test-coverage.ts:6:1: Undeclared dependency on istanbul-lib-coverage
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/collect-test-coverage.ts:7:1: Undeclared dependency on istanbul-lib-report
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/collect-test-coverage.ts:8:1: Undeclared dependency on istanbul-reports
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/extract-api.ts:3:1: Undeclared dependency on @microsoft/api-extractor
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/extract-formatting-changes.ts:2:1: Undeclared dependency on yargs
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/finish-release.ts:4:1: Undeclared dependency on yargs
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/github-common.ts:2:1: Undeclared dependency on node-fetch
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/github-prerelease.ts:2:1: Undeclared dependency on semver
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/link-bin.js:1:13: Undeclared dependency on lnk
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/scripts/link-bin.js:2:17: Undeclared dependency on @zkochan/cmd-shim
+➤ YN0000: │ Resolving @types/fs-extra@^9.0.13 errored with @types/fs-extra@^9.0.13 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/glob@^7.2.0 errored with @types/glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/js-yaml@^4.0.4 errored with @types/js-yaml@^4.0.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^16.11.5 errored with @types/node@^16.11.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving axios@^0.26.0 errored with axios@^0.26.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^10.0.0 errored with fs-extra@^10.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving js-yaml@^4.1.0 errored with js-yaml@^4.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ts-node@^10.4.0 errored with ts-node@^10.4.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.4.4 errored with typescript@^4.4.4 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-app/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-app/src/xcodeHelpers.js:2:14: Undeclared dependency on glob
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ini@^1.3.5 errored with ini@^1.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-emoji@^1.10.0 errored with node-emoji@^1.10.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.0 errored with rimraf@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving xcode@^2.1.0 errored with xcode@^2.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving yargs@^15.1.0 errored with yargs@^15.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/glob@^7.1.1 errored with @types/glob@^7.1.1 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-analytics/package.json
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-appsync-simulator/package.json
+➤ YN0000: │ Resolving @graphql-tools/schema@^8.3.1 errored with @graphql-tools/schema@^8.3.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @graphql-tools/utils@^8.5.1 errored with @graphql-tools/utils@^8.5.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving cors@^2.8.5 errored with cors@^2.8.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving dataloader@^2.0.0 errored with dataloader@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving express@^4.17.3 errored with express@^4.17.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving get-port@^5.1.1 errored with get-port@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql@^15.5.0 errored with graphql@^15.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-iso-date@^3.6.1 errored with graphql-iso-date@^3.6.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-subscriptions@^1.1.0 errored with graphql-subscriptions@^1.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ip@^1.1.5 errored with ip@^1.1.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving js-string-escape@^1.0.1 errored with js-string-escape@^1.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving jwt-decode@^2.2.0 errored with jwt-decode@^2.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving libphonenumber-js@1.9.47 errored with libphonenumber-js@1.9.47 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving moment@^2.24.0 errored with moment@^2.24.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving moment-jdateformatparser@^1.2.1 errored with moment-jdateformatparser@^1.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving moment-timezone@0.5.35 errored with moment-timezone@0.5.35 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-toolbox@^0.20.0 errored with promise-toolbox@^0.20.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving slash@^3.0.0 errored with slash@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ulid@^2.3.0 errored with ulid@^2.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving ws@^8.5.0 errored with ws@^8.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/cors@^2.8.6 errored with @types/cors@^2.8.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/express@^4.17.3 errored with @types/express@^4.17.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/ws@^8.2.2 errored with @types/ws@^8.2.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving jsonwebtoken@^9.0.0 errored with jsonwebtoken@^9.0.0 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 240ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/lambda-function.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/adminAuth/admin-auth-app.js:14:17: Undeclared dependency on express
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/adminAuth/admin-auth-app.js:15:20: Undeclared dependency on body-parser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/adminAuth/admin-auth-app.js:16:40: Undeclared dependency on aws-serverless-express
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/adminAuth/admin-auth-index.js:14:30: Undeclared dependency on aws-serverless-express
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/auth-custom-resource/hostedUILambda.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/auth-custom-resource/hostedUIProviderLambda.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/auth-custom-resource/mfaLambda.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/auth-custom-resource/oauthLambda.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/auth-custom-resource/openIdLambda.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/auth-custom-resource/role-map-lambda-function.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/auth-custom-resource/userpoolclientLambda.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving axios@^0.26.0 errored with axios@^0.26.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving change-case@^4.1.1 errored with change-case@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving constructs@^10.0.5 errored with constructs@^10.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving enquirer@^2.3.6 errored with enquirer@^2.3.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving mime-types@^2.1.26 errored with mime-types@^2.1.26 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving vm2@^3.9.8 errored with vm2@^3.9.8 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-sdk/client-cognito-identity-provider@^3.303.0 errored with @aws-sdk/client-cognito-identity-provider@^3.303.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/mime-types@^2.1.1 errored with @types/mime-types@^2.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving cloudform-types@^4.2.0 errored with cloudform-types@^4.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.2 errored with rimraf@^3.0.2 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 261ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-function/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-function/src/provider-utils/awscloudformation/utils/layerHelpers.ts:343:18: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-function/src/__tests__/provider-utils/awscloudformation/secrets/functionSecretsStateManager.test.ts:2:1: Undeclared dependency on ts-jest
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-function/src/__tests__/provider-utils/awscloudformation/utils/addLayerToFunctionUtil.test.ts:67:28: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ Resolving archiver@^5.3.0 errored with archiver@^5.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving cloudform-types@^4.2.0 errored with cloudform-types@^4.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving enquirer@^2.3.6 errored with enquirer@^2.3.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving folder-hash@^4.0.2 errored with folder-hash@^4.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving globby@^11.0.3 errored with globby@^11.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer-datepicker@^2.0.0 errored with inquirer-datepicker@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving jstreemap@^1.28.2 errored with jstreemap@^1.28.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/folder-hash@^4.0.1 errored with @types/folder-hash@^4.0.1 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 236ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-custom/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-custom/src/utils/build-custom-resources.ts:98:55: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-custom/src/utils/dependency-management-utils.ts:6:1: Undeclared dependency on lodash
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/lodash@^4.14.149 errored with @types/lodash@^4.14.149 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.2 errored with rimraf@^3.0.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-geo/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-geo/resources/custom-geofence-collection-resource-handler.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-geo/resources/custom-map-resource-handler.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-geo/resources/custom-place-index-resource-handler.js:1:18: Undeclared dependency on cfn-response
+➤ YN0000: │ Resolving ajv@^6.12.6 errored with ajv@^6.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving constructs@^10.0.5 errored with constructs@^10.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-hosting/package.json
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving mime-types@^2.1.26 errored with mime-types@^2.1.26 isn't supported by any available resolver
+➤ YN0000: │ Resolving minimatch@^3.0.4 errored with minimatch@^3.0.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving moment@^2.24.0 errored with moment@^2.24.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-interactions/package.json
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving fuzzy@^0.1.3 errored with fuzzy@^0.1.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-notifications/package.json
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving proxy-agent@^5.0.0 errored with proxy-agent@^5.0.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-predictions/package.json
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-sdk/client-rekognition@^3.303.0 errored with @aws-sdk/client-rekognition@^3.303.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-storage/package.json
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving constructs@^10.0.5 errored with constructs@^10.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving enquirer@^2.3.6 errored with enquirer@^2.3.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving vm2@^3.9.8 errored with vm2@^3.9.8 isn't supported by any available resolver
+➤ YN0000: │ Resolving cloudform-types@^4.2.0 errored with cloudform-types@^4.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.2 errored with rimraf@^3.0.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/global-prefix.ts:10:34: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/global-prefix.ts:13:38: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/global-prefix.ts:15:43: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/flow-report.test.ts:2:1: Undeclared dependency on amplify-headless-interface
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/commands/diagnose.ts:2:1: Undeclared dependency on archiver
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/commands/diagnose.ts:7:1: Undeclared dependency on columnify
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/plugin-helpers/scan-plugin-platform.ts:102:50: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/utils/global-prefix.ts:10:34: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/utils/global-prefix.ts:15:39: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/utils/global-prefix.ts:17:44: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/commands/diagnose.test.ts:2:1: Undeclared dependency on archiver
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/commands/plugin/configure.ts:110:23: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/commands/plugin/configure.ts:114:23: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/extensions/amplify-helpers/git-manager.ts:60:5: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/extensions/amplify-helpers/resource-status-data.ts:638:32: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/extensions/amplify-helpers/update-amplify-meta.ts:113:37: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/get-frontend-plugins.test.ts:12:24: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/get-frontend-plugins.test.ts:18:24: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/get-frontend-plugins.test.ts:24:24: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/get-frontend-plugins.test.ts:31:19: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/get-frontend-plugins.test.ts:32:16: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/get-frontend-plugins.test.ts:48:24: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/git-manager.test.ts:26:3: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/resource-status.test.ts:126:8: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/src/__tests__/extensions/amplify-helpers/resource-status.test.ts:135:36: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ Resolving @aws-amplify/amplify-category-api@^5.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/amplify-category-api@^5.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-auth-transformer@^2.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-auth-transformer@^2.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-cdk/cloudformation-diff@~2.68.0 errored with @aws-cdk/cloudformation-diff@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving amplify-codegen@^3.4.2 errored with amplify-codegen@^3.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving ci-info@^2.0.0 errored with ci-info@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving cli-table3@^0.6.0 errored with cli-table3@^0.6.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving cloudform-types@^4.2.0 errored with cloudform-types@^4.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving colors@1.4.0 errored with colors@1.4.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ejs@^3.1.7 errored with ejs@^3.1.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving env-editor@^0.5.0 errored with env-editor@^0.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving folder-hash@^4.0.2 errored with folder-hash@^4.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql@^15.5.0 errored with graphql@^15.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving gunzip-maybe@^1.4.2 errored with gunzip-maybe@^1.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving hidefile@^3.0.0 errored with hidefile@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ini@^1.3.5 errored with ini@^1.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving progress@^2.0.3 errored with progress@^2.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving tar-fs@^2.1.1 errored with tar-fs@^2.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving treeify@^1.1.0 errored with treeify@^1.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving update-notifier@^5.1.0 errored with update-notifier@^5.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving which@^2.0.2 errored with which@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/archiver@^5.3.1 errored with @types/archiver@^5.3.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/ci-info@^2.0.0 errored with @types/ci-info@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/columnify@^1.5.1 errored with @types/columnify@^1.5.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/folder-hash@^4.0.1 errored with @types/folder-hash@^4.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/fs-extra@^8.0.1 errored with @types/fs-extra@^8.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/glob@^7.1.1 errored with @types/glob@^7.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/gunzip-maybe@^1.4.0 errored with @types/gunzip-maybe@^1.4.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node-fetch@^2.6.1 errored with @types/node-fetch@^2.6.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/progress@^2.0.3 errored with @types/progress@^2.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/promise-sequential@^1.1.0 errored with @types/promise-sequential@^1.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/tar-fs@^2.0.0 errored with @types/tar-fs@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/treeify@^1.0.0 errored with @types/treeify@^1.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/update-notifier@^5.1.0 errored with @types/update-notifier@^5.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving cloudform-types@^4.2.0 errored with cloudform-types@^4.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving nock@^12.0.3 errored with nock@^12.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.5.5 errored with typescript@^4.5.5 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 281ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-core/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-core/src/feature-flags/featureFlags.ts:4:1: Undeclared dependency on json-schema
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-core/src/overrides-manager/override-skeleton-generator.ts:88:51: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-interfaces@^2.1.1 errored with @aws-amplify/graphql-transformer-interfaces@^2.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @yarnpkg/lockfile@^1.1.0 errored with @yarnpkg/lockfile@^1.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ajv@^6.12.6 errored with ajv@^6.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving ci-info@^2.0.0 errored with ci-info@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving cli-table3@^0.6.0 errored with cli-table3@^0.6.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving cloudform-types@^4.2.0 errored with cloudform-types@^4.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving colors@1.4.0 errored with colors@1.4.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving dotenv@^8.2.0 errored with dotenv@^8.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ejs@^3.1.7 errored with ejs@^3.1.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving globby@^11.0.3 errored with globby@^11.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving hjson@^3.2.1 errored with hjson@^3.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving js-yaml@^4.0.0 errored with js-yaml@^4.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving open@^8.4.0 errored with open@^8.4.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving proxy-agent@^5.0.0 errored with proxy-agent@^5.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript-json-schema@~0.52.0 errored with typescript-json-schema@~0.52.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving which@^2.0.2 errored with which@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving yaml@^2.2.1 errored with yaml@^2.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/ejs@^3.1.1 errored with @types/ejs@^3.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/fs-extra@^8.0.1 errored with @types/fs-extra@^8.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/hjson@^2.4.2 errored with @types/hjson@^2.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/json-schema@^7.0.5 errored with @types/json-schema@^7.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/lodash@^4.14.149 errored with @types/lodash@^4.14.149 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/rimraf@^3.0.0 errored with @types/rimraf@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/uuid@^8.0.0 errored with @types/uuid@^8.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/yarnpkg__lockfile@^1.1.5 errored with @types/yarnpkg__lockfile@^1.1.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving nock@^13.0.11 errored with nock@^13.0.11 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.0 errored with rimraf@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving strip-ansi@^6.0.0 errored with strip-ansi@^6.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 201ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-extensibility-helper/package.json
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-logger/package.json
+➤ YN0000: │ Resolving winston@^3.3.3 errored with winston@^3.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving winston-daily-rotate-file@^4.5.0 errored with winston-daily-rotate-file@^4.5.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-npm/package.json
+➤ YN0000: │ User scripts prefixed with "pre" or "post" (like "prepublishOnly") will not be called in sequence anymore; prefer calling prologues and epilogues explicitly
+➤ YN0000: │ Resolving axios@^0.26.0 errored with axios@^0.26.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.2 errored with rimraf@^3.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving tar-stream@^2.2.0 errored with tar-stream@^2.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/tar@^6.1.1 errored with @types/tar@^6.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.2 errored with rimraf@^3.0.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-shared-interfaces/package.json
+➤ YN0000: │ Resolving rimraf@^3.0.2 errored with rimraf@^3.0.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-console-hosting/package.json
+➤ YN0000: │ Resolving archiver@^5.3.0 errored with archiver@^5.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving cli-table3@^0.6.0 errored with cli-table3@^0.6.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-console-integration-tests/package.json
+➤ YN0000: │ Resolving @types/ini@^1.3.30 errored with @types/ini@^1.3.30 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving dotenv@^8.2.0 errored with dotenv@^8.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ini@^1.3.5 errored with ini@^1.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving moment@^2.24.0 errored with moment@^2.24.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-container-hosting/package.json
+➤ YN0000: │ Resolving @aws-amplify/amplify-category-api@^5.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/amplify-category-api@^5.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving mime-types@^2.1.26 errored with mime-types@^2.1.26 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-dotnet-function-runtime-provider/package.json
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving which@^2.0.2 errored with which@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/which@^1.3.2 errored with @types/which@^1.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-dotnet-function-template-provider/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-dotnet-function-template-provider/src/utils/analyticsWalkthrough.ts:1:1: Undeclared dependency on inquirer
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-dotnet-function-template-provider/src/utils/destFileMapper.ts:1:1: Undeclared dependency on lodash
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-dotnet-function-template-provider/src/utils/dynamoDBWalkthrough.ts:1:1: Undeclared dependency on inquirer
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-dotnet-function-template-provider/src/utils/eventSourceWalkthrough.ts:1:1: Undeclared dependency on inquirer
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/inquirer@^6.5.0 errored with @types/inquirer@^6.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/lodash@^4.14.149 errored with @types/lodash@^4.14.149 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-dynamodb-simulator/package.json
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving detect-port@^1.3.0 errored with detect-port@^1.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving logdown@^3.3.0 errored with logdown@^3.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-toolbox@^0.20.0 errored with promise-toolbox@^0.20.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving wait-port@^0.2.7 errored with wait-port@^0.2.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving which@^2.0.2 errored with which@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving get-port@^5.1.1 errored with get-port@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving gunzip-maybe@^1.4.2 errored with gunzip-maybe@^1.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving hash.js@^1.1.7 errored with hash.js@^1.1.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving tar@^6.1.11 errored with tar@^6.1.11 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-core/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-core/src/cli-version-controller.ts:37:45: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-core/src/index.ts:104:75: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-core/src/categories/lambda-function.ts:4:1: Undeclared dependency on glob
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-core/src/categories/lambda-function.ts:653:37: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving dotenv@^8.2.0 errored with dotenv@^8.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving ini@^1.3.5 errored with ini@^1.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving jest-circus@^27.0.0 errored with jest-circus@^27.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving jest-environment-node@^26.6.2 errored with jest-environment-node@^26.6.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-pty@beta errored with node-pty@beta isn't supported by any available resolver
+➤ YN0000: │ Resolving retimer@2.0.0 errored with retimer@2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.0 errored with rimraf@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving strip-ansi@^6.0.0 errored with strip-ansi@^6.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving throat@^5.0.0 errored with throat@^5.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/glob@^7.1.1 errored with @types/glob@^7.1.1 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 207ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/custom-resources/custom-cdk-stack-with-storage.ts:4:1: Undeclared dependency on @aws-amplify/cli-extensibility-helper
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/custom-resources/custom-cdk-stack.ts:3:1: Undeclared dependency on @aws-amplify/cli-extensibility-helper
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/overrides/override-auth.ts:1:1: Undeclared dependency on @aws-amplify/cli-extensibility-helper
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/overrides/override-root.ts:1:1: Undeclared dependency on @aws-amplify/cli-extensibility-helper
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/overrides/override-storage-ddb.ts:1:1: Undeclared dependency on @aws-amplify/cli-extensibility-helper
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/overrides/override-storage-s3.ts:1:1: Undeclared dependency on @aws-amplify/cli-extensibility-helper
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/src/__tests__/layer-2.test.ts:314:6: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/src/__tests__/layer-2.test.ts:349:55: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/resources/api-container/express/secret-password-index.js:1:17: Undeclared dependency on express
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/resources/api-container/express/secret-password-index.js:2:20: Undeclared dependency on body-parser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts:99:24: Undeclared dependency on get-port
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/src/__tests__/opensearch-simulator/opensearch-simulator.test.ts:4:1: Undeclared dependency on openpgp
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/src/__tests__/transformer-migrations/auth-migration.test.ts:18:1: Undeclared dependency on moment
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-e2e-tests/src/cypress/uibuilder/uibuilder-app.js:2:1: Undeclared dependency on @aws-amplify/ui-react
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-sdk/client-appsync@^3.303.0 errored with @aws-sdk/client-appsync@^3.303.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-sdk/client-dynamodb@^3.303.0 errored with @aws-sdk/client-dynamodb@^3.303.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-sdk/client-ssm@^3.303.0 errored with @aws-sdk/client-ssm@^3.303.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-amplify@^4.2.8 errored with aws-amplify@^4.2.8 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-appsync@^4.1.1 errored with aws-appsync@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving axios@^0.26.0 errored with axios@^0.26.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving circleci-api@^4.1.4 errored with circleci-api@^4.1.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving constructs@^10.0.5 errored with constructs@^10.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving dotenv@^8.2.0 errored with dotenv@^8.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving esm@^3.2.25 errored with esm@^3.2.25 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving extract-zip@^2.0.1 errored with extract-zip@^2.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^8.0.3 errored with glob@^8.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-tag@^2.10.1 errored with graphql-tag@^2.10.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving isomorphic-fetch@^3.0.0 errored with isomorphic-fetch@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.0 errored with rimraf@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving title-case@^3.0.3 errored with title-case@^3.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving upper-case@^2.0.2 errored with upper-case@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving ws@^7.5.7 errored with ws@^7.5.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving yargs@^15.1.0 errored with yargs@^15.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/body-parser@^1.19.2 errored with @types/body-parser@^1.19.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/express@^4.17.3 errored with @types/express@^4.17.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/lodash@^4.14.149 errored with @types/lodash@^4.14.149 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/ws@^7.4.4 errored with @types/ws@^7.4.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving ts-node@^8.10.2 errored with ts-node@^8.10.2 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 281ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-environment-parameters/package.json
+➤ YN0000: │ Resolving ajv@^6.12.6 errored with ajv@^6.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving mkdirp@^1.0.4 errored with mkdirp@^1.0.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving ts-json-schema-generator@~1.1.2 errored with ts-json-schema-generator@~1.1.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-frontend-android/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-frontend-android/lib/frontend-config-creator.js:4:11: Undeclared dependency on lodash
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-config@^2.2.1 errored with graphql-config@^2.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-frontend-flutter/package.json
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-config@^2.2.1 errored with graphql-config@^2.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-frontend-ios/package.json
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-config@^2.2.1 errored with graphql-config@^2.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-frontend-javascript/package.json
+➤ YN0000: │ Resolving @babel/core@^7.10.5 errored with @babel/core@^7.10.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving @babel/plugin-transform-modules-commonjs@7.10.4 errored with @babel/plugin-transform-modules-commonjs@7.10.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-config@^2.2.1 errored with graphql-config@^2.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-function-plugin-interface/package.json
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-go-function-runtime-provider/package.json
+➤ YN0000: │ Resolving archiver@^5.3.0 errored with archiver@^5.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving get-port@^5.1.1 errored with get-port@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving which@^2.0.2 errored with which@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/archiver@^5.1.1 errored with @types/archiver@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/semver@^7.1.0 errored with @types/semver@^7.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/which@^1.3.2 errored with @types/which@^1.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-go-function-template-provider/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-go-function-template-provider/src/providers/helloWorldProvider.ts:3:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-go-function-template-provider/src/utils/destFileMapper.ts:1:1: Undeclared dependency on lodash
+➤ YN0000: │ Resolving @types/fs-extra@^8.0.1 errored with @types/fs-extra@^8.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/lodash@^4.14.149 errored with @types/lodash@^4.14.149 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-graphiql-explorer/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-graphiql-explorer/config/modules.js:44:7: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-graphiql-explorer/config/paths.js:52:30: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-graphiql-explorer/config/webpack.config.js:35:34: Undeclared dependency on @babel/runtime
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-graphiql-explorer/config/webpack.config.js:36:33: Undeclared dependency on @babel/runtime
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-graphiql-explorer/config/webpack.config.js:270:17: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ Resolving @babel/core@^7.16.0 errored with @babel/core@^7.16.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @pmmmwh/react-refresh-webpack-plugin@^0.5.3 errored with @pmmmwh/react-refresh-webpack-plugin@^0.5.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving @svgr/webpack@^5.5.0 errored with @svgr/webpack@^5.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @testing-library/jest-dom@^5.11.4 errored with @testing-library/jest-dom@^5.11.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving @testing-library/react@^11.1.0 errored with @testing-library/react@^11.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @testing-library/user-event@^12.1.10 errored with @testing-library/user-event@^12.1.10 isn't supported by any available resolver
+➤ YN0000: │ Resolving babel-jest@^27.4.2 errored with babel-jest@^27.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving babel-loader@^8.3.0 errored with babel-loader@^8.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving babel-plugin-named-asset-import@^0.3.8 errored with babel-plugin-named-asset-import@^0.3.8 isn't supported by any available resolver
+➤ YN0000: │ Resolving babel-preset-react-app@^10.0.1 errored with babel-preset-react-app@^10.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving bfj@^7.0.2 errored with bfj@^7.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving browserslist@^4.21.4 errored with browserslist@^4.21.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving buffer@^6.0.3 errored with buffer@^6.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving camelcase@^6.2.1 errored with camelcase@^6.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving case-sensitive-paths-webpack-plugin@^2.4.0 errored with case-sensitive-paths-webpack-plugin@^2.4.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving cross-env@^7.0.3 errored with cross-env@^7.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving crypto-browserify@^3.12.0 errored with crypto-browserify@^3.12.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving css-loader@^6.5.1 errored with css-loader@^6.5.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving css-minimizer-webpack-plugin@^3.2.0 errored with css-minimizer-webpack-plugin@^3.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving dotenv@^10.0.0 errored with dotenv@^10.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving dotenv-expand@^5.1.0 errored with dotenv-expand@^5.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint@^8.3.0 errored with eslint@^8.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-config-react-app@^7.0.0 errored with eslint-config-react-app@^7.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving eslint-webpack-plugin@^3.1.1 errored with eslint-webpack-plugin@^3.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving file-loader@^6.2.0 errored with file-loader@^6.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^10.0.0 errored with fs-extra@^10.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphiql@^1.3.2 errored with graphiql@^1.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphiql-explorer@^0.6.2 errored with graphiql-explorer@^0.6.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql@^15.5.0 errored with graphql@^15.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving html-webpack-plugin@^5.5.0 errored with html-webpack-plugin@^5.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving identity-obj-proxy@^3.0.0 errored with identity-obj-proxy@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving jest@^26.6.3 errored with jest@^26.6.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving jest-resolve@^26.0.2 errored with jest-resolve@^26.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving jest-watch-typeahead@^1.0.0 errored with jest-watch-typeahead@^1.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving jsonwebtoken@^9.0.0 errored with jsonwebtoken@^9.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving mini-css-extract-plugin@^2.4.5 errored with mini-css-extract-plugin@^2.4.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving postcss@^8.4.4 errored with postcss@^8.4.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving postcss-flexbugs-fixes@^5.0.2 errored with postcss-flexbugs-fixes@^5.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving postcss-loader@^6.2.1 errored with postcss-loader@^6.2.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving postcss-normalize@^10.0.1 errored with postcss-normalize@^10.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving postcss-preset-env@^7.0.1 errored with postcss-preset-env@^7.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving process@^0.11.10 errored with process@^0.11.10 isn't supported by any available resolver
+➤ YN0000: │ Resolving prompts@^2.4.2 errored with prompts@^2.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving react@^17.0.2 errored with react@^17.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving react-app-polyfill@^3.0.0 errored with react-app-polyfill@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving react-dev-utils@^12.0.1 errored with react-dev-utils@^12.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving react-dom@^17.0.2 errored with react-dom@^17.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving react-refresh@^0.11.0 errored with react-refresh@^0.11.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving resolve@^1.20.0 errored with resolve@^1.20.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving resolve-url-loader@^4.0.0 errored with resolve-url-loader@^4.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving sass-loader@^12.3.0 errored with sass-loader@^12.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving semantic-ui-css@^2.5.0 errored with semantic-ui-css@^2.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving semantic-ui-react@^2.1.3 errored with semantic-ui-react@^2.1.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving source-map-loader@^3.0.0 errored with source-map-loader@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving stream-browserify@^3.0.0 errored with stream-browserify@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving style-loader@^3.3.1 errored with style-loader@^3.3.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving tailwindcss@^3.0.2 errored with tailwindcss@^3.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving terser-webpack-plugin@^5.2.5 errored with terser-webpack-plugin@^5.2.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.6.3 errored with typescript@^4.6.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving util@^0.12.4 errored with util@^0.12.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving web-vitals@^0.2.4 errored with web-vitals@^0.2.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving webpack@^5.64.4 errored with webpack@^5.64.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving webpack-dev-server@^4.6.0 errored with webpack-dev-server@^4.6.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving webpack-manifest-plugin@^4.0.2 errored with webpack-manifest-plugin@^4.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving workbox-webpack-plugin@^6.4.1 errored with workbox-webpack-plugin@^6.4.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @semantic-ui-react/css-patch@^1.0.0 errored with @semantic-ui-react/css-patch@^1.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/jest@^26.0.15 errored with @types/jest@^26.0.15 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/react@^17.0.39 errored with @types/react@^17.0.39 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/react-dom@^17.0.11 errored with @types/react-dom@^17.0.11 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-graphql-migration-tests/package.json
+➤ YN0000: │ Resolving @aws-amplify/graphql-auth-transformer@^2.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-auth-transformer@^2.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-default-value-transformer@^1.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-default-value-transformer@^1.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-function-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-function-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-http-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-http-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-index-transformer@^1.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-index-transformer@^1.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-model-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-model-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-predictions-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-predictions-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-relational-transformer@^1.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-relational-transformer@^1.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-searchable-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-searchable-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-interfaces@2.1.1 errored with @aws-amplify/graphql-transformer-interfaces@2.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-migrator@^2.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-transformer-migrator@^2.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-cdk/cloudformation-diff@~2.68.0 errored with @aws-cdk/cloudformation-diff@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-auth-transformer@^7.2.52 errored with graphql-auth-transformer@^7.2.52 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-connection-transformer@^5.2.51 errored with graphql-connection-transformer@^5.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-dynamodb-transformer@^7.2.51 errored with graphql-dynamodb-transformer@^7.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-elasticsearch-transformer@^5.2.52 errored with graphql-elasticsearch-transformer@^5.2.52 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-function-transformer@^3.3.42 errored with graphql-function-transformer@^3.3.42 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-http-transformer@^5.2.51 errored with graphql-http-transformer@^5.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-key-transformer@^3.2.51 errored with graphql-key-transformer@^3.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-predictions-transformer@^3.2.51 errored with graphql-predictions-transformer@^3.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-versioned-transformer@^5.2.51 errored with graphql-versioned-transformer@^5.2.51 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-headless-interface/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-headless-interface/scripts/generateSchemas.ts:2:1: Undeclared dependency on fs-extra
+➤ YN0000: │ Resolving rimraf@^3.0.2 errored with rimraf@^3.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving ts-node@^8.10.2 errored with ts-node@^8.10.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript-json-schema@~0.52.0 errored with typescript-json-schema@~0.52.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-java-function-runtime-provider/package.json
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving which@^2.0.2 errored with which@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/semver@^7.1.0 errored with @types/semver@^7.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/which@^1.3.2 errored with @types/which@^1.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-java-function-template-provider/package.json
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-migration-tests/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-migration-tests/custom-resources/custom-cdk-stack-v10.ts:1:1: Undeclared dependency on @aws-cdk/core
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-migration-tests/custom-resources/custom-cdk-stack-v10.ts:2:1: Undeclared dependency on @aws-cdk/aws-iam
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-migration-tests/custom-resources/custom-cdk-stack-v10.ts:3:1: Undeclared dependency on @aws-cdk/aws-sns
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-migration-tests/custom-resources/custom-cdk-stack-v10.ts:4:1: Undeclared dependency on @aws-cdk/aws-sns-subscriptions
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-migration-tests/custom-resources/custom-cdk-stack-v10.ts:5:1: Undeclared dependency on @aws-cdk/aws-sqs
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-migration-tests/src/__tests__/migration_tests/overrides/api-migration-d.test.ts:19:1: Undeclared dependency on amplify-headless-interface
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-migration-tests/src/__tests__/migration_tests/overrides/auth-migration-e.test.ts:15:1: Undeclared dependency on amplify-headless-interface
+➤ YN0000: │ Resolving @aws-cdk/cloudformation-diff@~2.68.0 errored with @aws-cdk/cloudformation-diff@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving constructs@^10.0.5 errored with constructs@^10.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving strip-ansi@^6.0.0 errored with strip-ansi@^6.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-runtime-provider/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-runtime-provider/src/utils/legacyBuild.ts:113:32: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-runtime-provider/src/utils/legacyPackage.ts:10:93: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-runtime-provider/src/__tests__/utils/legacyBuild.test.ts:3:1: Undeclared dependency on lodash
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-runtime-provider/src/__tests__/utils/legacyBuild.test.ts:20:4: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-runtime-provider/src/__tests__/utils/legacyBuild.test.ts:24:6: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving exit@^0.1.2 errored with exit@^0.1.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/exit@^0.1.31 errored with @types/exit@^0.1.31 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/src/providers/crudProvider.ts:4:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/src/providers/graphqlRequestProvider.ts:3:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/src/providers/helloWorldProvider.ts:3:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/src/providers/lambdaAuthProvider.ts:3:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/src/providers/serverlessProvider.ts:4:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/src/utils/analyticsWalkthrough.ts:1:1: Undeclared dependency on inquirer
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/src/utils/dynamoDBWalkthrough.ts:2:1: Undeclared dependency on inquirer
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/src/utils/eventSourceWalkthrough.ts:1:1: Undeclared dependency on inquirer
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/resources/lambda/crud/index.js:1:30: Undeclared dependency on aws-serverless-express
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-nodejs-function-template-provider/resources/lambda/serverless/index.js:1:30: Undeclared dependency on aws-serverless-express
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/fs-extra@^8.0.1 errored with @types/fs-extra@^8.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/inquirer@^6.5.0 errored with @types/inquirer@^6.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-opensearch-simulator/package.json
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving detect-port@^1.3.0 errored with detect-port@^1.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving get-port@^5.1.1 errored with get-port@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving gunzip-maybe@^1.4.2 errored with gunzip-maybe@^1.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving openpgp@^4.10.10 errored with openpgp@^4.10.10 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-toolbox@^0.20.0 errored with promise-toolbox@^0.20.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving tar@^6.1.11 errored with tar@^6.1.11 isn't supported by any available resolver
+➤ YN0000: │ Resolving wait-port@^0.2.7 errored with wait-port@^0.2.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/openpgp@^4.4.18 errored with @types/openpgp@^4.4.18 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-prompts/package.json
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving enquirer@^2.3.6 errored with enquirer@^2.3.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.2 errored with rimraf@^3.0.2 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/src/initializer.ts:17:1: Undeclared dependency on uuid
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/src/__tests__/configuration-manager.test.ts:7:1: Undeclared dependency on ts-jest
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/src/__tests__/push-resources.test.ts:5:1: Undeclared dependency on ts-jest
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/src/utils/admin-login-server.ts:4:1: Undeclared dependency on body-parser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/src/utils/admin-login-server.ts:6:1: Undeclared dependency on express
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/src/utils/archiver.js:5:64: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/src/__tests__/utils/admin-login-server.test.ts:11:8: Webpack configs from non-private packages should avoid referencing loaders without require.resolve
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-interfaces@^2.1.1 errored with @aws-amplify/graphql-transformer-interfaces@^2.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving amplify-codegen@^3.4.2 errored with amplify-codegen@^3.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving archiver@^5.3.0 errored with archiver@^5.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving bottleneck@2.19.5 errored with bottleneck@2.19.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving chalk@^4.1.1 errored with chalk@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving cloudform-types@^4.2.0 errored with cloudform-types@^4.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving columnify@^1.5.4 errored with columnify@^1.5.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving constructs@^10.0.5 errored with constructs@^10.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving cors@^2.8.5 errored with cors@^2.8.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving deep-diff@^1.0.2 errored with deep-diff@^1.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving extract-zip@^2.0.1 errored with extract-zip@^2.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving folder-hash@^4.0.2 errored with folder-hash@^4.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql@^15.5.0 errored with graphql@^15.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving ignore@^5.2.0 errored with ignore@^5.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ini@^1.3.5 errored with ini@^1.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving is-wsl@^2.2.0 errored with is-wsl@^2.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving jose@^4.3.7 errored with jose@^4.3.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash.throttle@^4.1.1 errored with lodash.throttle@^4.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving moment@^2.24.0 errored with moment@^2.24.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving netmask@^2.0.2 errored with netmask@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-sequential@^1.1.1 errored with promise-sequential@^1.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving proxy-agent@^5.0.0 errored with proxy-agent@^5.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving rimraf@^3.0.0 errored with rimraf@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving vm2@^3.9.8 errored with vm2@^3.9.8 isn't supported by any available resolver
+➤ YN0000: │ Resolving xstate@^4.14.0 errored with xstate@^4.14.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-interfaces@^2.1.1 errored with @aws-amplify/graphql-transformer-interfaces@^2.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/columnify@^1.5.0 errored with @types/columnify@^1.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/deep-diff@^1.0.0 errored with @types/deep-diff@^1.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/folder-hash@^4.0.1 errored with @types/folder-hash@^4.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/lodash.throttle@^4.1.6 errored with @types/lodash.throttle@^4.1.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/uuid@^8.0.0 errored with @types/uuid@^8.0.0 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 252ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-python-function-runtime-provider/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-python-function-runtime-provider/src/index.ts:3:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-python-function-runtime-provider/src/util/buildUtils.ts:1:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-python-function-runtime-provider/src/util/packageUtils.ts:2:1: Undeclared dependency on fs-extra
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-python-function-runtime-provider/src/util/pyUtils.ts:2:1: Undeclared dependency on fs-extra
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ini@^1.3.5 errored with ini@^1.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving which@^2.0.2 errored with which@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/fs-extra@^8.0.1 errored with @types/fs-extra@^8.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/semver@^7.1.0 errored with @types/semver@^7.1.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-python-function-template-provider/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-python-function-template-provider/src/index.ts:2:1: Undeclared dependency on fs-extra
+➤ YN0000: │ Resolving @types/fs-extra@^8.0.1 errored with @types/fs-extra@^8.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-storage-simulator/package.json
+➤ YN0000: │ Resolving body-parser@^1.19.2 errored with body-parser@^1.19.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving cors@^2.8.5 errored with cors@^2.8.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving etag@^1.8.1 errored with etag@^1.8.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving express@^4.17.3 errored with express@^4.17.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving glob@^7.2.0 errored with glob@^7.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving object-to-xml@^2.0.0 errored with object-to-xml@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving promise-toolbox@^0.20.0 errored with promise-toolbox@^0.20.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving serve-static@^1.14.2 errored with serve-static@^1.14.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving xml@^1.0.1 errored with xml@^1.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving xml-js@^1.6.11 errored with xml-js@^1.6.11 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/body-parser@^1.19.2 errored with @types/body-parser@^1.19.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/cors@^2.8.6 errored with @types/cors@^2.8.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/etag@^1.8.0 errored with @types/etag@^1.8.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/glob@^7.1.1 errored with @types/glob@^7.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/serve-static@^1.13.3 errored with @types/serve-static@^1.13.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/uuid@^8.3.1 errored with @types/uuid@^8.3.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/xml@^1.0.4 errored with @types/xml@^1.0.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-headless-input/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-headless-input/src/HeadlessInputValidator.ts:2:1: Undeclared dependency on json-schema
+➤ YN0000: │ Resolving ajv@^6.12.6 errored with ajv@^6.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/json-schema@^7.0.5 errored with @types/json-schema@^7.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-import/package.json
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-mock/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-mock/src/__tests__/utils/index.test.ts:1:1: Undeclared dependency on jest-circus
+➤ YN0000: │ Resolving @hapi/topo@^5.0.0 errored with @hapi/topo@^5.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving amplify-codegen@^3.4.2 errored with amplify-codegen@^3.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving chokidar@^3.5.3 errored with chokidar@^3.5.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving detect-port@^1.3.0 errored with detect-port@^1.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving dotenv@^8.2.0 errored with dotenv@^8.2.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving execa@^5.1.1 errored with execa@^5.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving inquirer@^7.3.3 errored with inquirer@^7.3.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving node-fetch@^2.6.7 errored with node-fetch@^2.6.7 isn't supported by any available resolver
+➤ YN0000: │ Resolving semver@^7.3.5 errored with semver@^7.3.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving which@^2.0.2 errored with which@^2.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-auth-transformer@^2.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-auth-transformer@^2.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-default-value-transformer@^1.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-default-value-transformer@^1.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-function-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-function-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-http-transformer@1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-http-transformer@1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-index-transformer@^1.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-index-transformer@^1.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-maps-to-transformer@^2.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-maps-to-transformer@^2.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-model-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-model-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-predictions-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-predictions-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-relational-transformer@^1.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-relational-transformer@^1.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-searchable-transformer@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-searchable-transformer@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-transformer-core@^1.2.1-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-interfaces@^2.1.1 errored with @aws-amplify/graphql-transformer-interfaces@^2.1.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/graphql-transformer-migrator@^2.1.3-ownerfield-pk-fix.0 errored with @aws-amplify/graphql-transformer-migrator@^2.1.3-ownerfield-pk-fix.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/detect-port@^1.3.0 errored with @types/detect-port@^1.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/lodash@^4.14.149 errored with @types/lodash@^4.14.149 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/node@^12.12.6 errored with @types/node@^12.12.6 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/semver@^7.1.0 errored with @types/semver@^7.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/which@^1.3.2 errored with @types/which@^1.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-appsync@^4.1.4 errored with aws-appsync@^4.1.4 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk-mock@^5.8.0 errored with aws-sdk-mock@^5.8.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving axios@^0.26.0 errored with axios@^0.26.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql@^15.5.0 errored with graphql@^15.5.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-auth-transformer@^7.2.52 errored with graphql-auth-transformer@^7.2.52 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-connection-transformer@^5.2.51 errored with graphql-connection-transformer@^5.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-dynamodb-transformer@^7.2.51 errored with graphql-dynamodb-transformer@^7.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-function-transformer@^3.3.42 errored with graphql-function-transformer@^3.3.42 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-key-transformer@^3.2.51 errored with graphql-key-transformer@^3.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-tag@^2.10.1 errored with graphql-tag@^2.10.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-transformer-core@^8.0.2 errored with graphql-transformer-core@^8.0.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving graphql-versioned-transformer@^5.2.51 errored with graphql-versioned-transformer@^5.2.51 isn't supported by any available resolver
+➤ YN0000: │ Resolving isomorphic-fetch@^3.0.0 errored with isomorphic-fetch@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving jsonwebtoken@^9.0.0 errored with jsonwebtoken@^9.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving uuid@^8.3.2 errored with uuid@^8.3.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving ws@^7.5.7 errored with ws@^7.5.7 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 235ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/commands/utils/notifyMissingPackages.ts:5:1: Undeclared dependency on semver
+➤ YN0000: │ Resolving @aws-amplify/codegen-ui@2.12.1 errored with @aws-amplify/codegen-ui@2.12.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/codegen-ui-react@2.12.1 errored with @aws-amplify/codegen-ui-react@2.12.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving amplify-codegen@^3.4.2 errored with amplify-codegen@^3.4.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-sdk@^2.1354.0 errored with aws-sdk@^2.1354.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving ora@^4.0.3 errored with ora@^4.0.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving tiny-async-pool@^2.1.0 errored with tiny-async-pool@^2.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/appsync-modelgen-plugin@^2.4.0 errored with @aws-amplify/appsync-modelgen-plugin@^2.4.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/fs-extra@^8.0.1 errored with @types/fs-extra@^8.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/jest@^26.0.20 errored with @types/jest@^26.0.20 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/semver@^7.1.0 errored with @types/semver@^7.1.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @types/tiny-async-pool@^2.0.0 errored with @types/tiny-async-pool@^2.0.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:931:16: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:1310:15: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:1311:14: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:3357:24: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:3358:15: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:3583:24: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:3584:15: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:4116:24: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:4117:15: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:4456:14: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:4457:14: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:4459:15: Undeclared dependency on browser
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/tests/runner/mocha.js:4465:19: Strings should avoid referencing the node_modules directory (prefer require.resolve)
+➤ YN0000: │ Resolving lodash@^4.17.21 errored with lodash@^4.17.21 isn't supported by any available resolver
+➤ YN0000: │ Resolving coveralls@~3.0.9 errored with coveralls@~3.0.9 isn't supported by any available resolver
+➤ YN0000: │ Resolving growl@^1.10.5 errored with growl@^1.10.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving istanbul@~0.4.5 errored with istanbul@~0.4.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving mocha@>=7.0.0 errored with mocha@>=7.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving mocha-lcov-reporter@1.3.0 errored with mocha-lcov-reporter@1.3.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving should@^13.2.3 errored with should@^13.2.3 isn't supported by any available resolver
+➤ YN0000: │ Resolving velocityjs@^2.0.0 errored with velocityjs@^2.0.0 isn't supported by any available resolver
+➤ YN0000: └ Completed in 0s 203ms
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-custom/resources/package.json
+➤ YN0000: │ Resolving @aws-amplify/cli-extensibility-helper@^3.0.0 errored with @aws-amplify/cli-extensibility-helper@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving aws-cdk-lib@~2.68.0 errored with aws-cdk-lib@~2.68.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving constructs@^10.0.5 errored with constructs@^10.0.5 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.2.4 errored with typescript@^4.2.4 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-velocity-template/examples/package.json
+➤ YN0000: │ Resolving velocityjs@^1.0.1 errored with velocityjs@^1.0.1 isn't supported by any available resolver
+➤ YN0000: │ Resolving webpack@^4.44.2 errored with webpack@^4.44.2 isn't supported by any available resolver
+➤ YN0000: │ Resolving webpack-cli@^3.3.12 errored with webpack-cli@^3.3.12 isn't supported by any available resolver
+➤ YN0000: │ Resolving webpack-dev-server@^3.11.0 errored with webpack-dev-server@^3.11.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/templates/plugin-template/package.json
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/templates/plugin-template-frontend/package.json
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli/templates/plugin-template-provider/package.json
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-core/resources/overrides-resource/package.json
+➤ YN0000: │ Resolving @aws-amplify/cli-extensibility-helper@^3.0.0 errored with @aws-amplify/cli-extensibility-helper@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.2.4 errored with typescript@^4.2.4 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-container-hosting/resources/express-template/package.json
+➤ YN0000: │ Resolving express@^4.17.1 errored with express@^4.17.1 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-provider-awscloudformation/resources/overrides-resource/package.json
+➤ YN0000: │ Resolving @aws-amplify/cli-extensibility-helper@^3.0.0 errored with @aws-amplify/cli-extensibility-helper@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.2.4 errored with typescript@^4.2.4 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/package.json
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/cloneComponentsFromEnv.test.ts:1:1: Undeclared dependency on aws-sdk
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/createUiBuilderComponent.test.ts:2:1: Undeclared dependency on @aws-amplify/codegen-ui
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/detachedFormCleanup.test.ts:2:1: Undeclared dependency on @aws-amplify/codegen-ui
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/generateComponents.test.ts:1:1: Undeclared dependency on aws-sdk
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/getAmplifyDataSchema.test.ts:1:1: Undeclared dependency on @aws-amplify/amplify-prompts
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/getAmplifyDataSchema.test.ts:2:1: Undeclared dependency on ts-jest
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/help.test.ts:2:1: Undeclared dependency on @aws-amplify/amplify-prompts
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/notifyMissingPackages.test.ts:1:1: Undeclared dependency on @aws-amplify/amplify-prompts
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/notifyMissingPackages.test.ts:2:1: Undeclared dependency on @aws-amplify/amplify-cli-core
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/notifyMissingPackages.test.ts:4:1: Undeclared dependency on @aws-amplify/amplify-cli-core
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/prePushHandler.test.ts:2:1: Undeclared dependency on aws-sdk
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/prePushHandler.test.ts:3:1: Undeclared dependency on aws-sdk
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/prePushHandler.test.ts:4:1: Undeclared dependency on @aws-amplify/amplify-prompts
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/shouldRenderComponents.test.ts:2:1: Undeclared dependency on @aws-amplify/amplify-cli-core
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/shouldRenderComponents.test.ts:3:1: Undeclared dependency on aws-sdk
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/syncAmplifyUiComponents.test.ts:2:1: Undeclared dependency on @aws-amplify/amplify-cli-core
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/syncAmplifyUiComponents.test.ts:3:1: Undeclared dependency on aws-sdk
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/utils.ts:1:1: Undeclared dependency on @aws-amplify/codegen-ui
+➤ YN0000: │ /home/development/github/lazpavel/amplify-cli/packages/amplify-util-uibuilder/src/__tests__/version.test.ts:1:1: Undeclared dependency on @aws-amplify/amplify-prompts
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/overrides-resource/auth/package.json
+➤ YN0000: │ Resolving @aws-amplify/cli-extensibility-helper@^3.0.0 errored with @aws-amplify/cli-extensibility-helper@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.2.4 errored with typescript@^4.2.4 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-auth/resources/overrides-resource/userPoolGroups/package.json
+➤ YN0000: │ Resolving @aws-amplify/cli-extensibility-helper@^3.0.0 errored with @aws-amplify/cli-extensibility-helper@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.2.4 errored with typescript@^4.2.4 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-storage/resources/overrides-resource/DynamoDB/package.json
+➤ YN0000: │ Resolving @aws-amplify/cli-extensibility-helper@^3.0.0 errored with @aws-amplify/cli-extensibility-helper@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.2.4 errored with typescript@^4.2.4 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-category-storage/resources/overrides-resource/S3/package.json
+➤ YN0000: │ Resolving @aws-amplify/cli-extensibility-helper@^3.0.0 errored with @aws-amplify/cli-extensibility-helper@^3.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving typescript@^4.2.4 errored with typescript@^4.2.4 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-core/src/__tests__/amplify-lockfile-dependency-detector/resources/package.json
+➤ YN0000: │ Resolving @aws-amplify/amplify-category-custom@^2.0.0 errored with @aws-amplify/amplify-category-custom@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving @aws-amplify/cli-extensibility-helper@^2.0.0 errored with @aws-amplify/cli-extensibility-helper@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving amplify-cli-core@^2.0.0 errored with amplify-cli-core@^2.0.0 isn't supported by any available resolver
+➤ YN0000: │ Resolving fs-extra@^8.1.0 errored with fs-extra@^8.1.0 isn't supported by any available resolver
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-core/src/__tests__/testFiles/packageManager-fallback/package.json
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-core/src/__tests__/testFiles/packageManager-npm/package.json
+➤ YN0000: └ Completed
+
+➤ YN0000: ┌ /home/development/github/lazpavel/amplify-cli/packages/amplify-cli-core/src/__tests__/testFiles/packageManager-yarn2/package.json
+➤ YN0000: └ Completed
+
+➤ YN0000: Failed with errors in 11s 733ms

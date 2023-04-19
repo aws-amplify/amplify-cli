@@ -1,12 +1,19 @@
 {
-  "editor.rulers": [140],
+  "editor.rulers": [
+    140
+  ],
   "files.exclude": {
     "**/.git": true,
     "**/build": true
   },
   "files.insertFinalNewline": true,
   "editor.formatOnSave": true,
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
   "eslint.lintTask.enable": true,
   "eslint.packageManager": "yarn",
   "eslint.quiet": false,
@@ -15,5 +22,13 @@
   },
   "prettier.requireConfig": true,
   "prettier.configPath": "./.prettierrc",
-  "prettier.prettierPath": "../node_modules/prettier"
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "eslint.nodePath": ".yarn/sdks",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "jest.jestCommandLine": "jest"
 }

@@ -262,5 +262,10 @@
         "packageName": "@aws-amplify/amplify-util-mock"
       }
     }
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

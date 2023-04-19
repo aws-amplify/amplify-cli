@@ -37,5 +37,10 @@
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6",
     "@types/semver": "^7.1.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

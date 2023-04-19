@@ -128,5 +128,10 @@
     "outputName": "js-test-results.xml",
     "usePathForSuiteName": "true",
     "addFileAttribute": "true"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

@@ -58,5 +58,10 @@
       "src/**/*.ts",
       "!**/*.d.ts"
     ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

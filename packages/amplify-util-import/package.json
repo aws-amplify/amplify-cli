@@ -24,5 +24,10 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.6"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }
