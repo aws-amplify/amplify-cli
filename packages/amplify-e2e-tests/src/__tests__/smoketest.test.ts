@@ -37,14 +37,11 @@ export type SmoketestArgs = {
 };
 
 function getArgs(): SmoketestArgs {
-  const { DESTRUCTIVE, CLI_VERSION, PROJECT_DIRECTORY } = process.env;
-  if (!CLI_VERSION) {
-    throw new TypeError('CLI_VERSION must be defined');
-  }
+  const { DESTRUCTIVE = 'false', CLI_VERSION = 'latest', PROJECT_DIRECTORY = path.join(os.tmpdir(), 'smoketest') } = process.env;
   return {
-    projectDirectory: PROJECT_DIRECTORY || path.join(os.tmpdir(), 'smoketest'),
+    projectDirectory: PROJECT_DIRECTORY,
     cliVersion: CLI_VERSION,
-    destructive: DESTRUCTIVE === 'true',
+    destructive: DESTRUCTIVE.toLowerCase() === 'true',
   };
 }
 
