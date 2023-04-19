@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-prompts": "2.6.8",
-    "@aws-amplify/codegen-ui": "2.12.1",
-    "@aws-amplify/codegen-ui-react": "2.12.1",
+    "@aws-amplify/codegen-ui": "2.12.2",
+    "@aws-amplify/codegen-ui-react": "2.12.2",
     "amplify-cli-core": "4.0.3",
     "amplify-codegen": "3.4.2",
     "aws-sdk": "^2.1233.0",
