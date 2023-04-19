@@ -26,7 +26,7 @@ phases:
   build:
     commands:
       # - yarn config set script-shell $(which bash)
-      - choco install -fy jq
+      # - choco install -fy jq
       - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
       - bash ./codebuild_specs/scripts-windows/rename-packaged-cli.sh
       # - cp $env:CODEBUILD_SRC_DIR\out\amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
