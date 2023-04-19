@@ -158,6 +158,7 @@ export type AmplifyErrorType =
   | 'ProjectNotFoundError'
   | 'ProjectNotInitializedError'
   | 'PushResourcesError'
+  | 'APIRateExceededError'
   | 'RegionNotAvailableError'
   | 'RemoveNotificationAppError'
   | 'ResourceAlreadyExistsError'
