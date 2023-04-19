@@ -97,14 +97,6 @@ function _buildLinux {
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
-function _buildWindows {
-    _setShell
-    echo Windows Build
-    yarn run production-build
-    yarn build-tests
-    storeCache $CODEBUILD_SRC_DIR repo-windows
-    storeCache $HOME/.cache .cache-windows
-}
 function _testLinux {
     echo Run Test
     # download [repo, .cache from s3]
@@ -245,16 +237,6 @@ function _install_packaged_cli_linux {
     export PATH=$AMPLIFY_DIR:$PATH
     cd $CODEBUILD_SRC_DIR
 }
-function _install_packaged_cli_win {
-    echo Install Amplify Packaged CLI to PATH
-    # rename the command to amplify
-    cd $CODEBUILD_SRC_DIR/out
-    cp amplify-pkg-win-x64.exe amplify.exe
-
-    echo Move to CLI Binary to already existing PATH
-    # This is a Hack to make sure the Amplify CLI is in the PATH
-    cp $CODEBUILD_SRC_DIR/out/amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
-}
 function _runE2ETestsLinux {
     echo RUN E2E Tests Linux
     
@@ -278,44 +260,6 @@ function _runE2ETestsLinux {
     changeNpmGlobalPath
     amplify version
     
-    cd packages/amplify-e2e-tests
-
-    _loadTestAccountCredentials
-
-    retry runE2eTest
-}
-function _runE2ETestsWindows {
-    echo RUN E2E Tests Windows
-
-    echo Git Enable Long Paths
-    git config --global core.longpaths true
-
-    loadCache repo-windows $CODEBUILD_SRC_DIR
-    loadCache .cache-windows $HOME/.cache
-    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-
-    loadCache all-binaries $CODEBUILD_SRC_DIR/out
-    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
-    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
-
-    echo Rename the Packaged CLI to amplify
-    cd $CODEBUILD_SRC_DIR/out
-    cp amplify-pkg-win-x64.exe amplify.exe
-    
-    echo Move CLI Binary to alredy existing PATH
-    # This is a Hack to make sure the Amplify CLI is in the PATH
-    cp $CODEBUILD_SRC_DIR/out/amplify-pkg-win-x64.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
-    _install_packaged_cli_win
-    # verify installation
-    amplify version
-
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
-    source $BASH_ENV
-
-    setNpmRegistryUrlToLocal
-    changeNpmGlobalPath
-    amplify version
-
     cd packages/amplify-e2e-tests
 
     _loadTestAccountCredentials

@@ -4,17 +4,9 @@ env:
 phases:
   build:
     commands:
-      # - node -v
-      # - npm -v
-      # - nvm version
-      # - nvm install 18.15.0
-      # - nvm use 18.15.0
-      # - nvm ls
-      # - node --version
-      # - npm --version
-      - npm install -g yarn
       - yarn run production-build
-      - yarn build-tests
+      - yarn run build-tests
+      - bash ./codebuild_specs/scripts-windows/save-build-windows.sh
 
 artifacts:
   files:
