@@ -916,6 +916,9 @@ jobs:
       - run:
           name: Run smoketest against @aws-amplify@latest
           command: |
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            amplify version
             changeNpmGlobalPath
             yarn smoketest@latest
   github_release:
