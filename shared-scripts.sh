@@ -115,42 +115,6 @@ function _testLinux {
     # echo collecting coverage
     # yarn coverage
 }
-
-# COVERAGE FUNCTIONS
-#
-# run_e2e_tests_linux.yml
-#	shared-scripts.sh: _runE2ETests(Linux/Windows)
-#		local_publish_helpers.sh: retry runE2ETest
-#			local_publish_helpers.sh: runE2ETest
-#
-# I really think this should probably be part of runE2ETest.
-# That way we can clean up after ourselves in a retry. Is that
-# required? Won't we overwrite all these files anyway?
-function _setupCoverage {
-    _turnOnNodeV8CoverageReporting
-    rm -r $E2E_TEST_COVERAGE_DIR
-    mkdir -p $E2E_TEST_COVERAGE_DIR
-}
-function _convertCoverage {
-    echo Convert Coverage
-    loadCache e2e-test-coverage $E2E_TEST_COVERAGE_DIR
-    local include="**/amplify-cli/packages/**"
-    local exclude="**/amplify-cli/packages/amplify-e2e-*"
-    local reporter=lcov
-    npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --include $include --exclude $exclude --allow-external --reporter $reporter
-    # needs to pick up the new coverage directory
-    # for reference, assuming e2e tests are run from the amplify-e2e-tests directory:
-    # .../amplify-e2e-tests/$NODE_V8_COVERAGE - generated with setting NODE_V8_COVERAGE env var
-    # .../amplify-e2e-tests/coverage/lcov - generated with c8 command above
-    # storeCache coverage e2e-test-coverage/converted # this should pick up the newly created converted files
-}
-function _teardownCoverage {
-    echo Teardown Coverage
-    # storeCache $E2E_TEST_COVERAGE_DIR e2e-test-coverage
-    rm -r $E2E_TEST_COVERAGE_DIR
-}
-# END COVERAGE FUNCTIONS
-
 function _validateCDKVersion {
     echo Validate CDK Version
     # download [repo, .cache from s3]
@@ -291,6 +255,65 @@ function _install_packaged_cli_win {
     # This is a Hack to make sure the Amplify CLI is in the PATH
     cp $CODEBUILD_SRC_DIR/out/amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
 }
+# COVERAGE FUNCTIONS
+#
+# run_e2e_tests_linux.yml
+#	shared-scripts.sh: _runE2ETests(Linux/Windows)
+#		local_publish_helpers.sh: retry runE2ETest
+#			local_publish_helpers.sh: runE2ETest
+#
+# I really think this should probably be part of runE2ETest.
+# That way we can clean up after ourselves in a retry. Is that
+# required? Won't we overwrite all these files anyway?
+function _setupCoverage {
+    _teardownCoverage
+    echo "Setup Coverage ($E2E_TEST_COVERAGE_DIR)"
+    if [ ! -d $E2E_TEST_COVERAGE_DIR ]
+    then
+        mkdir -p $E2E_TEST_COVERAGE_DIR
+    fi
+    NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR
+}
+function _teardownCoverage {
+    NODE_V8_COVERAGE=""
+    if [ -d $E2E_TEST_COVERAGE_DIR ]
+    then
+        echo "Teardown Coverage ($E2E_TEST_COVERAGE_DIR)"
+        rm -r $E2E_TEST_COVERAGE_DIR
+    fi
+}
+function _convertCoverage {
+    echo Convert Coverage
+    
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+
+    # needs to pick up the new coverage directory
+    # for reference, assuming e2e tests are run from the amplify-e2e-tests directory:
+    # .../$NODE_V8_COVERAGE - generated with setting NODE_V8_COVERAGE env var
+    # .../coverage/<reporter> - generated with c8 command above
+    loadCache e2e-test-coverage-raw $E2E_TEST_COVERAGE_DIR
+    npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --all --src ./packages -x "**/node_modules/**" -x "**/__tests__/**" --exclude-after-remap "**/node_modules/**" -x "**/amplify-e2e-*/**" --allow-external --reporter clover
+}
+# https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader
+function _uploadCoverageLinux {
+    if [ -z ${CODECOV_TOKEN+x} ]
+    then
+        echo "CODECOV_TOKEN not set: No coverage will be uploaded."
+    else
+        curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+        curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+        gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+        shasum -a 256 -c codecov.SHA256SUM
+
+        chmod +x codecov
+        ./codecov -t ${CODECOV_TOKEN} 
+    fi
+}
+# END COVERAGE FUNCTIONS
 function _runE2ETestsLinux {
     echo RUN E2E Tests Linux
     
@@ -319,7 +342,17 @@ function _runE2ETestsLinux {
     _loadTestAccountCredentials
 
     #retry runE2eTest
+    _setupCoverage
     NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+    _unassumeTestAccountCredentials
+    storeCache $E2E_TEST_COVERAGE_DIR e2e-test-coverage-raw
+    _teardownCoverage
+}
+function _unassumeTestAccountCredentials {
+    echo "Unassume Role"
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
 }
 function _runE2ETestsWindows {
     echo RUN E2E Tests Windows
@@ -359,7 +392,6 @@ function _runE2ETestsWindows {
 
     retry runE2eTest
 }
-
 
 function _scanArtifacts {
     if ! yarn ts-node .circleci/scan_artifacts_codebuild.ts; then

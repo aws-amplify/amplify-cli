@@ -4,7 +4,7 @@ env:
   variables:
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/geo-add-f.test.ts
-    E2E_TEST_COVERAGE_DIR: /amplify/coverage
+    E2E_TEST_COVERAGE_DIR: node_v8_coverage
     CI: true
     CIRCLECI: true
     # mock values to test artifact scanning
@@ -27,19 +27,18 @@ phases:
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
+      # - export CODEBUILD_SOURCE_VERSION=00f31ea25fc27aa865198398e5014ea4d6a126d9
       - export NODE_OPTIONS=--max-old-space-size=8096
-      # - export CODEBUILD_SOURCE_VERSION=4610160556171f344780aeb2f0d01b7b20147b5d
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
-      - source ./shared-scripts.sh && _runE2ETestsLinux
-      - codebuild-breakpoint
+      - source ./shared-scripts.sh && _runE2ETestsLinux # need ability to put artifacts into cache bucket?
   post_build:
     commands:
       - aws sts get-caller-identity
       - source ./shared-scripts.sh && _scanArtifacts
-
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports/*
+    - '**/*'
+  base-directory: packages/amplify-e2e-tests/$E2E_TEST_COVERAGE_DIR

@@ -153,7 +153,7 @@ function unsetSudoNpmRegistryUrl {
 }
 
 function changeNpmGlobalPath {
-    mkdir -p ~/.npm-global
+    mkdir -p ~/.npm-global/{bin,lib}
     npm config set prefix '~/.npm-global'
     export PATH=~/.npm-global/bin:$PATH
 }
