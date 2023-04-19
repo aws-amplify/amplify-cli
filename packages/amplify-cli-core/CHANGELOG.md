@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.4-rc.9c56c9eeca.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.3...amplify-cli-core@4.0.4-rc.9c56c9eeca.0) (2023-04-19)
+
+
+### Bug Fixes
+
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([73dc361](https://github.com/aws-amplify/amplify-cli/commit/73dc3614a687658bd01a958abb8bcff6eb874f32))
+* null check for custom IAM policies Action array ([#12346](https://github.com/aws-amplify/amplify-cli/issues/12346)) ([57885e4](https://github.com/aws-amplify/amplify-cli/commit/57885e497036d1d476b2213f3697ce91b4b26b5c))
+
+
+
+
+
 ## [4.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@4.0.1...amplify-cli-core@4.0.3) (2023-04-14)
 
 **Note:** Version bump only for package amplify-cli-core

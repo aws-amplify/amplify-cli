@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.4-rc.9c56c9eeca.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.5.3...@aws-amplify/amplify-dotnet-function-template-provider@2.5.4-rc.9c56c9eeca.0) (2023-04-19)
+
+
+### Bug Fixes
+
+* modelgen regression ([a87fc75](https://github.com/aws-amplify/amplify-cli/commit/a87fc7549440ee362fdf40b06c1b1e9f61bdc287))
+
+
+
+
+
 ## [2.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.5.1...@aws-amplify/amplify-dotnet-function-template-provider@2.5.3) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-dotnet-function-template-provider

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.4-rc.9c56c9eeca.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.3...@aws-amplify/amplify-container-hosting@2.6.4-rc.9c56c9eeca.0) (2023-04-19)
+
+
+### Bug Fixes
+
+* api hotfix for ownerfield as pk ([#12422](https://github.com/aws-amplify/amplify-cli/issues/12422)) ([353cf3a](https://github.com/aws-amplify/amplify-cli/commit/353cf3a1c0672a55b303f7c4988b4e7aeab02b54))
+
+
+
+
+
 ## [2.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.1...@aws-amplify/amplify-container-hosting@2.6.3) (2023-04-14)
 
 
