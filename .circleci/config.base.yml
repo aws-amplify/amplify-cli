@@ -1321,6 +1321,10 @@ workflows:
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
       - smoketest:
+          context:
+            - cleanup-resources
+            - e2e-auth-credentials
+            - e2e-test-context
           requires:
             - upload_pkg_binaries
       - github_release:
