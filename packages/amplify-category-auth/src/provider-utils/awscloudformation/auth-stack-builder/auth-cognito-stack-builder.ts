@@ -1254,12 +1254,12 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         }
       }
     });
-  }
+  };
 
   createHostedUIProviderResource = (providerMeta: {
-    ProviderName: string,
-    authorize_scopes: string,
-    AttributeMapping: { key: string },
+    ProviderName: string;
+    authorize_scopes: string;
+    AttributeMapping: { key: string };
   }) => {
     const providerName = providerMeta.ProviderName.toLowerCase();
     const resourceParams: cognito.CfnUserPoolIdentityProviderProps = {
@@ -1276,7 +1276,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
     const provider = new cognito.CfnUserPoolIdentityProvider(this, `HostedUI${providerMeta.ProviderName}ProviderResource`, resourceParams);
     this.hostedUIProviderResources.push(provider);
-  }
+  };
 
   createHostedUIAppleProviderResource = (providerMeta: any) => {
     const resourceParams: cognito.CfnUserPoolIdentityProviderProps = {
@@ -1295,7 +1295,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
     const provider = new cognito.CfnUserPoolIdentityProvider(this, `HostedUI${providerMeta.ProviderName}ProviderResource`, resourceParams);
     this.hostedUIProviderResources.push(provider);
-  }
+  };
 }
 
 type OAuthMetaData = {

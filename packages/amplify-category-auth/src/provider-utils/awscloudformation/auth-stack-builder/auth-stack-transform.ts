@@ -558,7 +558,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       );
     }
 
-    JSON.parse(props.hostedUIProviderMeta || '[]').forEach(({ ProviderName }: { ProviderName: string }) => {
+    JSON.parse(props.hostedUIProviderCreds || '[]').forEach(({ ProviderName }: { ProviderName: string }) => {
       socialSignInKeys[ProviderName].forEach((key: string) => {
         if (!Object.keys(props).includes(key)) {
           this._authTemplateObj.addCfnParameter(

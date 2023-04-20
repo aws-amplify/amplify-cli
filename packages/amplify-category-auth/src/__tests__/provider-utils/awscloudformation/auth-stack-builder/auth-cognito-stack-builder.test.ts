@@ -58,7 +58,7 @@ describe('generateCognitoStackResources', () => {
     triggers: {
       PreSignup: ['custom'],
     },
-    hostedUI: false,
+    hostedUI: true,
     userPoolGroupList: [],
     serviceName: 'Cognito',
     usernameCaseSensitive: false,
@@ -83,6 +83,10 @@ describe('generateCognitoStackResources', () => {
     authTriggerConnections: [{ triggerType: 'PreSignUp', lambdaFunctionName: 'issue96802f106de32f106de3PreSignup' }],
     authProviders: ['accounts.google.com'],
     audiences: ['xxxgoogleClientIdxxx'],
+    hostedUIProviderMeta:
+      '[{"ProviderName":"Facebook","authorize_scopes":"email,public_profile","AttributeMapping":{"email":"email","username":"id"}},{"ProviderName":"Google","authorize_scopes":"openid email profile","AttributeMapping":{"email":"email","username":"sub"}},{"ProviderName":"LoginWithAmazon","authorize_scopes":"profile profile:user_id","AttributeMapping":{"email":"email","username":"user_id"}},{"ProviderName":"SignInWithApple","authorize_scopes":"email","AttributeMapping":{"email":"email"}}]',
+    hostedUIProviderCreds:
+      '[{"ProviderName":"Facebook","client_id":"sdcsdc","client_secret":"bfdsvsr"},{"ProviderName":"Google","client_id":"avearver","client_secret":"vcvereger"},{"ProviderName":"LoginWithAmazon","client_id":"vercvdsavcer","client_secret":"revfdsavrtv"},{"ProviderName":"SignInWithApple","client_id":"vfdvergver","team_id":"ervervre","key_id":"vfdavervfer","private_key":"vaveb"}]',
   };
 
   it('adds correct preSignUp  lambda config and permissions', () => {
@@ -184,5 +188,30 @@ describe('generateCognitoStackResources', () => {
     const identityPoolDeps = cognitoStack.identityPool?.obtainResourceDependencies().map((d) => d.cfnResourceType);
 
     expect(identityPoolDeps).toContain('AWS::IAM::OIDCProvider');
+  });
+
+  it('adds correct identity provider dependencies', async () => {
+    const testApp = new cdk.App();
+    const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
+
+    await cognitoStack.generateCognitoStackResources(props);
+
+    expect(cognitoStack.hostedUIProviderResources.length).toEqual(4);
+
+    expect(
+      cognitoStack
+        .hostedUIProviderResources!.map((r) => r.cfnResourceType)
+        .reduce((p, r) => {
+          if (p === r) return p;
+          else return 'null';
+        }),
+    ).toEqual('AWS::Cognito::UserPoolIdentityProvider');
+
+    const providerNames = cognitoStack.hostedUIProviderResources!.map((r) => r.providerName);
+
+    expect(providerNames).toContain('Facebook');
+    expect(providerNames).toContain('Google');
+    expect(providerNames).toContain('LoginWithAmazon');
+    expect(providerNames).toContain('SignInWithApple');
   });
 });

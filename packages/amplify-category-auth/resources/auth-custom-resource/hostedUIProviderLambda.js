@@ -27,5 +27,5 @@ exports.handler = (event, context, callback) => {
   } catch (err) {
     console.log(err.stack);
     response.send(event, context, response.FAILED, { err });
-  };
-}
+  }
+};

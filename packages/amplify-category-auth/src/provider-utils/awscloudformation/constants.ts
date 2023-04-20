@@ -88,28 +88,16 @@ export const privateKeys = [
 ];
 
 export const socialSignInKeys: { [key: string]: string[] } = {
-  'Facebook': [
-    'facebookAppIdUserPool',
-    'facebookAuthorizeScopes',
-    'facebookAppSecretUserPool',
-  ],
-  'Google': [
-    'googleAppIdUserPool',
-    'googleAuthorizeScopes',
-    'googleAppSecretUserPool',
-  ],
-  'LoginWithAmazon': [
-    'loginwithamazonAppIdUserPool',
-    'loginwithamazonAuthorizeScopes',
-    'loginwithamazonAppSecretUserPool',
-  ],
-  'SignInWithApple': [
+  Facebook: ['facebookAppIdUserPool', 'facebookAuthorizeScopes', 'facebookAppSecretUserPool'],
+  Google: ['googleAppIdUserPool', 'googleAuthorizeScopes', 'googleAppSecretUserPool'],
+  LoginWithAmazon: ['loginwithamazonAppIdUserPool', 'loginwithamazonAuthorizeScopes', 'loginwithamazonAppSecretUserPool'],
+  SignInWithApple: [
     'signinwithappleAuthorizeScopes',
     'signinwithappleClientIdUserPool',
     'signinwithappleKeyIdUserPool',
     'signinwithapplePrivateKeyUserPool',
     'signinwithappleTeamIdUserPool',
-  ]
+  ],
 };
 
 // amplify console auth options

@@ -1194,8 +1194,9 @@ export const formNestedStack = async (
               parameters.signinwithappleTeamIdUserPool = provider.team_id;
             } else {
               const varName = ProviderName.toLowerCase();
-              const authorizeScopes = JSON.parse(parameters.hostedUIProviderMeta)
-                .find((p) => p.ProviderName === ProviderName)?.authorize_scopes;
+              const authorizeScopes = JSON.parse(parameters.hostedUIProviderMeta).find(
+                (p) => p.ProviderName === ProviderName,
+              )?.authorize_scopes;
 
               parameters[`${varName}AuthorizeScopes`] = authorizeScopes;
               parameters[`${varName}AppIdUserPool`] = provider.client_id;
