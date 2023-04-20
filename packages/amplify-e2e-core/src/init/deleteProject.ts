@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack } from '..';
 import { getBackendAmplifyMeta } from '../utils';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Runs `amplify delete`

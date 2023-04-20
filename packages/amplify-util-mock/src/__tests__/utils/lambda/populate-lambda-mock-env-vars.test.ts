@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as dotenv from 'dotenv';
 
 jest.mock('@aws-amplify/amplify-provider-awscloudformation');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('dotenv');
 
 const loadConfigurationForEnv_mock = loadConfigurationForEnv as jest.MockedFunction<typeof loadConfigurationForEnv>;

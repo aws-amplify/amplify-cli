@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { executeProviderUtils } from '../../../extensions/amplify-helpers/execute-provider-utils';
 
 jest.mock('../../../extensions/amplify-helpers/get-provider-plugins.ts', () => ({

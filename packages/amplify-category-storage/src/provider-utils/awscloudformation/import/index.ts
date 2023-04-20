@@ -1,4 +1,4 @@
-import { $TSContext, ServiceSelection } from 'amplify-cli-core';
+import { $TSContext, ServiceSelection } from '@aws-amplify/amplify-cli-core';
 import { importS3 } from './import-s3';
 import { importDynamoDB } from './import-dynamodb';
 

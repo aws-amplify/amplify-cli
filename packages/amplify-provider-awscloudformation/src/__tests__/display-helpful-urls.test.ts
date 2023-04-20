@@ -5,7 +5,7 @@ import { SNS } from '../aws-utils/aws-sns';
 import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
 
 jest.mock('../aws-utils/aws-sns');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 printerMock.info = jest.fn();

@@ -7,7 +7,7 @@ import * as stateManagerModule from '../../../../provider-utils/awscloudformatio
 import { getAppId, getFunctionSecretPrefix } from '../../../../provider-utils/awscloudformation/secrets/secretName';
 import { SSMClientWrapper } from '../../../../provider-utils/awscloudformation/secrets/ssmClientWrapper';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/secrets/ssmClientWrapper');
 jest.mock('../../../../provider-utils/awscloudformation/secrets/secretsCfnModifier');
 jest.mock('../../../../provider-utils/awscloudformation/secrets/secretName');

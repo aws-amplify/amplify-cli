@@ -8,7 +8,7 @@ import {
   stateManager,
   ManuallyTimedCodePath,
   LocalEnvInfo,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getChangedResources } from '../../commands/build';

@@ -2,7 +2,7 @@ import { stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { populateCfnParams } from '../../../utils/lambda/populate-cfn-params';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../api/api', () => ({
   GRAPHQL_API_ENDPOINT_OUTPUT: 'GraphQLAPIEndpointOutput',
   GRAPHQL_API_KEY_OUTPUT: 'GraphQLAPIKeyOutput',

@@ -7,7 +7,7 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { updateGeofenceCollectionWalkthrough } from '../../service-walkthroughs/geofenceCollectionWalkthrough';
 import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
 
 describe('Geofence Collection walkthrough works as expected', () => {

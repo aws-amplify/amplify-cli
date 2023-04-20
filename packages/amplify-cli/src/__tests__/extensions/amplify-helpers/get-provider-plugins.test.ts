@@ -1,11 +1,11 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   getProviderPlugins,
   getConfiguredProviders,
   executeProviderCommand,
 } from '../../../extensions/amplify-helpers/get-provider-plugins';
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   stateManager: {
     getProjectConfig: jest.fn(),
   },

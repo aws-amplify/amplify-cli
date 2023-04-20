@@ -79,6 +79,7 @@ import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
 import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 import { minifyJSONFile } from './utils/minify-json';
 import { handleCloudFormationError } from './cloud-formation-error-handler';
+import { handleCommonSdkError } from './handle-common-sdk-errors';
 
 const logger = fileLogger('push-resources');
 
@@ -330,7 +331,11 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         }
         const s3 = await S3.getInstance(context);
         if (stateFolder.cloud) {
-          await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
+          try {
+            await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
+          } catch (error) {
+            throw handleCommonSdkError(error);
+          }
         }
         await postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
@@ -585,7 +590,13 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
     Key: s3Key,
   };
   logger('packageResources.s3.uploadFile', [{ Key: s3Key }])();
-  const s3Bucket = await s3.uploadFile(s3Params);
+
+  let s3Bucket;
+  try {
+    s3Bucket = await s3.uploadFile(s3Params);
+  } catch (error) {
+    throw handleCommonSdkError(error);
+  }
 
   // Update cfn template
   const { category, resourceName }: { category: string; resourceName: string } = resource;
@@ -794,7 +805,12 @@ export const uploadTemplateToS3 = async (
   };
 
   logger('uploadTemplateToS3.s3.uploadFile', [{ Key: s3Params.Key }])();
-  const projectBucket = await s3.uploadFile(s3Params, false);
+  let projectBucket;
+  try {
+    projectBucket = await s3.uploadFile(s3Params, false);
+  } catch (error) {
+    throw handleCommonSdkError(error);
+  }
 
   if (amplifyMeta) {
     const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${category}/${cfnFile}`;
@@ -1238,7 +1254,11 @@ export const generateAndUploadRootStack = async (context: $TSContext, destinatio
     Key: destinationS3Key,
   };
 
-  await s3Client.uploadFile(s3Params, false);
+  try {
+    await s3Client.uploadFile(s3Params, false);
+  } catch (error) {
+    throw handleCommonSdkError(error);
+  }
 };
 
 const rollbackLambdaLayers = (layerResources: $TSAny[]) => {

@@ -6,7 +6,7 @@ import * as configManager from '../configuration-manager';
 import { loadConfigurationForEnv } from '../configuration-manager';
 import { mocked } from 'ts-jest/utils';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('fs-extra');
 jest.mock('../system-config-manager');
 

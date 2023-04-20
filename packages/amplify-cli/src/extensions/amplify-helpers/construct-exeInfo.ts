@@ -1,5 +1,5 @@
 import { getProjectDetails } from './get-project-details';
-import { JSONUtilities, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext } from '@aws-amplify/amplify-cli-core';
 
 export function constructExeInfo(context: $TSContext) {
   const projectDetails = getProjectDetails();

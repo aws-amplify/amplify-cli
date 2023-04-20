@@ -1,7 +1,7 @@
 import glob from 'glob';
 import path from 'path';
 import * as fs from 'fs-extra';
-import { stateManager, pathManager } from 'amplify-cli-core';
+import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { CLOUD_INITIALIZED } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { capitalize, globCFNFilePath, ResourceDiff, stackMutationType } from '../../../extensions/amplify-helpers/resource-status-diff';
 import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
@@ -31,8 +31,8 @@ jest.mock('fs-extra', () => ({
   statSync: jest.fn().mockReturnValue({ isFile: () => true } as fs.Stats),
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   FeatureFlags: {
     getBoolean: jest.fn(),
     getNumber: jest.fn(),
@@ -54,7 +54,7 @@ const mockGraphQLAPIMeta = {
 
 // helper to mock common dependencies
 const setMockTestCommonDependencies = () => {
-  jest.mock('amplify-cli-core');
+  jest.mock('@aws-amplify/amplify-cli-core');
   const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
   pathManagerMock.getBackendDirPath = jest.fn().mockImplementation(() => localBackendDirPathStub);
   pathManagerMock.getCurrentCloudBackendDirPath = jest.fn().mockImplementation(() => currentBackendDirPathStub);
@@ -67,7 +67,7 @@ const setMockTestCommonDependencies = () => {
 
 describe('resource-status-diff helpers', () => {
   beforeAll(() => {
-    jest.unmock('amplify-cli-core');
+    jest.unmock('@aws-amplify/amplify-cli-core');
   });
 
   it('capitalize should capitalize strings', async () => {

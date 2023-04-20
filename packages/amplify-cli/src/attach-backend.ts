@@ -1,4 +1,12 @@
-import { $TSContext, AmplifyError, AmplifyFault, FeatureFlags, LocalEnvInfo, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  FeatureFlags,
+  LocalEnvInfo,
+  pathManager,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';

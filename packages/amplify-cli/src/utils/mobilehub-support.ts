@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Mobile hub command compatibility check

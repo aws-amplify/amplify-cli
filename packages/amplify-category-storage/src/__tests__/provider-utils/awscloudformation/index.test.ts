@@ -1,7 +1,7 @@
-import { open } from 'amplify-cli-core';
+import { open } from '@aws-amplify/amplify-cli-core';
 import { console } from '../../../provider-utils/awscloudformation';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const openMock = open as jest.MockedFunction<typeof open>;
 

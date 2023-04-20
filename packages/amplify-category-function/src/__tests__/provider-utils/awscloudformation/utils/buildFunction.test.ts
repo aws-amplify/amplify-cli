@@ -2,7 +2,7 @@ import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
 import { BuildType, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { buildFunction } from '../../../../provider-utils/awscloudformation/utils/buildFunction';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 pathManager_mock.getBackendDirPath.mockReturnValue('mockpath');

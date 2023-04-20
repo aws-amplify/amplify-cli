@@ -3,7 +3,7 @@ import { FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-p
 import { buildLayer } from '../../../../provider-utils/awscloudformation/utils/buildLayer';
 import { loadLayerConfigurationFile } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration');
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;

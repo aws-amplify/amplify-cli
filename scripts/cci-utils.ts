@@ -32,13 +32,13 @@ export const AWS_REGIONS_TO_RUN_TESTS = [
 ];
 
 // Some services (eg. amazon lex) are not available in all regions
-// Tests added to this list will always run in us-west-2
-export const FORCE_US_WEST_2 = [
-  'src/__tests__/custom-resource-with-storage.test.ts',
-  'src/__tests__/interactions.test.ts',
-  'src/__tests__/interactions-1.test.ts',
-  'src/__tests__/interactions-2.test.ts',
-];
+// Tests added to this list will always run in a specific region
+export const FORCE_REGION_MAP: Map<string, string> = new Map();
+FORCE_REGION_MAP.set('src/__tests__/custom-resource-with-storage.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/interactions.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/interactions-1.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/interactions-2.test.ts', 'us-west-2');
+FORCE_REGION_MAP.set('src/__tests__/migration_tests_v10/pinpoint-region.migration.test.ts', 'us-east-2');
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
 export const USE_PARENT_ACCOUNT = [

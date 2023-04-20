@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { $TSAny, $TSMeta, $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSMeta, $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ExecutionContext, getCLIPath, nspawn as spawn } from '..';
@@ -213,7 +213,7 @@ export const removeLayer = (cwd: string, versionsToRemove: number[], allVersions
   new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
-      .sendCarriageReturn() // first one
+      .wait('Only one option for')
       .wait('When you delete a layer version, you can no longer configure functions to use it.')
       .wait('However, any function that already uses the layer version continues to have access to it.')
       .wait('Choose the Layer versions you want to remove.');
@@ -240,15 +240,22 @@ export const removeLayer = (cwd: string, versionsToRemove: number[], allVersions
  */
 export const removeLayerVersion = (
   cwd: string,
-  settings: { removeLegacyOnly?: boolean; removeNoLayerVersions?: boolean },
+  settings: { removeLegacyOnly?: boolean; removeNoLayerVersions?: boolean; multipleResources?: boolean },
   versionsToRemove: number[],
   allVersions: number[],
   testingWithLatestCodebase = false,
 ): Promise<void> =>
   new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['remove', 'function'], { cwd, stripColors: true })
-      .wait('Choose the resource you would want to remove')
-      .sendCarriageReturn() // first one
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['remove', 'function'], { cwd, stripColors: true }).wait(
+      'Choose the resource you would want to remove',
+    );
+
+    if (settings.multipleResources) {
+      chain.sendCarriageReturn(); // first one
+    } else {
+      chain.wait('Only one option for');
+    }
+    chain
       .wait('When you delete a layer version, you can no longer configure functions to use it.')
       .wait('However, any function that already uses the layer version continues to have access to it.')
       .wait('Choose the Layer versions you want to remove.');

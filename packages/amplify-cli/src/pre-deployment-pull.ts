@@ -1,5 +1,5 @@
 import { run } from '@aws-amplify/amplify-app';
-import { $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS, pathManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, AMPLIFY_SUPPORT_DOCS, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import fetch from 'node-fetch';
 import * as path from 'path';
