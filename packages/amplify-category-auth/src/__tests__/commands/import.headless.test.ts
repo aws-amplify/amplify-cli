@@ -219,7 +219,9 @@ describe('import auth headless', () => {
 
       fail('should throw error');
     } catch (e) {
-      expect(e.message).toMatchInlineSnapshot(`"The previously configured Cognito User Pool: '' (user-pool-123) cannot be found."`);
+      expect((e as Error).message).toMatchInlineSnapshot(
+        `"The previously configured Cognito User Pool: '' (user-pool-123) cannot be found."`,
+      );
     }
   });
 
@@ -251,7 +253,7 @@ describe('import auth headless', () => {
 
       fail('should throw error');
     } catch (e) {
-      expect(e.message).toBe(
+      expect((e as Error).message).toBe(
         'The selected Cognito User Pool does not have at least 1 Web app client configured. Web app clients are app clients without a client secret.',
       );
     }
@@ -281,7 +283,9 @@ describe('import auth headless', () => {
 
       fail('should throw error');
     } catch (e) {
-      expect(e.message).toBe('There are no Identity Pools found which has the selected Cognito User Pool configured as identity provider.');
+      expect((e as Error).message).toBe(
+        'There are no Identity Pools found which has the selected Cognito User Pool configured as identity provider.',
+      );
     }
   });
 });

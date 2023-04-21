@@ -120,8 +120,7 @@ describe('auth update:', () => {
       });
     });
     it('update run method should detect presence of dependent resource and print a message', async () => {
-      await update.run(mockContext);
-      expect(printer.info).toBeCalledWith(messages.dependenciesExists);
+      await expect(update.run(mockContext)).rejects.toThrowError('There was an error updating the auth resource');
     });
     it('serviceSelectionPrompt should still be called even when warning displayed for existing resource', async () => {
       await update.run(mockContext);
