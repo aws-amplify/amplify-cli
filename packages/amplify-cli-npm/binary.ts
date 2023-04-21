@@ -126,7 +126,7 @@ export class Binary {
       console.log('amplify has been installed!');
       spawnSync(this.binaryPath, ['version'], { cwd: process.cwd(), stdio: 'inherit' });
     } catch (e) {
-      error(`Error fetching release: ${e.message}`);
+      error(`Error fetching release: ${(e as Error).message}`);
     }
   }
 
