@@ -2,6 +2,7 @@ import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-paramete
 import {
   $TSContext,
   AmplifyCategories,
+  AmplifyFault,
   AmplifySupportedService,
   BannerMessage,
   FeatureFlags,
@@ -89,10 +90,12 @@ export const run = async (context: AuthContext): Promise<string | $TSContext | u
     printer.blankLine();
     return updateResourceResponse;
   } catch (err) {
-    printer.info(err.stack);
-    printer.error('There was an error adding the auth resource');
-    void context.usageData.emitError(err);
-    process.exitCode = 1;
-    return undefined;
+    throw new AmplifyFault(
+      'ResourceUpdateFault',
+      {
+        message: 'There was an error updating the auth resource',
+      },
+      err as Error,
+    );
   }
 };

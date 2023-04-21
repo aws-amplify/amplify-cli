@@ -28,7 +28,11 @@ export const packageAssemblies = async (request: PackageRequest, context: any): 
       throw new Error(`Packaging failed. Exit code was ${result.exitCode}`);
     }
   } catch (err) {
-    throw new AmplifyError('PackagingLambdaFunctionError', { message: `Packaging failed, error message was ${err.message}` }, err);
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      { message: `Packaging failed, error message was ${(err as Error).message}` },
+      err as Error,
+    );
   }
 
   return {

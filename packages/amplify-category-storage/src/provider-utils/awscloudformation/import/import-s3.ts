@@ -3,6 +3,7 @@ import {
   $TSAny,
   $TSContext,
   AmplifyError,
+  AmplifyFault,
   exitOnNextTick,
   ResourceAlreadyExistsError,
   ServiceSelection,
@@ -205,9 +206,13 @@ const ensureAuth = async (context: $TSContext): Promise<void> => {
           await context.amplify.invokePluginMethod(context, 'auth', undefined, 'importAuth', [context]);
         }
       } catch (e) {
-        printer.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
-        await context.usageData.emitError(e);
-        exitOnNextTick(1);
+        throw new AmplifyFault(
+          addOrImportAnswer.addOrImport === 'add' ? 'ResourceAddFault' : 'ResourceImportFault',
+          {
+            message: 'There was an error adding or importing the auth resource to your project',
+          },
+          e as Error,
+        );
       }
     }
   }

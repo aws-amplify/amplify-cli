@@ -89,6 +89,6 @@ const loadHandler = async (root: string, handler: string): Promise<Function> => 
     }
     return handlerFunc;
   } catch (err) {
-    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Could not load lambda handler function due to ${err}` }, err);
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Could not load lambda handler function due to ${err}` }, err as Error);
   }
 };

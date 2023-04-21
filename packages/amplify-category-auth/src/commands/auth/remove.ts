@@ -1,4 +1,12 @@
-import { $TSContext, $TSMeta, AmplifyCategories, AmplifyError, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext,
+  $TSMeta,
+  AmplifyCategories,
+  AmplifyError,
+  AmplifyFault,
+  AmplifySupportedService,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
@@ -37,10 +45,13 @@ export const run = async (context: $TSContext): Promise<void> => {
       await cliState.saveCLIInputPayload(cliInputPayload);
     }
   } catch (err) {
-    printer.info(err.stack);
-    printer.error('There was an error removing the auth resource');
-    void context.usageData.emitError(err);
-    process.exitCode = 1;
+    throw new AmplifyFault(
+      'ResourceRemoveFault',
+      {
+        message: 'There was an error removing the auth resource',
+      },
+      err as Error,
+    );
   }
 };
 

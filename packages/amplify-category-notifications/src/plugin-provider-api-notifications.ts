@@ -55,7 +55,7 @@ export const notificationsPluginAPIRemoveApp = async (context: $TSContext, appNa
       resourceProviderServiceName: AmplifySupportedService.PINPOINT, // Service which provisions capability, subCapability e.g Pinpoint
       status: false, // true - successfully applied, false - failed to apply
       errorCode: PluginAPIError.E_UNKNOWN,
-      reasonMsg: error,
+      reasonMsg: error as string,
     };
     return errorResponse;
   }

@@ -116,7 +116,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
 
     await deleteDetachedForms(detachedForms, studioClient);
   } catch (e) {
-    printer.debug(e);
+    printer.debug((e as Error).message);
     spinner.fail('Failed to sync UI components');
   }
 };

@@ -11,6 +11,6 @@ export const run = async (context: $TSContext): Promise<void> => {
     await cloneComponentsFromEnv(context);
   } catch (e) {
     // Swallow all errors from the uibuilder plugin
-    printer.debug(e);
+    printer.debug((e as Error).message);
   }
 };

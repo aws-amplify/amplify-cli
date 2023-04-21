@@ -96,31 +96,21 @@ const configure = async (context: $TSContext, defaultValuesFilename: string): Pr
         'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
       )
     ) {
-      try {
-        await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-          context,
-          'analytics',
-          resource,
-          analyticsRequirements,
-        ]);
-      } catch (error) {
-        printer.error(error);
-        throw error;
-      }
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        'analytics',
+        resource,
+        analyticsRequirements,
+      ]);
     } else {
-      try {
-        printer.warn('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
-        analyticsRequirements.allowUnauthenticatedIdentities = false;
-        await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
-          context,
-          'analytics',
-          resource,
-          analyticsRequirements,
-        ]);
-      } catch (error) {
-        printer.error(error);
-        throw error;
-      }
+      printer.warn('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
+      analyticsRequirements.allowUnauthenticatedIdentities = false;
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        'analytics',
+        resource,
+        analyticsRequirements,
+      ]);
     }
   }
 

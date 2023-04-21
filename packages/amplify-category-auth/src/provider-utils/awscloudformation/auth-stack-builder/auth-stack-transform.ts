@@ -134,10 +134,10 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
           'InvalidOverrideError',
           {
             message: `Executing overrides failed.`,
-            details: err.message,
+            details: (err as Error).message,
             resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
           },
-          err,
+          err as Error,
         );
       }
     }

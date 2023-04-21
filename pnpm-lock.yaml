@@ -1351,6 +1351,25 @@ importers:
         specifier: ^6.1.1
         version: 6.1.1
 
+  packages/amplify-cli-npm/lib:
+    dependencies:
+      axios:
+        specifier: ^0.26.0
+        version: 0.26.0
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tar-stream:
+        specifier: ^2.2.0
+        version: 2.2.0
+    devDependencies:
+      '@aws-amplify/cli-internal':
+        specifier: 11.0.5
+        version: link:../../amplify-cli
+      '@types/tar':
+        specifier: ^6.1.1
+        version: 6.1.1
+
   packages/amplify-cli-shared-interfaces:
     devDependencies:
       rimraf:

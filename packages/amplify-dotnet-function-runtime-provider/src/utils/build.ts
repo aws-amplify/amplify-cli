@@ -42,9 +42,9 @@ export const build = async ({ srcRoot, lastBuildTimeStamp, buildType }: BuildReq
       throw new AmplifyError(
         'PackagingLambdaFunctionError',
         {
-          message: `${executableName} build failed, error message was ${err.message}`,
+          message: `${executableName} build failed, error message was ${(err as Error).message}`,
         },
-        err,
+        err as Error,
       );
     }
 

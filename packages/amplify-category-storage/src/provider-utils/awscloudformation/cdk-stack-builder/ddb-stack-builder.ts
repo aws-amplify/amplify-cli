@@ -32,7 +32,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       // eslint-disable-next-line no-new
       new cdk.CfnOutput(this, logicalId, props);
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error as string);
     }
   }
 
@@ -44,7 +44,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       // eslint-disable-next-line no-new
       new cdk.CfnMapping(this, logicalId, props);
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error as string);
     }
   }
 
@@ -56,7 +56,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       // eslint-disable-next-line no-new
       new cdk.CfnCondition(this, logicalId, props);
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error as string);
     }
   }
 
@@ -68,7 +68,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       // eslint-disable-next-line no-new
       new cdk.CfnResource(this, logicalId, props);
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error as string);
     }
   }
 
@@ -82,7 +82,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       }
       this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error as string);
     }
   }
 

@@ -224,10 +224,10 @@ export class DDBStackTransform {
             'InvalidOverrideError',
             {
               message: `Executing overrides failed.`,
-              details: err.message,
+              details: (err as Error).message,
               resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
             },
-            err,
+            err as Error,
           );
         }
       }
@@ -246,18 +246,10 @@ export class DDBStackTransform {
 
     fs.ensureDirSync(this._cliInputsState.buildFilePath);
     const cfnFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, `${this._resourceName}-cloudformation-template.json`));
-    try {
-      JSONUtilities.writeJson(cfnFilePath, this._cfn);
-    } catch (e) {
-      throw new Error(e);
-    }
+    JSONUtilities.writeJson(cfnFilePath, this._cfn);
 
     fs.ensureDirSync(this._cliInputsState.buildFilePath);
     const cfnInputParamsFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, 'parameters.json'));
-    try {
-      JSONUtilities.writeJson(cfnInputParamsFilePath, this._cfnInputParams);
-    } catch (e) {
-      throw new Error(e);
-    }
+    JSONUtilities.writeJson(cfnInputParamsFilePath, this._cfnInputParams);
   }
 }

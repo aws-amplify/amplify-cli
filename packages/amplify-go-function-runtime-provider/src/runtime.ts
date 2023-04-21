@@ -41,7 +41,11 @@ export const executeCommand = (
     }
     return output.stdout;
   } catch (err) {
-    throw new AmplifyError('PackagingLambdaFunctionError', { message: `${executableName} failed, error message was ${err.message}` }, err);
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      { message: `${executableName} failed, error message was ${(err as Error).message}` },
+      err as Error,
+    );
   }
 };
 
@@ -166,8 +170,8 @@ export const packageResource = async (request: PackageRequest, context: any): Pr
     } catch (err) {
       throw new AmplifyError(
         'PackagingLambdaFunctionError',
-        { message: `Packaging go function failed, error message was ${err.message}` },
-        err,
+        { message: `Packaging go function failed, error message was ${(err as Error).message}` },
+        err as Error,
       );
     }
     return { packageHash };

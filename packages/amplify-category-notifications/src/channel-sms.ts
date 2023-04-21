@@ -57,7 +57,7 @@ export const enable = async (context: $TSContext): Promise<$TSAny> => {
       {
         message: `Failed to enable the ${channelName} channel.`,
       },
-      e,
+      e as Error,
     );
   }
 };
@@ -90,7 +90,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
       {
         message: `Failed to disable the ${channelName} channel.`,
       },
-      e,
+      e as Error,
     );
   }
 };
@@ -114,13 +114,13 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
     return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.SMSChannelResponse);
   } catch (err) {
     spinner.stop();
-    if (err.code !== 'NotFoundException') {
+    if ((err as { code: string }).code !== 'NotFoundException') {
       throw new AmplifyFault(
         'NotificationsChannelSmsFault',
         {
           message: `Channel ${channelName} not found in the notifications metadata.`,
         },
-        err,
+        err as Error,
       );
     }
 

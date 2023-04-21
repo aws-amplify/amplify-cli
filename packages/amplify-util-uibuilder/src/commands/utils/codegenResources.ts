@@ -86,7 +86,7 @@ export const createUiBuilderTheme = (
     rendererManager.renderSchemaToTemplate(schema);
     return schema;
   } catch (e) {
-    printer.debug(e);
+    printer.debug((e as Error).message);
     printer.debug('Skipping invalid theme with schema');
     printer.debug(JSON.stringify(schema, null, 2));
     throw e;
@@ -123,7 +123,7 @@ export const createUiBuilderForm = (
     rendererManager.renderSchemaToTemplate(schema);
     return schema;
   } catch (e) {
-    printer.debug(e);
+    printer.debug((e as Error).message);
     printer.debug('Skipping invalid form with schema');
     printer.debug(JSON.stringify(schema, null, 2));
     throw e;
@@ -156,7 +156,7 @@ export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: 
       rendererManager.renderSchemaToTemplate(schemas);
     }
   } catch (e) {
-    printer.debug(e);
+    printer.debug((e as Error).message);
     printer.debug('Failed to generate component index file');
     throw e;
   }
@@ -199,7 +199,7 @@ export const generateAmplifyUiBuilderUtilFile = (context: $TSContext, { hasForms
       rendererManager.renderSchemaToTemplate([...utils]);
     }
   } catch (e) {
-    printer.debug(e);
+    printer.debug((e as Error).message);
     printer.debug('Failed to generate component index file');
     throw e;
   }
@@ -219,7 +219,7 @@ export const getAmplifyDataSchema = async (context: $TSContext): Promise<Generic
     }
     return getGenericFromDataStore(localSchema as ModelIntrospectionSchema);
   } catch (e) {
-    printer.debug(e.toString());
+    printer.debug((e as Error).message);
     return undefined;
   }
 };

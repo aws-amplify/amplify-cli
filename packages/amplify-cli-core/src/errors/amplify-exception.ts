@@ -184,6 +184,7 @@ export type AmplifyErrorType =
  * Amplify fault types
  */
 export type AmplifyFaultType =
+  | 'AddDependencyFault'
   | 'AmplifyBackupFault'
   | 'AnalyticsCategoryFault'
   | 'AuthCategoryFault'
@@ -214,9 +215,11 @@ export type AmplifyFaultType =
   | 'PushResourcesFault'
   | 'ResourceAddFault'
   | 'ResourceExportFault'
+  | 'ResourceImportFault'
   | 'ResourceNotFoundFault'
   | 'ResourceNotReadyFault'
   | 'ResourceRemoveFault'
+  | 'ResourceUpdateFault'
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
   | 'SnsSandboxModeCheckFault'

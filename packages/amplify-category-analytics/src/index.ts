@@ -84,7 +84,7 @@ export const getPermissionPolicies = async (context: $TSContext, resourceOpsMapp
         {
           message: `Could not get policies for ${category}: ${resourceName}`,
         },
-        e,
+        e as Error,
       );
     }
   }

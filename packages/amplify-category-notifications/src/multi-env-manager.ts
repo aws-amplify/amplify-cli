@@ -355,14 +355,14 @@ export const checkAndCreatePinpointApp = async (
       await viewShowInlineModeInstructionsStop(channelName);
     } catch (err) {
       // if the push fails, the user will be prompted to deploy the resource manually
-      await viewShowInlineModeInstructionsFail(channelName, err);
+      await viewShowInlineModeInstructionsFail(channelName, err as Error | string);
       throw new AmplifyError(
         'DeploymentError',
         {
           message: 'Failed to deploy Auth and Pinpoint resources.',
           resolution: 'Deploy the Auth and Pinpoint resources manually.',
         },
-        err,
+        err as Error,
       );
     }
   }

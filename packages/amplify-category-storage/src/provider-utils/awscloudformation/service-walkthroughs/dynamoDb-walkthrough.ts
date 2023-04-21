@@ -153,7 +153,7 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
         triggerName = await addTrigger(context, resourceName);
         return [triggerName];
       } catch (e) {
-        printer.error(e.message);
+        printer.error((e as Error).message);
       }
     }
   } else {
@@ -174,7 +174,7 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
             triggerFunctions.push(triggerName);
             continueWithTriggerOperationQuestion = false;
           } catch (e) {
-            printer.error(e.message);
+            printer.error((e as Error).message);
             continueWithTriggerOperationQuestion = true;
           }
           break;
@@ -196,7 +196,7 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
               }
             }
           } catch (e) {
-            printer.error(e.message);
+            printer.error((e as Error).message);
             continueWithTriggerOperationQuestion = true;
           }
 

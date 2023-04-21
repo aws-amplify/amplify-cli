@@ -62,11 +62,7 @@ export class DynamoDBInputState {
     await this.isCLIInputsValid(cliInputs);
 
     fs.ensureDirSync(pathManager.getResourceDirectoryPath(undefined, this._category, this._resourceName));
-    try {
-      JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
-    } catch (e) {
-      throw new Error(e);
-    }
+    JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
   }
 
   public async migrate(): Promise<void> {

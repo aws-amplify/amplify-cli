@@ -41,8 +41,8 @@ export const generateUiBuilderComponents = (
       return { resultType: 'SUCCESS', schema: component };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
-      printer.debug(e);
-      return { resultType: 'FAILURE', schemaName: schema.name, error: e };
+      printer.debug((e as Error).message);
+      return { resultType: 'FAILURE', schemaName: schema.name, error: e as Error };
     }
   });
 
@@ -68,8 +68,8 @@ export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]
       return { resultType: 'SUCCESS', schema: theme };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
-      printer.debug(e);
-      return { resultType: 'FAILURE', schemaName: schema.name, error: e };
+      printer.debug((e as Error).message);
+      return { resultType: 'FAILURE', schemaName: schema.name, error: e as Error };
     }
   });
 
@@ -89,8 +89,8 @@ const generateDefaultTheme = (context: $TSContext): CodegenResponse<StudioTheme>
     return { resultType: 'SUCCESS', schema: theme };
   } catch (e) {
     printer.debug(`Failure caught rendering default theme`);
-    printer.debug(e);
-    return { resultType: 'FAILURE', schemaName: 'studioTheme', error: e };
+    printer.debug((e as Error).message);
+    return { resultType: 'FAILURE', schemaName: 'studioTheme', error: e as Error };
   }
 };
 
@@ -119,12 +119,12 @@ export const generateUiBuilderForms = (
       return { resultType: 'SUCCESS', schema: form };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
-      printer.debug(e);
+      printer.debug((e as Error).message);
       return {
         resultType: 'FAILURE',
         schemaName: schema.name,
         schema,
-        error: e,
+        error: e as Error,
       };
     }
   };

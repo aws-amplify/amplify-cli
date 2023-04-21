@@ -146,7 +146,7 @@ export const analyticsPluginAPIPush = async (
     } catch (err) {
       pushResponse.status = false;
       pushResponse.errorCode = PluginAPIError.E_PUSH_FAILED;
-      pushResponse.reasonMsg = err.message;
+      pushResponse.reasonMsg = (err as Error).message;
     }
   }
   return pushResponse;

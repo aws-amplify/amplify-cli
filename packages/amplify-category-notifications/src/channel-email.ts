@@ -75,7 +75,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     };
     return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.EmailChannelResponse);
   } catch (err) {
-    if (err && err.code === 'NotFoundException') {
+    if (err && (err as { code: string }).code === 'NotFoundException') {
       spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
       return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, {
         id: params.ApplicationId,
@@ -87,9 +87,9 @@ export const enable = async (context: $TSContext, successMessage: string | undef
       'NotificationsChannelEmailFault',
       {
         message: `Failed to enable the ${channelName} channel.`,
-        details: err.message,
+        details: (err as Error).message,
       },
-      err,
+      err as Error,
     );
   }
 };
@@ -127,7 +127,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
     return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.EmailChannelResponse);
   } catch (err) {
-    if (err && err.code === 'NotFoundException') {
+    if (err && (err as { code: string }).code === 'NotFoundException') {
       spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
       return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, {
         id: params.ApplicationId,
@@ -139,9 +139,9 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
       'NotificationsChannelEmailFault',
       {
         message: `Failed to disable the ${channelName} channel.`,
-        details: err.message,
+        details: (err as Error).message,
       },
-      err,
+      err as Error,
     );
   }
 };
@@ -166,13 +166,13 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
     return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.EmailChannelResponse);
   } catch (err) {
     spinner.stop();
-    if (err.code !== 'NotFoundException') {
+    if ((err as { code: string }).code !== 'NotFoundException') {
       throw new AmplifyFault(
         'NotificationsChannelEmailFault',
         {
           message: `Failed to pull the ${channelName} channel.`,
         },
-        err,
+        err as Error,
       );
     }
 

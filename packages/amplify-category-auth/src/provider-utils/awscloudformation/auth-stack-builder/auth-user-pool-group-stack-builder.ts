@@ -64,64 +64,44 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
    * Add an output to the template
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
-    try {
-      // eslint-disable-next-line no-new
-      new cdk.CfnOutput(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    // eslint-disable-next-line no-new
+    new cdk.CfnOutput(this, logicalId, props);
   }
 
   /**
    * Add a mapping to the template
    */
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-    try {
-      // eslint-disable-next-line no-new
-      new cdk.CfnMapping(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    // eslint-disable-next-line no-new
+    new cdk.CfnMapping(this, logicalId, props);
   }
 
   /**
    * Add a resource to the template
    */
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-    try {
-      // eslint-disable-next-line no-new
-      new cdk.CfnResource(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    // eslint-disable-next-line no-new
+    new cdk.CfnResource(this, logicalId, props);
   }
 
   /**
    * Add a template parameter
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-    try {
-      if (this._cfnParameterMap.has(logicalId)) {
-        throw new Error('logical Id already Exists');
-      }
-      this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
-    } catch (error) {
-      throw new Error(error);
+    if (this._cfnParameterMap.has(logicalId)) {
+      throw new Error('logical Id already Exists');
     }
+    this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
   }
 
   /**
    * Add a template condition
    */
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-    try {
-      if (this._cfnConditionMap.has(logicalId)) {
-        throw new Error('logical Id already Exists');
-      }
-      this._cfnConditionMap.set(logicalId, new cdk.CfnCondition(this, logicalId, props));
-    } catch (error) {
-      throw new Error(error);
+    if (this._cfnConditionMap.has(logicalId)) {
+      throw new Error('logical Id already Exists');
     }
+    this._cfnConditionMap.set(logicalId, new cdk.CfnCondition(this, logicalId, props));
   }
 
   /**
@@ -361,12 +341,8 @@ export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack {
    * Add an output to the stack
    */
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
-    try {
-      // eslint-disable-next-line no-new
-      new cdk.CfnOutput(this, logicalId, props);
-    } catch (error) {
-      throw new Error(error);
-    }
+    // eslint-disable-next-line no-new
+    new cdk.CfnOutput(this, logicalId, props);
   }
 
   /**

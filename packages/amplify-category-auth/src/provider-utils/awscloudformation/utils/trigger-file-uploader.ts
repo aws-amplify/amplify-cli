@@ -49,7 +49,7 @@ export const uploadFiles = async (context: $TSContext): Promise<void> => {
       throw e;
     }
   } catch (e) {
-    throw new AmplifyFault('TriggerUploadFault', { message: 'Unable to upload trigger files to S3' }, e);
+    throw new AmplifyFault('TriggerUploadFault', { message: 'Unable to upload trigger files to S3' }, e as Error);
   }
 };
 

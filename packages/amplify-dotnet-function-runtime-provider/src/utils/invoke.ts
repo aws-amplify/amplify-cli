@@ -27,7 +27,11 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
     execPromise.stdout?.pipe(process.stdout);
     result = await execPromise;
   } catch (err) {
-    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Test failed, error message was ${err.message}` }, err);
+    throw new AmplifyError(
+      'LambdaFunctionInvokeError',
+      { message: `Test failed, error message was ${(err as Error).message}` },
+      err as Error,
+    );
   } finally {
     // Clean up
     if (tempDir && fs.existsSync(tempDir)) {

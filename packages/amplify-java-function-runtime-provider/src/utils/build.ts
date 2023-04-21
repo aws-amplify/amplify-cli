@@ -42,7 +42,11 @@ const runPackageManager = (cwd: string, buildArgs: string) => {
       throw new AmplifyError('PackagingLambdaFunctionError', { message: `${packageManager} failed, exit code was ${result.exitCode}` });
     }
   } catch (err) {
-    throw new AmplifyError('PackagingLambdaFunctionError', { message: `${packageManager} failed, error message was ${err.message}` }, err);
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      { message: `${packageManager} failed, error message was ${(err as Error).message}` },
+      err as Error,
+    );
   }
 };
 

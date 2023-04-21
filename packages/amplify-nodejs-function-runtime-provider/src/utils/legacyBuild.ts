@@ -1,4 +1,4 @@
-import { $TSObject, getPackageManager, JSONUtilities, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSObject, getPackageManager, JSONUtilities, AmplifyError, PackageManager } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -57,31 +57,7 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
       encoding: 'utf-8',
     });
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      throw new AmplifyError(
-        'PackagingLambdaFunctionError',
-        {
-          message: `Packaging lambda function failed. Could not find ${packageManager.packageManager} executable in the PATH.`,
-        },
-        error,
-      );
-    } else if (error.stdout?.includes('YN0050: The --production option is deprecated')) {
-      throw new AmplifyError(
-        'PackagingLambdaFunctionError',
-        {
-          message: 'Packaging lambda function failed. Yarn 2 is not supported. Use Yarn 1.x and push again.',
-        },
-        error,
-      );
-    } else {
-      throw new AmplifyError(
-        'PackagingLambdaFunctionError',
-        {
-          message: `Packaging lambda function failed with the error \n${error.message}`,
-        },
-        error,
-      );
-    }
+    handlePackagingError(error as Error & { code: string; stdout: string }, packageManager);
   }
 };
 
@@ -113,4 +89,32 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, buildType: 
     .filter((p) => !p.includes('node_modules'))
     .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
   return !!fileUpdatedAfterLastBuild;
+};
+
+const handlePackagingError = (error: Error & { code: string; stdout: string }, packageManager: PackageManager): void => {
+  if (error.code === 'ENOENT') {
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      {
+        message: `Packaging lambda function failed. Could not find ${packageManager.packageManager} executable in the PATH.`,
+      },
+      error,
+    );
+  } else if (error.stdout?.includes('YN0050: The --production option is deprecated')) {
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      {
+        message: 'Packaging lambda function failed. Yarn 2 is not supported. Use Yarn 1.x and push again.',
+      },
+      error,
+    );
+  } else {
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      {
+        message: `Packaging lambda function failed with the error \n${error.message}`,
+      },
+      error,
+    );
+  }
 };

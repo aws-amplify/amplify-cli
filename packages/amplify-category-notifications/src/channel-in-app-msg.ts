@@ -119,7 +119,7 @@ export const enable = async (context: $TSContext): Promise<IChannelAPIResponse> 
     };
     return enableChannelInAppMsgResponse;
   } catch (e) {
-    spinner.fail(`Enable channel error: ${e.message}`);
+    spinner.fail(`Enable channel error: ${(e as Error).message}`);
     throw e;
   }
 };

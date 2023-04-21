@@ -32,8 +32,8 @@ export async function pythonInvoke(context: any, request: InvocationRequest): Pr
   let stdout;
   try {
     stdout = (await childProcess).stdout;
-  } catch (err) {
-    throw new AmplifyError('LambdaFunctionInvokeError', { message: err.message }, err);
+  } catch (err: unknown) {
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: (err as Error).message }, err as Error);
   }
 
   const lines = stdout.split('\n');

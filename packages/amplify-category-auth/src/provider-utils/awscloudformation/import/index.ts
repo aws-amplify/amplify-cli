@@ -1099,7 +1099,7 @@ export const importedAuthEnvInit = async (
   try {
     answers.userPool = await cognito.getUserPoolDetails(currentEnvSpecificParameters.userPoolId);
   } catch (error) {
-    if (error.name === 'ResourceNotFoundException') {
+    if ((error as { name: string }).name === 'ResourceNotFoundException') {
       if (projectHasAuth()) {
         printer.warn(importMessages.UserPoolNotFound(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId));
         printer.warn(`Unlink userPool: ${currentEnvSpecificParameters.userPoolName} using 'amplify remove auth'`);
@@ -1264,7 +1264,7 @@ export const headlessImport = async (
   try {
     answers.userPool = await cognito.getUserPoolDetails(resolvedEnvParams.userPoolId);
   } catch (error) {
-    if (error.name === 'ResourceNotFoundException') {
+    if ((error as Error).name === 'ResourceNotFoundException') {
       if (projectHasAuth()) {
         // returning silently in headless calls
         printer.debug(`The previously configured Cognito User Pool: ${resolvedEnvParams.userPoolId} cannot be found.`);

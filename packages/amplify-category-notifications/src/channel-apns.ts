@@ -105,7 +105,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
       {
         message: `Failed to enable the ${channelName} channel.`,
       },
-      e,
+      e as Error,
     );
   }
 
@@ -195,9 +195,9 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
       'NotificationsChannelAPNSFault',
       {
         message: `Failed to update the ${channelName} channel.`,
-        details: `Action: ${ChannelAction.DISABLE}. ${e.message}`,
+        details: `Action: ${ChannelAction.DISABLE}. ${(e as Error).message}`,
       },
-      e,
+      e as Error,
     );
   }
   spinner.succeed(`The ${channelName} channel has been disabled.`);
@@ -225,14 +225,14 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
     return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.APNSChannelResponse);
   } catch (err) {
     spinner.stop();
-    if (err.code !== 'NotFoundException') {
+    if ((err as { code: string }).code !== 'NotFoundException') {
       throw new AmplifyFault(
         'NotificationsChannelAPNSFault',
         {
           message: `Failed to pull the ${channelName} channel.`,
-          details: `Action: ${ChannelAction.PULL}. ${err.message}`,
+          details: `Action: ${ChannelAction.PULL}. ${(err as Error).message}`,
         },
-        err,
+        err as Error,
       );
     }
 

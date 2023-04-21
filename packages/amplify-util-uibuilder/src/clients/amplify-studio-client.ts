@@ -71,7 +71,7 @@ export default class AmplifyStudioClient {
     } catch (err) {
       // return false is admin app failed check
       // this means we wont run codegen-ui
-      printer.debug(`Failed admin app check: ${err.message}`);
+      printer.debug(`Failed admin app check: ${(err as Error).message}`);
       return false;
     }
   };
@@ -140,7 +140,7 @@ export default class AmplifyStudioClient {
         },
       };
     } catch (err) {
-      throw new Error(`Failed to load metadata: ${err.message}`);
+      throw new Error(`Failed to load metadata: ${(err as Error).message}`);
     }
   };
 
@@ -167,7 +167,7 @@ export default class AmplifyStudioClient {
       printer.debug(JSON.stringify(uiBuilderComponents, null, 2));
       return { entities: uiBuilderComponents };
     } catch (err) {
-      throw new Error(`Failed to list components: ${err.message}`);
+      throw new Error(`Failed to list components: ${(err as Error).message}`);
     }
   };
 
@@ -195,7 +195,7 @@ export default class AmplifyStudioClient {
       printer.debug(JSON.stringify(uiBuilderThemes, null, 2));
       return { entities: uiBuilderThemes };
     } catch (err) {
-      throw new Error(`Failed to list themes: ${err.message}`);
+      throw new Error(`Failed to list themes: ${(err as Error).message}`);
     }
   };
 
@@ -219,7 +219,7 @@ export default class AmplifyStudioClient {
       printer.debug(JSON.stringify(uibuilderForms, null, 2));
       return { entities: uibuilderForms };
     } catch (err) {
-      throw new Error(`Failed to list forms: ${err.message}`);
+      throw new Error(`Failed to list forms: ${(err as Error).message}`);
     }
   };
 
@@ -236,19 +236,14 @@ export default class AmplifyStudioClient {
         .promise();
       return response.entity;
     } catch (err) {
-      throw new Error(`Failed to create component: ${err.message}`);
+      throw new Error(`Failed to create component: ${(err as Error).message}`);
     }
   };
 
   deleteForm = async (formId: string, envName?: string, appId?: string): Promise<void> => {
     const environmentName = envName || this.#envName;
     const resolvedAppId = appId || this.#appId;
-    try {
-      await this.#amplifyUiBuilder.deleteForm({ id: formId, environmentName, appId: resolvedAppId }).promise();
-    } catch (err) {
-      printer.debug(err.toString());
-      throw err;
-    }
+    await this.#amplifyUiBuilder.deleteForm({ id: formId, environmentName, appId: resolvedAppId }).promise();
   };
 
   getModels = async (resourceName: string, envName?: string, appId?: string): Promise<string | undefined> => {
@@ -264,7 +259,7 @@ export default class AmplifyStudioClient {
         .promise();
       return Models;
     } catch (err) {
-      throw new Error(`Models not found in AmplifyBackend:GetBackendAPIModels response: ${err.message}`);
+      throw new Error(`Models not found in AmplifyBackend:GetBackendAPIModels response: ${(err as Error).message}`);
     }
   };
 }

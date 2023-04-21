@@ -1,5 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
-import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext,
+  $TSObject,
+  AmplifyFault,
+  pathManager,
+  readCFNTemplate,
+  stateManager,
+  writeCFNTemplate,
+} from '@aws-amplify/amplify-cli-core';
 import { byValues, printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import { glob } from 'glob';
@@ -264,11 +272,13 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
         }
       }
     } catch (e) {
-      printer.warn(`Dependencies cannot be added for ${selectedCategory}`);
-      if (e.stack) {
-        printer.warn(e.stack);
-      }
-      process.exitCode = 1;
+      throw new AmplifyFault(
+        'AddDependencyFault',
+        {
+          message: `Failed to add dependency for ${selectedCategory} category`,
+        },
+        e as Error,
+      );
     }
   }
 

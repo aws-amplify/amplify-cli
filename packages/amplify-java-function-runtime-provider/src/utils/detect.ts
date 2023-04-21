@@ -25,7 +25,11 @@ export const checkJava = async (): Promise<CheckDependenciesResult> => {
       throw new AmplifyError('PackagingLambdaFunctionError', { message: `java failed, exit code was ${result.exitCode}` });
     }
   } catch (err) {
-    throw new AmplifyError('PackagingLambdaFunctionError', { message: `java failed, error message was ${err.message}` }, err);
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      { message: `java failed, error message was ${(err as Error).message}` },
+      err as Error,
+    );
   }
 
   const regex = /(\d+\.)(\d+\.)(\d)/g;
@@ -65,7 +69,11 @@ export const checkGradle = async (): Promise<CheckDependenciesResult> => {
       throw new AmplifyError('PackagingLambdaFunctionError', { message: `gradle failed, exit code was ${result.exitCode}` });
     }
   } catch (err) {
-    throw new AmplifyError('PackagingLambdaFunctionError', { message: `gradle failed, error message was ${err.message}` }, err);
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      { message: `gradle failed, error message was ${(err as Error).message}` },
+      err as Error,
+    );
   }
 
   const regex = /(\d+\.)(\d+)/g;
@@ -106,7 +114,11 @@ export const checkJavaCompiler = async () => {
       throw new AmplifyError('PackagingLambdaFunctionError', { message: `java failed, exit code was ${result.exitCode}` });
     }
   } catch (err) {
-    throw new AmplifyError('PackagingLambdaFunctionError', { message: `java failed, error message was ${err.message}` }, err);
+    throw new AmplifyError(
+      'PackagingLambdaFunctionError',
+      { message: `java failed, error message was ${(err as Error).message}` },
+      err as Error,
+    );
   }
 
   const regex = /(\d+\.)(\d+\.)(\d)/g;

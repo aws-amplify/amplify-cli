@@ -64,10 +64,10 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
     throw new AmplifyError(
       'MigrationError',
       {
-        message: `There was an error migrating your project: ${e.message}`,
+        message: `There was an error migrating your project: ${(e as Error).message}`,
         details: `Migration operations are rolled back.`,
       },
-      e,
+      e as Error,
     );
   } finally {
     cleanUp(backupAuthResourceFolder);

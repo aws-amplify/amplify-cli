@@ -8,11 +8,11 @@ export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
   if (!params.lastBuildTimeStamp || isBuildStale(params.srcRoot, params.lastBuildTimeStamp)) {
     try {
       await execa.command('pipenv install', { cwd: params.srcRoot, stdio: 'inherit' }); // making virtual env in project folder
-    } catch (err) {
+    } catch (err: unknown) {
       throw new AmplifyError(
         'PackagingLambdaFunctionError',
         { message: `Failed to install dependencies in ${params.srcRoot}: ${err}` },
-        err,
+        err as Error,
       );
     }
     return { rebuilt: true };
