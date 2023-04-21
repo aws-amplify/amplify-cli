@@ -85,13 +85,7 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     process.stdout.write = originalStdoutWrite;
     if (tempStdoutWrite) {
       await new Promise((resolve, reject) => {
-        tempStdoutWrite.close((err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(null);
-          }
-        });
+        tempStdoutWrite.close();
       });
     }
     await fs.remove(absoluteTempOutputDir);

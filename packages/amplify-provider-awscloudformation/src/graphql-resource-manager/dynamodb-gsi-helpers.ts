@@ -26,10 +26,12 @@ export const getGSIDetails = (indexName: string, table: DynamoDB.Table): GSIReco
 
     assertNotIntrinsicFunction<KeySchema>(keySchema);
 
-    const attributesUsedInKey = keySchema.reduce((acc, attr) => {
-      acc.push(attr.AttributeName);
-      return acc;
-    }, []);
+    const attributesUsedInKey = Array.isArray(keySchema)
+      ? keySchema.reduce((acc, attr) => {
+          acc.push(attr.AttributeName);
+          return acc;
+        }, [])
+      : [keySchema.AttributeName];
 
     const existingAttrDefinition = table.Properties.AttributeDefinitions;
     assertNotIntrinsicFunction(existingAttrDefinition);
@@ -69,7 +71,9 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
     });
   }
 
-  gsis.push(index.gsi);
+  if (Array.isArray(gsis)) {
+    gsis.push(index.gsi);
+  }
 
   updatedTable.Properties.GlobalSecondaryIndexes = gsis;
 

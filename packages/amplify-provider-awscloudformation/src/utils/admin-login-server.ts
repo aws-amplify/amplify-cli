@@ -1,9 +1,9 @@
 import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as assert from 'assert';
 import { CognitoIdentity } from 'aws-sdk';
-import bodyParser from 'body-parser'; // eslint-disable-line
+import bodyParser from 'body-parser';
 import cors from 'cors';
-import express from 'express'; // eslint-disable-line
+import express from 'express';
 import http from 'http';
 import * as jose from 'jose';
 import _ from 'lodash';
