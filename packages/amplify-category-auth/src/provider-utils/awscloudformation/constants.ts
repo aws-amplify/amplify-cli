@@ -100,6 +100,8 @@ export const socialSignInKeys: { [key: string]: string[] } = {
   ],
 };
 
+export const SignInWithApple = 'SignInWithApple';
+
 // amplify console auth options
 export const UserPool = 'User Pool';
 export const IdentityPool = 'Identity Pool';
