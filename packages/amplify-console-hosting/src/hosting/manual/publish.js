@@ -5,8 +5,7 @@ const builder = require('../../utils/build-utils');
 const clientFactory = require('../../utils/client-factory');
 const amplifyUtils = require('../../utils/amplify-console-utils');
 const constants = require('../../constants/plugin-constants');
-const ora = require('ora');
-
+const { spinner } = require('@aws-amplify/amplify-cli-core');
 const ZIPPING_MESSAGE = 'Zipping artifacts.. ';
 const ZIPPING_SUCCESS_MESSAGE = 'Zipping artifacts completed.';
 const ZIPPING_FAILURE_MESSAGE =
@@ -24,12 +23,13 @@ async function publish(context, doSkipBuild, doSkipPush) {
     const amplifyClient = await clientFactory.getAmplifyClient(context);
     const appId = utils.getAppIdForCurrEnv(context);
     const env = utils.getCurrEnv(context);
-    const spinner = ora();
     spinner.start(ZIPPING_MESSAGE);
-    artifactsPath = await zipArtifacts(context).catch(err => {
+    try {
+      artifactsPath = await zipArtifacts(context);
+    } catch (err) {
       spinner.fail(ZIPPING_FAILURE_MESSAGE);
       throw err;
-    });
+    }
     spinner.succeed(ZIPPING_SUCCESS_MESSAGE);
     await amplifyUtils.publishFileToAmplify(appId, env, artifactsPath, amplifyClient);
     context.print.info(amplifyUtils.getDefaultDomainForBranch(appId, env));

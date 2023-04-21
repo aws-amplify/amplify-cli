@@ -7,8 +7,8 @@ export const dynamodbUtils = {
   toDynamoDB(value: any) {
     return Converter.input(toJSON(value));
   },
-  $toSet(values, fn = value => value) {
-    return this.toDynamoDB(new DynamoDBSet([].concat(values).map(value => fn(value))));
+  $toSet(values, fn = (value) => value) {
+    return this.toDynamoDB(new DynamoDBSet([].concat(values).map((value) => fn(value))));
   },
   toDynamoDBJson(value) {
     return JSON.stringify(this.toDynamoDB(value));
@@ -81,7 +81,7 @@ export const dynamodbUtils = {
         ...sum,
         [key]: this.toDynamoDB(value),
       }),
-      {}
+      {},
     );
   },
   toMapValuesJson(values) {

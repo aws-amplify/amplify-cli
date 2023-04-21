@@ -9,12 +9,7 @@ const dictionary = require('./.eslint-dictionary.json');
  */
 module.exports = {
   root: true,
-  extends: [
-    'airbnb',
-    'eslint:recommended',
-    'plugin:import/recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   env: {
     es6: true,
@@ -24,6 +19,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module', // Allows for the use of imports
+    project: ['tsconfig.base.json', 'packages/amplify-cli/tsconfig.json'],
+    tsconfigRootDir: __dirname,
     ecmaFeatures: {
       jsx: true, // Allows for the parsing of JSX
       arrowFunctions: true,
@@ -31,7 +28,7 @@ module.exports = {
       module: true,
     },
   },
-  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'jsdoc', 'prefer-arrow'],
+  plugins: ['@typescript-eslint', 'spellcheck', 'import', 'prefer-arrow'],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
@@ -41,129 +38,20 @@ module.exports = {
     },
   },
   rules: {
-    // NOTE: This config should only specify rules as "errors" or "off". Over time "warnings" invariably become the same as "off".
-
-    // Spellcheck rules
-    // Docs: https://www.npmjs.com/package/eslint-plugin-spellcheck
-    'spellcheck/spell-checker': ['error', {
-      lang: 'en_US',
-      skipWords: dictionary,
-      skipIfMatch: [
-        'http://[^s]*',
-        '^[-\\w]+/[-\\w\\.]+$', //For MIME Types
-      ],
-      minLength: 4,
-    }],
-
-    // Disables double quote error when using single quotes within string for readability
-    // https://eslint.org/docs/rules/quotes#avoidescape
-    // Allows String template literals like `foo`
-    // https://eslint.org/docs/rules/quotes#allowtemplateliterals
-    'quotes': ['error', 'single', { 'avoidEscape': true, 'allowTemplateLiterals': true }],
-
-    // Typescript rules
-    // Extends recommended rules here: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
-    '@typescript-eslint/naming-convention': [ 'error',
-      // Add to this block to enforce naming conventions on different identifiers
-      // Docs here: https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/naming-convention.md
-      {
-        selector: ['enumMember'],
-        format: ['UPPER_CASE'],
-      },
-      {
-        selector: ['typeLike'],
-        format: ['PascalCase'],
-      },
-      {
-        selector: 'default',
-        format: null,
-      },
-    ],
-    '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
-    '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/method-signature-style': ['error', 'property'],
-
-    // Some ESLint rules conflict with the corresponding TS rule. These ESLint rules are turned off in favor of the corresponding TS rules
-    'no-invalid-this': 'off',
-    '@typescript-eslint/no-invalid-this': 'error',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'all', argsIgnorePattern: '^_{2,}[A-Za-z0-9]*$' }],
-    'no-shadow': 'off',
-    '@typescript-eslint/no-shadow': 'error',
-    'no-useless-constructor': 'off',
-    '@typescript-eslint/no-useless-constructor': 'error',
-
-    // Import Rules
-    // Extends recommended rules here: https://github.com/import-js/eslint-plugin-import/blob/6c957e7df178d1b81d01cf219d62ba91b4e6d9e8/config/recommended.js
-    'import/no-dynamic-require': 'error',
-    'import/newline-after-import': 'error',
-    'import/no-cycle': 'error',
-    'import/order': 'error',
-    'import/first': 'error',
+    '@typescript-eslint/switch-exhaustiveness-check': 'error',
+    '@typescript-eslint/no-var-requires': 'off',
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/no-misused-promises': 'error',
     'import/no-extraneous-dependencies': 'error',
-    'import/no-useless-path-segments': 'error',
-    'import/extensions': 'off',
-    'import/prefer-default-export': 'off',
-
-    // JSDoc Rules
-    // Docs here: https://www.npmjs.com/package/eslint-plugin-jsdoc
-    'jsdoc/require-jsdoc': ['error', {
-      publicOnly: true,
-      require: {
-        ClassDeclaration: true,
-        ArrowFunctionExpression: true,
-      },
-      contexts: [
-        'MethodDefinition:not([accessibility=/(private|protected)/]) > FunctionExpression', // Require JSDoc on public methods
-        'TSInterfaceDeclaration',
-        'TSTypeAliasDeclaration',
-        'TSEnumDeclaration',
-      ],
-      checkConstructors: false
-    }],
-    'jsdoc/require-description': ['error', { contexts: ['any'] }
-    ],
-    'jsdoc/require-param': 'off',
-    'jsdoc/require-param-description': 'error',
-    'jsdoc/require-returns': 'off',
-    'jsdoc/require-returns-description': 'error',
-    'jsdoc/check-param-names': 'error',
-
-    // ESLint Rules
-    // These rules override the AirBnb rules here: https://github.com/airbnb/javascript
-    // as well as the recommended ESLint rules here: https://eslint.org/docs/rules/
-
-    // this is the same as the AirBnb rule, but with length of 140 instead of 100
-    'max-len': ['error', 140, 2, {
-      ignoreUrls: true,
-      ignoreComments: false,
-      ignoreRegExpLiterals: true,
-      ignoreStrings: true,
-      ignoreTemplateLiterals: true,
-    }],
-    'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
-    'max-classes-per-file': 'error',
-    'no-lonely-if': 'error',
-    'no-unneeded-ternary': 'error',
-    'no-use-before-define': 'off',
+    'no-bitwise': 'warn',
     'consistent-return': 'error',
-    'no-bitwise': 'error',
-    'yoda': 'error',
-    'no-var': 'error',
-    'strict': 'error',
-    'spaced-comment': ['error', 'always'],
-    'no-new': 'error',
-    'no-underscore-dangle': 'off',
-    'no-template-curly-in-string': 'off',
-    'no-plusplus': 'off',
-    'no-await-in-loop': 'off',
-
-    // same as air-bnb default with the exception of allowing for...of
+    'eol-last': ['error', 'always'],
     'no-restricted-syntax': [
       'error',
       {
         selector: 'ForInStatement',
-        message: 'for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.',
+        message:
+          'for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.',
       },
       {
         selector: 'LabeledStatement',
@@ -175,20 +63,36 @@ module.exports = {
       },
     ],
 
-    // function style
-    'arrow-parens': ['error', 'as-needed'],
-    'func-style': ['error', 'expression'],
-    'prefer-arrow/prefer-arrow-functions': ['error', { disallowPrototype: true }],
-    // yes I know these are all supposed to be errors, but this one requires too much functional refactoring at the moment
-    // we should still aim to keep funcitons small moving forward
-    'max-lines-per-function': ['warn', {
-      max: 50,
-      skipBlankLines: true,
-      skipComments: true,
-    }],
-    'max-depth': ['error', 4],
+    quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
+    'spellcheck/spell-checker': [
+      'warn',
+      {
+        lang: 'en_US',
+        skipWords: dictionary,
+        skipIfMatch: [
+          'http://[^s]*',
+          '^[-\\w]+/[-\\w\\.]+$', //For MIME Types
+        ],
+        minLength: 4,
+      },
+    ],
+    'no-restricted-properties': [
+      2,
+      {
+        object: '_',
+        property: 'set',
+        message: 'Using _.set() has unintended side effects. Please use _.setWith() instead',
+      },
+    ],
   },
   overrides: [
+    {
+      files: ['cypress/*', 'packages/amplify-e2e-tests/src/cypress/uibuilder/uibuilder-spec.js'],
+      plugins: ['cypress'],
+      env: {
+        'cypress/globals': true,
+      },
+    },
     {
       // Add files to this list that shouldn't be spellchecked
       files: ['.eslintrc.js'],
@@ -198,19 +102,38 @@ module.exports = {
     },
     {
       // edit rules here to modify test linting
-      files: ['__tests__/**', '*.test.ts'],
+      files: ['__tests__/**', '*.test.ts', '**/amplify-e2e-tests/**'],
       plugins: ['jest'],
       extends: ['plugin:jest/recommended'],
       rules: {
         '@typescript-eslint/unbound-method': 'off',
         'jest/unbound-method': 'error',
         '@typescript-eslint/no-explicit-any': 'off',
-      }
-    }
+        'spellcheck/spell-checker': 'off',
+      },
+    },
+    {
+      // disable spell checker in tests
+      files: ['**/__tests__/**', '**/__test__/**', '*.test.ts', 'packages/amplify-e2e-*/**', '**/test/**', '**/tests/**'],
+      plugins: ['jest'],
+      extends: ['plugin:jest/recommended'],
+      rules: {
+        'spellcheck/spell-checker': 'off',
+      },
+    },
+    {
+      // Disable no-unused-vars for templates
+      files: ['packages/amplify-cli/templates/**'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+      },
+    },
   ],
   // Files / paths / globs that shouldn't be linted at all
   // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)
   ignorePatterns: [
+    '**/__tests__/**',
+    '**.test.**',
     '.eslintrc.js',
     'scripts/',
     'node_modules',
@@ -218,6 +141,8 @@ module.exports = {
     'build',
     '__mocks__',
     'coverage',
+    'packages/**/lib',
+    '**/__e2e__/**',
 
     // Forked package
     'amplify-velocity-template',
@@ -247,6 +172,7 @@ module.exports = {
     '/packages/amplify-cli/lib',
     '/packages/amplify-cli-logger/lib',
     '/packages/amplify-e2e-core/lib',
+    '/packages/amplify-e2e-tests/lib',
     '/packages/amplify-function-plugin-interface/lib',
     '/packages/amplify-graphql-schema-test-library/lib',
     '/packages/amplify-headless-interface/lib',
@@ -284,5 +210,7 @@ module.exports = {
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
+    // Ignore autogenerated API files
+    '/packages/*/API.md',
   ],
 };

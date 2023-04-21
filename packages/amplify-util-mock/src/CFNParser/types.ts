@@ -13,8 +13,8 @@ export type CloudFormationParseContext = {
 };
 
 export type CloudFormationWalkContext = CloudFormationParseContext & {
-  walkFn: Function;
-  parent: Object;
+  walkFn: (...args: unknown[]) => unknown;
+  parent: Record<string, unknown>;
   path: string[];
 };
 

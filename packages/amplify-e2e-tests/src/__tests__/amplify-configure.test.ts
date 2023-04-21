@@ -17,7 +17,7 @@ describe('amplify configure', () => {
 });
 
 function testAmplifyConfigureValidation(): Promise<void> {
-  const validMockAWSAccessKeyId = 'MOCK_KLNS6VBMOLVRGX';
+  const validMockAWSAccessKeyId = 'AKIAIOSFODNN7EXAMPLE';
   const defaultAWSAccessKeyId = '<YOUR_ACCESS_KEY_ID>';
   const accessKeyIdWithSpace = 'MOCK_JKLN 6VBMOLVRGX';
   const accessKeyIdTooShort = 'MOCK_JKLN'; //less than 16
@@ -26,7 +26,7 @@ function testAmplifyConfigureValidation(): Promise<void> {
     accessKeyIdTooLong += accessKeyIdTooLong;
   }
 
-  const validMockAWSSecretAccessKey = 'Mock_T0ERcxUpZhtQ1iom0v3O8fr0WYTkscsjrXDE';
+  const validMockAWSSecretAccessKey = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY';
   const defaultAWSSecretAccessKey = '<YOUR_SECRET_ACCESS_KEY>';
 
   return new Promise((resolve, reject) => {
@@ -35,8 +35,6 @@ function testAmplifyConfigureValidation(): Promise<void> {
       .wait('Press Enter to continue')
       .sendCarriageReturn()
       .wait('Specify the AWS Region')
-      .sendCarriageReturn()
-      .wait('user name:')
       .sendCarriageReturn()
       .wait('Press Enter to continue')
       .sendCarriageReturn()

@@ -4,7 +4,7 @@ const identity = new aws.CognitoIdentityServiceProvider();
 exports.handler = (event, context, callback) => {
   const userPoolId = event.ResourceProperties.userPoolId;
   const inputDomainName = event.ResourceProperties.hostedUIDomainName;
-  let deleteUserPoolDomain = domainName => {
+  let deleteUserPoolDomain = (domainName) => {
     let params = { Domain: domainName, UserPoolId: userPoolId };
     return identity.deleteUserPoolDomain(params).promise();
   };
@@ -13,41 +13,41 @@ exports.handler = (event, context, callback) => {
       .then(() => {
         response.send(event, context, response.SUCCESS, {});
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         response.send(event, context, response.FAILED, { err });
       });
   }
   if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    let checkDomainAvailability = domainName => {
+    let checkDomainAvailability = (domainName) => {
       let params = { Domain: domainName };
       return identity
         .describeUserPoolDomain(params)
         .promise()
-        .then(res => {
+        .then((res) => {
           if (res.DomainDescription && res.DomainDescription.UserPool) {
             return false;
           }
           return true;
         })
-        .catch(err => {
+        .catch((err) => {
           return false;
         });
     };
-    let createUserPoolDomain = domainName => {
+    let createUserPoolDomain = (domainName) => {
       let params = { Domain: domainName, UserPoolId: userPoolId };
       return identity.createUserPoolDomain(params).promise();
     };
     identity
       .describeUserPool({ UserPoolId: userPoolId })
       .promise()
-      .then(result => {
+      .then((result) => {
         if (inputDomainName) {
           if (result.UserPool.Domain === inputDomainName) {
             return;
           } else {
             if (!result.UserPool.Domain) {
-              return checkDomainAvailability(inputDomainName).then(isDomainAvailable => {
+              return checkDomainAvailability(inputDomainName).then((isDomainAvailable) => {
                 if (isDomainAvailable) {
                   return createUserPoolDomain(inputDomainName);
                 } else {
@@ -55,7 +55,7 @@ exports.handler = (event, context, callback) => {
                 }
               });
             } else {
-              return checkDomainAvailability(inputDomainName).then(isDomainAvailable => {
+              return checkDomainAvailability(inputDomainName).then((isDomainAvailable) => {
                 if (isDomainAvailable) {
                   return deleteUserPoolDomain(result.UserPool.Domain).then(() => createUserPoolDomain(inputDomainName));
                 } else {
@@ -73,7 +73,7 @@ exports.handler = (event, context, callback) => {
       .then(() => {
         response.send(event, context, response.SUCCESS, {});
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         response.send(event, context, response.FAILED, { err });
       });

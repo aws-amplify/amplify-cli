@@ -2,7 +2,7 @@ import {
   convertProjectLayersToExternalLayers,
   convertExternalLayersToProjectLayers,
 } from '../../../../provider-utils/awscloudformation/utils/convertLayersTypes';
-import { LambdaLayer } from 'amplify-function-plugin-interface';
+import { LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { convertProjectLayer } from '../../../../provider-utils/awscloudformation/utils/layerArnConverter';
 import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
 
@@ -13,10 +13,10 @@ const convertProjectLayer_mock = convertProjectLayer as jest.MockedFunction<type
 convertProjectLayer_mock.mockReturnValue({ 'Fn::Sub': 'mockLayerArn' });
 
 const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
-layerCloudState_mock.getInstance.mockReturnValue(({
+layerCloudState_mock.getInstance.mockReturnValue({
   getLayerVersionsFromCloud: jest.fn(async () => []),
   latestVersionLogicalId: 'mockLogicalId',
-} as unknown) as LayerCloudState);
+} as unknown as LayerCloudState);
 
 describe('convert ProjectLayer when checkout env if required', () => {
   const envName = 'prod';

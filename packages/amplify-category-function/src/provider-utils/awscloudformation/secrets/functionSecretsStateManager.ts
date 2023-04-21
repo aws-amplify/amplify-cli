@@ -1,9 +1,5 @@
-import {
-  $TSContext, JSONUtilities, pathManager, ResourceName,
-} from 'amplify-cli-core';
-import {
-  removeSecret, retainSecret, SecretDeltas, SecretName, setSecret,
-} from 'amplify-function-plugin-interface';
+import { $TSContext, AmplifyError, JSONUtilities, pathManager, ResourceName, stateManager } from '@aws-amplify/amplify-cli-core';
+import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from '@aws-amplify/amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
@@ -76,7 +72,7 @@ export class FunctionSecretsStateManager {
             await this.ssmClientWrapper.setSecret(fullyQualifiedSecretName, secretDelta.value);
             break;
           default:
-            // retain is a noop
+          // retain is a noop
         }
       }),
     );
@@ -104,14 +100,23 @@ export class FunctionSecretsStateManager {
       return;
     }
     const cloudSecretNames = await this.getCloudFunctionSecretNames(functionName);
-    const addedSecrets = localSecretNames.filter(name => !cloudSecretNames.includes(name));
+    const addedSecrets = localSecretNames.filter((name) => !cloudSecretNames.includes(name));
     if (!addedSecrets.length) {
       return;
     }
     if (!this.isInteractive()) {
-      throw new Error(
-        `The following secrets in ${functionName} do not have values: [${addedSecrets}]\nRun 'amplify push' interactively to specify values.`,
-      );
+      const inputEnvName = this.context?.exeInfo?.inputParams?.amplify?.envName;
+      const inputAppId = this.context?.exeInfo?.inputParams?.amplify?.appId;
+      const resolution =
+        `Run 'amplify push' interactively to specify values.\n` +
+        `Alternatively, manually add SecureString values in SSM Parameter Store for the following parameter names:\n\n` +
+        `${addedSecrets.map((secretName) => getFullyQualifiedSecretName(secretName, functionName, inputEnvName, inputAppId)).join('\n')}\n`;
+      throw new AmplifyError('EnvironmentConfigurationError', {
+        message: `Function ${functionName} is missing secret values in this environment.`,
+        details: `[${addedSecrets}] ${addedSecrets.length > 1 ? 'do' : 'does'} not have values.`,
+        resolution,
+        link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
+      });
     }
     const delta = await prePushMissingSecretsWalkthrough(functionName, addedSecrets);
     await this.syncSecretDeltas(delta, functionName);
@@ -132,13 +137,15 @@ export class FunctionSecretsStateManager {
    */
   syncSecretsPendingRemoval = async (): Promise<void> => {
     await Promise.all(
-      Object.entries(secretsPendingRemoval).map(([functionName, secretNames]) => this.syncSecretDeltas(
-        {
-          ...secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName)),
-          ...secretNamesToSecretDeltas(secretNames, removeSecret),
-        },
-        functionName,
-      )),
+      Object.entries(secretsPendingRemoval).map(([functionName, secretNames]) =>
+        this.syncSecretDeltas(
+          {
+            ...secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName)),
+            ...secretNamesToSecretDeltas(secretNames, removeSecret),
+          },
+          functionName,
+        ),
+      ),
     );
     secretsPendingRemoval = {};
   };
@@ -162,7 +169,7 @@ export class FunctionSecretsStateManager {
     const destDelta = secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName), retainSecret);
     const sourceCloudSecretNames = await this.getCloudFunctionSecretNames(functionName, sourceEnv);
     const sourceCloudSecrets = await this.ssmClientWrapper.getSecrets(
-      sourceCloudSecretNames.map(name => getFullyQualifiedSecretName(name, functionName, sourceEnv)),
+      sourceCloudSecretNames.map((name) => getFullyQualifiedSecretName(name, functionName, sourceEnv)),
     );
     sourceCloudSecrets.reduce((acc, { secretName, secretValue }) => {
       const shortName = secretName.slice(getFunctionSecretPrefix(functionName, sourceEnv).length);
@@ -179,10 +186,13 @@ export class FunctionSecretsStateManager {
    * @returns string[] of all secret names for the function
    */
   private getCloudFunctionSecretNames = async (functionName: string, envName?: string): Promise<string[]> => {
-    const prefix = getFunctionSecretPrefix(functionName, envName);
+    if (envName === undefined) {
+      envName = stateManager.getCurrentEnvName() || this.context?.exeInfo?.inputParams?.amplify?.envName;
+    }
+    const prefix = getFunctionSecretPrefix(functionName, envName, this.context?.exeInfo?.inputParams?.amplify?.appId);
     const parts = path.parse(prefix);
     const unfilteredSecrets = await this.ssmClientWrapper.getSecretNamesByPath(parts.dir);
-    return unfilteredSecrets.filter(secretName => secretName.startsWith(prefix)).map(secretName => secretName.slice(prefix.length));
+    return unfilteredSecrets.filter((secretName) => secretName.startsWith(prefix)).map((secretName) => secretName.slice(prefix.length));
   };
 
   /**
@@ -211,10 +221,10 @@ export class FunctionSecretsStateManager {
  * @param functionNames A list of all function names in the project
  */
 export const storeSecretsPendingRemoval = async (context: $TSContext, functionNames: string[]): Promise<void> => {
-  functionNames.forEach(functionName => {
+  functionNames.forEach((functionName) => {
     const cloudSecretNames = getLocalFunctionSecretNames(functionName, { fromCurrentCloudBackend: true });
     const localSecretNames = getLocalFunctionSecretNames(functionName);
-    const removed = cloudSecretNames.filter(name => !localSecretNames.includes(name));
+    const removed = cloudSecretNames.filter((name) => !localSecretNames.includes(name));
     if (removed.length) {
       secretsPendingRemoval[functionName] = removed;
     }
@@ -297,8 +307,8 @@ const storeToBeRemovedFunctionsWithSecrets = async (context: $TSContext): Promis
     service: string;
   }[];
   const deletedLambdas = resourcesToBeDeleted
-    .filter(resource => resource.service === ServiceName.LambdaFunction)
-    .map(resource => resource.resourceName);
+    .filter((resource) => resource.service === ServiceName.LambdaFunction)
+    .map((resource) => resource.resourceName);
   for (const deletedLambda of deletedLambdas) {
     const cloudSecretNames = getLocalFunctionSecretNames(deletedLambda, { fromCurrentCloudBackend: true });
     const localSecretNames = getLocalFunctionSecretNames(deletedLambda);

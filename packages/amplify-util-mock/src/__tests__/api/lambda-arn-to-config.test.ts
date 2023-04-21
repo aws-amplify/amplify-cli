@@ -1,15 +1,16 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { lambdaArnToConfig } from '../../api/lambda-arn-to-config';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import { loadLambdaConfig } from '../../utils/lambda/load-lambda-config';
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('test/path'),
   },
   ApiCategoryFacade: {
     getTransformerVersion: jest.fn().mockReturnValue(2),
-  },  getGraphQLTransformerFunctionDocLink: jest.fn().mockReturnValue('mockdocs'),
+  },
+  getGraphQLTransformerFunctionDocLink: jest.fn().mockReturnValue('mockdocs'),
   stateManager: {
     getMeta: jest.fn().mockReturnValue({
       function: {

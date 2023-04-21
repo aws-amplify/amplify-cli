@@ -10,7 +10,7 @@ export function map(value: any, hint?: string) {
   if (value instanceof JavaArray) return value;
   if (Array.isArray(value)) {
     return new JavaArray(
-      value.map(x => map(x)),
+      value.map((x) => map(x)),
       map,
     );
   }

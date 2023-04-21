@@ -1,7 +1,11 @@
 import { describe } from 'jest-circus';
-import { _isUnsupportedJavaVersion } from '../../utils';
-import { fail } from 'assert';
+import { _isUnsupportedJavaVersion, checkJavaHome } from '../../utils';
 import semver = require('semver/preload');
+import * as fs from 'fs-extra';
+
+jest.mock('fs-extra', () => ({
+  existsSync: jest.fn().mockReturnValue(true),
+}));
 
 type JavaCondition = {
   name: string;
@@ -84,11 +88,26 @@ LibericaJDK 64-Bit Server VM (build 11.0.3-BellSoft+12, mixed mode)`,
     },
   ];
 
-  javas.forEach(java => {
+  javas.forEach((java) => {
     it(`should return ${java.unsupported} on java ${java.name} with JAVA_OPTS: ${java.javaOpts != null}`, () => {
-      const stderr: string = [java.javaOpts, java.versionString].filter(text => text != null).join('\n');
+      const stderr: string = [java.javaOpts, java.versionString].filter((text) => text != null).join('\n');
       const actual = _isUnsupportedJavaVersion(stderr === '' ? null : stderr);
       expect(actual).toBe(java.unsupported);
     });
+  });
+});
+
+describe('Check JAVA_HOME variable', () => {
+  const initialJavaHome = process?.env?.JAVA_HOME;
+  afterEach(() => {
+    process.env.JAVA_HOME = initialJavaHome;
+    jest.clearAllMocks();
+  });
+
+  it('Should not throw when JAVA_HOME is set and is valid', () => {
+    process.env.JAVA_HOME = 'pathtojdk';
+    expect(() => {
+      checkJavaHome();
+    }).not.toThrow();
   });
 });

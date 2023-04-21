@@ -14,16 +14,30 @@ parameters:
   e2e_resource_cleanup:
     type: boolean
     default: false
+  e2e_workflow_cleanup:
+    type: boolean
+    default: false
+  e2e_workflow_cleanup_workflow_id:
+    type: string
+    default: ''
   setup:
     type: boolean
     default: true
 
 executors:
-  linux: &linux-e2e-executor
+  l_large: &linux-e2e-executor-large
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
+  l_xlarge: &linux-e2e-executor-xlarge
+    docker:
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
+    working_directory: ~/repo
+    resource_class: xlarge
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
@@ -31,7 +45,7 @@ executors:
 # our defined job, and its steps
 jobs:
   setup:
-    executor: 'linux'
+    executor: 'l_large'
     steps:
       - checkout # checkout code
       - run: # run a command
@@ -46,10 +60,13 @@ jobs:
     parameters:
       os:
         type: executor
-        default: linux
+        default: l_xlarge
     executor: << parameters.os >>
     steps:
       - checkout
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: yarn run production-build
       - save_cache:
           key: >-
@@ -65,9 +82,9 @@ jobs:
             equal:
               - docker:
                   - image: >-
-                      public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+                      public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
                 working_directory: ~/repo
-                resource_class: large
+                resource_class: xlarge
                 environment:
                   AMPLIFY_DIR: /home/circleci/repo/out
                   AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
@@ -78,7 +95,7 @@ jobs:
                 paths: .
   publish_to_local_registry:
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -126,7 +143,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: linux
+        default: l_large
     executor: << parameters.os >>
     steps:
       - attach_workspace:
@@ -150,7 +167,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --maxWorkers=3
+            retry yarn run console-integration --no-cache --maxWorkers=4
           name: Run Amplify Console integration tests
           no_output_timeout: 90m
       - run:
@@ -169,7 +186,7 @@ jobs:
             ~/repo/packages/amplify-console-integration-tests/console-integration-reports
   cleanup_resources:
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -181,12 +198,27 @@ jobs:
       - restore_cache:
           key: >-
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Run cleanup script
-          command: |
-            cd packages/amplify-e2e-tests
-            yarn clean-e2e-resources
-          no_output_timeout: 90m
+      - when:
+          condition:
+            equal: [true, << pipeline.parameters.e2e_workflow_cleanup >>]
+          steps:
+            - run:
+                name: Run cleanup script for specific workflow
+                command: |
+                  echo "Cleaning up for Workflow << pipeline.parameters.e2e_workflow_cleanup_workflow_id >>"
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources workflow << pipeline.parameters.e2e_workflow_cleanup_workflow_id >>
+                no_output_timeout: 90m
+      - when:
+          condition:
+            equal: [true, << pipeline.parameters.e2e_resource_cleanup >>]
+          steps:
+            - run:
+                name: Run cleanup script
+                command: |
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources
+                no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
           command: |
@@ -221,7 +253,10 @@ workflows:
             - build
             - publish_to_local_registry
   e2e_resource_cleanup:
-    when: << pipeline.parameters.e2e_resource_cleanup >>
+    when:
+      or:
+        - equal: [true, << pipeline.parameters.e2e_resource_cleanup >>]
+        - equal: [true, << pipeline.parameters.e2e_workflow_cleanup >>]
     jobs:
       - build
       - cleanup_resources:

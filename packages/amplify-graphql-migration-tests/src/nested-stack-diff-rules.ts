@@ -34,11 +34,13 @@ const tableNameResolvesToSameName = (stackName: string, diff: TemplateDiff) => {
   const apiId = 'testApiId';
   const env = 'testEnv';
 
-  const replacedElements = joinElements.map(el => {
+  const replacedElements = joinElements.map((el) => {
     if (typeof el?.Ref === 'string') {
+      // eslint-disable-next-line spellcheck/spell-checker
       if (el.Ref.startsWith('referencetotransformerrootstackGraphQLAPI')) {
         return apiId;
       }
+      // eslint-disable-next-line spellcheck/spell-checker
       if (el.Ref.startsWith('referencetotransformerrootstackenv')) {
         return env;
       }
@@ -51,8 +53,8 @@ const tableNameResolvesToSameName = (stackName: string, diff: TemplateDiff) => {
 
 const dataSourceLogicalIdsAreSame = (_: string, diff: TemplateDiff) => {
   const areDataSourcesReplaced = Object.values(diff.resources.changes)
-    .filter(diff => diff.resourceType === 'AWS::AppSync::DataSource')
-    .map(diff => diff.changeImpact === ResourceImpact.WILL_REPLACE)
+    .filter((diff) => diff.resourceType === 'AWS::AppSync::DataSource')
+    .map((diff) => diff.changeImpact === ResourceImpact.WILL_REPLACE)
     .reduce((acc, it) => acc && it, true);
   expect(areDataSourcesReplaced).toBe(true);
 };

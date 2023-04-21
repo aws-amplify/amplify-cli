@@ -1,4 +1,4 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getSupportedServices } from '../../supported-services';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { ProviderUtils } from '../import/types';
@@ -17,10 +17,10 @@ export const doesConfigurationIncludeSMS = (request: CognitoConfiguration | Serv
   }
 
   return (
-    request.usernameAttributes?.some(str =>
+    request.usernameAttributes?.some((str) =>
       str
         ?.split(',')
-        .map(str => str.trim())
+        .map((str) => str.trim())
         .includes('phone_number'),
     ) || false
   );
@@ -35,7 +35,7 @@ const getProviderPlugin = (context: $TSContext): ProviderUtils => {
 
 async function loadResourceParametersLegacyCode(authResourceName: string): Promise<UserPoolMessageConfiguration> {
   const legacyParameters = await stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
-  let userPoolMessageConfig: UserPoolMessageConfiguration = {
+  const userPoolMessageConfig: UserPoolMessageConfiguration = {
     mfaConfiguration: legacyParameters.mfaConfiguration,
     mfaTypes: legacyParameters.mfaTypes,
     usernameAttributes: legacyParameters.usernameAttributes,

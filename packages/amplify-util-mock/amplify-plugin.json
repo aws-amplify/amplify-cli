@@ -1,12 +1,6 @@
 {
-    "name": "mock",
-    "type": "util",
-    "commands": [
-        "api",
-        "function",
-        "mock",
-        "storage",
-        "help"
-    ],
-    "eventHandlers": []
+  "name": "mock",
+  "type": "util",
+  "commands": ["api", "function", "mock", "storage", "help"],
+  "eventHandlers": []
 }

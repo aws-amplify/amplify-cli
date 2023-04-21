@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface';
+import { PackageRequest, PackageResult } from '@aws-amplify/amplify-function-plugin-interface';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 export async function packageResource(request: PackageRequest, context: any): Promise<PackageResult> {
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
@@ -11,11 +12,11 @@ export async function packageResource(request: PackageRequest, context: any): Pr
       output.on('close', () => {
         resolve({ packageHash });
       });
-      output.on('error', err => {
-        reject(new Error(`Failed to copy zip with error: [${err}]`));
+      output.on('error', (err) => {
+        reject(new AmplifyError('PackagingLambdaFunctionError', { message: `Failed to copy zip with error: [${err}]` }, err));
       });
-      // buld through gradle build
-      let zipFile: string = 'latest_build.zip';
+      // build through gradle build
+      const zipFile = 'latest_build.zip';
       fs.createReadStream(path.join(request.srcRoot, 'build', 'distributions', zipFile)).pipe(output);
     });
   }

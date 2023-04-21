@@ -1,17 +1,15 @@
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
 import { removePluginPackage, confirmAndScan } from '../../plugin-manager';
-import { PluginPlatform } from '../../domain/plugin-platform';
-import { constants } from '../../domain/constants';
+import { PluginPlatform, constants, PluginInfo } from '@aws-amplify/amplify-cli-core';
 import { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
-import { PluginInfo } from '../../domain/plugin-info';
 
 export const run = async (context: Context) => {
   const options = new Array<InquirerOption>();
   const { plugins } = context.pluginPlatform;
 
   if (plugins && Object.keys(plugins).length > 0) {
-    Object.keys(plugins).forEach(key => {
+    Object.keys(plugins).forEach((key) => {
       if (key === constants.CORE) {
         return;
       }
@@ -53,15 +51,15 @@ export const run = async (context: Context) => {
   }
 };
 
-async function removeNamedPlugins(pluginPlatform: PluginPlatform, pluginInfos: Array<PluginInfo>) {
-  if (pluginInfos.length === 1) {
-    removePluginPackage(pluginPlatform, pluginInfos[0]);
-  } else if (pluginInfos.length > 1) {
-    const options = pluginInfos.map((pluginInfo: PluginInfo) => {
+async function removeNamedPlugins(pluginPlatform: PluginPlatform, pluginInfo: Array<PluginInfo>) {
+  if (pluginInfo.length === 1) {
+    removePluginPackage(pluginPlatform, pluginInfo[0]);
+  } else if (pluginInfo.length > 1) {
+    const options = pluginInfo.map((singlePluginInfo: PluginInfo) => {
       const optionObject = {
-        name: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
-        value: pluginInfo,
-        short: pluginInfo.packageName + '@' + pluginInfo.packageVersion,
+        name: singlePluginInfo.packageName + '@' + singlePluginInfo.packageVersion,
+        value: singlePluginInfo,
+        short: singlePluginInfo.packageName + '@' + singlePluginInfo.packageVersion,
       };
       return optionObject;
     });
@@ -74,8 +72,8 @@ async function removeNamedPlugins(pluginPlatform: PluginPlatform, pluginInfos: A
 
     if (selections.length > 0) {
       const sequential = require('promise-sequential');
-      const removeTasks = selections.map((pluginInfo: PluginInfo) => async () => {
-        await removePluginPackage(pluginPlatform, pluginInfo);
+      const removeTasks = selections.map((singlePluginInfo: PluginInfo) => async () => {
+        await removePluginPackage(pluginPlatform, singlePluginInfo);
       });
       await sequential(removeTasks);
     }

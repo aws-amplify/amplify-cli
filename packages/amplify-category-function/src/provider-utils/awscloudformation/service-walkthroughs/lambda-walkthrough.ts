@@ -1,14 +1,9 @@
-/* eslint-disable no-param-reassign */
-import {
-  $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { FunctionParameters, ProjectLayer } from 'amplify-function-plugin-interface';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionParameters, ProjectLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import {
-  categoryName, envVarPrintoutPrefix, topLevelCommentPrefix, topLevelCommentSuffix,
-} from '../../../constants';
+import { categoryName, envVarPrintoutPrefix, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
 import { getNewCFNEnvVariables, getNewCFNParameters } from '../utils/cloudformationHelpers';
 import {
   advancedSettingsList,
@@ -79,7 +74,7 @@ export const createWalkthrough = async (
   // list out the advanced settings before asking whether to configure them
   context.print.info('');
   context.print.success('Available advanced settings:');
-  advancedSettingsList.forEach(setting => context.print.info('- '.concat(setting)));
+  advancedSettingsList.forEach((setting) => context.print.info('- '.concat(setting)));
   context.print.info('');
 
   // ask whether to configure advanced settings
@@ -153,9 +148,9 @@ const provideInformation = (context, lambdaToUpdate, functionRuntime, currentPar
   context.print.success('Resource access permission');
   const currentCategoryPermissions = fetchPermissionCategories(currentParameters.permissions);
   if (currentCategoryPermissions.length) {
-    currentCategoryPermissions.forEach(category => {
+    currentCategoryPermissions.forEach((category) => {
       const currentResources = fetchPermissionResourcesForCategory(currentParameters.permissions, category);
-      currentResources.forEach(resource => {
+      currentResources.forEach((resource) => {
         const currentPermissions = fetchPermissionsForResourceInCategory(currentParameters.permissions, category, resource);
         const formattedCurrentPermissions = ' ('.concat(currentPermissions.join(', ').concat(')'));
         context.print.info('- '.concat(resource).concat(formattedCurrentPermissions));
@@ -181,7 +176,7 @@ const provideInformation = (context, lambdaToUpdate, functionRuntime, currentPar
   // Provide lambda layer information
   context.print.success('Lambda layers');
   if (currentParameters.lambdaLayers && currentParameters.lambdaLayers.length) {
-    currentParameters.lambdaLayers.forEach(layer => {
+    currentParameters.lambdaLayers.forEach((layer) => {
       if (layer.arn) {
         context.print.info('- '.concat(layer.arn));
       } else {
@@ -210,7 +205,7 @@ const provideInformation = (context, lambdaToUpdate, functionRuntime, currentPar
   context.print.success('Secrets configuration');
   const currentSecrets = getLocalFunctionSecretNames(lambdaToUpdate);
   if (currentSecrets.length) {
-    currentSecrets.forEach(secretName => context.print.info(`- ${secretName}`));
+    currentSecrets.forEach((secretName) => context.print.info(`- ${secretName}`));
   } else {
     context.print.info('- Not configured');
   }
@@ -222,8 +217,8 @@ const provideInformation = (context, lambdaToUpdate, functionRuntime, currentPar
  */
 export const updateWalkthrough = async (context: $TSContext, lambdaToUpdate?: string): Promise<Partial<FunctionParameters>> => {
   const lambdaFuncResourceNames = ((await context.amplify.getResourceStatus()).allResources as $TSAny[])
-    .filter(resource => resource.service === ServiceName.LambdaFunction && resource.mobileHubMigrated !== true)
-    .map(resource => resource.resourceName);
+    .filter((resource) => resource.service === ServiceName.LambdaFunction && resource.mobileHubMigrated !== true)
+    .map((resource) => resource.resourceName);
 
   if (lambdaFuncResourceNames.length === 0) {
     context.print.error('No Lambda function resource to update. Use "amplify add function" to create a new function.');
@@ -291,9 +286,8 @@ export const updateWalkthrough = async (context: $TSContext, lambdaToUpdate?: st
 
   // ask lambda layer questions and merge results
   if (selectedSettings.includes(lambdaLayerSetting)) {
-    const currentFunctionParameters: $TSAny = JSONUtilities.readJson(
-      path.join(resourceDirPath, functionParametersFileName), { throwIfNotExist: false },
-    ) || {};
+    const currentFunctionParameters: $TSAny =
+      JSONUtilities.readJson(path.join(resourceDirPath, functionParametersFileName), { throwIfNotExist: false }) || {};
     merge(
       functionParameters,
       await addLayersToFunctionWalkthrough(context, { value: functionRuntime }, currentFunctionParameters.lambdaLayers, true),
@@ -407,7 +401,6 @@ export const migrate = (__: $TSContext, projectPath: string, resourceName: strin
   JSONUtilities.writeJson(cfnFilePath, newCfn);
 };
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const updateCFNFileForResourcePermissions = (
   resourceDirPath: string,
   functionParameters: Partial<FunctionParameters>,
@@ -420,10 +413,10 @@ export const updateCFNFileForResourcePermissions = (
   const dependsOnParams = { env: { Type: 'String' } };
 
   Object.keys(functionParameters.environmentMap)
-    .filter(key => key !== 'ENV')
-    .filter(key => key !== 'REGION')
-    .filter(resourceProperty => 'Ref' in functionParameters.environmentMap[resourceProperty])
-    .forEach(resourceProperty => {
+    .filter((key) => key !== 'ENV')
+    .filter((key) => key !== 'REGION')
+    .filter((resourceProperty) => 'Ref' in functionParameters.environmentMap[resourceProperty])
+    .forEach((resourceProperty) => {
       dependsOnParams[functionParameters.environmentMap[resourceProperty].Ref] = {
         Type: 'String',
         Default: functionParameters.environmentMap[resourceProperty].Ref,
@@ -479,7 +472,7 @@ const addLayerCFNParameters = (context: $TSContext, functionParameters: Partial<
   const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
   const cfnContent = JSONUtilities.readJson<$TSAny>(cfnFilePath);
-  functionParameters.lambdaLayers.forEach(layer => {
+  functionParameters.lambdaLayers.forEach((layer) => {
     const resourceName = _.get(layer as ProjectLayer, ['resourceName'], null);
     if (resourceName) {
       const param = `function${resourceName}Arn`;

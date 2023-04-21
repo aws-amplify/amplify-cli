@@ -1,11 +1,12 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.6.0",
+  "version": "1.6.14",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest --logHeapUsage"
+    "test": "jest --logHeapUsage",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -13,18 +14,22 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/codegen-ui": "2.5.4",
-    "@aws-amplify/codegen-ui-react": "2.5.4",
-    "amplify-cli-core": "3.3.0",
-    "amplify-prompts": "2.6.0",
-    "aws-sdk": "^2.1233.0",
+    "@aws-amplify/amplify-cli-core": "4.0.3",
+    "@aws-amplify/amplify-prompts": "2.6.8",
+    "@aws-amplify/codegen-ui": "2.12.1",
+    "@aws-amplify/codegen-ui-react": "2.12.1",
+    "amplify-codegen": "^3.4.2",
+    "aws-sdk": "^2.1354.0",
     "fs-extra": "^8.1.0",
-    "ora": "^4.0.3"
+    "ora": "^4.0.3",
+    "tiny-async-pool": "^2.1.0"
   },
   "devDependencies": {
+    "@aws-amplify/appsync-modelgen-plugin": "^2.4.0",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^26.0.20",
-    "@types/semver": "^7.1.0"
+    "@types/semver": "^7.1.0",
+    "@types/tiny-async-pool": "^2.0.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",

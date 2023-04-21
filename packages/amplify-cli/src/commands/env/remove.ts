@@ -1,10 +1,9 @@
 import ora from 'ora';
-import {
-  FeatureFlags, stateManager, $TSContext, AmplifyError,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { FeatureFlags, stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
 import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
+import { invokeDeleteEnvParamsFromService } from '../../extensions/amplify-helpers/invoke-delete-env-params';
 
 /**
  * Entry point for env subcommand
@@ -41,6 +40,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     spinner.start();
     try {
       await removeEnvFromCloud(context, envName, confirmation.deleteS3);
+      await invokeDeleteEnvParamsFromService(context, envName);
     } catch (ex) {
       // safely exit spinner, then allow the exception to propagate up
       spinner.fail(`remove env failed: ${ex.message}`);

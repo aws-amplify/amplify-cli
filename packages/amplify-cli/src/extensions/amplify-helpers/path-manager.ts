@@ -1,4 +1,4 @@
-import { $TSAny, projectNotInitializedError } from 'amplify-cli-core';
+import { $TSAny, projectNotInitializedError } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 import * as path from 'path';
@@ -62,37 +62,25 @@ export const getAmplifyDirPath = (projectPath?: string): string => {
 /**
  * returns the project amplify config sub directory path
  */
-export const getDotConfigDirPath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getAmplifyDirPath(projectPath),
-    amplifyCLIConstants.DotConfigAmplifyCLISubDirName,
-  ),
-);
+export const getDotConfigDirPath = (projectPath?: string): string =>
+  path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.DotConfigAmplifyCLISubDirName));
 
 /**
  * returns the project backend directory path
  */
-export const getBackendDirPath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getAmplifyDirPath(projectPath),
-    amplifyCLIConstants.BackendAmplifyCLISubDirName,
-  ),
-);
+export const getBackendDirPath = (projectPath?: string): string =>
+  path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.BackendAmplifyCLISubDirName));
 
 /**
  * returns the project current cloud backend directory path
  */
-export const getCurrentCloudBackendDirPath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getAmplifyDirPath(projectPath),
-    amplifyCLIConstants.CurrentCloudBackendAmplifyCLISubDirName,
-  ),
-);
+export const getCurrentCloudBackendDirPath = (projectPath?: string): string =>
+  path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.CurrentCloudBackendAmplifyCLISubDirName));
 
 /**
  * returns the project .amplifyrc file path
  */
-export const getAmplifyRcFilePath = (projectPath?: string) : string => {
+export const getAmplifyRcFilePath = (projectPath?: string): string => {
   if (!projectPath) {
     // eslint-disable-next-line no-param-reassign
     projectPath = searchProjectRootPath();
@@ -123,69 +111,41 @@ export const getGitIgnoreFilePath = (projectPath?: string): string => {
 /**
  * returns the project project-config.json file path
  */
-export const getProjectConfigFilePath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getDotConfigDirPath(projectPath),
-    amplifyCLIConstants.ProjectConfigFileName,
-  ),
-);
+export const getProjectConfigFilePath = (projectPath?: string): string =>
+  path.normalize(path.join(getDotConfigDirPath(projectPath), amplifyCLIConstants.ProjectConfigFileName));
 
 /**
  * returns the project local-env-info.json file path
  */
-export const getLocalEnvFilePath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getDotConfigDirPath(projectPath),
-    amplifyCLIConstants.LocalEnvFileName,
-  ),
-);
+export const getLocalEnvFilePath = (projectPath?: string): string =>
+  path.normalize(path.join(getDotConfigDirPath(projectPath), amplifyCLIConstants.LocalEnvFileName));
 
 /**
  * returns the project team-provider-info.json file path
  */
-export const getProviderInfoFilePath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getAmplifyDirPath(projectPath),
-    amplifyCLIConstants.ProviderInfoFileName,
-  ),
-);
+export const getProviderInfoFilePath = (projectPath?: string): string =>
+  path.normalize(path.join(getAmplifyDirPath(projectPath), amplifyCLIConstants.ProviderInfoFileName));
 
 /**
  * returns the project backend-config.json file path
  */
-export const getBackendConfigFilePath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getBackendDirPath(projectPath),
-    amplifyCLIConstants.BackendConfigFileName,
-  ),
-);
+export const getBackendConfigFilePath = (projectPath?: string): string =>
+  path.normalize(path.join(getBackendDirPath(projectPath), amplifyCLIConstants.BackendConfigFileName));
 
 /**
  * returns the project current backend amplify config sub directory path
  */
-export const getCurrentBackendConfigFilePath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getCurrentCloudBackendDirPath(projectPath),
-    amplifyCLIConstants.BackendConfigFileName,
-  ),
-);
+export const getCurrentBackendConfigFilePath = (projectPath?: string): string =>
+  path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.BackendConfigFileName));
 
 /**
  * returns the project amplify meta file path
  */
-export const getAmplifyMetaFilePath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getBackendDirPath(projectPath),
-    amplifyCLIConstants.amplifyMetaFileName,
-  ),
-);
+export const getAmplifyMetaFilePath = (projectPath?: string): string =>
+  path.normalize(path.join(getBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));
 
 /**
  * returns the project current backend amplify meta file path
  */
-export const getCurrentAmplifyMetaFilePath = (projectPath?: string): string => path.normalize(
-  path.join(
-    getCurrentCloudBackendDirPath(projectPath),
-    amplifyCLIConstants.amplifyMetaFileName,
-  ),
-);
+export const getCurrentAmplifyMetaFilePath = (projectPath?: string): string =>
+  path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));

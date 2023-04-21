@@ -5,19 +5,16 @@ import {
   BuildRequest,
   BuildResult,
   BuildType,
-} from 'amplify-function-plugin-interface';
+} from '@aws-amplify/amplify-function-plugin-interface';
 import * as which from 'which';
 import execa from 'execa';
 import archiver from 'archiver';
 import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
-import {
-  SemVer, coerce, gte, lt,
-} from 'semver';
-import {
-  BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN,
-} from './constants';
+import { SemVer, coerce, gte, lt } from 'semver';
+import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 const executableName = 'go';
 const minimumVersion = <SemVer>coerce('1.0');
@@ -28,22 +25,24 @@ let executablePath: string | null;
 export const executeCommand = (
   args: string[],
   streamStdio: boolean,
-  env: {} = {},
+  env: Record<string, string> = {},
   cwd: string | undefined = undefined,
   stdioInput: string | undefined = undefined,
 ): string => {
-  const output = execa.sync(executableName, args, {
-    stdio: streamStdio === true ? 'inherit' : 'pipe',
-    env,
-    cwd,
-    input: stdioInput,
-  });
-
-  if (output.exitCode !== 0) {
-    throw new Error(`${executableName} failed, exit code was ${output.exitCode}`);
+  try {
+    const output = execa.sync(executableName, args, {
+      stdio: streamStdio === true ? 'inherit' : 'pipe',
+      env,
+      cwd,
+      input: stdioInput,
+    });
+    if (output.exitCode !== 0) {
+      throw new AmplifyError('PackagingLambdaFunctionError', { message: `${executableName} failed, exit code was ${output.exitCode}` });
+    }
+    return output.stdout;
+  } catch (err) {
+    throw new AmplifyError('PackagingLambdaFunctionError', { message: `${executableName} failed, error message was ${err.message}` }, err);
   }
-
-  return output.stdout;
 };
 
 const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: string) => {
@@ -62,7 +61,7 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: str
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/${SRC}/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };
@@ -130,7 +129,7 @@ export const getGoVersion = (): SemVer => {
   throw new Error(`Invalid version string: ${versionOutput}`);
 };
 
-export const checkDependencies = async (_runtimeValue: string): Promise<CheckDependenciesResult> => {
+export const checkDependencies = async (): Promise<CheckDependenciesResult> => {
   // Check if go is in the path
   executablePath = which.sync(executableName, {
     nothrow: true,
@@ -162,7 +161,15 @@ export const packageResource = async (request: PackageRequest, context: any): Pr
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
     const packageHash = await context.amplify.hashDir(request.srcRoot, [DIST]);
     const zipFn = process.platform.startsWith('win') ? winZip : nixZip;
-    await zipFn(request.srcRoot, request.dstFilename, context.print);
+    try {
+      await zipFn(request.srcRoot, request.dstFilename, context.print);
+    } catch (err) {
+      throw new AmplifyError(
+        'PackagingLambdaFunctionError',
+        { message: `Packaging go function failed, error message was ${err.message}` },
+        err,
+      );
+    }
     return { packageHash };
   }
   return {};
@@ -172,8 +179,8 @@ const winZip = async (src: string, dest: string, print: any) => {
   // get lambda zip tool with the fix of https://go.dev/doc/go-get-install-deprecation
   const version = getGoVersion();
   try {
-    if (gte(version, '1.17')) {
-      await execa(executableName, ['install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
+    if (gte(version, <SemVer>coerce('1.17'))) {
+      await execa(executableName, ['install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip@latest']);
     } else {
       await execa(executableName, ['get', '-u', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip']);
     }
@@ -203,7 +210,7 @@ const nixZip = async (src: string, dest: string): Promise<void> => {
       resolve();
     });
 
-    file.on('error', err => {
+    file.on('error', (err) => {
       reject(new Error(`Failed to zip with error: [${err}]`));
     });
 
@@ -222,6 +229,6 @@ const nixZip = async (src: string, dest: string): Promise<void> => {
       ignore: [mainFile],
     });
 
-    zip.finalize();
+    void zip.finalize();
   });
 };

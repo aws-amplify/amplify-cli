@@ -43,7 +43,7 @@ function scan(context, distributionDirPath, WebsiteConfiguration) {
 function recursiveScan(dir, filelist, amplifyIgnore, ignoreRoot) {
   const files = fs.readdirSync(dir);
   filelist = filelist || [];
-  files.forEach(file => {
+  files.forEach((file) => {
     const filePath = path.join(dir, file);
     if (fs.statSync(filePath).isDirectory()) {
       if (!publishConfig.isIgnored(filePath, amplifyIgnore, ignoreRoot)) {

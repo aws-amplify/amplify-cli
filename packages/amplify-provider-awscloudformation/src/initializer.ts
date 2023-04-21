@@ -6,28 +6,25 @@ import {
   $TSContext,
   $TSObject,
   AmplifyError,
-  AmplifyFault,
   JSONUtilities,
-  PathConstants,
+  LocalEnvInfo,
   pathManager,
   stateManager,
   Tag,
   Template,
-} from 'amplify-cli-core';
-import { AmplifySpinner } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
 
 import fs from 'fs-extra';
-import glob from 'glob';
 import moment from 'moment';
 import path from 'path';
 import sequential from 'promise-sequential';
 import { getDefaultTemplateDescription } from './template-description-utils';
 import { rootStackFileName } from './push-resources';
 import { transformRootStack } from './override-manager';
-import amplifyServiceManager from './amplify-service-manager';
+import { init } from './amplify-service-manager';
 import * as amplifyServiceMigrate from './amplify-service-migrate';
 import Cloudformation from './aws-utils/aws-cfn';
 import { S3 } from './aws-utils/aws-s3';
@@ -35,17 +32,19 @@ import * as configurationManager from './configuration-manager';
 import constants from './constants';
 import { configurePermissionsBoundaryForInit } from './permissions-boundary/permissions-boundary';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
-import archiver from './utils/archiver';
 import { fileLogger } from './utils/aws-logger';
+import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
+import { handleCommonSdkError } from './handle-common-sdk-errors';
 
 const logger = fileLogger('initializer');
 
 type ParamType = {
-  StackName: string,
-  Capabilities: string[],
-  TemplateBody: string,
-  Parameters: {ParameterKey: string, ParameterValue: string}[],
-  Tags: Tag[],
+  StackName: string;
+  Capabilities: string[];
+  TemplateBody: string;
+  Parameters: { ParameterKey: string; ParameterValue: string }[];
+  Tags: Tag[];
 };
 
 /**
@@ -54,7 +53,7 @@ type ParamType = {
 export const run = async (context: $TSContext): Promise<void> => {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
-    context.exeInfo = context.exeInfo || {};
+    context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     const { projectName } = context.exeInfo.projectConfig;
     const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
     /* eslint-disable-next-line spellcheck/spell-checker */
@@ -72,7 +71,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       envName,
       stackName,
     };
-    const { amplifyAppId, verifiedStackName, deploymentBucketName } = await amplifyServiceManager.init(amplifyServiceParams);
+    const { amplifyAppId, verifiedStackName, deploymentBucketName } = await init(amplifyServiceParams);
 
     // start root stack builder and deploy
 
@@ -115,15 +114,20 @@ export const run = async (context: $TSContext): Promise<void> => {
               external: true,
             },
           });
-          await sandboxNode.run(overrideCode).override(configuration);
+          const projectInfo = getProjectInfo();
+          await sandboxNode.run(overrideCode).override(configuration, projectInfo);
         }
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
 
@@ -168,10 +172,10 @@ export const run = async (context: $TSContext): Promise<void> => {
     // the `#current-cloud-backend` and the `backend` directories, and the team-provider-info file to exist.
     // It allows the local project's env to be added to an existing Amplify Console project, as specified
     // by the appId, without unnecessarily creating another Amplify Console project by the post push migration.
-    !context.exeInfo.isNewProject
-    && context.exeInfo.inputParams
-    && context.exeInfo.inputParams.amplify
-    && context.exeInfo.inputParams.amplify.appId
+    !context.exeInfo.isNewProject &&
+    context.exeInfo.inputParams &&
+    context.exeInfo.inputParams.amplify &&
+    context.exeInfo.inputParams.amplify.appId
   ) {
     await amplifyServiceMigrate.run(context);
   } else {
@@ -180,17 +184,17 @@ export const run = async (context: $TSContext): Promise<void> => {
 };
 
 type EventMap = {
-  rootStackName: string,
-  rootResources: {key: string}[],
-  categories: string[],
-  envName: string,
-  projectName: string
-}
+  rootStackName: string;
+  rootResources: { key: string }[];
+  categories: string[];
+  envName: string;
+  projectName: string;
+};
 
 function createInitEventMap(params: ParamType, envName: string, projectName: string): EventMap {
   return {
     rootStackName: params.StackName,
-    rootResources: params.Parameters.map(item => {
+    rootResources: params.Parameters.map((item) => {
       const key = item.ParameterKey;
       return {
         key: key.endsWith('Name') ? key.replace(/.{0,4}$/, '') : key,
@@ -222,14 +226,14 @@ const processStackCreationData = (context: $TSContext, amplifyAppId: string | un
 };
 
 const setCloudFormationOutputInContext = (context: $TSContext, cfnOutput: $TSObject): void => {
-  _.set(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
+  _.setWith(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
   const { envName } = context.exeInfo.localEnvInfo;
   if (envName) {
     const providerInfo = _.get(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName]);
     if (providerInfo) {
       _.merge(providerInfo, cfnOutput);
     } else {
-      _.set(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
+      _.setWith(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
     }
   }
 };
@@ -290,70 +294,17 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
   fs.copySync(path.join(rootStackBackendBuildDir, '..'), path.join(rootStackCloudBackendBuildDir, '..'));
 };
 
-const storeCurrentCloudBackend = async (context: $TSContext): Promise<void> => {
-  const projectRoot = pathManager.findProjectRoot();
-  const zipFilename = '#current-cloud-backend.zip';
-  const backendDir = pathManager.getBackendDirPath(projectRoot);
-  const tempDir = path.join(backendDir, '.temp');
-  const currentCloudBackendDir = context.exeInfo
-    ? path.join(context.exeInfo.localEnvInfo.projectPath, PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName)
-    : pathManager.getCurrentCloudBackendDirPath(projectRoot);
+const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> =>
+  S3.getInstance(context).then(async (s3) => {
+    const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
+    const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
+    const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
+    const fileUploadTasks = [];
 
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-  }
-
-  const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
-    cwd: pathManager.getAmplifyDirPath(projectRoot),
-    absolute: true,
+    fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
+    fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
+    await sequential(fileUploadTasks);
   });
-
-  // handle tag file
-  const tagFilePath = pathManager.getTagFilePath(projectRoot);
-  const tagCloudFilePath = pathManager.getCurrentTagFilePath(projectRoot);
-  if (fs.existsSync(tagFilePath)) {
-    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
-  }
-
-  const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  const spinner = new AmplifySpinner();
-
-  return archiver
-    .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
-    .then(result => {
-      const s3Key = `${result.zipFilename}`;
-      spinner.start('Saving deployment state.');
-      return S3.getInstance(context).then(s3 => {
-        spinner.stop('Deployment bucket fetched.');
-        const s3Params = {
-          Body: fs.createReadStream(result.zipFilePath),
-          Key: s3Key,
-        };
-        logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }])();
-        return s3.uploadFile(s3Params);
-      });
-    })
-    .catch(ex => {
-      spinner.stop('Deployment state save failed.', false);
-      throw new AmplifyFault('DeploymentFault', {
-        message: ex.message,
-      }, ex);
-    })
-    .then(() => {
-      fs.removeSync(tempDir);
-    });
-};
-
-const storeArtifactsForAmplifyService = async (context: $TSContext): Promise<void> => S3.getInstance(context).then(async s3 => {
-  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
-  const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
-  const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
-  const fileUploadTasks = [];
-
-  fileUploadTasks.push(() => uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json'));
-  fileUploadTasks.push(() => uploadFile(s3, backendConfigFilePath, 'backend-config.json'));
-  await sequential(fileUploadTasks);
-});
 
 const uploadFile = async (s3, filePath: string, key): Promise<void> => {
   if (fs.existsSync(filePath)) {
@@ -362,7 +313,11 @@ const uploadFile = async (s3, filePath: string, key): Promise<void> => {
       Key: key,
     };
     logger('uploadFile.s3.uploadFile', [{ Key: key }])();
-    await s3.uploadFile(s3Params);
+    try {
+      await s3.uploadFile(s3Params);
+    } catch (error) {
+      throw handleCommonSdkError(error);
+    }
   }
 };
 

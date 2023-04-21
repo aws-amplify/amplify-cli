@@ -1,5 +1,11 @@
-import { $TSContext, $TSMeta } from 'amplify-cli-core';
-import { ExternalLayer, FunctionDependency, FunctionRuntime, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
+import { $TSContext, $TSMeta } from '@aws-amplify/amplify-cli-core';
+import {
+  ExternalLayer,
+  FunctionDependency,
+  FunctionRuntime,
+  LambdaLayer,
+  ProjectLayer,
+} from '@aws-amplify/amplify-function-plugin-interface';
 import enquirer from 'enquirer';
 import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
 import _ from 'lodash';
@@ -37,8 +43,8 @@ export const askLayerSelection = async (
 
   const functionMeta = _.get(amplifyMeta, [categoryName]) || {};
   const layerOptions = _.keys(functionMeta)
-    .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
-    .filter(key => {
+    .filter((key) => functionMeta[key].service === ServiceName.LambdaLayer)
+    .filter((key) => {
       // filter by compatible runtimes - unless no runtimes are present for the given Lambda layer
       // since any Lambda function can depend on /opt folder content if there is no runtime.
       const runtimes = functionMeta[key].runtimes || getLayerRuntimes(key);
@@ -54,15 +60,15 @@ export const askLayerSelection = async (
   }
 
   const disabledMessage = 'Layer requires migration. Run "amplify function update" and choose this layer to migrate.';
-  const currentResourceNames = filterProjectLayers(previousSelections).map(sel => (sel as ProjectLayer).resourceName);
-  const choices = layerOptions.map(op => ({
+  const currentResourceNames = filterProjectLayers(previousSelections).map((sel) => (sel as ProjectLayer).resourceName);
+  const choices = layerOptions.map((op) => ({
     name: op,
     checked: currentResourceNames.includes(op),
     disabled: getLegacyLayerState(op) !== LegacyState.NOT_LEGACY ? disabledMessage : false,
   }));
   choices.unshift({
     name: provideExistingARNsPrompt,
-    checked: previousSelections.map(sel => sel.type).includes('ExternalLayer'),
+    checked: previousSelections.map((sel) => sel.type).includes('ExternalLayer'),
     disabled: false,
   });
 
@@ -75,7 +81,7 @@ export const askLayerSelection = async (
   };
   let layerSelections: string[] = (await inquirer.prompt(layerSelectionQuestion)).layerSelections;
   const askArnQuestion = layerSelections.includes(provideExistingARNsPrompt);
-  layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
+  layerSelections = layerSelections.filter((selection) => selection !== provideExistingARNsPrompt);
 
   for (const layerName of layerSelections) {
     const layerCloudState = LayerCloudState.getInstance(layerName);
@@ -93,14 +99,14 @@ export const askLayerSelection = async (
     // skip asking version for a new layer
     if (layerVersionChoices.length > 0) {
       layerVersionChoices.unshift(defaultLayerVersionPrompt);
-      const previousLayerSelection = _.first(filterProjectLayers(previousSelections).filter(prev => prev.resourceName === layerName));
+      const previousLayerSelection = _.first(filterProjectLayers(previousSelections).filter((prev) => prev.resourceName === layerName));
 
       let defaultLayerSelection: string;
 
       if (previousLayerSelection === undefined || previousLayerSelection.isLatestVersionSelected) {
         defaultLayerSelection = defaultLayerVersionPrompt;
       } else {
-        const previouslySelectedLayerVersion = _.first(layerVersions.filter(v => v.Version === previousLayerSelection.version));
+        const previouslySelectedLayerVersion = _.first(layerVersions.filter((v) => v.Version === previousLayerSelection.version));
 
         // Fallback to defaultLayerVersionPrompt as it is possible that a function is associated with a non-existent layer version
         defaultLayerSelection = previouslySelectedLayerVersion
@@ -153,10 +159,10 @@ export const askCustomArnQuestion = async (numLayersSelected: number, previousSe
     filter: stringSplitAndTrim,
     default:
       filterExternalLayers(previousSelections)
-        .map(sel => sel.arn)
+        .map((sel) => sel.arn)
         .join(', ') || undefined,
   };
-  return ((await inquirer.prompt(arnPrompt)).arns as string[]).map(arn => ({ type: 'ExternalLayer', arn } as LambdaLayer));
+  return ((await inquirer.prompt(arnPrompt)).arns as string[]).map((arn) => ({ type: 'ExternalLayer', arn } as LambdaLayer));
 };
 
 /**
@@ -169,14 +175,14 @@ export const askLayerOrderQuestion = async (currentSelections: LambdaLayer[], pr
     return currentSelections;
   }
   // order selections based on previous selection order, if applicable
-  previousSelections.reverse().forEach(prevSel => {
+  previousSelections.reverse().forEach((prevSel) => {
     let idx = -1;
     switch (prevSel.type) {
       case 'ExternalLayer':
-        idx = currentSelections.findIndex(currSel => currSel.type === 'ExternalLayer' && currSel.arn === prevSel.arn);
+        idx = currentSelections.findIndex((currSel) => currSel.type === 'ExternalLayer' && currSel.arn === prevSel.arn);
         break;
       default:
-        idx = currentSelections.findIndex(currSel => currSel.type === 'ProjectLayer' && currSel.resourceName === prevSel.resourceName);
+        idx = currentSelections.findIndex((currSel) => currSel.type === 'ProjectLayer' && currSel.resourceName === prevSel.resourceName);
     }
     if (idx >= 0) {
       currentSelections.unshift(...currentSelections.splice(idx, 1)); // move element to beginning of list
@@ -187,40 +193,42 @@ export const askLayerOrderQuestion = async (currentSelections: LambdaLayer[], pr
     type: 'sort',
     name: 'sortedNames',
     message: layerOrderPrompt,
-    choices: currentSelections.map(ll => (ll.type === 'ExternalLayer' ? ll.arn : ll.resourceName)),
+    choices: currentSelections.map((ll) => (ll.type === 'ExternalLayer' ? ll.arn : ll.resourceName)),
   };
 
   const sortedNames = (await enquirer.prompt<{ sortedNames: string[] }>(sortPrompt)).sortedNames;
 
   // sort the currentSelections based on the sortedNames
   const finalSelectionOrder: LambdaLayer[] = [];
-  sortedNames.forEach(name =>
-    finalSelectionOrder.push(currentSelections.find(sel => (sel.type === 'ExternalLayer' ? sel.arn === name : sel.resourceName === name))),
+  sortedNames.forEach((name) =>
+    finalSelectionOrder.push(
+      currentSelections.find((sel) => (sel.type === 'ExternalLayer' ? sel.arn === name : sel.resourceName === name)),
+    ),
   );
   return finalSelectionOrder;
 };
 
 const isRuntime = (runtime: string) => ({
-  inRuntimes: (runtimes: FunctionRuntime[]) => runtimes.map(runtime => runtime.value).includes(runtime),
+  inRuntimes: (runtimes: FunctionRuntime[]) => runtimes.map((runtime) => runtime.value).includes(runtime),
 });
 
 const filterProjectLayers = (layers: LambdaLayer[]): ProjectLayer[] => {
-  return layers.filter(layer => layer.type === 'ProjectLayer') as ProjectLayer[];
+  return layers.filter((layer) => layer.type === 'ProjectLayer') as ProjectLayer[];
 };
 
 const filterExternalLayers = (layers: LambdaLayer[]): ExternalLayer[] => {
-  return layers.filter(layer => layer.type === 'ExternalLayer') as ExternalLayer[];
+  return layers.filter((layer) => layer.type === 'ExternalLayer') as ExternalLayer[];
 };
 
 const stringSplitAndTrim = (input: string): string[] => {
   return input
     .split(',')
-    .map(str => str.trim())
-    .filter(str => str); // filter out empty elements
+    .map((str) => str.trim())
+    .filter((str) => str); // filter out empty elements
 };
 
 // validates that each string in input is a valid lambda layer ARN
 const lambdaLayerARNValidator = (input: string[]): true | string => {
-  const invalidARNs = input.filter(arn => !arn.match(layerARNRegex));
+  const invalidARNs = input.filter((arn) => !arn.match(layerARNRegex));
   return invalidARNs.length === 0 ? true : `${invalidARNs.join(', ')} are not valid Lambda layer ARNs`;
 };

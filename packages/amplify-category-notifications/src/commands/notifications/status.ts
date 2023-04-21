@@ -1,7 +1,5 @@
-import {
-  $TSContext,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { IChannelAvailability, INotificationsConfigStatus } from '../../channel-types';
 import { getNotificationsAppMeta } from '../../notifications-amplify-meta-api';
@@ -50,11 +48,19 @@ const viewDisplayChannelAvailability = async (context: $TSContext, backend: INot
   const tableOptions = [['Channel', 'Status', 'Deployed/Not Deployed']];
   for (const enabledChannel of backend.local.channels.enabledChannels) {
     const channelViewInfo = getChannelViewInfo(enabledChannel);
-    tableOptions.push([channelViewInfo.viewName, viewStyles.enabled('Enabled'), getDeployedStyledStatus(enabledChannel, backend.deployed.channels, 'Enabled')]);
+    tableOptions.push([
+      channelViewInfo.viewName,
+      viewStyles.enabled('Enabled'),
+      getDeployedStyledStatus(enabledChannel, backend.deployed.channels, 'Enabled'),
+    ]);
   }
   for (const disabledChannel of backend.local.channels.disabledChannels) {
     const channelViewInfo = getChannelViewInfo(disabledChannel);
-    tableOptions.push([channelViewInfo.viewName, viewStyles.disabled('Disabled'), getDeployedStyledStatus(disabledChannel, backend.deployed.channels, 'Disabled')]);
+    tableOptions.push([
+      channelViewInfo.viewName,
+      viewStyles.disabled('Disabled'),
+      getDeployedStyledStatus(disabledChannel, backend.deployed.channels, 'Disabled'),
+    ]);
   }
   context.print.table(tableOptions, { format: 'lean' });
 };

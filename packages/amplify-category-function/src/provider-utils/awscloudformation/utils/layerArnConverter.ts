@@ -1,4 +1,4 @@
-import { LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
+import { LambdaLayer, ProjectLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { isMultiEnvLayer } from './layerHelpers';
 
 /**
@@ -8,7 +8,7 @@ export const convertLambdaLayerMetaToLayerCFNArray = (
   input: LambdaLayer[],
   env: string,
 ): (string | { 'Fn::Sub': string } | { Ref: string })[] => {
-  return input.map(layer => {
+  return input.map((layer) => {
     if (layer.type === 'ProjectLayer') {
       if (isMultiEnvLayer(layer.resourceName)) {
         return convertProjectLayer(layer, env);

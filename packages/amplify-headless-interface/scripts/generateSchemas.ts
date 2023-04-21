@@ -16,7 +16,7 @@ const typeDefs: TypeDef[] = [
   {
     typeName: 'UpdateAuthRequest',
     category: 'auth',
-    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('auth', file)),
+    relativeSourcePaths: ['add.ts', 'update.ts'].map((file) => path.join('auth', file)),
   },
   {
     typeName: 'AddApiRequest',
@@ -26,7 +26,7 @@ const typeDefs: TypeDef[] = [
   {
     typeName: 'UpdateApiRequest',
     category: 'api',
-    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('api', file)),
+    relativeSourcePaths: ['add.ts', 'update.ts'].map((file) => path.join('api', file)),
   },
   {
     typeName: 'AddStorageRequest',
@@ -56,8 +56,8 @@ const typeDefs: TypeDef[] = [
   {
     typeName: 'UpdateGeoRequest',
     category: 'geo',
-    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('geo', file)),
-  }
+    relativeSourcePaths: ['add.ts', 'update.ts'].map((file) => path.join('geo', file)),
+  },
 ];
 
 const schemaFileName = (typeName: string) => `${typeName}.schema.json`;
@@ -69,8 +69,8 @@ const settings: PartialArgs = {
   required: true,
 };
 
-typeDefs.forEach(typeDef => {
-  const files = typeDef.relativeSourcePaths.map(p => path.resolve(path.join(typesSourceRoot, p)));
+typeDefs.forEach((typeDef) => {
+  const files = typeDef.relativeSourcePaths.map((p) => path.resolve(path.join(typesSourceRoot, p)));
   const typeSchema = buildGenerator(getProgramFromFiles(files), settings)!.getSchemaForSymbol(typeDef.typeName);
   const version = (typeSchema.properties!.version as Definition).enum![0] as number;
   const schemaFilePath = path.resolve(path.join(schemaFilesRoot, typeDef.category, version.toString(), schemaFileName(typeDef.typeName)));

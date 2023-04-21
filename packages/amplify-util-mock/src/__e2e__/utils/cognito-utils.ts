@@ -10,6 +10,7 @@ export function signUpAddToGroupAndGetJwtToken(
 ) {
   const token = {
     sub: v4(),
+    // eslint-disable-next-line spellcheck/spell-checker
     aud: '75pk49boud2olipfda0ke3snic',
     'cognito:groups': groups,
     event_id: v4(),

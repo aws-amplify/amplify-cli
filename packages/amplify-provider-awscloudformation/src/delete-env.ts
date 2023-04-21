@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { loadConfigurationForEnv } from './configuration-manager';
 import Cloudformation from './aws-utils/aws-cfn';
 import { S3 } from './aws-utils/aws-s3';
@@ -61,7 +61,7 @@ const getStorageCategoryBucketNameFromCloud = async (context, envName, s3, tempD
   const storage = amplifyMeta.storage || {};
 
   // filter out imported buckets as we cannot touch those.
-  const s3Storage = Object.keys(storage).filter(r => storage[r].service === 'S3' && storage[r].serviceType !== 'imported');
+  const s3Storage = Object.keys(storage).filter((r) => storage[r].service === 'S3' && storage[r].serviceType !== 'imported');
 
   if (!s3Storage.length) {
     return undefined;

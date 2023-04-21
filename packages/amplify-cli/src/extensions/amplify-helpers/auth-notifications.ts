@@ -1,11 +1,7 @@
-import {
-  $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
-import {
-  DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse,
-} from 'graphql';
+import { DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse } from 'graphql';
 import { collectDirectivesByType, collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import path from 'path';
 
@@ -29,9 +25,9 @@ const setNotificationFlag = async (projectPath: string, flagName: string, value:
  */
 export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promise<boolean> => {
   const flagName = 'showFieldAuthNotification';
-  const dontShowNotification = !FeatureFlags.getBoolean(`graphqltransformer.${flagName}`);
+  const doNotShowNotification = !FeatureFlags.getBoolean(`graphqltransformer.${flagName}`);
 
-  if (dontShowNotification) return false;
+  if (doNotShowNotification) return false;
 
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   const apiResourceDir = await getApiResourceDir();
@@ -49,15 +45,15 @@ export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promis
   if (displayAuthNotification(directiveMap, fieldDirectives)) {
     printer.blankLine();
     const continueChange = await prompter.yesOrNo(
-      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. `
-        + `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
+      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
+        `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
     );
 
     if (!continueChange) {
       await context.usageData.emitSuccess();
       exitOnNextTick(0);
     }
-    modifyGraphQLSchema(apiResourceDir);
+    await modifyGraphQLSchema(apiResourceDir);
     schemaModified = true;
   }
 
@@ -100,8 +96,9 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
   const resolversToCheck = Object.entries(resolvers)
     .filter(([resolverFileName, __]) => resolverFileName.startsWith('Query.list') && resolverFileName.endsWith('.req.vtl'))
     .map(([__, resolverCode]) => resolverCode);
-  const listQueryPattern = /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
-  const resolversToSecure = resolversToCheck.filter(resolver => listQueryPattern.test(resolver));
+  const listQueryPattern =
+    /#set\( \$filterExpression = \$util\.parseJson\(\$util\.transform\.toDynamoDBFilterExpression\(\$filter\)\) \)\s*(?!\s*#if\( \$util\.isNullOrEmpty\(\$filterExpression\) \))/gm;
+  const resolversToSecure = resolversToCheck.filter((resolver) => listQueryPattern.test(resolver));
   if (resolversToSecure.length === 0) {
     return false;
   }
@@ -112,8 +109,8 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
   if (hasV2AuthDirectives(doc)) {
     printer.blankLine();
     const continueChange = await prompter.yesOrNo(
-      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. `
-        + `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
+      `This version of Amplify CLI introduces additional security enhancements for your GraphQL API. ` +
+        `The changes are applied automatically with this deployment. This change won't impact your client code. Continue?`,
     );
 
     if (!continueChange) {
@@ -121,7 +118,7 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
       exitOnNextTick(0);
     }
 
-    modifyGraphQLSchema(apiResourceDir);
+    await modifyGraphQLSchema(apiResourceDir);
     schemaModified = true;
   }
 
@@ -178,7 +175,7 @@ const modifyGraphQLSchema = async (apiResourceDir: string): Promise<void> => {
   const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
 
   if (schemaFileExists) {
-    fs.appendFile(schemaFilePath, ' ');
+    await fs.appendFile(schemaFilePath, ' ');
   } else if (schemaDirectoryExists) {
     await modifyGraphQLSchemaDirectory(schemaDirectoryPath);
   }
@@ -203,7 +200,7 @@ const modifyGraphQLSchemaDirectory = async (schemaDirectoryPath: string): Promis
     }
 
     if (stats.isFile()) {
-      fs.appendFile(fullPath, ' ');
+      await fs.appendFile(fullPath, ' ');
       return true;
     }
   }
@@ -223,10 +220,13 @@ export const displayAuthNotification = (directiveMap: $TSAny, fieldDirectives: S
     const subscriptionOff: boolean = (modelDirective?.arguments || []).some((arg: $TSAny) => {
       if (arg.name.value === 'subscriptions') {
         const subscriptionNull = arg.value.kind === 'NullValue';
-        const levelFieldOffOrNull = arg.value?.fields?.some(({ name, value }) => name.value === 'level' && (value.value === 'off' || value.kind === 'NullValue'));
+        const levelFieldOffOrNull = arg.value?.fields?.some(
+          ({ name, value }) => name.value === 'level' && (value.value === 'off' || value.kind === 'NullValue'),
+        );
 
         return levelFieldOffOrNull || subscriptionNull;
       }
+      return undefined;
     });
 
     return subscriptionOff && fieldDirectives.has(typeName);
@@ -244,7 +244,7 @@ export const hasFieldAuthDirectives = (doc: DocumentNode): Set<string> => {
   doc.definitions?.forEach((def: $TSAny) => {
     const withAuth: FieldNode[] = (def.fields || []).filter((field: FieldDefinitionNode) => {
       const nonNullable = field.type.kind === 'NonNullType';
-      const hasAuth = field.directives?.some(dir => dir.name.value === 'auth');
+      const hasAuth = field.directives?.some((dir) => dir.name.value === 'auth');
       return hasAuth && nonNullable;
     });
 
@@ -264,7 +264,7 @@ export const hasV2AuthDirectives = (doc: DocumentNode): boolean => {
   const usesTransformerV2 = FeatureFlags.getNumber('graphqltransformer.transformerVersion') === 2;
 
   doc.definitions?.forEach((def: $TSAny) => {
-    if (def.directives?.some(dir => dir.name.value === 'auth')) {
+    if (def.directives?.some((dir) => dir.name.value === 'auth')) {
       containsAuthDir = true;
     }
   });
@@ -302,7 +302,7 @@ export const notifySecurityEnhancement = async (context: $TSContext): Promise<vo
 
     const directiveMap = collectDirectivesByTypeNames(project.schema);
     const notifyAuthWithKey = Object.keys(directiveMap.types).some(
-      type => directiveMap.types[type].includes('auth') && directiveMap.types[type].includes('primaryKey'),
+      (type) => directiveMap.types[type].includes('auth') && directiveMap.types[type].includes('primaryKey'),
     );
 
     if (meta?.auth && notifyAuthWithKey) {

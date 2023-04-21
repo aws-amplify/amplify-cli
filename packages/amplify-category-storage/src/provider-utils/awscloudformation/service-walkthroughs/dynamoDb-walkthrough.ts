@@ -9,8 +9,8 @@ import {
   pathManager,
   ResourceDoesNotExistError,
   stateManager,
-} from 'amplify-cli-core';
-import { alphanumeric, printer, prompter, Validator } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { alphanumeric, printer, prompter, Validator } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
@@ -43,7 +43,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
   const partitionKey = await askPrimaryKeyQuestion(indexableAttributeList, attributeAnswers); // Cannot be changed once added
 
-  let cliInputs: DynamoDBCLIInputs = {
+  const cliInputs: DynamoDBCLIInputs = {
     resourceName,
     tableName,
     partitionKey,
@@ -56,10 +56,10 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName);
 
   const cliInputsState = new DynamoDBInputState(context, cliInputs.resourceName);
-  cliInputsState.saveCliInputPayload(cliInputs);
+  await cliInputsState.saveCliInputPayload(cliInputs);
 
   const stackGenerator = new DDBStackTransform(context, cliInputs.resourceName);
-  stackGenerator.transform();
+  await stackGenerator.transform();
 
   return cliInputs.resourceName;
 }
@@ -68,7 +68,7 @@ export async function updateWalkthrough(context: $TSContext) {
   const amplifyMeta = stateManager.getMeta();
   const dynamoDbResources: $TSObject = {};
 
-  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
+  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach((resourceName) => {
     if (
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === AmplifySupportedService.DYNAMODB &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].mobileHubMigrated !== true &&
@@ -82,9 +82,9 @@ export async function updateWalkthrough(context: $TSContext) {
     const errMessage = 'No resources to update. You need to add a resource.';
 
     printer.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    void context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
-    return;
+    return undefined;
   }
 
   const resources = Object.keys(dynamoDbResources);
@@ -96,17 +96,17 @@ export async function updateWalkthrough(context: $TSContext) {
   const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
   if (!cliInputsState.cliInputFileExists()) {
     if (headlessMigrate || (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, resourceName), true))) {
-      cliInputsState.migrate();
+      await cliInputsState.migrate();
       const stackGenerator = new DDBStackTransform(context, resourceName);
-      stackGenerator.transform();
+      await stackGenerator.transform();
     } else {
-      return;
+      return undefined;
     }
   }
 
   const cliInputs = cliInputsState.getCliInputPayload();
 
-  let existingAttributeDefinitions: DynamoDBCLIInputsKeyType[] = [];
+  const existingAttributeDefinitions: DynamoDBCLIInputsKeyType[] = [];
 
   if (cliInputs.partitionKey) {
     existingAttributeDefinitions.push(cliInputs.partitionKey);
@@ -134,16 +134,16 @@ export async function updateWalkthrough(context: $TSContext) {
   cliInputs.gsi = await askGSIQuestion(indexableAttributeList, attributeAnswers, cliInputs.gsi);
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName, cliInputs.triggerFunctions);
 
-  cliInputsState.saveCliInputPayload(cliInputs);
+  await cliInputsState.saveCliInputPayload(cliInputs);
 
   const stackGenerator = new DDBStackTransform(context, cliInputs.resourceName);
-  stackGenerator.transform();
+  await stackGenerator.transform();
 
   return cliInputs;
 }
 
 async function askTriggersQuestion(context: $TSContext, resourceName: string, existingTriggerFunctions?: string[]): Promise<string[]> {
-  let triggerFunctions: string[] = existingTriggerFunctions || [];
+  const triggerFunctions: string[] = existingTriggerFunctions || [];
 
   if (!existingTriggerFunctions || existingTriggerFunctions.length === 0) {
     if (await prompter.confirmContinue('Do you want to add a Lambda Trigger for your Table?')) {
@@ -234,15 +234,15 @@ async function askGSIQuestion(
   if (
     existingGSIList &&
     !!existingGSIList.length &&
-    (await prompter.yesOrNo('Do you want to keep existing global seconday indexes created on your table?', true))
+    (await prompter.yesOrNo('Do you want to keep existing global secondary indexes created on your table?', true))
   ) {
     gsiList = existingGSIList;
   }
 
   if (await prompter.yesOrNo('Do you want to add global secondary indexes to your table?', true)) {
-    let continuewithGSIQuestions = true;
+    let continueWithGSIQuestions = true;
 
-    while (continuewithGSIQuestions) {
+    while (continueWithGSIQuestions) {
       if (indexableAttributeList.length > 0) {
         const gsiNameValidator =
           (message: string): Validator =>
@@ -260,7 +260,7 @@ async function askGSIQuestion(
         );
 
         /* eslint-enable */
-        let gsiItem: DynamoDBCLIInputsGSIType = {
+        const gsiItem: DynamoDBCLIInputsGSIType = {
           name: gsiName,
           partitionKey: {
             fieldName: gsiPartitionKeyName,
@@ -284,7 +284,7 @@ async function askGSIQuestion(
         }
 
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await prompter.yesOrNo('Do you want to add more global secondary indexes to your table?', true);
+        continueWithGSIQuestions = await prompter.yesOrNo('Do you want to add more global secondary indexes to your table?', true);
       } else {
         printer.error('You do not have any other attributes remaining to configure');
         break;
@@ -316,7 +316,7 @@ async function askSortKeyQuestion(
       printer.error('You must add additional keys in order to select a sort key.');
     }
   }
-  return;
+  return undefined;
 }
 
 async function askPrimaryKeyQuestion(indexableAttributeList: string[], attributeDefinitions: DynamoDBAttributeDefType[]) {
@@ -397,11 +397,11 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
 
     attributeAnswers.push({
       AttributeName: attributeName,
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expression is ambiguous... Remove this comment to see the full error message
       AttributeType: attributeTypes[attributeType].code,
     });
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expression is ambiguous... Remove this comment to see the full error message
     if (attributeTypes[attributeType].indexable) {
       indexableAttributeList.push(attributeName);
     }
@@ -669,10 +669,10 @@ export function migrate(context: $TSContext, projectPath: any, resourceName: any
   /* Current Dynamo CFN's have a trailing comma (accepted by CFN),
   but fails on JSON.parse(), hence removing it */
 
-  let oldcfnString = fs.readFileSync(cfnFilePath, 'utf8');
-  oldcfnString = removeDanglingCommas(oldcfnString);
+  let oldCfnString = fs.readFileSync(cfnFilePath, 'utf8');
+  oldCfnString = removeDanglingCommas(oldCfnString);
 
-  const oldCfn = JSON.parse(oldcfnString);
+  const oldCfn = JSON.parse(oldCfnString);
 
   const newCfn = {};
 

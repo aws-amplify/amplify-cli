@@ -90,7 +90,7 @@ describe('None data source', () => {
     });
 
     // give pubsub some time to deliver message
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     expect(onInboxMock).toHaveBeenCalledTimes(1);
     expect(onInboxMock).toHaveBeenCalledWith(page);
   });

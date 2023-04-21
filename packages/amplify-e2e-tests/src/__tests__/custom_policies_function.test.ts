@@ -13,15 +13,13 @@ import {
   deleteProjectDir,
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
-import AWS from 'aws-sdk';
+
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { GetParameterCommand, PutParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 
 const customIAMPolicy: CustomIAMPolicy = {
   Effect: 'Allow',
-  Action: [
-    'ssm:GetParameter',
-  ],
+  Action: ['ssm:GetParameter'],
   Resource: [],
 };
 const customIAMPolicies: CustomIAMPolicy[] = [];
@@ -58,17 +56,21 @@ it('should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
   const { Region: region } = meta?.providers?.awscloudformation;
 
   // Put SSM parameter
-  const ssmClient = new AWS.SSM({ region });
-  await ssmClient.putParameter({
-    Name: '/amplify/testCustomPolicies',
-    Value: 'testCustomPoliciesValue',
-    Type: 'String',
-    Overwrite: true,
-  }).promise();
+  const ssmClient = new SSMClient({ region });
+  await ssmClient.send(
+    new PutParameterCommand({
+      Name: '/amplify/testCustomPolicies',
+      Value: 'testCustomPoliciesValue',
+      Type: 'String',
+      Overwrite: true,
+    }),
+  );
 
-  const getParaResponse = await ssmClient.getParameter({
-    Name: '/amplify/testCustomPolicies',
-  }).promise();
+  const getParaResponse = await ssmClient.send(
+    new GetParameterCommand({
+      Name: '/amplify/testCustomPolicies',
+    }),
+  );
   const ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);
@@ -93,4 +95,4 @@ type CustomIAMPolicy = {
   Action: string[];
   Effect: string;
   Resource: string[];
-}
+};

@@ -1,16 +1,14 @@
-import {
-  stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError,
-} from 'amplify-cli-core';
+import { stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError } from '@aws-amplify/amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import fetch from 'node-fetch';
-import { Redactor, stringMasker } from 'amplify-cli-logger';
+import { Redactor, stringMasker } from '@aws-amplify/amplify-cli-logger';
 import columnify from 'columnify';
 import * as _ from 'lodash';
 import os from 'os';
 import { v4 } from 'uuid';
-import { prompter, printer } from 'amplify-prompts';
+import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import { collectFiles } from './helpers/collect-files';
 import { encryptBuffer, encryptKey, createHashedIdentifier } from './helpers/encryption-helpers';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
@@ -81,7 +79,7 @@ const showLearnMore = (showOptOut: boolean): void => {
   if (showOptOut) {
     printer.blankLine();
     printer.info(
-      'This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running \'amplify diagnose --auto-send-off\'',
+      "This project has been opted in automatically to share non-sensitive project configuration files. you can opt out by running 'amplify diagnose --auto-send-off'",
     );
   }
 };
@@ -116,7 +114,7 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
   } catch (ex) {
     printer.blankLine();
     printer.info(ex.message);
-    context.usageData.emitError(ex);
+    void context.usageData.emitError(ex);
     spinner.fail();
   }
 };
@@ -129,7 +127,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   const backend = stateManager.getBackendConfig(rootPath);
   const resources: { category: string; resourceName: string; service: string }[] = [];
   const categoryResources = Object.keys(backend).reduce((array, key) => {
-    Object.keys(backend[key]).forEach(resourceKey => {
+    Object.keys(backend[key]).forEach((resourceKey) => {
       array.push({
         category: key,
         resourceName: resourceKey,
@@ -141,7 +139,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   }, resources);
   const filePaths = collectFiles(categoryResources, rootPath);
   const zipper = archiver.create('zip');
-  filePaths.forEach(file => {
+  filePaths.forEach((file) => {
     zipper.append(
       file.redact ? Redactor(fs.readFileSync(file.filePath, { encoding: 'utf-8' })) : fs.readFileSync(file.filePath, { encoding: 'utf-8' }),
       {
@@ -151,7 +149,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
   });
   if (context.exeInfo && context.exeInfo.cloudformationEvents) {
     const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
-    const events = context.exeInfo.cloudformationEvents.map(r => ({
+    const events = context.exeInfo.cloudformationEvents.map((r) => ({
       ...r,
       LogicalResourceId: stringMasker(r.LogicalResourceId),
     }));
@@ -180,7 +178,7 @@ const createZip = async (context: Context, error: Error | undefined): Promise<st
 
   return new Promise((resolve, reject) => {
     output.on('close', () => resolve(fileDestination));
-    output.on('error', err => {
+    output.on('error', (err) => {
       reject(err);
     });
   });

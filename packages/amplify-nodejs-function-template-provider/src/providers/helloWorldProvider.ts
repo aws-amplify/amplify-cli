@@ -1,8 +1,7 @@
-import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { templateRoot } from '../utils/constants';
 import fs from 'fs-extra';
 import path from 'path';
-import _ from 'lodash';
 import { getDstMap } from '../utils/destFileMapper';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda/hello-world');

@@ -18,6 +18,19 @@ describe('packageManager tests', () => {
     expect(packageManager).toBeNull();
   });
 
+  test('detects yarn2 correctly', () => {
+    which_mock.sync.mockReturnValue('/path/to/yarn');
+
+    const testDirectory = path.join(baseDirectory, 'packageManager-yarn2');
+
+    const packageManager = getPackageManager(testDirectory);
+
+    expect(which_mock.sync).toBeCalledTimes(1);
+    expect(packageManager).toBeDefined();
+    expect(packageManager?.packageManager).toEqual('yarn');
+    expect(packageManager?.yarnrcPath).toEqual('.yarnrc.yml');
+  });
+
   test('detects yarn correctly', () => {
     which_mock.sync.mockReturnValue('/path/to/yarn');
 
@@ -25,7 +38,7 @@ describe('packageManager tests', () => {
 
     const packageManager = getPackageManager(testDirectory);
 
-    expect(which_mock.sync).toBeCalledTimes(1);
+    expect(which_mock.sync).toBeCalledTimes(2);
     expect(packageManager).toBeDefined();
     expect(packageManager!.packageManager).toEqual('yarn');
   });

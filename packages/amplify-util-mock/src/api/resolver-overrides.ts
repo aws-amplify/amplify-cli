@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as chokidar from 'chokidar';
 
 export class ResolverOverrides {
   private overrides: Set<string>;
@@ -18,13 +17,13 @@ export class ResolverOverrides {
 
   start() {
     this._foldersToWatch
-      .map(folder => path.join(this._rootFolder, folder))
-      .forEach(folder => {
+      .map((folder) => path.join(this._rootFolder, folder))
+      .forEach((folder) => {
         if (fs.existsSync(folder) && fs.lstatSync(folder).isDirectory()) {
           fs.readdirSync(folder)
-            .map(f => path.join(folder, f))
-            .filter(f => this.isTemplateFile(f))
-            .forEach(f => {
+            .map((f) => path.join(folder, f))
+            .filter((f) => this.isTemplateFile(f))
+            .forEach((f) => {
               this.updateContentMap(f);
             });
         }
@@ -44,7 +43,7 @@ export class ResolverOverrides {
     const result: {
       path: string;
       content: string;
-    }[] = transformerResolvers.map(resolver => {
+    }[] = transformerResolvers.map((resolver) => {
       const r = { ...resolver };
       const normalizedPath = path.normalize(resolver.path);
       // Step 1: Check if the file is in the override map and if it really is
@@ -75,7 +74,7 @@ export class ResolverOverrides {
     });
 
     // Populate the list of files that needs to be deleted
-    const generatedResolverPath = transformerResolvers.map(r => r.path);
+    const generatedResolverPath = transformerResolvers.map((r) => r.path);
     this.contentMap.forEach((val, resolverPath) => {
       if (!this.overrides.has(resolverPath) && !generatedResolverPath.includes(resolverPath)) {
         filesToDelete.add(resolverPath);
@@ -84,9 +83,9 @@ export class ResolverOverrides {
 
     // Files that are in the disk used by resolvers created by custom stack will exist in resolver folder
     //  include them in the resolver output
-    const resolversCreatedByTransformer = result.map(r => r.path);
-    const customResolverTemplates = Array.from(this.overrides.values()).filter(o => !resolversCreatedByTransformer.includes(o));
-    customResolverTemplates.forEach(templateName => {
+    const resolversCreatedByTransformer = result.map((r) => r.path);
+    const customResolverTemplates = Array.from(this.overrides.values()).filter((o) => !resolversCreatedByTransformer.includes(o));
+    customResolverTemplates.forEach((templateName) => {
       result.push({
         path: templateName,
         content: this.contentMap.get(templateName),
@@ -103,7 +102,7 @@ export class ResolverOverrides {
     });
 
     // Delete the files that are no longer needed
-    filesToDelete.forEach(filePath => {
+    filesToDelete.forEach((filePath) => {
       this.contentMap.delete(filePath);
       fs.unlinkSync(this.getAbsPath(filePath));
     });
@@ -122,11 +121,11 @@ export class ResolverOverrides {
     });
   }
 
-  isTemplateFile(filePath: string, isDelete: boolean = false): boolean {
+  isTemplateFile(filePath: string, isDelete = false): boolean {
     if (!this.fileExtensions.includes(path.extname(filePath))) {
       return false;
     }
-    const isInWatchedDir = this._foldersToWatch.some(folder => {
+    const isInWatchedDir = this._foldersToWatch.some((folder) => {
       const absFolder = path.join(this._rootFolder, folder);
       return filePath.includes(absFolder);
     });

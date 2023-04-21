@@ -6,21 +6,20 @@ let options;
 
 module.exports = {
   name: subcommand,
-  run: async context =>
+  run: async (context) =>
     promptCategory()
-      .then(result => {
-        result = result.predictionsCategory;
+      .then((result) => {
         options = {
           providerPlugin: result.provider,
         };
         const providerController = require(`../../provider-utils/${result.provider}/index`);
         if (!providerController) {
           context.print.error('Provider not configured for this category');
-          return;
+          return undefined;
         }
         return providerController.addResource(context, category, result.fileName, options);
       })
-      .then(resourceName => {
+      .then((resourceName) => {
         const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally`);
         print.info('');
@@ -31,7 +30,7 @@ module.exports = {
         );
         print.info('');
       })
-      .catch(err => {
+      .catch((err) => {
         context.print.info(err.stack);
         context.print.error('An error occurred when adding the predictions resource');
         context.usageData.emitError(err);

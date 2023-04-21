@@ -1,6 +1,39 @@
 #!/bin/bash -e
-git config --global user.email $GITHUB_EMAIL
-git config --global user.name $GITHUB_USER
+
+# lerna has a bug (https://github.com/lerna/lerna/issues/1066) where failed publishes do not set the exit code properly
+# this causes the script to keep running even after failed publishes
+# this function forces failed publishes to exit on failure
+function lernaPublishExitOnFailure {
+  # exit on failure
+  set -e
+  # run lerna publish with the args that were passed to this function
+  # duplicate stdout to a temp file
+  # grep the temp file for the lerna err token and return exit 1 if found (-v option inverts grep exit code)
+  npx lerna publish "$@" | tee /tmp/publish-results && grep -qvz "lerna ERR!" < /tmp/publish-results
+}
+
+if [ -z "$GITHUB_EMAIL" ]; then
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    git config --global user.email not@used.com
+  else
+    echo "GITHUB_EMAIL email is missing"
+    exit 1
+  fi
+else
+  git config --global user.email $GITHUB_EMAIL
+fi
+
+if [ -z "$GITHUB_USER" ]; then
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    git config --global user.name "Doesnt Matter"
+  else
+    echo "GITHUB_USER email is missing"
+    exit 1
+  fi
+else
+  git config --global user.name $GITHUB_USER
+fi
+
 if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
     # Remove tagged-release-without-e2e-tests/
@@ -16,10 +49,10 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
 
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     echo "Publishing to local registry under latest tag"
-    npx lerna publish --exact --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-push --yes --include-merged-tags
+    lernaPublishExitOnFailure --exact --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-push --yes --include-merged-tags
   else
     echo "Publishing to NPM under $NPM_TAG tag"
-    npx lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
+    lernaPublishExitOnFailure --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
   fi
 
 # @latest release
@@ -28,7 +61,7 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
 
   # publish versions that were just computed
-  npx lerna publish from-git --yes --no-push
+  lernaPublishExitOnFailure from-git --yes --no-push
 
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     echo "Published packages to verdaccio"
@@ -67,14 +100,14 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
   # if publishing locally to verdaccio
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     # publish to verdaccio with no dist tag (default to latest)
-    npx lerna publish from-git --yes --no-push
+    lernaPublishExitOnFailure from-git --yes --no-push
     echo "Published packages to verdaccio"
     echo "Exiting without pushing release commit or release tags"
     exit 0
   fi
 
   # publish versions that were just computed
-  npx lerna publish from-git --yes --no-push --dist-tag rc
+  lernaPublishExitOnFailure from-git --yes --no-push --dist-tag rc
 
   # push release commit
   git push origin "$CIRCLE_BRANCH"

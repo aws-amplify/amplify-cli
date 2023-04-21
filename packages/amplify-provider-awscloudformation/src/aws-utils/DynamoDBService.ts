@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { IDynamoDBService } from 'amplify-util-import';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { IDynamoDBService } from '@aws-amplify/amplify-util-import';
 import DynamoDB, { ListTablesInput, ListTablesOutput, TableDescription, TableName } from 'aws-sdk/clients/dynamodb';
 import { loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
@@ -37,8 +37,8 @@ export class DynamoDBService implements IDynamoDBService {
         {
           Limit: 100,
         },
-        response => response?.TableNames,
-        async response => response?.LastEvaluatedTableName,
+        (response) => response?.TableNames,
+        async (response) => response?.LastEvaluatedTableName,
       );
 
       this.cachedTableList.push(...result!);

@@ -6,12 +6,18 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-  addApiWithoutSchema, updateApiSchema, getProjectMeta, createNewProjectDir, deleteProjectDir,
+  addApiWithoutSchema,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 
 (global as any).fetch = require('node-fetch');
+
+jest.setTimeout(120 * 60 * 1000); // Set timeout to 2 hour because of creating/deleting searchable instance
 
 describe('transformer model searchable migration test', () => {
   let projRoot: string;
@@ -24,12 +30,17 @@ describe('transformer model searchable migration test', () => {
     await initJSProjectWithProfile(projRoot, {
       name: projectName,
     });
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
+    if (process.env.CIRCLECI) {
+      console.log('Skipping cloud deletion since we are in CI, and cleanup script will delete this stack in cleanup step.');
+      deleteProjectDir(projRoot);
+    } else {
+      await deleteProject(projRoot);
+      deleteProjectDir(projRoot);
+    }
   });
 
   it('migration of searchable directive - search should return expected results', async () => {
@@ -87,7 +98,8 @@ describe('transformer model searchable migration test', () => {
     }
   };
 
-  const createEntry = async (name: string, description: string, count: number) => await runMutation(getCreateTodosMutation(name, description, count));
+  const createEntry = async (name: string, description: string, count: number) =>
+    await runMutation(getCreateTodosMutation(name, description, count));
 
   function getCreateTodosMutation(name: string, description: string, count: number): string {
     return `mutation {

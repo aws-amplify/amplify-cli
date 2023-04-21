@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 import {
   nspawn as spawn,
   getCLIPath,
@@ -57,7 +56,7 @@ describe('nodejs version migration tests', () => {
     );
     let authStackContent = fs.readFileSync(authStackFileName).toString();
 
-    authStackContent = authStackContent.replace('nodejs14.x', 'nodejs10.x');
+    authStackContent = authStackContent.replace('nodejs16.x', 'nodejs10.x');
 
     fs.writeFileSync(authStackFileName, authStackContent, 'utf-8');
 
@@ -72,7 +71,7 @@ describe('nodejs version migration tests', () => {
     );
     let functionStackContent = fs.readFileSync(functionStackFileName).toString();
 
-    functionStackContent = functionStackContent.replace('nodejs14.x', 'nodejs10.x');
+    functionStackContent = functionStackContent.replace(/nodejs\d{1,2}\.x/, 'nodejs10.x');
 
     fs.writeFileSync(functionStackFileName, functionStackContent, 'utf-8');
 
@@ -84,26 +83,18 @@ describe('nodejs version migration tests', () => {
     functionStackContent = fs.readFileSync(functionStackFileName).toString();
 
     expect(projectConfigContent.indexOf('3.1')).toBeGreaterThan(0);
-    expect(authStackContent.indexOf('nodejs14.x')).toBeGreaterThan(0);
-    expect(functionStackContent.indexOf('nodejs14.x')).toBeGreaterThan(0);
+    expect(authStackContent.indexOf('nodejs16.x')).toBeGreaterThan(0);
+    expect(functionStackContent.indexOf('nodejs16.x')).toBeGreaterThan(0);
   });
 
-  function amplifyNodeMigrationAndPush(cwd: string) {
-    return new Promise((resolve, reject) => {
-      spawn(getCLIPath(), ['push'], { cwd, stripColors: true, disableCIDetection: true })
-        .wait('Confirm to update the Node.js runtime version to nodejs')
-        .sendConfirmYes()
-        .wait('Node.js runtime version successfully updated')
-        .wait('Are you sure you want to continue?')
-        .sendConfirmYes()
-        .wait(/.*/)
-        .run((err: Error) => {
-          if (!err) {
-            resolve(undefined);
-          } else {
-            reject(err);
-          }
-        });
-    });
-  }
+  const amplifyNodeMigrationAndPush = async (cwd: string): Promise<void> => {
+    return spawn(getCLIPath(), ['push'], { cwd, stripColors: true, disableCIDetection: true })
+      .wait('Confirm to update the Node.js runtime version to nodejs')
+      .sendConfirmYes()
+      .wait('Node.js runtime version successfully updated')
+      .wait('Are you sure you want to continue?')
+      .sendYes()
+      .wait(/.*/)
+      .runAsync();
+  };
 });

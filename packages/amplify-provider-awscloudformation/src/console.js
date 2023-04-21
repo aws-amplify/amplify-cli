@@ -1,14 +1,14 @@
-const { open } = require('amplify-cli-core');
+const { open } = require('@aws-amplify/amplify-cli-core');
 const constants = require('./constants');
 
-function run(context) {
+async function run(context) {
   const metaData = context.amplify.getProjectMeta();
   let consoleUrl = 'https://console.aws.amazon.com/cloudformation/';
   if (metaData.providers && metaData.providers[constants.Label]) {
     const { Region, StackId } = metaData.providers[constants.Label];
     consoleUrl = `https://console.aws.amazon.com/cloudformation/home?region=${Region}#/stack/detail?stackId=${StackId}`;
   }
-  open(consoleUrl, { wait: false });
+  await open(consoleUrl, { wait: false });
 }
 
 module.exports = {

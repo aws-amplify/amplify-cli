@@ -10,7 +10,7 @@ export const isSilent = process.argv.includes('--silent');
 /**
  * If this flag is set, all prompts are suppressed.
  */
-export const isYes = !!['--yes', '-y'].find(yesFlag => process.argv.includes(yesFlag));
+export const isYes = !!['--yes', '-y'].find((yesFlag) => process.argv.includes(yesFlag));
 
 /**
  * Set to true if stdin is a TTY (interactive shell)

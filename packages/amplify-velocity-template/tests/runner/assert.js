@@ -24,11 +24,11 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-(function(global) {
+(function (global) {
   // Object.create compatible in IE
   var create =
     Object.create ||
-    function(p) {
+    function (p) {
       if (!p) throw Error('no type');
       function f() {}
       f.prototype = p;
@@ -37,7 +37,7 @@
 
   // UTILITY
   var util = {
-    inherits: function(ctor, superCtor) {
+    inherits: function (ctor, superCtor) {
       ctor.super_ = superCtor;
       ctor.prototype = create(superCtor.prototype, {
         constructor: {
@@ -104,7 +104,7 @@
     }
   }
 
-  assert.AssertionError.prototype.toString = function() {
+  assert.AssertionError.prototype.toString = function () {
     if (this.message) {
       return [this.name + ':', this.message].join(' ');
     } else {
@@ -355,16 +355,16 @@
   // 11. Expected to throw an error:
   // assert.throws(block, Error_opt, message_opt);
 
-  assert.throws = function(block, /*optional*/ error, /*optional*/ message) {
+  assert.throws = function (block, /*optional*/ error, /*optional*/ message) {
     _throws.apply(this, [true].concat(pSlice.call(arguments)));
   };
 
   // EXTENSION! This is annoying to write outside this module.
-  assert.doesNotThrow = function(block, /*optional*/ error, /*optional*/ message) {
+  assert.doesNotThrow = function (block, /*optional*/ error, /*optional*/ message) {
     _throws.apply(this, [false].concat(pSlice.call(arguments)));
   };
 
-  assert.ifError = function(err) {
+  assert.ifError = function (err) {
     if (err) {
       throw err;
     }

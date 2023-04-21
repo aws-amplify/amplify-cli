@@ -1,7 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, LocalEnvInfo } from '@aws-amplify/amplify-cli-core';
 import { constructInputParams } from '../amplify-service-helper';
 import { Context } from '../domain/context';
-import { raisePostEnvAddEvent } from '../execution-manager';
+import { raisePostEnvAddEvent, raisePrePushEvent } from '../execution-manager';
 import { postInitSetup } from '../init-steps/postInitSetup';
 import { preInitSetup } from '../init-steps/preInitSetup';
 import { analyzeProject, analyzeProjectHeadless } from '../init-steps/s0-analyzeProject';
@@ -9,18 +9,21 @@ import { initFrontend } from '../init-steps/s1-initFrontend';
 import { initProviders } from '../init-steps/s2-initProviders';
 import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
 import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
+import { verifyExpectedEnvParams } from '../utils/verify-expected-env-params';
 import { checkForNestedProject } from './helpers/projectUtils';
 
 const constructExeInfo = (context: $TSContext): void => {
   context.exeInfo = {
     inputParams: constructInputParams(context),
+    localEnvInfo: {} as unknown as LocalEnvInfo,
   };
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const runStrategy = (quickstart: boolean) => (quickstart
-  ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-  : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup]);
+const runStrategy = (quickstart: boolean) =>
+  quickstart
+    ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command
@@ -28,8 +31,13 @@ const runStrategy = (quickstart: boolean) => (quickstart
 export const run = async (context: $TSContext): Promise<void> => {
   constructExeInfo(context);
   checkForNestedProject();
+  if (context?.input?.options?.forcePush === true) {
+    await verifyExpectedEnvParams(context);
+    // raising PrePush event here because init with --forcePush will do a push after initializing
+    await raisePrePushEvent(context as unknown as Context);
+  }
 
-  const steps = runStrategy(context?.parameters?.options?.quickstart);
+  const steps = runStrategy(!!context?.parameters?.options?.quickstart);
   for (const step of steps) {
     await step(context);
   }

@@ -11,15 +11,13 @@ import {
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import AWS from 'aws-sdk';
 import path from 'path';
 
 const customIAMPolicy: CustomIAMPolicy = {
   Effect: 'Allow',
-  Action: [
-    'ssm:GetParameter',
-  ],
+  Action: ['ssm:GetParameter'],
   Resource: [],
 };
 const customIAMPolicies: CustomIAMPolicy[] = [];
@@ -54,16 +52,20 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
 
   // Put SSM parameter
   const ssmClient = new AWS.SSM({ region });
-  await ssmClient.putParameter({
-    Name: '/amplify/testCustomPolicies',
-    Value: 'testCustomPoliciesValue',
-    Type: 'String',
-    Overwrite: true,
-  }).promise();
+  await ssmClient
+    .putParameter({
+      Name: '/amplify/testCustomPolicies',
+      Value: 'testCustomPoliciesValue',
+      Type: 'String',
+      Overwrite: true,
+    })
+    .promise();
 
-  const getParaResponse = await ssmClient.getParameter({
-    Name: '/amplify/testCustomPolicies',
-  }).promise();
+  const getParaResponse = await ssmClient
+    .getParameter({
+      Name: '/amplify/testCustomPolicies',
+    })
+    .promise();
   const ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);
@@ -72,16 +74,13 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
   JSONUtilities.writeJson(customPoliciesPath, customIAMPolicies);
 
   await amplifyPushWithoutCodegen(projRoot);
-  const containerCFN = readJsonFile(
-    path.join(projRoot, 'amplify', 'backend', 'api', name, `${name}-cloudformation-template.json`),
-  );
+  const containerCFN = readJsonFile(path.join(projRoot, 'amplify', 'backend', 'api', name, `${name}-cloudformation-template.json`));
 
-  expect(containerCFN.Resources.CustomExecutionPolicyForContainer.Properties.PolicyDocument.Statement[0])
-    .toEqual(customIAMPolicies[0]);
+  expect(containerCFN.Resources.CustomExecutionPolicyForContainer.Properties.PolicyDocument.Statement[0]).toEqual(customIAMPolicies[0]);
 });
 
 type CustomIAMPolicy = {
   Action: string[];
   Effect: string;
   Resource: string[];
-}
+};

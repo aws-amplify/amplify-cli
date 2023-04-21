@@ -1,39 +1,15 @@
-import { addCircleCITags, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { getCLIPath } from '../util';
-import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE, ORIGINAL_ENV } from './constants';
-import { EOL } from 'os';
+import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE } from './constants';
 
-const defaultSettings = {
-  name: EOL,
-  envName: ORIGINAL_ENV,
-  editor: EOL,
-  appType: EOL,
-  framework: EOL,
-  srcDir: EOL,
-  distDir: EOL,
-  buildCmd: EOL,
-  startCmd: EOL,
-  useProfile: EOL,
-  profileName: EOL,
+export const deleteProject = async (cwd: string): Promise<void> => {
+  const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
+  return spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
+    .wait('Are you sure you want to continue?')
+    .sendYes()
+    .wait('Project deleted locally.')
+    .runAsync();
 };
-
-export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
-    spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .sendCarriageReturn()
-      .wait('Project deleted locally.')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
 
 export function addEnvironment(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -90,20 +66,12 @@ export function addCICDHostingWithoutFrontend(cwd: string): Promise<void> {
   });
 }
 
-export function amplifyPublish(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue?')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPublish = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue?')
+    .sendCarriageReturn()
+    .runAsync();
+};
 
 export function amplifyConfigure(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -137,7 +105,7 @@ export function amplifyServe(cwd: string): Promise<void> {
 
 export function amplifyStatus(cwd: string, expectedStatus: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let regex = new RegExp(`.*${expectedStatus}*`);
+    const regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(), ['status'], { cwd, stripColors: true })
       .wait(regex)
       .sendCarriageReturn()
@@ -151,20 +119,12 @@ export function amplifyStatus(cwd: string, expectedStatus: string): Promise<void
   });
 }
 
-export function amplifyPush(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue?')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPush = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue?')
+    .sendCarriageReturn()
+    .runAsync();
+};
 
 export function removeHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {

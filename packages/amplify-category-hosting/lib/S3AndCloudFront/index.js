@@ -1,12 +1,12 @@
 const fs = require('fs-extra');
-const inquirer = require('inquirer');
 const path = require('path');
 const chalk = require('chalk');
-const { open } = require('amplify-cli-core');
+const { open } = require('@aws-amplify/amplify-cli-core');
 const configManager = require('./configuration-manager');
 const fileUPloader = require('./helpers/file-uploader');
 const cloudFrontManager = require('./helpers/cloudfront-manager');
 const constants = require('../constants');
+const { prompter, byValue } = require('@aws-amplify/amplify-prompts');
 
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
@@ -53,15 +53,8 @@ async function enable(context) {
 }
 
 async function checkCDN(context) {
-  const selectEnvironment = {
-    type: 'list',
-    name: 'environment',
-    message: 'Select the environment setup:',
-    choices: Environments,
-    default: DEV,
-  };
-  const answer = await inquirer.prompt(selectEnvironment);
-  if (answer.environment === DEV) {
+  const answer = await prompter.pick('Select the environment setup:', Environments, { initial: byValue(DEV) });
+  if (answer === DEV) {
     removeCDN(context);
   } else {
     makeBucketPrivate(context);
@@ -127,7 +120,7 @@ function publish(context, args) {
         open(WebsiteURL, { wait: false });
       }
     })
-    .catch(e => {
+    .catch((e) => {
       throw e;
     });
 }

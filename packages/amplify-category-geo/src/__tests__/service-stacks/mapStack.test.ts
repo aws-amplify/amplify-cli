@@ -1,4 +1,4 @@
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
 import { AccessType } from '../../service-utils/resourceParams';
 import { MapStack } from '../../service-stacks/mapStack';
 

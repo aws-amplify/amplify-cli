@@ -1,7 +1,5 @@
 import * as fs from 'fs-extra';
-import {
-  pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext,
-} from 'amplify-cli-core';
+import { pathManager, stateManager, DeploymentSecrets, removeFromDeploymentSecrets, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import {
   saveEnvResourceParameters,
@@ -11,7 +9,7 @@ import {
 } from '../../../extensions/amplify-helpers/envResourceParams';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: { getTeamProviderInfoFilePath: jest.fn() },
   stateManager: {
     getTeamProviderInfo: jest.fn(),
@@ -19,6 +17,7 @@ jest.mock('amplify-cli-core', () => ({
     getDeploymentSecrets: jest.fn(),
     setDeploymentSecrets: jest.fn(),
     getLocalEnvInfo: jest.fn().mockReturnValue({ envName: 'testEnv' }),
+    getBackendConfig: jest.fn(),
     getMeta: jest.fn().mockReturnValue({
       providers: {
         awscloudformation: {
@@ -44,16 +43,10 @@ beforeEach(async () => {
 });
 
 test('saveEnvResourceParams appends to existing params', () => {
-  getEnvParamManager('testEnv')
-    .getResourceParamManager('testCategory', 'testResourceName')
-    .setParam('existingParam', 'existingParamValue');
+  getEnvParamManager('testEnv').getResourceParamManager('testCategory', 'testResourceName').setParam('existingParam', 'existingParamValue');
 
   saveEnvResourceParameters(undefined, 'testCategory', 'testResourceName', { newParam: 'newParamValue' });
-  expect(
-    getEnvParamManager('testEnv')
-      .getResourceParamManager('testCategory', 'testResourceName')
-      .getAllParams(),
-  ).toEqual({
+  expect(getEnvParamManager('testEnv').getResourceParamManager('testCategory', 'testResourceName').getAllParams()).toEqual({
     existingParam: 'existingParamValue',
     newParam: 'newParamValue',
   });
@@ -100,10 +93,8 @@ test('loadEnvResourceParameters load params from deployment secrets and env para
 });
 
 test('removeResourceParameters remove resource params from team provider info', () => {
-  getEnvParamManager('testEnv')
-    .getResourceParamManager('testCategory', 'testResourceName')
-    .setParam('existingParam', 'existingParamValue');
-  removeResourceParameters(({} as unknown) as $TSContext, 'testCategory', 'testResourceName');
+  getEnvParamManager('testEnv').getResourceParamManager('testCategory', 'testResourceName').setParam('existingParam', 'existingParamValue');
+  removeResourceParameters({} as unknown as $TSContext, 'testCategory', 'testResourceName');
   expect(getEnvParamManager('testEnv').hasResourceParamManager('testCategory', 'testResourceName')).toBe(false);
 });
 

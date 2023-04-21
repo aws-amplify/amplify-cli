@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 import { AuthModal, AUTH_MODE } from './AuthModal';
+import { ClearDataModal } from './ClearDataModal';
 import { refreshToken } from './utils/jwt';
 
 const DEFAULT_COGNITO_JWT_TOKEN = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZDhjYTUyOC00OTMxLTQyNTQtOTI3My1lYTVlZTg1M2YyNzEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS91cy1lYXN0LTFfZmFrZSIsInBob25lX251bWJlcl92ZXJpZmllZCI6dHJ1ZSwiY29nbml0bzp1c2VybmFtZSI6InVzZXIxIiwiYXVkIjoiMmhpZmEwOTZiM2EyNG12bTNwaHNrdWFxaTMiLCJldmVudF9pZCI6ImIxMmEzZTJmLTdhMzYtNDkzYy04NWIzLTIwZDgxOGJkNzhhMSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxOTc0MjY0NDEyLCJwaG9uZV9udW1iZXIiOiIrMTIwNjIwNjIwMTYiLCJleHAiOjE1NjQyNjgwMTIsImlhdCI6MTU2NDI2NDQxMywiZW1haWwiOiJ1c2VyQGRvbWFpbi5jb20ifQ.wHKY2KIhvWn4zpJ4TZ1vS3zRE9mGWsLY4NCV2Cof17Q`;
@@ -46,7 +47,12 @@ const LOCAL_STORAGE_KEY_NAMES = {
 };
 
 function getAPIInfo() {
-  return fetch('/api-config').then(response => response.json());
+  return fetch('/api-config').then((response) => response.json());
+}
+
+// Calls clear-data endpoint to clear all data in the local database
+function clearData() {
+  return fetch('/clear-data', { method: 'DELETE' }).then((response) => response.json());
 }
 
 function fetcher(params: Object, additionalHeaders): Promise<any> {
@@ -81,6 +87,7 @@ type State = {
   query?: string;
   explorerIsOpen: boolean;
   authModalVisible: boolean;
+  clearDataModalVisible: boolean;
   jwtToken?: string;
   apiKey?: string;
   apiInfo: AmplifyAppSyncSimulatorApiInfo;
@@ -91,6 +98,7 @@ type State = {
     oidcJWTToken?: string;
     iamRole?: 'Auth' | 'UnAuth';
   };
+  clearResponse?: string;
 };
 
 class App extends Component<{}, State> {
@@ -100,6 +108,7 @@ class App extends Component<{}, State> {
     query: DEFAULT_QUERY,
     explorerIsOpen: true,
     authModalVisible: false,
+    clearDataModalVisible: false,
     apiInfo: DEFAULT_API_INFO,
     currentAuthMode: AUTH_MODE.API_KEY,
     credentials: {
@@ -133,11 +142,28 @@ class App extends Component<{}, State> {
   }
 
   toggleAuthModal = () =>
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       authModalVisible: !prevState.authModalVisible,
     }));
 
-  switchAuthMode = val => {
+  toggleClearDataModal = () =>
+    this.setState((prevState) => ({
+      clearDataModalVisible: !prevState.clearDataModalVisible,
+    }));
+
+  hideDataModal = () => {
+    this.setState({ clearDataModalVisible: false });
+  };
+
+  clearDataAndShowMessage = async () => {
+    this.setState({ clearDataModalVisible: false });
+    this.setState({ clearResponse: JSON.stringify(await clearData(), undefined, 2) });
+    setTimeout(() => {
+      this.setState({ clearResponse: '' });
+    }, 8000);
+  };
+
+  switchAuthMode = (val) => {
     this.setState({ currentAuthMode: val });
   };
   _handleInspectOperation = (cm: any, mousePos: { line: Number; ch: Number }) => {
@@ -158,7 +184,7 @@ class App extends Component<{}, State> {
 
     var position = relevantMousePos;
 
-    var def = parsedQuery.definitions.find(definition => {
+    var def = parsedQuery.definitions.find((definition) => {
       if (!definition.loc) {
         console.log('Missing location information for definition');
         return false;
@@ -227,7 +253,7 @@ class App extends Component<{}, State> {
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.iamRole, credentials.iamRole);
     }
 
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       credentials: {
         ...prevState.credentials,
@@ -240,7 +266,7 @@ class App extends Component<{}, State> {
   loadCredentials(apiInfo = this.state.apiInfo) {
     const credentials = {};
     const authProviders = [apiInfo.defaultAuthenticationType, ...apiInfo.additionalAuthenticationProviders];
-    const possibleAuth = authProviders.map(auth => auth.authenticationType);
+    const possibleAuth = authProviders.map((auth) => auth.authenticationType);
 
     if (possibleAuth.includes('API_KEY')) {
       credentials['apiKey'] = DEFAULT_API_INFO.apiKey;
@@ -258,7 +284,7 @@ class App extends Component<{}, State> {
 
     if (possibleAuth.includes('OPENID_CONNECT')) {
       const issuers = authProviders
-        .filter(auth => auth.authenticationType === AUTH_MODE.OPENID_CONNECT)
+        .filter((auth) => auth.authenticationType === AUTH_MODE.OPENID_CONNECT)
         .map((auth: any) => auth.openIDConnectConfig.Issuer);
       try {
         credentials['oidcJWTToken'] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.oidcToken) || '', issuers[0]);
@@ -280,11 +306,11 @@ class App extends Component<{}, State> {
   }
 
   render() {
-    const { query, schema, authModalVisible, apiInfo } = this.state;
+    const { query, schema, authModalVisible, apiInfo, clearDataModalVisible, clearResponse } = this.state;
     const authModes = [
       AUTH_MODE[apiInfo.defaultAuthenticationType.authenticationType],
-      ...apiInfo.additionalAuthenticationProviders.map(auth => AUTH_MODE[auth.authenticationType]),
-    ].filter(auth => auth);
+      ...apiInfo.additionalAuthenticationProviders.map((auth) => AUTH_MODE[auth.authenticationType]),
+    ].filter((auth) => auth);
     const authModal = authModalVisible ? (
       <AuthModal
         selectedAuthMode={this.state.currentAuthMode}
@@ -293,47 +319,54 @@ class App extends Component<{}, State> {
         apiKey={this.state.credentials.apiKey}
         iamRole={this.state.credentials.iamRole}
         authModes={authModes}
-        onClose={credentials => {
+        onClose={(credentials) => {
           this.storeCredentials(credentials);
           this.setState({ authModalVisible: false });
         }}
       />
     ) : null;
+
+    const clearDataModal = clearDataModalVisible ? (
+      <ClearDataModal onClose={this.hideDataModal} onClear={this.clearDataAndShowMessage} />
+    ) : null;
     return (
       <>
         {authModal}
-        <div className='graphiql-container'>
+        {clearDataModal}
+        <div className="graphiql-container">
           <GraphiQLExplorer
             schema={schema}
             query={query}
             onEdit={this._handleEditQuery}
-            onRunOperation={operationName => this._graphiql?.handleRunQuery(operationName)}
+            onRunOperation={(operationName) => this._graphiql?.handleRunQuery(operationName)}
             explorerIsOpen={this.state.explorerIsOpen}
             onToggleExplorer={this._handleToggleExplorer}
           />
           <GraphiQL
-            ref={ref => (this._graphiql = ref as GraphiQL)}
+            ref={(ref) => (this._graphiql = ref as GraphiQL)}
             fetcher={this.fetch}
             schema={schema!}
             query={query}
             onEditQuery={this._handleEditQuery}
+            response={clearResponse}
           >
             <GraphiQL.Toolbar>
               <GraphiQL.Button
                 onClick={() => this._graphiql?.handlePrettifyQuery()}
-                label='Prettify'
-                title='Prettify Query (Shift-Ctrl-P)'
+                label="Prettify"
+                title="Prettify Query (Shift-Ctrl-P)"
               />
-              <GraphiQL.Button onClick={() => this._graphiql?.handleToggleHistory()} label='History' title='Show History' />
-              <GraphiQL.Button onClick={this._handleToggleExplorer} label='Explorer' title='Toggle Explorer' />
-              <GraphiQL.Button onClick={this.toggleAuthModal} label='Update Auth' title='Auth Setting' />
+              <GraphiQL.Button onClick={() => this._graphiql?.handleToggleHistory()} label="History" title="Show History" />
+              <GraphiQL.Button onClick={this._handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
+              <GraphiQL.Button onClick={this.toggleAuthModal} label="Update Auth" title="Auth Setting" />
+              <GraphiQL.Button onClick={this.toggleClearDataModal} label="Clear data" title="Clear Mock Data" />
               <GraphiQL.Menu
                 label={`Auth - ${AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}${
                   this.state.currentAuthMode === 'AWS_IAM' ? `(${this.state.credentials.iamRole} Role)` : ''
                 }`}
                 title={AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}
               >
-                {authModes.map(mode => (
+                {authModes.map((mode) => (
                   <GraphiQL.MenuItem
                     title={AUTH_TYPE_TO_NAME[mode]}
                     label={`Use: ${AUTH_TYPE_TO_NAME[mode]}`}

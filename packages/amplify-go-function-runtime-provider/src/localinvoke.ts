@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { $TSContext, pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
 import getPort from 'get-port';
-import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { executeCommand } from './runtime';
 import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from './constants';
 import execa, { ExecaChildProcess } from 'execa';
@@ -23,7 +23,7 @@ const buildLocalInvoker = async (context: any) => {
 
   // Check if we need to build it or it already exists
   if (!fs.existsSync(localInvokeExecutablePath)) {
-    // Build localinvoker
+    // Build localInvoker
     context.print.info('Local invoker binary was not found, building it...');
     executeCommand(['mod', 'tidy'], true, undefined, localInvokerDir);
     executeCommand(['build', MAIN_SOURCE], true, undefined, localInvokerDir);
@@ -50,7 +50,7 @@ const startLambda = (request: InvocationRequest, portNumber: number, lambda: { e
   return lambdaProcess;
 };
 
-const stopLambda = async (lambdaProcess: ExecaChildProcess) => {
+const stopLambda = async (lambdaProcess?: ExecaChildProcess) => {
   try {
     if (lambdaProcess) {
       lambdaProcess.cancel();
@@ -67,7 +67,7 @@ export const localInvoke = async (request: InvocationRequest, context: $TSContex
   const localInvoker = await buildLocalInvoker(context);
 
   // Find a free tcp port for the Lambda to launch on
-  const portNumber = await getPort({port: getPort.makeRange(BASE_PORT, MAX_PORT)});
+  const portNumber = await getPort({ port: getPort.makeRange(BASE_PORT, MAX_PORT) });
 
   const lambdaExecutableDir = path.join(request.srcRoot, BIN_LOCAL);
   const lambdaExecutablePath = path.join(lambdaExecutableDir, MAIN_BINARY);

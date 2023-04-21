@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import {
-  amplifyPush,
+  amplifyPushLegacy,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
@@ -16,7 +16,7 @@ import {
 import * as fs from 'fs-extra';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
-import { addApiWithSchemaAndConflictDetectionOldDx, initJSProjectWithProfile } from '../../../migration-helpers';
+import { addApiWithSchemaAndConflictDetectionOldDx, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('api migration update test c', () => {
   let projRoot: string;
@@ -35,9 +35,9 @@ describe('api migration update test c', () => {
   it('init a sync enabled project and update conflict resolution strategy', async () => {
     const name = `syncenabled`;
     // init and add api with locally installed cli
-    await initJSProjectWithProfile(projRoot, { name });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name });
     await addApiWithSchemaAndConflictDetectionOldDx(projRoot, 'simple_model.graphql');
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
     let transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.ResolverConfig).toBeDefined();

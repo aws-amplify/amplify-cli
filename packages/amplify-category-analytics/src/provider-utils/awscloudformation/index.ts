@@ -3,13 +3,8 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable spellcheck/spell-checker */
 
-import {
-  $TSAny,
-  $TSContext,
-  exitOnNextTick,
-  NotImplementedError,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, exitOnNextTick, NotImplementedError } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * Add Analytics resource walkthrough
@@ -18,7 +13,7 @@ import { printer } from 'amplify-prompts';
  * @param {*} service - Pinpoint/Kinesis
  * @returns resourceName
  */
-export const addResource = (context : $TSContext, __: string, service: string): $TSAny => {
+export const addResource = (context: $TSContext, __: string, service: string): $TSAny => {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
@@ -35,7 +30,7 @@ export const addResource = (context : $TSContext, __: string, service: string): 
  * @param service Name of analytics provider service
  * @returns updateWalkthrough response
  */
-export const updateResource = (context : $TSContext, __: string, service: string): $TSAny => {
+export const updateResource = (context: $TSContext, __: string, service: string): $TSAny => {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -44,7 +39,7 @@ export const updateResource = (context : $TSContext, __: string, service: string
   if (!updateWalkthrough) {
     const message = 'Update functionality not available for this service';
     printer.error(message);
-    context.usageData.emitError(new NotImplementedError(message));
+    void context.usageData.emitError(new NotImplementedError(message));
     exitOnNextTick(0);
   }
 
@@ -64,7 +59,7 @@ export const getPermissionPolicies = (
   service: string,
   resourceName: string,
   crudOptions: $TSAny,
-): $TSAny|undefined => {
+): $TSAny | undefined => {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;

@@ -1,8 +1,22 @@
-import { $TSAny, $TSContext, AmplifyCategories } from 'amplify-cli-core';
-import { AddS3ServiceConfiguration, AddStorageRequest, CrudOperation, PermissionGroups, S3Permissions, UpdateStorageRequest } from 'amplify-headless-interface';
+import { $TSContext, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
+import {
+  AddS3ServiceConfiguration,
+  AddStorageRequest,
+  CrudOperation,
+  PermissionGroups,
+  S3Permissions,
+  UpdateStorageRequest,
+} from 'amplify-headless-interface';
 import { s3GetUserInput, S3UserInputs } from '../..';
 import { getAllDefaults as getDefaultS3UserInput } from './default-values/s3-defaults';
-import { GroupAccessType, S3AccessType, S3PermissionType, S3TriggerEventType, S3TriggerPrefixTransform, S3UserInputTriggerFunctionParams } from './service-walkthrough-types/s3-user-input-types';
+import {
+  GroupAccessType,
+  S3AccessType,
+  S3PermissionType,
+  S3TriggerEventType,
+  S3TriggerPrefixTransform,
+  S3UserInputTriggerFunctionParams,
+} from './service-walkthrough-types/s3-user-input-types';
 import { v4 as uuid } from 'uuid';
 /**
  * Configure S3UserInputs for all parameters except for (new) lambda triggers.
@@ -19,7 +33,7 @@ export function buildS3UserInputFromHeadlessStorageRequest(context: $TSContext, 
   const [shortId] = uuid().split('-');
   const defaultS3UserInput = getDefaultS3UserInput(context.amplify.getProjectDetails(), shortId);
 
-  let s3UserInput: S3UserInputs = {
+  const s3UserInput: S3UserInputs = {
     resourceName: headlessS3Config.resourceName ? headlessS3Config.resourceName : defaultS3UserInput.resourceName,
     bucketName: headlessS3Config.bucketName ? headlessS3Config.bucketName : defaultS3UserInput.bucketName,
     policyUUID: defaultS3UserInput.policyUUID,
@@ -40,25 +54,28 @@ export function buildS3UserInputFromHeadlessStorageRequest(context: $TSContext, 
  * @param storageRequest : Headless storage request
  * @returns s3UserInput
  */
-export async function buildS3UserInputFromHeadlessUpdateStorageRequest( context : $TSContext , storageRequest : UpdateStorageRequest ) : Promise<S3UserInputs>{
-    const {
-        serviceModification: { permissions, resourceName, lambdaTrigger },
-      } = storageRequest;
-    let s3UserInputs = await s3GetUserInput(context, resourceName)
-    //update permissions
-    if( permissions ){
-        s3UserInputs.authAccess = getS3PermissionFromHeadlessParams(permissions.auth);
-        s3UserInputs.guestAccess = getS3PermissionFromHeadlessParams(permissions.guest);
-        s3UserInputs.storageAccess = getStorageAccessTypeFromPermissions(s3UserInputs.guestAccess);
+export async function buildS3UserInputFromHeadlessUpdateStorageRequest(
+  context: $TSContext,
+  storageRequest: UpdateStorageRequest,
+): Promise<S3UserInputs> {
+  const {
+    serviceModification: { permissions, resourceName, lambdaTrigger },
+  } = storageRequest;
+  const s3UserInputs = await s3GetUserInput(context, resourceName);
+  //update permissions
+  if (permissions) {
+    s3UserInputs.authAccess = getS3PermissionFromHeadlessParams(permissions.auth);
+    s3UserInputs.guestAccess = getS3PermissionFromHeadlessParams(permissions.guest);
+    s3UserInputs.storageAccess = getStorageAccessTypeFromPermissions(s3UserInputs.guestAccess);
+  }
+  //update trigger if existing, else first create function and then add
+  if (lambdaTrigger) {
+    if (lambdaTrigger.mode === 'existing') {
+      s3UserInputs.triggerFunction = lambdaTrigger.name;
     }
-    //update trigger if existing, else first create function and then add
-    if ( lambdaTrigger ){
-        if (lambdaTrigger.mode === 'existing'){
-            s3UserInputs.triggerFunction = lambdaTrigger.name;
-        }
-        //note:- if mode is new, we will create the trigger function using a different api.
-    }
-    return s3UserInputs;
+    //note:- if mode is new, we will create the trigger function using a different api.
+  }
+  return s3UserInputs;
 }
 
 /**
@@ -69,26 +86,27 @@ export async function buildS3UserInputFromHeadlessUpdateStorageRequest( context 
  * @param triggerFunctionName
  * @returns S3 trigger function params.
  */
-export function buildTriggerFunctionParams(triggerFunctionName:string): S3UserInputTriggerFunctionParams{
-   const storageLambdaParams: S3UserInputTriggerFunctionParams = {
-        category : AmplifyCategories.STORAGE,
-        tag : "triggerFunction",
-        triggerFunction : triggerFunctionName,
-        permissions : [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
-        triggerEvents : [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED],
-        triggerPrefix : [ { prefix : 'protected/', prefixTransform :  S3TriggerPrefixTransform.ATTACH_REGION },
-                          { prefix : 'private/', prefixTransform :  S3TriggerPrefixTransform.ATTACH_REGION },
-                          { prefix : 'public/', prefixTransform :  S3TriggerPrefixTransform.ATTACH_REGION } ]
-      }
-    return storageLambdaParams;
+export function buildTriggerFunctionParams(triggerFunctionName: string): S3UserInputTriggerFunctionParams {
+  const storageLambdaParams: S3UserInputTriggerFunctionParams = {
+    category: AmplifyCategories.STORAGE,
+    tag: 'triggerFunction',
+    triggerFunction: triggerFunctionName,
+    permissions: [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE],
+    triggerEvents: [S3TriggerEventType.OBJ_PUT_POST_COPY, S3TriggerEventType.OBJ_REMOVED],
+    triggerPrefix: [
+      { prefix: 'protected/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+      { prefix: 'private/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+      { prefix: 'public/', prefixTransform: S3TriggerPrefixTransform.ATTACH_REGION },
+    ],
+  };
+  return storageLambdaParams;
 }
-
 
 /** Data Type Conversion Helpers (Headless => UserInput) **/
 
 export function getS3PermissionFromHeadlessParams(headlessPermissionList: CrudOperation[] | undefined): S3PermissionType[] {
   if (headlessPermissionList && headlessPermissionList.length > 0) {
-    return headlessPermissionList.map(headlessCrud => {
+    return headlessPermissionList.map((headlessCrud) => {
       switch (headlessCrud) {
         case CrudOperation.CREATE_AND_UPDATE: {
           return S3PermissionType.CREATE_AND_UPDATE;
@@ -100,7 +118,7 @@ export function getS3PermissionFromHeadlessParams(headlessPermissionList: CrudOp
           return S3PermissionType.READ;
         }
         default:
-          throw new Error(`Headless Acces Permission ${headlessCrud} is not supported in S3 CLI`);
+          throw new Error(`Headless Access Permission ${headlessCrud} is not supported in S3 CLI`);
       }
     });
   } else {
@@ -112,7 +130,7 @@ function getStorageAccessTypeFromPermissions(guestPermissions: S3PermissionType[
 }
 
 function getGroupAccessTypeFromPermissions(headlessPermissionGroups: PermissionGroups | undefined) {
-  let groupAccessType: GroupAccessType = {};
+  const groupAccessType: GroupAccessType = {};
   if (!headlessPermissionGroups) {
     return undefined;
   } else {

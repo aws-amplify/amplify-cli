@@ -1,4 +1,4 @@
-import { $TSAny, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSObject, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 
 export function updateBackendConfigAfterResourceAdd(category: string, resourceName: string, options: $TSObject) {
@@ -26,7 +26,7 @@ export function updateBackendConfigAfterResourceUpdate(category: string, resourc
     default: {},
   });
 
-  _.set(backendConfig, [category, resourceName, attribute], value);
+  _.setWith(backendConfig, [category, resourceName, attribute], value);
 
   stateManager.setBackendConfig(undefined, backendConfig);
 }

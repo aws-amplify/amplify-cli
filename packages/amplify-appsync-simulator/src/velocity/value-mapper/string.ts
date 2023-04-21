@@ -64,16 +64,16 @@ export class JavaString {
     // in the regex into the result. To remove the groups from the result we need the count of capturing groups in
     // the provided regex, the only way in JS seems to be via a match to an empty string
     const testRe = new RegExp(`${regexString.toString()}|`);
-    const ngroups = ''.match(testRe).length; // actually num of groups plus one, ie "" and the (empty) groups
+    const numberOfGroups = ''.match(testRe).length; // actually num of groups plus one, ie "" and the (empty) groups
 
     const re = new RegExp(regexString.toString());
 
-    const result = this.value.split(re, limit).filter((v, ii) => !(ii % ngroups));
-    return new JavaArray(result, e => new JavaString(e.toString()));
+    const result = this.value.split(re, limit).filter((v, ii) => !(ii % numberOfGroups));
+    return new JavaArray(result, (e) => new JavaString(e.toString()));
   }
 
-  startsWith(prefix, toffset = 0) {
-    return this.value.startsWith(prefix.toString(), toffset);
+  startsWith(prefix, offset = 0) {
+    return this.value.startsWith(prefix.toString(), offset);
   }
 
   substring(beginIndex, endIndex = Infinity) {

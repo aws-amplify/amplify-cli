@@ -1,5 +1,5 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { customResourceNameQuestion } from '../../utils/common-questions';
 import { addCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-walkthrough';
 
@@ -7,8 +7,8 @@ jest.mock('../../utils/common-questions');
 jest.mock('../../utils/build-custom-resources');
 jest.mock('../../utils/dependency-management-utils');
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-prompts');
 
 jest.mock('fs-extra', () => ({
   readFileSync: jest.fn().mockReturnValue('mockCode'),

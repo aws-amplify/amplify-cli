@@ -1,4 +1,4 @@
-import { AmplifyError, stateManager } from 'amplify-cli-core';
+import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as assert from 'assert';
 import { CognitoIdentity } from 'aws-sdk';
 import bodyParser from 'body-parser'; // eslint-disable-line
@@ -8,7 +8,7 @@ import http from 'http';
 import * as jose from 'jose';
 import _ from 'lodash';
 
-import { Printer } from 'amplify-prompts';
+import { Printer } from '@aws-amplify/amplify-prompts';
 import { AdminAuthPayload, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 /**
@@ -59,7 +59,8 @@ export class AdminLoginServer {
     return this.port;
   }
 
-  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> { // eslint-disable-line
+  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> {
+    // eslint-disable-line
     const cognitoIdentity = new CognitoIdentity({ region });
     const login = idToken.payload.iss.replace('https://', '');
     const logins = {
@@ -80,7 +81,8 @@ export class AdminLoginServer {
   }
 
   private async setupRoute(callback): Promise<void> {
-    this.app.post('/amplifyadmin/', async (req, res) => { // eslint-disable-line
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    this.app.post('/amplifyadmin/', async (req, res) => {
       if (!req.body || req.body.error) {
         this.shutdown();
         if (req.body.error === 'CANCELLED') {
@@ -97,18 +99,24 @@ export class AdminLoginServer {
         res.sendStatus(200);
       } catch (err) {
         res.sendStatus(500);
-        throw new AmplifyError('AmplifyStudioLoginError', {
-          message: `Failed to receive expected authentication tokens. Error: [${err}]`,
-        }, err);
+        throw new AmplifyError(
+          'AmplifyStudioLoginError',
+          {
+            message: `Failed to receive expected authentication tokens. Error: [${err}]`,
+          },
+          err,
+        );
       }
       callback();
     });
-    this.app.get('/ping', async (_, res) => { // eslint-disable-line
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    this.app.get('/ping', async (_, res) => {
       res.send({ success: true });
     });
   }
 
-  private async validateTokens( // eslint-disable-line
+  private async validateTokens(
+    // eslint-disable-line
     tokens: {
       accessToken: CognitoAccessToken;
       idToken: CognitoIdToken;
@@ -136,12 +144,10 @@ export class AdminLoginServer {
    * Stores tokens received by server
    */
   public async storeTokens(payload: AdminAuthPayload, appId: string): Promise<void> {
-    const areTokensValid = await this.validateTokens(
-      {
-        idToken: payload.idToken,
-        accessToken: payload.accessToken,
-      },
-    );
+    const areTokensValid = await this.validateTokens({
+      idToken: payload.idToken,
+      accessToken: payload.accessToken,
+    });
     if (areTokensValid) {
       const IdentityId = await this.getIdentityId(payload.idToken, payload.IdentityPoolId, payload.region);
       const config = { ...payload, IdentityId };

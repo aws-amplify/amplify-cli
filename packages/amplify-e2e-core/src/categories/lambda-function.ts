@@ -7,15 +7,15 @@ import _ from 'lodash';
 import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 
-type FunctionRuntimes = 'dotnetCore31' | 'go' | 'java' | 'nodejs' | 'python';
+type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
 
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
 // runtimeChoices are shared between tests
-export const runtimeChoices = ['.NET Core 3.1', 'Go', 'Java', 'NodeJS', 'Python'];
+export const runtimeChoices = ['.NET 6', 'Go', 'Java', 'NodeJS', 'Python'];
 
 // templateChoices is per runtime
-const dotNetCore31TemplateChoices = [
+const dotNetTemplateChoices = [
   'CRUD function for DynamoDB (Integration with API Gateway)',
   'Hello World',
   'Serverless',
@@ -164,7 +164,7 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
@@ -325,20 +325,12 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
-export const functionBuild = (cwd: string, settings: any): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue building the resources?')
-      .sendConfirmYes()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+export const functionBuild = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue building the resources?')
+    .sendYes()
+    .sendEof()
+    .runAsync();
 };
 
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
@@ -361,9 +353,44 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
   singleSelect(chain, functionTemplate, templateChoices);
 };
 
+export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext): void => {
+  chain.wait('Choose a DynamoDB data source option');
+  singleSelect(chain, 'Create a new DynamoDB table', [
+    'Use DynamoDB table configured in the current Amplify project',
+    'Create a new DynamoDB table',
+  ]);
+  chain
+    .wait('Provide a friendly name')
+    .sendCarriageReturn()
+    .wait('Provide table name')
+    .sendCarriageReturn()
+    .wait('What would you like to name this column')
+    .sendLine('column1')
+    .wait('Choose the data type')
+    .sendCarriageReturn()
+    .wait('Would you like to add another column?')
+    .sendYes()
+    .wait('What would you like to name this column')
+    .sendLine('column2')
+    .wait('Choose the data type')
+    .sendCarriageReturn()
+    .wait('Would you like to add another column?')
+    .sendNo()
+    .wait('Choose partition key for the table')
+    .sendCarriageReturn()
+    .wait('Do you want to add a sort key to your table?')
+    .sendYes()
+    .wait('Do you want to add global secondary indexes to your table?')
+    .sendNo()
+    .wait('Do you want to add a Lambda Trigger for your Table?')
+    .sendNo();
+};
+
 export const removeFunction = (cwd: string, funcName: string) =>
   new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
+    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run((err) =>
+      err ? reject(err) : resolve(),
+    );
   });
 
 export interface LayerOptions {
@@ -404,12 +431,12 @@ const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => 
 
   // If no versions present in options, skip the version selection prompt
   if (options.versions) {
-    options.select.forEach(selection => {
+    options.select.forEach((selection) => {
       chain.wait(`Select a version for ${selection}`);
 
       singleSelect(chain, options.versions[selection].version.toString(), [
         'Always choose latest version',
-        ...options.versions[selection].expectedVersionOptions.map(op => op.toString()),
+        ...options.versions[selection].expectedVersionOptions.map((op) => op.toString()),
       ]);
     });
   }
@@ -552,17 +579,21 @@ const addCron = (chain: ExecutionContext, settings: any) => {
 export const functionMockAssert = (
   cwd: string,
   settings: { funcName: string; successString: string; eventFile: string; timeout?: number },
+  testingWithLatestCodebase = false,
 ) => {
   return new Promise<void>((resolve, reject) => {
     const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
       settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
     );
-    spawn(getCLIPath(), cliArgs, { cwd, stripColors: true })
-      .wait('Result:')
-      .wait(settings.successString)
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), cliArgs, { cwd, stripColors: true });
+    chain.wait('Result:');
+    if (settings.successString) {
+      chain.wait(settings.successString);
+    }
+    chain
       .wait('Finished execution.')
       .sendEof()
-      .run(err => (err ? reject(err) : resolve()));
+      .run((err) => (err ? reject(err) : resolve()));
   });
 };
 
@@ -578,15 +609,15 @@ export const functionCloudInvoke = async (
   expect(region).toBeDefined();
   const result = await invokeFunction(functionName, settings.payload, region);
   if (!result.$response.data) {
-    fail('No data in lambda response');
+    throw new Error('No data in lambda response');
   }
   return result.$response.data as Lambda.InvocationResponse;
 };
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnetCore31':
-      return dotNetCore31TemplateChoices;
+    case 'dotnet6':
+      return dotNetTemplateChoices;
     case 'go':
       return goTemplateChoices;
     case 'java':
@@ -602,8 +633,8 @@ const getTemplateChoices = (runtime: FunctionRuntimes) => {
 
 const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnetCore31':
-      return '.NET Core 3.1';
+    case 'dotnet6':
+      return '.NET 6';
     case 'go':
       return 'Go';
     case 'java':
@@ -618,7 +649,7 @@ const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
 };
 
 export function validateNodeModulesDirRemoval(projRoot) {
-  let functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
+  const functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: functionDir,
     absolute: true,

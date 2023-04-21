@@ -2,8 +2,8 @@
  * Contains all of the logic for the various secret prompts
  */
 
-import { ResourceName } from 'amplify-cli-core';
-import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from 'amplify-function-plugin-interface';
+import { ResourceName } from '@aws-amplify/amplify-cli-core';
+import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from '@aws-amplify/amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
 import { getStoredEnvironmentVariables } from '../utils/environmentVariablesHelper';
@@ -71,7 +71,7 @@ export const cloneEnvWalkthrough = async (
   }
 
   const funcList = Object.keys(deltas);
-  for (let funcToUpdate = await selectFunctionToUpdate(funcList); !!funcToUpdate; funcToUpdate = await selectFunctionToUpdate(funcList)) {
+  for (let funcToUpdate = await selectFunctionToUpdate(funcList); funcToUpdate; funcToUpdate = await selectFunctionToUpdate(funcList)) {
     await secretValuesWalkthrough(deltas[funcToUpdate], Object.keys(getStoredEnvironmentVariables(funcToUpdate)), { preConfirmed: true });
   }
 
@@ -94,7 +94,7 @@ const updateSecretFlow = async (secretDeltas: SecretDeltas) => {
 
 const removeSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretsToRemove = await multiSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secrets to delete:');
-  secretsToRemove.forEach(secretName => (secretDeltas[secretName] = removeSecret));
+  secretsToRemove.forEach((secretName) => (secretDeltas[secretName] = removeSecret));
 };
 
 const operationFlowMap: Record<Exclude<SecretOperation, 'done'>, SecretDeltasModifier> = {
@@ -129,12 +129,12 @@ const selectFunctionToUpdate = async (funcNames: string[]) =>
       name: 'funcToUpdate',
       message: 'Select a function to update secrets for:',
       choices: funcNames
-        .map(name => ({ name, value: name } as { name: string; value: string | false }))
+        .map((name) => ({ name, value: name } as { name: string; value: string | false }))
         .concat({ name: "I'm done", value: false }),
     })
   ).funcToUpdate as string | false;
 
-const addSecretsConfirm = async (preConfirmed: boolean = false) => {
+const addSecretsConfirm = async (preConfirmed = false) => {
   if (preConfirmed) {
     return true;
   }

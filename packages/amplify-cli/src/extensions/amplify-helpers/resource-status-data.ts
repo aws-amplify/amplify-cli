@@ -2,11 +2,8 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-cycle */
-import { hashLayerResource, ServiceName as FunctionServiceName } from 'amplify-category-function';
-import {
-  $TSAny,
-  pathManager, projectNotInitializedError, stateManager, ViewResourceTableParams,
-} from 'amplify-cli-core';
+import { hashLayerResource, ServiceName as FunctionServiceName } from '@aws-amplify/amplify-category-function';
+import { $TSAny, pathManager, projectNotInitializedError, stateManager, ViewResourceTableParams } from '@aws-amplify/amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -15,19 +12,19 @@ import { removeGetUserEndpoints } from './remove-pinpoint-policy';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import * as resourceStatus from './resource-status-diff';
 import { capitalize, IResourceDiffCollection } from './resource-status-diff';
-import { getHashForRootStack, isRootStackModifiedSinceLastPush } from './root-stack-status';
+import { isRootStackModifiedSinceLastPush } from './root-stack-status';
 
 /**
  * Resources separated by their states Created, Updated, Deleted, Synced and all (merged)
  */
 export interface IResourceGroups {
-  resourcesToBeUpdated: Array<$TSAny>,
-  resourcesToBeDeleted: Array<$TSAny>,
-  resourcesToBeCreated: Array<$TSAny>,
-  resourcesToBeSynced : Array<$TSAny>,
-  allResources: Array<$TSAny>,
-  rootStackUpdated?: boolean,
-  tagsUpdated?: boolean,
+  resourcesToBeUpdated: Array<$TSAny>;
+  resourcesToBeDeleted: Array<$TSAny>;
+  resourcesToBeCreated: Array<$TSAny>;
+  resourcesToBeSynced: Array<$TSAny>;
+  allResources: Array<$TSAny>;
+  rootStackUpdated?: boolean;
+  tagsUpdated?: boolean;
 }
 
 // Place holder for Summary cell types
@@ -57,7 +54,7 @@ export const getMultiCategoryStatus = async (inputs: ViewResourceTableParams | u
  */
 export const getResourceDiffs = async (
   resourcesToBeUpdated: Array<$TSAny>,
-  resourcesToBeDeleted:Array<$TSAny>,
+  resourcesToBeDeleted: Array<$TSAny>,
   resourcesToBeCreated: Array<$TSAny>,
 ): Promise<IResourceDiffCollection> => {
   const result: IResourceDiffCollection = {
@@ -68,10 +65,12 @@ export const getResourceDiffs = async (
   return result;
 };
 
-const resourceToTableRow = (
-  resource: $TSAny,
-  operation: string,
-): Array<string> => [capitalize(resource.category), resource.resourceName, operation /* syncOperationLabel*/, resource.providerPlugin];
+const resourceToTableRow = (resource: $TSAny, operation: string): Array<string> => [
+  capitalize(resource.category),
+  resource.resourceName,
+  operation /* syncOperationLabel*/,
+  resource.providerPlugin,
+];
 
 const ResourceOperationLabel = {
   Create: 'Create',
@@ -116,7 +115,7 @@ export const getSummaryTableData = ({
     resourcesToBeCreated.concat(resourcesToBeUpdated).concat(resourcesToBeSynced),
     _.isEqual,
   );
-  noChangeResources = noChangeResources.filter(resource => resource.category !== 'providers');
+  noChangeResources = noChangeResources.filter((resource) => resource.category !== 'providers');
 
   const tableOptions = [
     [TableColumnLabels.Category, TableColumnLabels.ResourceName, TableColumnLabels.Operation, TableColumnLabels.ProviderPlugin],
@@ -145,9 +144,9 @@ export const getSummaryTableData = ({
   return tableOptions;
 };
 
-interface IBackendConfigs{
-  currentBackendConfig: $TSAny,
-  backendConfig: $TSAny
+interface IBackendConfigs {
+  currentBackendConfig: $TSAny;
+  backendConfig: $TSAny;
 }
 
 /**
@@ -158,34 +157,40 @@ interface IBackendConfigs{
  * @param filteredResources  Resources to be ignored in the results
  */
 export const getResourceStatus = async (
-  category? : string,
-  resourceName? : string,
-  providerName? : string,
-  filteredResources? : Array<$TSAny>,
+  category?: string,
+  resourceName?: string,
+  providerName?: string,
+  filteredResources?: Array<$TSAny>,
 ): Promise<resourceStatus.ICategoryStatusCollection> => {
   const { amplifyMeta, currentAmplifyMeta } = getAmplifyMeta();
   const backendConfigs = getLocalAndDeployedBackendConfig();
   let resourcesToBeCreated: $TSAny = getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
-  let resourcesToBeUpdated: $TSAny = await getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, backendConfigs,
-    category, resourceName, filteredResources);
+  let resourcesToBeUpdated: $TSAny = await getResourcesToBeUpdated(
+    amplifyMeta,
+    currentAmplifyMeta,
+    backendConfigs,
+    category,
+    resourceName,
+    filteredResources,
+  );
   let resourcesToBeSynced: $TSAny = getResourcesToBeSynced(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeDeleted: $TSAny = getResourcesToBeDeleted(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let allResources: $TSAny = getAllResources(amplifyMeta, category, resourceName, filteredResources);
 
-  resourcesToBeCreated = resourcesToBeCreated.filter(resource => resource.category !== 'provider');
+  resourcesToBeCreated = resourcesToBeCreated.filter((resource) => resource.category !== 'provider');
 
   if (providerName) {
-    resourcesToBeCreated = resourcesToBeCreated.filter(resource => resource.providerPlugin === providerName);
-    resourcesToBeUpdated = resourcesToBeUpdated.filter(resource => resource.providerPlugin === providerName);
-    resourcesToBeSynced = resourcesToBeSynced.filter(resource => resource.providerPlugin === providerName);
-    resourcesToBeDeleted = resourcesToBeDeleted.filter(resource => resource.providerPlugin === providerName);
-    allResources = allResources.filter(resource => resource.providerPlugin === providerName);
+    resourcesToBeCreated = resourcesToBeCreated.filter((resource) => resource.providerPlugin === providerName);
+    resourcesToBeUpdated = resourcesToBeUpdated.filter((resource) => resource.providerPlugin === providerName);
+    resourcesToBeSynced = resourcesToBeSynced.filter((resource) => resource.providerPlugin === providerName);
+    resourcesToBeDeleted = resourcesToBeDeleted.filter((resource) => resource.providerPlugin === providerName);
+    allResources = allResources.filter((resource) => resource.providerPlugin === providerName);
   }
   // if not equal there is a tag update
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
   // if not equal there is a root stack update
-  const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
+  const rootStackUpdated = await isRootStackModifiedSinceLastPush();
 
   return {
     resourcesToBeCreated,
@@ -201,13 +206,17 @@ export const getResourceStatus = async (
 /**
  * Get the list of all resources
  */
-export const getAllResources = (amplifyMeta: $TSAny, category: $TSAny, resourceName: string|undefined,
-  filteredResources: Array<$TSAny>|undefined) : Array<$TSAny> => {
+export const getAllResources = (
+  amplifyMeta: $TSAny,
+  category: $TSAny,
+  resourceName: string | undefined,
+  filteredResources: Array<$TSAny> | undefined,
+): Array<$TSAny> => {
   let resources: $TSAny[] = [];
 
-  Object.keys(amplifyMeta).forEach(categoryName => {
+  Object.keys(amplifyMeta).forEach((categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
-    Object.keys(categoryItem).forEach(resource => {
+    Object.keys(categoryItem).forEach((resource) => {
       amplifyMeta[categoryName][resource].resourceName = resource;
       amplifyMeta[categoryName][resource].category = categoryName;
       resources.push(amplifyMeta[categoryName][resource]);
@@ -218,12 +227,12 @@ export const getAllResources = (amplifyMeta: $TSAny, category: $TSAny, resourceN
 
   if (category !== undefined && resourceName !== undefined) {
     // Create only specified resource in the cloud
-    resources = resources.filter(resource => resource.category === category && resource.resourceName === resourceName);
+    resources = resources.filter((resource) => resource.category === category && resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
     // Create all the resources for the specified category in the cloud
-    resources = resources.filter(resource => resource.category === category);
+    resources = resources.filter((resource) => resource.category === category);
   }
 
   return resources;
@@ -233,20 +242,24 @@ export const getAllResources = (amplifyMeta: $TSAny, category: $TSAny, resourceN
  * Query metadata and get resources to be created.
  * Typically a resource to be created exists in backend-config but not in #currentBackend/amplify-meta
  */
-export const getResourcesToBeCreated = (amplifyMeta:$TSAny, currentAmplifyMeta: $TSAny,
-  category: string|undefined, resourceName: string|undefined,
-  filteredResources: Array<$TSAny>|undefined): Array<$TSAny> => {
+export const getResourcesToBeCreated = (
+  amplifyMeta: $TSAny,
+  currentAmplifyMeta: $TSAny,
+  category: string | undefined,
+  resourceName: string | undefined,
+  filteredResources: Array<$TSAny> | undefined,
+): Array<$TSAny> => {
   let resources: $TSAny[] = [];
 
-  Object.keys(amplifyMeta).forEach(categoryName => {
+  Object.keys(amplifyMeta).forEach((categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
-    Object.keys(categoryItem).forEach(resource => {
+    Object.keys(categoryItem).forEach((resource) => {
       if (
-        (!amplifyMeta[categoryName][resource]?.lastPushTimeStamp
-          || !currentAmplifyMeta[categoryName]
-          || !currentAmplifyMeta[categoryName][resource])
-        && categoryName !== 'providers'
-        && amplifyMeta[categoryName][resource].serviceType !== 'imported'
+        (!amplifyMeta[categoryName][resource]?.lastPushTimeStamp ||
+          !currentAmplifyMeta[categoryName] ||
+          !currentAmplifyMeta[categoryName][resource]) &&
+        categoryName !== 'providers' &&
+        amplifyMeta[categoryName][resource].serviceType !== 'imported'
       ) {
         amplifyMeta[categoryName][resource].resourceName = resource;
         amplifyMeta[categoryName][resource].category = categoryName;
@@ -259,12 +272,12 @@ export const getResourcesToBeCreated = (amplifyMeta:$TSAny, currentAmplifyMeta: 
 
   if (category !== undefined && resourceName !== undefined) {
     // Create only specified resource in the cloud
-    resources = resources.filter(resource => resource.category === category && resource.resourceName === resourceName);
+    resources = resources.filter((resource) => resource.category === category && resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
     // Create all the resources for the specified category in the cloud
-    resources = resources.filter(resource => resource.category === category);
+    resources = resources.filter((resource) => resource.category === category);
   }
 
   // Check for dependencies and add them
@@ -275,13 +288,13 @@ export const getResourcesToBeCreated = (amplifyMeta:$TSAny, currentAmplifyMeta: 
         const dependsOnCategory = resources[i].dependsOn[j].category;
         const dependsOnResourceName = resources[i].dependsOn[j].resourceName;
         if (
-          amplifyMeta[dependsOnCategory]
-          && (!amplifyMeta[dependsOnCategory][dependsOnResourceName]?.lastPushTimeStamp
-            || !currentAmplifyMeta[dependsOnCategory]
-            || !currentAmplifyMeta[dependsOnCategory][dependsOnResourceName])
-          && amplifyMeta[dependsOnCategory][dependsOnResourceName]
-          && amplifyMeta[dependsOnCategory][dependsOnResourceName]?.serviceType !== 'imported'
-          && !resources.includes(amplifyMeta[dependsOnCategory][dependsOnResourceName])
+          amplifyMeta[dependsOnCategory] &&
+          (!amplifyMeta[dependsOnCategory][dependsOnResourceName]?.lastPushTimeStamp ||
+            !currentAmplifyMeta[dependsOnCategory] ||
+            !currentAmplifyMeta[dependsOnCategory][dependsOnResourceName]) &&
+          amplifyMeta[dependsOnCategory][dependsOnResourceName] &&
+          amplifyMeta[dependsOnCategory][dependsOnResourceName]?.serviceType !== 'imported' &&
+          !resources.includes(amplifyMeta[dependsOnCategory][dependsOnResourceName])
         ) {
           resources.push(amplifyMeta[dependsOnCategory][dependsOnResourceName]);
         }
@@ -296,13 +309,18 @@ export const getResourcesToBeCreated = (amplifyMeta:$TSAny, currentAmplifyMeta: 
  * Query metadata and get resources to be deleted.
  * Typically a resource to be deleted exists both in backend-config and in #currentBackend/amplify-meta
  */
-export const getResourcesToBeDeleted = (amplifyMeta : $TSAny, currentAmplifyMeta: $TSAny, category : string|undefined,
-  resourceName: string|undefined, filteredResources: Array<$TSAny>|undefined):Array<$TSAny> => {
+export const getResourcesToBeDeleted = (
+  amplifyMeta: $TSAny,
+  currentAmplifyMeta: $TSAny,
+  category: string | undefined,
+  resourceName: string | undefined,
+  filteredResources: Array<$TSAny> | undefined,
+): Array<$TSAny> => {
   let resources: $TSAny[] = [];
 
-  Object.keys(currentAmplifyMeta).forEach(categoryName => {
+  Object.keys(currentAmplifyMeta).forEach((categoryName) => {
     const categoryItem = currentAmplifyMeta[categoryName];
-    Object.keys(categoryItem).forEach(resource => {
+    Object.keys(categoryItem).forEach((resource) => {
       if ((!amplifyMeta[categoryName] || !amplifyMeta[categoryName][resource]) && categoryItem[resource].serviceType !== 'imported') {
         currentAmplifyMeta[categoryName][resource].resourceName = resource;
         currentAmplifyMeta[categoryName][resource].category = categoryName;
@@ -316,12 +334,12 @@ export const getResourcesToBeDeleted = (amplifyMeta : $TSAny, currentAmplifyMeta
 
   if (category !== undefined && resourceName !== undefined) {
     // Deletes only specified resource in the cloud
-    resources = resources.filter(resource => resource.category === category && resource.resourceName === resourceName);
+    resources = resources.filter((resource) => resource.category === category && resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
     // Deletes all the resources for the specified category in the cloud
-    resources = resources.filter(resource => resource.category === category);
+    resources = resources.filter((resource) => resource.category === category);
   }
 
   return resources;
@@ -331,16 +349,15 @@ export const getResourcesToBeDeleted = (amplifyMeta : $TSAny, currentAmplifyMeta
  * Compares the contents of the backendConfig files from backend and #currentCloudBackend
  */
 const isBackendConfigModifiedSinceLastPush = (categoryName: string, resourceName: string, backendConfigs: IBackendConfigs): boolean => {
-  if ((backendConfigs.backendConfig && backendConfigs.currentBackendConfig)) {
-    const deployedCategoryBackendConfig = (categoryName in backendConfigs.currentBackendConfig)
-      ? backendConfigs.currentBackendConfig[categoryName] : undefined;
-    const categoryBackendConfig = (categoryName in backendConfigs.backendConfig)
-      ? backendConfigs.backendConfig[categoryName] : undefined;
-    const deployedResource = (deployedCategoryBackendConfig) ? deployedCategoryBackendConfig[resourceName] : undefined;
-    const categoryResource = (categoryBackendConfig) ? categoryBackendConfig[resourceName] : undefined;
+  if (backendConfigs.backendConfig && backendConfigs.currentBackendConfig) {
+    const deployedCategoryBackendConfig =
+      categoryName in backendConfigs.currentBackendConfig ? backendConfigs.currentBackendConfig[categoryName] : undefined;
+    const categoryBackendConfig = categoryName in backendConfigs.backendConfig ? backendConfigs.backendConfig[categoryName] : undefined;
+    const deployedResource = deployedCategoryBackendConfig ? deployedCategoryBackendConfig[resourceName] : undefined;
+    const categoryResource = categoryBackendConfig ? categoryBackendConfig[resourceName] : undefined;
     // resource is configured in both backendConfig files, check for equality
     if (deployedResource && categoryResource) {
-      return (JSON.stringify(deployedResource).normalize() !== JSON.stringify(categoryResource).normalize());
+      return JSON.stringify(deployedResource).normalize() !== JSON.stringify(categoryResource).normalize();
     }
     if (categoryResource) {
       return true;
@@ -352,31 +369,32 @@ const isBackendConfigModifiedSinceLastPush = (categoryName: string, resourceName
 };
 
 /**
-* Query metadata and get resources to be updated.
-* Typically a resource to be updated has a different has value in amplify-meta vs #currentBackend/amplify-meta
-*/
+ * Query metadata and get resources to be updated.
+ * Typically a resource to be updated has a different has value in amplify-meta vs #currentBackend/amplify-meta
+ */
 export const getResourcesToBeUpdated = async (
-  amplifyMeta : $TSAny,
+  amplifyMeta: $TSAny,
   currentAmplifyMeta: $TSAny,
   backendConfigs: IBackendConfigs,
-  category: string|undefined,
-  resourceName: string|undefined, filteredResources: Array<$TSAny>|undefined,
+  category: string | undefined,
+  resourceName: string | undefined,
+  filteredResources: Array<$TSAny> | undefined,
 ): Promise<$TSAny[]> => {
   let resources: $TSAny[] = [];
 
-  await asyncForEach(Object.keys(amplifyMeta), async categoryName => {
+  await asyncForEach(Object.keys(amplifyMeta), async (categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
-    await asyncForEach(Object.keys(categoryItem), async resource => {
+    await asyncForEach(Object.keys(categoryItem), async (resource) => {
       if (categoryName === 'analytics') {
         removeGetUserEndpoints(resource);
       }
 
       if (
-        currentAmplifyMeta[categoryName]
-        && currentAmplifyMeta[categoryName][resource] !== undefined
-        && amplifyMeta[categoryName]
-        && amplifyMeta[categoryName][resource] !== undefined
-        && amplifyMeta[categoryName][resource].serviceType !== 'imported'
+        currentAmplifyMeta[categoryName] &&
+        currentAmplifyMeta[categoryName][resource] !== undefined &&
+        amplifyMeta[categoryName] &&
+        amplifyMeta[categoryName][resource] !== undefined &&
+        amplifyMeta[categoryName][resource].serviceType !== 'imported'
       ) {
         if (categoryName === 'function' && currentAmplifyMeta[categoryName][resource].service === FunctionServiceName.LambdaLayer) {
           const backendModified = await isBackendDirModifiedSinceLastPush(
@@ -393,12 +411,14 @@ export const getResourcesToBeUpdated = async (
           }
         } else {
           const backendConfigModified = isBackendConfigModifiedSinceLastPush(categoryName, resource, backendConfigs);
-          const backendModified = (backendConfigModified) || await isBackendDirModifiedSinceLastPush(
-            resource,
-            categoryName,
-            currentAmplifyMeta[categoryName][resource]?.lastPushTimeStamp,
-            getHashForResourceDir,
-          );
+          const backendModified =
+            backendConfigModified ||
+            (await isBackendDirModifiedSinceLastPush(
+              resource,
+              categoryName,
+              currentAmplifyMeta[categoryName][resource]?.lastPushTimeStamp,
+              getHashForResourceDir,
+            ));
 
           if (backendModified) {
             amplifyMeta[categoryName][resource].resourceName = resource;
@@ -440,37 +460,41 @@ export const getResourcesToBeUpdated = async (
   resources = filterResources(resources, filteredResources);
 
   if (category !== undefined && resourceName !== undefined) {
-    resources = resources.filter(resource => resource.category === category && resource.resourceName === resourceName);
+    resources = resources.filter((resource) => resource.category === category && resource.resourceName === resourceName);
   }
   if (category !== undefined && !resourceName) {
-    resources = resources.filter(resource => resource.category === category);
+    resources = resources.filter((resource) => resource.category === category);
   }
   return resources;
 };
 
 /**
-* Query metadata and get resources to be synced.
-* Typically a resource to be updated has a different has value in amplify-meta vs #currentBackend/amplify-meta
-*/
-export const getResourcesToBeSynced = (amplifyMeta : $TSAny, currentAmplifyMeta: $TSAny,
-  category: string|undefined, resourceName: string|undefined,
-  filteredResources: Array<$TSAny>|undefined): Array<$TSAny> => {
+ * Query metadata and get resources to be synced.
+ * Typically a resource to be updated has a different has value in amplify-meta vs #currentBackend/amplify-meta
+ */
+export const getResourcesToBeSynced = (
+  amplifyMeta: $TSAny,
+  currentAmplifyMeta: $TSAny,
+  category: string | undefined,
+  resourceName: string | undefined,
+  filteredResources: Array<$TSAny> | undefined,
+): Array<$TSAny> => {
   let resources: Array<$TSAny> = [];
 
   // For imported resource we are handling add/remove/delete in one place, because
   // it does not involve CFN operations we still need a way to enforce the CLI
   // to show changes status when imported resources are added or removed
 
-  Object.keys(amplifyMeta).forEach(categoryName => {
+  Object.keys(amplifyMeta).forEach((categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
 
     Object.keys(categoryItem)
-      .filter(resource => categoryItem[resource].serviceType === 'imported')
-      .forEach(resource => {
+      .filter((resource) => categoryItem[resource].serviceType === 'imported')
+      .forEach((resource) => {
         // Added
         if (
-          _.get(currentAmplifyMeta, [categoryName, resource], undefined) === undefined
-          && _.get(amplifyMeta, [categoryName, resource], undefined) !== undefined
+          _.get(currentAmplifyMeta, [categoryName, resource], undefined) === undefined &&
+          _.get(amplifyMeta, [categoryName, resource], undefined) !== undefined
         ) {
           amplifyMeta[categoryName][resource].resourceName = resource;
           amplifyMeta[categoryName][resource].category = categoryName;
@@ -478,8 +502,8 @@ export const getResourcesToBeSynced = (amplifyMeta : $TSAny, currentAmplifyMeta:
 
           resources.push(amplifyMeta[categoryName][resource]);
         } else if (
-          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined
-          && _.get(amplifyMeta, [categoryName, resource], undefined) === undefined
+          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined &&
+          _.get(amplifyMeta, [categoryName, resource], undefined) === undefined
         ) {
           // Removed
           amplifyMeta[categoryName][resource].resourceName = resource;
@@ -488,8 +512,8 @@ export const getResourcesToBeSynced = (amplifyMeta : $TSAny, currentAmplifyMeta:
 
           resources.push(amplifyMeta[categoryName][resource]);
         } else if (
-          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined
-          && _.get(amplifyMeta, [categoryName, resource], undefined) !== undefined
+          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined &&
+          _.get(amplifyMeta, [categoryName, resource], undefined) !== undefined
         ) {
           // Refresh - for resources that are already present, it is possible that secrets needed to be
           // regenerated or any other data needs to be refreshed, it is a special state for imported resources
@@ -506,16 +530,16 @@ export const getResourcesToBeSynced = (amplifyMeta : $TSAny, currentAmplifyMeta:
   // For remove it is possible that the the object key for the category not present in the meta so an extra iteration needed on
   // currentAmplifyMeta keys as well
 
-  Object.keys(currentAmplifyMeta).forEach(categoryName => {
+  Object.keys(currentAmplifyMeta).forEach((categoryName) => {
     const categoryItem = currentAmplifyMeta[categoryName];
 
     Object.keys(categoryItem)
-      .filter(resource => categoryItem[resource].serviceType === 'imported')
-      .forEach(resource => {
+      .filter((resource) => categoryItem[resource].serviceType === 'imported')
+      .forEach((resource) => {
         // Removed
         if (
-          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined
-          && _.get(amplifyMeta, [categoryName, resource], undefined) === undefined
+          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined &&
+          _.get(amplifyMeta, [categoryName, resource], undefined) === undefined
         ) {
           currentAmplifyMeta[categoryName][resource].resourceName = resource;
           currentAmplifyMeta[categoryName][resource].category = categoryName;
@@ -529,11 +553,11 @@ export const getResourcesToBeSynced = (amplifyMeta : $TSAny, currentAmplifyMeta:
   resources = filterResources(resources, filteredResources);
 
   if (category !== undefined && resourceName !== undefined) {
-    resources = resources.filter(resource => resource.category === category && resource.resourceName === resourceName);
+    resources = resources.filter((resource) => resource.category === category && resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
-    resources = resources.filter(resource => resource.category === category);
+    resources = resources.filter((resource) => resource.category === category);
   }
 
   return resources;
@@ -542,7 +566,7 @@ export const getResourcesToBeSynced = (amplifyMeta : $TSAny, currentAmplifyMeta:
 /**
  * API: get amplify metadata based on cloud-init status.
  */
-export const getAmplifyMeta = ():$TSAny => {
+export const getAmplifyMeta = (): $TSAny => {
   const amplifyProjectInitStatus = getCloudInitStatus();
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
     return {
@@ -564,16 +588,16 @@ export const getAmplifyMeta = ():$TSAny => {
  * API: get amplify backend config
  */
 export const getLocalAndDeployedBackendConfig = (): IBackendConfigs => {
-  let currentBackendConfig:$TSAny;
-  let backendConfig:$TSAny;
+  let currentBackendConfig: $TSAny;
+  let backendConfig: $TSAny;
   try {
     currentBackendConfig = stateManager.getCurrentBackendConfig();
-  // eslint-disable-next-line no-empty
+    // eslint-disable-next-line no-empty
   } catch (e) {} // this will fail on iniEnv;
 
   try {
     backendConfig = stateManager.getBackendConfig();
-  // eslint-disable-next-line no-empty
+    // eslint-disable-next-line no-empty
   } catch (e) {} // this will fail on iniEnv;
 
   return {
@@ -583,9 +607,13 @@ export const getLocalAndDeployedBackendConfig = (): IBackendConfigs => {
 };
 
 // helper: Check if directory has been modified by comparing hash values
-const isBackendDirModifiedSinceLastPush = async (resourceName: string, category: string,
-  lastPushTimeStamp: string, hashFunction: $TSAny): Promise<boolean> => {
-// Pushing the resource for the first time hence no lastPushTimeStamp
+const isBackendDirModifiedSinceLastPush = async (
+  resourceName: string,
+  category: string,
+  lastPushTimeStamp: string,
+  hashFunction: $TSAny,
+): Promise<boolean> => {
+  // Pushing the resource for the first time hence no lastPushTimeStamp
   if (!lastPushTimeStamp) {
     return false;
   }
@@ -605,22 +633,22 @@ const isBackendDirModifiedSinceLastPush = async (resourceName: string, category:
 /**
  * API: calculate hash for resource directory : TBD move to library
  */
-export const getHashForResourceDir = async (dirPath: string, files?:string[]): Promise<string> => {
+export const getHashForResourceDir = async (dirPath: string, files?: string[]): Promise<string> => {
   const options: HashElementOptions = {
     folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
     files: {
       include: files,
     },
   };
-  return hashElement(dirPath, options).then(result => result.hash);
+  return hashElement(dirPath, options).then((result) => result.hash);
 };
 
 // helper: remove specified resources from list of given resources
-const filterResources = (resources: Array<$TSAny>, filteredResources: Array<$TSAny>|undefined):Array<$TSAny> => {
+const filterResources = (resources: Array<$TSAny>, filteredResources: Array<$TSAny> | undefined): Array<$TSAny> => {
   if (!filteredResources) {
     return resources;
   }
-  resources = resources.filter(resource => {
+  resources = resources.filter((resource) => {
     let common = false;
     for (let i = 0; i < filteredResources.length; ++i) {
       if (filteredResources[i].category === resource.category && filteredResources[i].resourceName === resource.resourceName) {
@@ -634,7 +662,7 @@ const filterResources = (resources: Array<$TSAny>, filteredResources: Array<$TSA
 };
 
 // helper: validate category of the resource
-const resourceBelongsToCategoryList = (category, categoryList):boolean => {
+const resourceBelongsToCategoryList = (category, categoryList): boolean => {
   if (typeof category === 'string') {
     return categoryList.includes(category);
   }
@@ -642,9 +670,8 @@ const resourceBelongsToCategoryList = (category, categoryList):boolean => {
 };
 
 // helper: filter resources based on category
-const filterResourceCategory = (resourceList:Array<$TSAny>, categoryList:Array<$TSAny>): Array<$TSAny> => (resourceList
-  ? resourceList.filter(resource => resourceBelongsToCategoryList(resource.category, categoryList))
-  : []);
+const filterResourceCategory = (resourceList: Array<$TSAny>, categoryList: Array<$TSAny>): Array<$TSAny> =>
+  resourceList ? resourceList.filter((resource) => resourceBelongsToCategoryList(resource.category, categoryList)) : [];
 
 /**
  * Get the name of the AWS service provisioning the resource
@@ -657,7 +684,7 @@ export const getResourceService = (category: string, resourceName: string): stri
 
 // helper to await results of all function calls
 // TODO: replace with 'await for of'
-const asyncForEach = async (array: Array<$TSAny>, callback:$TSAny):Promise<$TSAny> => {
+const asyncForEach = async (array: Array<$TSAny>, callback: $TSAny): Promise<$TSAny> => {
   for (let index = 0; index < array.length; ++index) {
     await callback(array[index], index, array);
   }

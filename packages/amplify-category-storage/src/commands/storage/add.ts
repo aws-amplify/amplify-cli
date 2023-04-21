@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { categoryName } from '../../constants';
 
 export const name = 'add'; // subcommand
@@ -11,7 +11,7 @@ export async function run(context: $TSContext) {
   const serviceMetadata = (await import('../../provider-utils/supported-services')).supportedServices;
   return amplify
     .serviceSelectionPrompt(context, categoryName, serviceMetadata)
-    .then(async result => {
+    .then(async (result) => {
       options = {
         service: result.service,
         providerPlugin: result.providerName,
@@ -21,12 +21,12 @@ export async function run(context: $TSContext) {
 
       if (!providerController) {
         printer.error('Provider not configured for this category');
-        return;
+        return undefined;
       }
 
       return providerController.addResource(context, categoryName, result.service, options);
     })
-    .then(resourceName => {
+    .then((resourceName) => {
       if (resourceName) {
         printer.success(`Successfully added resource ${resourceName} locally`);
         printer.info('');
@@ -41,7 +41,7 @@ export async function run(context: $TSContext) {
         printer.info('');
       }
     })
-    .catch(async err => {
+    .catch(async (err) => {
       if (err.message) {
         printer.error(err.message);
       }

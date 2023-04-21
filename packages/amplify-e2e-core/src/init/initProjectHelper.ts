@@ -1,12 +1,9 @@
 /* eslint-disable import/no-cycle */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
-/* eslint-disable jsdoc/require-jsdoc */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
-import {
-  nspawn as spawn, getCLIPath, singleSelect, addCircleCITags,
-} from '..';
+import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 
@@ -57,7 +54,10 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), cliArgs, {
-      cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection,
+      cwd,
+      stripColors: true,
+      env,
+      disableCIDetection: s.disableCIDetection,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -68,7 +68,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine(s.appType)
+      .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendLine(s.framework)
       .wait('Source Directory Path:')
@@ -88,9 +88,11 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
         .wait('Please choose the profile you want to use')
         .sendLine(s.profileName);
     }
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    chain
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (err) {
           reject(err);
         } else {
@@ -128,8 +130,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .send('j')
-      .sendCarriageReturn()
+      .sendLine('android')
       .wait('Where is your Res directory')
       .sendCarriageReturn()
       .wait('Select the authentication method you want to use:')
@@ -162,13 +163,19 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
 
   addCircleCITags(cwd);
 
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
@@ -179,8 +186,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendKeyDown(3)
-      .sendCarriageReturn()
+      .sendLine('ios')
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
@@ -216,8 +222,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendKeyDown(2)
-      .sendCarriageReturn()
+      .sendLine('flutter')
       .wait('Where do you want to store your configuration file')
       .sendLine('./lib/')
       .wait('Using default provider  awscloudformation')
@@ -227,9 +232,11 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
       .sendLine(s.profileName);
 
     singleSelect(chain, s.region, amplifyRegions);
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    chain
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -264,7 +271,7 @@ export function initProjectWithAccessKey(
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine(s.appType)
+      .sendLine('javascript')
       .wait('What javascript framework are you using')
       .sendLine(s.framework)
       .wait('Source Directory Path:')
@@ -288,9 +295,11 @@ export function initProjectWithAccessKey(
       .wait('region');
 
     singleSelect(chain, s.region, amplifyRegions);
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    chain
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -431,22 +440,6 @@ export function amplifyInitSandbox(cwd: string, settings: Record<string, unknown
   });
 }
 
-export function amplifyInitYes(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init', '--yes'], {
-      cwd,
-      stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
-    }).run((err: Error) => (err
-      ? reject(err)
-      : (() => {
-        resolve();
-      })()));
-  });
-}
-
 export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['--version'], { cwd, stripColors: true })
@@ -494,4 +487,8 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
         }
       });
   });
+}
+
+export function initHeadless(cwd: string, envName: string, appId: string): Promise<void> {
+  return spawn(getCLIPath(), ['init', '--yes', '--envName', envName, '--appId', appId], { cwd, stripColors: true }).runAsync();
 }

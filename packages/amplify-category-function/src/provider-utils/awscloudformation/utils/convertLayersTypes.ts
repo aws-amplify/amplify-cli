@@ -1,4 +1,4 @@
-import { ExternalLayer, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
+import { ExternalLayer, LambdaLayer, ProjectLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { convertProjectLayer } from './layerArnConverter';
 const externalLayer = 'ExternalLayer';
 const projectLayer = 'ProjectLayer';
@@ -9,7 +9,7 @@ const LAYER_ARN_KEY = 'Fn::Sub';
 // only latest version layer will remain a project layer
 export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
-  lambdaLayers.forEach(layer => {
+  lambdaLayers.forEach((layer) => {
     if (layer.type === projectLayer) {
       if (layer.env !== envName && !layer.isLatestVersionSelected) {
         const convertLayer: ExternalLayer = {
@@ -34,12 +34,13 @@ export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[]
 };
 
 //This functions convert external layers to project layers if they belong to the env
-// exmaple Arn to convert external layers to project Layers when changing env
+// example Arn to convert external layers to project Layers when changing env
+// eslint-disable-next-line spellcheck/spell-checker
 // "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:buildlayers8mytestinglayer1-dev:2"
 export const convertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
-  lambdaLayers.forEach(layer => {
-    if (layer.type === externalLayer && layer.arn.hasOwnProperty(LAYER_ARN_KEY)) {
+  lambdaLayers.forEach((layer) => {
+    if (layer.type === externalLayer && Object.prototype.hasOwnProperty.call(layer.arn, LAYER_ARN_KEY)) {
       const layerArn = layer.arn[LAYER_ARN_KEY];
       const layerArnSplit = layerArn.split(':');
       const layerNameWithEnv = layerArnSplit[layerArnSplit.length - 2];

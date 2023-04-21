@@ -2,7 +2,6 @@
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable jsdoc/require-jsdoc */
 const path = require('path');
 const Module = require('module');
 const fs = require('fs-extra');
@@ -10,6 +9,7 @@ const graphQLConfig = require('graphql-config');
 const babel = require('@babel/core');
 const babelTransformEsmToCjs = require('@babel/plugin-transform-modules-commonjs').default;
 const constants = require('./constants');
+const _ = require('lodash');
 
 const MOCK_RESERVED_EXPORT_KEYS = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
@@ -65,9 +65,6 @@ const AMPLIFY_RESERVED_EXPORT_KEYS = [
   'aws_bots',
   'aws_bots_config',
 
-  // Sumerian
-  'XR',
-
   // Predictions
   'predictions',
 
@@ -99,9 +96,9 @@ function deleteAmplifyConfig(context) {
   const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
   if (gqlConfig && gqlConfig.config) {
     const { projects } = gqlConfig.config;
-    Object.keys(projects).forEach(project => {
+    Object.keys(projects).forEach((project) => {
       const { codeGenTarget, docsFilePath } = projects[project].extensions.amplify;
-      fileNames.forEach(filename => {
+      fileNames.forEach((filename) => {
         const file = path.join(projectPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget] || 'graphql'}`);
         if (fs.existsSync(file)) fs.removeSync(file);
       });
@@ -147,7 +144,7 @@ function createAmplifyConfig(context, amplifyResources) {
 
 async function createAWSExports(context, amplifyResources, cloudAmplifyResources) {
   const newAWSExports = await getAWSExports(context, amplifyResources, cloudAmplifyResources);
-  generateAWSExportsFile(context, newAWSExports);
+  await generateAWSExportsFile(context, newAWSExports);
   return context;
 }
 
@@ -165,8 +162,8 @@ function getCustomConfigs(cloudAWSExports, currentAWSExports) {
   const customConfigs = {};
   if (currentAWSExports) {
     Object.keys(currentAWSExports)
-      .filter(key => !CUSTOM_CONFIG_DENY_LIST.includes(key))
-      .forEach(key => {
+      .filter((key) => !CUSTOM_CONFIG_DENY_LIST.includes(key))
+      .forEach((key) => {
         if (!cloudAWSExports[key]) {
           customConfigs[key] = currentAWSExports[key];
         }
@@ -184,7 +181,7 @@ function getAWSExportsObject(resources) {
   const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
 
-  Object.keys(serviceResourceMapping).forEach(service => {
+  Object.keys(serviceResourceMapping).forEach((service) => {
     switch (service) {
       case 'Cognito':
         Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
@@ -210,9 +207,6 @@ function getAWSExportsObject(resources) {
         break;
       case 'Lex':
         Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
-        break;
-      case 'Sumerian':
-        Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
         break;
       // predictions config generation
       case 'Translate':
@@ -381,10 +375,10 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   };
 
   if (
-    cognitoResource.output.GoogleWebClient
-    || cognitoResource.output.FacebookWebClient
-    || cognitoResource.output.AmazonWebClient
-    || cognitoResource.output.AppleWebClient
+    cognitoResource.output.GoogleWebClient ||
+    cognitoResource.output.FacebookWebClient ||
+    cognitoResource.output.AmazonWebClient ||
+    cognitoResource.output.AppleWebClient
   ) {
     idpFederation = true;
   }
@@ -524,7 +518,7 @@ function getIdentifyConfig(identifyResources) {
   const baseConfig = {
     proxy: false,
   };
-  identifyResources.forEach(identifyResource => {
+  identifyResources.forEach((identifyResource) => {
     if (identifyResource.identifyType === 'identifyText') {
       resultConfig.identifyText = {
         ...baseConfig,
@@ -582,35 +576,50 @@ function getInferConfig(inferResources) {
   };
 }
 
-function isPinpointChannelEnabled(channelName, pinpointResource) {
-  return pinpointResource?.output?.[channelName]?.Enabled;
-}
-
 function getPinpointConfig(pinpointResources) {
-  // There are legacy projects where we could have multiple Pinpoint resources.
-  // We will iterate over all Pinpoint resources in amplify-meta until we get the configured
-  // AppId, Region and Channel configuration for that Pinpoint resource
-
-  const firstPinpointResource = pinpointResources[0];
-  const pinpointConfig = {
-    aws_mobile_analytics_app_id: firstPinpointResource.output.Id,
-    aws_mobile_analytics_app_region: firstPinpointResource.output.Region,
+  const channelMapping = {
+    APNS: 'Push',
+    FCM: 'Push',
+    InAppMessaging: 'InAppMessaging',
+    Email: 'Email',
+    SMS: 'SMS',
   };
-  for (const pinpointResource of pinpointResources) {
-    pinpointConfig.aws_mobile_analytics_app_id = (pinpointConfig.aws_mobile_analytics_app_id) || pinpointResource.output.Id;
-    pinpointConfig.aws_mobile_analytics_app_region = (pinpointConfig.aws_mobile_analytics_app_region) || pinpointResource.output.Region;
-    if (isPinpointChannelEnabled('InAppMessaging', pinpointResource)) {
-      pinpointConfig.Notifications = {
-        InAppMessaging: {
-          AWSPinpoint: {
-            appId: pinpointConfig.aws_mobile_analytics_app_id,
-            region: pinpointConfig.aws_mobile_analytics_app_region,
-          },
+
+  const pinpointConfig = {};
+
+  const pinpointAnalytics = pinpointResources.filter(
+    (it) => _.intersection(Object.keys(it.output), Object.keys(channelMapping)).length === 0,
+  );
+  const pinpointNotifications = pinpointResources.filter(
+    (it) => _.intersection(Object.keys(it.output), Object.keys(channelMapping)).length !== 0,
+  );
+
+  if (pinpointAnalytics.length !== 0) {
+    // legacy
+    pinpointConfig.aws_mobile_analytics_app_id = pinpointConfig.aws_mobile_analytics_app_id || pinpointAnalytics[0].output.Id;
+    pinpointConfig.aws_mobile_analytics_app_region = pinpointConfig.aws_mobile_analytics_app_region || pinpointAnalytics[0].output.Region;
+
+    pinpointConfig.Analytics = {
+      AWSPinpoint: {
+        appId: pinpointConfig.aws_mobile_analytics_app_id,
+        region: pinpointConfig.aws_mobile_analytics_app_region,
+      },
+    };
+  }
+
+  for (const [channel, plugin] of Object.entries(channelMapping)) {
+    const notificationPinpoint = pinpointNotifications.find((it) => it.output?.[channel]?.Enabled);
+    if (notificationPinpoint) {
+      pinpointConfig.Notifications = pinpointConfig.Notifications ?? {};
+      pinpointConfig.Notifications[plugin] = {
+        AWSPinpoint: {
+          appId: notificationPinpoint.output[channel].ApplicationId,
+          region: notificationPinpoint.output.Region,
         },
       };
-      break;
     }
   }
+
   return pinpointConfig;
 }
 
@@ -643,7 +652,7 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
 }
 
 function getLexConfig(lexResources) {
-  const config = lexResources.map(r => ({
+  const config = lexResources.map((r) => ({
     name: r.output.BotName,
     alias: '$LATEST',
     region: r.output.Region,
@@ -655,29 +664,12 @@ function getLexConfig(lexResources) {
   };
 }
 
-function getSumerianConfig(sumerianResources) {
-  const scenes = {};
-  sumerianResources.forEach(r => {
-    const { resourceName, output } = r;
-    delete output.service;
-
-    scenes[resourceName] = {
-      sceneConfig: output,
-    };
-  });
-  return {
-    XR: {
-      scenes,
-    },
-  };
-}
-
 function getMapConfig(mapResources) {
   let defaultMap = '';
   const mapConfig = {
     items: {},
   };
-  mapResources.forEach(mapResource => {
+  mapResources.forEach((mapResource) => {
     const mapName = mapResource.output.Name;
     mapConfig.items[mapName] = {
       style: mapResource.output.Style,
@@ -695,7 +687,7 @@ function getPlaceIndexConfig(placeIndexResources) {
   const placeIndexConfig = {
     items: [],
   };
-  placeIndexResources.forEach(placeIndexResource => {
+  placeIndexResources.forEach((placeIndexResource) => {
     const placeIndexName = placeIndexResource.output.Name;
     placeIndexConfig.items.push(placeIndexName);
     if (placeIndexResource.isDefault) {
@@ -711,7 +703,7 @@ function getGeofenceCollectionConfig(geofenceCollectionResources) {
   const geofenceCollectionConfig = {
     items: [],
   };
-  geofenceCollectionResources.forEach(geofenceCollectionResource => {
+  geofenceCollectionResources.forEach((geofenceCollectionResource) => {
     const geofenceCollectionName = geofenceCollectionResource.output.Name;
     geofenceCollectionConfig.items.push(geofenceCollectionName);
     if (geofenceCollectionResource.isDefault) {

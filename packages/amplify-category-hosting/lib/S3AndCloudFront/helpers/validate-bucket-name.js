@@ -1,4 +1,4 @@
-module.exports = value => {
+module.exports = (value) => {
   let isValid = typeof value === 'string' && value.length >= 3 && value.length <= 63 && /^[a-z0-9.-]*$/.test(value);
 
   if (!isValid) {

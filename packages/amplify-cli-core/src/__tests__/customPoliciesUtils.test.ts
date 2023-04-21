@@ -1,6 +1,6 @@
 import { createDefaultCustomPoliciesFile, generateCustomPoliciesInTemplate } from '../customPoliciesUtils';
-import { printer } from 'amplify-prompts';
-import { JSONUtilities } from '..';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { AmplifyError, JSONUtilities } from '..';
 import { pathManager, PathConstants, stateManager } from '../state-manager';
 import path from 'path';
 import { Template, Fn } from 'cloudform-types';
@@ -135,5 +135,18 @@ describe('Custom policies util test', () => {
     const template = generateCustomPoliciesInTemplate({}, 'lambdaResourceName', 'Lambda', 'function');
 
     expect(template.Resources?.CustomLambdaExecutionPolicy).toBeUndefined();
+  });
+  test('test generateCustomPoliciesInTemplate with empty action array', () => {
+    (stateManager.getCustomPolicies as jest.Mock).mockReturnValueOnce([
+      {
+        Action: undefined,
+        Resource: [],
+      },
+    ]);
+    try {
+      generateCustomPoliciesInTemplate({}, 'lambdaResourceName', 'Lambda', 'function');
+    } catch (e) {
+      expect((e as AmplifyError).name).toBe('CustomPoliciesFormatError');
+    }
   });
 });

@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import path from 'path';
 const TransformPackage = require('graphql-transformer-core');
-const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+import { AmplifyCategories, stateManager, ResourceDoesNotExistError, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 
 export async function askDynamoDBQuestions(context: any, currentProjectOnly = false): Promise<{ resourceName: string }> {
   const dynamoDbTypeQuestion = {
@@ -30,7 +30,7 @@ export async function askDynamoDBQuestions(context: any, currentProjectOnly = fa
           context.print.error('There are no DynamoDB resources configured in your project currently');
           break;
         }
-        Object.keys(storageResources).forEach(resourceName => {
+        Object.keys(storageResources).forEach((resourceName) => {
           if (storageResources[resourceName].service === 'DynamoDB') {
             dynamoDbProjectResources.push(resourceName);
           }
@@ -83,17 +83,10 @@ export async function getTableParameters(context: any, dynamoAnswers: any): Prom
       sortKeyType: rangeType.AttributeType,
     };
   } // Looking for table parameters on local configuration
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
-  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
-  let parameters;
-  try {
-    parameters = context.amplify.readJsonFile(parametersFilePath);
-  } catch (e) {
-    parameters = {};
-  }
-
-  return parameters;
+  return stateManager.getResourceParametersJson(undefined, AmplifyCategories.STORAGE, dynamoAnswers.resourceName, {
+    throwIfNotExist: false,
+    default: {},
+  });
 }
 
 export async function askAPICategoryDynamoDBQuestions(context: any) {
@@ -127,7 +120,7 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
   const resourceDirPath = path.join(backendDir, 'api', targetResourceName);
   const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
   const directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
-  const modelNames = Object.keys(directiveMap.types).filter(typeName => directiveMap.types[typeName].includes('model'));
+  const modelNames = Object.keys(directiveMap.types).filter((typeName) => directiveMap.types[typeName].includes('model'));
 
   let targetModelNames: string[] = [];
   if (modelNames.length === 0) {
@@ -153,7 +146,7 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
     }
   }
 
-  const triggerEventSourceMappings = targetModelNames.map(modelName => {
+  const triggerEventSourceMappings = targetModelNames.map((modelName) => {
     const streamArnParamRef = {
       'Fn::ImportValue': {
         'Fn::Sub': [`\${api${targetResourceName}GraphQLAPIIdOutput}`, 'GetAtt', `${modelName}Table`, 'StreamArn'].join(':'),

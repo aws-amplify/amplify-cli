@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import archiver from 'archiver';
-import { pathManager, stateManager } from 'amplify-cli-core';
-import { Redactor } from 'amplify-cli-logger';
+import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { Redactor } from '@aws-amplify/amplify-cli-logger';
 import { WriteStream } from 'fs-extra';
 import fetch from 'node-fetch';
 import * as uuid from 'uuid';
@@ -10,7 +10,7 @@ import { run } from '../../commands/diagnose';
 import { Context } from '../../domain/context';
 
 jest.mock('uuid');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../commands/helpers/collect-files');
 jest.mock('../../commands/helpers/encryption-helpers', () => ({
   createHashedIdentifier: jest.fn().mockReturnValue({
@@ -22,7 +22,7 @@ jest.mock('../../commands/helpers/encryption-helpers', () => ({
 }));
 jest.mock('archiver');
 jest.mock('fs-extra');
-jest.mock('amplify-cli-logger', () => ({
+jest.mock('@aws-amplify/amplify-cli-logger', () => ({
   Redactor: jest.fn(),
   stringMasker: jest.fn(),
 }));
@@ -54,7 +54,7 @@ const mockMeta = {
     },
   },
 };
-const collectedFiles : { filePath: string, redact: boolean }[] = [
+const collectedFiles: { filePath: string; redact: boolean }[] = [
   {
     filePath: 'file.ts',
     redact: false,
@@ -72,25 +72,27 @@ describe('run report command', () => {
         getUsageDataPayload: jest.fn().mockReturnValue({
           sessionUuid: 'sessionId',
           installationUuid: '',
-
         }),
       },
       exeInfo: {
         /* eslint-disable spellcheck/spell-checker */
         cloudFormationEvents: [
           {
-            StackId: 'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
+            StackId:
+              'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
             EventId: 'd006c2e0-c0f4-11ec-841d-0e43d8dbed1f',
             StackName: 'amplify-pushfail-dev-230444',
             LogicalResourceId: 'amplify-pushfail-dev-230444',
-            PhysicalResourceId: 'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
+            PhysicalResourceId:
+              'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
             ResourceType: 'AWS::CloudFormation::Stack',
             Timestamp: '2022-04-20T21:57:03.599Z',
             ResourceStatus: 'UPDATE_IN_PROGRESS',
             ResourceStatusReason: 'User Initiated',
           },
           {
-            StackId: 'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
+            StackId:
+              'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
             EventId: 'apipushfail-CREATE_IN_PROGRESS-2022-04-20T21:57:09.528Z',
             StackName: 'amplify-pushfail-dev-230444',
             LogicalResourceId: 'apipushfail',
@@ -100,7 +102,8 @@ describe('run report command', () => {
             ResourceStatus: 'CREATE_IN_PROGRESS',
           },
           {
-            StackId: 'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
+            StackId:
+              'arn:aws:cloudformation:us-east-1:1234567891009:stack/amplify-pushfail-dev-230444/d7470930-8ac5-11ec-a30c-0a84db46e9eb',
             EventId: 'UpdateRolesWithIDPFunctionRole-CREATE_IN_PROGRESS-2022-04-20T21:57:09.540Z',
             StackName: 'amplify-pushfail-dev-230444',
             LogicalResourceId: 'UpdateRolesWithIDPFunctionRole',
@@ -111,7 +114,6 @@ describe('run report command', () => {
           },
         ],
         /* eslint-enable spellcheck/spell-checker */
-
       },
       input: {
         options: {

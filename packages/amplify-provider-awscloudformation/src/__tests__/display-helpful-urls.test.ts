@@ -1,11 +1,11 @@
-import { ApiCategoryFacade, BannerMessage, stateManager } from 'amplify-cli-core';
+import { ApiCategoryFacade, BannerMessage, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AWSError } from 'aws-sdk';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { SNS } from '../aws-utils/aws-sns';
 import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
 
 jest.mock('../aws-utils/aws-sns');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 printerMock.info = jest.fn();
@@ -67,7 +67,7 @@ describe('showSMSSandBoxWarning', () => {
 
     it('should show warning when SNS Client is missing sandbox API and there is a banner message associated', async () => {
       const message = 'UPGRADE YOUR CLI!!!!';
-      mockedGetMessage.mockImplementation(async messageId => (messageId === 'COGNITO_SMS_SANDBOX_UPDATE_WARNING' ? message : undefined));
+      mockedGetMessage.mockImplementation(async (messageId) => (messageId === 'COGNITO_SMS_SANDBOX_UPDATE_WARNING' ? message : undefined));
 
       await showSMSSandboxWarning(context);
 
@@ -92,7 +92,7 @@ describe('showSMSSandBoxWarning', () => {
     it('should show any warning if there is no message associated', async () => {
       const message = 'UPDATE YOUR PROFILE USER WITH SANDBOX PERMISSION';
 
-      mockedGetMessage.mockImplementation(async messageId => {
+      mockedGetMessage.mockImplementation(async (messageId) => {
         switch (messageId) {
           case 'COGNITO_SMS_SANDBOX_MISSING_PERMISSION':
             return message;
@@ -116,7 +116,7 @@ describe('showSMSSandBoxWarning', () => {
     });
     it('should not print error', async () => {
       const message = 'UPGRADE YOUR CLI!!!!';
-      mockedGetMessage.mockImplementation(async messageId => (messageId === 'COGNITO_SMS_SANDBOX_UPDATE_WARNING' ? message : undefined));
+      mockedGetMessage.mockImplementation(async (messageId) => (messageId === 'COGNITO_SMS_SANDBOX_UPDATE_WARNING' ? message : undefined));
 
       await showSMSSandboxWarning(context);
 
@@ -134,7 +134,7 @@ describe('showSMSSandBoxWarning', () => {
 
     it('should not print error', async () => {
       const message = 'UPGRADE YOUR CLI!!!!';
-      mockedGetMessage.mockImplementation(async messageId => (messageId === 'COGNITO_SMS_SANDBOX_UPDATE_WARNING' ? message : undefined));
+      mockedGetMessage.mockImplementation(async (messageId) => (messageId === 'COGNITO_SMS_SANDBOX_UPDATE_WARNING' ? message : undefined));
 
       await showSMSSandboxWarning(context);
 

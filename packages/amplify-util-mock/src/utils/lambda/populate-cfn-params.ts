@@ -1,22 +1,18 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { stateManager } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 // eslint-disable-next-line import/no-cycle
-import {
-  GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT,
-} from '../../api/api';
+import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT } from '../../api/api';
 
 /**
  * Loads all parameters that should be passed into the lambda CFN template when resolving values
  *
  * Iterates through a list of parameter getters. If multiple getters return the same key, the latter will overwrite the former
  */
-export const populateCfnParams = (
-  resourceName: string,
-  overrideApiToLocal = false,
-): Record<string, string> => [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getResourceEnvParams]
-  .map(paramProvider => paramProvider(resourceName, overrideApiToLocal))
-  .reduce((acc, it) => ({ ...acc, ...it }), {});
+export const populateCfnParams = (resourceName: string, overrideApiToLocal = false): Record<string, string> =>
+  [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getResourceEnvParams]
+    .map((paramProvider) => paramProvider(resourceName, overrideApiToLocal))
+    .reduce((acc, it) => ({ ...acc, ...it }), {});
 
 const getCfnPseudoParams = (): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
@@ -42,10 +38,7 @@ const getCfnPseudoParams = (): Record<string, string> => {
 /**
  * Loads CFN parameters by matching the dependsOn field of the resource with the CFN outputs of other resources in the project
  */
-const getAmplifyMetaParams = (
-  resourceName: string,
-  overrideApiToLocal = false,
-): Record<string, string> => {
+const getAmplifyMetaParams = (resourceName: string, overrideApiToLocal = false): Record<string, string> => {
   const projectMeta = stateManager.getMeta();
   if (!Array.isArray(projectMeta?.function?.[resourceName]?.dependsOn)) {
     return {};
@@ -56,7 +49,7 @@ const getAmplifyMetaParams = (
     attributes: string[];
   }[];
   return dependencies.reduce((acc, dependency) => {
-    dependency.attributes.forEach(attribute => {
+    dependency.attributes.forEach((attribute) => {
       let val = projectMeta?.[dependency.category]?.[dependency.resourceName]?.output?.[attribute];
 
       if (overrideApiToLocal) {
@@ -68,7 +61,7 @@ const getAmplifyMetaParams = (
             val = MOCK_API_KEY;
             break;
           default:
-            // noop
+          // noop
         }
       }
 
@@ -89,9 +82,11 @@ const getAmplifyMetaParams = (
  * Loads CFN parameters from the parameters.json file for the resource (if present)
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getParametersJsonParams = (resourceName: string): Record<string, string> => stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
+const getParametersJsonParams = (resourceName: string): Record<string, string> =>
+  stateManager.getResourceParametersJson(undefined, 'function', resourceName, { throwIfNotExist: false }) ?? {};
 
 /**
  * Loads CFN parameters for the resource in the team-provider-info.json file (if present)
  */
-const getResourceEnvParams = (resourceName: string): Record<string, string> => getEnvParamManager().getResourceParamManager('function', resourceName).getAllParams();
+const getResourceEnvParams = (resourceName: string): Record<string, string> =>
+  getEnvParamManager().getResourceParamManager('function', resourceName).getAllParams();

@@ -222,7 +222,7 @@ describe('Compile', function () {
         {},
         {},
         {
-          valueMapper: value => {
+          valueMapper: (value) => {
             values.push(value);
             return 'foo';
           },

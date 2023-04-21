@@ -1,4 +1,4 @@
-import { MultiProgressBar } from 'amplify-prompts';
+import { MultiProgressBar } from '@aws-amplify/amplify-prompts';
 import {
   createProgressBarFormatter,
   createItemFormatter,
@@ -38,15 +38,17 @@ export const initializeProgressBars = (eventMap: EventMap): MultiProgressBar => 
   });
 
   progressBarsConfigs = eventMap.categories.reduce(
-    (previous, current) => previous.concat({
-      name: current.name,
-      value: 0,
-      total: current.size,
-      payload: {
-        progressName: current.name,
-        envName: eventMap.envName,
-      },
-    }), progressBarsConfigs,
+    (previous, current) =>
+      previous.concat({
+        name: current.name,
+        value: 0,
+        total: current.size,
+        payload: {
+          progressName: current.name,
+          envName: eventMap.envName,
+        },
+      }),
+    progressBarsConfigs,
   );
   if (newMultiBar.isTTY()) {
     newMultiBar.create(progressBarsConfigs);

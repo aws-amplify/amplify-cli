@@ -1,5 +1,5 @@
-import { stateManager, open, $TSContext } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { stateManager, open, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 
 const providerName = 'awscloudformation';
@@ -32,13 +32,13 @@ export const run = async (context: $TSContext): Promise<void> => {
     }
   } catch (e) {
     printer.error(e.message);
-    context.usageData.emitError(e);
+    void context.usageData.emitError(e);
     process.exitCode = 1;
     return;
   }
 
   printer.info(chalk.green(consoleUrl));
-  open(consoleUrl, { wait: false });
+  await open(consoleUrl, { wait: false });
 };
 
 const constructAdminURL = (baseUrl: string, appId: string, envName: string): string => `${baseUrl}/admin/${appId}/${envName}/home`;

@@ -1,7 +1,12 @@
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSContext, $TSObject, stateManager, removeFromDeploymentSecrets, mergeDeploymentSecrets, $TSAny,
-} from 'amplify-cli-core';
+  $TSContext,
+  $TSObject,
+  stateManager,
+  removeFromDeploymentSecrets,
+  mergeDeploymentSecrets,
+  $TSAny,
+} from '@aws-amplify/amplify-cli-core';
 
 import _ from 'lodash';
 import { getRootStackId } from './get-root-stack-id';
@@ -67,14 +72,14 @@ const loadEnvResourceParametersFromDeploymentSecrets = (category: string, resour
     const currentEnv = stateManager.getLocalEnvInfo().envName;
     const deploymentSecrets = stateManager.getDeploymentSecrets();
     const rootStackId = getRootStackId();
-    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
+    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, (appSecret) => appSecret.rootStackId === rootStackId);
     if (deploymentSecretByAppId) {
       return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
     }
     const parameters = stateManager.getResourceParametersJson(undefined, category, resource);
     // set empty default if no hostedUIProviderCreds found
     if (parameters && parameters.hostedUI) {
-      return _.set({}, hostedUIProviderCredsField, '[]');
+      return _.setWith({}, hostedUIProviderCredsField, '[]');
     }
   } catch (e) {
     // swallow error

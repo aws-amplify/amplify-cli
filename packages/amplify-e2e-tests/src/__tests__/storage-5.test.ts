@@ -1,4 +1,4 @@
-import { $TSAny, $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithDefault,
   addDDBWithTrigger,
@@ -16,6 +16,7 @@ import {
   initJSProjectWithProfile,
   overrideDDB,
   overrideS3,
+  replaceOverrideFileWithProjectInfo,
   updateDDBWithTrigger,
   updateSimpleDDBwithGSI,
 } from '@aws-amplify/amplify-e2e-core';
@@ -44,10 +45,11 @@ describe('s3 override tests', () => {
   });
 
   it('override S3 Removal property', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addS3WithGuestAccess(projRoot, {});
-    await overrideS3(projRoot, {});
+    const projectName = 's3OverrideTest';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addAuthWithDefault(projRoot);
+    await addS3WithGuestAccess(projRoot);
+    await overrideS3(projRoot);
 
     const resourcePath = path.join(projRoot, 'amplify', 'backend', 'storage');
     const resourceName = fs.readdirSync(resourcePath)[0];
@@ -68,8 +70,8 @@ describe('s3 override tests', () => {
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-s3.ts');
     const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', 'cloudformation-template.json');
-    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
-    await buildOverrideStorage(projRoot, {});
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    await buildOverrideStorage(projRoot);
     let s3CFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file
     expect(s3CFNFileJSON?.Resources?.S3Bucket?.Properties?.VersioningConfiguration?.Status).toEqual('Enabled');
@@ -102,9 +104,9 @@ describe('amplify add/update storage(DDB) with GSI', () => {
 
   it('init a project add a GSI and then update with another GSI', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addSimpleDDBwithGSI(projRoot, {});
-    await updateSimpleDDBwithGSI(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addSimpleDDBwithGSI(projRoot);
+    await updateSimpleDDBwithGSI(projRoot);
     await amplifyPushAuth(projRoot);
   });
 });
@@ -134,7 +136,7 @@ describe('amplify add/update storage(DDB)', () => {
       Arn: table1Arn,
       Region: table1Region,
       StreamArn: table1StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    } = Object.keys(meta.storage).map((key) => meta.storage[key])[0].output;
 
     expect(table1Name).toBeDefined();
     expect(table1Arn).toBeDefined();
@@ -149,7 +151,7 @@ describe('amplify add/update storage(DDB)', () => {
       Arn: table2Arn,
       Region: table2Region,
       StreamArn: table2StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[1].output;
+    } = Object.keys(meta.storage).map((key) => meta.storage[key])[1].output;
 
     expect(table2Name).toBeDefined();
     expect(table2Arn).toBeDefined();
@@ -173,9 +175,10 @@ describe('ddb override tests', () => {
 
   it('override DDB StreamSpecification property', async () => {
     const resourceName = `dynamo${uuid.v4().split('-')[0]}`;
-    await initJSProjectWithProfile(projRoot, {});
+    const projectName = 'ddbOverrideTest';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     await addSimpleDDB(projRoot, { name: resourceName });
-    await overrideDDB(projRoot, {});
+    await overrideDDB(projRoot);
 
     // this is where we will write our override logic to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
@@ -183,13 +186,13 @@ describe('ddb override tests', () => {
     // build overrides should throw an error if there are compilation errors in override file
     const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
     fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
-    await expect(buildOverrideStorage(projRoot, {})).rejects.toThrowError();
+    await expect(buildOverrideStorage(projRoot)).rejects.toThrowError();
     await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
 
     // build overrides should throw an error if there are runtime errors in override file
     const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
     fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
-    await expect(buildOverrideStorage(projRoot, {})).rejects.toThrowError();
+    await expect(buildOverrideStorage(projRoot)).rejects.toThrowError();
     await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
 
     // test happy path
@@ -204,8 +207,8 @@ describe('ddb override tests', () => {
       `${resourceName}-cloudformation-template.json`,
     );
 
-    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
-    await buildOverrideStorage(projRoot, {});
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    await buildOverrideStorage(projRoot);
     let ddbCFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file
     expect(ddbCFNFileJSON?.Resources?.DynamoDBTable?.Properties?.StreamSpecification?.StreamViewType).toEqual('NEW_AND_OLD_IMAGES');
@@ -222,7 +225,7 @@ describe('ddb override tests', () => {
       Arn: table1Arn,
       Region: table1Region,
       StreamArn: table1StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    } = Object.keys(meta.storage).map((key) => meta.storage[key])[0].output;
 
     expect(table1Name).toBeDefined();
     expect(table1Arn).toBeDefined();

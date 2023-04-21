@@ -1,6 +1,4 @@
-import {
-  $TSContext, stateManager, AmplifyError, AmplifyFault,
-} from 'amplify-cli-core';
+import { $TSContext, stateManager, AmplifyError, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { pullBackend } from '../pull-backend';
 import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
@@ -20,10 +18,14 @@ export const run = async (context: $TSContext): Promise<void> => {
     try {
       await preDeployPullBackend(context, inputParams.sandboxId);
     } catch (e) {
-      throw new AmplifyFault('UnknownFault', {
-        message: `Failed to pull sandbox app.`,
-        details: e.message || 'An unknown error occurred.',
-      }, e);
+      throw new AmplifyFault(
+        'UnknownFault',
+        {
+          message: `Failed to pull sandbox app.`,
+          details: e.message || 'An unknown error occurred.',
+        },
+        e,
+      );
     }
     return;
   }

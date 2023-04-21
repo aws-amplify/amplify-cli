@@ -1,7 +1,5 @@
 /* eslint-disable no-continue */
-import {
-  $TSContext, AmplifyError,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import * as _ from 'lodash';
 import Cloudformation from './aws-utils/aws-cfn';
 
@@ -15,7 +13,7 @@ export const run = async (context: $TSContext, stackName: string): Promise<void>
   let continueListing = false;
   do {
     const stacks = await cfn.listStacks(nextToken, []);
-    rootStack = _.find(stacks.StackSummaries, summary => summary.StackName === stackName);
+    rootStack = _.find(stacks.StackSummaries, (summary) => summary.StackName === stackName);
     // if stack found the
     if (rootStack) {
       continueListing = false;

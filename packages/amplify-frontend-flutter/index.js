@@ -33,7 +33,7 @@ function onInitSuccessful(context) {
  * This function enables export to write these files to an external path
  * @param {TSContext} context
  * @param {metaWithOutput} amplifyResources
- * @param {cloudMetaWithOuput} amplifyCloudResources
+ * @param {cloudMetaWithOutput} amplifyCloudResources
  * @param {string} exportPath path to where the files need to be written
  */
 function createFrontendConfigsAtPath(context, amplifyResources, amplifyCloudResources, exportPath) {

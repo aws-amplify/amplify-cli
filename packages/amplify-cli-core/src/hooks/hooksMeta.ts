@@ -2,6 +2,7 @@ import { HookEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun, ErrorParam
 import { supportedEvents, supportedEnvEvents } from './hooksConstants';
 import { stateManager } from '../state-manager';
 import _ from 'lodash';
+import { CommandLineInput } from '../types';
 
 export class HooksMeta {
   private static instance?: HooksMeta;
@@ -9,17 +10,7 @@ export class HooksMeta {
   private dataParameter: DataParameter;
   private errorParameter?: ErrorParameter;
 
-  public static getInstance = (
-    input?: {
-      command?: string;
-      plugin?: string;
-      subCommands?: string[];
-      options?: { forcePush?: boolean };
-      argv?: string[];
-    },
-    eventPrefix?: EventPrefix,
-    errorParameter?: ErrorParameter,
-  ): HooksMeta => {
+  public static getInstance = (input?: CommandLineInput, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter): HooksMeta => {
     if (!HooksMeta.instance) {
       HooksMeta.instance = new HooksMeta();
     }
@@ -86,13 +77,7 @@ export class HooksMeta {
     this.dataParameter = _.merge(this.dataParameter, newDataParameter);
   }
 
-  public setHookEventFromInput(input?: {
-    command?: string;
-    plugin?: string;
-    subCommands?: string[];
-    argv?: string[];
-    options?: { forcePush?: boolean };
-  }): void {
+  public setHookEventFromInput(input?: CommandLineInput): void {
     if (!input) {
       return;
     }
@@ -129,13 +114,13 @@ export class HooksMeta {
       command = 'mock';
     }
 
-    if (supportedEvents.hasOwnProperty(command)) {
+    if (Object.prototype.hasOwnProperty.call(supportedEvents, command)) {
       this.hookEvent.command = command;
       if (supportedEvents?.[command as HooksVerb]?.includes(subCommand as HooksNoun)) {
         this.hookEvent.subCommand = subCommand;
       }
     }
-    this.hookEvent.forcePush = (input?.options?.forcePush && this.hookEvent.command !== 'push') ?? false;
+    this.hookEvent.forcePush = (input?.options?.forcePush && this.hookEvent.command !== 'push') || false;
     this.hookEvent.argv = input.argv;
   }
 

@@ -7,7 +7,7 @@ export const windowsPathSerializer = {
   },
   print(val) {
     return `"${(val as string).replace(/\\/g, '\\')}"`;
-  }
+  },
 };
 
 test('validateWindowsPathSerializer', () => {

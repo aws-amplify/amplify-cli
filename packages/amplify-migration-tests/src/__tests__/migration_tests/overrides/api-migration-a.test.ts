@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import {
-  amplifyPush,
+  amplifyPushLegacy,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
@@ -15,7 +15,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { addApiWithoutSchemaOldDx, initJSProjectWithProfile } from '../../../migration-helpers';
+import { addApiWithoutSchemaOldDx, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('api migration update test a', () => {
   let projRoot: string;
@@ -33,10 +33,10 @@ describe('api migration update test a', () => {
 
   it('api update migration with multiauth', async () => {
     // init and add api with installed CLI
-    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'simplemodelmultiauth' });
     await addApiWithoutSchemaOldDx(projRoot);
     await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
     // update and push with codebase
     await updateApiWithMultiAuth(projRoot, { testingWithLatestCodebase: true });
     // cli-inputs should exist
@@ -53,16 +53,16 @@ describe('api migration update test a', () => {
     expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
     expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
 
-    const cognito = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
+    const cognito = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
 
     expect(cognito).toBeDefined();
     expect(cognito.userPoolConfig).toBeDefined();
 
-    const iam = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AWS_IAM')[0];
+    const iam = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'AWS_IAM')[0];
 
     expect(iam).toBeDefined();
 
-    const oidc = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'OPENID_CONNECT')[0];
+    const oidc = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'OPENID_CONNECT')[0];
 
     expect(oidc).toBeDefined();
     expect(oidc.openIDConnectConfig).toBeDefined();

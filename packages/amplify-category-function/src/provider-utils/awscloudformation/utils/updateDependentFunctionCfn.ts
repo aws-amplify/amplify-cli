@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { getResourcesForCfn, generateEnvVariablesForCfn } from '../service-walkthroughs/execPermissionsWalkthrough';
 import { updateCFNFileForResourcePermissions } from '../service-walkthroughs/lambda-walkthrough';
 import { loadFunctionParameters } from './loadFunctionParameters';
@@ -28,7 +28,7 @@ export async function updateDependentFunctionsCfn(
     const currentParameters = loadFunctionParameters(resourceDirPath);
     const selectedCategories = currentParameters.permissions;
     let categoryPolicies = [];
-    let permissions = {};
+    const permissions = {};
     let resources = [];
     const functionParameters: Partial<FunctionParameters> = {
       resourceName: lambda.resourceName,
@@ -43,7 +43,7 @@ export async function updateDependentFunctionsCfn(
     };
 
     for (const selectedCategory of Object.keys(selectedCategories)) {
-      // update function parameters resouce parameters with deleted models data
+      // update function parameters resource parameters with deleted models data
       // remove the deleted @model
       const selectedResources = selectedCategories[selectedCategory];
       for (const resourceName of Object.keys(selectedResources)) {
@@ -84,9 +84,7 @@ export async function updateDependentFunctionsCfn(
   }
 }
 
-export function addAppSyncInvokeMethodPermission(
-  functionName: string,
-) {
+export function addAppSyncInvokeMethodPermission(functionName: string) {
   const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, functionName);
   const cfnFileName = `${functionName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
@@ -97,10 +95,10 @@ export function addAppSyncInvokeMethodPermission(
       Type: 'AWS::Lambda::Permission',
       Properties: {
         FunctionName: {
-          Ref: "LambdaFunction"
+          Ref: 'LambdaFunction',
         },
-        Action: "lambda:InvokeFunction",
-        Principal: "appsync.amazonaws.com",
+        Action: 'lambda:InvokeFunction',
+        Principal: 'appsync.amazonaws.com',
       },
     };
   }

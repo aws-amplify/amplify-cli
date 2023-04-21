@@ -57,8 +57,8 @@ describe('CloudFormation stack', () => {
       ).toEqual({ ...CFN_PSEUDO_PARAMS, test: 'default test value' }); // ?
     });
     it('should throw an error when the input is missing default value', () => {
-      expect(
-        () => mergeParameters(
+      expect(() =>
+        mergeParameters(
           {
             test: {
               Type: 'String',
@@ -226,16 +226,18 @@ describe('CloudFormation stack', () => {
     });
 
     it('should throw an error when condition is non-existent condition', () => {
-      expect(() => filterResourcesBasedOnConditions(
-        {
-          resource1: {
-            Properties: {},
-            Condition: 'non-existent-condition',
-            Type: 'resource1type',
+      expect(() =>
+        filterResourcesBasedOnConditions(
+          {
+            resource1: {
+              Properties: {},
+              Condition: 'non-existent-condition',
+              Type: 'resource1type',
+            },
           },
-        },
-        {},
-      )).toThrowError('not defined in Condition block');
+          {},
+        ),
+      ).toThrowError('not defined in Condition block');
     });
   });
 
@@ -432,7 +434,7 @@ describe('CloudFormation stack', () => {
           },
         },
       };
-      cfnResourceFetcher.getCloudFormationStackTemplate = jest.fn().mockImplementation(templateName => {
+      cfnResourceFetcher.getCloudFormationStackTemplate = jest.fn().mockImplementation((templateName) => {
         const template = templateName.replace('https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/', '');
         return transformerOutput.stacks[template] as CloudFormationTemplate;
       });
@@ -571,7 +573,10 @@ describe('CloudFormation stack', () => {
         'nestedStack',
         resource,
         {
-          conditions: {}, exports: {}, params: {}, resources: {},
+          conditions: {},
+          exports: {},
+          params: {},
+          resources: {},
         },
         cfnResourceFetcher,
       );
@@ -589,14 +594,19 @@ describe('CloudFormation stack', () => {
           TemplateURL: 'https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/stack1',
         },
       };
-      expect(() => nestedStackHandler(
-        'nestedStack',
-        resource,
-        {
-          conditions: {}, exports: { 'NestedStack:FooValue': 'Existing value' }, params: {}, resources: {},
-        },
-        cfnResourceFetcher,
-      )).toThrowError('is already exported in a different stack');
+      expect(() =>
+        nestedStackHandler(
+          'nestedStack',
+          resource,
+          {
+            conditions: {},
+            exports: { 'NestedStack:FooValue': 'Existing value' },
+            params: {},
+            resources: {},
+          },
+          cfnResourceFetcher,
+        ),
+      ).toThrowError('is already exported in a different stack');
     });
 
     it('should throw error if the nested stack resource does not have TemplateURL', () => {
@@ -604,9 +614,19 @@ describe('CloudFormation stack', () => {
         Type: 'AWS::CloudFormation::Stack',
         Properties: {},
       };
-      expect(() => nestedStackHandler('nestedStack', resource, {
-        conditions: {}, exports: {}, params: {}, resources: {},
-      }, cfnResourceFetcher)).toThrowError('Stack is missing required property TemplateURL');
+      expect(() =>
+        nestedStackHandler(
+          'nestedStack',
+          resource,
+          {
+            conditions: {},
+            exports: {},
+            params: {},
+            resources: {},
+          },
+          cfnResourceFetcher,
+        ),
+      ).toThrowError('Stack is missing required property TemplateURL');
     });
   });
 
@@ -696,6 +716,24 @@ describe('CloudFormation stack', () => {
         ],
       };
       expect(getDependencyResources(propValue, {})).toEqual(['Fn1', 'Fn2']);
+    });
+    it('should get Fn::GetAtt resource name inside resource parameters (more than 1 key) as a dependency', () => {
+      const propValue = {
+        Parameters: {
+          Functions: [
+            {
+              'Fn::GetAtt': ['Fn1', 'FunctionId'],
+            },
+            {
+              'Fn::GetAtt': ['Fn2', 'FunctionId'],
+            },
+          ],
+          referencetonestedstack: {
+            'Fn::GetAtt': ['Fn3', 'FunctionId'],
+          },
+        },
+      };
+      expect(getDependencyResources(propValue, {})).toEqual(['Fn1', 'Fn2', 'Fn3']);
     });
   });
 });

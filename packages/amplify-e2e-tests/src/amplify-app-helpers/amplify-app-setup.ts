@@ -99,7 +99,7 @@ function addIntegAccountInConfig(projRoot: string) {
   if (isCI()) {
     const buildConfigPath = path.join(projRoot, 'amplify-build-config.json');
     const buildConfigFile = fs.readFileSync(buildConfigPath);
-    let buildConfig = JSON.parse(buildConfigFile.toString());
+    const buildConfig = JSON.parse(buildConfigFile.toString());
     buildConfig.profile = 'amplify-integ-test-user';
     fs.writeFileSync(buildConfigPath, JSON.stringify(buildConfig));
   }

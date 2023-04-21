@@ -1,11 +1,9 @@
 import glob from 'glob';
 import path from 'path';
 import * as fs from 'fs-extra';
-import { stateManager, pathManager } from 'amplify-cli-core';
+import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { CLOUD_INITIALIZED } from '../../../extensions/amplify-helpers/get-cloud-init-status';
-import {
-  capitalize, globCFNFilePath, ResourceDiff, stackMutationType,
-} from '../../../extensions/amplify-helpers/resource-status-diff';
+import { capitalize, globCFNFilePath, ResourceDiff, stackMutationType } from '../../../extensions/amplify-helpers/resource-status-diff';
 import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
 // Mock Glob to fetch test cloudformation
@@ -24,7 +22,7 @@ const allFiles: string[] = [
   'schema.graphql',
 ];
 const templateMatchRegex = '.*template.(json|yaml|yml)$';
-globMock.sync.mockImplementation(() => allFiles.filter(fname => fname.match(templateMatchRegex)));
+globMock.sync.mockImplementation(() => allFiles.filter((fname) => fname.match(templateMatchRegex)));
 
 // Mock fs to pass all file-system checks
 jest.mock('fs-extra', () => ({
@@ -33,8 +31,8 @@ jest.mock('fs-extra', () => ({
   statSync: jest.fn().mockReturnValue({ isFile: () => true } as fs.Stats),
 }));
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   FeatureFlags: {
     getBoolean: jest.fn(),
     getNumber: jest.fn(),
@@ -56,7 +54,7 @@ const mockGraphQLAPIMeta = {
 
 // helper to mock common dependencies
 const setMockTestCommonDependencies = () => {
-  jest.mock('amplify-cli-core');
+  jest.mock('@aws-amplify/amplify-cli-core');
   const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
   pathManagerMock.getBackendDirPath = jest.fn().mockImplementation(() => localBackendDirPathStub);
   pathManagerMock.getCurrentCloudBackendDirPath = jest.fn().mockImplementation(() => currentBackendDirPathStub);
@@ -69,7 +67,7 @@ const setMockTestCommonDependencies = () => {
 
 describe('resource-status-diff helpers', () => {
   beforeAll(() => {
-    jest.unmock('amplify-cli-core');
+    jest.unmock('@aws-amplify/amplify-cli-core');
   });
 
   it('capitalize should capitalize strings', async () => {
@@ -79,7 +77,7 @@ describe('resource-status-diff helpers', () => {
   });
 
   it('should Glob only cloudformation template files', async () => {
-    const mockCloudformationTemplateName = 'cloudformation-template.json';
+    const mockCloudFormationTemplateName = 'cloudformation-template.json';
     const stubFileFolder = 'stub-file-folder';
     const expectedGlobOptions = {
       absolute: false,
@@ -91,7 +89,7 @@ describe('resource-status-diff helpers', () => {
     const cfnFilename = globCFNFilePath(stubFileFolder);
     expect(globMock.sync.mock.calls.length).toBe(1);
     expect(globMock.sync).toBeCalledWith('**/*template.{yaml,yml,json}', expectedGlobOptions);
-    expect(cfnFilename).toBe(`${stubFileFolder}/${mockCloudformationTemplateName}`);
+    expect(cfnFilename).toBe(`${stubFileFolder}/${mockCloudFormationTemplateName}`);
   });
 
   it('should search both Build and non Build folders for Cloudformation Templates', async () => {

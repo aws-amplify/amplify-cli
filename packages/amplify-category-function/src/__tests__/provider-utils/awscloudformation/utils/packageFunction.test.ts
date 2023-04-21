@@ -1,11 +1,11 @@
 import { getRuntimeManager } from '../../../../provider-utils/awscloudformation/utils/functionPluginLoader';
-import { $TSContext, getFolderSize, pathManager } from 'amplify-cli-core';
+import { $TSContext, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
 import { packageFunction } from '../../../../provider-utils/awscloudformation/utils/packageFunction';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';
 import { zipPackage } from '../../../../provider-utils/awscloudformation/utils/zipResource';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoader');
 jest.mock('../../../../provider-utils/awscloudformation/utils/zipResource');
 
@@ -46,17 +46,17 @@ const resourceRequest: PackageRequestMeta = {
 
 describe('package function', () => {
   it('delegates packaging to the runtime manager', async () => {
-    await packageFunction((context_stub as unknown) as $TSContext, resourceRequest);
+    await packageFunction(context_stub as unknown as $TSContext, resourceRequest);
     expect(runtimeManager_mock.package.mock.calls[0][0].srcRoot).toEqual('backend/dir/path/testcategory/testResourceName');
   });
 
   it('updates amplify meta after packaging', async () => {
-    await packageFunction((context_stub as unknown) as $TSContext, resourceRequest);
+    await packageFunction(context_stub as unknown as $TSContext, resourceRequest);
     expect(context_stub.amplify.updateAmplifyMetaAfterPackage.mock.calls[0][0]).toEqual(resourceRequest);
   });
 
   it('throws an error when the size of the function is too large', async () => {
     getFolderSize_mock.mockResolvedValueOnce(251 * 1024 ** 2);
-    await expect(async () => await packageFunction((context_stub as unknown) as $TSContext, resourceRequest)).rejects.toThrow();
+    await expect(async () => await packageFunction(context_stub as unknown as $TSContext, resourceRequest)).rejects.toThrow();
   });
 });

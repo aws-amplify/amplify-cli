@@ -60,7 +60,7 @@ describe('s3 import c', () => {
     ogSettings = createStorageSettings(ogProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
-    await addAuthWithDefault(ogProjectRoot, {});
+    await addAuthWithDefault(ogProjectRoot);
     await addS3StorageWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -68,7 +68,7 @@ describe('s3 import c', () => {
     dummyOGSettings = createStorageSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
-    await addAuthWithDefault(dummyOGProjectRoot, {});
+    await addAuthWithDefault(dummyOGProjectRoot);
     await addS3StorageWithSettings(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });
@@ -103,7 +103,7 @@ describe('s3 import c', () => {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importS3(projectRoot, ogSettings.bucketName);
 
     await amplifyPushAuth(projectRoot);

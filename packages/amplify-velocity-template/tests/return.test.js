@@ -3,7 +3,7 @@ var assert = require('assert');
 var parse = Velocity.parse;
 var Compile = Velocity.Compile;
 
-describe('Return', function() {
+describe('Return', function () {
   var render = Velocity.render;
 
   function getContext(str, context, macros) {
@@ -12,28 +12,28 @@ describe('Return', function() {
     return compile.context;
   }
 
-  it('return value', function() {
+  it('return value', function () {
     var tpl = `#return ([1,2,3])`;
     const html = render(tpl);
     console.log(tpl);
     html.should.containEql('[1,2,3]');
   });
 
-  it('return empty value', function() {
+  it('return empty value', function () {
     var tpl = `#return`;
     const html = render(tpl);
     console.log(tpl);
     html.should.containEql('');
   });
 
-  it('return empty value', function() {
+  it('return empty value', function () {
     var tpl = `#return(null)`;
     const html = render(tpl);
     console.log(tpl);
     html.should.containEql('');
   });
 
-  it('return value several times', function() {
+  it('return value several times', function () {
     var tpl = `#return ("Foo")`;
     var compile = new Compile(parse(tpl));
     const result = compile.render(context);

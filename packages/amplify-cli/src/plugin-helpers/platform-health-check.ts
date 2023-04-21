@@ -1,13 +1,10 @@
-/* eslint-disable jsdoc/require-description */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as path from 'path';
 import chalk from 'chalk';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny, PluginInfo, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 import { satisfies } from 'semver';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginPlatform } from '../domain/plugin-platform';
 
 /**
  *
@@ -69,9 +66,7 @@ export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promi
   if (missingOfficialPlugins.length > 0) {
     console.log(chalk.yellow('The following official plugins are missing or inactive:'));
     missingOfficialPlugins.forEach((pluginDescription: PluginDescription) => {
-      const {
-        name, type, packageName, packageVersion,
-      } = pluginDescription;
+      const { name, type, packageName, packageVersion } = pluginDescription;
       console.log(`${indent}${name}: ${type} | ${packageName}@${packageVersion}`);
     });
   }
@@ -79,9 +74,7 @@ export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promi
   if (mismatchedOfficialPlugins.length > 0) {
     console.log(chalk.yellow('The following official plugins have mismatched packages:'));
     mismatchedOfficialPlugins.forEach((pluginDescription: PluginDescription) => {
-      const {
-        name, type, packageName, packageVersion,
-      } = pluginDescription;
+      const { name, type, packageName, packageVersion } = pluginDescription;
       console.log('Expected:');
       console.log(`${indent}${name}: ${type} | ${packageName}@${packageVersion}`);
       console.log('Found:');
@@ -117,7 +110,7 @@ export function getOfficialPlugins(): { [key: string]: PluginDescription | Array
 
   Object.keys(officialPlugins).forEach((plugin: string) => {
     const plugins = Array.isArray(officialPlugins[plugin]) ? officialPlugins[plugin] : [officialPlugins[plugin]];
-    plugins.forEach(officialPlugin => {
+    plugins.forEach((officialPlugin) => {
       const { packageName } = officialPlugin;
       if (dependencies[packageName]) {
         const version = dependencies[packageName];

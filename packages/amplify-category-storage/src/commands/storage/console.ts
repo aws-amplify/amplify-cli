@@ -1,8 +1,5 @@
-import { printer } from 'amplify-prompts';
-import { categoryName } from '../../constants';
+import { console } from '../..';
 
 export const name = 'console'; // subcommand
 
-export async function run() {
-  printer.info(`to be implemented: ${categoryName} ${name}`);
-}
+export const run = console;

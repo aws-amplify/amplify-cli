@@ -9,7 +9,7 @@ import {
   JSONUtilities,
   stateManager,
   AmplifyError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { S3 } from '../aws-utils/aws-s3';
 import { ProviderName } from '../constants';
 
@@ -67,7 +67,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     this.currentState.currentStepIndex = 0;
     this.currentState.status = DeploymentStatus.DEPLOYING;
     this.currentState.steps = steps;
-    this.currentState.steps.forEach(s => {
+    this.currentState.steps.forEach((s) => {
       // eslint-disable-next-line no-param-reassign
       s.status = DeploymentStepStatus.WAITING_FOR_DEPLOYMENT;
     });
@@ -186,8 +186,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     await this.saveState();
   };
 
-  public isDeploymentInProgress = (): boolean => this.currentState.status === DeploymentStatus.DEPLOYING
-                                                 || this.currentState.status === DeploymentStatus.ROLLING_BACK;
+  public isDeploymentInProgress = (): boolean =>
+    this.currentState.status === DeploymentStatus.DEPLOYING || this.currentState.status === DeploymentStatus.ROLLING_BACK;
 
   public isDeploymentFinished = (): boolean => this.currentState.finishedAt !== undefined;
 
@@ -230,8 +230,8 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   };
 
   /**
- * Delete the deployment state file if it exists
- */
+   * Delete the deployment state file if it exists
+   */
   public deleteDeploymentStateFile = async (): Promise<void> => {
     await this.s3.deleteObject(this.deploymentBucketName, DeploymentStateManager.stateFileName);
   };

@@ -121,7 +121,7 @@
                 }
             },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
-            "Runtime": "nodejs14.x",
+            "Runtime": "nodejs18.x",
             "Timeout": 25
           }
         },
@@ -211,6 +211,11 @@
         "LambdaExecutionRole": {
             "Value": {
                 "Ref": "LambdaExecutionRole"
+            }
+        },
+        "LambdaExecutionRoleArn": {
+            "Value": {
+                "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
             }
         },
         "Region": {

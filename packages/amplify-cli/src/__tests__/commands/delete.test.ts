@@ -3,11 +3,11 @@
 //
 // https://stackoverflow.com/questions/46148169/stubbing-process-exit-with-jest
 
-import { UnknownArgumentError, AmplifyError } from 'amplify-cli-core';
+import { UnknownArgumentError, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify delete:', () => {
   const mockExit = jest.fn();
-  jest.mock('amplify-cli-core', () => ({
+  jest.mock('@aws-amplify/amplify-cli-core', () => ({
     exitOnNextTick: mockExit,
     UnknownArgumentError,
     AmplifyError,
@@ -85,6 +85,8 @@ describe('amplify delete:', () => {
     },
   };
   it('delete run method should display an error message when using force option', async () => {
-    await expect(runDeleteCmd(mockContextWithForceOptionAndCLArgs)).rejects.toThrow('The "delete" command does not expect additional arguments.');
+    await expect(runDeleteCmd(mockContextWithForceOptionAndCLArgs)).rejects.toThrow(
+      'The "delete" command does not expect additional arguments.',
+    );
   });
 });

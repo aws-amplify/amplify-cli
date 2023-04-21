@@ -1,7 +1,7 @@
 import { appsyncTableSuffix } from './constants';
 import { getAppSyncResourceName } from './appSyncHelper';
 import * as path from 'path';
-import { $TSAny, pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
+import { $TSAny, pathManager, readCFNTemplate, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { categoryName } from '../../../constants';
 import { getTableNameForModel, readProjectConfiguration } from 'graphql-transformer-core';
 
@@ -23,8 +23,8 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   const categorySet = new Set();
 
   if (currentDefaults.permissions) {
-    Object.keys(currentDefaults.permissions).forEach(category => {
-      Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
+    Object.keys(currentDefaults.permissions).forEach((category) => {
+      Object.keys(currentDefaults.permissions[category]).forEach((resourceName) => {
         categorySet.add(category);
         currentResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
@@ -32,8 +32,8 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   }
 
   if (newDefaults.permissions) {
-    Object.keys(newDefaults.permissions).forEach(category => {
-      Object.keys(newDefaults.permissions[category]).forEach(resourceName => {
+    Object.keys(newDefaults.permissions).forEach((category) => {
+      Object.keys(newDefaults.permissions[category]).forEach((resourceName) => {
         newResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
     });
@@ -43,15 +43,15 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
     apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, true);
   }
 
-  currentResources.forEach(resourceName => {
+  currentResources.forEach((resourceName) => {
     if (newResources.indexOf(resourceName) === -1) {
       deletedResources.push(resourceName);
     }
   });
 
-  const deleteAppSyncTableResources = deletedResources.filter(resource => resource.includes(appsyncTableSuffix.toUpperCase()));
-  deletedResources = deletedResources.filter(resource => !resource.includes(appsyncTableSuffix.toUpperCase()));
-  deleteAppSyncTableResources.forEach(table => {
+  const deleteAppSyncTableResources = deletedResources.filter((resource) => resource.includes(appsyncTableSuffix.toUpperCase()));
+  deletedResources = deletedResources.filter((resource) => !resource.includes(appsyncTableSuffix.toUpperCase()));
+  deleteAppSyncTableResources.forEach((table) => {
     const appsyncResourceName = getAppSyncResourceName();
     const replacementTableSuffix = `:${appsyncTableSuffix.toUpperCase()}_`;
     const modelEnvPrefix = `API_${appsyncResourceName.toUpperCase()}_${table
@@ -64,7 +64,7 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   });
 
   const toBeDeletedEnvVariables = [];
-  Object.keys(oldCFNEnvVariables).forEach(envVar => {
+  Object.keys(oldCFNEnvVariables).forEach((envVar) => {
     for (let i = 0; i < deletedResources.length; i += 1) {
       if (envVar.includes(deletedResources[i])) {
         toBeDeletedEnvVariables.push(envVar);
@@ -73,7 +73,7 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
     }
   });
 
-  toBeDeletedEnvVariables.forEach(envVar => {
+  toBeDeletedEnvVariables.forEach((envVar) => {
     delete oldCFNEnvVariables[envVar];
   });
 
@@ -89,8 +89,8 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
 
   const categorySet = new Set();
   if (currentDefaults.permissions) {
-    Object.keys(currentDefaults.permissions).forEach(category => {
-      Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
+    Object.keys(currentDefaults.permissions).forEach((category) => {
+      Object.keys(currentDefaults.permissions[category]).forEach((resourceName) => {
         categorySet.add(category);
         currentResources.push(`${category}${resourceName}`);
       });
@@ -98,8 +98,8 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
   }
 
   if (newDefaults.permissions) {
-    Object.keys(newDefaults.permissions).forEach(category => {
-      Object.keys(newDefaults.permissions[category]).forEach(resourceName => {
+    Object.keys(newDefaults.permissions).forEach((category) => {
+      Object.keys(newDefaults.permissions[category]).forEach((resourceName) => {
         newResources.push(`${category}${resourceName}`);
       });
     });
@@ -110,7 +110,7 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
     apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, false);
   }
 
-  currentResources.forEach(resourceName => {
+  currentResources.forEach((resourceName) => {
     if (newResources.indexOf(resourceName) === -1) {
       deletedResources.push(resourceName);
     }
@@ -118,7 +118,7 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
 
   const toBeDeletedParameters = [];
 
-  Object.keys(oldCFNParameters).forEach(parameter => {
+  Object.keys(oldCFNParameters).forEach((parameter) => {
     for (let i = 0; i < deletedResources.length; i += 1) {
       if (parameter.includes(deletedResources[i])) {
         toBeDeletedParameters.push(parameter);
@@ -126,7 +126,7 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
       }
     }
   });
-  toBeDeletedParameters.forEach(parameter => {
+  toBeDeletedParameters.forEach((parameter) => {
     delete oldCFNParameters[parameter];
   });
 
@@ -139,7 +139,7 @@ export function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
-  crudOptions.forEach(crudOption => {
+  crudOptions.forEach((crudOption) => {
     switch (crudOption) {
       case 'create':
         actions.push('lambda:Create*', 'lambda:Put*', 'lambda:Add*');
@@ -228,7 +228,7 @@ export function constructCloudWatchEventComponent(cfnFilePath: string, cfnConten
       ],
     },
   };
-  // append permissions to invoke lambda via cloiudwatch to CFN file
+  // append permissions to invoke lambda via CloudWatch to CFN file
   cfnContent.Resources.PermissionForEventsToInvokeLambda = {
     Type: 'AWS::Lambda::Permission',
     Properties: {
@@ -258,7 +258,7 @@ export function constructCloudWatchEventComponent(cfnFilePath: string, cfnConten
 }
 
 function apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, isEnvParams) {
-  const apiAddFlag = resourceSet.has('api') || !newResources.find(resource => resource.includes('storage'));
+  const apiAddFlag = resourceSet.has('api') || !newResources.find((resource) => resource.includes('storage'));
   if (apiAddFlag) {
     isEnvParams ? currentResources.push(`API_${apiResourceName.toUpperCase()}_`) : currentResources.push(`api${apiResourceName}`);
   }

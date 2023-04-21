@@ -28,7 +28,7 @@ describe('generated tags test', () => {
     if (hostingBucket) {
       try {
         await deleteS3Bucket(hostingBucket);
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch {}
     }
     deleteProjectDir(projRoot);
@@ -49,17 +49,15 @@ describe('generated tags test', () => {
 
     // Currently only checks to make sure that the pushed tags have the same amount and name of keys than the ones added locally on the tags.json file
     expect(checkEquality(localTags, rootStackInfo.Tags)).toBe(true);
-    expect(rootStackInfo.Tags.filter(r => r.Key === 'user:Stack')[0].Value).toEqual(envName);
-    expect(rootStackInfo.Tags.filter(r => r.Key === 'user:Application')[0].Value).toEqual(projName);
-
-    
+    expect(rootStackInfo.Tags.filter((r) => r.Key === 'user:Stack')[0].Value).toEqual(envName);
+    expect(rootStackInfo.Tags.filter((r) => r.Key === 'user:Application')[0].Value).toEqual(projName);
   });
 });
 
 // ? Not sure if this is the best way to indicate an array of objects in TS
 function checkEquality(localTags: {}[], generatedTags: {}[]) {
-  localTags.forEach(tagObj => {
-    const rootTag = generatedTags.find(obj => obj['Key'] === tagObj['Key']);
+  localTags.forEach((tagObj) => {
+    const rootTag = generatedTags.find((obj) => obj['Key'] === tagObj['Key']);
     if (tagObj['Key'] !== rootTag['Key']) return false;
   });
 

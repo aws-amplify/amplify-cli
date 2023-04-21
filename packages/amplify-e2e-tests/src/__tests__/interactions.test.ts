@@ -13,6 +13,7 @@ describe('amplify add interactions', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('interactions');
+    await initJSProjectWithProfile(projRoot, { name: 'interactions' });
   });
 
   afterEach(async () => {
@@ -20,16 +21,15 @@ describe('amplify add interactions', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add  simple interaction', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addSampleInteraction(projRoot, {});
+  it('init a project and add simple interaction', async () => {
+    await addSampleInteraction(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const {
       FunctionArn: functionArn,
       BotName: botName,
       Region: region,
-    } = Object.keys(meta.interactions).map(key => meta.interactions[key])[0].output;
+    } = Object.keys(meta.interactions).map((key) => meta.interactions[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(botName).toBeDefined();
     expect(region).toBeDefined();

@@ -10,8 +10,16 @@ import tar from 'tar';
 import { promisify } from 'util';
 const { fromEvent } = require('promise-toolbox');
 import * as openpgp from 'openpgp';
-import { $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform, GetPackageAssetPaths, pathManager, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import {
+  $TSAny,
+  AmplifyFault,
+  AMPLIFY_SUPPORT_DOCS,
+  isWindowsPlatform,
+  GetPackageAssetPaths,
+  pathManager,
+  AmplifyError,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 // default port that opensearch chooses
 const basePort = 9200;
@@ -31,12 +39,12 @@ export const relativePathToOpensearchLocal = join('opensearch', supportedOpenSea
 export const packageName = '@aws-amplify/amplify-opensearch-simulator';
 
 type OpenSearchEmulatorOptions = {
-  port?: number; 
-  clusterName?: string; 
+  port?: number;
+  clusterName?: string;
   nodeName?: string;
-  type?: string; 
+  type?: string;
   startTimeout?: number;
-}
+};
 
 export class OpenSearchEmulator {
   public proc: execa.ExecaChildProcess<string>;
@@ -48,11 +56,11 @@ export class OpenSearchEmulator {
     return this;
   }
 
-  public get pid(): number|undefined {
+  public get pid(): number | undefined {
     return this.proc?.pid;
   }
 
-  public get port(): number|undefined {
+  public get port(): number | undefined {
     return this.opts?.port;
   }
 
@@ -72,7 +80,7 @@ export class OpenSearchEmulator {
 
 const wait = (ms: number) => {
   let timeoutHandle: NodeJS.Timeout;
-  const promise = new Promise(accept => {
+  const promise = new Promise((accept) => {
     timeoutHandle = global.setTimeout(accept, ms);
   });
 
@@ -112,14 +120,14 @@ export const buildArgs = (options: OpenSearchEmulatorOptions, pathToOpenSearchDa
 
 export const launch = async (
   pathToOpenSearchData: string,
-  givenOptions: OpenSearchEmulatorOptions = {}, 
-  retry:number = 0, 
-  startTime: number = Date.now()
-): Promise<OpenSearchEmulator> => { 
-  if (isWindowsPlatform) {
+  givenOptions: OpenSearchEmulatorOptions = {},
+  retry = 0,
+  startTime: number = Date.now(),
+): Promise<OpenSearchEmulator> => {
+  if (isWindowsPlatform()) {
     throw new AmplifyError('SearchableMockUnsupportedPlatformError', {
       message: 'Cannot launch OpenSearch simulator on windows OS',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
@@ -127,7 +135,7 @@ export const launch = async (
   if (retry >= maxRetries) {
     throw new AmplifyFault('MockProcessFault', {
       message: 'Max retries hit for starting OpenSearch simulator',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
@@ -136,7 +144,7 @@ export const launch = async (
   } catch (error) {
     throw new AmplifyFault('MockProcessFault', {
       message: 'Failed to setup local OpenSearch simulator',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
@@ -148,7 +156,7 @@ export const launch = async (
     if (freePort !== port) {
       throw new AmplifyError('SearchableMockUnavailablePortError', {
         message: `Port ${port} is not free. Please use a different port`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
       });
     }
   }
@@ -166,22 +174,21 @@ export const launch = async (
   if (!emulator) {
     throw new AmplifyError('SearchableMockProcessError', {
       message: 'Unable to start the Opensearch emulator. Please restart the mock process.',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
   return emulator;
 };
 
 export const startOpensearchEmulator = async (
-  opts: Required<OpenSearchEmulatorOptions>, 
-  proc: execa.ExecaChildProcess<string>, 
-  port: number, 
-  startTime: number, 
-  givenOptions: OpenSearchEmulatorOptions, 
-  pathToOpenSearchData: string, 
-  retry: number
-): Promise<OpenSearchEmulator|undefined> => {
-
+  opts: Required<OpenSearchEmulatorOptions>,
+  proc: execa.ExecaChildProcess<string>,
+  port: number,
+  startTime: number,
+  givenOptions: OpenSearchEmulatorOptions,
+  pathToOpenSearchData: string,
+  retry: number,
+): Promise<OpenSearchEmulator | undefined> => {
   function startingTimeout() {
     printer.error('Failed to start within timeout');
     // ensure process is halted.
@@ -189,7 +196,7 @@ export const startOpensearchEmulator = async (
     const err: $TSAny = new Error('start has timed out!');
     err.code = 'timeout';
     throw err;
-  };
+  }
 
   // define this now so we can use it later to remove a listener.
   let prematureExit: $TSAny;
@@ -207,7 +214,7 @@ export const startOpensearchEmulator = async (
     await Promise.race([
       startingEmulatorPromise(opts, proc, port),
       waiter.promise.then(startingTimeout),
-      exitingEmulatorPromise(proc, prematureExit)
+      exitingEmulatorPromise(proc, prematureExit),
     ]);
     printer.info('Successfully launched OpenSearch Simulator on' + JSON.stringify({ port, time: Date.now() - startTime }));
   } catch (err) {
@@ -224,18 +231,18 @@ export const startOpensearchEmulator = async (
   } finally {
     waiter && waiter.cancel();
     if (typeof prematureExit === 'function') {
-      proc.removeListener('exit', prematureExit);
+      void proc.removeListener('exit', prematureExit);
     }
   }
   return new OpenSearchEmulator(proc, opts);
-}
+};
 
 export const startingEmulatorPromise = (opts: Required<OpenSearchEmulatorOptions>, proc: execa.ExecaChildProcess<string>, port: number) => {
   return new Promise((accept, reject) => {
     let stdout = '';
     let stderr = '';
 
-    function readStderrBuffer(buffer: { toString: () => string; }) {
+    function readStderrBuffer(buffer: { toString: () => string }) {
       stderr += buffer.toString();
 
       // Check stderr for any known errors.
@@ -248,7 +255,7 @@ export const startingEmulatorPromise = (opts: Required<OpenSearchEmulatorOptions
       }
     }
 
-    function readStdoutBuffer(buffer: { toString: () => string; }) {
+    function readStdoutBuffer(buffer: { toString: () => string }) {
       stdout += buffer.toString();
 
       if (stdout.indexOf(opts.port.toString()) !== -1) {
@@ -273,10 +280,10 @@ export const exitingEmulatorPromise = (proc: execa.ExecaChildProcess<string>, pr
     prematureExit = () => {
       const err: $TSAny = new Error('premature exit');
       err.code = 'premature';
-      proc.removeListener('exit', prematureExit);
+      void proc.removeListener('exit', prematureExit);
       reject(err);
     };
-    proc.on('exit', prematureExit);
+    void proc.on('exit', prematureExit);
   });
 };
 
@@ -293,10 +300,10 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
 
   await ensureDir(pathToOpenSearchLocal);
 
-  const latestSig = (await nodeFetch(sigFileUrl).then(res => res.buffer()));
+  const latestSig = await nodeFetch(sigFileUrl).then((res) => res.buffer());
 
-  const latestPublicKey = (await nodeFetch(publicKeyUrl).then(res => res.text()));
-  const opensearchSimulatorGunZippedTarball = await nodeFetch(opensearchMinLinuxArtifactUrl).then(res => res.buffer());
+  const latestPublicKey = await nodeFetch(publicKeyUrl).then((res) => res.text());
+  const opensearchSimulatorGunZippedTarball = await nodeFetch(opensearchMinLinuxArtifactUrl).then((res) => res.buffer());
 
   const signature = await openpgp.signature.read(latestSig);
   const publickey = await openpgp.key.readArmored(latestPublicKey);
@@ -304,7 +311,7 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
   const verificationResult = await openpgp.verify({
     message: message,
     signature: signature,
-    publicKeys: publickey.keys
+    publicKeys: publickey.keys,
   });
 
   const { verified } = verificationResult.signatures[0];
@@ -313,7 +320,7 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
   if (!verifyResult) {
     throw new AmplifyFault('MockProcessFault', {
       message: 'PGP signature of downloaded OpenSearch binary did not match',
-      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
+      link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
     });
   }
 
@@ -321,10 +328,10 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
 };
 
 export const writeOpensearchEmulatorArtifacts = async (
-  pathToOpenSearchLocal: string, 
-  opensearchSimulatorGunZippedTarball: $TSAny, 
+  pathToOpenSearchLocal: string,
+  opensearchSimulatorGunZippedTarball: $TSAny,
   latestSig: $TSAny,
-  latestPublicKey: $TSAny
+  latestPublicKey: $TSAny,
 ) => {
   const pathToOpenSearchLib = join(pathToOpenSearchLocal, 'opensearchLib');
   await ensureDir(pathToOpenSearchLib);
@@ -340,7 +347,11 @@ export const writeOpensearchEmulatorArtifacts = async (
 
 export const unzipOpensearchBuildFile = async (opensearchSimulatorGunZippedTarball: Buffer, pathToOpenSearchLib: string) => {
   // Create a Readable stream from the in-memory tar.gz, unzip it, and extract it to 'pathToOpenSearchLib'
-  await promisify(pipeline)(Readable.from(opensearchSimulatorGunZippedTarball), gunzip(), tar.extract({ C: pathToOpenSearchLib, stripComponents: 1 }));
+  await promisify(pipeline)(
+    Readable.from(opensearchSimulatorGunZippedTarball),
+    gunzip(),
+    tar.extract({ C: pathToOpenSearchLib, stripComponents: 1 }),
+  );
 };
 
 export const openSearchLocalExists = async (pathToOpenSearchLocal: string): Promise<boolean> => {
@@ -359,4 +370,4 @@ export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeP
 export const getOpensearchLocalDirectory = () => {
   const opensearchLocalDir = pathManager.getAmplifyPackageLibDirPath(packageName);
   return join(opensearchLocalDir, relativePathToOpensearchLocal);
-}
+};

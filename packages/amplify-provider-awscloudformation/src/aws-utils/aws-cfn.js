@@ -12,26 +12,27 @@ const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
-const { stateManager, pathManager, AmplifyError, AmplifyException, AmplifyFault } = require('amplify-cli-core');
+const { stateManager, pathManager, AmplifyError, AmplifyFault } = require('@aws-amplify/amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
 const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
+const { getStatusToErrorMsg, collectStackErrorMessages } = require('./cloudformation-error-serializer');
 
-const { printer } = require('amplify-prompts');
+const { printer } = require('@aws-amplify/amplify-prompts');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
-const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
+const CFN_POLL_TIME = (process.env.IS_AMPLIFY_CI ? 30 : 5) * 1000; // 5 secs wait to check if  new stacks are created by root stack
+const CFN_POLL_TIME_MAX = (process.env.IS_AMPLIFY_CI ? 120 : 30) * 1000; // 30 seconds
 let CFNLOG = [];
 const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
 
 const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
 
 // These are cascade failures caused because of a root failure. Safe to ignore
-const RESOURCE_CASCADE_FAIL_REASONS = [
-  'Resource creation cancelled',
-  'Resource update cancelled'
-];
+const RESOURCE_CASCADE_FAIL_REASONS = ['Resource creation cancelled', 'Resource update cancelled'];
+
+const STACK_RESOURCE_FILTER_FAIL_REASON = 'The following resource(s) failed';
 class CloudFormation {
   constructor(context, userAgentAction, options = {}, eventMap = {}) {
     return (async () => {
@@ -76,7 +77,7 @@ class CloudFormation {
 
     return new Promise((resolve, reject) => {
       logger('cfnModel.createStack', [cfnParentStackParams])();
-      cfnModel.createStack(cfnParentStackParams, createErr => {
+      cfnModel.createStack(cfnParentStackParams, (createErr) => {
         this.readStackEvents(cfnParentStackParams.StackName);
         logger('cfnModel.createStack', [cfnParentStackParams])(createErr);
         if (createErr) {
@@ -85,16 +86,20 @@ class CloudFormation {
         }
         cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, async (completeErr, waitForStackdata) => {
           if (self.pollForEvents) {
-            clearInterval(self.pollForEvents);
+            clearTimeout(self.pollForEvents);
           }
 
           this.progressBar?.stop();
 
           if (completeErr) {
             context.print.error('\nAn error occurred when creating the CloudFormation stack');
-            await this.collectStackErrors(cfnParentStackParams.StackName);
+            const errorDetails = await this.collectStackErrors(cfnParentStackParams.StackName);
             logger('cfnModel.createStack', [cfnParentStackParams])(completeErr);
-            const error = new Error('Initialization of project failed');
+            const error = new AmplifyFault(
+              'DeploymentFault',
+              { message: 'Initialization of project failed', details: errorDetails },
+              completeErr,
+            );
             error.stack = null;
             reject(error);
           }
@@ -104,72 +109,119 @@ class CloudFormation {
     });
   }
 
+  /**
+   * In the event of a cfn deployment failure, generate error messages from the cfn events
+   * and write them on the console and return them for consumption by the caller.
+   */
   collectStackErrors(stackName) {
     // add root stack to see the new stacks
     this.readStackEvents(stackName);
     // wait for the poll queue to drain
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.pollQueue.once('empty', () => {
-        const failedStacks = this.stackEvents.filter(ev => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
-
+        const failedStacks = this.stackEvents.filter((ev) => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
+        const customStackIds = this.getCustomStackIds(failedStacks);
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
           printer.error('The following resources failed to deploy:');
-          trace.forEach(t => {
+          trace.forEach((t) => {
             console.log(t);
             console.log('\n');
           });
-          resolve();
+          resolve(collectStackErrorMessages(this.filterFailedStackEvents(failedStacks), customStackIds));
         } catch (e) {
-          Promise.reject(e);
+          reject(e);
         } finally {
           if (this.pollForEvents) {
-            clearInterval(this.pollForEvents);
+            clearTimeout(this.pollForEvents);
           }
         }
       });
     });
   }
 
+  getCustomStackIds(eventsWithFailure) {
+    return eventsWithFailure
+      .filter((stack) => stack.ResourceType === 'AWS::CloudFormation::Stack')
+      .filter(
+        (stack) =>
+          this.eventMap['rootResources'] &&
+          this.eventMap['rootResources'].some(
+            (resource) => resource.category.includes('custom-') && resource.key === stack.LogicalResourceId,
+          ),
+      )
+      .map((stack) => stack.PhysicalResourceId);
+  }
+
+  /**
+   * Generate user friendly error message from the failed stacks for printing it on the user console
+   */
   generateFailedStackErrorMsgs(eventsWithFailure) {
     this.context.exeInfo.cloudformationEvents = CFNLOG;
-    const stackTrees = eventsWithFailure
-      .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
-      .filter(stack => this.eventMap['eventToCategories'].has(stack.LogicalResourceId))
-      .filter(stack => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason))
-      .map(event => {
-        const err = [];
-        const resourceName = event.LogicalResourceId;
-        const cfnURL = getCFNConsoleLink(event, this.cfn);
-        err.push(`${chalk.red('Resource Name:')} ${resourceName} (${event.ResourceType})`);
-        err.push(`${chalk.red('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
-        err.push(`${chalk.red('Reason:')} ${event.ResourceStatusReason}`);
-        if (cfnURL) {
-          err.push(`${chalk.red('URL:')} ${cfnURL}`);
-        }
-        return err.join('\n');
-      });
+    const stackTrees = this.filterFailedStackEvents(eventsWithFailure).map((event) => {
+      const err = [];
+      const resourceName = event.LogicalResourceId;
+      const cfnURL = getCFNConsoleLink(event, this.cfn);
+      err.push(`${chalk.red('Resource Name:')} ${resourceName} (${event.ResourceType})`);
+      err.push(`${chalk.red('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
+      err.push(`${chalk.red('Reason:')} ${event.ResourceStatusReason}`);
+      if (cfnURL) {
+        err.push(`${chalk.red('URL:')} ${cfnURL}`);
+      }
+      return err.join('\n');
+    });
     return stackTrees;
   }
 
+  /**
+   * Filter out all the failed stacks that don't have useful error messages such as parent stack's 'Resource creation cancelled'
+   */
+  filterFailedStackEvents(eventsWithFailure) {
+    return eventsWithFailure
+      .filter(
+        (stack) =>
+          stack.ResourceType !== 'AWS::CloudFormation::Stack' ||
+          (stack.ResourceStatusReason && !stack.ResourceStatusReason.includes(STACK_RESOURCE_FILTER_FAIL_REASON)),
+      )
+      .filter(
+        (stack) =>
+          (this.eventMap.logicalResourceNames && this.eventMap.logicalResourceNames.includes(stack.LogicalResourceId)) ||
+          (this.eventMap['rootResources'] && this.eventMap['rootResources'].some((resource) => resource.key === stack.LogicalResourceId)),
+      )
+      .filter((stack) => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason));
+  }
+
   readStackEvents(stackName) {
-    this.pollForEvents = setInterval(() => this.addToPollQueue(stackName, 3), CFN_POLL_TIME);
+    const self = this;
+    let delay = CFN_POLL_TIME;
+    let readStackEventsCalls = 0;
+    const invoker = () => {
+      self.addToPollQueue(stackName, 3);
+      if (delay < CFN_POLL_TIME_MAX) {
+        delay = Math.min(Math.pow(2, readStackEventsCalls) * CFN_POLL_TIME, CFN_POLL_TIME_MAX);
+      }
+      self.pollForEvents = setTimeout(invoker, delay);
+      readStackEventsCalls++;
+    };
+
+    // start it off
+    self.pollForEvents = setTimeout(invoker, delay);
   }
 
   pollStack(stackName) {
     return this.getStackEvents(stackName)
-      .then(stackEvents => {
+      .then((stackEvents) => {
         const uniqueEvents = getUniqueStacksEvents(stackEvents);
         const nestedStacks = filterNestedStacks(uniqueEvents);
 
-        nestedStacks.forEach(stackId => {
+        nestedStacks.forEach((stackId) => {
           if (stackId !== stackName) {
             this.addToPollQueue(stackId);
           }
         });
         this.showNewEvents(stackEvents);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }
@@ -200,14 +252,13 @@ class CloudFormation {
     } else {
       newEvents = events;
     }
-    if(this.eventMap &&
-      this.progressBar.isTTY()) {
+    if (this.eventMap && this.progressBar.isTTY()) {
       this.showEventProgress(_.uniqBy(newEvents, 'EventId'));
-    }
-    else {
+    } else {
       showEvents(_.uniqBy(newEvents, 'EventId'));
     }
 
+    CFNLOG = CFNLOG.concat(_.uniqBy(newEvents, 'EventId').reverse());
     this.stackEvents = [...allShownEvents, ...newEvents];
   }
 
@@ -215,7 +266,7 @@ class CloudFormation {
   showEventProgress(events) {
     events = events.reverse();
     if (events.length > 0) {
-      events.forEach(event => {
+      events.forEach((event) => {
         const finishStatus = CFN_SUCCESS_STATUS.includes(event.ResourceStatus);
         const updateObj = {
           name: event.LogicalResourceId,
@@ -223,23 +274,23 @@ class CloudFormation {
             LogicalResourceId: event.LogicalResourceId,
             ResourceType: event.ResourceType,
             ResourceStatus: event.ResourceStatus,
-            Timestamp: event.Timestamp
-        }}
-        const item = this.eventMap['rootResources'].find(it => it.key === event.LogicalResourceId)
-        if(event.LogicalResourceId === this.eventMap['rootStackName'] || item) {
+            Timestamp: event.Timestamp,
+          },
+        };
+        const item = this.eventMap['rootResources'].find((it) => it.key === event.LogicalResourceId);
+        if (event.LogicalResourceId === this.eventMap['rootStackName'] || item) {
           // If the root resource for a category has already finished, then we do not have to wait for all events under it.
           if (finishStatus && item && item.category) {
-            this.progressBar.finishBar(item.category)
+            this.progressBar.finishBar(item.category);
           }
           this.progressBar.updateBar('projectBar', updateObj);
-        }
-        else if(this.eventMap['eventToCategories']){
+        } else if (this.eventMap['eventToCategories']) {
           const category = this.eventMap['eventToCategories'].get(event.LogicalResourceId);
           if (category) {
             this.progressBar.updateBar(category, updateObj);
           }
         }
-      })
+      });
     }
   }
 
@@ -251,12 +302,12 @@ class CloudFormation {
     return this.cfn
       .describeStackEvents({ StackName: stackName })
       .promise()
-      .then(data => {
+      .then((data) => {
         let events = data.StackEvents;
-        events = events.filter(event => self.eventStartTime < new Date(event.Timestamp));
+        events = events.filter((event) => self.eventStartTime < new Date(event.Timestamp));
         return Promise.resolve(events);
       })
-      .catch(e => {
+      .catch((e) => {
         log(e);
         if (e && e.code === 'Throttling') {
           return Promise.resolve([]);
@@ -269,7 +320,7 @@ class CloudFormation {
     return this.cfn
       .describeStack({ StackName: stackName })
       .promise()
-      .then(data => {
+      .then((data) => {
         return data.Parameters;
       });
   }
@@ -284,12 +335,10 @@ class CloudFormation {
       const { amplifyMeta } = this.context.amplify.getProjectDetails();
       const providerMeta = amplifyMeta.providers ? amplifyMeta.providers[providerName] : {};
 
-      const stackName = providerMeta.StackName  || '';
+      const stackName = providerMeta.StackName || '';
       const stackId = providerMeta.StackId || '';
 
-      const deploymentBucketName = amplifyMeta.providers
-        ? amplifyMeta.providers[providerName].DeploymentBucketName
-        : '';
+      const deploymentBucketName = amplifyMeta.providers ? amplifyMeta.providers[providerName].DeploymentBucketName : '';
       const authRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].AuthRoleName : '';
       const unauthRoleName = amplifyMeta.providers ? amplifyMeta.providers[providerName].UnauthRoleName : '';
 
@@ -309,7 +358,7 @@ class CloudFormation {
       }
 
       return S3.getInstance(this.context)
-        .then(s3 => {
+        .then((s3) => {
           const s3Params = {
             Body: fs.createReadStream(filePath),
             Key: cfnFile,
@@ -317,7 +366,7 @@ class CloudFormation {
           logger('updateResourceStack.s3.uploadFile', [{ Key: s3Params.cfnFile }])();
           return s3.uploadFile(s3Params, false);
         })
-        .then(bucketName => {
+        .then((bucketName) => {
           const templateURL = `https://s3.amazonaws.com/${bucketName}/${cfnFile}`;
           const cfnStackCheckParams = {
             StackName: stackName,
@@ -351,32 +400,36 @@ class CloudFormation {
                   Tags,
                 };
                 logger('updateResourceStack.updateStack', [cfnStackCheckParams])();
-                cfnModel.updateStack(cfnParentStackParams, updateErr => {
+                cfnModel.updateStack(cfnParentStackParams, (updateErr) => {
                   self.readStackEvents(stackName);
 
                   const cfnCompleteStatus = 'stackUpdateComplete';
                   if (updateErr) {
                     if (self.pollForEvents) {
-                      clearInterval(self.pollForEvents);
+                      clearTimeout(self.pollForEvents);
                     }
                     return reject(updateErr);
                   }
-                  cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, completeErr => {
+                  cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, async (completeErr) => {
                     if (self.pollForEvents) {
-                      clearInterval(self.pollForEvents);
+                      clearTimeout(self.pollForEvents);
                     }
                     this.progressBar?.stop();
 
                     if (completeErr) {
-                      this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
+                      await this.collectStackErrors(cfnParentStackParams.StackName).then((errorDetails) => {
+                        completeErr.details = errorDetails;
+                        reject(completeErr);
+                      });
                     } else {
                       self.context.usageData.calculatePushNormalizationFactor(this.stackEvents, stackId);
-                      return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
+                      await self.updateamplifyMetaFileWithStackOutputs(stackName);
+                      return resolve();
                     }
                   });
                 });
               })
-              .catch(err => {
+              .catch((err) => {
                 reject(new Error("Project stack doesn't exist"));
                 context.print.info(err.stack);
               });
@@ -384,14 +437,14 @@ class CloudFormation {
         });
     } catch (error) {
       this.progressBar?.stop();
-
-      if (error instanceof AmplifyException) {
-        throw error;
-      }
-
-      throw new AmplifyFault('ResourceNotReadyFault', {
-        message: error.message
-      }, error);
+      throw new AmplifyFault(
+        'ResourceNotReadyFault',
+        {
+          message: error.message,
+          code: error.code,
+        },
+        error,
+      );
     }
   }
 
@@ -419,12 +472,12 @@ class CloudFormation {
       {
         StackName: parentStackName,
       },
-      response => response.StackResourceSummaries,
-      async response => response.NextToken,
+      (response) => response.StackResourceSummaries,
+      async (response) => response.NextToken,
     );
 
     const resources = stackSummaries.filter(
-      resource =>
+      (resource) =>
         ![
           'DeploymentBucket',
           'AuthRole',
@@ -438,7 +491,7 @@ class CloudFormation {
      * Update root stack overrides
      */
     const rootStackResources = stackSummaries.filter(
-      resource =>
+      (resource) =>
         !['UpdateRolesWithIDPFunction', 'UpdateRolesWithIDPFunctionOutputs', 'UpdateRolesWithIDPFunctionRole'].includes(
           resource.LogicalResourceId,
         ),
@@ -446,9 +499,9 @@ class CloudFormation {
     if (rootStackResources.length > 0) {
       const rootStackResult = await this.describeStack(cfnParentStackParams);
       Object.keys(amplifyMeta)
-        .filter(k => k === 'providers')
-        .forEach(category => {
-          Object.keys(amplifyMeta[category]).forEach(key => {
+        .filter((k) => k === 'providers')
+        .forEach((category) => {
+          Object.keys(amplifyMeta[category]).forEach((key) => {
             const formattedOutputs = formatOutputs(rootStackResult.Stacks[0].Outputs);
             this.context.amplify.updateProviderAmplifyMeta('awscloudformation', formattedOutputs);
             /**
@@ -460,7 +513,7 @@ class CloudFormation {
             const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
             const tpiResourceParams = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
             _.assign(tpiResourceParams, stateManager.getMeta().providers.awscloudformation);
-            _.set(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
+            _.setWith(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
             stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
           });
         });
@@ -480,11 +533,11 @@ class CloudFormation {
       const stackResult = await Promise.all(promises);
 
       Object.keys(amplifyMeta)
-        .filter(k => k !== 'providers')
-        .forEach(category => {
-          Object.keys(amplifyMeta[category]).forEach(resource => {
+        .filter((k) => k !== 'providers')
+        .forEach((category) => {
+          Object.keys(amplifyMeta[category]).forEach((resource) => {
             const logicalResourceId = category + resource;
-            const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
+            const index = resources.findIndex((resourceItem) => resourceItem.LogicalResourceId === logicalResourceId);
 
             if (index !== -1) {
               const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
@@ -524,12 +577,12 @@ class CloudFormation {
     const log = logger('listExports.cfn.listExports', [{ NextToken: nextToken }]);
     return new Promise((resolve, reject) => {
       log();
-      this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, (err, data) => {
+      this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, async (err, data) => {
         if (err) {
           log(err);
           reject(err);
         } else if (data.NextToken) {
-          this.listExports(data.NextToken).then(innerExports => resolve([...data.Exports, ...innerExports]));
+          await this.listExports(data.NextToken).then((innerExports) => resolve([...data.Exports, ...innerExports]));
         } else {
           resolve(data.Exports);
         }
@@ -545,8 +598,8 @@ class CloudFormation {
       cfnModel
         .describeStacks(cfnNestedStackParams)
         .promise()
-        .then(result => resolve(result))
-        .catch(e => {
+        .then((result) => resolve(result))
+        .catch((e) => {
           log(e);
           if (e.code === 'Throttling' && e.retryable) {
             setTimeout(() => {
@@ -600,15 +653,18 @@ class CloudFormation {
           resolve();
         }
         if (err === null) {
-          cfnModel.deleteStack(cfnStackParams, deleteErr => {
+          cfnModel.deleteStack(cfnStackParams, (deleteErr) => {
             if (deleteErr) {
               console.log(`Error deleting stack ${stackName}`);
               return reject(deleteErr);
             }
-            cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, completeErr => {
+            cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, async (completeErr) => {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
-                this.collectStackErrors(stackName).then(() => reject(completeErr));
+                await this.collectStackErrors(stackName).then((errorDetails) => {
+                  completeErr.details = errorDetails;
+                  reject(completeErr);
+                });
               } else {
                 resolve();
               }
@@ -633,7 +689,6 @@ function formatOutputs(outputs) {
 }
 
 function showEvents(events) {
-
   // CFN sorts the events by descending
   events = events.reverse();
 
@@ -641,7 +696,7 @@ function showEvents(events) {
     console.log('\n');
     const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
 
-    const e = events.map(ev => {
+    const e = events.map((ev) => {
       const res = {};
       const { ResourceStatus: resourceStatus } = ev;
 
@@ -652,7 +707,7 @@ function showEvents(events) {
         colorFn = chalk.green;
       }
 
-      COLUMNS.forEach(col => {
+      COLUMNS.forEach((col) => {
         if (ev[col]) {
           res[col] = colorFn(ev[col]);
         }
@@ -664,7 +719,6 @@ function showEvents(events) {
       columns: COLUMNS,
       showHeaders: false,
     });
-    CFNLOG = CFNLOG.concat(events);
     console.log(formattedEvents);
   }
 }
@@ -691,15 +745,6 @@ function filterNestedStacks(uniqueEvents, excludeWithStatus = CFN_SUCCESS_STATUS
     }
   }
   return nestedStacks;
-}
-
-function getStatusToErrorMsg(status) {
-  const MAP = {
-    CREATE_FAILED: 'create',
-    DELETE_FAILED: 'delete',
-    UPDATE_FAILED: 'update',
-  };
-  return MAP[status] || status;
 }
 
 function getCFNConsoleLink(event, cfn) {

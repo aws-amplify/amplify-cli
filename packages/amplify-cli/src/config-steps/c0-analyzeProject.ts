@@ -6,7 +6,7 @@ import { getEnvInfo } from '../extensions/amplify-helpers/get-env-info';
 import { displayConfigurationDefaults } from '../init-steps/s0-analyzeProject';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isContainersEnabled } from '../execution-manager';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 export async function analyzeProject(context) {
   context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {
@@ -18,7 +18,7 @@ export async function analyzeProject(context) {
   const projectPath = process.cwd();
   Object.assign(context.exeInfo.localEnvInfo, { projectPath });
 
-  let { projectName } = context.exeInfo.projectConfig;
+  const { projectName } = context.exeInfo.projectConfig;
   const { defaultEditor, envName } = context.exeInfo.localEnvInfo;
 
   context.print.info('');
@@ -108,7 +108,7 @@ async function configureProjectName(context) {
         name: 'inputProjectName',
         message: 'Enter a name for the project',
         default: projectName,
-        validate: input => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
+        validate: (input) => isProjectNameValid(input) || 'Project name should be between 3 and 20 characters and alphanumeric',
       };
       const answer = await inquirer.prompt(projectNameQuestion);
       projectName = answer.inputProjectName;

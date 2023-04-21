@@ -1,13 +1,12 @@
-import { $TSAny, $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
-import _ from 'lodash';
+import { $TSAny, $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { categoryName, functionCategoryName } from '../../constants';
 import { FunctionServiceNameLambdaFunction, providerName } from './provider-constants';
 
 export async function removeTrigger(context: $TSContext, resourceName: string, triggerFunctionName: string) {
-  // Update Cloudformtion file
+  // Update CloudFormation file
   const projectRoot = pathManager.findProjectRoot();
   const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
   const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
@@ -198,7 +197,7 @@ export async function addTrigger(
 
   // If updating an already existing S3 resource
   if (resourceName) {
-    // Update Cloudformtion file
+    // Update CloudFormation file
     const projectBackendDirPath = pathManager.getBackendDirPath();
     const storageCFNFilePath = path.join(projectBackendDirPath, categoryName, resourceName, 's3-cloudformation-template.json');
     const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = readCFNTemplate(storageCFNFilePath);

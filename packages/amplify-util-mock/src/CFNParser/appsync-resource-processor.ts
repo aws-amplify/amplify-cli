@@ -8,7 +8,7 @@ import {
 import { AppSyncAPIKeyProcessedResource, AppSyncAPIProcessedResource } from './resource-processors/appsync';
 import { processCloudFormationStack } from './stack/index';
 import { CloudFormationTemplateFetcher, CloudFormationTemplate } from './stack/types';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 
 const CFN_DEFAULT_PARAMS = {
@@ -26,7 +26,7 @@ export function processApiResources(
   transformResult: any,
   appSyncConfig: AmplifyAppSyncSimulatorConfig,
 ): void {
-  Object.values(resources).forEach(resource => {
+  Object.values(resources).forEach((resource) => {
     const { Type: resourceType } = resource;
     const result: any = resource.result;
 
@@ -63,12 +63,13 @@ export function processApiResources(
         }
 
         break;
-      case 'AWS::AppSync::GraphQLApi':
+      case 'AWS::AppSync::GraphQLApi': {
         const resource = result as AppSyncAPIProcessedResource;
         appSyncConfig.appSync.name = resource.name;
         appSyncConfig.appSync.defaultAuthenticationType = resource.defaultAuthenticationType;
         appSyncConfig.appSync.additionalAuthenticationProviders = resource.additionalAuthenticationProviders || [];
         break;
+      }
       case 'AWS::AppSync::ApiKey':
         appSyncConfig.appSync.apiKey = (result as AppSyncAPIKeyProcessedResource).ApiKey;
         break;
@@ -111,7 +112,10 @@ export function processCloudFormationResults(resources, transformResult) {
       content: content as string,
     });
   });
-  configureSearchEnabledTables(transformResult, processedResources);
+
+  if (searchableModelExists(transformResult)) {
+    return configureSearchEnabledTables(transformResult, processedResources);
+  }
 
   return processedResources;
 }
@@ -121,7 +125,7 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
   registerLambdaResourceProcessor();
   registerOpenSearchResourceProcessor();
 
-  const rootStack = JSON.parse(JSON.stringify(transformResult.rootStack)); // rootstack is not
+  const rootStack = JSON.parse(JSON.stringify(transformResult.rootStack));
   const cfnParams = {
     ...CFN_DEFAULT_PARAMS,
     env: '${env}',
@@ -154,21 +158,22 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
   return processCloudFormationResults(processedStacks.resources, transformResult);
 }
 
-export function configureSearchEnabledTables(transformResult: $TSAny, processedResources: AmplifyAppSyncSimulatorConfig): void {
-  if (!searchableModelExists(transformResult)) {
-    return;
-  }
+export function configureSearchEnabledTables(
+  transformResult: $TSAny,
+  processedResources: AmplifyAppSyncSimulatorConfig,
+): AmplifyAppSyncSimulatorConfig {
   const searchableStackResources = Object.keys(transformResult?.stacks?.SearchableStack?.Resources);
-  processedResources.tables = processedResources?.tables?.map( (table: $TSAny) => {
+  processedResources.tables = processedResources?.tables?.map((table: $TSAny) => {
     const tableName = table?.Properties?.TableName;
     const eventSourceMappingPrefix = `Searchable${tableName.substring(0, tableName.lastIndexOf('Table'))}LambdaMapping`;
     return {
       ...table,
-      isSearchable: searchableStackResources?.findIndex(resource => resource?.startsWith(eventSourceMappingPrefix)) !== -1
-    }
+      isSearchable: searchableStackResources?.findIndex((resource) => resource?.startsWith(eventSourceMappingPrefix)) !== -1,
+    };
   });
+  return processedResources;
 }
 
 export function searchableModelExists(transformResult: $TSAny): boolean {
-  return !(_.isEmpty(transformResult?.stacks?.SearchableStack));
+  return !_.isEmpty(transformResult?.stacks?.SearchableStack);
 }

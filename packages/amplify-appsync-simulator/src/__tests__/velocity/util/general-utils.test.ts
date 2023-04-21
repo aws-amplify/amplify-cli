@@ -1,6 +1,6 @@
+import { GraphQLResolveInfo } from 'graphql';
 import { create } from '../../../velocity/util/index';
 import { JavaMap } from '../../../velocity/value-mapper/map';
-import { GraphQLResolveInfo } from 'graphql';
 import { generalUtils } from '../../../velocity/util/general-utils';
 import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
@@ -44,8 +44,8 @@ const stubInfo = {
   },
 } as unknown;
 export const mockInfo = stubInfo as GraphQLResolveInfo;
-const stubJavaMap: JavaMap = new JavaMap({ field1: 'field1Value', field2: 'field2Value', field3: 'field3Value' }, x => x);
-var util;
+const stubJavaMap: JavaMap = new JavaMap({ field1: 'field1Value', field2: 'field2Value', field3: 'field3Value' }, (x) => x);
+let util;
 
 beforeEach(() => {
   const executionContext: AppSyncGraphQLExecutionContext = {
@@ -105,5 +105,12 @@ describe('$util.urlEncode and $util.urlDecode following application/x-www-form-u
 
   it('should not decode reserved chars from application/x-www-form-urlencoded', () => {
     expect(generalUtils.urlDecode(encodedReservedChars)).toBe(reservedChars);
+  });
+});
+
+describe('$util.autoUlid() helper', () => {
+  it('should return a ulid matching string', () => {
+    const ulidFormat = /[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}/i;
+    expect(generalUtils.autoUlid()).toMatch(ulidFormat);
   });
 });

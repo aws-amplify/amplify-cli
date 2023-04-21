@@ -8,18 +8,20 @@ export const getAwsSubscribeDirective = () => `directive @${directiveName}(mutat
 export const getAwsSubscribeDirectiveTransformer = (
   simulatorContext: AmplifyAppSyncSimulator,
 ): ((schema: GraphQLSchema) => GraphQLSchema) => {
-  return schema => {
+  return (schema) => {
     return mapSchema(schema, {
-      [MapperKind.MUTATION_ROOT_FIELD]: mutation => {
+      [MapperKind.MUTATION_ROOT_FIELD]: (mutation) => {
         const allSubscriptions = schema.getSubscriptionType()?.getFields();
         const subscriptions = getSubscriberForMutation(schema, allSubscriptions || {}, mutation.astNode?.name.value);
         if (subscriptions.length) {
           const resolve = mutation.resolve;
           const newResolver = async (parent, args, context, info) => {
             const result = await resolve(parent, args, context, info);
-            subscriptions.forEach(subscriptionName => {
-              simulatorContext.pubsub.publish(subscriptionName, result);
-            });
+            await Promise.all(
+              subscriptions.map(async (subscriptionName) => {
+                await simulatorContext.pubsub.publish(subscriptionName, result);
+              }),
+            );
             return result;
           };
           mutation.resolve = newResolver;
@@ -40,6 +42,7 @@ const getSubscriberForMutation = (schema: GraphQLSchema, subscriptions: GraphQLF
           return subscriptionName;
         }
       }
+      return undefined;
     })
     .filter(Boolean);
 };

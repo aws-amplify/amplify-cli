@@ -1,12 +1,10 @@
-import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, IAmplifyResource } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 /**
  * Command to transform CFN with overrides
  */
-const subcommand = 'build';
-
-export const run = async (context: $TSContext) => {
+export const run = async (context: $TSContext): Promise<void> => {
   const categoryName = context?.input?.subCommands?.[0];
   let resourceName = context?.input?.subCommands?.[1];
   if (categoryName === undefined) {
@@ -15,15 +13,15 @@ export const run = async (context: $TSContext) => {
   }
 
   try {
-    await generateDependentResourcesType(context);
-    const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+    await generateDependentResourcesType();
+    const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
     let filteredResources: IAmplifyResource[] = resourcesToBuild;
     if (categoryName) {
-      filteredResources = filteredResources.filter(resource => resource.category === categoryName);
+      filteredResources = filteredResources.filter((resource) => resource.category === categoryName);
     }
     if (categoryName && resourceName) {
       filteredResources = filteredResources.filter(
-        resource => resource.category === categoryName && resource.resourceName === resourceName,
+        (resource) => resource.category === categoryName && resource.resourceName === resourceName,
       );
     }
     if (!categoryName && !resourceName) {
@@ -38,12 +36,15 @@ export const run = async (context: $TSContext) => {
   } catch (err) {
     printer.error(err.stack);
     printer.error('There was an error building the resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
 };
 
-export const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
+/**
+ * Returns resources in create or update state
+ */
+export const getChangedResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
   const resources: IAmplifyResource[] = [];
   const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
   resourcesToBeCreated.forEach((resourceCreated: IAmplifyResource) => {
@@ -59,6 +60,19 @@ export const getResources = async (context: $TSContext): Promise<IAmplifyResourc
       service: resourceUpdated.service,
       category: resourceUpdated.category,
       resourceName: resourceUpdated.resourceName,
+    });
+  });
+  return resources;
+};
+
+export const getAllResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
+  const resources: IAmplifyResource[] = [];
+  const { allResources } = await context.amplify.getResourceStatus();
+  allResources.forEach((resource: IAmplifyResource) => {
+    resources.push({
+      service: resource.service,
+      category: resource.category,
+      resourceName: resource.resourceName,
     });
   });
   return resources;

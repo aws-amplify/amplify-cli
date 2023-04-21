@@ -1,10 +1,11 @@
 import url from 'url';
 import { prodUrl } from '../domain/amplify-usageData/getUsageDataUrl';
 import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
-import { UsageData } from '../domain/amplify-usageData'
+import { UsageData } from '../domain/amplify-usageData';
 import { getLatestApiVersion, getLatestPayloadVersion } from '../domain/amplify-usageData/VersionManager';
-import { Input } from '../domain/input';
-import { IFlowReport } from 'amplify-cli-shared-interfaces';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
+import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { ProjectSettings } from '@aws-amplify/amplify-cli-core/src';
 
 describe('test version manager', () => {
   it('url version should be the latest URL', () => {
@@ -19,14 +20,14 @@ describe('test version manager', () => {
       '',
       '',
       '',
-      new Input([]),
+      new CommandLineInput([]),
       new Error(''),
       '',
       '12311232',
-      { frontend: 'javascript', editor: 'vscode', framework: 'react' },
+      { frontend: 'javascript', editor: 'vscode', framework: 'react' } as unknown as ProjectSettings,
       {},
       {},
-      usageData.getFlowReport() as IFlowReport
+      usageData.getFlowReport() as IFlowReport,
     );
     expect(payload.payloadVersion).toEqual(getLatestPayloadVersion());
   });

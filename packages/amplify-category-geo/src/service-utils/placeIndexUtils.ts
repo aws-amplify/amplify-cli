@@ -1,7 +1,5 @@
-import {
-  $TSContext, $TSObject, stateManager, pathManager,
-} from 'amplify-cli-core';
-import { App } from '@aws-cdk/core';
+import { $TSContext, $TSObject, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { App } from 'aws-cdk-lib';
 import { PlaceIndexParameters } from './placeIndexParams';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../constants';
@@ -28,19 +26,16 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
-  const authResourceName = await getAuthResourceName(context);
+  const authResourceName = await getAuthResourceName();
 
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(
-    pathManager.findProjectRoot(),
-    category,
-    parameters.name,
-    { groupPermissions: parameters.groupPermissions },
-  );
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, {
+    groupPermissions: parameters.groupPermissions,
+  });
 
   const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
 
@@ -60,18 +55,15 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
-  const authResourceName = await getAuthResourceName(context);
+  const authResourceName = await getAuthResourceName();
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings, authResourceName });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
-  stateManager.setResourceInputsJson(
-    pathManager.findProjectRoot(),
-    category,
-    parameters.name,
-    { groupPermissions: parameters.groupPermissions },
-  );
+  stateManager.setResourceInputsJson(pathManager.findProjectRoot(), category, parameters.name, {
+    groupPermissions: parameters.groupPermissions,
+  });
 
   // update the default place index
   if (parameters.isDefault) {
@@ -81,7 +73,7 @@ export const modifyPlaceIndexResource = async (context: $TSContext, parameters: 
   const placeIndexMetaParameters = constructPlaceIndexMetaParameters(parameters, authResourceName);
 
   const paramsToUpdate = ['accessType', 'dependsOn'] as const;
-  paramsToUpdate.forEach(param => {
+  paramsToUpdate.forEach((param) => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
     context.amplify.updateBackendConfigAfterResourceUpdate(category, parameters.name, param, placeIndexMetaParameters[param]);
   });
@@ -131,10 +123,7 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters, 
 /**
  * The Meta information stored for a Place Index Resource
  */
-export type PlaceIndexMetaParameters = Pick<
-  PlaceIndexParameters,
-  'isDefault' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'
-> & {
+export type PlaceIndexMetaParameters = Pick<PlaceIndexParameters, 'isDefault' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'> & {
   providerPlugin: string;
   service: string;
   dependsOn: ResourceDependsOn[];
@@ -145,8 +134,8 @@ export type PlaceIndexMetaParameters = Pick<
  */
 export const getCurrentPlaceIndexParameters = async (indexName: string): Promise<Partial<PlaceIndexParameters>> => {
   const currentIndexMetaParameters = (await readResourceMetaParameters(ServiceName.PlaceIndex, indexName)) as PlaceIndexMetaParameters;
-  const currentIndexParameters = stateManager.getResourceInputsJson(pathManager.findProjectRoot(),
-    category, indexName, { throwIfNotExist: false }) || {};
+  const currentIndexParameters =
+    stateManager.getResourceInputsJson(pathManager.findProjectRoot(), category, indexName, { throwIfNotExist: false }) || {};
   return {
     dataProvider: currentIndexMetaParameters.dataProvider,
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,
@@ -163,7 +152,7 @@ export const getPlaceIndexIamPolicies = (resourceName: string, crudOptions: stri
   const policy = [];
   const actions = new Set<string>();
 
-  crudOptions.forEach(crudOption => {
+  crudOptions.forEach((crudOption) => {
     switch (crudOption) {
       case 'create':
         actions.add('geo:CreatePlaceIndex');

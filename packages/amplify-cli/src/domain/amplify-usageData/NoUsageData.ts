@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this */
-import { ICommandInput, IFlowData } from 'amplify-cli-shared-interfaces';
-import { IFlowReport } from 'amplify-cli-shared-interfaces/lib/amplify-cli-flow-reporter-types';
-import { Input } from '../input';
-import { IUsageData } from './UsageDataTypes';
+import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
+import { CLIInput } from '../command-input';
+import { IUsageData, IUsageDataPayload, ProjectSettings } from '@aws-amplify/amplify-cli-core';
 import { CLINoFlowReport } from './NoFlowReport';
 import { UsageDataPayload } from './UsageDataPayload';
 
@@ -19,16 +19,16 @@ export class NoUsageData implements IUsageData, IFlowData {
    * @param state - state to include in the payload
    * @returns UsageDataPayload
    */
-  getUsageDataPayload(error: Error | null, state: string): UsageDataPayload {
+  getUsageDataPayload(error: Error | null, state: string): IUsageDataPayload {
     return new UsageDataPayload(
       '',
       '',
       '',
-      new Input([]),
+      new CLIInput([]),
       error,
       state,
       '',
-      {},
+      {} as unknown as ProjectSettings,
       {},
       {},
       {
@@ -36,7 +36,7 @@ export class NoUsageData implements IUsageData, IFlowData {
         category: '',
         cmd: '',
         executable: '',
-        input: { argv: [] },
+        input: { argv: [], command: '' },
         isHeadless: true,
         optionFlowData: [],
         runtime: '',
@@ -49,7 +49,7 @@ export class NoUsageData implements IUsageData, IFlowData {
   /**
    *  Noop implementation of calculatePushNormalizationFactor
    */
-  calculatePushNormalizationFactor(__events: { StackId: string; PhysicalResourceId: string; }[], __stackId: string): void {
+  calculatePushNormalizationFactor(): void {
     /* noop */
   }
 
@@ -84,39 +84,45 @@ export class NoUsageData implements IUsageData, IFlowData {
   /**
    * Noop implementation of init
    */
-  init(): void { /* noop */ }
+  init(): void {
+    /* noop */
+  }
 
   /**
    *  Noop implementation of startCodePathTimer
    */
-  startCodePathTimer(): void { /* noop */ }
+  startCodePathTimer(): void {
+    /* noop */
+  }
 
   /**
    *  Noop implementation of stopCodePathTimer
    */
-  stopCodePathTimer(): void { /* noop */ }
-
-  /**
-   * Noop function
-   */
-  pushInteractiveFlow = (__prompt: string, __input: unknown): void => {
+  stopCodePathTimer(): void {
     /* noop */
   }
 
   /**
    * Noop function
    */
-  pushHeadlessFlow = (__headlessFlowDataString: string, __input: ICommandInput): void => {
+  pushInteractiveFlow = (): void => {
     /* noop */
-  }
+  };
+
+  /**
+   * Noop function
+   */
+  pushHeadlessFlow = (): void => {
+    /* noop */
+  };
 
   /**
    * Noop function to set isHeadless flag in flowLogger
    * @param __headless unused
    */
-  setIsHeadless = (__headless: boolean): void => {
+  setIsHeadless = (): void => {
     /* noop */
-  }
+  };
 
   /**
    * Empty function is for flow report.

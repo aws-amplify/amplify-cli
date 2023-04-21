@@ -1,4 +1,4 @@
-import { $TSAny, stateManager } from 'amplify-cli-core';
+import { $TSAny, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Gets the TPI file

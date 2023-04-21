@@ -1,7 +1,14 @@
 import {
-  $TSAny, $TSContext, AmplifyFault, JSONUtilities, PathConstants, spinner, stateManager, validateExportDirectoryPath,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+  $TSAny,
+  $TSContext,
+  AmplifyFault,
+  JSONUtilities,
+  PathConstants,
+  spinner,
+  stateManager,
+  validateExportDirectoryPath,
+} from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -69,13 +76,17 @@ export const run = async (context: $TSContext, resourceDefinition: $TSAny[], exp
     printer.info('For more information: https://docs.amplify.aws/cli/usage/export-to-cdk');
     printer.blankLine();
   } catch (ex) {
-    revertToBackup(amplifyExportFolder);
+    await revertToBackup(amplifyExportFolder);
     spinner.fail();
-    throw new AmplifyFault('ResourceNotReadyFault', {
-      message: ex.message,
-    }, ex);
+    throw new AmplifyFault(
+      'ResourceNotReadyFault',
+      {
+        message: ex.message,
+      },
+      ex,
+    );
   } finally {
-    removeBackup(amplifyExportFolder);
+    await removeBackup(amplifyExportFolder);
     spinner.stop();
   }
 };
@@ -96,7 +107,7 @@ const createTagsFile = (exportPath: string): void => {
 
   JSONUtilities.writeJson(
     path.join(exportPath, PathConstants.ExportTagsJsonFileName),
-    hydratedTags.map(tag => ({
+    hydratedTags.map((tag) => ({
       key: tag.Key,
       value: tag.Value,
     })),
@@ -111,7 +122,7 @@ const createTagsFile = (exportPath: string): void => {
 const createCategoryStackMapping = (resources: ResourceDefinition[], amplifyExportFolder: string): void => {
   JSONUtilities.writeJson(
     path.join(amplifyExportFolder, PathConstants.ExportCategoryStackMappingJsonFilename),
-    resources.map(r => _.pick(r, ['category', 'resourceName', 'service'])),
+    resources.map((r) => _.pick(r, ['category', 'resourceName', 'service'])),
   );
 };
 
@@ -179,7 +190,7 @@ const transformManifestParameters = (stackParameters: StackIncludeDetails, expor
     }
     Object.keys(stackParameters.nestedStacks)
       .sort()
-      .forEach(key => {
+      .forEach((key) => {
         manifest.loadNestedStacks[key] = transformManifestParameters(stackParameters.nestedStacks[key], exportPath);
       });
     return manifest;

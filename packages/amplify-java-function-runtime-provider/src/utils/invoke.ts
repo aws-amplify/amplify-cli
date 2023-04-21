@@ -1,8 +1,8 @@
 import execa from 'execa';
 import path from 'path';
-import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { InvocationRequest } from '@aws-amplify/amplify-function-plugin-interface';
 import { packageName, relativeShimJarPath } from './constants';
-import { pathManager } from 'amplify-cli-core';
+import { AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';
 
 export const invokeResource = async (request: InvocationRequest, context: any) => {
   const [handlerClassName, handlerMethodName] = request.handler.split('::');
@@ -27,7 +27,7 @@ export const invokeResource = async (request: InvocationRequest, context: any) =
 
   const { stdout, exitCode } = await childProcess;
   if (exitCode !== 0) {
-    throw new Error(`java failed, exit code was ${exitCode}`);
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `java failed, exit code was ${exitCode}` });
   }
   const lines = stdout.split('\n');
   const lastLine = lines[lines.length - 1];

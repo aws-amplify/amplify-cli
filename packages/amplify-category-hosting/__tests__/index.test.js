@@ -1,12 +1,18 @@
 jest.mock('../lib/category-manager');
 
-const inquirer = require('inquirer');
-const mockirer = require('mockirer');
 const fs = require('fs-extra');
-
 const categoryManager = require('../lib/category-manager');
-
 const indexModule = require('../index');
+const amplifyPrompts = require('@aws-amplify/amplify-prompts');
+
+jest.mock('@aws-amplify/amplify-prompts', () => ({
+  prompter: {
+    input: jest.fn(),
+    yesOrNo: jest.fn(),
+    pick: jest.fn(),
+  },
+  byValue: jest.fn(),
+}));
 
 describe('index', () => {
   const mockContext = {
@@ -17,7 +23,7 @@ describe('index', () => {
       success: jest.fn(),
     },
     amplify: {
-      readJsonFile: jest.fn(filePath => {
+      readJsonFile: jest.fn((filePath) => {
         return JSON.parse(fs.readFileSync(filePath, 'utf8'));
       }),
     },
@@ -57,8 +63,8 @@ describe('index', () => {
     mockAvailableServices.push(ANOTHERSERVICE);
     mockDisabledServices.push(S3ANDCLOUDFRONT);
     mockDisabledServices.push(ANOTHERSERVICE);
-    mockAnswers.selectedServices.push(S3ANDCLOUDFRONT);
-    mockirer(inquirer, mockAnswers);
+
+    amplifyPrompts.prompter.pick.mockReturnValueOnce(['S3ANDCLOUDFRONT']);
     await indexModule.add(mockContext);
     expect(categoryManager.runServiceAction).toBeCalled();
   });
@@ -92,7 +98,7 @@ describe('index', () => {
     mockEnabledServices.push(S3ANDCLOUDFRONT);
     mockEnabledServices.push(ANOTHERSERVICE);
     mockAnswers.selectedServices.push(S3ANDCLOUDFRONT);
-    mockirer(inquirer, mockAnswers);
+    amplifyPrompts.prompter.pick.mockReturnValueOnce(['S3ANDCLOUDFRONT']);
     await indexModule.configure(mockContext);
     expect(categoryManager.runServiceAction).toBeCalled();
   });
@@ -156,7 +162,7 @@ describe('index', () => {
     mockEnabledServices.push(S3ANDCLOUDFRONT);
     mockEnabledServices.push(ANOTHERSERVICE);
     mockAnswers.selectedService = mockEnabledServices[0];
-    mockirer(inquirer, mockAnswers);
+    amplifyPrompts.prompter.pick.mockReturnValueOnce(mockEnabledServices[0]);
     await indexModule.console(mockContext);
     expect(categoryManager.runServiceAction).toBeCalled();
     expect(categoryManager.runServiceAction.mock.calls[0][0]).toBe(mockContext);

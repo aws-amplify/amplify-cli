@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "serviceConfiguration":{
+  "serviceConfiguration": {
     "serviceName": "Map",
     "accessType": "AuthorizedUsers",
     "setAsDefault": true,

@@ -1,4 +1,3 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   deleteProject,
@@ -7,14 +6,16 @@ import {
   deleteProjectDir,
   getProjectMeta,
   amplifyPushOverride,
+  replaceOverrideFileWithProjectInfo,
 } from '@aws-amplify/amplify-e2e-core';
-import { JSONUtilities } from 'amplify-cli-core';
-import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfile } from '../../../migration-helpers';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('amplify init', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('init');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
@@ -23,17 +24,14 @@ describe('amplify init', () => {
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
   });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('init');
-  });
-
   afterEach(async () => {
     await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
 
   it('should init the project and override root and push', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    const projectName = 'initMigrationTest';
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: projectName });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     // turn ON feature flag
@@ -45,7 +43,7 @@ describe('amplify init', () => {
     await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
     const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', '..', '..', 'amplify-e2e-tests', 'overrides', 'override-root.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
-    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     await amplifyPushOverride(projRoot, true);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toContain('mockRole');

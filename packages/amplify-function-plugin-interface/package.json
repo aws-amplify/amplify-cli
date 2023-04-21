@@ -1,11 +1,14 @@
 {
-  "name": "amplify-function-plugin-interface",
-  "version": "1.9.5",
+  "name": "@aws-amplify/amplify-function-plugin-interface",
+  "version": "1.10.2",
   "description": "Interface for plugins that provide additional functionality to function category plugins",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
     "directory": "packages/amplify-function-plugin-interface"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -14,6 +17,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   }
 }

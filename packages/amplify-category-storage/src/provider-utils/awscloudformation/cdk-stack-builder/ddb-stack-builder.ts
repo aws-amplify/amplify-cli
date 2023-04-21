@@ -1,6 +1,7 @@
+import * as cdk from 'aws-cdk-lib';
+import * as ddb from 'aws-cdk-lib/aws-dynamodb';
+import { Construct } from 'constructs';
 import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as ddb from '@aws-cdk/aws-dynamodb';
-import * as cdk from '@aws-cdk/core';
 import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType } from '../service-walkthrough-types/dynamoDB-user-input-types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -10,12 +11,12 @@ const ROOT_CFN_DESCRIPTION = 'DDB Resource for AWS Amplify CLI';
  * Class to generate Amplify DynamoDB resource for storage category
  */
 export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBResourceTemplate {
-  _scope: cdk.Construct;
+  _scope: Construct;
   dynamoDBTable!: ddb.CfnTable;
   _props: DynamoDBCLIInputs;
   _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
 
-  constructor(scope: cdk.Construct, id: string, props: DynamoDBCLIInputs) {
+  constructor(scope: Construct, id: string, props: DynamoDBCLIInputs) {
     super(scope, id, undefined);
     this._scope = scope;
     this._props = props;
@@ -105,7 +106,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
       });
     }
     if (this._props.gsi && this._props.gsi.length > 0) {
-      this._props.gsi.forEach(gsi => {
+      this._props.gsi.forEach((gsi) => {
         const gsiIndex = {
           indexName: gsi.name,
           keySchema: [
@@ -123,7 +124,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
           },
         };
 
-        if (usedAttributes.findIndex(attr => attr.fieldName === gsi.partitionKey.fieldName) === -1) {
+        if (usedAttributes.findIndex((attr) => attr.fieldName === gsi.partitionKey.fieldName) === -1) {
           usedAttributes.push(gsi.partitionKey);
         }
         if (gsi.sortKey) {
@@ -131,7 +132,7 @@ export class AmplifyDDBResourceStack extends cdk.Stack implements AmplifyDDBReso
             attributeName: gsi.sortKey?.fieldName,
             keyType: 'RANGE',
           });
-          if (usedAttributes.findIndex(attr => attr?.fieldName === gsi.sortKey?.fieldName) === -1) {
+          if (usedAttributes.findIndex((attr) => attr?.fieldName === gsi.sortKey?.fieldName) === -1) {
             usedAttributes.push(gsi.sortKey);
           }
         }

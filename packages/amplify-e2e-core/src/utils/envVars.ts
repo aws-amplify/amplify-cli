@@ -22,7 +22,7 @@ export function getEnvVars(): EnvironmentVariables {
   return { ...process.env } as EnvironmentVariables;
 }
 
-export function getSocialProviders(getEnv: boolean = false): SocialProviders {
+export function getSocialProviders(getEnv = false): SocialProviders {
   if (!getEnv) {
     return {
       FACEBOOK_APP_ID: 'fbAppId',
@@ -36,7 +36,7 @@ export function getSocialProviders(getEnv: boolean = false): SocialProviders {
       APPLE_KEY_ID: '2QLZXKYJ8J',
       // Cognito validates the private key, this is an invalidated key.
       APPLE_PRIVATE_KEY:
-        'MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw',
+        '----BEGIN PRIVATE KEY-----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----',
     };
   }
   const {
@@ -49,7 +49,7 @@ export function getSocialProviders(getEnv: boolean = false): SocialProviders {
     APPLE_APP_ID,
     APPLE_TEAM_ID,
     APPLE_KEY_ID,
-    APPLE_PRIVATE_KEY,
+    APPLE_PRIVATE_KEY_2,
   }: any = getEnvVars();
 
   const missingVars = [];
@@ -80,7 +80,7 @@ export function getSocialProviders(getEnv: boolean = false): SocialProviders {
   if (!APPLE_KEY_ID) {
     missingVars.push('APPLE_KEY_ID');
   }
-  if (!APPLE_PRIVATE_KEY) {
+  if (!APPLE_PRIVATE_KEY_2) {
     missingVars.push('APPLE_PRIVATE_KEY');
   }
 
@@ -97,6 +97,6 @@ export function getSocialProviders(getEnv: boolean = false): SocialProviders {
     APPLE_APP_ID,
     APPLE_TEAM_ID,
     APPLE_KEY_ID,
-    APPLE_PRIVATE_KEY,
+    APPLE_PRIVATE_KEY: APPLE_PRIVATE_KEY_2,
   };
 }

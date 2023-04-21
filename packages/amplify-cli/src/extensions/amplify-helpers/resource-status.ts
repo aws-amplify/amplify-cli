@@ -1,7 +1,6 @@
-import _ from 'lodash';
 import { print } from './print';
 import { CLOUD_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
-import { ViewResourceTableParams } from 'amplify-cli-core';
+import { ViewResourceTableParams } from '@aws-amplify/amplify-cli-core';
 import { viewSummaryTable, viewEnvInfo, viewResourceDiffs } from './resource-status-view';
 import { getMultiCategoryStatus, getResourceStatus, getHashForResourceDir } from './resource-status-data';
 
@@ -9,14 +8,8 @@ export { getResourceStatus, getHashForResourceDir };
 
 export async function showStatusTable(tableViewFilter: ViewResourceTableParams) {
   const amplifyProjectInitStatus = getCloudInitStatus();
-  const {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    resourcesToBeDeleted,
-    resourcesToBeSynced,
-    allResources,
-    tagsUpdated,
-  } = await getMultiCategoryStatus(tableViewFilter);
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced, allResources, tagsUpdated } =
+    await getMultiCategoryStatus(tableViewFilter);
 
   //1. Display Environment Info
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {

@@ -1,6 +1,4 @@
-import {
-  $TSContext, setPermissionsBoundaryArn, getPermissionsBoundaryArn, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, setPermissionsBoundaryArn, getPermissionsBoundaryArn, stateManager } from '@aws-amplify/amplify-cli-core';
 import { prompt } from 'inquirer';
 import { IAM } from 'aws-sdk';
 import { configurePermissionsBoundaryForInit } from '../../permissions-boundary/permissions-boundary';
@@ -10,9 +8,8 @@ const permissionsBoundaryArn = 'arn:aws:iam::123456789012:policy/some-policy-nam
 const argName = 'permissions-boundary';
 const envName = 'newEnvName';
 
-// jest.mock('amplify-cli-core');
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   stateManager: {
     getLocalEnvInfo: jest.fn(),
   },
@@ -35,7 +32,7 @@ describe('configure permissions boundary on init', () => {
   let context_stub: $TSContext;
 
   beforeEach(() => {
-    context_stub = ({
+    context_stub = {
       amplify: {
         inputValidation: () => () => true,
       },
@@ -54,7 +51,7 @@ describe('configure permissions boundary on init', () => {
         warning: jest.fn(),
         info: jest.fn(),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
     jest.clearAllMocks();
   });
   it('applies policy specifed in cmd arg when present', async () => {
@@ -74,7 +71,7 @@ describe('configure permissions boundary on env add', () => {
   let context_stub: $TSContext;
 
   beforeEach(() => {
-    context_stub = ({
+    context_stub = {
       amplify: {
         inputValidation: () => () => true,
       },
@@ -93,7 +90,7 @@ describe('configure permissions boundary on env add', () => {
         warning: jest.fn(),
         info: jest.fn(),
       },
-    } as unknown) as $TSContext;
+    } as unknown as $TSContext;
     jest.clearAllMocks();
   });
   it('applies policy specified in cmd arg when present', async () => {
@@ -111,11 +108,11 @@ describe('configure permissions boundary on env add', () => {
   it('applies existing policy to new env when existing policy is accessible', async () => {
     getPermissionsBoundaryArn_mock.mockReturnValueOnce(permissionsBoundaryArn);
     IAMClient_mock.getInstance.mockResolvedValueOnce({
-      client: ({
+      client: {
         getPolicy: jest.fn().mockReturnValueOnce({
           promise: jest.fn(),
         }),
-      } as unknown) as IAM,
+      } as unknown as IAM,
     });
     await configurePermissionsBoundaryForInit(context_stub);
     expect(setPermissionsBoundaryArn_mock.mock.calls[0][0]).toEqual(permissionsBoundaryArn);
@@ -125,11 +122,11 @@ describe('configure permissions boundary on env add', () => {
   it('prompts for new policy when existing one is not accessible', async () => {
     getPermissionsBoundaryArn_mock.mockReturnValueOnce(permissionsBoundaryArn);
     IAMClient_mock.getInstance.mockResolvedValueOnce({
-      client: ({
+      client: {
         getPolicy: jest.fn().mockReturnValueOnce({
           promise: jest.fn().mockRejectedValueOnce({ statusCode: 404, message: 'test error' }),
         }),
-      } as unknown) as IAM,
+      } as unknown as IAM,
     });
     const newPermissionsBoundaryArn = 'thisIsANewArn';
     prompt_mock.mockResolvedValueOnce({
@@ -143,11 +140,11 @@ describe('configure permissions boundary on env add', () => {
     context_stub.input.options.yes = true;
     getPermissionsBoundaryArn_mock.mockReturnValueOnce(permissionsBoundaryArn);
     IAMClient_mock.getInstance.mockResolvedValueOnce({
-      client: ({
+      client: {
         getPolicy: jest.fn().mockReturnValueOnce({
           promise: jest.fn().mockRejectedValueOnce({ statusCode: 404, message: 'test error' }),
         }),
-      } as unknown) as IAM,
+      } as unknown as IAM,
     });
     await expect(configurePermissionsBoundaryForInit(context_stub)).rejects.toMatchInlineSnapshot(
       `[InputValidationError: A permissions boundary ARN must be specified using --permissions-boundary]`,

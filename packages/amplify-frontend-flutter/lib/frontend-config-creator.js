@@ -42,9 +42,9 @@ function deleteAmplifyConfig(context) {
   const gqlConfig = graphQLConfig.getGraphQLConfig(projectPath);
   if (gqlConfig && gqlConfig.config) {
     const { projects } = gqlConfig.config;
-    Object.keys(projects).forEach(project => {
+    Object.keys(projects).forEach((project) => {
       const { codeGenTarget, docsFilePath } = projects[project].extensions.amplify;
-      fileNames.forEach(filename => {
+      fileNames.forEach((filename) => {
         const file = path.join(projectPath, docsFilePath, `${filename}.${FILE_EXTENSION_MAP[codeGenTarget] || 'graphql'}`);
         if (fs.existsSync(file)) fs.removeSync(file);
       });
@@ -73,15 +73,9 @@ function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
 }
 
 function getAmplifyConfig(context, amplifyResources, cloudAmplifyResources, targetFilePath) {
-  let amplifyConfig;
-  if (fs.existsSync(targetFilePath)) {
-    amplifyConfig = readJsonFromDart(targetFilePath);
-  }
-
   // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
   const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
-  amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig, newAWSConfig);
-  return amplifyConfig;
+  return amplifyConfigHelper.generateConfig(context, newAWSConfig);
 }
 
 function writeToFile(filePath, fileName, configObject) {
@@ -119,7 +113,7 @@ function getAWSConfigObject(amplifyResources) {
 
   const projectRegion = amplifyResources.metadata.Region;
 
-  Object.keys(serviceResourceMapping).forEach(service => {
+  Object.keys(serviceResourceMapping).forEach((service) => {
     switch (service) {
       case 'Cognito':
         Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
@@ -172,8 +166,8 @@ function getCurrentAWSConfig(context) {
 function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
   const customConfigs = {};
   Object.keys(currentAWSConfig)
-    .filter(k => !AMPLIFY_RESERVED_EXPORT_KEYS.includes(k))
-    .forEach(key => {
+    .filter((k) => !AMPLIFY_RESERVED_EXPORT_KEYS.includes(k))
+    .forEach((key) => {
       if (!cloudAWSConfig[key]) {
         customConfigs[key] = currentAWSConfig[key];
       }
@@ -260,11 +254,11 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   }
 
   if (cognitoConfig.Auth && cognitoConfig.Auth.Default) {
-    cognitoConfig.Auth.Default.authenticationFlowType = cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH';
+    cognitoConfig.Auth.Default.authenticationFlowType = cognitoResources.find((i) => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH';
   } else {
     cognitoConfig.Auth = {
       Default: {
-        authenticationFlowType: cognitoResources.find(i => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH',
+        authenticationFlowType: cognitoResources.find((i) => i.customAuth) ? 'CUSTOM_AUTH' : 'USER_SRP_AUTH',
       },
     };
   }
@@ -352,7 +346,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
   const additionalAuths =
     (appsyncResource.output && appsyncResource.output.authConfig && appsyncResource.output.authConfig.additionalAuthenticationProviders) ||
     [];
-  additionalAuths.forEach(auth => {
+  additionalAuths.forEach((auth) => {
     const apiName = `${appsyncResource.resourceName}_${auth.authenticationType}`;
     const config = {
       ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
@@ -372,7 +366,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
 
 function getLexConfig(lexResources) {
   const config = {};
-  lexResources.forEach(r => {
+  lexResources.forEach((r) => {
     config[r.output.BotName] = {
       Name: r.output.BotName,
       Alias: '$LATEST',
@@ -386,7 +380,7 @@ function getLexConfig(lexResources) {
 
 function getSumerianConfig(sumerianResources) {
   const config = {};
-  sumerianResources.forEach(r => {
+  sumerianResources.forEach((r) => {
     const { output } = r;
     Object.assign(config, output);
   });

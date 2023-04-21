@@ -16,7 +16,7 @@ const runTransformer = async (validSchema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer()],
     featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
     } as FeatureFlagProvider,
     sandboxModeEnabled: true,
   });
@@ -50,7 +50,7 @@ describe('$util method', () => {
     } catch (e) {
       logDebug('error when setting up test');
       logDebug(e);
-      expect(true).toEqual(false);
+      throw e;
     }
   });
 

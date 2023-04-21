@@ -1,6 +1,5 @@
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorFunctionResolverConfig } from '../type-definition';
-import { VelocityTemplate } from '../velocity';
 import { AppSyncBaseResolver } from './base-resolver';
 
 export class AmplifySimulatorFunction extends AppSyncBaseResolver {

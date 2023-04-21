@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "10.4.1",
+  "version": "11.0.5",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -27,54 +27,56 @@
     "test": "jest --logHeapUsage",
     "postinstall": "node scripts/post-install.js",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib tsconfig.tsbuildinfo"
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "engines": {
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^4.0.9",
-    "@aws-amplify/amplify-category-auth": "2.13.0",
-    "@aws-amplify/amplify-category-custom": "2.5.4",
-    "@aws-amplify/amplify-category-storage": "3.6.0",
-    "@aws-amplify/amplify-environment-parameters": "1.2.0",
-    "@aws-amplify/amplify-util-uibuilder": "1.6.0",
-    "@aws-amplify/graphql-auth-transformer": "^1.1.4",
-    "@aws-cdk/cloudformation-diff": "~1.172.0",
-    "amplify-app": "4.3.4",
-    "amplify-category-analytics": "4.2.0",
-    "amplify-category-function": "4.2.0",
-    "amplify-category-geo": "2.9.0",
-    "amplify-category-hosting": "3.4.4",
-    "amplify-category-interactions": "4.1.4",
-    "amplify-category-notifications": "2.21.0",
-    "amplify-category-predictions": "4.2.0",
-    "amplify-category-xr": "3.3.4",
-    "amplify-cli-core": "3.3.0",
-    "amplify-cli-logger": "1.2.1",
-    "amplify-cli-shared-interfaces": "1.1.0",
-    "amplify-codegen": "^3.3.2",
-    "amplify-console-hosting": "2.3.4",
-    "amplify-container-hosting": "2.5.5",
-    "amplify-dotnet-function-runtime-provider": "1.6.10",
-    "amplify-dotnet-function-template-provider": "2.3.4",
-    "amplify-frontend-android": "3.4.0",
-    "amplify-frontend-flutter": "1.3.5",
-    "amplify-frontend-ios": "3.5.4",
-    "amplify-frontend-javascript": "3.7.0",
-    "amplify-go-function-runtime-provider": "2.3.4",
-    "amplify-go-function-template-provider": "1.3.14",
-    "amplify-java-function-runtime-provider": "2.3.4",
-    "amplify-java-function-template-provider": "1.5.14",
-    "amplify-nodejs-function-runtime-provider": "2.3.4",
-    "amplify-nodejs-function-template-provider": "2.5.4",
-    "amplify-prompts": "2.6.0",
-    "amplify-provider-awscloudformation": "6.9.0",
-    "amplify-python-function-runtime-provider": "2.4.4",
-    "amplify-python-function-template-provider": "1.3.16",
-    "amplify-util-import": "2.3.0",
-    "amplify-util-mock": "4.6.1",
-    "aws-sdk": "^2.1233.0",
+    "@aws-amplify/amplify-app": "5.0.3",
+    "@aws-amplify/amplify-category-analytics": "5.0.5",
+    "@aws-amplify/amplify-category-api": "^5.2.1-ownerfield-pk-fix.0",
+    "@aws-amplify/amplify-category-auth": "3.0.3",
+    "@aws-amplify/amplify-category-custom": "3.0.3",
+    "@aws-amplify/amplify-category-function": "5.1.3",
+    "@aws-amplify/amplify-category-geo": "3.0.3",
+    "@aws-amplify/amplify-category-hosting": "3.5.5",
+    "@aws-amplify/amplify-category-interactions": "5.0.5",
+    "@aws-amplify/amplify-category-notifications": "2.24.5",
+    "@aws-amplify/amplify-category-predictions": "5.0.5",
+    "@aws-amplify/amplify-category-storage": "5.0.3",
+    "@aws-amplify/amplify-cli-core": "4.0.3",
+    "@aws-amplify/amplify-cli-logger": "1.3.2",
+    "@aws-amplify/amplify-cli-shared-interfaces": "1.2.2",
+    "@aws-amplify/amplify-console-hosting": "2.5.3",
+    "@aws-amplify/amplify-container-hosting": "2.6.3",
+    "@aws-amplify/amplify-dotnet-function-template-provider": "2.5.3",
+    "@aws-amplify/amplify-environment-parameters": "1.4.3",
+    "@aws-amplify/amplify-frontend-android": "3.5.3",
+    "@aws-amplify/amplify-frontend-flutter": "1.4.2",
+    "@aws-amplify/amplify-frontend-ios": "3.6.5",
+    "@aws-amplify/amplify-frontend-javascript": "3.9.3",
+    "@aws-amplify/amplify-go-function-template-provider": "1.4.3",
+    "@aws-amplify/amplify-nodejs-function-template-provider": "2.7.5",
+    "@aws-amplify/amplify-prompts": "2.6.8",
+    "@aws-amplify/amplify-provider-awscloudformation": "8.0.5",
+    "@aws-amplify/amplify-python-function-template-provider": "1.4.3",
+    "@aws-amplify/amplify-util-import": "2.4.2",
+    "@aws-amplify/amplify-util-mock": "5.0.7",
+    "@aws-amplify/amplify-util-uibuilder": "1.6.14",
+    "@aws-amplify/graphql-auth-transformer": "^2.1.3-ownerfield-pk-fix.0",
+    "@aws-amplify/graphql-transformer-core": "^1.2.1-ownerfield-pk-fix.0",
+    "@aws-cdk/cloudformation-diff": "~2.68.0",
+    "amplify-codegen": "^3.4.2",
+    "amplify-dotnet-function-runtime-provider": "1.7.6",
+    "amplify-go-function-runtime-provider": "2.3.16",
+    "amplify-java-function-runtime-provider": "2.3.16",
+    "amplify-java-function-template-provider": "1.5.19",
+    "amplify-nodejs-function-runtime-provider": "2.3.16",
+    "amplify-python-function-runtime-provider": "2.4.16",
+    "aws-cdk-lib": "~2.68.0",
+    "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",
@@ -86,16 +88,14 @@
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
-    "global-prefix": "^3.0.0",
     "graphql": "^15.5.0",
-    "graphql-transformer-core": "^7.6.6",
+    "graphql-transformer-core": "^8.0.2",
     "gunzip-maybe": "^1.4.2",
     "hidefile": "^3.0.0",
     "ini": "^1.3.5",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
-    "open": "^8.4.0",
     "ora": "^4.0.3",
     "progress": "^2.0.3",
     "promise-sequential": "^1.1.1",
@@ -107,13 +107,13 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
+    "@aws-amplify/amplify-function-plugin-interface": "1.10.2",
     "@types/archiver": "^5.3.1",
     "@types/ci-info": "^2.0.0",
     "@types/columnify": "^1.5.1",
     "@types/folder-hash": "^4.0.1",
     "@types/fs-extra": "^8.0.1",
     "@types/glob": "^7.1.1",
-    "@types/global-prefix": "^3.0.0",
     "@types/gunzip-maybe": "^1.4.0",
     "@types/node": "^12.12.6",
     "@types/node-fetch": "^2.6.1",
@@ -122,12 +122,15 @@
     "@types/tar-fs": "^2.0.0",
     "@types/treeify": "^1.0.0",
     "@types/update-notifier": "^5.1.0",
-    "amplify-function-plugin-interface": "1.9.5",
     "cloudform-types": "^4.2.0",
     "nock": "^12.0.3",
     "typescript": "^4.5.5"
   },
   "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
     "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
@@ -157,12 +160,12 @@
       "awscloudformation": {
         "name": "awscloudformation",
         "type": "provider",
-        "packageName": "amplify-provider-awscloudformation"
+        "packageName": "@aws-amplify/amplify-provider-awscloudformation"
       },
       "analytics": {
         "name": "analytics",
         "type": "category",
-        "packageName": "amplify-category-analytics"
+        "packageName": "@aws-amplify/amplify-category-analytics"
       },
       "api": {
         "name": "api",
@@ -184,54 +187,49 @@
       "function": {
         "name": "function",
         "type": "category",
-        "packageName": "amplify-category-function"
+        "packageName": "@aws-amplify/amplify-category-function"
       },
       "geo": {
         "name": "geo",
         "type": "category",
-        "packageName": "amplify-category-geo"
+        "packageName": "@aws-amplify/amplify-category-geo"
       },
       "hosting": [
         {
           "name": "hosting",
           "type": "category",
-          "packageName": "amplify-category-hosting"
+          "packageName": "@aws-amplify/amplify-category-hosting"
         },
         {
           "name": "hosting",
           "type": "category",
-          "packageName": "amplify-console-hosting"
+          "packageName": "@aws-amplify/amplify-console-hosting"
         },
         {
           "name": "hosting",
           "type": "category",
-          "packageName": "amplify-container-hosting"
+          "packageName": "@aws-amplify/amplify-container-hosting"
         }
       ],
       "interactions": {
         "name": "interactions",
         "type": "category",
-        "packageName": "amplify-category-interactions"
+        "packageName": "@aws-amplify/amplify-category-interactions"
       },
       "notifications": {
         "name": "notifications",
         "type": "category",
-        "packageName": "amplify-category-notifications"
+        "packageName": "@aws-amplify/amplify-category-notifications"
       },
       "predictions": {
         "name": "predictions",
         "type": "category",
-        "packageName": "amplify-category-predictions"
+        "packageName": "@aws-amplify/amplify-category-predictions"
       },
       "storage": {
         "name": "storage",
         "type": "category",
         "packageName": "@aws-amplify/amplify-category-storage"
-      },
-      "xr": {
-        "name": "xr",
-        "type": "category",
-        "packageName": "amplify-category-xr"
       },
       "codegen": {
         "name": "codegen",
@@ -241,27 +239,27 @@
       "flutter": {
         "name": "flutter",
         "type": "frontend",
-        "packageName": "amplify-frontend-flutter"
+        "packageName": "@aws-amplify/amplify-frontend-flutter"
       },
       "android": {
         "name": "android",
         "type": "frontend",
-        "packageName": "amplify-frontend-android"
+        "packageName": "@aws-amplify/amplify-frontend-android"
       },
       "ios": {
         "name": "ios",
         "type": "frontend",
-        "packageName": "amplify-frontend-ios"
+        "packageName": "@aws-amplify/amplify-frontend-ios"
       },
       "javascript": {
         "name": "javascript",
         "type": "frontend",
-        "packageName": "amplify-frontend-javascript"
+        "packageName": "@aws-amplify/amplify-frontend-javascript"
       },
       "mock": {
         "name": "mock",
         "type": "util",
-        "packageName": "amplify-util-mock"
+        "packageName": "@aws-amplify/amplify-util-mock"
       }
     }
   }

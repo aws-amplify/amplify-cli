@@ -1,4 +1,4 @@
-import { PackageRequest, PackageResult, ZipEntry } from 'amplify-function-plugin-interface';
+import { PackageRequest, PackageResult, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
 import * as path from 'path';
@@ -20,8 +20,8 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       const layerDirPath = path.join(params.srcRoot, '..', '..');
       const optPath = path.join(layerDirPath, 'opt');
 
-      let conflicts: string[] = [];
-      libGlob.forEach(lib => {
+      const conflicts: string[] = [];
+      libGlob.forEach((lib) => {
         const basename = path.basename(lib);
         if (fs.pathExistsSync(path.join(optPath, basename))) {
           conflicts.push(basename);
@@ -29,14 +29,15 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       });
 
       if (conflicts.length > 0) {
-        const libs = conflicts.map(lib => `"/${lib}"`).join(', ');
+        const libs = conflicts.map((lib) => `"/${lib}"`).join(', ');
         const plural = conflicts.length > 1 ? 'ies' : 'y';
         context.print.warning(
+          // eslint-disable-next-line spellcheck/spell-checker
           `${libs} subdirector${plural} found in both "/lib" and "/opt". These folders will be merged and the files in "/opt" will take precedence if a conflict exists.`,
         );
       }
 
-      [...libGlob].forEach(folder => {
+      [...libGlob].forEach((folder) => {
         if (fs.lstatSync(folder).isDirectory()) {
           zipEntries.push({ packageFolder: folder });
         }
@@ -45,7 +46,21 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       zipEntries.push({
         sourceFolder: path.join(params.srcRoot, 'src'),
         packageFolder: await getPipenvDir(params.srcRoot),
-        ignoreFiles: ['**/dist/**', '**/__pycache__/**', '**/test/**', '**/tests/**', 'distutils**', 'pip**', 'pkg_resources**', 'setuptools**', 'src.egg-info/**', 'wheel**', '_virtualenv**', 'easy-install.pth', 'src.egg-link'],
+        ignoreFiles: [
+          '**/dist/**',
+          '**/__pycache__/**',
+          '**/test/**',
+          '**/tests/**',
+          'distutils**',
+          'pip**',
+          'pkg_resources**',
+          'setuptools**',
+          'src.egg-info/**',
+          'wheel**',
+          '_virtualenv**',
+          'easy-install.pth',
+          'src.egg-link',
+        ],
       });
     }
     return Promise.resolve({ packageHash, zipEntries });

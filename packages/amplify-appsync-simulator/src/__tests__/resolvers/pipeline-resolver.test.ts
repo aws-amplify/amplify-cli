@@ -77,7 +77,7 @@ describe('Pipeline Resolvers', () => {
           })),
         },
       };
-      getFunction.mockImplementation(fnName => fnImpl[fnName]);
+      getFunction.mockImplementation((fnName) => fnImpl[fnName]);
       templates = {
         request: {
           render: jest.fn().mockImplementation(({ stash, arguments: args }) => ({
@@ -97,7 +97,7 @@ describe('Pipeline Resolvers', () => {
         },
       };
 
-      getMappingTemplate.mockImplementation(templateName => templates[templateName]);
+      getMappingTemplate.mockImplementation((templateName) => templates[templateName]);
       resolver = new AppSyncPipelineResolver(baseConfig, simulatorContext);
     });
 

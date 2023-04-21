@@ -1,8 +1,8 @@
 var define;
 var require;
-(function(global, undefined) {
+(function (global, undefined) {
   function isType(type) {
-    return function(obj) {
+    return function (obj) {
       return {}.toString.call(obj) == '[object ' + type + ']';
     };
   }
@@ -13,7 +13,7 @@ var require;
 
   function Module() {}
 
-  Module.prototype.exec = function() {
+  Module.prototype.exec = function () {
     var mod = this;
 
     if (this.execed) {
@@ -41,7 +41,7 @@ var require;
     return exports;
   };
 
-  define = function(id, deps, factory) {
+  define = function (id, deps, factory) {
     var meta = {
       id: id,
       deps: deps,
@@ -51,7 +51,7 @@ var require;
     Module.save(meta);
   };
 
-  Module.save = function(meta) {
+  Module.save = function (meta) {
     var mod = Module.get(meta.id);
 
     mod.id = meta.id;
@@ -59,11 +59,11 @@ var require;
     mod.factory = meta.factory;
   };
 
-  Module.get = function(id) {
+  Module.get = function (id) {
     return cachedMods[id] || (cachedMods[id] = new Module());
   };
 
-  require = function(id) {
+  require = function (id) {
     var mod = Module.get(id);
     if (!mod.execed) {
       mod.exec();

@@ -33,8 +33,8 @@ describe('amplify geo add e', () => {
   });
 
   it('init a project with default auth config and add two place index resources with the second set to default', async () => {
-    const index1Id = `placeindex${generateRandomShortId()}`;
-    const index2Id = `placeindex${generateRandomShortId()}`;
+    const index1Id = `placeIndex${generateRandomShortId()}`;
+    const index2Id = `placeIndex${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id, isFirstGeoResource: true });

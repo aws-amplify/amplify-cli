@@ -1,7 +1,5 @@
-import {
-  AmplifyError, convertNumBytes, getFolderSize, pathManager,
-} from 'amplify-cli-core';
-import { LambdaLayer } from 'amplify-function-plugin-interface';
+import { AmplifyError, convertNumBytes, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
+import { LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { lambdaPackageLimitInMB } from './constants';
@@ -53,10 +51,10 @@ export const packageFunction: Packager = async (context, resource) => {
       message: `The function is too large to package.`,
       details: `
 Total size of Lambda function ${
-  resource.resourceName
-} plus it's dependent layers exceeds ${lambdaPackageLimitInMB}MB limit. Lambda function is ${convertNumBytes(
-  functionSizeInBytes,
-).toMB()}MB. Dependent Lambda layers are ${convertNumBytes(layersSizeInBytes).toMB()}MB.`,
+        resource.resourceName
+      } plus it's dependent layers exceeds ${lambdaPackageLimitInMB}MB limit. Lambda function is ${convertNumBytes(
+        functionSizeInBytes,
+      ).toMB()}MB. Dependent Lambda layers are ${convertNumBytes(layersSizeInBytes).toMB()}MB.`,
     });
   }
 

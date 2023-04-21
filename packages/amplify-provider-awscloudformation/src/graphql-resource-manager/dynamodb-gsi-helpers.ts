@@ -1,8 +1,8 @@
 import { AttributeDefinition, GlobalSecondaryIndex, KeySchema } from 'cloudform-types/types/dynamoDb/table';
-import { DynamoDB, IntrinsicFunction } from 'cloudform';
+import { DynamoDB, IntrinsicFunction } from 'cloudform-types';
 
 import _ from 'lodash';
-import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
+import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from '@aws-amplify/amplify-cli-core';
 import { GSIRecord } from '../utils/amplify-resource-state-utils';
 
 export const MAX_GSI_PER_TABLE = 20;
@@ -34,10 +34,11 @@ export const getGSIDetails = (indexName: string, table: DynamoDB.Table): GSIReco
     const existingAttrDefinition = table.Properties.AttributeDefinitions;
     assertNotIntrinsicFunction(existingAttrDefinition);
 
-    const attributeDefinition = _.filter(existingAttrDefinition, defs => attributesUsedInKey.includes(defs.AttributeName));
+    const attributeDefinition = _.filter(existingAttrDefinition, (defs) => attributesUsedInKey.includes(defs.AttributeName));
 
     return { gsi: addedGSI, attributeDefinition };
   }
+  return undefined;
 };
 
 /**
@@ -95,7 +96,7 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
     });
   }
 
-  const indexNames = gsis.map(g => g.IndexName);
+  const indexNames = gsis.map((g) => g.IndexName);
   if (!indexNames.includes(indexName)) {
     throw new AmplifyError('ConfigurationError', {
       message: `Table ${table.Properties.TableName || '{UnnamedTable}'} does not contain GSI ${indexName}`,
@@ -108,10 +109,13 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
 
   const removedIndices = _.remove(gsis, { IndexName: indexName });
   assertNotIntrinsicFunction(removedIndices);
-  const currentKeySchemas = gsis.reduce((acc, gsi) => {
+  const gsiKeySchemas: Array<KeySchema> = gsis.reduce((acc, gsi) => {
     acc.push(...(gsi.KeySchema as Array<KeySchema>));
     return acc;
   }, []);
+
+  // Add the KeySchema property on table to the currentKeySchemas
+  const currentKeySchemas = _.union(gsiKeySchemas, (updatedTable?.Properties?.KeySchema as Array<KeySchema>) || []);
 
   // Remove the property as it does not have any child
   if (gsis.length == 0) {

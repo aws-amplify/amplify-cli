@@ -1,10 +1,10 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 export async function loadRuntimePlugin(context: $TSContext, pluginId: string) {
   if (!context.pluginPlatform.plugins.functionRuntime) {
     throw new Error('No function runtime plugins found. Try "amplify plugin scan" and then rerun the command.');
   }
-  const pluginMeta = context.pluginPlatform.plugins.functionRuntime.find(meta => meta.manifest.functionRuntime.pluginId === pluginId);
+  const pluginMeta = context.pluginPlatform.plugins.functionRuntime.find((meta) => meta.manifest.functionRuntime?.pluginId === pluginId);
   if (!pluginMeta) {
     throw new Error(`Could not find runtime plugin with id [${pluginId}]`);
   }

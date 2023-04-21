@@ -1,11 +1,11 @@
 import { copyBatch } from '../../../extensions/amplify-helpers/copy-batch';
-import { JSONUtilities, $TSContext, $TSCopyJob } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext, $TSCopyJob } from '@aws-amplify/amplify-cli-core';
 
 let exists = false;
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
-const context_stub = ({
+const context_stub = {
   prompt: {
     confirm: jest.fn(),
   },
@@ -15,15 +15,15 @@ const context_stub = ({
   template: {
     generate: jest.fn(),
   },
-} as unknown) as jest.Mocked<$TSContext>;
-const jobs_stub = ([
+} as unknown as jest.Mocked<$TSContext>;
+const jobs_stub = [
   {
     target: 'test',
     dir: 'test',
     template: 'test',
     paramsFile: 'test',
   },
-] as unknown) as jest.Mocked<$TSCopyJob>;
+] as unknown as jest.Mocked<$TSCopyJob>;
 
 describe('copyBatch', () => {
   beforeEach(() => {

@@ -1,16 +1,16 @@
-import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
 import { buildResource } from './utils/build';
 import { packageResource } from './utils/package';
 import { checkJava, checkJavaCompiler, checkGradle } from './utils/detect';
 import { invokeResource } from './utils/invoke';
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
+import { CheckDependenciesResult } from '@aws-amplify/amplify-function-plugin-interface';
 import path from 'path';
 import { relativeShimSrcPath } from './utils/constants';
-import { GetPackageAssetPaths } from 'amplify-cli-core';
+import { GetPackageAssetPaths } from '@aws-amplify/amplify-cli-core';
 
-export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
+export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = (context) => {
   return {
-    contribute: request => {
+    contribute: (request) => {
       const selection = request.selection;
 
       if (selection !== 'java') {
@@ -29,7 +29,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     },
 
     checkDependencies: async () => {
-      var result: CheckDependenciesResult = {
+      const result: CheckDependenciesResult = {
         hasRequiredDependencies: true,
       };
 
@@ -60,9 +60,9 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
 
       return result;
     },
-    package: params => packageResource(params, context),
+    package: (params) => packageResource(params, context),
     build: buildResource,
-    invoke: params => invokeResource(params, context),
+    invoke: (params) => invokeResource(params, context),
   };
 };
 

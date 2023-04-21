@@ -1,11 +1,11 @@
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { run as push } from './push';
 
 /**
  * Entry point to amplify publish
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const run = async context => {
+export const run = async (context) => {
   context.amplify.constructExeInfo(context);
   const { amplifyMeta } = context.exeInfo;
   const isHostingAdded = amplifyMeta.hosting && Object.keys(amplifyMeta.hosting).length > 0;
@@ -19,7 +19,7 @@ export const run = async context => {
   }
 
   let isHostingAlreadyPushed = false;
-  Object.keys(amplifyMeta.hosting).every(hostingService => {
+  Object.keys(amplifyMeta.hosting).every((hostingService) => {
     let continueToCheckNext = true;
     if (amplifyMeta.hosting[hostingService].lastPushTimeStamp) {
       const lastPushTime = new Date(amplifyMeta.hosting[hostingService].lastPushTimeStamp).getTime();

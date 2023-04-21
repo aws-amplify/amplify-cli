@@ -405,8 +405,7 @@ describe('feature flags', () => {
         name: 'FeatureFlagsValidationError',
         link: 'https://docs.amplify.aws/cli/reference/feature-flags',
         classification: 'ERROR',
-        details:
-`These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:
+        details: `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:
 - graphqltransformer.foo,
 - graphqltransformer.bar
 The following feature flags have validation errors:

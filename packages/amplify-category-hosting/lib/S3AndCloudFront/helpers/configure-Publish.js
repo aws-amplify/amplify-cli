@@ -1,7 +1,7 @@
 const path = require('path');
-const inquirer = require('inquirer');
 const minimatch = require('minimatch');
 const fs = require('fs-extra');
+const { prompter, byValue } = require('@aws-amplify/amplify-prompts');
 
 const PublishIgnoreFileName = 'amplifyPublishIgnore.json';
 
@@ -18,9 +18,9 @@ async function configure(context) {
   }
 
   publishIgnore = publishIgnore
-    .map(ignore => ignore.trim())
-    .filter(ignore => ignore.length > 0)
-    .filter(ignore => !/^#/.test(ignore));
+    .map((ignore) => ignore.trim())
+    .filter((ignore) => ignore.length > 0)
+    .filter((ignore) => !/^#/.test(ignore));
 
   context.print.info('You can configure the publish command to ignore certain directories or files.');
   context.print.info('Use glob patterns as in the .gitignore file.');
@@ -51,15 +51,11 @@ function getPublishIgnoreFilePath(context) {
 async function configurePublishIgnore(context, publishIgnore) {
   const DONE = 'exit';
   const configActions = ['list', 'add', 'remove', 'remove all', DONE];
-  const answer = await inquirer.prompt({
-    name: 'action',
-    type: 'list',
-    message: 'Please select the configuration action on the publish ignore.',
-    choices: configActions,
-    default: configActions[0],
+  const action = await prompter.pick('Please select the configuration action on the publish ignore.', configActions, {
+    initial: byValue(configActions[0]),
   });
 
-  switch (answer.action) {
+  switch (action) {
     case 'list':
       listPublishIgnore(context, publishIgnore);
       break;
@@ -76,7 +72,7 @@ async function configurePublishIgnore(context, publishIgnore) {
       break;
   }
 
-  if (answer.action !== DONE) {
+  if (action !== DONE) {
     publishIgnore = await configurePublishIgnore(context, publishIgnore);
   }
 
@@ -85,20 +81,16 @@ async function configurePublishIgnore(context, publishIgnore) {
 
 function listPublishIgnore(context, publishIgnore) {
   context.print.info('');
-  publishIgnore.forEach(element => {
+  publishIgnore.forEach((element) => {
     context.print.info(element);
   });
   context.print.info('');
 }
 
 async function addIgnore(context, publishIgnore) {
-  const answer = await inquirer.prompt({
-    name: 'patternToAdd',
-    type: 'input',
-    message: 'Ignore pattern to add: ',
-  });
-  if (answer.patternToAdd) {
-    const pattern = answer.patternToAdd.trim();
+  const patternToAdd = await prompter.input('Ignore pattern to add: ');
+  if (patternToAdd) {
+    const pattern = patternToAdd.trim();
     if (pattern.length > 0) {
       if (!publishIgnore.includes(pattern)) {
         publishIgnore.push(pattern);
@@ -116,13 +108,9 @@ async function removeIgnore(context, publishIgnore) {
     context.print.error('Publish ignore list is empty, nothing to remove.');
     publishIgnore = [];
   } else {
-    const answer = await inquirer.prompt({
-      name: 'patternToRemove',
-      type: 'list',
-      choices: [...publishIgnore, CANCEL],
-    });
-    if (answer.patternToRemove && answer.patternToRemove !== CANCEL) {
-      publishIgnore = publishIgnore.filter(ignore => answer.patternToRemove !== ignore);
+    const patternToRemove = await prompter.pick('', [...publishIgnore, CANCEL]);
+    if (patternToRemove && patternToRemove !== CANCEL) {
+      publishIgnore = publishIgnore.filter((ignore) => patternToRemove !== ignore);
     }
   }
   return publishIgnore;

@@ -1,9 +1,7 @@
 // @ts-check
 import chalk from 'chalk';
-import {
-  BannerMessage, stateManager, FeatureFlags, ApiCategoryFacade, AmplifyFault, $TSAny,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { BannerMessage, stateManager, FeatureFlags, ApiCategoryFacade, AmplifyFault, $TSAny } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { fileLogger } from './utils/aws-logger';
 import { SNS } from './aws-utils/aws-sns';
 
@@ -28,7 +26,7 @@ export const displayHelpfulURLs = async (context, resourcesToBeCreated): Promise
 };
 
 const showPinpointURL = (context, resourcesToBeCreated): void => {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'Pinpoint');
+  const resources = resourcesToBeCreated.filter((resource) => resource.service === 'Pinpoint');
   // There can only be one analytics resource
   if (resources.length > 0) {
     const resource = resources[0];
@@ -45,7 +43,7 @@ const showPinpointURL = (context, resourcesToBeCreated): void => {
 
 const showGraphQlUrl = (context, resourcesToBeCreated) => {
   const resources = resourcesToBeCreated.filter(
-    resource => resource.service === 'AppSync' || (resource.service === 'ElasticContainer' && resource.apiType === 'GRAPHQL'),
+    (resource) => resource.service === 'AppSync' || (resource.service === 'ElasticContainer' && resource.apiType === 'GRAPHQL'),
   );
 
   for (const resource of resources) {
@@ -54,9 +52,7 @@ const showGraphQlUrl = (context, resourcesToBeCreated) => {
     if (!amplifyMeta[category][resourceName].output) {
       return;
     }
-    const {
-      GraphQLAPIEndpointOutput, securityType, authConfig, GraphQLAPIKeyOutput,
-    } = amplifyMeta[category][resourceName].output;
+    const { GraphQLAPIEndpointOutput, securityType, authConfig, GraphQLAPIKeyOutput } = amplifyMeta[category][resourceName].output;
 
     if (!GraphQLAPIEndpointOutput) {
       return;
@@ -68,7 +64,7 @@ const showGraphQlUrl = (context, resourcesToBeCreated) => {
       hasApiKey = securityType === 'API_KEY';
     } else if (authConfig) {
       const apiKeyProvider = [...(authConfig.additionalAuthenticationProviders || []), authConfig.defaultAuthentication].find(
-        provider => provider.authenticationType === 'API_KEY',
+        (provider) => provider.authenticationType === 'API_KEY',
       );
 
       hasApiKey = !!apiKeyProvider;
@@ -90,7 +86,9 @@ const showGraphQlUrl = (context, resourcesToBeCreated) => {
 };
 
 const showRestAPIURL = (context, resourcesToBeCreated) => {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'API Gateway' || resource.service === 'ElasticContainer');
+  const resources = resourcesToBeCreated.filter(
+    (resource) => resource.service === 'API Gateway' || resource.service === 'ElasticContainer',
+  );
 
   if (resources.length > 0) {
     const resource = resources[0];
@@ -109,7 +107,7 @@ const showRestAPIURL = (context, resourcesToBeCreated) => {
 
 const showContainerHostingInfo = (context, resourcesToBeCreated) => {
   const resource = resourcesToBeCreated.find(
-    resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId,
+    (resource) => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId,
   );
   if (resource && resource.output) {
     const {
@@ -133,7 +131,7 @@ const showContainerHostingInfo = (context, resourcesToBeCreated) => {
 };
 
 const showHostingURL = (context, resourcesToBeCreated): void => {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'S3AndCloudFront');
+  const resources = resourcesToBeCreated.filter((resource) => resource.service === 'S3AndCloudFront');
   // There can only be one appsync resource
   if (resources.length > 0) {
     const resource = resources[0];
@@ -151,7 +149,7 @@ const showHostingURL = (context, resourcesToBeCreated): void => {
 };
 
 const showHostedUIURLs = (context, resourcesToBeCreated): void => {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'Cognito');
+  const resources = resourcesToBeCreated.filter((resource) => resource.service === 'Cognito');
 
   if (resources.length > 0) {
     const resource = resources[0];
@@ -182,7 +180,7 @@ const showHostedUIURLs = (context, resourcesToBeCreated): void => {
 };
 
 const showCognitoSandBoxMessage = async (context, resources): Promise<void> => {
-  const cognitoResource = resources.filter(resource => resource.service === 'Cognito');
+  const cognitoResource = resources.filter((resource) => resource.service === 'Cognito');
 
   if (cognitoResource.length > 0) {
     logger('showCognitoSandBoxMessage', [cognitoResource[0].resourceName])();
@@ -198,7 +196,7 @@ const showCognitoSandBoxMessage = async (context, resources): Promise<void> => {
 };
 
 const showRekognitionURLS = async (context, resourcesToBeCreated): Promise<void> => {
-  const resource = resourcesToBeCreated.find(resource => {
+  const resource = resourcesToBeCreated.find((resource) => {
     if (resource.identifyType && resource.identifyType === 'identifyEntities') {
       return true;
     }
@@ -223,7 +221,7 @@ const showRekognitionURLS = async (context, resourcesToBeCreated): Promise<void>
 /**
  *  displays sms sandbox warning
  */
-export const showSMSSandboxWarning = async (context) : Promise<void> => {
+export const showSMSSandboxWarning = async (context): Promise<void> => {
   const log = logger('showSMSSandBoxWarning', []);
 
   // This message will be set only after SNS Sandbox  Sandbox API is available and AWS SDK gets updated
@@ -259,9 +257,14 @@ export const showSMSSandboxWarning = async (context) : Promise<void> => {
       // Network error. Sandbox status is for informational purpose and should not stop deployment
       log(e);
     } else {
-      throw new AmplifyFault('DeploymentFault', {
-        message: e.message,
-      }, e);
+      throw new AmplifyFault(
+        'SnsSandboxModeCheckFault',
+        {
+          message: e.message,
+          code: e.code,
+        },
+        e,
+      );
     }
   }
 };

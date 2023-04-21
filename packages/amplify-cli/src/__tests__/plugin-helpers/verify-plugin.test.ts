@@ -1,10 +1,9 @@
 import { verifyPlugin, validPluginName } from '../../plugin-helpers/verify-plugin';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { PluginVerificationError, PluginVerificationResult } from '../../domain/plugin-verification-result';
-import { PluginManifest } from '../../domain/plugin-manifest';
-import { AmplifyEvent } from '../../domain/amplify-event';
+import { PluginVerificationError, PluginVerificationResult } from '@aws-amplify/amplify-cli-core';
+import { PluginManifest, AmplifyEvent } from '@aws-amplify/amplify-cli-core';
 
 const corePluginJson = {
   name: 'core',
@@ -36,12 +35,8 @@ const corePluginJson = {
   },
 };
 
-jest.mock('amplify-cli-core', () => ({
-  JSONUtilities: {
-    readJson: jest.fn(),
-    writeJson: jest.fn(),
-  },
-}));
+jest.spyOn(JSONUtilities, 'readJson');
+jest.spyOn(JSONUtilities, 'writeJson');
 
 const fsMock = fs as jest.Mocked<typeof fs>;
 

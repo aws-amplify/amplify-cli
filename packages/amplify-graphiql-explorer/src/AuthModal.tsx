@@ -80,7 +80,7 @@ export class AuthModal extends Component<Props, State> {
       'auth_time',
     ];
     const additionalFields = Object.keys(decodedToken)
-      .filter(k => !jwtFieldsToFilter.includes(k))
+      .filter((k) => !jwtFieldsToFilter.includes(k))
       .reduce((acc, k) => ({ ...acc, [k]: decodedToken[k] }), {});
 
     this.state = {
@@ -183,7 +183,7 @@ export class AuthModal extends Component<Props, State> {
         <>
           <Form.Field>
             <label>ApiKey</label>
-            <Input readOnly placeholder='APIKey' value={this.state.apiKey} onChange={this.changeAPIKey} />
+            <Input readOnly placeholder="APIKey" value={this.state.apiKey} onChange={this.changeAPIKey} />
           </Form.Field>
         </>
       );
@@ -193,14 +193,14 @@ export class AuthModal extends Component<Props, State> {
         <>
           <Form.Field>
             <label>Username</label>
-            <Input placeholder='User Name' value={this.state.userName} onChange={this.onUserNameChange} />
+            <Input placeholder="User Name" value={this.state.userName} onChange={this.onUserNameChange} />
           </Form.Field>
           <Form.Field>
             <label>Groups</label>
             <Dropdown
-              placeholder='Choose cognito user groups'
+              placeholder="Choose cognito user groups"
               search
-              options={this.state.possibleGroups.map(g => ({
+              options={this.state.possibleGroups.map((g) => ({
                 key: g,
                 value: g,
                 text: g,
@@ -216,7 +216,7 @@ export class AuthModal extends Component<Props, State> {
           </Form.Field>
           <Form.Field>
             <label>Email</label>
-            <Input placeholder='Email' value={this.state.email} onChange={this.changeEmail} />
+            <Input placeholder="Email" value={this.state.email} onChange={this.changeEmail} />
           </Form.Field>
 
           <Form.Field>
@@ -224,8 +224,8 @@ export class AuthModal extends Component<Props, State> {
             <TextArea
               onChange={this.onAdditionalFieldChange}
               rows={10}
-              placeholder='Decoded OIDC Token'
-              spellCheck='false'
+              placeholder="Decoded OIDC Token"
+              spellCheck="false"
               value={this.state.additionalFields}
             />
           </Form.Field>
@@ -233,7 +233,7 @@ export class AuthModal extends Component<Props, State> {
       );
     } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
       const errorLabel = this.state.oidcTokenError ? (
-        <Label basic color='red' pointing='below'>
+        <Label basic color="red" pointing="below">
           {this.state.oidcTokenError}
         </Label>
       ) : null;
@@ -245,8 +245,8 @@ export class AuthModal extends Component<Props, State> {
             <TextArea
               onChange={this.onOIDCTokenChange}
               rows={10}
-              placeholder='Decoded OIDC Token'
-              spellCheck='false'
+              placeholder="Decoded OIDC Token"
+              spellCheck="false"
               value={this.state.currentOIDCTokenDecoded}
             />
           </Form.Field>
@@ -258,7 +258,7 @@ export class AuthModal extends Component<Props, State> {
           <label>Role:</label>
           <br />
           <Dropdown
-            placeholder='Role'
+            placeholder="Role"
             selection
             options={[
               { value: 'Auth', text: 'Auth' },
@@ -272,8 +272,8 @@ export class AuthModal extends Component<Props, State> {
     }
 
     const authModeOptions = this.state.supportedAuthModes
-      .filter(mode => mode)
-      .map(mode => ({
+      .filter((mode) => mode)
+      .map((mode) => ({
         key: mode,
         value: mode,
         text: mode,
@@ -285,7 +285,7 @@ export class AuthModal extends Component<Props, State> {
         <Modal.Content>
           <Modal.Description>
             <Dropdown
-              placeholder='Auth Mode'
+              placeholder="Auth Mode"
               selection
               options={authModeOptions}
               value={this.state.currentAuthMode}

@@ -1,10 +1,6 @@
-import {
-  $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, AmplifyError,
-} from 'amplify-cli-core';
+import { $TSContext, stateManager, AmplifyCategories, AmplifySupportedService, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
-import {
-  IChannelAvailability, ChannelConfigDeploymentType, IChannelViewInfo,
-} from './channel-types';
+import { IChannelAvailability, ChannelConfigDeploymentType, IChannelViewInfo } from './channel-types';
 import { getNotificationsAppConfig } from './notifications-backend-cfg-api';
 import { INotificationsResourceBackendConfig, INotificationsChannelBackendConfig } from './notifications-backend-cfg-types';
 
@@ -82,20 +78,19 @@ const channelViewInfo: Record<string, IChannelViewInfo> = {
 /**
  * checks if it's a valid channel type
  */
-export const isValidChannel = (channelName: string| undefined): boolean => (channelName !== undefined
-                              && channelName in ChannelType);
+export const isValidChannel = (channelName: string | undefined): boolean => channelName !== undefined && channelName in ChannelType;
 
 /**
  * Get the channel view info for the given channel
  */
-export const getChannelViewInfo = (channelName: string): IChannelViewInfo => (channelViewInfo[channelName]);
+export const getChannelViewInfo = (channelName: string): IChannelViewInfo => channelViewInfo[channelName];
 
 /**
  * Given a channelName display the help string for it.
  * @param channelName  notifications channel for which help needs to be displayed
  * @returns help string for the channel name
  */
-export const getChannelViewHelp = (channelName: string): string => (channelViewInfo[channelName].help);
+export const getChannelViewHelp = (channelName: string): string => channelViewInfo[channelName].help;
 
 /**
  * Given a channelName return the user friendly channel name to be displayed
@@ -124,12 +119,11 @@ export const getChannelNameFromView = (channelViewString: string): string => {
  * @param backendResourceConfig notifications resource info from the backend config
  * @returns enabled and disabled channels
  */
-export const getChannelAvailability = async (backendResourceConfig:INotificationsResourceBackendConfig)
-: Promise<IChannelAvailability> => {
+export const getChannelAvailability = async (backendResourceConfig: INotificationsResourceBackendConfig): Promise<IChannelAvailability> => {
   const availableChannels = getAvailableChannels();
   const enabledChannels = (await getEnabledChannelsFromBackendConfig(backendResourceConfig)) || [];
   const disabledChannels = (await getDisabledChannelsFromBackendConfig(availableChannels, enabledChannels)) || [];
-  const backend : IChannelAvailability = {
+  const backend: IChannelAvailability = {
     enabledChannels,
     disabledChannels,
   };
@@ -140,15 +134,17 @@ export const getChannelAvailability = async (backendResourceConfig:INotification
  * Get all notifications channel which are not in use in the Backend Config
  * @returns array of channels which are not in use
  */
-export const getDisabledChannelsFromBackendConfig = async (availableChannels?: Array<string>,
-  enabledChannels?: Array<string>): Promise<Array<string>> => {
-  let result : Array<string> = [];
-  const tmpEnabledChannels = (enabledChannels) || await getEnabledChannelsFromBackendConfig();
-  const tmpAvailableChannels = (availableChannels) || getAvailableChannels();
+export const getDisabledChannelsFromBackendConfig = async (
+  availableChannels?: Array<string>,
+  enabledChannels?: Array<string>,
+): Promise<Array<string>> => {
+  let result: Array<string> = [];
+  const tmpEnabledChannels = enabledChannels || (await getEnabledChannelsFromBackendConfig());
+  const tmpAvailableChannels = availableChannels || getAvailableChannels();
   if (!tmpAvailableChannels) {
     return result;
   }
-  result = tmpAvailableChannels.filter(channelName => !tmpEnabledChannels.includes(channelName));
+  result = tmpAvailableChannels.filter((channelName) => !tmpEnabledChannels.includes(channelName));
   return result;
 };
 
@@ -157,18 +153,16 @@ export const getDisabledChannelsFromBackendConfig = async (availableChannels?: A
  * @param validChannelName - a valid channel name
  * @returns true if channel deployment is handled through amplify push
  */
-export const isChannelDeploymentDeferred = (validChannelName: string): boolean => (
-  getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.DEFERRED
-);
+export const isChannelDeploymentDeferred = (validChannelName: string): boolean =>
+  getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.DEFERRED;
 
 /**
  * Returns true if resource is deployed during the amplify cli execution
  * @param validChannelName - a valid channel name
  * @returns true if channel deployment is handled at the time of amplify cli execution
  */
-export const isChannelDeploymentInline = (validChannelName: string): boolean => (
-  getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.INLINE
-);
+export const isChannelDeploymentInline = (validChannelName: string): boolean =>
+  getChannelDeploymentType(validChannelName) === ChannelConfigDeploymentType.INLINE;
 
 /**
  * Check if notification channel has been added to the backend-config
@@ -209,23 +203,23 @@ export const getAvailableChannels = (): Array<string> => Object.keys(ChannelType
  * Get user friendly names for all available notification channels
  * @returns user friendly channel names
  */
-export const getAvailableChannelViewNames = ():Array<string> => Object.keys(ChannelType).map(getChannelViewName);
+export const getAvailableChannelViewNames = (): Array<string> => Object.keys(ChannelType).map(getChannelViewName);
 
 /**
  * Get user friendly channel names
  * @param notificationConfig from the BackendConfig
  * @returns array of user friendly channel names
  */
-export const getEnabledChannelViewNames = async (notificationConfig:INotificationsResourceBackendConfig):Promise<string[]> => {
+export const getEnabledChannelViewNames = async (notificationConfig: INotificationsResourceBackendConfig): Promise<string[]> => {
   const enabledChannels = await getEnabledChannelsFromBackendConfig(notificationConfig);
   return enabledChannels.map(getChannelViewName);
 };
 
 /**
-* Get all notifications channels enabled in the backend-config
-* @param context amplify cli context
-* @returns array of enabledChannels
-*/
+ * Get all notifications channels enabled in the backend-config
+ * @param context amplify cli context
+ * @returns array of enabledChannels
+ */
 export const getEnabledChannels = async (context: $TSContext): Promise<Array<string>> => {
   const notificationConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
   return (await getEnabledChannelsFromBackendConfig(notificationConfig)) || [];
@@ -238,7 +232,7 @@ export const getEnabledChannels = async (context: $TSContext): Promise<Array<str
 export const getEnabledChannelsFromBackendConfig = async (
   notificationsConfig?: INotificationsResourceBackendConfig,
 ): Promise<Array<string>> => {
-  const tmpNotificationsCfg = (notificationsConfig) || await getNotificationsAppConfig();
+  const tmpNotificationsCfg = notificationsConfig || (await getNotificationsAppConfig());
   if (tmpNotificationsCfg) {
     return tmpNotificationsCfg.channels;
   }
@@ -248,9 +242,8 @@ export const getEnabledChannelsFromBackendConfig = async (
 /**
  * checks if the channel is deferred or inline
  */
-export const getChannelDeploymentType = (channelName: string): ChannelConfigDeploymentType => ((channelName === ChannelType.InAppMessaging)
-  ? ChannelConfigDeploymentType.DEFERRED
-  : ChannelConfigDeploymentType.INLINE);
+export const getChannelDeploymentType = (channelName: string): ChannelConfigDeploymentType =>
+  channelName === ChannelType.InAppMessaging ? ChannelConfigDeploymentType.DEFERRED : ChannelConfigDeploymentType.INLINE;
 
 /**
  * enables notification channel config in the backend-config
@@ -278,11 +271,13 @@ export const enableNotificationsChannel = (
 /**
  * disables notification channel config in the backend-config
  */
-export const disableNotificationsChannel = (notificationsConfig: INotificationsResourceBackendConfig,
-  validChannelName: string):INotificationsResourceBackendConfig => {
+export const disableNotificationsChannel = (
+  notificationsConfig: INotificationsResourceBackendConfig,
+  validChannelName: string,
+): INotificationsResourceBackendConfig => {
   const disabledNotificationsConfig = notificationsConfig;
   if (notificationsConfig.channels?.includes(validChannelName)) {
-    disabledNotificationsConfig.channels = notificationsConfig.channels.filter(channelName => channelName !== validChannelName);
+    disabledNotificationsConfig.channels = notificationsConfig.channels.filter((channelName) => channelName !== validChannelName);
     if (notificationsConfig.channelConfig && validChannelName in disabledNotificationsConfig.channelConfig) {
       delete disabledNotificationsConfig.channelConfig[validChannelName];
     }
@@ -298,11 +293,14 @@ export const disableNotificationsChannel = (notificationsConfig: INotificationsR
 /**
  * updates notification channel config in the backend-config
  */
-export const updateNotificationsChannelConfig = (notificationsConfig: INotificationsResourceBackendConfig,
-  validChannelName: string, channelConfig: INotificationsChannelBackendConfig):INotificationsResourceBackendConfig => {
+export const updateNotificationsChannelConfig = (
+  notificationsConfig: INotificationsResourceBackendConfig,
+  validChannelName: string,
+  channelConfig: INotificationsChannelBackendConfig,
+): INotificationsResourceBackendConfig => {
   const updatedNotificationsConfig = notificationsConfig;
   if (updatedNotificationsConfig.channels && !updatedNotificationsConfig.channels.includes(validChannelName)) {
-    updatedNotificationsConfig.channels = updatedNotificationsConfig.channels.filter(channelName => channelName !== validChannelName);
+    updatedNotificationsConfig.channels = updatedNotificationsConfig.channels.filter((channelName) => channelName !== validChannelName);
     if (notificationsConfig.channelConfig) {
       updatedNotificationsConfig.channelConfig[validChannelName] = channelConfig;
     }

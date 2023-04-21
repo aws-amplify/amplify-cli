@@ -1,13 +1,16 @@
-const aws = require('aws-sdk');
+const {
+  CognitoIdentityProviderClient,
+  AdminAddUserToGroupCommand,
+  GetGroupCommand,
+  CreateGroupCommand,
+} = require('@aws-sdk/client-cognito-identity-provider');
 
-const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
-  apiVersion: '2016-04-18',
-});
+const cognitoIdentityServiceProvider = new CognitoIdentityProviderClient({});
 
 /**
  * @type {import('@types/aws-lambda').PostConfirmationTriggerHandler}
  */
-exports.handler = async event => {
+exports.handler = async (event) => {
   const groupParams = {
     GroupName: process.env.GROUP,
     UserPoolId: event.userPoolId,
@@ -21,14 +24,14 @@ exports.handler = async event => {
    * Check if the group exists; if it doesn't, create it.
    */
   try {
-    await cognitoidentityserviceprovider.getGroup(groupParams).promise();
+    await cognitoIdentityServiceProvider.send(new GetGroupCommand(groupParams));
   } catch (e) {
-    await cognitoidentityserviceprovider.createGroup(groupParams).promise();
+    await cognitoIdentityServiceProvider.send(new CreateGroupCommand(groupParams));
   }
   /**
    * Then, add the user to the group.
    */
-  await cognitoidentityserviceprovider.adminAddUserToGroup(addUserParams).promise();
+  await cognitoIdentityServiceProvider.send(new AdminAddUserToGroupCommand(addUserParams));
 
   return event;
 };

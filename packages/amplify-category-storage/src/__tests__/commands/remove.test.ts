@@ -1,9 +1,9 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/storage/remove';
 import * as providerController from '../../provider-utils/awscloudformation/index';
 
 jest.mock('../../provider-utils/awscloudformation/index');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const providerController_mock = providerController as jest.Mocked<typeof providerController>;
 providerController_mock.updateResource.mockImplementation = jest.fn().mockImplementation(async () => {
@@ -44,7 +44,6 @@ describe('remove ddb command tests', () => {
   });
 });
 
-
 describe('remove s3 command tests', () => {
   let mockContext: $TSContext;
 
@@ -78,4 +77,3 @@ describe('remove s3 command tests', () => {
     expect(mockContext.amplify.removeResource).toHaveBeenCalledWith(mockContext, 'storage', mockResourceName);
   });
 });
-

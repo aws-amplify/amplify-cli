@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getProjectMeta } from './get-project-meta';
 
 const errAuthMissingIAM = `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`;
@@ -10,9 +10,8 @@ const errAuthMissingLambda = `@auth directive with 'function' provider found, bu
 /**
  * checks if the message comes from a graphql auth error
  */
-export const isValidGraphQLAuthError = (message: string): boolean => [
-  errAuthMissingIAM, errAuthMissingUserPools, errAuthMissingOIDC, errAuthMissingApiKey, errAuthMissingLambda,
-].includes(message);
+export const isValidGraphQLAuthError = (message: string): boolean =>
+  [errAuthMissingIAM, errAuthMissingUserPools, errAuthMissingOIDC, errAuthMissingApiKey, errAuthMissingLambda].includes(message);
 
 /**
  * handles a valid graphql auth error
@@ -32,13 +31,16 @@ export const handleValidGraphQLAuthError = async (context: $TSContext, message: 
     if (message === errAuthMissingUserPools) {
       await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
       return true;
-    } if (message === errAuthMissingOIDC) {
+    }
+    if (message === errAuthMissingOIDC) {
       await addGraphQLAuthRequirement(context, 'OPENID_CONNECT');
       return true;
-    } if (message === errAuthMissingApiKey) {
+    }
+    if (message === errAuthMissingApiKey) {
       await addGraphQLAuthRequirement(context, 'API_KEY');
       return true;
-    } if (message === errAuthMissingLambda) {
+    }
+    if (message === errAuthMissingLambda) {
       await addGraphQLAuthRequirement(context, 'AWS_LAMBDA');
       return true;
     }
@@ -46,15 +48,15 @@ export const handleValidGraphQLAuthError = async (context: $TSContext, message: 
   return false;
 };
 
-const addGraphQLAuthRequirement = async (context, authType)
-  : Promise<$TSAny> => context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-  context,
-  {
-    authType,
-    printLeadText: true,
-    authSettings: undefined,
-  },
-]);
+const addGraphQLAuthRequirement = async (context, authType): Promise<$TSAny> =>
+  context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
+    context,
+    {
+      authType,
+      printLeadText: true,
+      authSettings: undefined,
+    },
+  ]);
 
 /**
  * Query Amplify Meta file and check if Auth is configured
@@ -68,7 +70,7 @@ export const checkIfAuthExists = (): boolean => {
 
   const categoryResources = amplifyMeta[authCategory];
   if (categoryResources !== null && typeof categoryResources === 'object') {
-    authExists = Object.keys(categoryResources).some(resource => categoryResources[resource].service === authServiceName);
+    authExists = Object.keys(categoryResources).some((resource) => categoryResources[resource].service === authServiceName);
   }
   return authExists;
 };

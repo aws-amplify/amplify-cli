@@ -1,16 +1,16 @@
 import { getAmplifyMeta } from './index';
 export class ConfigOverrideManager {
   private static instance: ConfigOverrideManager = null;
-  private overrides: {};
+  private overrides: Record<string, any>;
   private amplifyMeta: any = {};
   constructor(context) {
     this.overrides = {};
-    context.amplify.addCleanUpTask(async context => {
+    context.amplify.addCleanUpTask(async (context) => {
       await this.restoreFrontendExports(context);
     });
   }
 
-  addOverride(category: string, override: {}) {
+  addOverride(category: string, override: Record<string, any>) {
     this.overrides[category] = override;
   }
 

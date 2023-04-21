@@ -7,8 +7,10 @@ export async function waitTillTableStateIsActive(
   maximumWait: number = 15 * MILLI_SECONDS,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
+    /* eslint-disable prefer-const */
     let intervalHandle;
     let timeoutHandle;
+    /* eslint-enable */
     const checkStatus = async () => {
       const tableDescription = await dynamoDBClient.describeTable({ TableName: tableName }).promise();
       if (tableDescription.Table.TableStatus === 'ACTIVE') {
@@ -17,13 +19,13 @@ export async function waitTillTableStateIsActive(
         resolve();
       }
     };
-    intervalHandle = setInterval(checkStatus, 1000);
+    intervalHandle = setInterval(void checkStatus, 1000);
     timeoutHandle = setTimeout(() => {
       clearTimeout(timeoutHandle);
       clearInterval(intervalHandle);
       reject(new Error('Waiting for table status to turn ACTIVE timed out'));
     }, maximumWait);
 
-    checkStatus();
+    void checkStatus();
   });
 }

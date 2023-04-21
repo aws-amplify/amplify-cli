@@ -3,8 +3,8 @@
 
 import {
   addHeadlessApi,
-  amplifyPush,
-  amplifyPushUpdate,
+  amplifyPushLegacy,
+  amplifyPushUpdateLegacy,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -19,7 +19,7 @@ import {
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfile } from '../../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('api migration update test d', () => {
   let projRoot: string;
@@ -68,15 +68,15 @@ describe('api migration update test d', () => {
     },
   };
   it('updates AppSync API in headless mode', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfileV4_52_0(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest, {
       allowDestructiveUpdates: false,
       testingWithLatestCodebase: false,
     });
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
     await updateHeadlessApi(projRoot, updateApiRequest, true, { testingWithLatestCodebase: true });
     expect(getCLIInputs(projRoot, 'api', 'myApiName')).toBeDefined();
-    await amplifyPushUpdate(projRoot, undefined, undefined, true);
+    await amplifyPushUpdateLegacy(projRoot, undefined, true);
 
     // verify
     const meta = getProjectMeta(projRoot);

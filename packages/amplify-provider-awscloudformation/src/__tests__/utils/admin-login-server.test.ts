@@ -1,5 +1,5 @@
 import { AdminLoginServer } from '../../utils/admin-login-server';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const useMock = jest.fn();
 const postMock = jest.fn(async () => {});
@@ -18,7 +18,7 @@ describe('AdminLoginServer', () => {
   test('run server with 0.0.0.0', async () => {
     const adminLoginServer = new AdminLoginServer('appId', 'http://example.com', printer);
 
-    await new Promise<void>(resolve => {
+    await new Promise<void>((resolve) => {
       adminLoginServer.startServer(() => {});
       resolve();
     });
@@ -32,7 +32,7 @@ describe('AdminLoginServer', () => {
     const adminLoginServer = new AdminLoginServer('appId', 'http://example.com', printer);
     listenMock.mockReturnValue({ close: serverCloseMock });
 
-    await new Promise<void>(resolve => {
+    await new Promise<void>((resolve) => {
       adminLoginServer.startServer(() => {});
       resolve();
     });

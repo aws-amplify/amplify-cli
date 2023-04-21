@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/uninstall';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -28,7 +28,7 @@ const context_stub = {
 jest.mock('hidefile');
 const hideSync_mock = hideSync as jest.MockedFunction<typeof hideSync>;
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
   },
@@ -48,7 +48,7 @@ const originalPlatform = process.platform;
 
 expect.addSnapshotSerializer(windowsPathSerializer);
 
-const context_stub_typed = (context_stub as unknown) as $TSContext;
+const context_stub_typed = context_stub as unknown as $TSContext;
 
 describe('uninstall packaged CLI on mac / linux', () => {
   beforeAll(() => {

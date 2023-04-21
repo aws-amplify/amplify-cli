@@ -11,14 +11,14 @@ import {
   $TSMeta,
   AmplifyError,
   AmplifyFault,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import {
   invokeAnalyticsAPICreateResource,
   invokeAnalyticsAPIGetResources,
+  invokeAnalyticsGetPinpointRegionMapping,
   invokeAnalyticsPush,
 } from './plugin-client-api-analytics';
-
 import * as authHelper from './auth-helper';
 import { ICategoryMeta } from './notifications-amplify-meta-types';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
@@ -26,14 +26,21 @@ import { PinpointName } from './pinpoint-name';
 import { isChannelDeploymentDeferred } from './notifications-backend-cfg-channel-api';
 import { constructResourceMeta, addPartialNotificationsAppMeta } from './notifications-amplify-meta-api';
 import { addPartialNotificationsBackendConfig } from './notifications-backend-cfg-api';
-
-const providerName = 'awscloudformation';
+import aws from 'aws-sdk';
+import {
+  formUserAgentParam,
+  loadConfiguration,
+  resolveRegion,
+  loadConfigurationForEnv,
+} from '@aws-amplify/amplify-provider-awscloudformation';
+import proxyAgent from 'proxy-agent';
 const spinner = ora('');
+const defaultPinpointRegion = 'us-east-1';
 
 /**
  * Get the Pinpoint app from analytics category
  */
-export const getPinpointApp = (context: $TSContext): ICategoryMeta|undefined => {
+export const getPinpointApp = (context: $TSContext): ICategoryMeta | undefined => {
   const { amplifyMeta } = context.exeInfo;
   return scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
 };
@@ -53,16 +60,16 @@ export const enum IPinpointDeploymentStatus {
  * Analytics Pinpoint App status
  */
 export interface IPinpointAppStatus {
-  status: IPinpointDeploymentStatus,
-  app: IAnalyticsResource|undefined
-  context: $TSContext
+  status: IPinpointDeploymentStatus;
+  app: IAnalyticsResource | undefined;
+  context: $TSContext;
 }
 
 /**
  * Given a pinpoint resource deployment state returns true if channel can be programmed
  */
-export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus): boolean => (
-  (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED) || (pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM));
+export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus): boolean =>
+  pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED || pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM;
 
 /**
  * Given the Pinpoint App Status and channelName return true if channel requires the Pinpoint resource to be deployed.
@@ -70,10 +77,8 @@ export const isPinpointAppDeployed = (pinpointStatus: IPinpointDeploymentStatus)
  * note: - TBD!!:  in legacy deployments even In-App-Messaging is deployed in-line
  * isChannelDeploymentDeferred needs to be changed to check if environment is configured for legacy deployment.
  */
-export const isPinpointDeploymentRequired = (
-  channelName: string,
-  pinpointAppStatus: IPinpointAppStatus,
-): boolean => !isPinpointAppDeployed(pinpointAppStatus.status) && !isChannelDeploymentDeferred(channelName);
+export const isPinpointDeploymentRequired = (channelName: string, pinpointAppStatus: IPinpointAppStatus): boolean =>
+  !isPinpointAppDeployed(pinpointAppStatus.status) && !isChannelDeploymentDeferred(channelName);
 
 /**
  * Only legacy apps where PinpointApp is allocated through
@@ -81,8 +86,8 @@ export const isPinpointDeploymentRequired = (
  * @param pinpointStatus deployment state of the PinpointApp
  * @returns true if owned by Notifications
  */
-export const isPinpointAppOwnedByNotifications = (pinpointStatus: IPinpointDeploymentStatus): boolean => (
-  pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM);
+export const isPinpointAppOwnedByNotifications = (pinpointStatus: IPinpointDeploymentStatus): boolean =>
+  pinpointStatus === IPinpointDeploymentStatus.APP_IS_DEPLOYED_CUSTOM;
 
 /**
  * Helper function to normalize Notifications Pinpoint App to Analytics result
@@ -91,9 +96,9 @@ export const isPinpointAppOwnedByNotifications = (pinpointStatus: IPinpointDeplo
  * @param envName - environment of the amplify app.
  * @returns Pinpoint analytics resource metadata
  */
-const buildAnalyticsResourceFromPinpointApp = (pinpointApp : ICategoryMeta, envName: string) :IAnalyticsResource => {
-  const regulatedResourceName: string = (pinpointApp.regulatedResourceName) || PinpointName.extractResourceName(pinpointApp.Name, envName);
-  const analyticsResource:IAnalyticsResource = {
+const buildAnalyticsResourceFromPinpointApp = (pinpointApp: ICategoryMeta, envName: string): IAnalyticsResource => {
+  const regulatedResourceName: string = pinpointApp.regulatedResourceName || PinpointName.extractResourceName(pinpointApp.Name, envName);
+  const analyticsResource: IAnalyticsResource = {
     category: AmplifyCategories.NOTIFICATIONS,
     service: AmplifySupportedService.PINPOINT,
     resourceName: regulatedResourceName,
@@ -117,8 +122,12 @@ const buildAnalyticsResourceFromPinpointApp = (pinpointApp : ICategoryMeta, envN
  * @param channelName (SMS,InAppMessaging...)
  * @returns Channel API response
  */
-export const buildPinpointChannelResponseSuccess = (action: ChannelAction,
-  deploymentType: ChannelConfigDeploymentType, channelName: string, output?: $TSAny): IChannelAPIResponse => ({
+export const buildPinpointChannelResponseSuccess = (
+  action: ChannelAction,
+  deploymentType: ChannelConfigDeploymentType,
+  channelName: string,
+  output?: $TSAny,
+): IChannelAPIResponse => ({
   action,
   channel: channelName,
   deploymentType,
@@ -140,9 +149,12 @@ export const buildPinpointChannelResponseSuccess = (action: ChannelAction,
  * @param envName - application environment
  * @returns PinpointApp
  */
-export const getPinpointAppStatusNotifications = (notificationsMeta: $TSAny,
-  amplifyMeta: $TSAny, envName: string):ICategoryMeta|undefined => {
-  const scanOptions : $TSAny = {
+export const getPinpointAppStatusNotifications = (
+  notificationsMeta: $TSAny,
+  amplifyMeta: $TSAny,
+  envName: string,
+): ICategoryMeta | undefined => {
+  const scanOptions: $TSAny = {
     isRegulatingResourceName: true,
     envName,
   };
@@ -154,8 +166,12 @@ export const getPinpointAppStatusNotifications = (notificationsMeta: $TSAny,
 /**
  * Check if PinpointApp is created in Analytics and/or Notifications.
  */
-export const getPinpointAppStatus = async (context: $TSContext, amplifyMeta: $TSAny,
-  pinpointNotificationsMeta: $TSAny, envName: string|undefined): Promise<IPinpointAppStatus> => {
+export const getPinpointAppStatus = async (
+  context: $TSContext,
+  amplifyMeta: $TSAny,
+  pinpointNotificationsMeta: $TSAny,
+  envName: string | undefined,
+): Promise<IPinpointAppStatus> => {
   const resultPinpointApp: IPinpointAppStatus = {
     status: IPinpointDeploymentStatus.APP_NOT_CREATED,
     app: undefined,
@@ -187,7 +203,7 @@ export const getPinpointAppStatus = async (context: $TSContext, amplifyMeta: $TS
  * Display 'amplify push' required prompt.
  * @param pinpointStatus - deployment status of the pinpoint app
  */
-export const viewShowAmplifyPushRequired = (pinpointStatus:IPinpointDeploymentStatus): void => {
+export const viewShowAmplifyPushRequired = (pinpointStatus: IPinpointDeploymentStatus): void => {
   let pinpointStatusMessage = '';
   switch (pinpointStatus) {
     case IPinpointDeploymentStatus.APP_NOT_CREATED:
@@ -206,8 +222,10 @@ export const viewShowAmplifyPushRequired = (pinpointStatus:IPinpointDeploymentSt
       pinpointStatusMessage = 'Pinpoint resource is not initialized in this environment';
   }
   printer.warn(pinpointStatusMessage);
-  if ((pinpointStatus === IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED)
-    || (pinpointStatus === IPinpointDeploymentStatus.APP_NOT_CREATED)) {
+  if (
+    pinpointStatus === IPinpointDeploymentStatus.APP_IS_CREATED_NOT_DEPLOYED ||
+    pinpointStatus === IPinpointDeploymentStatus.APP_NOT_CREATED
+  ) {
     printer.warn('Run "amplify push" to deploy the Pinpoint resource and then retry...');
   }
 };
@@ -234,15 +252,14 @@ export const updateContextFromAnalyticsOutput = async (
   context: $TSContext,
   amplifyMeta: $TSMeta,
   pinpointAppStatus: IPinpointAppStatus,
-): Promise<Partial<ICategoryMeta>|undefined> => {
+): Promise<Partial<ICategoryMeta> | undefined> => {
   if (pinpointAppStatus.app?.output && pinpointAppStatus.app?.resourceName) {
     const pinpointApp = getPinpointAppFromAnalyticsOutput(pinpointAppStatus.app);
     const resourceName = pinpointAppStatus.app.resourceName as string;
     // create updated version of amplify-meta with notifications resource
     context.exeInfo.amplifyMeta = constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
     // create updated version of backend-config with notifications resource configuration
-    context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
-      context.exeInfo.backendConfig);
+    context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName, context.exeInfo.backendConfig);
     return pinpointApp;
   }
   return undefined;
@@ -270,11 +287,11 @@ export const createAnalyticsPinpointApp = async (context: $TSContext): Promise<v
  */
 export const getPinpointAppStatusFromMeta = async (
   context: $TSContext,
-  pinpointNotificationsMeta: INotificationsResourceMeta|undefined,
-  appEnvName: string|undefined,
+  pinpointNotificationsMeta: INotificationsResourceMeta | undefined,
+  appEnvName: string | undefined,
 ): Promise<IPinpointAppStatus> => {
-  const amplifyMeta = (context.exeInfo.amplifyMeta) || stateManager.getMeta();
-  const envName = (appEnvName) || stateManager.getCurrentEnvName();
+  const amplifyMeta = context.exeInfo.amplifyMeta || stateManager.getMeta();
+  const envName = appEnvName || stateManager.getCurrentEnvName();
   return getPinpointAppStatus(context, amplifyMeta, pinpointNotificationsMeta, envName);
 };
 
@@ -283,7 +300,7 @@ export const getPinpointAppStatusFromMeta = async (
  */
 export const pushAuthAndAnalyticsPinpointResources = async (
   context: $TSContext,
-  pinpointAppStatus:IPinpointAppStatus,
+  pinpointAppStatus: IPinpointAppStatus,
 ): Promise<IPinpointAppStatus> => {
   await createAnalyticsPinpointApp(context);
   return {
@@ -301,11 +318,11 @@ export const ensurePinpointApp = async (
   appStatus?: IPinpointAppStatus,
   appEnvName?: string,
 ): Promise<IPinpointAppStatus> => {
-  let pinpointApp : Partial<ICategoryMeta>|undefined;
+  let pinpointApp: Partial<ICategoryMeta> | undefined;
   let resourceName;
-  const amplifyMeta = (context.exeInfo.amplifyMeta) || stateManager.getMeta();
-  const envName = (appEnvName) || context.exeInfo.localEnvInfo.envName || stateManager.getCurrentEnvName();
-  const pinpointAppStatus = (appStatus) || await getPinpointAppStatus(context, amplifyMeta, pinpointNotificationsMeta, envName);
+  const amplifyMeta = context.exeInfo.amplifyMeta || stateManager.getMeta();
+  const envName: string = appEnvName || context.exeInfo.localEnvInfo.envName || stateManager.getCurrentEnvName() || '';
+  const pinpointAppStatus = appStatus || (await getPinpointAppStatus(context, amplifyMeta, pinpointNotificationsMeta, envName));
   switch (pinpointAppStatus.status) {
     case IPinpointDeploymentStatus.NO_ENV: {
       printer.warn('Current ENV not configured!');
@@ -342,8 +359,7 @@ export const ensurePinpointApp = async (
         // Update pinpointApp into Notifications amplifyMeta (in-core)
         context.exeInfo.amplifyMeta = constructResourceMeta(amplifyMeta, resourceName, pinpointApp as ICategoryMeta);
       }
-      context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
-        context.exeInfo.backendConfig);
+      context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName, context.exeInfo.backendConfig);
       break;
     }
     case IPinpointDeploymentStatus.APP_NOT_CREATED: {
@@ -354,8 +370,7 @@ export const ensurePinpointApp = async (
       // create updated version of amplify-meta with notifications resource
       context.exeInfo.amplifyMeta = await addPartialNotificationsAppMeta(context, resourceName);
       // create updated version of backend-config with notifications resource configuration
-      context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
-        context.exeInfo.backendConfig);
+      context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName, context.exeInfo.backendConfig);
       // The Pinpoint resource is locally created, but requires an amplify push for channels to be programmed
       // note:- This is temporary until deployment state-machine supports deferred resource push.
       viewShowAmplifyPushRequired(pinpointAppStatus.status);
@@ -367,8 +382,7 @@ export const ensurePinpointApp = async (
         // create updated version of amplify-meta with notifications resource
         context.exeInfo.amplifyMeta = await addPartialNotificationsAppMeta(context, resourceName);
         // create updated version of backend-config with notifications resource configuration
-        context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName,
-          context.exeInfo.backendConfig);
+        context.exeInfo.backendConfig = await addPartialNotificationsBackendConfig(resourceName, context.exeInfo.backendConfig);
       }
       viewShowAmplifyPushRequired(pinpointAppStatus.status);
       break;
@@ -391,13 +405,13 @@ export const ensurePinpointApp = async (
 /**
  * Delete Pinpoint App
  */
-export const deletePinpointApp = async (context: $TSContext):Promise<void> => {
+export const deletePinpointApp = async (context: $TSContext): Promise<void> => {
   const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
 
   if (pinpointApp) {
     await authHelper.deleteRolePolicy(context);
-    pinpointApp = await deleteApp(context, pinpointApp.Id) as ICategoryMeta;
+    pinpointApp = (await deleteApp(context, pinpointApp.Id)) as ICategoryMeta;
     removeCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.NOTIFICATIONS], pinpointApp.Id);
     removeCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], pinpointApp.Id);
   }
@@ -408,8 +422,8 @@ export const deletePinpointApp = async (context: $TSContext):Promise<void> => {
  * @param categoryMeta - CategoryMeta is updated if CLI is regulating pinpoint resource name
  * @param options - amplify cli options
  */
-export const scanCategoryMetaForPinpoint = (categoryMeta: $TSAny, options: $TSAny): ICategoryMeta|undefined => {
-  let result:ICategoryMeta|undefined;
+export const scanCategoryMetaForPinpoint = (categoryMeta: $TSAny, options: $TSAny): ICategoryMeta | undefined => {
+  let result: ICategoryMeta | undefined;
   if (categoryMeta) {
     const resources = Object.keys(categoryMeta);
     for (const resourceName of resources) {
@@ -442,7 +456,7 @@ export const scanCategoryMetaForPinpoint = (categoryMeta: $TSAny, options: $TSAn
   return result;
 };
 
-const removeCategoryMetaForPinpoint = (categoryMeta: $TSAny, pinpointAppId: string):void => {
+const removeCategoryMetaForPinpoint = (categoryMeta: $TSAny, pinpointAppId: string): void => {
   if (categoryMeta) {
     const services = Object.keys(categoryMeta);
     for (const service of services) {
@@ -455,12 +469,12 @@ const removeCategoryMetaForPinpoint = (categoryMeta: $TSAny, pinpointAppId: stri
   }
 };
 
-const deleteApp = async (context : $TSContext, pinpointAppId : string) : Promise<$TSAny> => {
+const deleteApp = async (context: $TSContext, pinpointAppId: string): Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointAppId,
   };
   const envName: string = stateManager.getCurrentEnvName() as string; // throws exception if env is not configured
-  const pinpointClient = await getPinpointClient(context, 'delete', envName);
+  const pinpointClient = await getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'delete', envName);
   spinner.start('Deleting Pinpoint app.');
   return new Promise((resolve, reject) => {
     pinpointClient.deleteApp(params, (err: $TSAny, data: $TSAny) => {
@@ -485,25 +499,68 @@ const deleteApp = async (context : $TSContext, pinpointAppId : string) : Promise
 /**
  * Open the AWS console in the browser for the given service.
  */
-export const console = (context: $TSContext): void => {
+export const console = async (context: $TSContext): Promise<void> => {
   const { amplifyMeta } = context.exeInfo;
   const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
   if (pinpointApp) {
     const { Id, Region } = pinpointApp;
     const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/settings`;
-    open(consoleUrl, { wait: false });
+    await open(consoleUrl, { wait: false });
   } else {
     printer.error('Neither notifications nor analytics is enabled in the cloud.');
   }
 };
 
-/**
- * Get Pinpoint client from cloudformation
- */
-export const getPinpointClient = async (context: $TSContext, action: string, envName: string): Promise<$TSAny> => {
-  const providerPlugins = context.amplify.getProviderPlugins(context);
-  const provider = await import(providerPlugins[providerName]);
-  return provider.getConfiguredPinpointClient(context, AmplifyCategories.NOTIFICATIONS, action, envName);
+const getConfiguredCredentials = async (context: $TSContext, envName?: string): Promise<{ region?: string } | undefined> => {
+  try {
+    if (envName) {
+      return loadConfigurationForEnv(context, envName);
+    } else {
+      return loadConfiguration(context);
+    }
+  } catch (e) {
+    // ignore missing config
+    return undefined;
+  }
+};
+
+export const getPinpointClient = async (
+  context: $TSContext,
+  category: string,
+  action?: string,
+  envName?: string,
+): Promise<aws.Pinpoint> => {
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  const cred = await getConfiguredCredentials(context, envName);
+
+  const amplifyMeta = stateManager.getMeta();
+  const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[AmplifyCategories.ANALYTICS], undefined);
+
+  category = category || 'missing';
+  action = action || 'missing';
+  const userAgentAction = `${category}:${action}`;
+  const defaultOptions = {
+    region: pinpointApp?.Region ?? (await mapServiceRegion(context, cred?.region || resolveRegion())),
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+  };
+
+  if (httpProxy) {
+    aws.config.update({
+      httpOptions: {
+        agent: proxyAgent(httpProxy),
+      },
+    });
+  }
+
+  return new aws.Pinpoint({ ...cred, ...defaultOptions });
+};
+
+export const mapServiceRegion = async (context: $TSContext, region: string): Promise<string> => {
+  const serviceRegionMap = await invokeAnalyticsGetPinpointRegionMapping(context);
+  if (serviceRegionMap[region]) {
+    return serviceRegionMap[region];
+  }
+  return defaultPinpointRegion;
 };
 
 /**

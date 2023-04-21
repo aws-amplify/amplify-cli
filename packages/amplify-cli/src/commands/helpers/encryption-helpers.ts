@@ -37,11 +37,16 @@ export const encryptBuffer = async (text: Buffer, passKey: string): Promise<stri
  */
 export const encryptKey = async (key: string): Promise<string> => {
   const publicKey = await getPublicKey();
-  return crypto.publicEncrypt({
-    key: publicKey,
-    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-    oaepHash: 'sha256',
-  }, Buffer.from(key)).toString('base64');
+  return crypto
+    .publicEncrypt(
+      {
+        key: publicKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: 'sha256',
+      },
+      Buffer.from(key),
+    )
+    .toString('base64');
 };
 
 /**
@@ -51,17 +56,15 @@ export const encryptKey = async (key: string): Promise<string> => {
  * @param envName the current Environment name
  * @returns
  */
-export const createHashedIdentifier = (projectName: string, appId: string, envName: string | undefined): {
-  projectIdentifier: string,
-  projectEnvIdentifier: string,
+export const createHashedIdentifier = (
+  projectName: string,
+  appId: string,
+  envName: string | undefined,
+): {
+  projectIdentifier: string;
+  projectEnvIdentifier: string;
 } => {
-  const projectIdentifier = crypto
-    .createHash('md5')
-    .update(`${projectName}-${appId}`)
-    .digest('hex');
-  const projectEnvIdentifier = crypto
-    .createHash('md5')
-    .update(`${projectName}-${appId}-${envName}`)
-    .digest('hex');
+  const projectIdentifier = crypto.createHash('md5').update(`${projectName}-${appId}`).digest('hex');
+  const projectEnvIdentifier = crypto.createHash('md5').update(`${projectName}-${appId}-${envName}`).digest('hex');
   return { projectIdentifier, projectEnvIdentifier };
 };

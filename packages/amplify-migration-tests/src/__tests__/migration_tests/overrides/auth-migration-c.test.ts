@@ -2,10 +2,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable jest/no-standalone-expect */
 
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithRecaptchaTrigger,
   amplifyPushAuth,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -15,7 +16,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { versionCheck, allowedVersionsToMigrateFrom, initAndroidProjectWithProfile } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom, initAndroidProjectWithProfileInquirer } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
@@ -23,17 +24,14 @@ const defaultSettings = {
 describe('amplify auth migration c', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('auth_migration');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth_migration');
   });
 
   afterEach(async () => {
@@ -45,14 +43,16 @@ describe('amplify auth migration c', () => {
   });
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update', async () => {
-    await initAndroidProjectWithProfile(projRoot, defaultSettings);
-    await addAuthWithRecaptchaTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
+    await initAndroidProjectWithProfileInquirer(projRoot, defaultSettings);
+    await addAuthWithRecaptchaTrigger(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     let meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
     const amplifyMeta = getProjectMeta(projRoot);
-    const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
+    const authResourceName = Object.keys(amplifyMeta.auth).filter(
+      (resourceName) => amplifyMeta.auth[resourceName].service === 'Cognito',
+    )[0];
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,

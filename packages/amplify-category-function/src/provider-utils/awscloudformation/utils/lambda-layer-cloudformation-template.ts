@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
 import _ from 'lodash';
@@ -13,7 +13,7 @@ import { createLayerZipFilename } from './packageLayer';
 
 /**
  * generates CloudFormation for Layer versions and Layer permissions
- * @param versionList is sorted descendingly
+ * @param versionList is sorted in a descending manner
  */
 export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
   const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
@@ -26,7 +26,8 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
     const [shortId] = uuid().split('-');
     logicalName = `${LayerCfnLogicalNamePrefix.LambdaLayerVersion}${shortId}`;
     const layerCloudState = LayerCloudState.getInstance(parameters.layerName);
-    layerCloudState.latestVersionLogicalId = logicalName; // Store in the given layer's layerCloudState instance so it can be used in zipfile name
+    // Store in the given layer's layerCloudState instance so it can be used in zip file name
+    layerCloudState.latestVersionLogicalId = logicalName;
     versionList.unshift({ LogicalName: logicalName, legacyLayer: false });
   } else {
     logicalName = _.first(versionList).LogicalName;
@@ -44,14 +45,14 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   const layerVersionsToBeRemoved = getLayerVersionsToBeRemovedByCfn(resourceName, envName);
   const skipLayerVersionSet = new Set<number>(layerVersionsToBeRemoved);
 
-  for (const layerVersion of versionList.filter(r => !skipLayerVersionSet.has(r.Version))) {
+  for (const layerVersion of versionList.filter((r) => !skipLayerVersionSet.has(r.Version))) {
     let shortId: string;
     if (!layerVersion.legacyLayer) {
       cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion, resourceName, hasRuntimes);
       shortId = layerVersion.LogicalName.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
     }
     const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId, envName);
-    permissionObjects.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
+    permissionObjects.forEach((permission) => (cfnObj.Resources[permission.name] = permission.policy));
   }
 
   return { ...cfnObj, ...outputObj };
@@ -138,7 +139,7 @@ function constructLayerVersionPermissionObjects(
   };
 
   // If public permissions are applied, any other permissions are redundant
-  if (permissions.filter(p => p.type === PermissionEnum.Public).length > 0) {
+  if (permissions.filter((p) => p.type === PermissionEnum.Public).length > 0) {
     return [
       {
         name: getPublicLayerVersionPermissionName(layerVersion, shortId),
@@ -164,7 +165,7 @@ function constructLayerVersionPermissionObjects(
         });
         break;
       case PermissionEnum.AwsAccounts:
-        permission.accounts.forEach(accountId =>
+        permission.accounts.forEach((accountId) =>
           layerVersionPermissions.push({
             name: getAccountLayerVersionPermissionName(layerVersion, shortId, accountId),
             policy: new Lambda.LayerVersionPermission({
@@ -175,7 +176,7 @@ function constructLayerVersionPermissionObjects(
         );
         break;
       case PermissionEnum.AwsOrg:
-        permission.orgs.forEach(orgId =>
+        permission.orgs.forEach((orgId) =>
           layerVersionPermissions.push({
             name: getOrgLayerVersionPermissionName(layerVersion, shortId, orgId),
             policy: new Lambda.LayerVersionPermission({

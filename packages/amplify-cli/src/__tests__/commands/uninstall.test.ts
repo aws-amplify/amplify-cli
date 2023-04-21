@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/uninstall';
 import execa from 'execa';
 
@@ -18,7 +18,7 @@ const context_stub = {
   },
 };
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
   },
@@ -26,10 +26,10 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 jest.mock('chalk', () => ({
-  blueBright: jest.fn().mockImplementation(input => input),
+  blueBright: jest.fn().mockImplementation((input) => input),
 }));
 
-const context_stub_typed = (context_stub as unknown) as $TSContext;
+const context_stub_typed = context_stub as unknown as $TSContext;
 
 describe('uninstall node CLI', () => {
   afterEach(() => {

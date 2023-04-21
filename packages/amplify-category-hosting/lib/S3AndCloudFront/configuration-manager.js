@@ -1,6 +1,6 @@
-const inquirer = require('inquirer');
 const moment = require('moment');
 const validateBucketName = require('./helpers/validate-bucket-name');
+const { prompter, byValue } = require('@aws-amplify/amplify-prompts');
 
 const configurables = {
   Website: './helpers/configure-Website',
@@ -46,18 +46,11 @@ async function configureHostingComponents(context, lastConfiguredSection) {
     }
   }
 
-  const answer = await inquirer.prompt({
-    type: 'list',
-    name: 'section',
-    message: 'Specify the section to configure',
-    choices: options,
-    default: defaultSection,
-  });
-
-  if (answer.section !== done) {
-    const configureModule = require(configurables[answer.section]);
+  const section = await prompter.pick('Specify the section to configure', options, { initial: byValue(defaultSection) });
+  if (section !== done) {
+    const configureModule = require(configurables[section]);
     await configureModule.configure(context);
-    await configureHostingComponents(context, answer.section);
+    await configureHostingComponents(context, section);
   }
 }
 
@@ -69,20 +62,10 @@ async function setBucketName(context, bucketName) {
   }
 
   bucketName = bucketName.replace(/[^-a-z0-9]/g, '');
-
-  const questions = [
-    {
-      name: 'HostingBucketName',
-      type: 'input',
-      message: 'hosting bucket name',
-      default: bucketName,
-      validate: validateBucketName,
-    },
-  ];
-
-  const answers = await inquirer.prompt(questions);
-
-  context.exeInfo.parameters.bucketName = answers.HostingBucketName;
+  context.exeInfo.parameters.bucketName = await prompter.input('hosting bucket name', {
+    initial: bucketName,
+    validate: validateBucketName,
+  });
 }
 
 module.exports = {

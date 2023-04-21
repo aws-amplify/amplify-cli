@@ -19,7 +19,7 @@ const mockFeatureFlags: FeatureFlagProvider = {
   getObject: jest.fn(),
 };
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const USER_POOL_ID = 'us-fake-1ID';
 
@@ -110,11 +110,7 @@ describe('relational tests', () => {
     expect(ownerFieldResponse.hadException).toBe(false);
     expect(ownerFieldResponse.stash.authFilter).toEqual(
       expect.objectContaining({
-        or: [
-          { owner: { eq: `${ownerRequest.jwt.sub}::user1` } },
-          { owner: { eq: `${ownerRequest.jwt.sub}` } },
-          { owner: { eq: 'user1' } },
-        ],
+        or: [{ owner: { eq: `${ownerRequest.jwt.sub}::user1` } }, { owner: { eq: `${ownerRequest.jwt.sub}` } }, { owner: { eq: 'user1' } }],
       }),
     );
   });

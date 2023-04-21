@@ -4,6 +4,7 @@ export const exampleSchema: GenericDataSchema = {
   dataSourceType: 'DataStore',
   models: {
     Author: {
+      primaryKeys: ['id'],
       fields: {
         id: {
           dataType: 'ID',
@@ -50,6 +51,7 @@ export const exampleSchema: GenericDataSchema = {
       },
     },
     JoinTable: {
+      primaryKeys: ['id'],
       fields: {
         id: {
           dataType: 'ID',
@@ -58,11 +60,11 @@ export const exampleSchema: GenericDataSchema = {
           isArray: false,
         },
       },
-      isJoinTable: true
+      isJoinTable: true,
     },
     EmptyModel: {
-      fields: {
-      },
+      primaryKeys: ['id'],
+      fields: {},
     },
   },
   enums: {}, // eslint-disable-line spellcheck/spell-checker

@@ -2,11 +2,11 @@ import interpretAssets from '../assets/interpretQuestions';
 import getAllDefaults from '../default-values/interpret-defaults';
 import regionMapper from '../assets/regionMapping';
 import { enableGuestAuth } from './enable-guest-auth';
+import { prompter } from '@aws-amplify/amplify-prompts';
 
-const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
-const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('@aws-amplify/amplify-cli-core');
 // Predictions Info
 const category = 'predictions';
 const parametersFileName = 'parameters.json';
@@ -17,7 +17,7 @@ const service = 'Comprehend';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt(
+      await prompter.yesOrNo(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -38,7 +38,7 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
     if (interpretTypes.includes(amplifyMeta[category][resourceName].interpretType)) {
       predictionsResources.push({
         name: resourceName,
@@ -51,17 +51,11 @@ async function updateWalkthrough(context) {
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
-    return;
+    return undefined;
   }
   let resourceObj = predictionsResources[0].value;
-  if (predictionsResources > 1) {
-    const resourceAnswer = await inquirer.prompt({
-      type: 'list',
-      name: 'resource',
-      messages: 'Which interpret resource would you like to update?',
-      choices: predictionsResources,
-    });
-    resourceObj = resourceAnswer.resource;
+  if (predictionsResources.length > 1) {
+    resourceObj = await prompter.pick('Which interpret resource would you like to update?', predictionsResources);
   }
 
   return configure(context, resourceObj);
@@ -90,7 +84,8 @@ async function configure(context, resourceObj) {
 
   // only ask this for add
   if (!parameters.resourceName) {
-    answers = await inquirer.prompt(interpretAssets.setup.type());
+    const interpretQuestionSetupType = interpretAssets.setup.type();
+    answers.interpretType = await prompter.pick(interpretQuestionSetupType.message, interpretQuestionSetupType.choices);
 
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.interpretType);
@@ -101,11 +96,15 @@ async function configure(context, resourceObj) {
       exitOnNextTick(0);
     }
 
-    Object.assign(answers, await inquirer.prompt(interpretAssets.setup.name(`${answers.interpretType}${defaultValues.resourceName}`)));
+    const interpretQuestionSetupName = interpretAssets.setup.name(`${answers.interpretType}${defaultValues.resourceName}`);
+    answers.resourceName = await prompter.input(interpretQuestionSetupName.message, {
+      validate: interpretQuestionSetupName.validate,
+      initial: interpretQuestionSetupName.default,
+    });
     interpretType = answers.interpretType;
   }
 
-  Object.assign(answers, await followupQuestions(context, interpretAssets[interpretType], interpretType, parameters));
+  Object.assign(answers, await followupQuestions(interpretAssets[interpretType], parameters));
   answers = { ...answers, service };
   Object.assign(defaultValues, answers);
 
@@ -146,9 +145,14 @@ function addRegionMapping(context, resourceName, interpretType) {
   fs.writeFileSync(identifyCFNFilePath, identifyCFNJSON, 'utf8');
 }
 
-async function followupQuestions(context, questionObj, interpretType, parameters) {
-  const answers = await inquirer.prompt(questionObj.questions(parameters));
-  Object.assign(answers, await inquirer.prompt(questionObj.auth(parameters)));
+async function followupQuestions(questionObj, parameters) {
+  const questionsInput = questionObj.questions(parameters);
+  const authInput = questionObj.auth(parameters);
+  const answers = {
+    [questionsInput.name]: await prompter.pick(questionsInput.message, questionsInput.choices),
+    [authInput.name]: await prompter.pick(authInput.message, authInput.choices),
+  };
+
   return answers;
 }
 
@@ -177,7 +181,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -193,7 +197,7 @@ function resourceAlreadyExists(context, interpretType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].interpretType === interpretType) {
         type = interpretType;
       }

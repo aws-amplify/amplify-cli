@@ -21,9 +21,7 @@ export const retry = async <T>(
   settings?: Partial<RetrySettings>,
   failurePredicate?: (res?: T) => boolean,
 ): Promise<T> => {
-  const {
-    times, delayMS, timeoutMS, stopOnError,
-  } = _.merge({}, defaultSettings, settings);
+  const { times, delayMS, timeoutMS, stopOnError } = _.merge({}, defaultSettings, settings);
 
   let count = 0;
   let result: T;

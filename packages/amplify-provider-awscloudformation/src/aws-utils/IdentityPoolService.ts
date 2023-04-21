@@ -1,11 +1,7 @@
-import {
-  $TSAny, $TSContext, AmplifyFault, AmplifyError,
-} from 'amplify-cli-core';
-import { IIdentityPoolService } from 'amplify-util-import';
+import { $TSAny, $TSContext, AmplifyFault, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import { CognitoIdentity } from 'aws-sdk';
-import {
-  PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse,
-} from 'aws-sdk/clients/cognitoidentity';
+import { PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse } from 'aws-sdk/clients/cognitoidentity';
 import { loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
 
@@ -32,17 +28,18 @@ export class IdentityPoolService implements IIdentityPoolService {
   public async listIdentityPools(): Promise<IdentityPoolShortDescription[]> {
     if (this.cachedIdentityPoolIds.length === 0) {
       const result = await pagedAWSCall<ListIdentityPoolsResponse, IdentityPoolShortDescription, PaginationKey>(
-        async (params: CognitoIdentity.Types.ListIdentitiesInput, nextToken: PaginationKey) => await this.cognitoIdentity
-          .listIdentityPools({
-            ...params,
-            NextToken: nextToken,
-          })
-          .promise(),
+        async (params: CognitoIdentity.Types.ListIdentitiesInput, nextToken: PaginationKey) =>
+          await this.cognitoIdentity
+            .listIdentityPools({
+              ...params,
+              NextToken: nextToken,
+            })
+            .promise(),
         {
           MaxResults: 60,
         },
-        response => response?.IdentityPools,
-        async response => response?.NextToken,
+        (response) => response?.IdentityPools,
+        async (response) => response?.NextToken,
       );
 
       this.cachedIdentityPoolIds.push(...result);
@@ -58,11 +55,13 @@ export class IdentityPoolService implements IIdentityPoolService {
       const identityPoolDetails = [];
 
       if (identityPools.length > 0) {
-        const describeIdentityPoolPromises = identityPools.map(idp => this.cognitoIdentity
-          .describeIdentityPool({
-            IdentityPoolId: idp.IdentityPoolId,
-          })
-          .promise());
+        const describeIdentityPoolPromises = identityPools.map((idp) =>
+          this.cognitoIdentity
+            .describeIdentityPool({
+              IdentityPoolId: idp.IdentityPoolId,
+            })
+            .promise(),
+        );
 
         const identityPoolDetailResults = await Promise.all(describeIdentityPoolPromises);
 

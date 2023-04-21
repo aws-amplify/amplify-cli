@@ -1,4 +1,5 @@
 import { Context } from '../domain/context';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
 
 describe('test SIGINT with execute', () => {
   afterAll(() => {
@@ -9,8 +10,8 @@ describe('test SIGINT with execute', () => {
     const input = { argv: ['/usr/local/bin/node', '/usr/local/bin/amplify-dev', '-v'], options: { v: true } };
     const mockExit = jest.fn();
 
-    jest.setMock('amplify-cli-core', {
-      ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+    jest.setMock('@aws-amplify/amplify-cli-core', {
+      ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
       JSONUtilities: {
         readJson: jest.fn().mockReturnValue({
           name: 'cli',
@@ -61,15 +62,15 @@ describe('test SIGINT with execute', () => {
         verified: true,
       }),
     });
-    jest.setMock('amplify-cli-logger', {
-      logger: {
+    jest.setMock('@aws-amplify/amplify-cli-logger', {
+      getAmplifyLogger: jest.fn().mockReturnValue({
         logInfo: jest.fn(),
-      },
+      }),
       Redactor: jest.fn(),
     });
 
     const mockContext: Context = jest.createMockFromModule('../domain/context');
-    mockContext.input = input;
+    mockContext.input = input as unknown as CommandLineInput;
     mockContext.print = {
       warning: jest.fn(),
     };
@@ -126,4 +127,4 @@ describe('test SIGINT with execute', () => {
   });
 });
 
-const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));

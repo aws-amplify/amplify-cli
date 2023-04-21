@@ -3,24 +3,24 @@
  */
 class ElasticsearchUtils {
   private static readonly ONE: number = 1;
-  private static readonly BOOL: string = "bool";
-  private static readonly MUST: string = "must";
-  private static readonly MUST_NOT: string = "must_not";
-  private static readonly SHOULD: string = "should";
-  private static readonly MATCH: string = "match";
-  private static readonly MATCH_PHRASE: string = "match_phrase";
-  private static readonly MATCH_PHRASE_PREFIX: string = "match_phrase_prefix";
-  private static readonly MULTI_MATCH: string = "multi_match";
-  private static readonly EXISTS: string = "exists";
-  private static readonly WILDCARD: string = "wildcard";
-  private static readonly REGEXP: string = "regexp";
-  private static readonly RANGE: string = "range";
-  private static readonly GT: string = "gt";
-  private static readonly GTE: string = "gte";
-  private static readonly LT: string = "lt";
-  private static readonly LTE: string = "lte";
-  private static readonly MINIMUM_SHOULD_MATCH: string = "minimum_should_match";
-  private static readonly FIELD: string = "field";
+  private static readonly BOOL: string = 'bool';
+  private static readonly MUST: string = 'must';
+  private static readonly MUST_NOT: string = 'must_not';
+  private static readonly SHOULD: string = 'should';
+  private static readonly MATCH: string = 'match';
+  private static readonly MATCH_PHRASE: string = 'match_phrase';
+  private static readonly MATCH_PHRASE_PREFIX: string = 'match_phrase_prefix';
+  private static readonly MULTI_MATCH: string = 'multi_match';
+  private static readonly EXISTS: string = 'exists';
+  private static readonly WILDCARD: string = 'wildcard';
+  private static readonly REGEXP: string = 'regexp';
+  private static readonly RANGE: string = 'range';
+  private static readonly GT: string = 'gt';
+  private static readonly GTE: string = 'gte';
+  private static readonly LT: string = 'lt';
+  private static readonly LTE: string = 'lte';
+  private static readonly MINIMUM_SHOULD_MATCH: string = 'minimum_should_match';
+  private static readonly FIELD: string = 'field';
 
   /**
    * Convert a field and a value into Elasticsearch "match" expression.
@@ -37,7 +37,7 @@ class ElasticsearchUtils {
       return null;
     }
 
-    const updatedFieldName: string = ((typeof value) === "string") ? (fieldName + ".keyword") : fieldName;
+    const updatedFieldName: string = typeof value === 'string' ? fieldName + '.keyword' : fieldName;
 
     return this.toMatchExpression(updatedFieldName, value);
   }
@@ -53,7 +53,6 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toNeExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
@@ -72,15 +71,14 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toMatchExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
 
     return {
       [ElasticsearchUtils.MATCH]: {
-        [fieldName]: value
-      }
+        [fieldName]: value,
+      },
     };
   }
 
@@ -95,15 +93,14 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toMatchPhraseExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
 
     return {
       [ElasticsearchUtils.MATCH_PHRASE]: {
-        [fieldName]: value
-      }
+        [fieldName]: value,
+      },
     };
   }
 
@@ -118,15 +115,14 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toMatchPhrasePrefixExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
 
     return {
       [ElasticsearchUtils.MATCH_PHRASE_PREFIX]: {
-        [fieldName]: value
-      }
+        [fieldName]: value,
+      },
     };
   }
 
@@ -141,15 +137,14 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toMultiMatchExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
 
     return {
       [ElasticsearchUtils.MULTI_MATCH]: {
-        [fieldName]: value
-      }
+        [fieldName]: value,
+      },
     };
   }
 
@@ -164,26 +159,25 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toExistsExpression(fieldName: string, value: boolean): any {
-
-    if (!fieldName || (typeof value !== 'boolean')) {
+    if (!fieldName || typeof value !== 'boolean') {
       return null;
     }
 
     if (value) {
       return {
         [ElasticsearchUtils.EXISTS]: {
-          [ElasticsearchUtils.FIELD]: fieldName
-        }
+          [ElasticsearchUtils.FIELD]: fieldName,
+        },
       };
     } else {
       return {
         [ElasticsearchUtils.BOOL]: {
           [ElasticsearchUtils.MUST_NOT]: {
             [ElasticsearchUtils.EXISTS]: {
-              [ElasticsearchUtils.FIELD]: fieldName
-            }
-          }
-        }
+              [ElasticsearchUtils.FIELD]: fieldName,
+            },
+          },
+        },
       };
     }
   }
@@ -199,16 +193,15 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toWildcardExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
 
     return {
       [ElasticsearchUtils.WILDCARD]: {
-        [fieldName]: value
-      }
-    }
+        [fieldName]: value,
+      },
+    };
   }
 
   /**
@@ -222,15 +215,14 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toRegularExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
 
     return {
       [ElasticsearchUtils.REGEXP]: {
-        [fieldName]: value
-      }
+        [fieldName]: value,
+      },
     };
   }
 
@@ -245,7 +237,6 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toGtExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
@@ -253,12 +244,10 @@ class ElasticsearchUtils {
     return {
       [ElasticsearchUtils.RANGE]: {
         [fieldName]: {
-          [ElasticsearchUtils.GT]: value
-        }
-      }
+          [ElasticsearchUtils.GT]: value,
+        },
+      },
     };
-
-
   }
 
   /**
@@ -272,7 +261,6 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toGteExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
@@ -280,12 +268,10 @@ class ElasticsearchUtils {
     return {
       [ElasticsearchUtils.RANGE]: {
         [fieldName]: {
-          [ElasticsearchUtils.GTE]: value
-        }
-      }
+          [ElasticsearchUtils.GTE]: value,
+        },
+      },
     };
-
-
   }
 
   /**
@@ -299,7 +285,6 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toLTExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
@@ -307,9 +292,9 @@ class ElasticsearchUtils {
     return {
       [ElasticsearchUtils.RANGE]: {
         [fieldName]: {
-          [ElasticsearchUtils.LT]: value
-        }
-      }
+          [ElasticsearchUtils.LT]: value,
+        },
+      },
     };
   }
 
@@ -324,7 +309,6 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toLTEExpression(fieldName: string, value: any): any {
-
     if (!fieldName) {
       return null;
     }
@@ -332,12 +316,11 @@ class ElasticsearchUtils {
     return {
       [ElasticsearchUtils.RANGE]: {
         [fieldName]: {
-          [ElasticsearchUtils.LTE]: value
-        }
-      }
+          [ElasticsearchUtils.LTE]: value,
+        },
+      },
     };
   }
-
 
   /**
    * Convert a field and a value into Elasticsearch "range" expression.
@@ -353,7 +336,6 @@ class ElasticsearchUtils {
    *    The converted Elasticsearch expression. Returns null if fieldName is invalid.
    */
   public toRangeExpression(fieldName: string, start: any, end: any): any {
-
     if (!fieldName) {
       return null;
     }
@@ -362,9 +344,9 @@ class ElasticsearchUtils {
       [ElasticsearchUtils.RANGE]: {
         [fieldName]: {
           [ElasticsearchUtils.GTE]: start,
-          [ElasticsearchUtils.LTE]: end
-        }
-      }
+          [ElasticsearchUtils.LTE]: end,
+        },
+      },
     };
   }
 
@@ -381,10 +363,10 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
-        [ElasticsearchUtils.MUST]: filterClauses
-      }
+        [ElasticsearchUtils.MUST]: filterClauses,
+      },
     };
 
     return andExpression;
@@ -403,11 +385,11 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
         [ElasticsearchUtils.SHOULD]: filterClauses,
-        [ElasticsearchUtils.MINIMUM_SHOULD_MATCH]: ElasticsearchUtils.ONE
-      }
+        [ElasticsearchUtils.MINIMUM_SHOULD_MATCH]: ElasticsearchUtils.ONE,
+      },
     };
 
     return andExpression;
@@ -426,15 +408,14 @@ class ElasticsearchUtils {
       return null;
     }
 
-    let andExpression: any = {
+    const andExpression: any = {
       [ElasticsearchUtils.BOOL]: {
-        [ElasticsearchUtils.MUST_NOT]: expression
-      }
+        [ElasticsearchUtils.MUST_NOT]: expression,
+      },
     };
 
     return andExpression;
   }
-
 }
 
 export default ElasticsearchUtils;

@@ -1,8 +1,8 @@
-import { $TSContext, FeatureFlags, stateManager } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as add from '../../commands/auth/enable';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta = jest.fn();
@@ -28,7 +28,7 @@ describe('auth enable: ', () => {
       executeProviderUtils: mockExecuteProviderUtils,
       getProjectDetails: mockGetProjectDetails,
       serviceSelectionPrompt: mockSelectionPrompt,
-      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path, 'utf-8'))),
+      readJsonFile: jest.fn((path) => JSON.parse(fs.readFileSync(path, 'utf-8'))),
     },
     usageData: {
       emitError: jest.fn(),

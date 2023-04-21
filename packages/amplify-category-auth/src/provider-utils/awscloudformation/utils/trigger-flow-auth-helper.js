@@ -1,5 +1,5 @@
 const path = require('path');
-const { FeatureFlags } = require('amplify-cli-core');
+const { FeatureFlags } = require('@aws-amplify/amplify-cli-core');
 
 const triggerAssetRoot = path.resolve(path.join(__dirname, '../../../../provider-utils/awscloudformation/triggers'));
 
@@ -26,7 +26,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
 
   // getting static trigger env variables that do not change based on direct user input
   const triggerEnvs = {};
-  Object.keys(triggers).forEach(r => {
+  Object.keys(triggers).forEach((r) => {
     triggerEnvs[r] = context.amplify.getTriggerEnvVariables(context, { key: r, modules: triggers[r] }, 'auth');
   });
 
@@ -99,8 +99,8 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   }
 
   if (previouslySaved) {
-    const previousTriggers = Object.keys(previouslySaved).map(i => `${authResourceName}${i}`);
-    const currentTriggers = Object.keys(triggers).map(i => `${authResourceName}${i}`);
+    const previousTriggers = Object.keys(previouslySaved).map((i) => `${authResourceName}${i}`);
+    const currentTriggers = Object.keys(triggers).map((i) => `${authResourceName}${i}`);
     await context.amplify.deleteDeselectedTriggers(currentTriggers, previousTriggers, authResourceName, targetDir, context);
   }
 

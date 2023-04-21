@@ -1,12 +1,10 @@
-import {
-  $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifySupportedService, open } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * opens resource in AWS console
  */
-export const console = (context: $TSContext): void => {
+export const console = async (context: $TSContext): Promise<void> => {
   const amplifyMeta = context.amplify.getProjectMeta();
   const { envName } = context.amplify.getEnvInfo();
   const region = context.amplify.getEnvDetails()[envName].awscloudformation.Region;
@@ -15,7 +13,7 @@ export const console = (context: $TSContext): void => {
   if (kinesisApp) {
     const { Id } = kinesisApp;
     const consoleUrl = `https://${region}.console.aws.amazon.com/kinesis/home?region=${region}#/streams/details?streamName=${Id}&tab=details`;
-    open(consoleUrl, { wait: false });
+    await open(consoleUrl, { wait: false });
   } else {
     printer.error('Kinesis is not enabled in the cloud.');
   }

@@ -32,7 +32,7 @@ export const createUserPoolOnlyWithOAuthSettings = (projectPrefix: string, short
     appleAppTeamId: '2QLEWNDK6K',
     appleAppKeyID: '2QLZXKYJ8J',
     appleAppPrivateKey:
-      'MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw',
+      '----BEGIN PRIVATE KEY----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----',
   };
 };
 
@@ -40,7 +40,7 @@ export const createIDPAndUserPoolWithOAuthSettings = (
   projectPrefix: string,
   shortId: string,
 ): AddAuthIdentityPoolAndUserPoolWithOAuthSettings => {
-  let settings = createUserPoolOnlyWithOAuthSettings(projectPrefix, shortId);
+  const settings = createUserPoolOnlyWithOAuthSettings(projectPrefix, shortId);
 
   return {
     ...settings,
@@ -50,7 +50,7 @@ export const createIDPAndUserPoolWithOAuthSettings = (
     idpGoogleAppId: 'idpGoogleAppId',
     idpAmazonAppId: 'idpAmazonAppId',
     idpAppleAppId: 'idpAppleId',
-  } as AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
+  };
 };
 
 export const createStorageSettings = (projectPrefix: string, shortId: string): AddStorageSettings => {

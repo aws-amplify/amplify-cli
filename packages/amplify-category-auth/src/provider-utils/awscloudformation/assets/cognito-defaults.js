@@ -1,16 +1,16 @@
 const uuid = require('uuid');
-const { booleanOptions, oAuthScopes } = require('./string-maps');
+const { oAuthScopes } = require('./string-maps');
 
 const [sharedId] = uuid.v4().split('-');
 
-const generalDefaults = projectName => ({
+const generalDefaults = (projectName) => ({
   sharedId,
   resourceName: `${projectName}${sharedId}`,
   resourceNameTruncated: `${projectName.substring(0, 6)}${sharedId}`,
   authSelections: 'identityPoolAndUserPool',
 });
 
-const userPoolDefaults = projectName => {
+const userPoolDefaults = (projectName) => {
   const projectNameTruncated = `${projectName.substring(0, 6)}${sharedId}`;
   return {
     resourceNameTruncated: `${projectName.substring(0, 6)}${sharedId}`,
@@ -36,14 +36,14 @@ const userPoolDefaults = projectName => {
   };
 };
 
-const withSocialDefaults = projectName => ({
+const withSocialDefaults = (projectName) => ({
   hostedUI: true,
   hostedUIDomainName: `${projectName.replace('_', '')}-${sharedId}`,
   AllowedOAuthFlows: ['code'],
-  AllowedOAuthScopes: oAuthScopes.map(i => i.value),
+  AllowedOAuthScopes: oAuthScopes.map((i) => i.value),
 });
 
-const identityPoolDefaults = projectName => {
+const identityPoolDefaults = (projectName) => {
   // eslint-disable-line
   return {
     identityPoolName: `${projectName}_identitypool_${sharedId}`,
@@ -51,7 +51,7 @@ const identityPoolDefaults = projectName => {
   };
 };
 
-const identityAndUserPoolDefaults = projectName => ({
+const identityAndUserPoolDefaults = (projectName) => ({
   // replace dashes with underscores for id pool regex constraint
   ...identityPoolDefaults(projectName),
   ...userPoolDefaults(projectName),
@@ -68,7 +68,7 @@ const entityKeys = {
   userPoolKeys: Object.keys(userPoolDefaults('')),
 };
 
-const getAllDefaults = name => {
+const getAllDefaults = (name) => {
   const disallowedChars = /[^A-Za-z0-9_]+/g;
   let projectName = name.projectConfig
     ? `${name.projectConfig.projectName.toLowerCase().substring(0, 100)}${sharedId}`

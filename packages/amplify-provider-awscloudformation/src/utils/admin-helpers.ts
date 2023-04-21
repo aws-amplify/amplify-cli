@@ -1,14 +1,10 @@
-import {
-  stateManager, $TSContext, AmplifyError,
-} from 'amplify-cli-core';
+import { stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 import proxyAgent from 'proxy-agent';
 import { adminLoginFlow } from '../admin-login';
-import {
-  AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken,
-} from './auth-types';
+import { AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 /**
  *
@@ -97,7 +93,9 @@ async function getAdminCognitoCredentials(idToken: CognitoIdToken, identityId: s
 }
 
 async function getAdminStsCredentials(idToken: CognitoIdToken, region: string): Promise<AwsSdkConfig> {
-  const sts = new aws.STS();
+  const sts = new aws.STS({
+    stsRegionalEndpoints: 'regional',
+  });
   const { Credentials } = await sts
     .assumeRole({
       RoleArn: idToken.payload['cognito:preferred_role'],
@@ -188,6 +186,10 @@ export const adminBackendMap: {
   'eu-north-1': {
     amplifyAdminUrl: 'https://eu-north-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.eu-north-1.appstate.amplifyapp.com',
+  },
+  'eu-south-1': {
+    amplifyAdminUrl: 'https://eu-south-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.eu-south-1.appstate.amplifyapp.com',
   },
   'eu-west-1': {
     amplifyAdminUrl: 'https://eu-west-1.admin.amplifyapp.com',

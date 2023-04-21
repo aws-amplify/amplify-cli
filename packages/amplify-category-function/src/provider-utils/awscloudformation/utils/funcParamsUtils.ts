@@ -1,4 +1,4 @@
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import _ from 'lodash';
 
 // Merges other with existing in a non-destructive way.
@@ -13,13 +13,14 @@ export function merge(existing: Partial<FunctionParameters>, other: Partial<Func
     if (_.isArray(oldVal)) {
       return _.uniqWith(oldVal.concat(newVal), _.isEqual);
     }
+    return undefined;
   };
   return _.mergeWith(existing, other, mergeFunc);
 }
 
 export function isComplete(partial: Partial<FunctionParameters>): partial is FunctionParameters {
   const requiredFields = ['providerContext', 'cloudResourceTemplatePath', 'resourceName', 'functionName', 'runtime', 'roleName'];
-  const missingField = requiredFields.find(field => !_.keys(partial).includes(field));
+  const missingField = requiredFields.find((field) => !_.keys(partial).includes(field));
   return !missingField;
 }
 

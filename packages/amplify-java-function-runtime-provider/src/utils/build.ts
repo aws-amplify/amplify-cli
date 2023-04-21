@@ -3,8 +3,8 @@ import * as execa from 'execa';
 import fs from 'fs-extra';
 import glob from 'glob';
 import { packageName, relativeShimJarPath, relativeShimSrcPath } from './constants';
-import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
-import { pathManager } from 'amplify-cli-core';
+import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
+import { AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';
 
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
   const resourceDir = join(request.srcRoot);
@@ -33,12 +33,16 @@ const runPackageManager = (cwd: string, buildArgs: string) => {
   const packageManager = 'gradle';
   const args = [buildArgs];
 
-  const result = execa.sync(packageManager, args, {
-    cwd,
-  });
+  try {
+    const result = execa.sync(packageManager, args, {
+      cwd,
+    });
 
-  if (result.exitCode !== 0) {
-    throw new Error(`${packageManager} failed, exit code was ${result.exitCode}`);
+    if (result.exitCode !== 0) {
+      throw new AmplifyError('PackagingLambdaFunctionError', { message: `${packageManager} failed, exit code was ${result.exitCode}` });
+    }
+  } catch (err) {
+    throw new AmplifyError('PackagingLambdaFunctionError', { message: `${packageManager} failed, error message was ${err.message}` }, err);
   }
 };
 
@@ -51,7 +55,7 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date) => {
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/*/!(build | dist)/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };

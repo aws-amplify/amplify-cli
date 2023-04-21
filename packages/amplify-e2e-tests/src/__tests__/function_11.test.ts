@@ -13,7 +13,6 @@ import {
   updateApiSchema,
   generateRandomShortId,
   addApi,
-
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('Lambda AppSync nodejs:', () => {
@@ -98,11 +97,11 @@ describe('Lambda AppSync nodejs:', () => {
       'nodejs',
     );
 
-    await functionBuild(projRoot, {});
+    await functionBuild(projRoot);
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
 
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
@@ -149,11 +148,11 @@ describe('Lambda AppSync nodejs:', () => {
       'nodejs',
     );
 
-    await functionBuild(projRoot, {});
+    await functionBuild(projRoot);
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
 
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();

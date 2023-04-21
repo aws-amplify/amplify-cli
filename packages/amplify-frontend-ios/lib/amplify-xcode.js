@@ -19,10 +19,10 @@
 
 const execa = require('execa');
 const path = require('path');
-const { pathManager } = require('amplify-cli-core');
+const { pathManager } = require('@aws-amplify/amplify-cli-core');
 
 const BINARY_PATH = 'resources/amplify-xcode';
-const PACKAGE_NAME = 'amplify-frontend-ios';
+const PACKAGE_NAME = '@aws-amplify/amplify-frontend-ios';
 const amplifyXcodePath = () => path.join(pathManager.getAmplifyPackageLibDirPath(PACKAGE_NAME), BINARY_PATH);
 
 /**

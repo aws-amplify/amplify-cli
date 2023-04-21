@@ -1,8 +1,7 @@
-// disabling eslint until this file is migrated to TS
-/* eslint-disable */
+/* eslint-disable spellcheck/spell-checker */
 const fs = require('fs-extra');
 const path = require('path');
-const { pathManager, PathConstants, stateManager } = require('amplify-cli-core');
+const { pathManager, PathConstants, stateManager } = require('@aws-amplify/amplify-cli-core');
 const glob = require('glob');
 const constants = require('../constants/plugin-constants');
 const utils = require('../utils/amplify-context-utils');
@@ -110,8 +109,7 @@ async function deleteConsoleConfigFromCurrMeta(context) {
   await storeCurrentCloudBackend(context);
 }
 
-async function deleteHostingEnvParams(context) {
-  const categories = constants.CATEGORIES;
+async function deleteHostingEnvParams() {
   const category = constants.CATEGORY;
   const resourceName = constants.CONSOLE_RESOURCE_NAME;
 
@@ -135,7 +133,9 @@ function initBackendConfig(context, category, resourceName, type) {
 }
 
 async function loadConsoleConfigFromTeamProviderinfo() {
-  return (await ensureEnvParamManager()).instance.getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME).getAllParams();
+  return (await ensureEnvParamManager()).instance
+    .getResourceParamManager(constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME)
+    .getAllParams();
 }
 
 async function storeCurrentCloudBackend(context) {
@@ -167,13 +167,14 @@ async function storeCurrentCloudBackend(context) {
   }
 }
 
+// eslint-disable-next-line consistent-return
 async function uploadFile(s3, filePath, key) {
   if (fs.existsSync(filePath)) {
     const s3Params = {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    const projectBucket = stateManager.getMeta().providers[constants.PROVIDER].DeploymentBucketName
+    const projectBucket = stateManager.getMeta().providers[constants.PROVIDER].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
     await s3.putObject(s3Params).promise();
     return projectBucket;

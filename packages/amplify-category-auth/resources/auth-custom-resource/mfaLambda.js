@@ -27,10 +27,10 @@ exports.handler = (event, context, callback) => {
     identity
       .setUserPoolMfaConfig(totpParams)
       .promise()
-      .then(res => {
+      .then((res) => {
         response.send(event, context, response.SUCCESS, { res });
       })
-      .catch(err => {
+      .catch((err) => {
         response.send(event, context, response.FAILED, { err });
       });
   }

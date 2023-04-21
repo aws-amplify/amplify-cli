@@ -2,9 +2,7 @@
 
 /* These tests test the AmplifyS3ResourceStackTransform and run the cdk builder tool which is used within this file */
 import * as uuid from 'uuid';
-import {
-  $TSContext, CLISubCommandType, stateManager, buildOverrideDir, pathManager,
-} from 'amplify-cli-core';
+import { $TSContext, CLISubCommandType, stateManager, buildOverrideDir, pathManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { AmplifyS3ResourceStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
 import {
@@ -28,18 +26,18 @@ const mockContext = {
     }),
     getUserPoolGroupList: () => [],
     // eslint-disable-next-line
-      getResourceStatus: () => {
+    getResourceStatus: () => {
       return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
-      }, //eslint-disable-line
-    copyBatch: jest.fn().mockReturnValue(new Promise(resolve => resolve(true))),
-    updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise(resolve => resolve(true))),
+    }, //eslint-disable-line
+    copyBatch: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
+    updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
     pathManager: {
       getBackendDirPath: jest.fn().mockReturnValue('mockTargetDir'),
     },
   },
 } as unknown as $TSContext;
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 stateManagerMock.getMeta.mockReturnValue({
@@ -89,12 +87,7 @@ describe('Test S3 transform generates correct CFN template', () => {
     const cliInputParams = {
       bucketName,
       selectedGuestPermissions: ['s3:GetObject', 's3:ListBucket'],
-      selectedAuthenticatedPermissions: [
-        's3:PutObject',
-        's3:GetObject',
-        's3:ListBucket',
-        's3:DeleteObject',
-      ],
+      selectedAuthenticatedPermissions: ['s3:PutObject', 's3:GetObject', 's3:ListBucket', 's3:DeleteObject'],
       unauthRoleName: { Ref: 'UnauthRoleName' },
       authRoleName: { Ref: 'AuthRoleName' },
       triggerFunction: mockTriggerFunction,
@@ -123,7 +116,7 @@ describe('Test S3 transform generates correct CFN template', () => {
   });
 });
 
-// eslint-disable-next-line jest/no-export, jsdoc/require-jsdoc
+// eslint-disable-next-line jest/no-export
 export class S3MockDataBuilder {
   static mockBucketName = 'mock-stack-builder-bucket-name-99'; // s3 bucket naming rules allows alphanumeric and hyphens
   static mockResourceName = 'mockResourceName';
@@ -173,9 +166,11 @@ export class S3MockDataBuilder {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(__startCliInputState: S3UserInputs | undefined) { /* noop */ }
+  constructor(__startCliInputState: S3UserInputs | undefined) {
+    /* noop */
+  }
 
-  // eslint-disable-next-line jsdoc/require-jsdoc, @typescript-eslint/explicit-function-return-type
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   static getMockGetAllResourcesNoExistingLambdas() {
     return [{ service: 'Cognito', serviceType: 'managed' }];
   }

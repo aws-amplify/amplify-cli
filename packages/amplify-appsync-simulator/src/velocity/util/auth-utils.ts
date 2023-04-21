@@ -1,6 +1,6 @@
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../type-definition';
 
-export const authUtils = context => ({
+export const authUtils = (context) => ({
   authType() {
     if (context.requestAuthorizationMode === AmplifyAppSyncSimulatorAuthenticationType.API_KEY) {
       return 'API Key Authorization';

@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { analyzeProject } from '../config-steps/c0-analyzeProject';
 import { configFrontendHandler } from '../config-steps/c1-configFrontend';
 import { configProviders } from '../config-steps/c2-configProviders';
@@ -47,7 +47,7 @@ export const run = async (context: Context) => {
       await configProviders(context);
       await onSuccess(context);
     } catch (e) {
-      context.usageData.emitError(e);
+      void context.usageData.emitError(e);
       onFailure(e);
       process.exitCode = 1;
     }
@@ -56,5 +56,5 @@ export const run = async (context: Context) => {
 
 function constructExeInfo(context: Context) {
   context.exeInfo = context.amplify.getProjectDetails();
-  context.exeInfo.inputParams = normalizeInputParams((context as unknown) as $TSContext);
+  context.exeInfo.inputParams = normalizeInputParams(context as unknown as $TSContext);
 }

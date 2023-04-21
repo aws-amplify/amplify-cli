@@ -6,9 +6,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import {
-  $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager } from '@aws-amplify/amplify-cli-core';
 
 import _ from 'lodash';
 
@@ -93,7 +91,7 @@ export class S3 {
    * @param envName - Environment for which we need to fetch the S3 bucket.
    * @returns Updated S3 Params
    */
-  private attachBucketToParams(s3Params: $TSAny, envName?: string):$TSAny {
+  private attachBucketToParams(s3Params: $TSAny, envName?: string): $TSAny {
     // eslint-disable-next-line no-prototype-builtins
     if (!s3Params.hasOwnProperty('Bucket')) {
       if (!envName) envName = this.context.amplify.getEnvInfo().envName;
@@ -110,7 +108,7 @@ export class S3 {
    * @param showSpinner Flag, if true displays the spinner on the terminal. Must be set to false on headless.
    * @returns Promise<void>
    */
-  async uploadFile(s3Params: $TSAny, showSpinner = true):Promise<string> {
+  async uploadFile(s3Params: $TSAny, showSpinner = true): Promise<string> {
     // envName and bucket does not change during execution, cache them into a class level
     // field.
     if (this.uploadState === undefined) {
@@ -129,12 +127,12 @@ export class S3 {
       // eslint-disable-next-line no-unused-expressions
       showSpinner && spinner.start('Uploading files.');
       if (
-        (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize)
-        || (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
+        (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
+        (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
       ) {
         logger('uploadFile.s3.upload', [others])();
         uploadTask = this.s3.upload(augmentedS3Params);
-        uploadTask.on('httpUploadProgress', max => {
+        uploadTask.on('httpUploadProgress', (max) => {
           if (showSpinner) spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
         });
       } else {
@@ -215,18 +213,19 @@ export class S3 {
         ...options,
       },
       (response?) => response.Versions?.map(({ Key, VersionId }) => ({ Key, VersionId })),
-      async (response?) => (response?.IsTruncated
-        ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker, Prefix: response.Prefix }
-        : undefined),
+      async (response?) =>
+        response?.IsTruncated
+          ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker, Prefix: response.Prefix }
+          : undefined,
     );
     return result;
   }
 
   /**
-  * Delete a directory in the S3 bucket
-  * @param bucketName Name of the S3 bucket
-  * @param dirPath Path to the directory to be recursively deleted
-  */
+   * Delete a directory in the S3 bucket
+   * @param bucketName Name of the S3 bucket
+   * @param dirPath Path to the directory to be recursively deleted
+   */
   public async deleteDirectory(bucketName: string, dirPath: string): Promise<void> {
     logger('deleteDirectory.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName, { Prefix: dirPath });
@@ -251,13 +250,15 @@ export class S3 {
    * @param filePath - Object key ( path to the file key )
    * @returns Promise<boolean> true if exists
    */
-  public async checkExistObject(bucketName: string, filePath: string) : Promise<boolean> {
+  public async checkExistObject(bucketName: string, filePath: string): Promise<boolean> {
     logger('checkExistObject.s3', [{ BucketName: bucketName, FilePath: filePath }])();
     try {
-      await this.s3.headObject({
-        Bucket: bucketName,
-        Key: filePath,
-      }).promise();
+      await this.s3
+        .headObject({
+          Bucket: bucketName,
+          Key: filePath,
+        })
+        .promise();
       return true;
     } catch (error) {
       logger('checkExistObject.s3', [{ BucketName: bucketName, FilePath: filePath, Error: error.name }])();
@@ -266,7 +267,7 @@ export class S3 {
   }
 
   /**
-   * Delete the file provided as input, if it exists. Noop if the file doesnt exist.
+   * Delete the file provided as input, if it exists. No op if the file does not exist.
    * @param bucketName S3 bucket name
    * @param filePath Path to the file to be deleted
    */
@@ -274,17 +275,19 @@ export class S3 {
     logger('deleteObject.s3', [{ BucketName: bucketName, FilePath: filePath }])();
     const objExists = await this.checkExistObject(bucketName, filePath);
     if (objExists) {
-      await this.s3.deleteObject({
-        Bucket: bucketName,
-        Key: filePath,
-      }).promise();
+      await this.s3
+        .deleteObject({
+          Bucket: bucketName,
+          Key: filePath,
+        })
+        .promise();
     }
   }
 
   /**
-  * Delete all objects in the given S3 bucket
-  * @param bucketName - Name of the S3 bucket
-  */
+   * Delete all objects in the given S3 bucket
+   * @param bucketName - Name of the S3 bucket
+   */
   public async deleteAllObjects(bucketName: string): Promise<void> {
     logger('deleteAllObjects.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName);
@@ -345,15 +348,23 @@ export class S3 {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])(e);
 
       if (e.code === 'NotFound') {
-        throw new AmplifyError('BucketNotFoundError', {
-          message: e.message,
-          resolution: `Check that bucket name is correct: ${bucketName}`,
-        }, e);
+        throw new AmplifyError(
+          'BucketNotFoundError',
+          {
+            message: e.message,
+            resolution: `Check that bucket name is correct: ${bucketName}`,
+          },
+          e,
+        );
       }
 
-      throw new AmplifyFault('UnknownFault', {
-        message: e.message,
-      }, e);
+      throw new AmplifyFault(
+        'UnknownFault',
+        {
+          message: e.message,
+        },
+        e,
+      );
     }
   }
 
@@ -378,9 +389,13 @@ export class S3 {
         return undefined;
       }
 
-      throw new AmplifyFault('UnexpectedS3Fault', {
-        message: e.message,
-      }, e);
+      throw new AmplifyFault(
+        'UnexpectedS3Fault',
+        {
+          message: e.message,
+        },
+        e,
+      );
     }
   };
 }

@@ -1,5 +1,5 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { DynamoDBInputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import { DDBStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import { addWalkthrough, updateWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDb-walkthrough';
@@ -8,8 +8,8 @@ import {
   FieldType,
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/dynamoDB-user-input-types';
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
 jest.mock('../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform');
 
@@ -38,7 +38,7 @@ describe('add ddb walkthrough tests', () => {
   });
 
   it('addWalkthrough() test', async () => {
-    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(async () => undefined);
     jest.spyOn(DDBStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     const expectedCLIInputsJSON: DynamoDBCLIInputs = {
@@ -118,7 +118,7 @@ describe('update ddb walkthrough tests', () => {
   let mockContext: $TSContext;
 
   beforeEach(() => {
-    jest.mock('amplify-prompts');
+    jest.mock('@aws-amplify/amplify-prompts');
     mockContext = {
       amplify: {
         getProjectDetails: () => {
@@ -180,7 +180,7 @@ describe('update ddb walkthrough tests', () => {
 
     jest.spyOn(DynamoDBInputState.prototype, 'getCliInputPayload').mockImplementation(() => currentCLIInputsJSON);
 
-    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(DynamoDBInputState.prototype, 'saveCliInputPayload').mockImplementation(async () => undefined);
     jest.spyOn(DynamoDBInputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
     jest.spyOn(DDBStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
@@ -200,7 +200,7 @@ describe('update ddb walkthrough tests', () => {
       .fn()
       .mockReturnValueOnce(true) // Would you like to add another column
       .mockReturnValueOnce(false) // Would you like to add another column
-      .mockReturnValueOnce(true) // Do you want to keep existing global seconday indexes created on your table?
+      .mockReturnValueOnce(true) // Do you want to keep existing global secondary indexes created on your table?
       .mockReturnValueOnce(true) // Do you want to add global secondary indexes to your table?
       .mockReturnValueOnce(false) // Do you want to add a sort key to your global secondary index
       .mockReturnValueOnce(false); // Do you want to add more global secondary indexes to your table?

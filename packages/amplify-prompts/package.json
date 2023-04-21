@@ -1,14 +1,19 @@
 {
-  "name": "amplify-prompts",
-  "version": "2.6.0",
+  "name": "@aws-amplify/amplify-prompts",
+  "version": "2.6.8",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "demo": "yarn build && node lib/demo/demo.js",
     "test": "jest --logHeapUsage --color",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "repository": {
     "type": "git",
@@ -26,7 +31,7 @@
   },
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "dependencies": {
-    "amplify-cli-shared-interfaces": "1.1.0",
+    "@aws-amplify/amplify-cli-shared-interfaces": "1.2.2",
     "chalk": "^4.1.1",
     "enquirer": "^2.3.6"
   },
@@ -35,10 +40,13 @@
   },
   "jest": {
     "collectCoverage": true,
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
     "testURL": "http://localhost",
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",

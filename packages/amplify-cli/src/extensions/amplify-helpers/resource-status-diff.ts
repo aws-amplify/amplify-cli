@@ -3,9 +3,7 @@ import * as path from 'path';
 import * as glob from 'glob';
 import chalk from 'chalk';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
-import {
-  $TSAny, generateCustomPoliciesInTemplate, pathManager, readCFNTemplate,
-} from 'amplify-cli-core';
+import { $TSAny, generateCustomPoliciesInTemplate, pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { Template } from 'cloudform-types';
 import { print } from './print';
 // eslint-disable-next-line import/no-cycle
@@ -149,7 +147,7 @@ export class ResourceDiff {
   }
 
   // API :View: Print the resource detail status for the given mutation (Create/Update/Delete)
-  public printResourceDetailStatus = async (mutationInfo: StackMutationInfo) : Promise<void> => {
+  public printResourceDetailStatus = async (mutationInfo: StackMutationInfo): Promise<void> => {
     const header = `${mutationInfo.consoleStyle(mutationInfo.label)}`;
     const diff = await this.calculateCfnDiff();
     print.info(`${resourceDetailSectionStyle(`[\u27A5] Resource Stack: ${capitalize(this.category)}/${this.resourceName}`)} : ${header}`);
@@ -188,7 +186,7 @@ export class ResourceDiff {
 
   // helper: Select cloudformation file path from build folder or non build folder.
   // TBD: Update this function to infer file path based on the state of the resource.
-  private getCfnResourceFilePaths = async (): Promise<{ localTemplatePath: string; cloudTemplatePath: string; }> => {
+  private getCfnResourceFilePaths = async (): Promise<{ localTemplatePath: string; cloudTemplatePath: string }> => {
     const resourceFilePaths = {
       localTemplatePath: checkExist(this.resourceFiles.localBuildCfnFile)
         ? this.resourceFiles.localBuildCfnFile
@@ -207,14 +205,14 @@ export class ResourceDiff {
       return CategoryProviders.CLOUDFORMATION;
     }
     return provider;
-  }
+  };
 
   // helper: Convert cloudformation template diff data using CDK api
   private printStackDiff = (templateDiff: cfnDiff.TemplateDiff, stream?: cfnDiff.FormatStream): $TSAny => {
     // filter out 'AWS::CDK::Metadata' since info is not helpful and formatDifferences doesn't know how to format it.
     if (templateDiff.resources) {
       // eslint-disable-next-line no-param-reassign
-      templateDiff.resources = templateDiff.resources.filter(change => {
+      templateDiff.resources = templateDiff.resources.filter((change) => {
         if (!change) {
           return true;
         }
@@ -238,10 +236,10 @@ export class ResourceDiff {
     } catch (e) {
       return '';
     }
-  }
+  };
 
   // eslint-disable-next-line spellcheck/spell-checker
-  private isResourceTypeCDKMetada = (resourceType: string | undefined): boolean => resourceType === 'AWS::CDK::Metadata'
+  private isResourceTypeCDKMetada = (resourceType: string | undefined): boolean => resourceType === 'AWS::CDK::Metadata';
 }
 
 const checkExist = (filePath): boolean => {
@@ -280,8 +278,10 @@ export interface ICategoryStatusCollection {
  * "CollateResourceDiffs" - Calculates the diffs for the list of resources provided.
  * note:- The mutationInfo may be used for styling in enhanced summary.
  */
-export const CollateResourceDiffs = async (resources,
-  mutationInfo: StackMutationInfo /* create/update/delete */): Promise<ResourceDiff[]> => {
+export const CollateResourceDiffs = async (
+  resources,
+  mutationInfo: StackMutationInfo /* create/update/delete */,
+): Promise<ResourceDiff[]> => {
   const provider = CategoryProviders.CLOUDFORMATION;
   const resourceDiffs: ResourceDiff[] = [];
   for await (const resource of resources) {

@@ -8,7 +8,7 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionConte
 import { VelocityTemplateSimulator, AppSyncVTLContext, getJWTToken } from '../../velocity';
 import { featureFlags } from './test-helper';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const USER_POOL_ID = 'us-fake-1ID';
 
@@ -577,7 +577,7 @@ describe('@model field auth', () => {
       result: {
         id: '001',
         email: 'user1@test.com',
-        name: "samplename", // eslint-disable-line
+        name: 'samplename', // eslint-disable-line
         owner: 'user1',
       },
     };
@@ -624,7 +624,7 @@ describe('@model field auth', () => {
         ssn: '000111111',
       },
     };
-    ['name', 'ssn'].forEach(field => {
+    ['name', 'ssn'].forEach((field) => {
       // expect owner to get denied on these fields
       const readFieldTemplate = out.resolvers[`Student.${field}.req.vtl`];
       const ownerReadResponse = vtlTemplate.render(readFieldTemplate, { context: readFieldContext, requestParameters: ownerRequest });
@@ -634,7 +634,7 @@ describe('@model field auth', () => {
       expect(adminReadResponse.hadException).toEqual(false);
     });
 
-    ['id', 'email'].forEach(field => {
+    ['id', 'email'].forEach((field) => {
       // since the only two roles have access to these fields there are no field resolvers
       expect(out.resolvers?.[`Student.${field}.req.vtl`]).not.toBeDefined();
     });
@@ -1357,7 +1357,7 @@ describe('with identity claim feature flag disabled', () => {
         result: {
           id: '001',
           email: 'user1@test.com',
-          name: "samplename", // eslint-disable-line
+          name: 'samplename', // eslint-disable-line
           owner: 'user1',
         },
       };
@@ -1404,7 +1404,7 @@ describe('with identity claim feature flag disabled', () => {
           ssn: '000111111',
         },
       };
-      ['name', 'ssn'].forEach(field => {
+      ['name', 'ssn'].forEach((field) => {
         // expect owner to get denied on these fields
         const readFieldTemplate = out.resolvers[`Student.${field}.req.vtl`];
         const ownerReadResponse = vtlTemplate.render(readFieldTemplate, { context: readFieldContext, requestParameters: ownerRequest });
@@ -1417,7 +1417,7 @@ describe('with identity claim feature flag disabled', () => {
         expect(adminReadResponse.hadException).toEqual(false);
       });
 
-      ['id', 'email'].forEach(field => {
+      ['id', 'email'].forEach((field) => {
         // since the only two roles have access to these fields there are no field resolvers
         expect(out.resolvers?.[`Student.${field}.req.vtl`]).not.toBeDefined();
       });
@@ -1574,8 +1574,8 @@ describe('with identity claim feature flag disabled', () => {
       expect(listAuthVTLRequest.stash.authFilter).toEqual(
         expect.objectContaining({
           or: expect.arrayContaining([
-            expect.objectContaining({ child: { eq: ownerRequest.jwt['cognito:username'] } }),
-            expect.objectContaining({ parent: { eq: ownerRequest.jwt['cognito:username'] } }),
+            expect.objectContaining({ child: { in: expect.arrayContaining([ownerRequest.jwt['cognito:username']]) } }),
+            expect.objectContaining({ parent: { in: expect.arrayContaining([ownerRequest.jwt['cognito:username']]) } }),
           ]),
         }),
       );

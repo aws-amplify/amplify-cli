@@ -1,9 +1,13 @@
-import { MultiProgressBar } from 'amplify-prompts';
+import { MultiProgressBar } from '@aws-amplify/amplify-prompts';
 import type { StackEvent, StackEvents } from 'aws-sdk/clients/cloudformation';
 import chalk from 'chalk';
 import columnify from 'columnify';
 import {
-  CFN_SUCCESS_STATUS, CNF_ERROR_STATUS, createItemFormatter, createProgressBarFormatter, EventMap,
+  CFN_SUCCESS_STATUS,
+  CNF_ERROR_STATUS,
+  createItemFormatter,
+  createProgressBarFormatter,
+  EventMap,
 } from '../utils/progress-bar-helpers';
 import { IStackProgressPrinter } from './stack-event-monitor';
 
@@ -40,10 +44,8 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     if (this.progressBars.isTTY()) {
       // Create a bar only if corresponding resources events trigger.
       const progressBarsConfigs = [];
-      const item = this.eventMap.rootResources.find(it => it.key === event.LogicalResourceId);
-      if (
-        !this.categoriesPrinted.includes('projectBar')
-        && (event.LogicalResourceId === this.eventMap.rootStackName || item)) {
+      const item = this.eventMap.rootResources.find((it) => it.key === event.LogicalResourceId);
+      if (!this.categoriesPrinted.includes('projectBar') && (event.LogicalResourceId === this.eventMap.rootStackName || item)) {
         progressBarsConfigs.push({
           name: 'projectBar',
           value: 0,
@@ -58,7 +60,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
 
       const category = this.eventMap.eventToCategories.get(event.LogicalResourceId);
       if (category && !this.categoriesPrinted.includes(category)) {
-        const categoryItem = this.eventMap.categories.find(it => it.name === category);
+        const categoryItem = this.eventMap.categories.find((it) => it.name === category);
         if (categoryItem) {
           progressBarsConfigs.push({
             name: categoryItem.name,
@@ -80,7 +82,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     this.progressBars.updatePrefixText(
       `Deploying iterative update ${currentIndex} of ${totalIndices} into ${this.eventMap.envName} environment. This will take a few minutes.`,
     );
-  }
+  };
 
   print = (): void => {
     if (this.progressBars.isTTY()) {
@@ -88,12 +90,12 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     } else {
       this.printDefaultLogs();
     }
-  }
+  };
 
   printEventProgress = (): void => {
     if (this.events.length > 0) {
       this.events = this.events.reverse();
-      this.events.forEach(event => {
+      this.events.forEach((event) => {
         const finishStatus = CFN_SUCCESS_STATUS.includes(event.ResourceStatus);
         const updateObj = {
           name: event.LogicalResourceId,
@@ -104,7 +106,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
             Timestamp: event.Timestamp.toString(),
           },
         };
-        const item = this.eventMap.rootResources.find(it => it.key === event.LogicalResourceId);
+        const item = this.eventMap.rootResources.find((it) => it.key === event.LogicalResourceId);
         if (event.LogicalResourceId === this.eventMap.rootStackName || item) {
           // If the root resource for a category has already finished, then we do not have to wait for all events under it.
           if (finishStatus && item && item.category) {
@@ -120,7 +122,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
       });
       this.events = [];
     }
-  }
+  };
 
   printDefaultLogs = (): void => {
     // CFN sorts the events by descending
@@ -129,7 +131,7 @@ export class StackProgressPrinter implements IStackProgressPrinter {
       console.log('\n');
       const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
 
-      const e = this.events.map(ev => {
+      const e = this.events.map((ev) => {
         const res: Record<string, string> = {};
         const { ResourceStatus: resourceStatus } = ev;
 
@@ -160,11 +162,11 @@ export class StackProgressPrinter implements IStackProgressPrinter {
 
   finishBars = (): void => {
     this.progressBars.finishAllBars();
-  }
+  };
 
   stopBars = (): void => {
     this.progressBars.stop();
-  }
+  };
 
   isRunning = (): boolean => this.progressBars.getBarCount() !== 0;
 }

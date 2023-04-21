@@ -2,11 +2,12 @@ import {
   addNotificationChannel,
   addPinpointAnalytics,
   amplifyPushAuth,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck } from '../../../migration-helpers';
+import { initJSProjectWithProfileV4_52_0, versionCheck } from '../../../migration-helpers';
 import { getShortId } from '../../../migration-helpers/utils';
 
 describe('amplify add notifications', () => {
@@ -16,6 +17,8 @@ describe('amplify add notifications', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir('init');
+    await versionCheck(process.cwd(), false, migrateFromVersion);
+    await versionCheck(process.cwd(), true, migrateToVersion);
   });
 
   afterEach(async () => {
@@ -23,15 +26,10 @@ describe('amplify add notifications', () => {
     deleteProjectDir(projectRoot);
   });
 
-  beforeAll(async () => {
-    await versionCheck(process.cwd(), false, migrateFromVersion);
-    await versionCheck(process.cwd(), true, migrateToVersion);
-  });
-
   it('should add in app notifications if analytics added with an older version', async () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
 
-    await initJSProjectWithProfile(projectRoot, {}, false);
+    await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addPinpointAnalytics(projectRoot, false);
 
     const settings = { resourceName: `notification${getShortId()}` };
@@ -43,9 +41,9 @@ describe('amplify add notifications', () => {
   it('should add in app notifications if analytics added and pushed with an older version', async () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
 
-    await initJSProjectWithProfile(projectRoot, {}, false);
+    await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
     await addPinpointAnalytics(projectRoot, false);
-    await amplifyPushAuth(projectRoot, false);
+    await amplifyPushAuthV5V6(projectRoot);
 
     const settings = { resourceName: `notification${getShortId()}` };
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);

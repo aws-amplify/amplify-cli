@@ -9,7 +9,7 @@ jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
 fs_mock.existsSync.mockReturnValue(true);
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
   },
@@ -58,8 +58,8 @@ describe('delete old version', () => {
   });
 
   it('prints warning if old version cannot be deleted', () => {
-    const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
-    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(()=>{});
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     fs_mock.removeSync.mockImplementationOnce(() => {
       throw new Error('test error removing old binary');
     });

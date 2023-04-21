@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 
 export function getUserPoolGroupList(): $TSAny[] {
@@ -9,7 +9,7 @@ export function getUserPoolGroupList(): $TSAny[] {
   try {
     const existingGroups = JSONUtilities.readJson<$TSAny>(userGroupParamsPath);
 
-    userPoolGroupList = existingGroups.map(e => e.groupName);
+    userPoolGroupList = existingGroups.map((e) => e.groupName);
   } catch {
     // intentionally left blank
   }

@@ -9,34 +9,31 @@ import {
   getAuthDirectiveRules,
 } from '@aws-amplify/graphql-auth-transformer';
 import { parse, ObjectTypeDefinitionNode, DirectiveNode, FieldDefinitionNode } from 'graphql';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlags } from "amplify-cli-core";
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 
 export function showACM(sdl: string, nodeName: string) {
   const schema = parse(sdl);
   const type = schema.definitions.find(
-    node =>
-      node.kind === 'ObjectTypeDefinition' && node.name.value === nodeName && node?.directives?.find(dir => dir.name.value === 'model'),
+    (node) =>
+      node.kind === 'ObjectTypeDefinition' && node.name.value === nodeName && node?.directives?.find((dir) => dir.name.value === 'model'),
   ) as ObjectTypeDefinitionNode;
   if (!type) {
     throw new Error(`Model "${nodeName}" does not exist.`);
   } else {
     const fields: string[] = type.fields!.map((field: FieldDefinitionNode) => field.name.value);
     const acm = new AccessControlMatrix({ name: type.name.value, operations: MODEL_OPERATIONS, resources: fields });
-    const parentAuthDirective = type.directives?.find(dir => dir.name.value === 'auth');
+    const parentAuthDirective = type.directives?.find((dir) => dir.name.value === 'auth');
     if (parentAuthDirective) {
-      const authRules: AuthRule[] = getAuthDirectiveRules(
-        new DirectiveWrapper(parentAuthDirective),
-        {
-          isField: false,
-          deepMergeArguments: FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults'),
-        },
-      );
+      const authRules: AuthRule[] = getAuthDirectiveRules(new DirectiveWrapper(parentAuthDirective), {
+        isField: false,
+        deepMergeArguments: FeatureFlags.getBoolean('graphqltransformer.shouldDeepMergeDirectiveConfigDefaults'),
+      });
       convertModelRulesToRoles(acm, authRules);
     }
     for (const fieldNode of type.fields || []) {
-      const fieldAuthDir = fieldNode.directives?.find(dir => dir.name.value === 'auth') as DirectiveNode;
+      const fieldAuthDir = fieldNode.directives?.find((dir) => dir.name.value === 'auth') as DirectiveNode;
       if (fieldAuthDir) {
         if (parentAuthDirective) {
           acm.resetAccessForResource(fieldNode.name.value);
@@ -51,7 +48,7 @@ export function showACM(sdl: string, nodeName: string) {
       printer.warn(`No auth rules have been configured for the "${type.name.value}" model.`);
     }
 
-    for (let [role, acm] of truthTable) {
+    for (const [role, acm] of truthTable) {
       console.group(role);
       console.table(acm);
       console.groupEnd();
@@ -60,11 +57,11 @@ export function showACM(sdl: string, nodeName: string) {
 }
 
 function convertModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string) {
-  for (let rule of authRules) {
-    let operations: ModelOperation[] = rule.operations || MODEL_OPERATIONS;
+  for (const rule of authRules) {
+    const operations: ModelOperation[] = rule.operations || MODEL_OPERATIONS;
     if (rule.groups && !rule.groupsField) {
-      rule.groups.forEach(group => {
-        let roleName = `${rule.provider}:staticGroup:${group}`;
+      rule.groups.forEach((group) => {
+        const roleName = `${rule.provider}:staticGroup:${group}`;
         acm.setRole({ role: roleName, resource: field, operations });
       });
     } else {
@@ -79,11 +76,11 @@ function convertModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[
         case 'oidc':
         case 'userPools':
           if (rule.allow === 'groups') {
-            let groupsField = rule.groupsField || DEFAULT_GROUPS_FIELD;
-            let groupsClaim = rule.groupClaim || DEFAULT_GROUP_CLAIM;
+            const groupsField = rule.groupsField || DEFAULT_GROUPS_FIELD;
+            const groupsClaim = rule.groupClaim || DEFAULT_GROUP_CLAIM;
             roleName = `${rule.provider}:dynamicGroup:${groupsClaim}:${groupsField}`;
           } else if (rule.allow === 'owner') {
-            let ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
+            const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
             roleName = `${rule.provider}:owner:${ownerField}`;
           } else if (rule.allow === 'private') {
             roleName = `${rule.provider}:${rule.allow}`;

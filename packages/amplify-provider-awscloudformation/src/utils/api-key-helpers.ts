@@ -1,11 +1,11 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 export function getAppSyncApiConfig(): any {
   const apiConfig = stateManager.getMeta()?.api;
   let appSyncApi;
 
-  Object.keys(apiConfig).forEach(k => {
+  Object.keys(apiConfig).forEach((k) => {
     if (apiConfig[k]['service'] === 'AppSync') appSyncApi = apiConfig[k];
   });
 
@@ -17,6 +17,7 @@ function getDefaultIfApiKey(): ApiKeyConfig {
   const { defaultAuthentication } = authConfig;
 
   if (defaultAuthentication.authenticationType === 'API_KEY') return defaultAuthentication.apiKeyConfig;
+  return undefined;
 }
 
 function getAdditionalApiKeyConfig(): ApiKeyConfig {
@@ -24,7 +25,7 @@ function getAdditionalApiKeyConfig(): ApiKeyConfig {
   const { additionalAuthenticationProviders } = authConfig;
   let apiKeyConfig;
 
-  additionalAuthenticationProviders.forEach(authProvider => {
+  additionalAuthenticationProviders.forEach((authProvider) => {
     if (authProvider.authenticationType === 'API_KEY') apiKeyConfig = authProvider.apiKeyConfig;
   });
 

@@ -1,5 +1,5 @@
-import { JSONUtilities } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { printEnvInfo } from '../helpers/envUtils';
 
 /**
@@ -8,13 +8,13 @@ import { printEnvInfo } from '../helpers/envUtils';
 export const run = async (context): Promise<void> => {
   const { envName } = context.amplify.getEnvInfo();
 
-  if (context.parameters.options.details) {
+  if (context?.parameters?.options?.details) {
     const allEnvs = context.amplify.getEnvDetails();
     if (context.parameters.options.json) {
       printer.info(JSONUtilities.stringify(allEnvs) as string);
       return;
     }
-    Object.keys(allEnvs).forEach(env => {
+    Object.keys(allEnvs).forEach((env) => {
       printer.blankLine();
       if (envName === env) {
         printer.info(`*${env}*`, 'red');
@@ -25,7 +25,7 @@ export const run = async (context): Promise<void> => {
     });
   } else {
     const allEnvs = context.amplify.getAllEnvs();
-    if (context.parameters.options.json) {
+    if (context?.parameters?.options?.json) {
       printer.info(JSONUtilities.stringify({ envs: allEnvs }) as string);
       return;
     }

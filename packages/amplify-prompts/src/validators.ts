@@ -13,17 +13,17 @@ export type Validator = (value: string) => true | string | Promise<true | string
 */
 
 export const alphanumeric =
-  (message: string = 'Input must be alphanumeric'): Validator =>
+  (message = 'Input must be alphanumeric'): Validator =>
   (input: string) =>
     /^[a-zA-Z0-9]+$/.test(input) ? true : message;
 
 export const matchRegex =
-  (validatorRegex : RegExp, message?: string): Validator =>
+  (validatorRegex: RegExp, message?: string): Validator =>
   (input: string) =>
     validatorRegex.test(input) ? true : message || `Input does not match the regular expression ${validatorRegex}`;
 
 export const integer =
-  (message: string = 'Input must be a number'): Validator =>
+  (message = 'Input must be a number'): Validator =>
   (input: string) =>
     /^[0-9]+$/.test(input) ? true : message;
 
@@ -41,6 +41,11 @@ export const exact =
   (expected: string, message?: string): Validator =>
   (input: string) =>
     input === expected ? true : message ?? 'Input does not match expected value';
+
+export const between =
+  (min: number, max: number, message?: string): Validator =>
+  (input: string) =>
+    parseInt(input) >= min && parseInt(input) <= max ? true : message || `Input must be between ${min} and ${max}`;
 
 /**
  * Logically "and"s several validators

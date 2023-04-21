@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
-const ora = require('ora');
+const { spinner } = require('@aws-amplify/amplify-cli-core');
 
 const DEPLOY_ARTIFACTS_MESSAGE = 'Deploying build artifacts to the Amplify Console..';
 const DEPLOY_COMPLETE_MESSAGE = 'Deployment complete!';
@@ -16,7 +16,6 @@ function getDefaultDomainForBranch(appId, branch) {
 }
 
 async function publishFileToAmplify(appId, branchName, artifactsPath, amplifyClient) {
-  const spinner = ora();
   spinner.start(DEPLOY_ARTIFACTS_MESSAGE);
   try {
     const params = {
@@ -51,6 +50,8 @@ async function cancelAllPendingJob(appId, branchName, amplifyClient) {
 }
 
 function waitJobToSucceed(job, amplifyClient) {
+  /* eslint-disable no-async-promise-executor */
+  /* eslint-disable @typescript-eslint/no-misused-promises */
   return new Promise(async (resolve, reject) => {
     const timeout = setTimeout(() => {
       console.log('Job Timeout before succeeded');
@@ -79,6 +80,7 @@ function waitJobToSucceed(job, amplifyClient) {
       reject(err);
     }
   });
+  /* eslint-enable */
 }
 
 async function httpPutFile(filePath, url) {

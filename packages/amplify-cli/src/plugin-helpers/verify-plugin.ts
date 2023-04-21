@@ -1,14 +1,20 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { constants } from '../domain/constants';
-import { PluginManifest } from '../domain/plugin-manifest';
-import { PluginVerificationResult, PluginVerificationError } from '../domain/plugin-verification-result';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import {
+  PluginManifest,
+  constants,
+  JSONUtilities,
+  $TSAny,
+  PluginVerificationResult,
+  PluginVerificationError,
+} from '@aws-amplify/amplify-cli-core';
 
 type VerificationContext = {
   pluginDirPath: string;
   manifest?: PluginManifest;
-  pluginModule?: any;
+  pluginModule?: {
+    handleAmplifyEvent: string;
+  };
 };
 
 export async function verifyPlugin(pluginDirPath: string): Promise<PluginVerificationResult> {
@@ -77,7 +83,7 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
     if (pluginNameValidationResult.isValid) {
       context.manifest = manifest;
 
-      let result = verifyCommands(context);
+      let result = verifyCommands();
 
       result = result.verified ? await verifyEventHandlers(context) : result;
       result.manifest = manifest;
@@ -91,11 +97,11 @@ async function verifyAmplifyManifest(context: VerificationContext): Promise<Plug
   }
 }
 
-function verifyCommands(context: VerificationContext): PluginVerificationResult {
+function verifyCommands(): PluginVerificationResult {
   //   let isVerified = true;
   //   if (manifest.commands && manifest.commands.length > 0) {
-  //     isVerified = pluginModule.hasOwnProperty(constants.ExecuteAmplifyCommand) &&
-  //         typeof pluginModule[constants.ExecuteAmplifyCommand] === 'function';
+  //     isVerified = pluginModule.hasOwnProperty(constants.EXECUTE_AMPLIFY_COMMAND) &&
+  //         typeof pluginModule[constants.EXECUTE_AMPLIFY_COMMAND] === 'function';
   //   }
 
   //   if (isVerified) {
@@ -106,7 +112,7 @@ function verifyCommands(context: VerificationContext): PluginVerificationResult 
   //             PluginVerificationError.MissingExecuteAmplifyCommandMethod,
   //         );
 
-  // verification should be on the plugin type and if it implement all the required METHODS;
+  // verification should be on the plugin type and if it implements all the required METHODS;
   return new PluginVerificationResult(true);
 }
 
@@ -119,8 +125,8 @@ async function verifyEventHandlers(context: VerificationContext): Promise<Plugin
     }
 
     isVerified =
-      context.pluginModule.hasOwnProperty(constants.HandleAmplifyEvent) &&
-      typeof context.pluginModule[constants.HandleAmplifyEvent] === 'function';
+      Object.prototype.hasOwnProperty.call(context.pluginModule, constants.HANDLE_AMPLIFY_EVENT) &&
+      typeof context.pluginModule?.[constants.HANDLE_AMPLIFY_EVENT] === 'function';
   }
 
   if (isVerified) {

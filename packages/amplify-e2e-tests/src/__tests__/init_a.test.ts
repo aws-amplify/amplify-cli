@@ -14,7 +14,7 @@ import {
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 import { SandboxApp } from '../types/SandboxApp';
 
@@ -51,11 +51,7 @@ describe('amplify init a', () => {
     const awsExportsPath = path.join(projRoot, 'src', 'aws-exports.js');
     const modelsIndexPath = path.join(projRoot, 'src', 'models', 'index.js');
     const modelsSchemaPath = path.join(projRoot, 'src', 'models', 'schema.js');
-    expect(
-      fs.existsSync(awsExportsPath)
-      && fs.existsSync(modelsIndexPath)
-      && fs.existsSync(modelsSchemaPath),
-    ).toBe(true);
+    expect(fs.existsSync(awsExportsPath) && fs.existsSync(modelsIndexPath) && fs.existsSync(modelsSchemaPath)).toBe(true);
 
     await amplifyPush(projRoot);
   });

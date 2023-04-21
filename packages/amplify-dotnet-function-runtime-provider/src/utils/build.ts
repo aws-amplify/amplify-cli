@@ -2,7 +2,8 @@ import path from 'path';
 import fs from 'fs-extra';
 import glob from 'glob';
 import * as execa from 'execa';
-import { BuildRequest, BuildResult, BuildType } from 'amplify-function-plugin-interface';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import { executableName } from '../constants';
 
 export const build = async ({ srcRoot, lastBuildTimeStamp, buildType }: BuildRequest): Promise<BuildResult> => {
@@ -25,14 +26,26 @@ export const build = async ({ srcRoot, lastBuildTimeStamp, buildType }: BuildReq
         buildArguments.push('build', '-c', 'Debug', '-p:CopyLocalLockFileAssemblies=true');
         break;
       default:
-        throw new Error(`Unexpected buildType: [${buildType}]`);
+        throw new AmplifyError('PackagingLambdaFunctionError', { message: `Unexpected buildType: [${buildType}]` });
     }
-    const result = execa.sync(executableName, buildArguments, {
-      cwd: sourceFolder,
-    });
+    try {
+      const result = execa.sync(executableName, buildArguments, {
+        cwd: sourceFolder,
+      });
 
-    if (result.exitCode !== 0) {
-      throw new Error(`${executableName} build failed, exit code was ${result.exitCode}`);
+      if (result.exitCode !== 0) {
+        throw new AmplifyError('PackagingLambdaFunctionError', {
+          message: `${executableName} build failed, exit code was ${result.exitCode}`,
+        });
+      }
+    } catch (err) {
+      throw new AmplifyError(
+        'PackagingLambdaFunctionError',
+        {
+          message: `${executableName} build failed, error message was ${err.message}`,
+        },
+        err,
+      );
     }
 
     return { rebuilt: true };
@@ -55,7 +68,7 @@ const isBuildStale = (sourceFolder: string, lastBuildTimeStamp: Date) => {
 
   const fileUpdatedAfterLastBuild = glob
     .sync('**/*', { cwd: sourceFolder, ignore: ['bin', 'obj', '+(bin|obj)/**/*'] })
-    .find(file => new Date(fs.statSync(path.join(sourceFolder, file)).mtime) > lastBuildTimeStamp);
+    .find((file) => new Date(fs.statSync(path.join(sourceFolder, file)).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };

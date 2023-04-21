@@ -1,16 +1,22 @@
-import {
-  $TSContext, AmplifyCategories, AmplifyError, stateManager,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSContext, AmplifyCategories, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { IChannelAPIResponse } from '../../channel-types';
 import {
-  deletePinpointApp, ensurePinpointApp, getPinpointAppStatus, isPinpointAppDeployed, isPinpointAppOwnedByNotifications,
+  deletePinpointApp,
+  ensurePinpointApp,
+  getPinpointAppStatus,
+  isPinpointAppDeployed,
+  isPinpointAppOwnedByNotifications,
 } from '../../pinpoint-helper';
 import { notificationsAPIRemoveApp } from '../../plugin-provider-api-notifications';
 import { writeData } from '../../multi-env-manager-utils';
 import {
-  getAvailableChannelViewNames, getChannelNameFromView, getChannelViewName, getEnabledChannelViewNames, isChannelDeploymentDeferred,
+  getAvailableChannelViewNames,
+  getChannelNameFromView,
+  getChannelViewName,
+  getEnabledChannelViewNames,
+  isChannelDeploymentDeferred,
 } from '../../notifications-backend-cfg-channel-api';
 import { checkMigratedFromMobileHub } from '../../notifications-amplify-meta-api';
 import { getNotificationsAppConfig } from '../../notifications-backend-cfg-api';
@@ -48,7 +54,7 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   const optionChannelViewNames = [...enabledChannelViewNames, PinpointAppViewName, CANCEL];
 
   const channelName = context.parameters.first;
-  let channelViewName = (channelName) ? getChannelViewName(channelName) : undefined;
+  let channelViewName = channelName ? getChannelViewName(channelName) : undefined;
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     channelViewName = await prompter.pick('Choose the notification channel to remove', optionChannelViewNames);
@@ -58,18 +64,13 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
   }
 
   if (channelViewName && channelViewName !== CANCEL) {
-    const pinpointAppStatus = await getPinpointAppStatus(
-      context,
-      context.exeInfo.amplifyMeta,
-      notificationsMeta,
-      envName,
-    );
+    const pinpointAppStatus = await getPinpointAppStatus(context, context.exeInfo.amplifyMeta, notificationsMeta, envName);
     if (channelViewName !== PinpointAppViewName) {
       const selectedChannelName = getChannelNameFromView(channelViewName);
       // a channel can only be disabled if the PinpointApp exists
       await ensurePinpointApp(context, undefined, pinpointAppStatus, envName);
       if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannelName)) {
-        const channelAPIResponse : IChannelAPIResponse|undefined = await disableChannel(context, selectedChannelName);
+        const channelAPIResponse: IChannelAPIResponse | undefined = await disableChannel(context, selectedChannelName);
         await writeData(context, channelAPIResponse);
         printer.info('The channel has been successfully disabled.');
       }

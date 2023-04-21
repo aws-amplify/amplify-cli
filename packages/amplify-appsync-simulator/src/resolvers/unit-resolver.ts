@@ -22,11 +22,12 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     const requestMappingTemplate = this.getRequestMappingTemplate();
     const responseMappingTemplate = this.getResponseMappingTemplate();
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
-    const { result: requestPayload, errors: requestTemplateErrors, isReturn, hadException } = requestMappingTemplate.render(
-      { source, arguments: args },
-      context,
-      info,
-    );
+    const {
+      result: requestPayload,
+      errors: requestTemplateErrors,
+      isReturn,
+      hadException,
+    } = requestMappingTemplate.render({ source, arguments: args }, context, info);
     context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateErrors];
     let result = null;
     let error;
@@ -45,7 +46,7 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
       }
     }
     if (requestPayload && requestPayload.version !== '2018-05-29' && result === null) {
-      return;
+      return undefined;
     }
 
     const { result: responseTemplateResult, errors: responseTemplateErrors } = responseMappingTemplate.render(

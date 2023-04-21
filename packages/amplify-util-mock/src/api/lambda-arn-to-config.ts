@@ -1,7 +1,7 @@
 import { keys } from 'lodash';
-import { $TSAny, $TSContext, stateManager, ApiCategoryFacade, getGraphQLTransformerFunctionDocLink } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager, ApiCategoryFacade, getGraphQLTransformerFunctionDocLink } from '@aws-amplify/amplify-cli-core';
 import _ = require('lodash');
-import { ServiceName } from 'amplify-category-function';
+import { ServiceName } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
 
@@ -10,8 +10,8 @@ import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
  */
 export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promise<ProcessedLambdaFunction> => {
   const version = await ApiCategoryFacade.getTransformerVersion(context);
-  const doclink = getGraphQLTransformerFunctionDocLink(version);
-  const errorSuffix = `\nSee ${doclink} for information on how to configure Lambda resolvers.`;
+  const documentLink = getGraphQLTransformerFunctionDocLink(version);
+  const errorSuffix = `\nSee ${documentLink} for information on how to configure Lambda resolvers.`;
   let searchString = '';
   if (typeof arn === 'string') {
     searchString = arn;
@@ -30,7 +30,7 @@ export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promi
   const lambdaNames = _.entries<{ service: string }>(_.get(stateManager.getMeta(), ['function']))
     .filter(([_, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
     .map(([key]) => key);
-  const foundLambdaName = lambdaNames.find(name => searchString.includes(name));
+  const foundLambdaName = lambdaNames.find((name) => searchString.includes(name));
   if (!foundLambdaName) {
     throw new Error(
       `Did not find a Lambda matching ARN [${JSON.stringify(

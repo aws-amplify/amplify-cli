@@ -56,7 +56,11 @@ describe('amplify pull', () => {
 
   it('preserves team-provider-info contents across restore backend calls', async () => {
     // add a function with an env var and push
-    await addFunction(projRoot, { functionTemplate: 'Hello World', environmentVariables: { key: 'testVar', value: 'testValue' } }, 'nodejs');
+    await addFunction(
+      projRoot,
+      { functionTemplate: 'Hello World', environmentVariables: { key: 'testVar', value: 'testValue' } },
+      'nodejs',
+    );
     await amplifyPushAuth(projRoot);
 
     // grab the appId from the meta file

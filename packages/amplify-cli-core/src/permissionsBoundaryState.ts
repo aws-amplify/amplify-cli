@@ -50,7 +50,7 @@ export const setPermissionsBoundaryArn = (arn?: string, env?: string, teamProvid
   if (!arn) {
     _.unset(tpi, teamProviderInfoObjectPath(env));
   } else {
-    _.set(tpi, teamProviderInfoObjectPath(env), arn);
+    _.setWith(tpi, teamProviderInfoObjectPath(env), arn);
   }
   tpiSetter(tpi);
 };

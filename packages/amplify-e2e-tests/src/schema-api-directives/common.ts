@@ -86,7 +86,7 @@ export function updateSchemaInTestProject(projectDir: string, schema: any) {
 }
 
 export async function testMutations(testModule: any, appSyncClient: any) {
-  let mutationNames = Object.keys(testModule).filter(key => /^mutation[0-9]*$/.test(key));
+  let mutationNames = Object.keys(testModule).filter((key) => /^mutation[0-9]*$/.test(key));
 
   if (mutationNames.length > 1) {
     mutationNames = mutationNames.sort((name1, name2) => {
@@ -97,7 +97,7 @@ export async function testMutations(testModule: any, appSyncClient: any) {
   }
 
   const mutationTasks = [];
-  mutationNames.forEach(mutationName => {
+  mutationNames.forEach((mutationName) => {
     const mutation = testModule[mutationName];
     const mutationInput = testModule[`input_${mutationName}`];
     const mutationResult = testModule[`expected_result_${mutationName}`];
@@ -148,7 +148,7 @@ export async function testMutation(appSyncClient: any, mutation: any, mutationIn
 }
 
 export async function testQueries(testModule: any, appSyncClient: any) {
-  let queryNames = Object.keys(testModule).filter(key => /^query[0-9]*$/.test(key));
+  let queryNames = Object.keys(testModule).filter((key) => /^query[0-9]*$/.test(key));
 
   if (queryNames.length > 1) {
     queryNames = queryNames.sort((name1, name2) => {
@@ -159,7 +159,7 @@ export async function testQueries(testModule: any, appSyncClient: any) {
   }
 
   const queryTasks = [];
-  queryNames.forEach(queryName => {
+  queryNames.forEach((queryName) => {
     const query = testModule[queryName];
     const queryInput = testModule[`input_${queryName}`];
     const queryResult = testModule[`expected_result_${queryName}`];
@@ -209,7 +209,7 @@ export async function testQuery(appSyncClient: any, query: any, queryInput?: any
 }
 
 export async function testSubscriptions(testModule: any, appsyncClient: any) {
-  let subscriptionNames = Object.keys(testModule).filter(key => /^subscription[0-9]*$/.test(key));
+  let subscriptionNames = Object.keys(testModule).filter((key) => /^subscription[0-9]*$/.test(key));
 
   if (subscriptionNames.length > 1) {
     subscriptionNames = subscriptionNames.sort((name1, name2) => {
@@ -220,7 +220,7 @@ export async function testSubscriptions(testModule: any, appsyncClient: any) {
   }
 
   const subscriptionTasks = [];
-  subscriptionNames.forEach(subscriptionName => {
+  subscriptionNames.forEach((subscriptionName) => {
     const subscription = testModule[subscriptionName];
     const subscriptionInput = testModule[`input_${subscriptionName}`];
     const subscriptionResult = testModule[`expected_result_${subscriptionName}`];
@@ -253,7 +253,7 @@ export async function testSubscription(
     received.push(event.data);
   });
 
-  await new Promise<void>(res => setTimeout(() => res(), 4000));
+  await new Promise<void>((res) => setTimeout(() => res(), 4000));
 
   const mutationTasks = [];
   for (let i = 0; i < mutations.length; i++) {
@@ -265,13 +265,13 @@ export async function testSubscription(
         fetchPolicy: 'no-cache',
         variables: mutationInput,
       });
-      await new Promise<void>(res => setTimeout(() => res(), 4000)); // to ensure correct order in received data
+      await new Promise<void>((res) => setTimeout(() => res(), 4000)); // to ensure correct order in received data
     });
   }
 
   await runInSequential(mutationTasks);
 
-  await new Promise<void>(res => setTimeout(() => res(), 4000));
+  await new Promise<void>((res) => setTimeout(() => res(), 4000));
 
   sub.unsubscribe();
   if (!checkResult(received, subscriptionResult)) {
@@ -338,7 +338,7 @@ function runCompare(queue: { received: any; expected: any; depth: number }[]): b
       } else if (itemToCompare.received === null) {
         result = false;
       } else if (typeof itemToCompare.received === 'object') {
-        Object.keys(itemToCompare.expected).forEach(key => {
+        Object.keys(itemToCompare.expected).forEach((key) => {
           queue.push({
             received: itemToCompare.received[key],
             expected: itemToCompare.expected[key],

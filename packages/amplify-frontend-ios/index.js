@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { FeatureFlags, pathManager, JSONUtilities } = require('amplify-cli-core');
+const { FeatureFlags, pathManager, JSONUtilities } = require('@aws-amplify/amplify-cli-core');
 const { importConfig, importModels } = require('./lib/amplify-xcode');
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
@@ -29,11 +29,11 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function displayFrontendDefaults(context, projectPath) {
+function displayFrontendDefaults(context) {
   return configManager.displayFrontendDefaults(context);
 }
 
-function setFrontendDefaults(context, projectPath) {
+function setFrontendDefaults(context) {
   return configManager.setFrontendDefaults(context);
 }
 
@@ -41,7 +41,7 @@ function setFrontendDefaults(context, projectPath) {
  * This function enables export to write these files to an external path
  * @param {TSContext} context
  * @param {metaWithOutput} amplifyResources
- * @param {cloudMetaWithOuput} amplifyCloudResources
+ * @param {cloudMetaWithOutput} amplifyCloudResources
  * @param {string} exportPath path to where the files need to be written
  */
 function createFrontendConfigsAtPath(context, amplifyResources, amplifyCloudResources, exportPath) {
@@ -85,7 +85,7 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-const postInitQuickStart = projectPath => {
+const postInitQuickStart = (projectPath) => {
   const awsConfigFilePath = path.join(projectPath, 'awsconfiguration.json');
   const amplifyConfigFilePath = path.join(projectPath, 'amplifyconfiguration.json');
   if (!fs.existsSync(awsConfigFilePath)) {
@@ -100,10 +100,10 @@ const postInitQuickStart = projectPath => {
 async function handleAmplifyEvent(context, args) {
   const { frontend } = context.amplify.getProjectConfig();
   const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
-  const isFrontendiOS = frontend === 'ios';
+  const isFrontendIOS = frontend === 'ios';
   const isMacOs = process.platform === 'darwin';
   const successMessage = 'Amplify setup completed successfully.';
-  if (!isFrontendiOS || !isXcodeIntegrationEnabled) {
+  if (!isFrontendIOS || !isXcodeIntegrationEnabled) {
     return;
   }
   // Xcode integration is a MacOS-only binary, skip on other platforms

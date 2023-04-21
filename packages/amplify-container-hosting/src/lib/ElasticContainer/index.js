@@ -7,7 +7,7 @@ const path = require('path');
 const constants = require('../constants');
 
 const { EcsAlbStack, NETWORK_STACK_LOGICAL_ID, DEPLOYMENT_MECHANISM, processDockerConfig } = require('@aws-amplify/amplify-category-api');
-const { open } = require('amplify-cli-core');
+const { open } = require('@aws-amplify/amplify-cli-core');
 
 const serviceName = 'ElasticContainer';
 const categoryName = 'hosting';
@@ -44,7 +44,7 @@ async function enable(context) {
   });
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
-  const hasAccessibleResources = ['storage', 'function'].some(categoryName => {
+  const hasAccessibleResources = ['storage', 'function'].some((categoryName) => {
     return Object.keys(meta[categoryName] || {}).length > 0;
   });
   let rolePermissions = {};
@@ -159,7 +159,7 @@ export async function generateHostingResources(
     }
 
     // get auth dependency if exists to avoid duplication
-    const authDependency = dependsOn.find(dependency => dependency.category === 'auth');
+    const authDependency = dependsOn.find((dependency) => dependency.category === 'auth');
 
     if (authDependency === undefined) {
       authDependensOn = {
@@ -198,7 +198,7 @@ export async function generateHostingResources(
     const set = new Set(authDependensOn.attributes);
 
     if (authDependsOnFromRolePermissions) {
-      authDependsOnFromRolePermissions.attributes.forEach(attribute => set.add(attribute));
+      authDependsOnFromRolePermissions.attributes.forEach((attribute) => set.add(attribute));
     }
 
     authDependensOn.attributes = Array.from(set);
@@ -262,7 +262,7 @@ export async function generateHostingResources(
   const existingEcrRepositories = new Set(
     repositories
       .map(({ repositoryName }) => repositoryName)
-      .filter(repositoryName => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
+      .filter((repositoryName) => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
   );
 
   const stack = new EcsAlbStack(undefined, 'ContainersHosting', {
@@ -370,7 +370,7 @@ async function configure(context) {
   });
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
-  const hasAccessibleResources = ['storage', 'function'].some(categoryName => {
+  const hasAccessibleResources = ['storage', 'function'].some((categoryName) => {
     return Object.keys(meta[categoryName] || {}).length > 0;
   });
   let rolePermissions = {};

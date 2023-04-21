@@ -1,4 +1,4 @@
-module.exports = function(Helper, utils) {
+module.exports = function (Helper, utils) {
   /**
    * 获取引用文本，当引用自身不存在的情况下，需要返回原来的模板字符串
    */
@@ -20,7 +20,7 @@ module.exports = function(Helper, utils) {
 
     utils.forEach(
       ast.path,
-      function(ref) {
+      function (ref) {
         //不支持method并且传递参数
         if (ref.type == 'method') {
           ret += '.' + getMethodText(ref);
@@ -42,7 +42,7 @@ module.exports = function(Helper, utils) {
           ret += '.' + ref.id;
         }
       },
-      this
+      this,
     );
 
     if (ast.isWraped) ret += '}';
@@ -54,7 +54,7 @@ module.exports = function(Helper, utils) {
     var args = [];
     var ret = '';
 
-    utils.forEach(ref.args, function(arg) {
+    utils.forEach(ref.args, function (arg) {
       args.push(getLiteral(arg));
     });
 
@@ -83,7 +83,7 @@ module.exports = function(Helper, utils) {
       case 'array': {
         ret = '[';
         var len = ast.value.length - 1;
-        utils.forEach(ast.value, function(arg, i) {
+        utils.forEach(ast.value, function (arg, i) {
           ret += getLiteral(arg);
           if (i !== len) ret += ', ';
         });

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { Packager } from '../types/packaging-types';
 import { ServiceName } from './constants';
 import { packageFunction } from './packageFunction';

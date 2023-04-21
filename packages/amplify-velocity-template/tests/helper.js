@@ -2,23 +2,23 @@
 var Velocity = require('../src/velocity');
 var assert = require('assert');
 
-describe('Helper', function() {
+describe('Helper', function () {
   var getRefText = Velocity.Helper.getRefText;
   var parse = Velocity.parse;
-  describe('getRefText', function() {
-    it('simple reference', function() {
+  describe('getRefText', function () {
+    it('simple reference', function () {
       var foo = '$a.b';
       var ast = parse(foo)[0];
       assert.equal(getRefText(ast), foo);
     });
 
-    it('reference method', function() {
+    it('reference method', function () {
       var foo = '$a.b()';
       var ast = parse(foo)[0];
       assert.equal(getRefText(ast), foo);
     });
 
-    it('reference method with arguments', function() {
+    it('reference method with arguments', function () {
       var foo = '$a.b("hello")';
       var ast = parse(foo)[0];
       assert.equal(getRefText(ast), foo);
@@ -32,7 +32,7 @@ describe('Helper', function() {
       assert.equal(getRefText(ast), foo);
     });
 
-    it('reference method with arguments array', function() {
+    it('reference method with arguments array', function () {
       var foo = '$a.b(["hello"])';
       var ast = parse(foo)[0];
       assert.equal(getRefText(ast), foo);
@@ -42,7 +42,7 @@ describe('Helper', function() {
       assert.equal(getRefText(ast), foo);
     });
 
-    it('reference index', function() {
+    it('reference index', function () {
       var foo = '$a.b[1]';
       var ast = parse(foo)[0];
       assert.equal(getRefText(ast), foo);

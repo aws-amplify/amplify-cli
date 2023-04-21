@@ -1,5 +1,6 @@
 import {
   amplifyPush,
+  amplifyPushLegacy,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
@@ -16,7 +17,7 @@ import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
 import {
-  initJSProjectWithProfile,
+  initJSProjectWithProfileV4_52_0,
   versionCheck,
   addApiWithoutSchemaOldDx,
   addApiWithSchemaAndConflictDetectionOldDx,
@@ -26,18 +27,16 @@ import {
 describe('api migration update test', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('graphql-api');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('graphql-api');
-    await initJSProjectWithProfile(projRoot, { name: 'apimigration' });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'apimigration' });
   });
 
   afterEach(async () => {
@@ -55,7 +54,7 @@ describe('api migration update test', () => {
     const { projectName } = getProjectConfig(projRoot);
     await addApiWithoutSchemaOldDx(projRoot);
     updateApiSchema(projRoot, projectName, initialSchema);
-    await amplifyPush(projRoot);
+    await amplifyPushLegacy(projRoot);
 
     // update api and push with the CLI to be released (the codebase)
     updateApiSchema(projRoot, projectName, nextSchema);
@@ -86,16 +85,16 @@ describe('api migration update test', () => {
     expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
     expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
 
-    const cognito = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
+    const cognito = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
 
     expect(cognito).toBeDefined();
     expect(cognito.userPoolConfig).toBeDefined();
 
-    const iam = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AWS_IAM')[0];
+    const iam = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'AWS_IAM')[0];
 
     expect(iam).toBeDefined();
 
-    const oidc = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'OPENID_CONNECT')[0];
+    const oidc = graphqlApi.additionalAuthenticationProviders.filter((a) => a.authenticationType === 'OPENID_CONNECT')[0];
 
     expect(oidc).toBeDefined();
     expect(oidc.openIDConnectConfig).toBeDefined();
