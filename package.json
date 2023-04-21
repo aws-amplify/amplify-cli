@@ -91,15 +91,6 @@
     "run-node": "^2.0.0",
     "strip-ansi": "^6.0.0"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
-    "nohoist": [
-      "@aws-amplify/cli-internal/amplify-codegen",
-      "@aws-amplify/cli-internal/@aws-amplify/amplify-category-api"
-    ]
-  },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.5",
