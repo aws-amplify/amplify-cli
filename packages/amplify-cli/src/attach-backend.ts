@@ -50,7 +50,7 @@ export const attachBackend = async (context: $TSContext, inputParams): Promise<v
       {
         message: 'Failed to pull the backend.',
       },
-      e,
+      e as Error,
     );
   }
 };
@@ -127,14 +127,14 @@ const backupAmplifyFolder = (): void => {
     try {
       fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
     } catch (e) {
-      if (e.code === 'EPERM') {
+      if ((e as { code: string }).code === 'EPERM') {
         throw new AmplifyError(
           'DirectoryError',
           {
             message: `Could not attach the backend to the project.`,
             resolution: 'Ensure that there are no applications locking the `amplify` folder and try again.',
           },
-          e,
+          e as Error,
         );
       }
       throw new AmplifyFault(
@@ -142,7 +142,7 @@ const backupAmplifyFolder = (): void => {
         {
           message: `Could not attach the backend to the project.`,
         },
-        e,
+        e as Error,
       );
     }
   }

@@ -35,7 +35,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
       await showApiAuthAcm(context);
     } catch (err) {
-      printer.error(err?.message);
+      printer.error((err as Error)?.message);
     }
   } else {
     await context.amplify.showStatusTable(view);
@@ -91,10 +91,10 @@ const showApiAuthAcm = async (context): Promise<void> => {
   } catch (error) {
     printer.warn('ACM generation requires a valid schema, the provided schema is invalid.');
 
-    if (error.name) {
-      printer.error(`${error.name}: ${error.message?.trim()}`);
+    if ((error as { name: string }).name) {
+      printer.error(`${(error as { name: string }).name}: ${(error as { message: string }).message?.trim()}`);
     } else {
-      printer.error(`An error has occurred during schema compilation: ${error.message?.trim()}`);
+      printer.error(`An error has occurred during schema compilation: ${(error as { message: string }).message?.trim()}`);
     }
 
     return;

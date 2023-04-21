@@ -73,7 +73,7 @@ export const initializeEnv = async (
             message: `Could not load plugin for category ${category}.`,
             resolution: `Review the error message and stack trace for additional information.`,
           },
-          e,
+          e as Error,
         );
       }
     };
@@ -99,7 +99,7 @@ export const initializeEnv = async (
             message: `Could not load plugin for provider ${provider}.`,
             resolution: 'Review the error message and stack trace for additional information.',
           },
-          e,
+          e as Error,
         );
       }
     }
@@ -116,10 +116,10 @@ export const initializeEnv = async (
       throw new AmplifyFault(
         'ProjectInitFault',
         {
-          message: `Could not initialize platform for '${currentEnv}': ${e.message}`,
+          message: `Could not initialize platform for '${currentEnv}': ${(e as Error).message}`,
           resolution: 'Review the error message and stack trace for additional information.',
         },
-        e,
+        e as Error,
       );
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_PLATFORM);
@@ -141,10 +141,10 @@ export const initializeEnv = async (
       throw new AmplifyFault(
         'ProjectInitFault',
         {
-          message: `Could not initialize categories for '${currentEnv}': ${e.message}`,
+          message: `Could not initialize categories for '${currentEnv}': ${(e as Error).message}`,
           resolution: 'Review the error message and stack trace for additional information.',
         },
-        e,
+        e as Error,
       );
     } finally {
       context.usageData.stopCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);

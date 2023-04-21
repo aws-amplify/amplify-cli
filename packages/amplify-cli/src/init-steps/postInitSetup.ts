@@ -31,7 +31,7 @@ export const postInitSetup = async (context: $TSContext): Promise<void> => {
           message: 'An error occurred during project initialization',
           link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
         },
-        e,
+        e as Error,
       );
     }
   }

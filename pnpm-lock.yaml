@@ -1347,9 +1347,15 @@ importers:
       '@aws-amplify/cli-internal':
         specifier: 11.0.5
         version: link:../amplify-cli
+      '@types/rimraf':
+        specifier: ^3.0.0
+        version: 3.0.2
       '@types/tar':
         specifier: ^6.1.1
         version: 6.1.1
+      '@types/tar-stream':
+        specifier: ^2.2.2
+        version: 2.2.2
 
   packages/amplify-cli-npm/lib:
     dependencies:

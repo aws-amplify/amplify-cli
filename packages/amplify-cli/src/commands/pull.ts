@@ -22,9 +22,9 @@ export const run = async (context: $TSContext): Promise<void> => {
         'UnknownFault',
         {
           message: `Failed to pull sandbox app.`,
-          details: e.message || 'An unknown error occurred.',
+          details: (e as Error).message || 'An unknown error occurred.',
         },
-        e,
+        e as Error,
       );
     }
     return;

@@ -112,7 +112,7 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
     );
     spinner.succeed('Successfully generated frontend config files');
   } catch (ex) {
-    spinner.fail('Failed to generate frontend config files ' + ex.message);
+    spinner.fail('Failed to generate frontend config files ' + (ex as Error).message);
     throw ex;
   } finally {
     spinner.stop();

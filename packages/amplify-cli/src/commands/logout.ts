@@ -25,7 +25,7 @@ export const run = async (context: Context) => {
       await cognitoISP.globalSignOut(amplifyAdminConfig.accessToken.jwtToken);
       printer.info('Logged out globally.');
     } catch (e) {
-      printer.error(`An error occurred during logout: ${e.message}`);
+      printer.error(`An error occurred during logout: ${(e as Error).message}`);
       return;
     }
   }

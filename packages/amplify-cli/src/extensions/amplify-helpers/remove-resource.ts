@@ -102,7 +102,7 @@ export async function removeResource(
     throw new AmplifyFault(
       'ResourceRemoveFault',
       { message: 'An error occurred when removing the resources from the local directory' },
-      err,
+      err as Error,
     );
   }
 }

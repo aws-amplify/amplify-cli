@@ -184,6 +184,7 @@ export type AmplifyErrorType =
  * Amplify fault types
  */
 export type AmplifyFaultType =
+  | 'AuthenticationFault'
   | 'AddDependencyFault'
   | 'AmplifyBackupFault'
   | 'AnalyticsCategoryFault'

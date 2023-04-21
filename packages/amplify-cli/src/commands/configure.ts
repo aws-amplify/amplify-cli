@@ -1,4 +1,4 @@
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { analyzeProject } from '../config-steps/c0-analyzeProject';
 import { configFrontendHandler } from '../config-steps/c1-configFrontend';
 import { configProviders } from '../config-steps/c2-configProviders';
@@ -27,9 +27,13 @@ export const run = async (context: Context) => {
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
       await providerPlugin.adminLoginFlow(context, appId, envName);
     } catch (e) {
-      context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
-      await context.usageData.emitError(e);
-      process.exit(1);
+      throw new AmplifyFault(
+        'AuthenticationFault',
+        {
+          message: `Failed to authenticate: ${(e as Error).message || 'Unknown error occurred.'}`,
+        },
+        e as Error,
+      );
     }
     return;
   }
@@ -47,9 +51,8 @@ export const run = async (context: Context) => {
       await configProviders(context);
       await onSuccess(context);
     } catch (e) {
-      void context.usageData.emitError(e);
       onFailure(e);
-      process.exitCode = 1;
+      throw e;
     }
   }
 };

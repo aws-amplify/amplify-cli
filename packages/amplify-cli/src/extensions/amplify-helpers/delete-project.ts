@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import chalk from 'chalk';
-import { FeatureFlags, $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { FeatureFlags, $TSContext, AmplifyFault, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from './get-frontend-plugins';
@@ -48,7 +48,7 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
 
       spinner.succeed('Project deleted in the cloud.');
     } catch (ex) {
-      if ('name' in ex && ex.name === 'BucketNotFoundError') {
+      if ('name' in (ex as $TSAny) && (ex as $TSAny).name === 'BucketNotFoundError') {
         spinner.succeed('Project already deleted in the cloud.');
       } else {
         spinner.fail('Project delete failed.');
@@ -56,9 +56,9 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
           'BackendDeleteFault',
           {
             message: 'Project delete failed.',
-            details: ex.message,
+            details: (ex as Error).message,
           },
-          ex,
+          ex as Error,
         );
       }
     }

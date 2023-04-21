@@ -32,7 +32,7 @@ export const syncCurrentCloudBackend = async (context: $TSContext): Promise<void
     spinner.succeed(`Successfully pulled backend environment ${currentEnv} from the cloud.`);
   } catch (e) {
     spinner.fail(`There was an error pulling the backend environment ${currentEnv}.`);
-    throw new AmplifyFault('BackendPullFault', { message: e.message }, e);
+    throw new AmplifyFault('BackendPullFault', { message: (e as Error).message }, e as Error);
   }
 };
 

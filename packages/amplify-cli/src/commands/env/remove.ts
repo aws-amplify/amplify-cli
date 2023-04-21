@@ -43,7 +43,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       await invokeDeleteEnvParamsFromService(context, envName);
     } catch (ex) {
       // safely exit spinner, then allow the exception to propagate up
-      spinner.fail(`remove env failed: ${ex.message}`);
+      spinner.fail(`remove env failed: ${(ex as Error).message}`);
       throw ex;
     }
     spinner.succeed('Successfully removed environment from the cloud');

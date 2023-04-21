@@ -119,22 +119,22 @@ export const pushResources = async (
       await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
       // TODO PL: this needs to be removed once the api category is using the new amplify error class
-      const isAuthError = isValidGraphQLAuthError(err.message);
+      const isAuthError = isValidGraphQLAuthError((err as Error).message);
       if (isAuthError) {
-        retryPush = await handleValidGraphQLAuthError(context, err.message);
+        retryPush = await handleValidGraphQLAuthError(context, (err as Error).message);
       }
       if (!retryPush) {
         throw new AmplifyFault(
           'PushResourcesFault',
           {
-            message: err.message,
-            details: err.details,
+            message: (err as Error).message,
+            details: (err as { details: string }).details,
             link: isAuthError ? AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url : AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url,
             resolution: isAuthError
               ? 'Some @auth rules are defined in the GraphQL schema without enabling the corresponding auth providers. Run `amplify update api` to configure your GraphQL API to include the appropriate auth providers as an authorization mode.'
               : undefined,
           },
-          err,
+          err as Error,
         );
       }
     }

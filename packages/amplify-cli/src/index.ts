@@ -197,7 +197,7 @@ async function sigIntHandler(context: Context): Promise<void> {
   try {
     await context.amplify.runCleanUpTasks(context);
   } catch (err) {
-    context.print.warning(`Could not run clean up tasks\nError: ${err.message}`);
+    context.print.warning(`Could not run clean up tasks\nError: ${(err as Error).message}`);
   }
   context.print.warning('^Aborted!');
 

@@ -197,7 +197,7 @@ export const updateTrigger = async (triggerOptions) => {
     context.print.success('Successfully updated the Cognito trigger locally');
     return null;
   } catch (err) {
-    context.print.error(`Error updating the Cognito trigger: ${err.message}`);
+    context.print.error(`Error updating the Cognito trigger: ${(err as Error).message}`);
     await context.usageData.emitError(err);
     exitOnNextTick(1);
   }

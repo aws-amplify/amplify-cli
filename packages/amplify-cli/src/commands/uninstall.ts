@@ -37,7 +37,7 @@ export const run = async (context: $TSContext) => {
     try {
       await setRegPendingDelete();
     } catch (err) {
-      context.print.warning(err);
+      context.print.warning((err as Error).toString());
       context.print.warning(
         `Unable to set registry value marking Amplify binary for deletion. You can manually delete ${pendingDeletePath}.`,
       );

@@ -12,32 +12,25 @@ export const run = async (context: $TSContext): Promise<void> => {
     resourceName = undefined;
   }
 
-  try {
-    await generateDependentResourcesType();
-    const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
-    let filteredResources: IAmplifyResource[] = resourcesToBuild;
-    if (categoryName) {
-      filteredResources = filteredResources.filter((resource) => resource.category === categoryName);
-    }
-    if (categoryName && resourceName) {
-      filteredResources = filteredResources.filter(
-        (resource) => resource.category === categoryName && resource.resourceName === resourceName,
-      );
-    }
-    if (!categoryName && !resourceName) {
-      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [context]);
-    }
-    for (const resource of filteredResources) {
-      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [
-        context,
-        resource,
-      ]);
-    }
-  } catch (err) {
-    printer.error(err.stack);
-    printer.error('There was an error building the resource');
-    void context.usageData.emitError(err);
-    process.exitCode = 1;
+  await generateDependentResourcesType();
+  const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
+  let filteredResources: IAmplifyResource[] = resourcesToBuild;
+  if (categoryName) {
+    filteredResources = filteredResources.filter((resource) => resource.category === categoryName);
+  }
+  if (categoryName && resourceName) {
+    filteredResources = filteredResources.filter(
+      (resource) => resource.category === categoryName && resource.resourceName === resourceName,
+    );
+  }
+  if (!categoryName && !resourceName) {
+    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [context]);
+  }
+  for (const resource of filteredResources) {
+    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [
+      context,
+      resource,
+    ]);
   }
 };
 

@@ -1,3 +1,4 @@
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs';
 import { promisify } from 'util';
 // Workaround 'pkg' bug: https://github.com/zeit/pkg/issues/420
@@ -63,7 +64,7 @@ export const copyOverride = () => {
       try {
         fs.statSync(dest);
       } catch (statError) {
-        if (statError.code !== 'ENOENT') throw statError;
+        if ((statError as $TSAny).code !== 'ENOENT') throw statError;
         fs.writeFileSync(dest, content);
         return;
       }

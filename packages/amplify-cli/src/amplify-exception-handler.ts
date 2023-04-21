@@ -117,7 +117,7 @@ const executeSafely = async (functionToExecute: () => Promise<void> | void, erro
     await functionToExecute();
   } catch (e) {
     // Log the error, but do not reject the promise
-    printer.error(`${errorMessagePrefix}: ${e?.message || e}`);
+    printer.error(`${errorMessagePrefix}: ${e instanceof Error ? e.message : e}`);
   }
 };
 

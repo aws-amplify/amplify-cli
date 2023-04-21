@@ -42,7 +42,7 @@ function validateGithubRepo(repoUrl: string | boolean): asserts repoUrl is strin
         message: 'Invalid remote github url',
         link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
       },
-      e,
+      e as Error,
     );
   }
 }
@@ -67,10 +67,10 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
       'ProjectInitError',
       {
         message: 'Unable to clone repository',
-        details: e.message,
+        details: (e as Error).message,
         link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
       },
-      e,
+      e as Error,
     );
   }
 };

@@ -95,7 +95,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   try {
     fs.writeFileSync(overridePackageJsonCurrentCloudBackendFilePath, fs.readFileSync(overridePackageJsonBackendFilePath));
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if ((err as $TSAny).code !== 'ENOENT') {
       throw err;
     }
   }
@@ -103,7 +103,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   try {
     fs.writeFileSync(overrideTsConfigJsonCurrentCloudBackendFilePath, fs.readFileSync(overrideTsConfigJsonBackendFilePath));
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if ((err as $TSAny).code !== 'ENOENT') {
       throw err;
     }
   }

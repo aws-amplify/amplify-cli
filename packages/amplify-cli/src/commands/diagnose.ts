@@ -113,8 +113,8 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     }
   } catch (ex) {
     printer.blankLine();
-    printer.info(ex.message);
-    void context.usageData.emitError(ex);
+    printer.info((ex as Error).message);
+    void context.usageData.emitError(ex as Error);
     spinner.fail();
   }
 };
