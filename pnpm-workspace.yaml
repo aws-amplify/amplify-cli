@@ -1,3 +1,10 @@
 packages:
   # include packages in subfolders
-  - 'packages/*'
+  - 'packages/**'
+  # exclude packages list
+  - '!packages/amplify-category-auth/resources/overrides-resource/**'
+  - '!packages/amplify-provider-awscloudformation/resources/overrides-resource/**'
+  - '!packages/amplify-category-custom/resources/**'
+  - '!packages/amplify-cli-core/resources/overrides-resource/**'
+  - '!packages/amplify-velocity-template/examples/**'
+  - '!packages/amplify-category-storage/resources/overrides-resource/**'
