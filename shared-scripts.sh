@@ -82,9 +82,6 @@ function _loadTestAccountCredentials {
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
 
-
-
-
 function _setShell {
     echo Setting Shell
     yarn config set script-shell $(which bash)
@@ -285,6 +282,9 @@ function _cleanupResources {
 
     cd packages/amplify-e2e-tests
     yarn clean-e2e-resources
+}
 
+function _storeCleanupResources {
+    # store cleanup resources in cache
     storeCache $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports repo/packages/amplify-e2e-tests/amplify-e2e-reports
 }

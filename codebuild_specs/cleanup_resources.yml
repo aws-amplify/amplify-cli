@@ -8,3 +8,5 @@ phases:
     commands:
       - codebuild-breakpoint
       - source ./shared-scripts.sh && _cleanupResources
+      - aws sts get-caller-identity
+      - source ./shared-scripts.sh && _storeCleanupResources
