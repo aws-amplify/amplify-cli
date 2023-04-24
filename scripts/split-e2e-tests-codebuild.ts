@@ -7,8 +7,8 @@ import { REPO_ROOT } from './cci-utils';
 import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
 const CIRCLECI_GENERATED_CONFIG_BASE_PATH = join(REPO_ROOT, '.circleci', 'generated_config.yml');
-const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');
-const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated.yml');
+const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
+const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated');
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
   'src/__tests__/auth_2e.test.ts',
@@ -101,9 +101,9 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
 export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
 }
-export function saveConfig(config: any): void {
+export function saveConfig(config: any, batch: number): void {
   const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true })];
-  fs.writeFileSync(CODEBUILD_GENERATE_CONFIG_PATH, output.join('\n'));
+  fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}_${batch}.yml`, output.join('\n'));
 }
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   return glob.sync(pattern, { cwd: dir });
@@ -255,7 +255,7 @@ function main(): void {
     }
   }
   const configBase: any = loadConfigBase();
-  const buildGraph = configBase.batch['build-graph'];
+  const baseBuildGraph = configBase.batch['build-graph'];
 
   const counts = { w: 0, l: 0 };
   const splitE2ETests = splitTestsV3(
@@ -329,11 +329,26 @@ function main(): void {
       return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
-  // console.log(counts);
-  buildGraph.push(...splitE2ETests);
-  buildGraph.push(...splitMigrationV5Tests);
-  buildGraph.push(...splitMigrationV6Tests);
-  buildGraph.push(...splitMigrationV10Tests);
-  saveConfig(configBase);
+  let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  let batch = 1;
+  let maxBatchSize = 100;
+  let currentBatch = [...baseBuildGraph];
+  let shouldSave = true;
+  for (let build of allBuilds) {
+    if (currentBatch.length < maxBatchSize) {
+      currentBatch.push(build);
+      shouldSave = true;
+    } else {
+      configBase.batch['build-graph'] = currentBatch;
+      saveConfig(configBase, batch);
+      batch++;
+      currentBatch = [...baseBuildGraph];
+      shouldSave = false;
+    }
+  }
+  if (shouldSave) {
+    configBase.batch['build-graph'] = currentBatch;
+    saveConfig(configBase, batch);
+  }
 }
 main();

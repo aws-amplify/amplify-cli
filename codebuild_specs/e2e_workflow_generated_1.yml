@@ -1,0 +1,970 @@
+# auto generated file. DO NOT EDIT manually
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_MEDIUM
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    AWS_REGION: us-east-1
+    CDK_DEFAULT_REGION: us-east-1
+    CLI_REGION: us-east-1
+    TEST_SUITE: src/__tests__/auth_2b.test.ts
+    AMPLIFY_DIR: $CODEBUILD_SRC_DIR/out
+    AMPLIFY_PATH: $CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
+batch:
+  fast-fail: false
+  build-graph:
+    - identifier: build_linux
+      buildspec: codebuild_specs/build_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: build_windows
+      buildspec: codebuild_specs/build_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+    - identifier: test
+      buildspec: codebuild_specs/test.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_linux
+    - identifier: mock_e2e_tests
+      buildspec: codebuild_specs/mock_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_linux
+    - identifier: validate_cdk_version
+      buildspec: codebuild_specs/validate_cdk_version.yml
+      depend-on:
+        - build_linux
+    - identifier: verify_api_extract
+      buildspec: codebuild_specs/verify_api_extract.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_linux
+    - identifier: verify_yarn_lock
+      buildspec: codebuild_specs/verify_yarn_lock.yml
+      depend-on:
+        - build_linux
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_linux
+    - identifier: build_pkg_binaries_arm
+      buildspec: codebuild_specs/build_pkg_binaries_arm.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry
+    - identifier: build_pkg_binaries_linux
+      buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry
+    - identifier: build_pkg_binaries_macos
+      buildspec: codebuild_specs/build_pkg_binaries_macos.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry
+    - identifier: build_pkg_binaries_win
+      buildspec: codebuild_specs/build_pkg_binaries_win.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry
+    - identifier: upload_pkg_binaries
+      buildspec: codebuild_specs/upload_pkg_binaries.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - build_pkg_binaries_arm
+        - build_pkg_binaries_linux
+        - build_pkg_binaries_macos
+        - build_pkg_binaries_win
+    - identifier: verify_versions_match
+      buildspec: codebuild_specs/verify_versions_match.yml
+      depend-on:
+        - publish_to_local_registry
+    - identifier: l_datastore-modelgen_amplify-app_diagnose_hooks-a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_mock-api_analytics-kinesis_analytics-pinpoint-flutter_analytics-pinpoint-js
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_2a_auth_2b_auth_2d_auth_2f
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_notifications-lifecycle_uibuilder_notifications-analytics-compatibility-in-app-1_notifications-analytics-compatibility-sms-2
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_analytics-2_global_sandbox-c_hooks-b_notifications-analytics-compatibility-sms-1
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_plugin_studio-modelgen_custom-transformers_notifications-in-app-messaging-env-1
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_notifications-sms-pull_pull_auth_10_container-hosting
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_init_b_notifications-apns_notifications-fcm_notifications-in-app-messaging-env-2
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_with-babel-config_amplify-configure_env-2_init_d
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_init_f_auth_5d_configure-project_git-clone-attach
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_init_c_layer-4_function_2c_function_3b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_function_4_interactions_schema-model-a_tags
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_1a_auth-trigger_custom_policies_function_function_6
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_storage-2_export_iam-permissions-boundary_node-function
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_notifications-sms_schema-auth-4b_schema-model-e_schema-versioned
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_1c_auth_5e_auth_8b_geo-add-b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_s3-sse_schema-auth-4a_schema-model-b_schema-model-d
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_5f_env-4_frontend_config_drift_schema-auth-4d
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_schema-auth-6a_schema-data-access-patterns_schema-model-c_schema-predictions
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_model-migration_auth_3c_auth_4c_auth_5a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_5c_env-1_geo-add-a_init_a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-auth-4c_schema-auth-5c_auth_5b_auth_9
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_custom_resources_env-5_function_10_function_9c
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_function-permissions_geo-import-1a_geo-import-2_global_sandbox-b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-auth-5d_schema-auth-6b_schema-auth-8c_auth_3a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_3b_auth_4a_auth_7a_auth_8c
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_feature-flags_geo-import-1b_global_sandbox-a_init_e
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_notifications-analytics-compatibility-in-app-2_schema-auth-11-c_schema-auth-2b_schema-auth-6c
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-auth-6d_schema-auth-7c_schema-auth-8a_function-migration
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_api_10_api_7_export-pull-a_function_9a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_geo-headless_api-key-migration5_schema-auth-1a_schema-auth-5b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-auth-8b_schema-auth-9-a_schema-auth-9-c_storage-3
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_11_auth_1b_delete_geo-add-c
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_geo-add-d_geo-import-3_hosting_layer-3
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_api-connection-migration_api-key-migration3_predictions_schema-auth-11-b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-auth-1b_schema-auth-2a_schema-auth-7a_schema-auth-7b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_schema-auth-9-b_schema-iterative-rollback-1_predictions-migration_api_6a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_7b_export-pull-b_function_3a_init-special-case
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_http-migration_schema-auth-12_schema-auth-3_schema-function-2
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_4b_auth_8a_export-pull-d_schema-auth-5a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_schema-iterative-rollback-2_schema-iterative-update-3_auth-migration_api_2a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_api_2b_api_6c_api_9a_auth_12
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_custom-resource-with-storage_dynamodb-simulator_export-pull-c_function_2d
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_general-config-headless-init_help_init-force-push_interactions-1
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_interactions-2_minify-cloudformation_notifications-multi-env_opensearch-simulator
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_parameter-store-1_parameter-store-2_android-analytics-pinpoint-config_android-notifications-pinpoint-config
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_flutter-analytics-pinpoint-config_flutter-notifications-pinpoint-config_ios-analytics-pinpoint-config_ios-notifications-pinpoint-config
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: >-
+        l_javascript-analytics-pinpoint-config_javascript-notifications-pinpoint-config_pull-2_push
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_S3server_api_8_function_8_schema-iterative-update-locking
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_api_lambda_auth_2_layer-2_schema-auth-13_function_5
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-iterative-update-1_auth_6_function_2a_schema-connection-2
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-function-1_api_9b_custom_policies_container_function_9b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-iterative-update-2_storage-1a_storage-1b_function_11
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_function_2b_function_7_api-connection-migration2_api_4
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_containers-api-secrets_storage-4_schema-auth-10_geo-multi-env
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_searchable-datastore_resolvers_schema-key_api_5
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_apigw_api_lambda_auth_1_api-key-migration2_schema-searchable
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_api-key-migration1_schema-auth-14_api_3_api_6b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_api_1_layer-1_api-key-migration4_schema-iterative-update-4
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_function_1_storage-5
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_2c
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_auth_2e
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_geo-remove-3
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_geo-add-f
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_geo-add-e
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_dynamodb_2c
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_env-3
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_geo-remove-2
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_notifications-in-app-messaging
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_auth_2a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_auth_1a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_auth_2b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_s3_2a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_s3_2c
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_auth_1b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-auth-11-a
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_geo-update-1
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_geo-update-2
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_s3_3
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_dynamodb_2b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_hostingPROD
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_s3_2b
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_containers-api-1
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-auth-15
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_schema-connection-1
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: l_import_auth_3
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-southeast-2
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - upload_pkg_binaries
