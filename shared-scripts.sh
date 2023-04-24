@@ -275,3 +275,16 @@ function _scanArtifacts {
         exit 1
     fi
 }
+function _cleanupResources {
+    #restore cache
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    
+    #loading test account credentials
+    _loadTestAccountCredentials
+
+    cd packages/amplify-e2e-tests
+    yarn clean-e2e-resources
+
+    storeCache $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports repo
+}
