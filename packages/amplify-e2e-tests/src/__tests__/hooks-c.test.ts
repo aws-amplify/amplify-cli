@@ -16,7 +16,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 const appendHook = (pathToFile: string) =>
-`const fs = require('fs');
+  `const fs = require('fs');
 fs.appendFileSync('${pathToFile}', 'a');
 `;
 
