@@ -1,12 +1,10 @@
 import {
   addFunction,
-  amplifyPullNonInteractive,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAmplifyInitConfig,
-  getBackendAmplifyMeta,
   getHooksDirPath,
   gitCleanFdX,
   gitCommitAll,
@@ -66,7 +64,7 @@ describe('runtime hooks', () => {
     await gitCleanFdX(projRoot);
 
     // simulate hosting deployment
-    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projRoot, 'integtest'))
+    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projRoot, 'integtest'));
     expect(fs.existsSync(hooksDirPath)).toBe(true);
     expect(fs.existsSync(prePushOutputFilePath)).toBe(true);
     expect(fs.existsSync(postPushOutputFilePath)).toBe(true);
