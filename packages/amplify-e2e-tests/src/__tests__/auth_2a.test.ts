@@ -1,10 +1,14 @@
 /* eslint-disable spellcheck/spell-checker */
 import {
   addAuthWithDefaultSocial,
+  addFunction,
+  amplifyPull,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  generateRandomShortId,
+  getAppId,
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
@@ -29,10 +33,11 @@ describe('amplify add auth...', () => {
   });
 
   it('...should init a project and add auth with defaultSocial', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, disableAmplifyAppCreation: false });
     await addAuthWithDefaultSocial(projRoot);
     expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeTruthy();
     await amplifyPushAuth(projRoot);
+    const appId = getAppId(projRoot);
     const meta = getProjectMeta(projRoot);
     expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeFalsy();
     const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
@@ -47,5 +52,12 @@ describe('amplify add auth...', () => {
     expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
     expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
     expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(5);
+
+    // amplify pull should work
+    const functionName = `testcorsfunction${generateRandomShortId()}`;
+    const projRoot2 = await createNewProjectDir('auth2');
+    await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
+    await amplifyPull(projRoot2, { emptyDir: true, appId, envName: 'integtest', yesFlag: true });
+    deleteProjectDir(projRoot2);
   });
 });
