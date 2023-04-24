@@ -286,5 +286,5 @@ function _cleanupResources {
     cd packages/amplify-e2e-tests
     yarn clean-e2e-resources
 
-    storeCache $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports repo
+    storeCache $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports repo/packages/amplify-e2e-tests/amplify-e2e-reports
 }
