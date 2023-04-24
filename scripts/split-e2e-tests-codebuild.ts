@@ -222,7 +222,7 @@ const splitTestsV3 = (
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       const tmp = {
         ...baseJobLinux,
-        identifier: `${j.os}_${names}`,
+        identifier: `${j.os}_${names.replace(/-/g, '_')}`,
       };
       tmp.env.TEST_SUITE = j.tests;
       tmp.env.CLI_REGION = j.region;
@@ -235,7 +235,7 @@ const splitTestsV3 = (
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       const tmp = {
         ...baseJobWindows,
-        identifier: `${j.os}_${names}`,
+        identifier: `${j.os}_${names.replace(/-/g, '_')}`,
       };
       tmp.env.TEST_SUITE = j.tests;
       tmp.env.CLI_REGION = j.region;

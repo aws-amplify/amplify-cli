@@ -93,13 +93,13 @@ batch:
       buildspec: codebuild_specs/verify_versions_match.yml
       depend-on:
         - publish_to_local_registry
-    - identifier: l_containers-api-2
+    - identifier: l_containers_api_2
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: ap-southeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -109,27 +109,27 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: ap-southeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_searchable-migration
+    - identifier: l_searchable_migration
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: ap-southeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_geo-remove-1
+    - identifier: l_geo_remove_1
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: ap-southeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -139,12 +139,12 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: ap-southeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
     - identifier: >-
-        w_analytics-kinesis_analytics-pinpoint-flutter_analytics-pinpoint-js_auth_2a
+        w_analytics_kinesis_analytics_pinpoint_flutter_analytics_pinpoint_js_auth_2a
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -152,12 +152,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_auth_2b_auth_2d_auth_2f_notifications-lifecycle
+    - identifier: w_auth_2b_auth_2d_auth_2f_notifications_lifecycle
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -165,27 +165,13 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: >-
-        w_notifications-analytics-compatibility-in-app-1_notifications-analytics-compatibility-sms-2_analytics-2_global_sandbox-c
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
     - identifier: >-
-        w_hooks-b_notifications-analytics-compatibility-sms-1_plugin_studio-modelgen
+        w_notifications_analytics_compatibility_in_app_1_notifications_analytics_compatibility_sms_2_analytics_2_global_sandbox_c
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -193,13 +179,13 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
     - identifier: >-
-        w_custom-transformers_notifications-in-app-messaging-env-1_notifications-sms-pull_auth_10
+        w_hooks_b_notifications_analytics_compatibility_sms_1_plugin_studio_modelgen
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -207,26 +193,13 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_container-hosting_init_b_notifications-apns_notifications-fcm
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
     - identifier: >-
-        w_notifications-in-app-messaging-env-2_with-babel-config_amplify-configure_init_d
+        w_custom_transformers_notifications_in_app_messaging_env_1_notifications_sms_pull_auth_10
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -234,12 +207,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_init_f_auth_5d_configure-project_init_c
+    - identifier: w_container_hosting_init_b_notifications_apns_notifications_fcm
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -247,104 +220,13 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_layer-4_function_2c_interactions_schema-model-a
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_tags_auth_1a_auth-trigger_custom_policies_function
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_storage-2_iam-permissions-boundary_node-function_notifications-sms
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_schema-auth-4b_schema-model-e_schema-versioned_auth_1c
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_auth_5e_auth_8b_geo-add-b_s3-sse
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_schema-auth-4a_schema-model-b_schema-model-d_auth_5f
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_env-4_frontend_config_drift_schema-auth-4d_schema-auth-6a
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
     - identifier: >-
-        w_schema-data-access-patterns_schema-model-c_schema-predictions_model-migration
+        w_notifications_in_app_messaging_env_2_with_babel_config_amplify_configure_init_d
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -352,7 +234,125 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_init_f_auth_5d_configure_project_init_c
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_layer_4_function_2c_interactions_schema_model_a
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_tags_auth_1a_auth_trigger_custom_policies_function
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_storage_2_iam_permissions_boundary_node_function_notifications_sms
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_schema_auth_4b_schema_model_e_schema_versioned_auth_1c
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_auth_5e_auth_8b_geo_add_b_s3_sse
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_schema_auth_4a_schema_model_b_schema_model_d_auth_5f
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_env_4_frontend_config_drift_schema_auth_4d_schema_auth_6a
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: >-
+        w_schema_data_access_patterns_schema_model_c_schema_predictions_model_migration
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
@@ -365,12 +365,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_env-1_geo-add-a_init_a_schema-auth-4c
+    - identifier: w_env_1_geo_add_a_init_a_schema_auth_4c
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -378,12 +378,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_schema-auth-5c_auth_5b_auth_9_custom_resources
+    - identifier: w_schema_auth_5c_auth_5b_auth_9_custom_resources
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -391,12 +391,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_env-5_function_10_function_9c_function-permissions
+    - identifier: w_env_5_function_10_function_9c_function_permissions
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -404,12 +404,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_geo-import-1a_geo-import-2_global_sandbox-b_schema-auth-5d
+    - identifier: w_geo_import_1a_geo_import_2_global_sandbox_b_schema_auth_5d
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -417,12 +417,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_schema-auth-6b_schema-auth-8c_auth_3a_auth_3b
+    - identifier: w_schema_auth_6b_schema_auth_8c_auth_3a_auth_3b
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -430,12 +430,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_auth_4a_auth_7a_auth_8c_feature-flags
+    - identifier: w_auth_4a_auth_7a_auth_8c_feature_flags
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -443,209 +443,13 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: >-
-        w_geo-import-1b_global_sandbox-a_init_e_notifications-analytics-compatibility-in-app-2
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_schema-auth-11-c_schema-auth-2b_schema-auth-6c_schema-auth-6d
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_schema-auth-7c_schema-auth-8a_function-migration_api_10
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_api_7_export-pull-a_function_9a_geo-headless
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_api-key-migration5_schema-auth-1a_schema-auth-5b_schema-auth-8b
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_schema-auth-9-a_schema-auth-9-c_storage-3_auth_11
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_auth_1b_delete_geo-add-c_geo-add-d
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_geo-import-3_hosting_layer-3_api-connection-migration
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_api-key-migration3_predictions_schema-auth-11-b_schema-auth-1b
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_schema-auth-2a_schema-auth-7a_schema-auth-7b_schema-auth-9-b
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_predictions-migration_api_6a_auth_7b_export-pull-b
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_init-special-case_http-migration_schema-auth-12_schema-auth-3
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_schema-function-2_auth_4b_auth_8a_export-pull-d
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_schema-auth-5a_schema-iterative-update-3_auth-migration_api_2a
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
-        USE_PARENT_ACCOUNT: true
-      depend-on:
-        - build_windows
-        - upload_pkg_binaries
-    - identifier: w_api_2b_api_6c_api_9a_custom-resource-with-storage
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        TEST_SUITE:
-          - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
     - identifier: >-
-        w_dynamodb-simulator_export-pull-c_function_2d_general-config-headless-init
+        w_geo_import_1b_global_sandbox_a_init_e_notifications_analytics_compatibility_in_app_2
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -653,12 +457,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_help_init-force-push_interactions-1_interactions-2
+    - identifier: w_schema_auth_11_c_schema_auth_2b_schema_auth_6c_schema_auth_6d
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -666,13 +470,182 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_schema_auth_7c_schema_auth_8a_function_migration_api_10
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_api_7_export_pull_a_function_9a_geo_headless
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_api_key_migration5_schema_auth_1a_schema_auth_5b_schema_auth_8b
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_schema_auth_9_a_schema_auth_9_c_storage_3_auth_11
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_auth_1b_delete_geo_add_c_geo_add_d
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_geo_import_3_hosting_layer_3_api_connection_migration
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_api_key_migration3_predictions_schema_auth_11_b_schema_auth_1b
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_schema_auth_2a_schema_auth_7a_schema_auth_7b_schema_auth_9_b
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_predictions_migration_api_6a_auth_7b_export_pull_b
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_init_special_case_http_migration_schema_auth_12_schema_auth_3
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_schema_function_2_auth_4b_auth_8a_export_pull_d
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_schema_auth_5a_schema_iterative_update_3_auth_migration_api_2a
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_api_2b_api_6c_api_9a_custom_resource_with_storage
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
     - identifier: >-
-        w_minify-cloudformation_notifications-multi-env_parameter-store-1_parameter-store-2
+        w_dynamodb_simulator_export_pull_c_function_2d_general_config_headless_init
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -680,12 +653,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_pull-2_push_api_8_schema-iterative-update-locking
+    - identifier: w_help_init_force_push_interactions_1_interactions_2
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -693,12 +666,13 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_api_lambda_auth_2_schema-auth-13_function_5_schema-iterative-update-1
+    - identifier: >-
+        w_minify_cloudformation_notifications_multi_env_parameter_store_1_parameter_store_2
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -706,12 +680,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_auth_6_function_2a_schema-connection-2_schema-function-1
+    - identifier: w_pull_2_push_api_8_schema_iterative_update_locking
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -719,12 +693,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_api_9b_custom_policies_container_function_9b_schema-iterative-update-2
+    - identifier: w_api_lambda_auth_2_schema_auth_13_function_5_schema_iterative_update_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -732,12 +706,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_storage-1a_storage-1b_function_11_function_2b
+    - identifier: w_auth_6_function_2a_schema_connection_2_schema_function_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -745,12 +719,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_api-connection-migration2_api_4_containers-api-secrets_storage-4
+    - identifier: w_api_9b_custom_policies_container_function_9b_schema_iterative_update_2
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -758,12 +732,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_schema-auth-10_geo-multi-env_searchable-datastore_resolvers
+    - identifier: w_storage_1a_storage_1b_function_11_function_2b
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -771,12 +745,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_schema-key_api_5_apigw_api_lambda_auth_1
+    - identifier: w_api_connection_migration2_api_4_containers_api_secrets_storage_4
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -784,12 +758,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_api-key-migration2_schema-searchable_api-key-migration1_schema-auth-14
+    - identifier: w_schema_auth_10_geo_multi_env_searchable_datastore_resolvers
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -797,12 +771,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_api_3_api_6b_api_1_layer-1
+    - identifier: w_schema_key_api_5_apigw_api_lambda_auth_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -810,12 +784,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_api-key-migration4_schema-iterative-update-4_function_1
+    - identifier: w_api_key_migration2_schema_searchable_api_key_migration1_schema_auth_14
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -823,7 +797,33 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_api_3_api_6b_api_1_layer_1
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
+        USE_PARENT_ACCOUNT: true
+      depend-on:
+        - build_windows
+        - upload_pkg_binaries
+    - identifier: w_api_key_migration4_schema_iterative_update_4_function_1
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
+        image: $WINDOWS_IMAGE_2019
+        TEST_SUITE:
+          - src/__tests__/import_dynamodb_1.test.ts
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
@@ -836,7 +836,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
@@ -849,12 +849,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_env-3
+    - identifier: w_env_3
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -862,12 +862,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_notifications-in-app-messaging
+    - identifier: w_notifications_in_app_messaging
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -875,12 +875,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_schema-auth-11-a
+    - identifier: w_schema_auth_11_a
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -888,7 +888,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
@@ -901,7 +901,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
@@ -914,12 +914,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_containers-api-1
+    - identifier: w_containers_api_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -927,12 +927,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_schema-auth-15
+    - identifier: w_schema_auth_15
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -940,12 +940,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_schema-connection-1
+    - identifier: w_schema_connection_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -953,12 +953,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_containers-api-2
+    - identifier: w_containers_api_2
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -966,7 +966,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
@@ -979,12 +979,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_searchable-migration
+    - identifier: w_searchable_migration
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -992,12 +992,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: w_geo-remove-1
+    - identifier: w_geo_remove_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
@@ -1005,7 +1005,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
@@ -1018,58 +1018,58 @@ batch:
         image: $WINDOWS_IMAGE_2019
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
         - upload_pkg_binaries
-    - identifier: l_notifications-migration-4
+    - identifier: l_notifications_migration_4
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_api-key-migration
+    - identifier: l_api_key_migration
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_notifications-migration
+    - identifier: l_notifications_migration
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_api-key-migration-2
+    - identifier: l_api_key_migration_2
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_notifications-migration-2
+    - identifier: l_notifications_migration_2
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
@@ -1079,7 +1079,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
@@ -1089,7 +1089,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
@@ -1099,17 +1099,17 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_notifications-migration-3
+    - identifier: l_notifications_migration_3
       buildspec: codebuild_specs/migration_tests_v5.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
@@ -1119,47 +1119,47 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_auth-migration-d
+    - identifier: l_auth_migration_d
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_init-migration
+    - identifier: l_init_migration
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_notifications-migration-4
+    - identifier: l_notifications_migration_4
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
-    - identifier: l_auth-migration-e
+    - identifier: l_auth_migration_e
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: ap-northeast-1
         USE_PARENT_ACCOUNT: false
       depend-on:
         - upload_pkg_binaries
