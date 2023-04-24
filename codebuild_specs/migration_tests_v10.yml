@@ -26,10 +26,10 @@ phases:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
       - export NODE_OPTIONS=--max-old-space-size=8096
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
-      - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
+      - export AMPLIFY_PATH=$HOME/.amplify/bin/amplify
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
-      - source ./shared-scripts.sh && _runE2ETestsLinux
+      - source ./shared-scripts.sh && _runMigrationV10Test
   post_build:
     commands:
       - source ./shared-scripts.sh && _scanArtifacts
