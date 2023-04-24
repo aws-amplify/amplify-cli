@@ -110,6 +110,5 @@ batch:
         - upload_pkg_binaries
     - identifier: cleanup_resources
       buildspec: codebuild_specs/cleanup_resources.yml
-      debug-session: true
       depend-on:
         - publish_to_local_registry
