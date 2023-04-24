@@ -282,6 +282,8 @@ function _cleanupResources {
 
     cd packages/amplify-e2e-tests
     yarn clean-e2e-resources
+
+    cd $CODEBUILD_SRC_DIR
 }
 
 function _storeCleanupResources {
