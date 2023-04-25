@@ -8,7 +8,11 @@ import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from '../scripts/artifact-storage-pa
 // This is because of the location of this file in ~/repo/.circleci/scan_artifacts
 const ROOT_FOLDER_ABSOLUTE_PATH = path.normalize(path.join(__dirname, '..', '..'));
 
-export const hasMatchingContentInFolder = (patterns: string[], folder: string, excludeFolder = '{node_modules,.cache,.git}'): boolean => {
+export const hasMatchingContentInFolder = (
+  patterns: string[],
+  folder: string,
+  excludeFolder = '{node_modules,.cache,.git,.cache,.git}',
+): boolean => {
   console.log('Scanning folder:', folder);
   const patternParam = patterns.reduce<string[]>((acc, v) => [...acc, '-e', v], []);
 
