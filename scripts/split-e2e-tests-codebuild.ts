@@ -224,12 +224,14 @@ const splitTestsV3 = (
     if (j.tests.length !== 0) {
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       const tmp = {
-        ...baseJobLinux,
+        ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
         identifier: getIdentifier(j.os, names),
       };
-      tmp.env.TEST_SUITE = j.tests;
+      tmp.env.TEST_SUITE = j.tests.join('|');
       tmp.env.CLI_REGION = j.region;
-      tmp.env.USE_PARENT_ACCOUNT = j.useParentAccount;
+      if (j.useParentAccount) {
+        tmp.env.USE_PARENT_ACCOUNT = 1;
+      }
       result.push(tmp);
     }
   });
@@ -237,10 +239,10 @@ const splitTestsV3 = (
     if (j.tests.length !== 0) {
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       const tmp = {
-        ...baseJobWindows,
+        ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
         identifier: getIdentifier(j.os, names),
       };
-      tmp.env.TEST_SUITE = j.tests;
+      tmp.env.TEST_SUITE = j.tests.join('|');
       tmp.env.CLI_REGION = j.region;
       tmp.env.USE_PARENT_ACCOUNT = j.useParentAccount;
       result.push(tmp);
@@ -249,14 +251,6 @@ const splitTestsV3 = (
   return result;
 };
 function main(): void {
-  const generated: any = yaml.load(fs.readFileSync(CIRCLECI_GENERATED_CONFIG_BASE_PATH, 'utf8'));
-  const testJobs = [];
-  for (let k of Object.keys(generated.jobs)) {
-    const v = generated.jobs[k];
-    if (v.environment && v.environment.TEST_SUITE) {
-      testJobs.push(v.environment.TEST_SUITE);
-    }
-  }
   const configBase: any = loadConfigBase();
   const baseBuildGraph = configBase.batch['build-graph'];
 
@@ -334,7 +328,7 @@ function main(): void {
   );
   let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
   let batch = 1;
-  let maxBatchSize = 100;
+  const maxBatchSize = 100;
   let currentBatch = [...baseBuildGraph];
   let shouldSave = true;
   for (let build of allBuilds) {
