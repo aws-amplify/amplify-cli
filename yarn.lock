@@ -141,10 +141,10 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.4.1":
-  version "2.4.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.1.tgz#51893824c8fa65fed1b95e8bcb46a6bdd60b0693"
-  integrity sha512-qxdZNq2UmKeczwz1OKkYRfmfPHoPYFNwwBV+S59raX+9c3uaemBo0bmeTf52yKdNiova1ZzHoqGagAgGU9ZfBw==
+"@aws-amplify/appsync-modelgen-plugin@2.4.2":
+  version "2.4.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.2.tgz#aebdc3c7dffe76c64d66cf675cfc67893f921c07"
+  integrity sha512-xPJzpElQn18h3r2SChLDdVi3QFgRvxEZqdhdKDLvQQ3Z17IZLujBusDnKcLrACR9gJmYKHq+3jym+48QJ/VeLg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.18.8"
     "@graphql-codegen/visitor-plugin-common" "^1.22.0"
@@ -10005,12 +10005,12 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.4.2:
-  version "3.4.2"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.2.tgz#bae6c1edcf2df07de1ceebd326971e5af8fa16c6"
-  integrity sha512-6N87EvsQ5Q299vw2Ys5yOuLvssvGv2hDm1AkPG3mTVPGQlqj7ObA/eh9a0xvv3t+3IAOn8z5n85dZAJ1qKO/sQ==
+amplify-codegen@^3.4.3:
+  version "3.4.3"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.3.tgz#df90d4515c7760405a94c3dbca3c687af408cac0"
+  integrity sha512-OtXzcrik1Pie6a+WVt/qxYkbnuzqVA81MlGhMwtkHP03s/n2tBDC/7w1GErLKCqFZRVmBASPWtfIDA7AQW8sCA==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.4.1"
+    "@aws-amplify/appsync-modelgen-plugin" "2.4.2"
     "@aws-amplify/graphql-docs-generator" "3.0.3"
     "@aws-amplify/graphql-types-generator" "3.0.1"
     "@graphql-codegen/core" "2.6.6"
@@ -20431,6 +20431,7 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
 
 pkg-fetch@3.4.2, "pkg-fetch@https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff":
   version "3.4.2"
+  uid ad4a21feb533d338bf951e7ba28cea7256aedeff
   resolved "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
   dependencies:
     chalk "^4.1.2"
