@@ -52,7 +52,7 @@ jobs:
           name: Generate config
           command: |
             cd scripts
-            yarn version
+            yarn --version
             yarn
             yarn split-e2e-tests
       - continuation/continue:
