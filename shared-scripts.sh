@@ -277,11 +277,14 @@ function _scanArtifacts {
 }
 
 function _integrationTest {
+    echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    
+    echo "Running aws.sh"
     cd .circleci/ && chmod +x aws.sh
-    codebuild-breakpoint
 
+    echo "Setting Up Dependencies"
     apt-get update
     apt-get install -y sudo
     sudo apt-get install -y tcl
@@ -292,17 +295,6 @@ function _integrationTest {
     sudo apt-get install -y jq
     pip install awscli
 
+    echo "Running aws_configure.sh"
     expect .circleci/aws_configure.exp
-
-    yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
-    echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV
-    amplify-dev
-
-    cd ..
-    git clone $AUTH_CLONE_URL
-    cd aws-amplify-cypress-auth
-    yarn --cache-folder ~/.cache/yarn
-    yarn add cypress@6.8.0 --save
-
-
 }
