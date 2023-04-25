@@ -1,7 +1,9 @@
 version: 0.2
 env:
   shell: bash
+debug-session: true
 phases:
   build:
     commands:
       - echo integration testing
+      - codebuild-breakpoint
