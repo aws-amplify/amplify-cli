@@ -273,9 +273,9 @@ function runE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
     fi
 }
 

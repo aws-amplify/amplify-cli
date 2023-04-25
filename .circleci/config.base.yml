@@ -108,7 +108,7 @@ jobs:
     steps:
       - checkout
       - run: yarn config set npmRegistryServer https://registry.npmjs.org
-      - run: yarn run production-build
+      - run: yarn production-build
       - run:
           name: Build tests
           command: yarn build-tests
@@ -150,7 +150,7 @@ jobs:
           steps:
             - install_node_windows
             - checkout
-            - run: yarn run production-build
+            - run: yarn production-build
             - run:
                 name: Build tests
                 command: yarn build-tests
@@ -526,7 +526,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -556,7 +556,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -588,7 +588,7 @@ jobs:
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -618,7 +618,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -648,7 +648,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -678,7 +678,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-e2e-tests
-            retry yarn run general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -706,7 +706,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --no-cache --maxWorkers=4
+            retry yarn console-integration --no-cache --maxWorkers=4
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
