@@ -38,6 +38,7 @@ export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
 export const MOCK_API_KEY = 'da2-fakeApiId123456';
 export const MOCK_API_PORT = 20002;
+const errorSuffix = `\n For troubleshooting the GraphQL API, please visit ${AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url} `
 
 export class APITest {
   private apiName: string;
@@ -92,11 +93,13 @@ export class APITest {
       const errMessage = 'Failed to start API Mocking.';
       context.print.error(errMessage + ' Running cleanup tasks.');
       await this.stop(context);
-      throw new AmplifyFault('MockProcessFault', {
-        message: `${errMessage}. Reason: ${e?.message}`,
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
-      });
-    }
+      if (e.resolution == undefined || e.link == undefined ) {
+        context.print.red(`Reason: ${e.message}`);
+      } else {
+        context.print.red(`Reason: ${e.message}\nResolution: ${e?.resolution}`);
+        context.print.green(`${e.link}`);
+      }
+    } 
   }
 
   async stop(context) {
@@ -383,10 +386,16 @@ export class APITest {
     if (!name) {
       throw new AmplifyFault('MockProcessFault', {
         message: 'No AppSync API is added to the project',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
+        resolution: `Use 'amplify init' in the root of your app directory to create a new environment.`,
+        link: `${errorSuffix}`,
       });
     }
     return name;
+  }
+
+// extracted method for testing purposes only
+  public async getAppSyncApiPublic(context) {
+    return await this.getAppSyncAPI(context);
   }
 
   private async startDynamoDBLocalServer(context) {

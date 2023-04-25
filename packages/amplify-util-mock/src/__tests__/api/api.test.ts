@@ -70,6 +70,8 @@ describe('Test Mock API methods', () => {
     ConfigOverrideManager.getInstance = jest.fn().mockReturnValue(jest.fn);
     const mockContext = {
       print: {
+        red: jest.fn(),
+        green: jest.fn(),
         error: jest.fn(),
       },
       amplify: {
@@ -82,12 +84,15 @@ describe('Test Mock API methods', () => {
     } as unknown as $TSContext;
 
     const testApi = new APITest();
-    const testApiStartPromise = testApi.start(mockContext);
+    await testApi.start(mockContext);
 
-    await expect(testApiStartPromise).rejects.toThrow(
+    await expect(testApi['getAppSyncApiPublic'](mockContext)).rejects.toThrow(
       new AmplifyFault('MockProcessFault', {
-        message: 'Failed to start API Mocking.. Reason: No AppSync API is added to the project',
-      }),
+        message: 'No AppSync API is added to the project',
+        resolution: `Use 'amplify init' in the root of your app directory to create a new environment.`,
+        link: 'https://docs.amplify.aws/cli/graphql/troubleshooting/',
+      })
     );
+    expect(mockContext.print.green).toHaveBeenCalledWith('\n For troubleshooting the GraphQL API, please visit https://docs.amplify.aws/cli/graphql/troubleshooting/ ');  
   });
 });
