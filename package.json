@@ -63,8 +63,7 @@
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
-    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
-    "yarn-use-bash": "yarn config set script-shell /bin/bash"
+    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"

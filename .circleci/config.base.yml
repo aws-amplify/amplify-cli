@@ -108,7 +108,6 @@ jobs:
     steps:
       - checkout
       - run: yarn config set npmRegistryServer https://registry.npmjs.org
-      - run: yarn config set script-shell $(which bash)
       - run: yarn run production-build
       - run:
           name: Build tests
@@ -134,7 +133,6 @@ jobs:
     steps:
       - checkout
       - run: yarn config set npmRegistryServer https://registry.npmjs.org
-      - run: yarn config set script-shell $(which bash)
       - run: yarn install --network-concurrency 1
       - run:
           name: Build tests
@@ -152,7 +150,6 @@ jobs:
           steps:
             - install_node_windows
             - checkout
-            - run: yarn config set script-shell $(which bash)
             - run: yarn run production-build
             - run:
                 name: Build tests
