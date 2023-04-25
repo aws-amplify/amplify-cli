@@ -244,7 +244,7 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
     const existingEnvName = stateManager.getCurrentEnvName();
     throw new AmplifyError('ProjectInitError', {
       message: `Environment ${existingEnvName} is already initialized for Amplify project ${existingAppId}`,
-      resolution: 'To create a new environment run \`amplify add env\`',
+      resolution: 'To create a new environment run `amplify add env`',
     });
   }
 
