@@ -22,7 +22,6 @@
   },
   "prettier.requireConfig": true,
   "prettier.configPath": "./.prettierrc",
-  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
   "search.exclude": {
     "**/.yarn": true,
     "**/.pnp.*": true
@@ -30,5 +29,6 @@
   "eslint.nodePath": ".yarn/sdks",
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "jest.jestCommandLine": "jest"
+  "prettier.prettierPath": "../node_modules/prettier",
+  "jest.jestCommandLine": "./node_modules/.bin/jest"
 }

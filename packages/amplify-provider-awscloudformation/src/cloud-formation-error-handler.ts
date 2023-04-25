@@ -1,5 +1,6 @@
 import { $TSAny, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { deserializeErrorMessages, CFNErrorMessage, CFNErrorMessages } from './aws-utils/cloudformation-error-serializer';
+import { handleCommonSdkError } from './handle-common-sdk-errors';
 
 const s3Indicator = '(AWS::S3::Bucket)';
 
@@ -43,6 +44,8 @@ export const handleCloudFormationError = (err: Error & { details?: string }): vo
   if (err?.details?.includes(s3Indicator)) {
     handleS3Error(err);
   }
+
+  err = handleCommonSdkError(err);
 
   throw err;
 };

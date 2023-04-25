@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.1.3...@aws-amplify/amplify-category-function@5.2.0) (2023-04-24)
+
+
+### Bug Fixes
+
+* env param fail-fast checks don't fatal on missing appId or envName ([#12373](https://github.com/aws-amplify/amplify-cli/issues/12373)) ([756b6c3](https://github.com/aws-amplify/amplify-cli/commit/756b6c3c1642c6aceb279e8a57f5c7bec4e7caab))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([0b6e562](https://github.com/aws-amplify/amplify-cli/commit/0b6e562445a5ec9e6c7b0a7f93a66bbde4d23fe8))
+* fixes unit test and pin gql transformer v1 version ([bfeb9c4](https://github.com/aws-amplify/amplify-cli/commit/bfeb9c421c90a8afced1c89d6430d66705e49a35))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-cli/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
 ## [5.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.1.1...@aws-amplify/amplify-category-function@5.1.3) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-function
