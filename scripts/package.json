@@ -25,5 +25,10 @@
     "js-yaml": "^4.1.0",
     "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }
