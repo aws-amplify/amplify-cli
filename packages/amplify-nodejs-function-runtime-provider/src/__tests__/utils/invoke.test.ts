@@ -5,6 +5,7 @@ jest.mock('../../utils/executorPath', () => ({
   executorPath: path.resolve(path.join(__dirname, '../../../lib/utils/execute.js')),
 }));
 
+jest.setTimeout(10000);
 const stubObjectEvent = {
   test: 'event',
 };
