@@ -216,13 +216,16 @@ const splitTestsV3 = (
   };
   const linuxJobs = generateJobsForOS('l');
   const windowsJobs = generateJobsForOS('w');
+  const getIdentifier = (os: string, names: string) => {
+    return `${os}_${names.replace(/-/g, '_')}`.substring(0, 127);
+  };
   const result: any[] = [];
   linuxJobs.forEach((j) => {
     if (j.tests.length !== 0) {
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       const tmp = {
         ...baseJobLinux,
-        identifier: `${j.os}_${names.replace(/-/g, '_')}`,
+        identifier: getIdentifier(j.os, names),
       };
       tmp.env.TEST_SUITE = j.tests;
       tmp.env.CLI_REGION = j.region;
@@ -235,7 +238,7 @@ const splitTestsV3 = (
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       const tmp = {
         ...baseJobWindows,
-        identifier: `${j.os}_${names.replace(/-/g, '_')}`,
+        identifier: getIdentifier(j.os, names),
       };
       tmp.env.TEST_SUITE = j.tests;
       tmp.env.CLI_REGION = j.region;

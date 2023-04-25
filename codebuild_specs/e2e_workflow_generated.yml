@@ -99,7 +99,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -110,7 +110,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -120,7 +120,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -131,7 +131,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -142,7 +142,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -153,7 +153,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -163,7 +163,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -174,7 +174,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -184,7 +184,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -194,7 +194,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -204,7 +204,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -214,7 +214,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -224,7 +224,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -234,7 +234,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -244,7 +244,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -254,7 +254,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -264,7 +264,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -274,7 +274,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -285,7 +285,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -295,7 +295,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -305,7 +305,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -315,7 +315,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -325,7 +325,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -335,7 +335,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -345,7 +345,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -355,7 +355,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -365,7 +365,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -376,7 +376,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -386,7 +386,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -396,7 +396,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -406,7 +406,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -416,7 +416,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -426,7 +426,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -436,7 +436,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -447,7 +447,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -457,7 +457,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -468,7 +468,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -478,7 +478,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -488,7 +488,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -498,7 +498,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -509,7 +509,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -519,7 +519,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -530,7 +530,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -540,7 +540,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -551,7 +551,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -562,18 +562,18 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
     - identifier: >-
-        l_flutter_analytics_pinpoint_config_flutter_notifications_pinpoint_config_ios_analytics_pinpoint_config_ios_notifications_pinpoint_config
+        l_flutter_analytics_pinpoint_config_flutter_notifications_pinpoint_config_ios_analytics_pinpoint_config_ios_notifications_pinpo
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -584,7 +584,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -594,7 +594,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -604,7 +604,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -614,7 +614,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -624,7 +624,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -634,7 +634,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -644,7 +644,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -654,7 +654,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -664,7 +664,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -674,7 +674,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -684,7 +684,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -694,7 +694,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -704,7 +704,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -714,7 +714,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -724,7 +724,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -734,7 +734,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -744,7 +744,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -754,7 +754,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -764,7 +764,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -774,7 +774,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -784,7 +784,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -794,7 +794,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -804,7 +804,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -814,7 +814,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -824,7 +824,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -834,7 +834,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -844,7 +844,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -854,7 +854,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -864,7 +864,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -874,7 +874,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -884,7 +884,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -894,7 +894,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -904,7 +904,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -914,7 +914,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -924,7 +924,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -934,7 +934,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -944,7 +944,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -954,7 +954,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
@@ -964,7 +964,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         TEST_SUITE:
           - src/__tests__/import_dynamodb_1.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
         USE_PARENT_ACCOUNT: true
       depend-on:
         - upload_pkg_binaries
