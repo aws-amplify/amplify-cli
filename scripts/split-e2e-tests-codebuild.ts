@@ -239,7 +239,7 @@ const splitTestsV3 = (
     if (j.tests.length !== 0) {
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       const tmp = {
-        ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
+        ...JSON.parse(JSON.stringify(baseJobWindows)), // deep clone base job
         identifier: getIdentifier(j.os, names),
       };
       tmp.env.TEST_SUITE = j.tests.join('|');
@@ -260,7 +260,7 @@ function main(): void {
       identifier: 'run_e2e_tests_linux',
       buildspec: 'codebuild_specs/run_e2e_tests_linux.yml',
       env: {
-        'compute-type': 'BUILD_GENERAL1_LARGE',
+        'compute-type': 'BUILD_GENERAL1_MEDIUM',
       },
       'depend-on': ['upload_pkg_binaries'],
     },
@@ -269,7 +269,7 @@ function main(): void {
       buildspec: 'codebuild_specs/run_e2e_tests_windows.yml',
       env: {
         type: 'WINDOWS_SERVER_2019_CONTAINER',
-        'compute-type': 'BUILD_GENERAL1_LARGE',
+        'compute-type': 'BUILD_GENERAL1_MEDIUM',
         image: '$WINDOWS_IMAGE_2019',
       },
       'depend-on': ['build_windows', 'upload_pkg_binaries'],
@@ -283,7 +283,7 @@ function main(): void {
       identifier: 'migration_tests_v5',
       buildspec: 'codebuild_specs/migration_tests_v5.yml',
       env: {
-        'compute-type': 'BUILD_GENERAL1_LARGE',
+        'compute-type': 'BUILD_GENERAL1_SMALL',
       },
       'depend-on': ['upload_pkg_binaries'],
     },
@@ -299,7 +299,7 @@ function main(): void {
       identifier: 'migration_tests_v6',
       buildspec: 'codebuild_specs/migration_tests_v6.yml',
       env: {
-        'compute-type': 'BUILD_GENERAL1_LARGE',
+        'compute-type': 'BUILD_GENERAL1_SMALL',
       },
       'depend-on': ['upload_pkg_binaries'],
     },
@@ -315,7 +315,7 @@ function main(): void {
       identifier: 'migration_tests_v10',
       buildspec: 'codebuild_specs/migration_tests_v10.yml',
       env: {
-        'compute-type': 'BUILD_GENERAL1_LARGE',
+        'compute-type': 'BUILD_GENERAL1_SMALL',
       },
       'depend-on': ['upload_pkg_binaries'],
     },

@@ -96,23 +96,23 @@ batch:
     - identifier: l_api_migration_d
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests/overrides/api-migration-d.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: ap-northeast-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_auth_migration_b
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests/overrides/auth-migration-b.test.ts
-        CLI_REGION: eu-central-1
+        CLI_REGION: eu-west-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_api_migration_c
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests/overrides/api-migration-c.test.ts
         CLI_REGION: us-east-2
       depend-on:
@@ -120,98 +120,98 @@ batch:
     - identifier: l_auth_migration_c
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests/overrides/auth-migration-c.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: ap-southeast-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_notifications_migration
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: >-
           src/__tests__/migration_tests/notifications-migration/notifications-migration.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: us-east-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_api_migration_b
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests/overrides/api-migration-b.test.ts
-        CLI_REGION: eu-central-1
+        CLI_REGION: ap-northeast-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_auth_migration_a
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests/overrides/auth-migration-a.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: ap-southeast-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_api_key_migration_2
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: >-
           src/__tests__/migration_tests/transformer_migration/api.key.migration-2.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: ap-northeast-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_api_migration_a
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests/overrides/api-migration-a.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: us-east-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_notifications_migration_2
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: >-
           src/__tests__/migration_tests/notifications-migration/notifications-migration-2.test.ts
-        CLI_REGION: us-west-2
+        CLI_REGION: eu-west-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_apigw_ext_migration
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests/overrides/apigw-ext-migration.test.ts
-        CLI_REGION: ap-southeast-1
+        CLI_REGION: us-east-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_function_migration_update
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/update_tests/function_migration_update.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: eu-west-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_storage_migration_update
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/update_tests/storage_migration_update.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: eu-central-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_auth_migration_update
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/update_tests/auth_migration_update.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: ap-northeast-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_notifications_migration_3
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: >-
           src/__tests__/migration_tests/notifications-migration/notifications-migration-3.test.ts
         CLI_REGION: us-east-2
@@ -220,23 +220,23 @@ batch:
     - identifier: l_api_migration_update
       buildspec: codebuild_specs/migration_tests_v6.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/update_tests/api_migration_update.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: ap-northeast-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_scaffold
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/scaffold.test.ts
-        CLI_REGION: ap-northeast-1
+        CLI_REGION: ap-southeast-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_api_graphql_v2_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/api-graphql-v2.migration.test.ts
         CLI_REGION: us-east-2
       depend-on:
@@ -244,72 +244,72 @@ batch:
     - identifier: l_api_rest_basic_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-basic.migration.test.ts
-        CLI_REGION: ap-northeast-1
+        CLI_REGION: us-east-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_api_rest_lambda_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-lambda.migration.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: us-west-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_api_rest_serverless_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: >-
           src/__tests__/migration_tests_v10/api-rest-serverless.migration.test.ts
-        CLI_REGION: us-west-2
+        CLI_REGION: ap-southeast-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_auth_add_all_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/auth-add-all.migration.test.ts
-        CLI_REGION: us-east-1
+        CLI_REGION: eu-west-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_auth_override_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/auth-override.migration.test.ts
-        CLI_REGION: eu-west-2
+        CLI_REGION: eu-central-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_custom_stack_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/custom-stack.migration.test.ts
-        CLI_REGION: us-east-2
+        CLI_REGION: us-west-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_geo_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/geo.migration.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: eu-central-1
       depend-on:
         - upload_pkg_binaries
     - identifier: l_git_clone_migration_tests
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/git-clone-migration-tests.test.ts
-        CLI_REGION: ap-northeast-1
+        CLI_REGION: us-east-2
       depend-on:
         - upload_pkg_binaries
     - identifier: l_pinpoint_region_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/pinpoint-region.migration.test.ts
         CLI_REGION: us-east-2
       depend-on:
@@ -317,8 +317,8 @@ batch:
     - identifier: l_storage_migration
       buildspec: codebuild_specs/migration_tests_v10.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_SMALL
         TEST_SUITE: src/__tests__/migration_tests_v10/storage.migration.test.ts
-        CLI_REGION: ap-southeast-2
+        CLI_REGION: us-east-1
       depend-on:
         - upload_pkg_binaries
