@@ -14114,6 +14114,7 @@ __metadata:
     lerna: ^6.4.1
     lnk: 1.1.0
     lodash: ^4.17.21
+    node-gyp: ^9.3.1
     npm-check-updates: ^16.1.0
     pkg: ^5.8.1
     prettier: ^2.8.4
@@ -26973,7 +26974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp@npm:latest":
+"node-gyp@npm:^9.3.1, node-gyp@npm:latest":
   version: 9.3.1
   resolution: "node-gyp@npm:9.3.1"
   dependencies:
