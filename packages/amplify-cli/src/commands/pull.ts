@@ -32,7 +32,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   if (stateManager.currentMetaFileExists(projectPath)) {
     const { appId: inputAppId, envName: inputEnvName } = inputParams.amplify;
-    const { envName } = stateManager.getLocalEnvInfo(projectPath);
+    const { envName } = stateManager.getLocalEnvInfo(projectPath, { throwIfNotExist: false }) || {};
 
     const appId = getAmplifyAppId();
 
