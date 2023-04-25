@@ -275,3 +275,34 @@ function _scanArtifacts {
         exit 1
     fi
 }
+
+function _integrationTest {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+
+    cd .circleci/ && chmod +x aws.sh
+
+    apt-get update
+    apt-get install -y sudo
+    sudo apt-get install -y tcl
+    sudo apt-get install -y expect
+    sudo apt-get install -y zip
+    sudo apt-get install -y lsof
+    sudo apt-get install -y python python-pip libpython-dev
+    sudo apt-get install -y jq
+    pip install awscli
+
+    expect .circleci/aws_configure.exp
+
+    yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
+    echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV
+    amplify-dev
+
+    cd ..
+    git clone $AUTH_CLONE_URL
+    cd aws-amplify-cypress-auth
+    yarn --cache-folder ~/.cache/yarn
+    yarn add cypress@6.8.0 --save
+
+    
+}
