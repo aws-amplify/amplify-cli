@@ -85,7 +85,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^6.4.1",
+    "lerna": "^6.6.1",
     "node-gyp": "^9.3.1",
     "strip-ansi": "^6.0.0"
   },
@@ -141,6 +141,7 @@
     "lnk": "1.1.0",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.1.0",
+    "nx": "^15.9.2",
     "pkg": "^5.8.1",
     "prettier": "^2.8.4",
     "rimraf": "^3.0.0",
