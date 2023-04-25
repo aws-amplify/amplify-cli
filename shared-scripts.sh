@@ -277,11 +277,10 @@ function _scanArtifacts {
 }
 
 function _integrationTest {
-    codebuild-breakpoint
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-
     cd .circleci/ && chmod +x aws.sh
+    codebuild-breakpoint
 
     apt-get update
     apt-get install -y sudo
