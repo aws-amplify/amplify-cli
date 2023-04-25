@@ -107,7 +107,7 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
-      - run: yarn config set registry https://registry.npmjs.org
+      - run: yarn config set npmRegistryServer https://registry.npmjs.org
       - run: yarn config set script-shell $(which bash)
       - run: yarn run production-build
       - run:
@@ -133,7 +133,7 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
-      - run: yarn config set registry https://registry.npmjs.org
+      - run: yarn config set npmRegistryServer https://registry.npmjs.org
       - run: yarn config set script-shell $(which bash)
       - run: yarn install --network-concurrency 1
       - run:
