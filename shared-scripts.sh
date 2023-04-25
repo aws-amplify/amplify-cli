@@ -296,5 +296,5 @@ function _integrationTest {
     pip install awscli
 
     echo "Running aws_configure.sh"
-    expect ./aws_configure.exp
+    expect .exp_files/aws_configure.exp
 }
