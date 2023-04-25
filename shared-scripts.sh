@@ -277,6 +277,7 @@ function _scanArtifacts {
 }
 
 function _integrationTest {
+    codebuild-breakpoint
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
@@ -304,5 +305,5 @@ function _integrationTest {
     yarn --cache-folder ~/.cache/yarn
     yarn add cypress@6.8.0 --save
 
-    
+
 }
