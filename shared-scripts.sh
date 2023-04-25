@@ -295,8 +295,9 @@ function _integrationTest {
     sudo apt-get install -y jq
     pip install awscli
 
+    codebuild-breakpoint
+
+
     echo "Running aws_configure.sh"
     expect ./codebuild_specs/exp_files/aws_configure.exp
-
-    codebuild-breakpoint
 }
