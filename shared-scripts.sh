@@ -291,7 +291,7 @@ function _integrationTest {
     sudo apt-get install -y expect
     sudo apt-get install -y zip
     sudo apt-get install -y lsof
-    sudo apt-get install -y python python-pip libpython-dev
+    sudo apt-get install -y python3 python3-pip libpython3-dev
     sudo apt-get install -y jq
     pip install awscli
 
