@@ -53,7 +53,7 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
 2. Ensure you have [Java](https://aws.amazon.com/corretto/) installed and `java` command is available in your system. This is required for DynamoDB emulator.
 
-3. Ensure you are using the npm registry, even with yarn by running `yarn config set registry https://registry.npmjs.org`
+3. Ensure you are using the npm registry, even with yarn by running `yarn config set npmRegistryServer https://registry.npmjs.org`
 
 4. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _dev_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
 
