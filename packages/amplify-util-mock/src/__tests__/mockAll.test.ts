@@ -9,8 +9,8 @@ jest.mock('../api');
 jest.mock('../storage');
 jest.mock('../func');
 jest.mock('@aws-amplify/amplify-prompts');
-jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   FeatureFlags: {
     getNumber: jest.fn(),
   },
