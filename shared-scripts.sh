@@ -323,7 +323,5 @@ function _integrationTest {
     expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
     
     codebuild-breakpoint
-
-    
     expect codebuild_specs/exp-files/enable_auth.exp
 }
