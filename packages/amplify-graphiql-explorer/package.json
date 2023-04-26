@@ -34,7 +34,7 @@
     "graphql": "^15.5.0",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^26.6.3",
+    "jest": "^29.0.0",
     "jest-resolve": "^26.0.2",
     "jest-watch-typeahead": "^1.0.0",
     "jsonwebtoken": "^9.0.0",
@@ -72,7 +72,7 @@
   },
   "devDependencies": {
     "@semantic-ui-react/css-patch": "^1.0.0",
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^29.0.0",
     "@types/node": "^12.12.6",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11"

@@ -47,7 +47,9 @@
       "src/**/*.ts",
       "!**/*.d.ts"
     ],
-    "testURL": "http://localhost/",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*.test.(js|ts))$",
     "moduleFileExtensions": [
       "ts",

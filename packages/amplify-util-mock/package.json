@@ -111,7 +111,9 @@
       "jest-junit"
     ],
     "testEnvironment": "node",
-    "testURL": "http://localhost/",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/(__tests__|__e2e__|__e2e_v2__)/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",

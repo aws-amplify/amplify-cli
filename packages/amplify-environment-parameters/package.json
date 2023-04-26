@@ -45,7 +45,9 @@
       "src/**/*.{ts,tsx,js,jsx}",
       "!src/__tests__/"
     ],
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",

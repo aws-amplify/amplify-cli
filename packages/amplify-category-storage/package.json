@@ -50,7 +50,9 @@
     "rimraf": "^3.0.2"
   },
   "jest": {
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
