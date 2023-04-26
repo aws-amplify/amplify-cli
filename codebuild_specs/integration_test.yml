@@ -5,5 +5,5 @@ phases:
   build:
     commands:
       - echo integration testing
-      - export CODEBUILD_SOURCE_VERSION=e8a74b9d09bf6653efe0e8c9bbb46c79cc65b4be #this injects an older workflow version into shared-scripts
+      - export CODEBUILD_SOURCE_VERSION=41f4b75d2d1ceb15ae6b0ae6e8eead82ff3063d5 #this injects an older workflow version into shared-scripts
       - source ./shared-scripts.sh && _integrationTest
