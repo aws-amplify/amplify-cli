@@ -637,7 +637,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.11.4
     "@testing-library/react": ^11.1.0
     "@testing-library/user-event": ^12.1.10
-    "@types/jest": ^29.0.0
+    "@types/jest": ^29.5.1
     "@types/node": ^12.12.6
     "@types/react": ^17.0.39
     "@types/react-dom": ^17.0.11
@@ -920,7 +920,7 @@ __metadata:
     "@aws-amplify/codegen-ui": 2.12.2
     "@aws-amplify/codegen-ui-react": 2.12.2
     "@types/fs-extra": ^8.0.1
-    "@types/jest": ^29.0.20
+    "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
     "@types/tiny-async-pool": ^2.0.0
     amplify-codegen: ^3.4.2
@@ -928,6 +928,7 @@ __metadata:
     fs-extra: ^8.1.0
     ora: ^4.0.3
     tiny-async-pool: ^2.1.0
+    ts-jest: ^29.1.0
   languageName: unknown
   linkType: soft
 
@@ -11995,7 +11996,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^29.0.0, @types/jest@npm:^29.0.20":
+"@types/jest@npm:^29.5.1":
   version: 29.5.1
   resolution: "@types/jest@npm:29.5.1"
   dependencies:
@@ -13378,7 +13379,7 @@ __metadata:
     "@commitlint/prompt": ^16.2.3
     "@microsoft/api-extractor": ^7.33.5
     "@types/glob": ^7.1.1
-    "@types/jest": ^29.0.0
+    "@types/jest": ^29.5.1
     "@types/js-yaml": ^4.0.0
     "@types/node": ^18.16.1
     "@typescript-eslint/eslint-plugin": ^5.34.0
@@ -13419,7 +13420,7 @@ __metadata:
     prettier: ^2.8.4
     rimraf: ^3.0.0
     strip-ansi: ^6.0.0
-    ts-jest: ^29.0.0
+    ts-jest: ^29.1.0
     ts-node: ^10.4.0
     typescript: ^4.9.4
   languageName: unknown
@@ -31652,7 +31653,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.0.0":
+"ts-jest@npm:^29.1.0":
   version: 29.1.0
   resolution: "ts-jest@npm:29.1.0"
   dependencies:

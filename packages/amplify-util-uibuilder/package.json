@@ -27,9 +27,10 @@
   "devDependencies": {
     "@aws-amplify/appsync-modelgen-plugin": "^2.4.0",
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^29.0.20",
+    "@types/jest": "^29.5.1",
     "@types/semver": "^7.1.0",
-    "@types/tiny-async-pool": "^2.0.0"
+    "@types/tiny-async-pool": "^2.0.0",
+    "ts-jest": "^29.1.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",
