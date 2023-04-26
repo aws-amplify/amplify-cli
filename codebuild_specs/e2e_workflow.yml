@@ -14,10 +14,11 @@ env:
 batch:
   fast-fail: false
   build-graph:
-    - identifier: build_linux
-      buildspec: codebuild_specs/build_linux.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
+    # - identifier: build_linux
+    #   buildspec: codebuild_specs/build_linux.yml
+    #   env:
+    #     compute-type: BUILD_GENERAL1_LARGE
+
     # - identifier: build_windows
     #   buildspec: codebuild_specs/build_windows.yml
     #   env:
@@ -109,10 +110,11 @@ batch:
     #   depend-on:
     #     - build_windows
     #     - upload_pkg_binaries
+
     - identifier: integration_test
       buildspec: codebuild_specs/integration_test.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
       debug-session: true
-      depend-on:
-        - build_linux
+      # depend-on:
+      #   - build_linux

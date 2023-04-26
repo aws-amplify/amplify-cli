@@ -292,6 +292,7 @@ function _integrationTest {
     # sudo apt-get install -y jq
     # pip install awscli
 
+    _loadTestAccountCredentials
     echo "AWS_ACCESS_KEY_ID"
     echo $AWS_ACCESS_KEY_ID
 
