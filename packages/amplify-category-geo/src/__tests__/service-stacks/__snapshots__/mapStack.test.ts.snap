@@ -1,107 +1,107 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cdk stack creation for map service creates Map policy for Authorized and Guest users access type 1`] = `
-Object {
-  "Mappings": Object {
-    "RegionMapping": Object {
-      "eu-west-2": Object {
+{
+  "Mappings": {
+    "RegionMapping": {
+      "eu-west-2": {
         "locationServiceRegion": "eu-central-1",
       },
     },
   },
-  "Outputs": Object {
-    "Arn": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+  "Outputs": {
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
           "CustomMap",
           "MapArn",
         ],
       },
     },
-    "Name": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
           "CustomMap",
           "MapName",
         ],
       },
     },
-    "Region": Object {
-      "Value": Object {
-        "Fn::FindInMap": Array [
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
           "RegionMapping",
-          Object {
+          {
             "Ref": "AWS::Region",
           },
           "locationServiceRegion",
         ],
       },
     },
-    "Style": Object {
-      "Value": Object {
+    "Style": {
+      "Value": {
         "Ref": "mapStyle",
       },
     },
   },
-  "Parameters": Object {
-    "authRoleName": Object {
+  "Parameters": {
+    "authRoleName": {
       "Type": "String",
     },
-    "authmockAuthUserPoolId": Object {
+    "authmockAuthUserPoolId": {
       "Type": "String",
     },
-    "authuserPoolGroupsadminGroupGroupRole": Object {
+    "authuserPoolGroupsadminGroupGroupRole": {
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
-    "isDefault": Object {
+    "isDefault": {
       "Type": "String",
     },
-    "mapName": Object {
+    "mapName": {
       "Type": "String",
     },
-    "mapStyle": Object {
+    "mapStyle": {
       "Type": "String",
     },
-    "unauthRoleName": Object {
+    "unauthRoleName": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "CustomMap": Object {
+  "Resources": {
+    "CustomMap": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomMapLambda51D5D430",
             "Arn",
           ],
         },
-        "env": Object {
+        "env": {
           "Ref": "env",
         },
-        "mapName": Object {
-          "Fn::Join": Array [
+        "mapName": {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "mapName",
               },
-              Object {
+              {
                 "Ref": "env",
               },
             ],
           ],
         },
-        "mapStyle": Object {
+        "mapStyle": {
           "Ref": "mapStyle",
         },
-        "region": Object {
-          "Fn::FindInMap": Array [
+        "region": {
+          "Fn::FindInMap": [
             "RegionMapping",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             "locationServiceRegion",
@@ -111,13 +111,13 @@ Object {
       "Type": "Custom::LambdaCallout",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomMapLambda51D5D430": Object {
-      "DependsOn": Array [
+    "CustomMapLambda51D5D430": {
+      "DependsOn": [
         "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
         "CustomMapLambdaServiceRole4EE7732C",
       ],
-      "Properties": Object {
-        "Code": Object {
+      "Properties": {
+        "Code": {
           "ZipFile": "const response = require('cfn-response');
 const { LocationClient, CreateMapCommand, DeleteMapCommand, UpdateMapCommand } = require('@aws-sdk/client-location');
 exports.handler = async function (event, context) {
@@ -174,8 +174,8 @@ exports.handler = async function (event, context) {
 ",
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "CustomMapLambdaServiceRole4EE7732C",
             "Arn",
           ],
@@ -185,27 +185,27 @@ exports.handler = async function (event, context) {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "CustomMapLambdaServiceRole4EE7732C": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CustomMapLambdaServiceRole4EE7732C": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
@@ -216,45 +216,45 @@ exports.handler = async function (event, context) {
       },
       "Type": "AWS::IAM::Role",
     },
-    "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "geo:CreateMap",
               "Effect": "Allow",
               "Resource": "*",
             },
-            Object {
-              "Action": Array [
+            {
+              "Action": [
                 "geo:UpdateMap",
                 "geo:DeleteMap",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
+              "Resource": {
+                "Fn::Sub": [
                   "arn:aws:geo:\${region}:\${account}:map/\${mapName}",
-                  Object {
-                    "account": Object {
+                  {
+                    "account": {
                       "Ref": "AWS::AccountId",
                     },
-                    "mapName": Object {
-                      "Fn::Join": Array [
+                    "mapName": {
+                      "Fn::Join": [
                         "-",
-                        Array [
-                          Object {
+                        [
+                          {
                             "Ref": "mapName",
                           },
-                          Object {
+                          {
                             "Ref": "env",
                           },
                         ],
                       ],
                     },
-                    "region": Object {
-                      "Fn::FindInMap": Array [
+                    "region": {
+                      "Fn::FindInMap": [
                         "RegionMapping",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         "locationServiceRegion",
@@ -268,28 +268,28 @@ exports.handler = async function (event, context) {
           "Version": "2012-10-17",
         },
         "PolicyName": "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "CustomMapLambdaServiceRole4EE7732C",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "MapPolicy": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "MapPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "geo:GetMapStyleDescriptor",
                 "geo:GetMapGlyphs",
                 "geo:GetMapSprites",
                 "geo:GetMapTile",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
+              "Resource": {
+                "Fn::GetAtt": [
                   "CustomMap",
                   "MapArn",
                 ],
@@ -298,18 +298,18 @@ exports.handler = async function (event, context) {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
-          "Fn::Join": Array [
+        "PolicyName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
-                "Fn::Join": Array [
+            [
+              {
+                "Fn::Join": [
                   "-",
-                  Array [
-                    Object {
+                  [
+                    {
                       "Ref": "mapName",
                     },
-                    Object {
+                    {
                       "Ref": "env",
                     },
                   ],
@@ -319,18 +319,18 @@ exports.handler = async function (event, context) {
             ],
           ],
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
-          Object {
+          {
             "Ref": "unauthRoleName",
           },
-          Object {
-            "Fn::Join": Array [
+          {
+            "Fn::Join": [
               "-",
-              Array [
-                Object {
+              [
+                {
                   "Ref": "authmockAuthUserPoolId",
                 },
                 "adminGroupGroupRole",
@@ -346,107 +346,107 @@ exports.handler = async function (event, context) {
 `;
 
 exports[`cdk stack creation for map service creates Map policy for Authorized users only access type 1`] = `
-Object {
-  "Mappings": Object {
-    "RegionMapping": Object {
-      "eu-west-2": Object {
+{
+  "Mappings": {
+    "RegionMapping": {
+      "eu-west-2": {
         "locationServiceRegion": "eu-central-1",
       },
     },
   },
-  "Outputs": Object {
-    "Arn": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+  "Outputs": {
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
           "CustomMap",
           "MapArn",
         ],
       },
     },
-    "Name": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
           "CustomMap",
           "MapName",
         ],
       },
     },
-    "Region": Object {
-      "Value": Object {
-        "Fn::FindInMap": Array [
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
           "RegionMapping",
-          Object {
+          {
             "Ref": "AWS::Region",
           },
           "locationServiceRegion",
         ],
       },
     },
-    "Style": Object {
-      "Value": Object {
+    "Style": {
+      "Value": {
         "Ref": "mapStyle",
       },
     },
   },
-  "Parameters": Object {
-    "authRoleName": Object {
+  "Parameters": {
+    "authRoleName": {
       "Type": "String",
     },
-    "authmockAuthUserPoolId": Object {
+    "authmockAuthUserPoolId": {
       "Type": "String",
     },
-    "authuserPoolGroupsadminGroupGroupRole": Object {
+    "authuserPoolGroupsadminGroupGroupRole": {
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
-    "isDefault": Object {
+    "isDefault": {
       "Type": "String",
     },
-    "mapName": Object {
+    "mapName": {
       "Type": "String",
     },
-    "mapStyle": Object {
+    "mapStyle": {
       "Type": "String",
     },
-    "unauthRoleName": Object {
+    "unauthRoleName": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "CustomMap": Object {
+  "Resources": {
+    "CustomMap": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomMapLambda51D5D430",
             "Arn",
           ],
         },
-        "env": Object {
+        "env": {
           "Ref": "env",
         },
-        "mapName": Object {
-          "Fn::Join": Array [
+        "mapName": {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "mapName",
               },
-              Object {
+              {
                 "Ref": "env",
               },
             ],
           ],
         },
-        "mapStyle": Object {
+        "mapStyle": {
           "Ref": "mapStyle",
         },
-        "region": Object {
-          "Fn::FindInMap": Array [
+        "region": {
+          "Fn::FindInMap": [
             "RegionMapping",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             "locationServiceRegion",
@@ -456,13 +456,13 @@ Object {
       "Type": "Custom::LambdaCallout",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomMapLambda51D5D430": Object {
-      "DependsOn": Array [
+    "CustomMapLambda51D5D430": {
+      "DependsOn": [
         "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
         "CustomMapLambdaServiceRole4EE7732C",
       ],
-      "Properties": Object {
-        "Code": Object {
+      "Properties": {
+        "Code": {
           "ZipFile": "const response = require('cfn-response');
 const { LocationClient, CreateMapCommand, DeleteMapCommand, UpdateMapCommand } = require('@aws-sdk/client-location');
 exports.handler = async function (event, context) {
@@ -519,8 +519,8 @@ exports.handler = async function (event, context) {
 ",
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "CustomMapLambdaServiceRole4EE7732C",
             "Arn",
           ],
@@ -530,27 +530,27 @@ exports.handler = async function (event, context) {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "CustomMapLambdaServiceRole4EE7732C": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CustomMapLambdaServiceRole4EE7732C": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
@@ -561,45 +561,45 @@ exports.handler = async function (event, context) {
       },
       "Type": "AWS::IAM::Role",
     },
-    "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "geo:CreateMap",
               "Effect": "Allow",
               "Resource": "*",
             },
-            Object {
-              "Action": Array [
+            {
+              "Action": [
                 "geo:UpdateMap",
                 "geo:DeleteMap",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
+              "Resource": {
+                "Fn::Sub": [
                   "arn:aws:geo:\${region}:\${account}:map/\${mapName}",
-                  Object {
-                    "account": Object {
+                  {
+                    "account": {
                       "Ref": "AWS::AccountId",
                     },
-                    "mapName": Object {
-                      "Fn::Join": Array [
+                    "mapName": {
+                      "Fn::Join": [
                         "-",
-                        Array [
-                          Object {
+                        [
+                          {
                             "Ref": "mapName",
                           },
-                          Object {
+                          {
                             "Ref": "env",
                           },
                         ],
                       ],
                     },
-                    "region": Object {
-                      "Fn::FindInMap": Array [
+                    "region": {
+                      "Fn::FindInMap": [
                         "RegionMapping",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         "locationServiceRegion",
@@ -613,28 +613,28 @@ exports.handler = async function (event, context) {
           "Version": "2012-10-17",
         },
         "PolicyName": "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "CustomMapLambdaServiceRole4EE7732C",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "MapPolicy": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "MapPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "geo:GetMapStyleDescriptor",
                 "geo:GetMapGlyphs",
                 "geo:GetMapSprites",
                 "geo:GetMapTile",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
+              "Resource": {
+                "Fn::GetAtt": [
                   "CustomMap",
                   "MapArn",
                 ],
@@ -643,18 +643,18 @@ exports.handler = async function (event, context) {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
-          "Fn::Join": Array [
+        "PolicyName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
-                "Fn::Join": Array [
+            [
+              {
+                "Fn::Join": [
                   "-",
-                  Array [
-                    Object {
+                  [
+                    {
                       "Ref": "mapName",
                     },
-                    Object {
+                    {
                       "Ref": "env",
                     },
                   ],
@@ -664,15 +664,15 @@ exports.handler = async function (event, context) {
             ],
           ],
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
-          Object {
-            "Fn::Join": Array [
+          {
+            "Fn::Join": [
               "-",
-              Array [
-                Object {
+              [
+                {
                   "Ref": "authmockAuthUserPoolId",
                 },
                 "adminGroupGroupRole",
