@@ -292,18 +292,24 @@ function _integrationTest {
     # sudo apt-get install -y jq
     # pip install awscli
 
+    echo "Loading test account credentials"
     _loadTestAccountCredentials
-    echo "AWS_ACCESS_KEY_ID"
-    echo $AWS_ACCESS_KEY_ID
 
     echo "Running aws_configure.sh"
     chmod +x ./codebuild_specs/aws.sh
     expect ./codebuild_specs/exp_files/aws_configure.exp
 
-    codebuild-breakpoint
+    # codebuild-breakpoint
 
-    # echo "Configure Amplify CLI"
-    # yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
-    # echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV
-    # amplify-dev
+    echo "Configuring Amplify CLI"
+    yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
+    export PATH=$(yarn global bin):$PATH # changed from CCI: echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV. see https://circleci.com/docs/env-vars/#example-configuration-of-environment-variables
+    amplify-dev
+
+    echo "Cloning auth test package"
+    cd ..
+    git clone $AUTH_CLONE_URL
+    cd aws-amplify-cypress-auth
+    yarn --cache-folder ~/.cache/yarn
+    yarn add cypress@6.8.0 --save
 }
