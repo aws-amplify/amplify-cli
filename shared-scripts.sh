@@ -280,9 +280,6 @@ function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    
-    echo "Running aws.sh"
-    cd .circleci/ && chmod +x aws.sh
 
     echo "Setting Up Dependencies"
     apt-get update
