@@ -13583,7 +13583,6 @@ __metadata:
     lodash: ^4.17.21
     node-gyp: ^9.3.1
     npm-check-updates: ^16.1.0
-    nx: ^15.9.2
     pkg: ^5.8.1
     prettier: ^2.8.4
     rimraf: ^3.0.0
@@ -27276,7 +27275,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"nx@npm:15.9.2, nx@npm:>=15.5.2 < 16, nx@npm:^15.9.2":
+"nx@npm:15.9.2, nx@npm:>=15.5.2 < 16":
   version: 15.9.2
   resolution: "nx@npm:15.9.2"
   dependencies:
