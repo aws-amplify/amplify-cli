@@ -198,11 +198,6 @@
         {
           "name": "hosting",
           "type": "category",
-          "packageName": "@aws-amplify/amplify-category-hosting"
-        },
-        {
-          "name": "hosting",
-          "type": "category",
           "packageName": "@aws-amplify/amplify-console-hosting"
         },
         {
