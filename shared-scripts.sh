@@ -294,7 +294,7 @@ function _integrationTest {
     sudo apt-get install -y jq
     pip install awscli
 
-    # codebuild-breakpoint
+    codebuild-breakpoint
 
 
     echo "Running aws_configure.sh"
