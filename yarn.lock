@@ -12299,6 +12299,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^18.16.1":
+  version: 18.16.1
+  resolution: "@types/node@npm:18.16.1"
+  checksum: bd43d9e1df253955d73348ae9c8bc73f328ad3bd5481a134743142a04b0d1b74e39b90369aa0d361fd0b86a6a5c98035a226c1e1a4f67ba98e71b06734cc4f7d
+  languageName: node
+  linkType: hard
+
 "@types/normalize-package-data@npm:^2.4.0":
   version: 2.4.1
   resolution: "@types/normalize-package-data@npm:2.4.1"
@@ -13549,6 +13556,7 @@ __metadata:
     "@types/glob": ^7.1.1
     "@types/jest": ^27.0.0
     "@types/js-yaml": ^4.0.0
+    "@types/node": ^18.16.1
     "@typescript-eslint/eslint-plugin": ^5.34.0
     "@typescript-eslint/parser": ^5.34.0
     "@zkochan/cmd-shim": ^5.1.0
@@ -13671,6 +13679,7 @@ __metadata:
     "@types/body-parser": ^1.19.2
     "@types/express": ^4.17.3
     "@types/lodash": ^4.14.149
+    "@types/node": ^18.16.1
     "@types/ws": ^7.4.4
     amplify-dynamodb-simulator: 2.6.0
     amplify-headless-interface: 1.17.3
