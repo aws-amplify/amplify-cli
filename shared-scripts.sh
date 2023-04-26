@@ -297,7 +297,7 @@ function _integrationTest {
 
     echo "Running aws_configure.sh"
     chmod +x ./codebuild_specs/sh-files/aws.sh
-    expect ./codebuild_specs/exp_files/aws_configure.exp
+    expect ./codebuild_specs/exp-files/aws_configure.exp
 
     # codebuild-breakpoint
 
