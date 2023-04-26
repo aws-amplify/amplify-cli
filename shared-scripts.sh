@@ -282,15 +282,15 @@ function _integrationTest {
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
     # echo "Setting Up Dependencies"
-    # apt-get update
-    # apt-get install -y sudo
-    # sudo apt-get install -y tcl
-    # sudo apt-get install -y expect
-    # sudo apt-get install -y zip
-    # sudo apt-get install -y lsof
-    # sudo apt-get install -y python3 python3-pip libpython3-dev
-    # sudo apt-get install -y jq
-    # pip install awscli
+    apt-get update
+    apt-get install -y sudo
+    sudo apt-get install -y tcl
+    sudo apt-get install -y expect
+    sudo apt-get install -y zip
+    sudo apt-get install -y lsof
+    sudo apt-get install -y python3 python3-pip libpython3-dev
+    sudo apt-get install -y jq
+    pip install awscli
 
     echo "Loading test account credentials"
     _loadTestAccountCredentials
@@ -313,7 +313,6 @@ function _integrationTest {
     yarn --cache-folder ~/.cache/yarn
     yarn add cypress@6.8.0 --save
 
-    codebuild-breakpoint
 
     echo "Running "
     cd ../amplify-cli
@@ -322,5 +321,9 @@ function _integrationTest {
     chmod +x codebuild_specs/exp-files/amplify_init.exp
     chmod +x codebuild_specs/exp-files/enable_auth.exp
     expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
+    
+    codebuild-breakpoint
+
+    
     expect codebuild_specs/exp-files/enable_auth.exp
 }
