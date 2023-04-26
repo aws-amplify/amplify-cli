@@ -41,7 +41,6 @@
     "@aws-amplify/amplify-category-custom": "3.0.4",
     "@aws-amplify/amplify-category-function": "5.2.0",
     "@aws-amplify/amplify-category-geo": "3.1.0",
-    "@aws-amplify/amplify-category-hosting": "3.5.6",
     "@aws-amplify/amplify-category-interactions": "5.0.6",
     "@aws-amplify/amplify-category-notifications": "2.24.6",
     "@aws-amplify/amplify-category-predictions": "5.1.0",
@@ -195,11 +194,6 @@
         "packageName": "@aws-amplify/amplify-category-geo"
       },
       "hosting": [
-        {
-          "name": "hosting",
-          "type": "category",
-          "packageName": "@aws-amplify/amplify-category-hosting"
-        },
         {
           "name": "hosting",
           "type": "category",
