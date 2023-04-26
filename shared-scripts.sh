@@ -281,6 +281,8 @@ function _integrationTest {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
+    _loadTestAccountCredentials
+
     echo "Setting Up Dependencies"
     apt-get update
     apt-get install -y sudo
