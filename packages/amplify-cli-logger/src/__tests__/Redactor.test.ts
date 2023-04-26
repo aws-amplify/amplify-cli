@@ -43,8 +43,6 @@ describe('input-redaction', () => {
     expect(redactedPinpoint.FCM.ApiKey).not.toEqual(originalPinpoint.FCM.ApiKey);
 
     const redactedAuth = redactedInput.categories.auth.resourceName;
-    expect(redactedAuth.hostedUIProviderCreds).toMatchInlineSnapshot(
-      `"\\"ProviderName\\":\\"[***]book\\",\\"client_id\\":\\"[***]ntIdTest\\",\\"client_secret\\":\\"[***]SecretTest\\""`,
-    );
+    expect(redactedAuth.hostedUIProviderCreds).toMatchInlineSnapshot(`""ProviderName":"[***]book","client_id":"[***]ntIdTest","client_secret":"[***]SecretTest""`);
   });
 });
