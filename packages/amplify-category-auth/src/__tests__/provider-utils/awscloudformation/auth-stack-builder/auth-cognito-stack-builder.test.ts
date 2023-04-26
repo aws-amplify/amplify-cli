@@ -82,15 +82,15 @@ describe('generateCognitoStackResources', () => {
     cognitoStack.createOAuthCustomResource();
     expect(cognitoStack.oAuthCustomResource).toBeDefined();
     expect(
-      cognitoStack
-        .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.logicalId)
-        .map((logicalIdToken) => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1]),
-    ).toMatchInlineSnapshot(`
-      Array [
-        "HostedUICustomResourceInputs",
-        "HostedUIProvidersCustomResourceInputs",
-      ]
-    `);
+cognitoStack.
+oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.logicalId).
+map((logicalIdToken) => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1])).
+toMatchInlineSnapshot(`
+[
+  "HostedUICustomResourceInputs",
+  "HostedUIProvidersCustomResourceInputs",
+]
+`);
   });
 
   it('adds correct preSignUp  lambda config and permissions', () => {
@@ -122,12 +122,12 @@ describe('generateCognitoStackResources', () => {
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
-      Object {
-        "attributesRequireVerificationBeforeUpdate": Array [
-          "email",
-        ],
-      }
-    `);
+{
+  "attributesRequireVerificationBeforeUpdate": [
+    "email",
+  ],
+}
+`);
   });
 
   it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', () => {
@@ -142,12 +142,12 @@ describe('generateCognitoStackResources', () => {
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
-      Object {
-        "attributesRequireVerificationBeforeUpdate": Array [
-          "email",
-        ],
-      }
-    `);
+{
+  "attributesRequireVerificationBeforeUpdate": [
+    "email",
+  ],
+}
+`);
     expect(cognitoStack.userPool!.lambdaConfig).toHaveProperty('preSignUp');
     expect(cognitoStack.userPoolClientWeb!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.userPoolClient!.tokenValidityUnits).toHaveProperty('refreshToken');
