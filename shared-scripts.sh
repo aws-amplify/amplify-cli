@@ -300,8 +300,10 @@ function _integrationTest {
     chmod +x ./codebuild_specs/aws.sh
     expect ./codebuild_specs/exp_files/aws_configure.exp
 
-    echo "Configure Amplify CLI"
-    yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
-    echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV
-    amplify-dev
+    codebuild-breakpoint
+
+    # echo "Configure Amplify CLI"
+    # yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
+    # echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV
+    # amplify-dev
 }
