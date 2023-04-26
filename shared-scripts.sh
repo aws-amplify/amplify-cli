@@ -317,10 +317,10 @@ function _integrationTest {
 
     echo "Running "
     cd ../amplify-cli
-    chmod +x codebuild_specs/auth.sh
-    chmod +x codebuild_specs/amplify_init.sh
-    chmod +x codebuild_specs/amplify_init.exp
-    chmod +x codebuild_specs/enable_auth.exp
-    expect codebuild_specs/amplify_init.exp ../aws-amplify-cypress-auth
-    expect codebuild_specs/enable_auth.exp
+    chmod +x codebuild_specs/sh-files/auth.sh
+    chmod +x codebuild_specs/sh-files/amplify_init.sh
+    chmod +x codebuild_specs/exp-files/amplify_init.exp
+    chmod +x codebuild_specs/exp-files/enable_auth.exp
+    expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
+    expect codebuild_specs/exp-files/enable_auth.exp
 }

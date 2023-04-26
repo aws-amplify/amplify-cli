@@ -1,5 +1,5 @@
 #!/usr/bin/expect
-spawn ./codebuild_specs/aws.sh
+spawn ./codebuild_specs/sh-files/aws.sh
 log_user 0;
 expect  "AWS Access Key ID"
 send -- "$env(AWS_ACCESS_KEY_ID)\r"
