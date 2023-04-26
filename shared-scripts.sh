@@ -322,6 +322,6 @@ function _integrationTest {
     chmod +x codebuild_specs/exp-files/enable_auth.exp
     
     echo "spawning init script"
-    spawn codebuild_specs/exp-files/amplify_init.sh ../aws-amplify-cypress-auth
+    sh codebuild_specs/exp-files/amplify_init.sh ../aws-amplify-cypress-auth
 
 }
