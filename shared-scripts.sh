@@ -281,8 +281,6 @@ function _integrationTest {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
-    _loadTestAccountCredentials
-
     echo "Setting Up Dependencies"
     apt-get update
     apt-get install -y sudo
@@ -293,9 +291,6 @@ function _integrationTest {
     sudo apt-get install -y python3 python3-pip libpython3-dev
     sudo apt-get install -y jq
     pip install awscli
-
-    codebuild-breakpoint
-
 
     echo "Running aws_configure.sh"
     ls
