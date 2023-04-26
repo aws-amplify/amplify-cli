@@ -10,7 +10,6 @@ async function add(context) {
   const { availableServices, disabledServices } = categoryManager.getCategoryStatus(context);
 
   if (availableServices.length > 0) {
-    console.log(disabledServices.length);
     if (disabledServices.length > 1) {
       const selectedServices = await prompter.pick('Please select the service(s) to add.', disabledServices, {
         initial: 0,
