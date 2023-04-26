@@ -296,7 +296,7 @@ function _integrationTest {
     _loadTestAccountCredentials
 
     echo "Running aws_configure.sh"
-    chmod +x ./codebuild_specs/aws.sh
+    chmod +x ./codebuild_specs/sh-files/aws.sh
     expect ./codebuild_specs/exp_files/aws_configure.exp
 
     # codebuild-breakpoint
