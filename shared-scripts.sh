@@ -321,6 +321,9 @@ function _integrationTest {
     chmod +x codebuild_specs/exp-files/amplify_init.exp
     chmod +x codebuild_specs/exp-files/enable_auth.exp
     
+    echo $AWS_ACCESS_KEY_ID
+    echo $AWS_SECRET_ACCESS_KEY
+
     echo "spawning init script"
     codebuild-breakpoint
 
