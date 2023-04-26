@@ -22,15 +22,9 @@ send -- "\r"
 expect -exact "Start Command:"
 send -- "\r"
 expect "Select the authentication method you want to use:"
-send -- "j\r"
-log_user 0;
-expect "accessKeyId:"
-send -- "$env(AWS_ACCESS_KEY_ID)\r"
-expect "secretAccessKey:"
-send -- "$env(AWS_SECRET_ACCESS_KEY)\r"
-expect -exact "region:"
-log_user 1;
-send -- "j\r"
+send -- "\r"
+expect "Please choose the profile you want to use"
+send -- "\r"
 expect "Help improve Amplify CLI by sharing non sensitive configurations on failures"
 send -- "\r"
 interact;
