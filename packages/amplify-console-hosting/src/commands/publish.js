@@ -4,7 +4,7 @@ async function run(context) {
   try {
     await hostingModule.publish(context, false, false);
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err?.name === 'ValidationError') {
       context.print.error(err.message);
     } else {
       throw err;
