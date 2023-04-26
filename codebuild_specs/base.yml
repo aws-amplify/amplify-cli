@@ -14,7 +14,7 @@ env:
 batch:
   fast-fail: false
   build-graph:
-    - identifier: build_linux
+    - identifier: build_Linux
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
