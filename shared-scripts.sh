@@ -281,16 +281,19 @@ function _integrationTest {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
-    echo "Setting Up Dependencies"
-    apt-get update
-    apt-get install -y sudo
-    sudo apt-get install -y tcl
-    sudo apt-get install -y expect
-    sudo apt-get install -y zip
-    sudo apt-get install -y lsof
-    sudo apt-get install -y python3 python3-pip libpython3-dev
-    sudo apt-get install -y jq
-    pip install awscli
+    # echo "Setting Up Dependencies"
+    # apt-get update
+    # apt-get install -y sudo
+    # sudo apt-get install -y tcl
+    # sudo apt-get install -y expect
+    # sudo apt-get install -y zip
+    # sudo apt-get install -y lsof
+    # sudo apt-get install -y python3 python3-pip libpython3-dev
+    # sudo apt-get install -y jq
+    # pip install awscli
+
+    echo "AWS_ACCESS_KEY_ID"
+    echo $AWS_ACCESS_KEY_ID
 
     echo "Running aws_configure.sh"
     ls
