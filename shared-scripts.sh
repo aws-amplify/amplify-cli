@@ -297,8 +297,11 @@ function _integrationTest {
     echo $AWS_ACCESS_KEY_ID
 
     echo "Running aws_configure.sh"
-    ls
-    ls ./codebuild_specs
     chmod +x ./codebuild_specs/aws.sh
     expect ./codebuild_specs/exp_files/aws_configure.exp
+
+    echo "Configure Amplify CLI"
+    yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
+    echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV
+    amplify-dev
 }
