@@ -306,10 +306,15 @@ function _integrationTest {
     export PATH=$(yarn global bin):$PATH # changed from CCI: echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV. see https://circleci.com/docs/env-vars/#example-configuration-of-environment-variables
     amplify-dev
 
-    echo "Cloning auth test package"
-    cd ..
-    git clone $AUTH_CLONE_URL
-    cd aws-amplify-cypress-auth
-    yarn --cache-folder ~/.cache/yarn
-    yarn add cypress@6.8.0 --save
+    echo "pwd"
+    pwd
+
+    # echo "Cloning auth test package"
+    # cd ..
+    # git clone $AUTH_CLONE_URL
+    # cd aws-amplify-cypress-auth
+    # yarn --cache-folder ~/.cache/yarn
+    # yarn add cypress@6.8.0 --save
+
+        
 }
