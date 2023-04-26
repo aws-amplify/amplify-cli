@@ -108,6 +108,7 @@ jobs:
     steps:
       - checkout
       - run: yarn config set npmRegistryServer https://registry.npmjs.org
+      - run: yarn --immutable
       - run: yarn production-build
       - run:
           name: Build tests
@@ -150,6 +151,7 @@ jobs:
           steps:
             - install_node_windows
             - checkout
+            - run: yarn --immutable
             - run: yarn production-build
             - run:
                 name: Build tests
