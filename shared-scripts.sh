@@ -299,6 +299,7 @@ function _integrationTest {
 
 
     echo "Running aws_configure.sh"
+    ls
     ls ./codebuild_specs
     chmod +x ./codebuild_specs/aws.sh
     expect ./codebuild_specs/exp_files/aws_configure.exp
