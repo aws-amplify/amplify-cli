@@ -323,15 +323,12 @@ function _integrationTest {
 
     mkdir -p ~/.aws
     touch ~/.aws/config ~/.aws/credentials 
-    python3 codebuild_specs/aws-configure-credentials.py
+    python3 codebuild_specs/sh-files/aws-configure-credentials.py
 
     echo "spawning init script"
-    expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
-    
     codebuild-breakpoint
-    
+    expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
     expect codebuild_specs/exp-files/enable_auth.exp
-    
     cd ../aws-amplify-cypress-auth
     yarn --frozen-lockfile --cache-folder ~/.cache/yarn
 
