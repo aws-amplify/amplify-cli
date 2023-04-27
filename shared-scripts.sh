@@ -319,6 +319,13 @@ function _prepareAuthServer {
     export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
 }
 
+function _runIntegTests {
+    yarn add cypress@6.8.0 --save
+    cp ../repo/cypress.json .
+    cp -R ../repo/cypress .
+    yarn cypress run --spec $(find . -type f -name 'api_spec*')
+}
+
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
@@ -363,5 +370,9 @@ function _integrationTest {
     echo "running auth server in background"
     nohup yarn start & echo $! > ~/auth-server-pid-file
     jobs
-    codebuild-breakpoint
+    
+    echo "Running tests now"
+    cd ../aws-amplify-cypress-api
+    _runIntegTests
+
 }
