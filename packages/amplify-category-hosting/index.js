@@ -59,11 +59,9 @@ async function configure(context) {
 
 function publish(context, service, args) {
   const { enabledServices } = categoryManager.getCategoryStatus(context);
-
   if (enabledServices.length > 0) {
     if (enabledServices.includes(service)) {
-      context.print.info(context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output);
-      if (service === 'S3AndCloudFront' && context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output) {
+      if (service === 'S3AndCloudFront' && context.exeInfo?.amplifyMeta.hosting.S3AndCloudFront.output) {
         if (context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output['CloudFrontSecureURL'] === undefined) {
           throw new AmplifyError('ProjectPublishError', {
             message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
