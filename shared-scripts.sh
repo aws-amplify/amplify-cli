@@ -307,15 +307,15 @@ function _integrationTest {
     amplify-dev
 
     echo "Cloning auth test package"
-    cd ..
+    cd .. && pwd
     git clone $AUTH_CLONE_URL
-    cd aws-amplify-cypress-auth
+    cd aws-amplify-cypress-auth && pwd
     yarn --cache-folder ~/.cache/yarn
     yarn add cypress@6.8.0 --save
 
 
     # echo "Running "
-    cd ../amplify-cli
+    cd ../amplify-cli && pwd
     chmod +x codebuild_specs/sh-files/auth.sh
     chmod +x codebuild_specs/sh-files/amplify_init.sh
     chmod +x codebuild_specs/exp-files/amplify_init.exp
@@ -329,8 +329,12 @@ function _integrationTest {
     codebuild-breakpoint
     expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
     expect codebuild_specs/exp-files/enable_auth.exp
-    cd ../aws-amplify-cypress-auth
+    cd ../aws-amplify-cypress-auth && pwd
     yarn --frozen-lockfile --cache-folder ~/.cache/yarn
-
+    cd src && cat $(find . -type f -name 'aws-exports*') && pwd
     
+    echo "Start Auth test server in background"
+    cd .. && pwd
+    export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
+    yarn start
 }
