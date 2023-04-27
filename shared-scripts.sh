@@ -326,9 +326,16 @@ function _integrationTest {
     python3 codebuild_specs/sh-files/aws-configure-credentials.py
 
     echo "spawning init script"
-    codebuild-breakpoint
-    expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
+    # expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
+
+    amplify-dev init \
+    --amplify {"projectName":"unauth","envName":"integtest","defaultEditor":"code"} \
+    --providers {"awscloudformation":{"configLevel":"project","useProfile":true,"profileName":"default"}} \
+    --yes
+
     expect codebuild_specs/exp-files/enable_auth.exp
+
+
     cd ../aws-amplify-cypress-auth && pwd
     yarn --frozen-lockfile --cache-folder ~/.cache/yarn
     cd src && cat $(find . -type f -name 'aws-exports*') && pwd
