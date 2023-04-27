@@ -326,7 +326,6 @@ function _integrationTest {
     python3 codebuild_specs/aws-configure-credentials.py
 
     echo "spawning init script"
-    # codebuild-breakpoint
     expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
-
+    codebuild-breakpoint
 }
