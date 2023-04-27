@@ -308,6 +308,7 @@ function _addAndPushAuth {
     expect codebuild_specs/exp-files/enable_auth.exp
     cd ../aws-amplify-cypress-auth && pwd
     amplify-dev push --yes
+    amplify-dev status
 }
 
 function _integrationTest {
