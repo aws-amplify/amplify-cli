@@ -61,6 +61,8 @@ function publish(context, service, args) {
   const { enabledServices } = categoryManager.getCategoryStatus(context);
   if (enabledServices.length > 0) {
     if (enabledServices.includes(service)) {
+      // checks if hosting with S3 and CloudFront and has a secure URL otherwise,
+      // the user is hosting from S3 without CloudFront distribution and should throw an error
       if (service === 'S3AndCloudFront' && context.exeInfo?.amplifyMeta.hosting.S3AndCloudFront.output) {
         if (context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output['CloudFrontSecureURL'] === undefined) {
           throw new AmplifyError('ProjectPublishError', {
