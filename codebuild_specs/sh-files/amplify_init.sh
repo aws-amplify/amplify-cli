@@ -8,7 +8,7 @@ cd $1
 # echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
 # echo "aws_session_token=$AWS_SESSION_TOKEN" >> ~/.aws/credentials
 # echo "[default]" > ~/.aws/config
-# echo "region=us-west-2" >> ~/.aws/config
+# echo "region=us-west-2" >> ~/.aws/config 
 
 amplify-dev init
 echo "amplify init completed"
