@@ -328,37 +328,14 @@ function _integrationTest {
     echo "spawning init script"
     # expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
 
-    export REACTCONFIG="{\
-        \"SourceDir\":\"src\",\
-        \"DistributionDir\":\"build\",\
-        \"BuildCommand\":\"npm run-script build\",\
-        \"StartCommand\":\"npm run-script start\"\
-    }"
-
-    export FRONTEND="{\
-        \"frontend\":\"javascript\",\
-        \"framework\":\"react\",\
-        \"config\":$REACTCONFIG\
-    }"
-
-    export AMPLIFY_INIT_CONFIG="{\
-        \"projectName\":\"unauth\",\
-        \"envName\":\"integtest\",\
-        \"defaultEditor\":\"code\"\
-    }"
-
-    export PROVIDERS="{\
-        \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
-    }"
-
-    amplify-dev init \
-        --amplify $AMPLIFY_INIT_CONFIG \
-        --frontend $FRONTEND \
-        --providers $PROVIDERS
-
+    cd ../aws-amplify-cypress-auth && pwd
+    export REACTCONFIG="{\"SourceDir\":\"src\",\"DistributionDir\":\"build\",\"BuildCommand\":\"npm run-script build\",\"StartCommand\":\"npm run-script start\"}"
+    export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
+    export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
+    export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"
+    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS
 
     codebuild-breakpoint
-
     expect codebuild_specs/exp-files/enable_auth.exp
 
 
