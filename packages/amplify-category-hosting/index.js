@@ -63,8 +63,9 @@ function publish(context, service, args) {
     if (enabledServices.includes(service)) {
       // checks if hosting with S3 and CloudFront and has a secure URL otherwise,
       // the user is hosting from S3 without CloudFront distribution and should throw an error
-      if (service === 'S3AndCloudFront' && context.exeInfo?.amplifyMeta.hosting.S3AndCloudFront.output) {
-        if (context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output['CloudFrontSecureURL'] === undefined) {
+      if (service === 'S3AndCloudFront') {
+        let cfnOutput = context.exeInfo?.amplifyMeta.hosting.S3AndCloudFront.output;
+        if (typeof cfnOutput === 'object' && cfnOutput.CloudFrontSecureURL === undefined) {
           throw new AmplifyError('ProjectPublishError', {
             message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
             details: 'You will need to deploy your application to PROD or use this workaround for non-public dev apps only.',
