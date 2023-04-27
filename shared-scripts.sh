@@ -321,6 +321,7 @@ function _integrationTest {
     chmod +x codebuild_specs/exp-files/amplify_init.exp
     chmod +x codebuild_specs/exp-files/enable_auth.exp
 
+    touch ~/.aws/config ~/.aws/credentials 
     python3 codebuild_specs/aws-configure-credentials.py
 
     echo "spawning init script"
