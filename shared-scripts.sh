@@ -343,20 +343,24 @@ function _integrationTest {
     codebuild-breakpoint
     
     cd ../amplify-cli && pwd
+    echo "start auth exp"
     expect codebuild_specs/exp-files/enable_auth.exp
+    echo "end auth exp"
     cd ../aws-amplify-cypress-auth && pwd
+    echo "start auth push"
     amplify-dev push --yes
+    echo "end push"
 
     codebuild-breakpoint
 
 
-    cd ../aws-amplify-cypress-auth && pwd
-    yarn --frozen-lockfile --cache-folder ~/.cache/yarn
-    cd src && cat $(find . -type f -name 'aws-exports*') && pwd
+    # cd ../aws-amplify-cypress-auth && pwd
+    # yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+    # cd src && cat $(find . -type f -name 'aws-exports*') && pwd
     
-    echo "Start Auth test server in background"
-    cd .. && pwd
-    export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
-    yarn start &
-    echo "ran yarn start in background"
+    # echo "Start Auth test server in background"
+    # cd .. && pwd
+    # export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
+    # yarn start &
+    # echo "ran yarn start in background"
 }
