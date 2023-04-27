@@ -336,7 +336,7 @@ function _integrationTest {
     
     codebuild-breakpoint
     
-    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS
+    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
 
     amplify-dev status
 
