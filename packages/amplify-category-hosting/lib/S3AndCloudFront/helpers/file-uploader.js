@@ -17,7 +17,7 @@ async function run(context, distributionDirPath) {
   const s3Client = await getS3Client(context, 'update');
   const hostingBucketName = getHostingBucketName(context);
 
-  const hasCloudFront = !!context?.exeInfo?.template?.Resources?.CloudFrontDistribution
+  const hasCloudFront = !!context?.exeInfo?.template?.Resources?.CloudFrontDistribution;
 
   fileList.forEach(filePath => {
     uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront));

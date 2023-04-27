@@ -6,15 +6,11 @@ const configManager = require('./configuration-manager');
 const fileUPloader = require('./helpers/file-uploader');
 const cloudFrontManager = require('./helpers/cloudfront-manager');
 const constants = require('../constants');
-const { prompter, byValue } = require('amplify-prompts');
 
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
 const parametersFileName = 'parameters.json';
-
-const PROD = 'PROD (S3 with CloudFront using HTTPS)';
-const Environments = [PROD];
 
 async function enable(context) {
   let templateFilePath = path.join(__dirname, templateFileName);
