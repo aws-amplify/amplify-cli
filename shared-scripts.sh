@@ -320,10 +320,9 @@ function _prepareAuthServer {
 }
 
 function _runIntegTests {
-    yarn add cypress@6.8.0 --save
     cp ../repo/cypress.json .
     cp -R ../repo/cypress .
-    yarn cypress run --spec $(find . -type f -name 'api_spec*')
+    yarn cypress run --spec $(find . -type f -name 'auth_spec*')
 }
 
 function _integrationTest {
@@ -371,8 +370,11 @@ function _integrationTest {
     nohup yarn start & echo $! > ~/auth-server-pid-file
     jobs
     
+    codebuild-breakpoint
+
     echo "Running tests now"
-    cd ../aws-amplify-cypress-api
+    cat $(find ../repo -type f -name 'auth_spec*')
+    cd ../aws-amplify-cypress-auth
     _runIntegTests
 
 }
