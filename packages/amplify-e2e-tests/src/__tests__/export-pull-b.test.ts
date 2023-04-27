@@ -5,7 +5,6 @@ import {
   addApiWithoutSchema,
   addAuthWithMaxOptions,
   addConvert,
-  addPRODHosting,
   addS3StorageWithIdpAuth,
   amplifyPush,
   amplifyPushWithoutCodegen,
