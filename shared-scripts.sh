@@ -341,9 +341,6 @@ function _integrationTest {
     echo "Initializing new amplify project"
     cd ../aws-amplify-cypress-auth && pwd
     _integTestAmplifyInit
-
-    codebuild-breakpoint 
-
     
     cd ../amplify-cli && pwd
     echo "start auth exp"
@@ -353,6 +350,9 @@ function _integrationTest {
     echo "start auth push"
     amplify-dev push --yes
     echo "end push"
+
+    codebuild-breakpoint 
+
 
     # codebuild-breakpoint
 
