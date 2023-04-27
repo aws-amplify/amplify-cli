@@ -311,6 +311,16 @@ function _addAndPushAuth {
     amplify-dev status
 }
 
+function startAuthServer {
+    echo "Start Auth test server in background"
+    yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+    cd src && cat $(find . -type f -name 'aws-exports*') && pwd
+    cd .. && pwd
+    export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
+    yarn start &
+    echo "ran yarn start in background"
+}
+
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
@@ -350,12 +360,7 @@ function _integrationTest {
     _addAndPushAuth
     echo "end push"
 
-    yarn --frozen-lockfile --cache-folder ~/.cache/yarn
-    cd src && cat $(find . -type f -name 'aws-exports*') && pwd
-    
-    echo "Start Auth test server in background"
-    cd .. && pwd
-    export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
-    yarn start &
-    echo "ran yarn start in background"
+    nohup startAuthServer & echo $! > ~/auth-server-pid-file
+
+    codebuild-breakpoint
 }
