@@ -62,12 +62,15 @@ function publish(context, service, args) {
 
   if (enabledServices.length > 0) {
     if (enabledServices.includes(service)) {
-      if (service === 'S3AndCloudFront' && context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output.CloudFrontSecureURL === undefined) {
-        throw new AmplifyError('ProjectPublishError', {
-          message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
-          details: 'You will need to deploy your application to PROD or use this workaround for non-public dev apps only.',
-          link: 'https://github.com/aws-amplify/amplify-cli/issues/12503',
-        });
+      context.print.info(context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output);
+      if (service === 'S3AndCloudFront' && context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output) {
+        if (context.exeInfo.amplifyMeta.hosting.S3AndCloudFront.output['CloudFrontSecureURL'] === undefined) {
+          throw new AmplifyError('ProjectPublishError', {
+            message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
+            details: 'You will need to deploy your application to PROD or use this workaround for non-public dev apps only.',
+            link: 'https://github.com/aws-amplify/amplify-cli/issues/12503',
+          });
+        }
       }
       return categoryManager.runServiceAction(context, service, 'publish', args);
     }
