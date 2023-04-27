@@ -52,7 +52,6 @@ async function enable(context) {
 }
 
 async function checkCDN(context) {
-  await prompter.pick('Select the environment setup:', Environments, { initial: byValue(PROD) });
   makeBucketPrivate(context);
 }
 
