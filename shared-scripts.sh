@@ -276,12 +276,13 @@ function _scanArtifacts {
     fi
 }
 
-function _integrationTest {
-    echo "Restoring Cache"
-    loadCache repo $CODEBUILD_SRC_DIR
-    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+function _putCredsInProfile {
+    mkdir -p ~/.aws
+    touch ~/.aws/config ~/.aws/credentials 
+    python3 codebuild_specs/sh-files/aws-configure-credentials.py
+}
 
-    # echo "Setting Up Dependencies"
+function _installIntegTestsDependencies {
     apt-get update
     apt-get install -y sudo
     sudo apt-get install -y tcl
@@ -291,6 +292,20 @@ function _integrationTest {
     sudo apt-get install -y python3 python3-pip libpython3-dev
     sudo apt-get install -y jq
     pip install awscli
+}
+
+function _integTestAmplifyInit {
+    export REACTCONFIG="{\"SourceDir\":\"src\",\"DistributionDir\":\"build\",\"BuildCommand\":\"npm run-script build\",\"StartCommand\":\"npm run-script start\"}"
+    export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
+    export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
+    export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"    
+    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
+}
+
+function _integrationTest {
+    echo "Restoring Cache"
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
     echo "Loading test account credentials"
     _loadTestAccountCredentials
@@ -299,7 +314,11 @@ function _integrationTest {
     chmod +x ./codebuild_specs/sh-files/aws.sh
     expect ./codebuild_specs/exp-files/aws_configure.exp
 
-    # codebuild-breakpoint
+    echo "Adding credentials to default aws profile"
+    _putCredsInProfile
+
+    echo "Setting Up Dependencies"
+    _installIntegTestsDependencies
 
     echo "Configuring Amplify CLI"
     yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
@@ -313,45 +332,27 @@ function _integrationTest {
     yarn --cache-folder ~/.cache/yarn
     yarn add cypress@6.8.0 --save
 
-
-    # echo "Running "
     cd ../amplify-cli && pwd
     chmod +x codebuild_specs/sh-files/auth.sh
     chmod +x codebuild_specs/sh-files/amplify_init.sh
     chmod +x codebuild_specs/exp-files/amplify_init.exp
     chmod +x codebuild_specs/exp-files/enable_auth.exp
 
-    mkdir -p ~/.aws
-    touch ~/.aws/config ~/.aws/credentials 
-    python3 codebuild_specs/sh-files/aws-configure-credentials.py
-
-    echo "spawning init script"
-    # expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
-
+    echo "Initializing new amplify project"
     cd ../aws-amplify-cypress-auth && pwd
-    export REACTCONFIG="{\"SourceDir\":\"src\",\"DistributionDir\":\"build\",\"BuildCommand\":\"npm run-script build\",\"StartCommand\":\"npm run-script start\"}"
-    export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
-    export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
-    export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"
-    
-    codebuild-breakpoint
-    
-    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
+    _integTestAmplifyInit
 
-    amplify-dev status
-
-    codebuild-breakpoint
     
-    cd ../amplify-cli && pwd
-    echo "start auth exp"
-    expect codebuild_specs/exp-files/enable_auth.exp
-    echo "end auth exp"
-    cd ../aws-amplify-cypress-auth && pwd
-    echo "start auth push"
-    amplify-dev push --yes
-    echo "end push"
+    # cd ../amplify-cli && pwd
+    # echo "start auth exp"
+    # expect codebuild_specs/exp-files/enable_auth.exp
+    # echo "end auth exp"
+    # cd ../aws-amplify-cypress-auth && pwd
+    # echo "start auth push"
+    # amplify-dev push --yes
+    # echo "end push"
 
-    codebuild-breakpoint
+    # codebuild-breakpoint
 
 
     # cd ../aws-amplify-cypress-auth && pwd
