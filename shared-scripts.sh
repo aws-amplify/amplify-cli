@@ -327,5 +327,10 @@ function _integrationTest {
 
     echo "spawning init script"
     expect codebuild_specs/exp-files/amplify_init.exp ../aws-amplify-cypress-auth
+    expect .circleci/enable_auth.exp
+    
+    cd ../aws-amplify-cypress-auth
+    yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+
     codebuild-breakpoint
 }
