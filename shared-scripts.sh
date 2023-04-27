@@ -302,6 +302,14 @@ function _integTestAmplifyInit {
     amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
 }
 
+function _addAndPushAuth {
+    chmod +x codebuild_specs/sh-files/auth.sh
+    chmod +x codebuild_specs/exp-files/enable_auth.exp
+    expect codebuild_specs/exp-files/enable_auth.exp
+    cd ../aws-amplify-cypress-auth && pwd
+    amplify-dev push --yes
+}
+
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
@@ -332,38 +340,21 @@ function _integrationTest {
     yarn --cache-folder ~/.cache/yarn
     yarn add cypress@6.8.0 --save
 
-    cd ../amplify-cli && pwd
-    chmod +x codebuild_specs/sh-files/auth.sh
-    chmod +x codebuild_specs/sh-files/amplify_init.sh
-    chmod +x codebuild_specs/exp-files/amplify_init.exp
-    chmod +x codebuild_specs/exp-files/enable_auth.exp
-
     echo "Initializing new amplify project"
     cd ../aws-amplify-cypress-auth && pwd
     _integTestAmplifyInit
     
+    echo "Adding auth and pushing"
     cd ../amplify-cli && pwd
-    echo "start auth exp"
-    expect codebuild_specs/exp-files/enable_auth.exp
-    echo "end auth exp"
-    cd ../aws-amplify-cypress-auth && pwd
-    echo "start auth push"
-    amplify-dev push --yes
+    _addAndPushAuth
     echo "end push"
 
-    codebuild-breakpoint 
-
-
-    # codebuild-breakpoint
-
-
-    # cd ../aws-amplify-cypress-auth && pwd
-    # yarn --frozen-lockfile --cache-folder ~/.cache/yarn
-    # cd src && cat $(find . -type f -name 'aws-exports*') && pwd
+    yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+    cd src && cat $(find . -type f -name 'aws-exports*') && pwd
     
-    # echo "Start Auth test server in background"
-    # cd .. && pwd
-    # export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
-    # yarn start &
-    # echo "ran yarn start in background"
+    echo "Start Auth test server in background"
+    cd .. && pwd
+    export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
+    yarn start &
+    echo "ran yarn start in background"
 }
