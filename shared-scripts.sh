@@ -333,13 +333,19 @@ function _integrationTest {
     export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
     export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
     export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"
+    
+    codebuild-breakpoint
+    
     amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS
 
     amplify-dev status
 
     codebuild-breakpoint
+    
     cd ../amplify-cli && pwd
     expect codebuild_specs/exp-files/enable_auth.exp
+    
+    codebuild-breakpoint
 
 
     cd ../aws-amplify-cypress-auth && pwd
