@@ -27,5 +27,5 @@ expect "Please choose the profile you want to use"
 send -- "\r"
 expect "Help improve Amplify CLI by sharing non sensitive configurations on failures"
 send -- "\r"
-timeout 180
+set timeout -1
 interact
