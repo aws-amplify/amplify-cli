@@ -311,14 +311,12 @@ function _addAndPushAuth {
     amplify-dev status
 }
 
-function startAuthServer {
+function _prepareAuthServer {
     echo "Start Auth test server in background"
     yarn --frozen-lockfile --cache-folder ~/.cache/yarn
     cd src && cat $(find . -type f -name 'aws-exports*') && pwd
     cd .. && pwd
     export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
-    yarn start &
-    echo "ran yarn start in background"
 }
 
 function _integrationTest {
@@ -360,7 +358,10 @@ function _integrationTest {
     _addAndPushAuth
     echo "end push"
 
-    nohup startAuthServer & echo $! > ~/auth-server-pid-file
-
+    echo "preparing auth server"
+    _prepareAuthServer
+    echo "running auth server in background"
+    nohup yarn start & echo $! > ~/auth-server-pid-file
+    jobs
     codebuild-breakpoint
 }
