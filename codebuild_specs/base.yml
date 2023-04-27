@@ -4,7 +4,7 @@ env:
   compute-type: BUILD_GENERAL1_MEDIUM
   variables:
     AWS_DEFAULT_REGION: us-east-1
-    AWS_REGION: US-east-1
+    AWS_REGION: us-east-1
     CDK_DEFAULT_REGION: us-east-1
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2b.test.ts
