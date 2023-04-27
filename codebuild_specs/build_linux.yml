@@ -9,3 +9,4 @@ phases:
 artifacts:
   files:
     - 'shared-scripts.sh'
+       core.error('Missing semicolon', {file: 'app.js', startLine: 1})
