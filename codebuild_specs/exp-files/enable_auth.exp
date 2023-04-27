@@ -6,5 +6,6 @@ expect "How do you want users to be able to sign in?"
 send -- "\r"
 expect "Do you want to configure advanced settings?"
 send -- "\r"
+expect "\"amplify publish\" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud"
 set timeout -1
 interact

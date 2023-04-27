@@ -345,14 +345,14 @@ function _integrationTest {
     codebuild-breakpoint 
 
     
-    # cd ../amplify-cli && pwd
-    # echo "start auth exp"
-    # expect codebuild_specs/exp-files/enable_auth.exp
-    # echo "end auth exp"
-    # cd ../aws-amplify-cypress-auth && pwd
-    # echo "start auth push"
-    # amplify-dev push --yes
-    # echo "end push"
+    cd ../amplify-cli && pwd
+    echo "start auth exp"
+    expect codebuild_specs/exp-files/enable_auth.exp
+    echo "end auth exp"
+    cd ../aws-amplify-cypress-auth && pwd
+    echo "start auth push"
+    amplify-dev push --yes
+    echo "end push"
 
     # codebuild-breakpoint
 
