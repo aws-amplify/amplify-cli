@@ -7,7 +7,6 @@ import {
   getProjectMeta,
   getProjectTags,
   describeCloudFormationStack,
-  addDEVHosting,
   deleteS3Bucket,
   removeHosting,
   extractHostingBucketInfo,
@@ -38,7 +37,6 @@ describe('generated tags test', () => {
     const projName = 'tagsTest';
     const envName = 'devtag';
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addDEVHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
     // This block of code gets the necessary info to compare the values of both the local tags from the JSON file and tags on the stack

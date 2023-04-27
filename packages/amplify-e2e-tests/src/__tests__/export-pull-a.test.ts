@@ -5,7 +5,7 @@ import {
   addApiWithoutSchema,
   addAuthWithMaxOptions,
   addConvert,
-  addDEVHosting,
+  addPRODHosting,
   addS3StorageWithIdpAuth,
   amplifyPush,
   amplifyPushWithoutCodegen,
@@ -60,7 +60,6 @@ describe('amplify export pull a', () => {
   const AddandPushCategories = async (frontend?: string): Promise<void> => {
     await addAuthWithMaxOptions(projRoot, { frontend });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
-    await addDEVHosting(projRoot);
     await addS3StorageWithIdpAuth(projRoot);
     await addConvert(projRoot);
     if (frontend === 'flutter') {
