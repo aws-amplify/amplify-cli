@@ -344,7 +344,9 @@ function _integrationTest {
     
     cd ../amplify-cli && pwd
     expect codebuild_specs/exp-files/enable_auth.exp
-    
+    cd ../aws-amplify-cypress-auth && pwd
+    amplify-dev push --yes
+
     codebuild-breakpoint
 
 
@@ -355,5 +357,6 @@ function _integrationTest {
     echo "Start Auth test server in background"
     cd .. && pwd
     export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
-    yarn start
+    yarn start &
+    echo "ran yarn start in background"
 }
