@@ -342,6 +342,8 @@ function _integrationTest {
     cd ../aws-amplify-cypress-auth && pwd
     _integTestAmplifyInit
 
+    codebuild-breakpoint
+
     
     # cd ../amplify-cli && pwd
     # echo "start auth exp"
