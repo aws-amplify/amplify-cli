@@ -321,7 +321,7 @@ function _integrationTest {
     # chmod +x codebuild_specs/exp-files/amplify_init.exp
     # chmod +x codebuild_specs/exp-files/enable_auth.exp
 
-    mkdir -p .aws
+    mkdir -p ~/.aws
     touch ~/.aws/config ~/.aws/credentials 
     python3 codebuild_specs/aws-configure-credentials.py
 
