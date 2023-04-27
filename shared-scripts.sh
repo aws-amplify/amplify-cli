@@ -281,47 +281,48 @@ function _integrationTest {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
-    # echo "Setting Up Dependencies"
-    apt-get update
-    apt-get install -y sudo
-    sudo apt-get install -y tcl
-    sudo apt-get install -y expect
-    sudo apt-get install -y zip
-    sudo apt-get install -y lsof
-    sudo apt-get install -y python3 python3-pip libpython3-dev
-    sudo apt-get install -y jq
-    pip install awscli
+    # # echo "Setting Up Dependencies"
+    # apt-get update
+    # apt-get install -y sudo
+    # sudo apt-get install -y tcl
+    # sudo apt-get install -y expect
+    # sudo apt-get install -y zip
+    # sudo apt-get install -y lsof
+    # sudo apt-get install -y python3 python3-pip libpython3-dev
+    # sudo apt-get install -y jq
+    # pip install awscli
 
     echo "Loading test account credentials"
     _loadTestAccountCredentials
 
-    echo "Running aws_configure.sh"
-    chmod +x ./codebuild_specs/sh-files/aws.sh
-    expect ./codebuild_specs/exp-files/aws_configure.exp
+    # echo "Running aws_configure.sh"
+    # chmod +x ./codebuild_specs/sh-files/aws.sh
+    # expect ./codebuild_specs/exp-files/aws_configure.exp
 
-    # codebuild-breakpoint
+    # # codebuild-breakpoint
 
-    echo "Configuring Amplify CLI"
-    yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
-    export PATH=$(yarn global bin):$PATH # changed from CCI: echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV. see https://circleci.com/docs/env-vars/#example-configuration-of-environment-variables
-    amplify-dev
+    # echo "Configuring Amplify CLI"
+    # yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
+    # export PATH=$(yarn global bin):$PATH # changed from CCI: echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV. see https://circleci.com/docs/env-vars/#example-configuration-of-environment-variables
+    # amplify-dev
 
-    echo "Cloning auth test package"
-    cd ..
-    git clone $AUTH_CLONE_URL
-    cd aws-amplify-cypress-auth
-    yarn --cache-folder ~/.cache/yarn
-    yarn add cypress@6.8.0 --save
+    # echo "Cloning auth test package"
+    # cd ..
+    # git clone $AUTH_CLONE_URL
+    # cd aws-amplify-cypress-auth
+    # yarn --cache-folder ~/.cache/yarn
+    # yarn add cypress@6.8.0 --save
 
 
-    echo "Running "
-    cd ../amplify-cli
-    chmod +x codebuild_specs/sh-files/auth.sh
-    chmod +x codebuild_specs/sh-files/amplify_init.sh
-    chmod +x codebuild_specs/exp-files/amplify_init.exp
-    chmod +x codebuild_specs/exp-files/enable_auth.exp
+    # echo "Running "
+    # cd ../amplify-cli
+    # chmod +x codebuild_specs/sh-files/auth.sh
+    # chmod +x codebuild_specs/sh-files/amplify_init.sh
+    # chmod +x codebuild_specs/exp-files/amplify_init.exp
+    # chmod +x codebuild_specs/exp-files/enable_auth.exp
 
     touch ~/.aws/config ~/.aws/credentials 
+    print('ls', os.listdir('~'))
     python3 codebuild_specs/aws-configure-credentials.py
 
     echo "spawning init script"
