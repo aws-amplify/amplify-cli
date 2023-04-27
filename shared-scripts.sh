@@ -335,7 +335,10 @@ function _integrationTest {
     export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"
     amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS
 
+    amplify-dev status
+
     codebuild-breakpoint
+    cd ../amplify-cli && pwd
     expect codebuild_specs/exp-files/enable_auth.exp
 
 
