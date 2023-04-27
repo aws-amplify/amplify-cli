@@ -49,9 +49,6 @@ export function addPRODHosting(cwd: string): Promise<void> {
       .wait('Select the plugin module to execute')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Select the environment setup:')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
       .wait('hosting bucket name')
       .sendCarriageReturn()
       .run((err: Error) => {
