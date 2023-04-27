@@ -19,8 +19,8 @@ region=us-west-2
 
 '''
 
-with open('~/.aws/credentials') as f:
+with open('~/.aws/credentials', 'w') as f:
   f.write(credentials_file_contents)
 
-with open('~/.aws/config') as f:
+with open('~/.aws/config', 'w') as f:
   f.write(config_file_contents)
