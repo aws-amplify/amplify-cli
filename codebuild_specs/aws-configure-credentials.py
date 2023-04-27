@@ -19,5 +19,5 @@ region=us-west-2
 with open('/root/.aws/credentials', 'w') as f:
   f.write(credentials_file_contents)
 
-with open('root/.aws/config', 'w') as f:
+with open('/root/.aws/config', 'w') as f:
   f.write(config_file_contents)
