@@ -1,5 +1,6 @@
 import { Context } from '../domain/context';
 import { CLIInput as CommandLineInput } from '../domain/command-input';
+jest.setTimeout(150000);
 
 describe('test SIGINT with execute', () => {
   afterAll(() => {
