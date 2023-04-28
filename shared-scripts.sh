@@ -304,9 +304,17 @@ function _integTestAmplifyInit {
 }
 
 function _addAndPushAuth {
-    chmod +x ../amplify-cli/codebuild_specs/sh-files/auth.sh
-    chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
-    expect ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/api.sh
+    chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_api.exp
+    expect ../amplify-cli/codebuild_specs/exp-files/enable_api.exp
+    amplify-dev push --yes
+    amplify-dev status
+}
+
+function _addAndPushApi {
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/api.sh
+    chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_api.exp
+    expect ../amplify-cli/codebuild_specs/exp-files/enable_api.exp
     amplify-dev push --yes
     amplify-dev status
 }
@@ -355,7 +363,7 @@ function _integrationTest {
     yarn --cache-folder ~/.cache/yarn
     yarn add cypress@6.8.0 --save
 
-    echo "Initializing new amplify project"
+    echo "Initializing new amplify project for auth"
     cd ../aws-amplify-cypress-auth && pwd
     _integTestAmplifyInit
     
@@ -383,15 +391,23 @@ function _integrationTest {
     sudo kill -9 $(lsof -t -i:3000)
 
     echo "Deleting amplify app"
-    # export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
+    export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
     chmod +x ../amplify-cli/codebuild_specs/sh-files/delete_auth.sh
     expect ../amplify-cli/codebuild_specs/exp-files/delete_auth.exp
-    # aws s3 rb "$DEPLOYMENT_BUCKET" --force
+    aws s3 rb "$DEPLOYMENT_BUCKET" --force
 
-    # echo "Cloning api test package"
-    # cd .. && pwd
-    # git clone $AUTH_CLONE_URL
-    # cd aws-amplify-cypress-auth && pwd
-    # yarn --cache-folder ~/.cache/yarn
-    # yarn add cypress@6.8.0 --save
-}
+    echo "Clone API test package"
+    cd .. && pwd
+    git clone $API_CLONE_URL
+    cd aws-amplify-cypress-api
+    yarn --cache-folder ~/.cache/yarn}
+
+    echo "Initializing new amplify project for api"
+    cd ../aws-amplify-cypress-api && pwd
+    _integTestAmplifyInit
+
+    echo "Adding api and pushing"
+    _addAndPushApi
+    echo "end push"
+
+    
