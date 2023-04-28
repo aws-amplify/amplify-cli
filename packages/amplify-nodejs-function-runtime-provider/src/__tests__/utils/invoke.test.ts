@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { invoke } from '../../utils/invoke';
-jest.setTimeout(10000);
 
 jest.mock('../../utils/executorPath', () => ({
   executorPath: path.resolve(path.join(__dirname, '../../../lib/utils/execute.js')),

@@ -92,7 +92,7 @@ describe('Test Mock API methods', () => {
     const testApi = new APITest();
     await testApi.start(mockContext);
 
-    await expect(testApi['getAppSyncApi'](mockContext)).rejects.toThrow(
+    await expect(testApi['getAppSyncAPI'](mockContext)).rejects.toThrow(
       new AmplifyError('MockProcessError', {
         message: 'No AppSync API is added to the project',
         resolution: `Use 'amplify add api' in the root of your app directory to create a GraphQL API.`,
