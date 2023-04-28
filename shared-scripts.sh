@@ -407,8 +407,6 @@ function _integrationTest {
     aws s3 rb "$DEPLOYMENT_BUCKET" --force
 
 
-
-
     echo "Clone API test package"
     cd .. && pwd
     git clone $API_CLONE_URL
@@ -437,5 +435,14 @@ function _integrationTest {
     echo "Running auth tests now"
     export NODE_OPTIONS=--max-old-space-size=5120
     _runIntegApiTests
-    echo "Finished auth tests"
+    echo "Finished api tests"
+
+    echo "Killing server"
+    sudo kill -9 $(lsof -t -i:3000)
+
+    echo "Deleting amplify app"
+    export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/delete_auth.sh
+    expect ../amplify-cli/codebuild_specs/exp-files/delete_auth.exp
+    aws s3 rb "$DEPLOYMENT_BUCKET" --force
 }
