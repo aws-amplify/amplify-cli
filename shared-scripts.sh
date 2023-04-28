@@ -366,13 +366,10 @@ function _integrationTest {
     echo "preparing auth server"
     _prepareAuthServer
     echo "running auth server in background"
-    # nohup yarn start & echo $! > ~/auth-server-pid-file
-    # jobs
 
-    echo "before expect server"
-    expect ../amplify-cli/codebuild_specs/exp-files/wait-for-server.exp
-    echo "after expect server"
-
+	nohup yarn start & disown $!
+    while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." nohup.out; do sleep 1; done
+	echo "server started"
 
     echo "Running tests now"
     cat $(find ../amplify-cli -type f -name 'auth_spec*')
