@@ -366,8 +366,8 @@ function _integrationTest {
     echo "preparing auth server"
     _prepareAuthServer
     echo "running auth server in background"
-    nohup yarn start & echo $! > ~/auth-server-pid-file
-    jobs
+    # nohup yarn start & echo $! > ~/auth-server-pid-file
+    # jobs
 
     echo "before expect server"
     expect ../amplify-cli/codebuild_specs/exp-files/wait-for-server.exp
