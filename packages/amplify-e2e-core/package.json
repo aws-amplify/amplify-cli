@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-e2e-core",
-  "version": "4.9.0",
+  "version": "4.9.1-rc.0154097b6a.0",
   "description": "",
   "repository": {
     "type": "git",
