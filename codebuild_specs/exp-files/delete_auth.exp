@@ -1,5 +1,5 @@
 #!/usr/bin/expect
-spawn codebuild_specs/sh-files/delete_auth.sh
+spawn ../amplify-cli/codebuild_specs/sh-files/delete_auth.sh
 expect "Are you sure you want to continue? This CANNOT be undone. (This will delete all the environments of the project from the cloud and wipe out all the local files created by Amplify CLI)"
 send -- "Y\r"
 interact
