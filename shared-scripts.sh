@@ -360,12 +360,10 @@ function _integrationTest {
     _integTestAmplifyInit
     
     echo "Adding auth and pushing"
-    cd ../amplify-cli && pwd
     _addAndPushAuth
     echo "end push"
 
     echo "preparing auth server"
-    cd ../aws-amplify-cypress-auth && pwd
     _prepareAuthServer
     echo "running auth server in background"
     nohup yarn start & echo $! > ~/auth-server-pid-file
