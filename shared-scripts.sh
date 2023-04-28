@@ -367,6 +367,7 @@ function _integrationTest {
     _prepareAuthServer
     echo "running auth server in background"
 
+    export NODE_OPTIONS=--openssl-legacy-provider
 	nohup yarn start & disown $!
     while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." nohup.out; do sleep 1; done
 	echo "server started"
