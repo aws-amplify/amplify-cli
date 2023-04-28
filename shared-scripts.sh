@@ -414,6 +414,7 @@ function _integrationTest {
     git clone $API_CLONE_URL
     cd aws-amplify-cypress-api
     yarn --cache-folder ~/.cache/yarn
+    yarn add cypress@6.8.0 --save
 
     echo "Initializing new amplify project for api"
     cd ../aws-amplify-cypress-api && pwd
