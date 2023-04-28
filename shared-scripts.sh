@@ -291,6 +291,7 @@ function _installIntegTestsDependencies {
     sudo apt-get install -y lsof
     sudo apt-get install -y python3 python3-pip libpython3-dev
     sudo apt-get install -y jq
+    sudo apt-get install -y libgbm-dev #
     pip install awscli
 }
 
@@ -320,8 +321,8 @@ function _prepareAuthServer {
 }
 
 function _runIntegTests {
-    cp ../repo/cypress.json .
-    cp -R ../repo/cypress .
+    cp ../amplify-cli/cypress.json .
+    cp -R ../amplify-cli/cypress .
     yarn cypress run --spec $(find . -type f -name 'auth_spec*')
 }
 
@@ -373,8 +374,6 @@ function _integrationTest {
     echo "Running tests now"
     cat $(find ../repo -type f -name 'auth_spec*')
     cd ../aws-amplify-cypress-auth
-    
-    codebuild-breakpoint
 
     _runIntegTests
 
