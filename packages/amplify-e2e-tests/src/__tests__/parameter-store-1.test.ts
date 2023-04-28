@@ -59,23 +59,14 @@ describe('upload and delete parameters', () => {
     );
 
     await amplifyPushAuth(projRoot);
-    const deploymentBucketAndKey = [
-      { name: 'deploymentBucketName' },
-      { name: 's3Key' },
-    ];
-    const expectedParamsAfterAddFunc = [
-      ...deploymentBucketAndKey,
-      { name: envVariableName, value: envVariableValue },
-    ];
+    const deploymentBucketAndKey = [{ name: 'deploymentBucketName' }, { name: 's3Key' }];
+    const expectedParamsAfterAddFunc = [...deploymentBucketAndKey, { name: envVariableName, value: envVariableValue }];
     await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, 'function', fnName);
 
     await addEnvironmentCarryOverEnvVars(projRoot, { envName: secondEnvName });
     await addFunction(projRoot, { name: fnName2, functionTemplate: 'Hello World' }, 'nodejs');
     await amplifyPushAuth(projRoot);
-    const expectedParamsAfterAddEnv = [
-      ...deploymentBucketAndKey,
-      { name: envVariableName, value: envVariableValue },
-    ];
+    const expectedParamsAfterAddEnv = [...deploymentBucketAndKey, { name: envVariableName, value: envVariableValue }];
     await expectParametersOptionalValue(expectedParamsAfterAddFunc, [], region, appId, firstEnvName, 'function', fnName);
     await expectParametersOptionalValue(expectedParamsAfterAddEnv, [], region, appId, secondEnvName, 'function', fnName);
     await expectParametersOptionalValue(deploymentBucketAndKey, [], region, appId, secondEnvName, 'function', fnName2);

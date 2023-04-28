@@ -44,7 +44,7 @@ export const deleteEnvironmentParametersForResources = async (
   const envKeysInParameterStore = await getAllEnvParametersFromParameterStore(appId, envName, client);
   const removedParameterKeys = envKeysInParameterStore.filter((key: string) => {
     const keyAfterPaths = key.split('/').pop();
-    const [/* AMPLIFY */, categoryName, resourceName, /* paramName */] = keyAfterPaths.split('_');
+    const [, categoryName, resourceName] = keyAfterPaths.split('_');
     for (const resource of resources) {
       if (resource.category === categoryName && resource.resourceName === resourceName) {
         return true;
