@@ -19,9 +19,6 @@ async function enable(context) {
   let parametersFilePath = path.join(__dirname, parametersFileName);
   context.exeInfo.parameters = context.amplify.readJsonFile(parametersFilePath);
 
-  // will take this out once cloudformation invoke and wait are separated;
-  await checkCDN(context);
-
   await configManager.init(context);
 
   if (context.parameters.options.p) {
@@ -45,14 +42,6 @@ async function enable(context) {
     providerPlugin,
   };
   return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, metaData);
-}
-
-async function checkCDN(context) {
-  makeBucketPrivate(context);
-}
-
-function makeBucketPrivate(context) {
-  delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
 }
 
 async function configure(context) {
