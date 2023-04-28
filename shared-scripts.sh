@@ -334,7 +334,7 @@ function _prepareApiServer {
 function _runIntegAuthTests {
     cp ../amplify-cli/cypress.json .
     cp -R ../amplify-cli/cypress .
-    yarn cypress run --spec $(find . -type f -name 'auth_spec*')
+    yarn cypress run --spec $(find . -type f -name 'api_spec*')
 }
 
 function _integrationTest {
@@ -423,11 +423,10 @@ function _integrationTest {
     export NODE_OPTIONS=--openssl-legacy-provider
 	nohup yarn start > server_output.txt & disown $!
     echo "Polling for server ready message"
-    while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "ready message not found yet" && sleep 1; done
+    while ! grep -Fxq "You can now view aws-amplify-cypress-api in the browser." server_output.txt; do echo "ready message not found yet" && sleep 1; done
 	echo "server started"
 
     echo "Running auth tests now"
-    cat $(find ../amplify-cli -type f -name 'auth_spec*')
     export NODE_OPTIONS=--max-old-space-size=5120
     _runIntegAuthTests
     echo "Finished auth tests"
