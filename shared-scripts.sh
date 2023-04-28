@@ -400,7 +400,7 @@ function _integrationTest {
     cd .. && pwd
     git clone $API_CLONE_URL
     cd aws-amplify-cypress-api
-    yarn --cache-folder ~/.cache/yarn}
+    yarn --cache-folder ~/.cache/yarn
 
     echo "Initializing new amplify project for api"
     cd ../aws-amplify-cypress-api && pwd
@@ -410,4 +410,4 @@ function _integrationTest {
     _addAndPushApi
     echo "end push"
 
-    
+}
