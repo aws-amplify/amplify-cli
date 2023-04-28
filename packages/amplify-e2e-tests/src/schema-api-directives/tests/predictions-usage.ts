@@ -55,16 +55,21 @@ async function uploadImageFile(projectDir: string) {
   }) as any;
 
   const bucketName = amplifyMeta.storage[storageResourceName].output.BucketName;
-
-  const fileStream = fs.createReadStream(imageFilePath);
-  const uploadParams = {
-    Bucket: bucketName,
-    Key: imageKey,
-    Body: fileStream,
-    ContentType: 'image/jpeg',
-    ACL: 'public-read',
-  };
-  await s3Client.upload(uploadParams).promise();
+  try {
+    const fileStream = fs.createReadStream(imageFilePath);
+    const uploadParams = {
+      Bucket: bucketName,
+      Key: imageKey,
+      Body: fileStream,
+      ContentType: 'image/jpeg',
+      ACL: 'public-read',
+    };
+    await s3Client.upload(uploadParams).promise();
+  } catch (err) {
+    if (err.code !== 'AccessControlListNotSupported') {
+      throw err;
+    }
+  }
 }
 
 //schema
