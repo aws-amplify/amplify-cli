@@ -383,9 +383,10 @@ function _integrationTest {
     sudo kill -9 $(lsof -t -i:3000)
 
     echo "Deleting amplify app"
+    export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
     chmod +x ../amplify-cli/codebuild_specs/sh-files/delete_auth.sh
     expect ../amplify-cli/codebuild_specs/exp-files/delete_auth.exp
-
+    aws s3 rb "$DEPLOYMENT_BUCKET" --force
 
     # echo "Cloning api test package"
     # cd .. && pwd
