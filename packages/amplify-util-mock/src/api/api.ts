@@ -96,7 +96,7 @@ export class APITest {
       if (e.resolution == undefined || e.link == undefined ) {
         context.print.red(`Reason: ${e.message}`);
       } else {
-        context.print.red(`Reason: ${e.message}\nResolution: ${e?.resolution}`);
+        context.print.red(`Reason: ${e.message}\nResolution: ${e.resolution}`);
         context.print.green(`${e.link}`);
       }
     } 
