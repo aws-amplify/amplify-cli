@@ -20,7 +20,7 @@ export const run = async (context: $TSContext) => {
       context.print.red(`Reason: ${e.message}`);
     } else {
       context.print.red(`Reason: ${e.message}\nResolution: ${e?.resolution}`);
-      context.print.green(`For troubleshooting guide, please visit: ${e.link}`);
+      context.print.green(`For troubleshooting guide, visit: ${e.link}`);
   }
 }
 };

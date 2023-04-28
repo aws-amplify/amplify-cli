@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
 import * as opensearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
-import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, $TSAny, AmplifyFault, AMPLIFY_SUPPORT_DOCS, isWindowsPlatform, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -38,7 +38,7 @@ export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
 export const MOCK_API_KEY = 'da2-fakeApiId123456';
 export const MOCK_API_PORT = 20002;
-const errorSuffix = `\n For troubleshooting the GraphQL API, please visit ${AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url} `
+const errorSuffix = `\n For troubleshooting the GraphQL API, visit ${AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url} `
 
 export class APITest {
   private apiName: string;
@@ -384,9 +384,9 @@ export class APITest {
       return undefined;
     });
     if (!name) {
-      throw new AmplifyFault('MockProcessFault', {
+      throw new AmplifyError('MockProcessError', {
         message: 'No AppSync API is added to the project',
-        resolution: `Use 'amplify add api' in the root of your app directory to create an API. Today, we only support mocking of GraphQL API`,
+        resolution: `Use 'amplify add api' in the root of your app directory to create a GraphQL API.`,
         link: `${errorSuffix}`,
       });
     }

@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, AmplifyError, AmplifyFault, pathManager, stateManager} from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, pathManager} from '@aws-amplify/amplify-cli-core';
 import { APITest } from '../../api/api';
 import * as lambdaInvoke from '../../api/lambda-invoke';
 import { getMockSearchableTriggerDirectory } from '../../utils';
@@ -93,13 +93,13 @@ describe('Test Mock API methods', () => {
     await testApi.start(mockContext);
 
     await expect(testApi['getAppSyncApiPublic'](mockContext)).rejects.toThrow(
-      new AmplifyFault('MockProcessFault', {
+      new AmplifyError('MockProcessError', {
         message: 'No AppSync API is added to the project',
-        resolution: `Use 'amplify add api' in the root of your app directory to create an API. Today, we only support mocking of GraphQL API`,
+        resolution: `Use 'amplify add api' in the root of your app directory to create a GraphQL API.`,
         link: 'https://docs.amplify.aws/cli/graphql/troubleshooting/',
       })
     );
-    expect(mockContext.print.green).toHaveBeenCalledWith('\n For troubleshooting the GraphQL API, please visit https://docs.amplify.aws/cli/graphql/troubleshooting/ ');  
+    expect(mockContext.print.green).toHaveBeenCalledWith('\n For troubleshooting the GraphQL API, visit https://docs.amplify.aws/cli/graphql/troubleshooting/ ');  
   });
 
   it('shows error message & resolution when amplify environment is not initialized', async () => {
