@@ -372,7 +372,7 @@ export class APITest {
     const ddbConfig = this.ddbClient.config;
     return configureDDBDataSource(config, ddbConfig);
   }
-  private async getAppSyncAPI(context) {
+  public async getAppSyncAPI(context) {
     const currentMeta = await getAmplifyMeta(context);
     const { api: apis = {} } = currentMeta;
     let name = null;
@@ -391,11 +391,6 @@ export class APITest {
       });
     }
     return name;
-  }
-
-// extracted method for testing purposes only
-  public async getAppSyncApiPublic(context) {
-    return await this.getAppSyncAPI(context);
   }
 
   private async startDynamoDBLocalServer(context) {
