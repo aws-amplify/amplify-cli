@@ -382,6 +382,8 @@ function _integrationTest {
     echo "Killing server"
     sudo kill -9 $(lsof -t -i:3000)
 
+    codebuild-breakpoint
+
     echo "Deleting amplify app"
     export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
     chmod +x ../amplify-cli/codebuild_specs/sh-files/delete_auth.sh
