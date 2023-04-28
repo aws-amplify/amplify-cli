@@ -304,10 +304,9 @@ function _integTestAmplifyInit {
 }
 
 function _addAndPushAuth {
-    chmod +x codebuild_specs/sh-files/auth.sh
-    chmod +x codebuild_specs/exp-files/enable_auth.exp
-    expect codebuild_specs/exp-files/enable_auth.exp
-    cd ../aws-amplify-cypress-auth && pwd
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/auth.sh
+    chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
+    expect ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
     amplify-dev push --yes
     amplify-dev status
 }
@@ -366,16 +365,15 @@ function _integrationTest {
     echo "end push"
 
     echo "preparing auth server"
+    cd ../aws-amplify-cypress-auth && pwd
     _prepareAuthServer
     echo "running auth server in background"
     nohup yarn start & echo $! > ~/auth-server-pid-file
     jobs
-    expect codebuild_specs/exp-files/wait-for-server.exp
+    expect ../amplify-cli/codebuild_specs/exp-files/wait-for-server.exp
 
     echo "Running tests now"
     cat $(find ../amplify-cli -type f -name 'auth_spec*')
-    cd ../aws-amplify-cypress-auth
-
     _runIntegTests
 
 }
