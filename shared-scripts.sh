@@ -379,6 +379,18 @@ function _integrationTest {
     _runIntegAuthTests
     echo "Finished auth tests"
 
+    echo "Killing server"
+    sudo kill -9 $(lsof -t -i:3000)
+
+    echo "Deleting amplify app"
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/delete_auth.sh
+    expect ../amplify-cli/codebuild_specs/exp-files/delete_auth.exp
 
 
+    # echo "Cloning api test package"
+    # cd .. && pwd
+    # git clone $AUTH_CLONE_URL
+    # cd aws-amplify-cypress-auth && pwd
+    # yarn --cache-folder ~/.cache/yarn
+    # yarn add cypress@6.8.0 --save
 }
