@@ -39,17 +39,17 @@ describe('preProcessCFNTemplate', () => {
   it('writes the modified template and returns the path', async () => {
     const newPath = await preProcessCFNTemplate(path.join(backendPath, resourcePath));
     expect(writeCFNTemplate_mock.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "test": "modified",
-        },
-        "/project/amplify/backend/awscloudformation/build/api/resourceName/cfn-template-name.json",
-        Object {
-          "minify": undefined,
-          "templateFormat": "json",
-        },
-      ]
-    `);
+[
+  {
+    "test": "modified",
+  },
+  "/project/amplify/backend/awscloudformation/build/api/resourceName/cfn-template-name.json",
+  {
+    "minify": undefined,
+    "templateFormat": "json",
+  },
+]
+`);
     expect(newPath).toMatchInlineSnapshot(`"/project/amplify/backend/awscloudformation/build/api/resourceName/cfn-template-name.json"`);
   });
 
