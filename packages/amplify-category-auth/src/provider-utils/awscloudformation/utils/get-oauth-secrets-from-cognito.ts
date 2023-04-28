@@ -28,7 +28,7 @@ export const getOAuthObjectFromCognito = async (
 };
 
 /**
- *  type  for "Facebook"|"Google"|"LoginWithAmazon"
+ *  type for "Facebook" | "Google" | "LoginWithAmazon"
  */
 export type GenericProviderDetails = {
   ProviderName: string;
