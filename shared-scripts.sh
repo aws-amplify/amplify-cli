@@ -304,9 +304,9 @@ function _integTestAmplifyInit {
 }
 
 function _addAndPushAuth {
-    chmod +x ../amplify-cli/codebuild_specs/sh-files/api.sh
-    chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_api.exp
-    expect ../amplify-cli/codebuild_specs/exp-files/enable_api.exp
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/auth.sh
+    chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
+    expect ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
     amplify-dev push --yes
     amplify-dev status
 }
@@ -320,11 +320,15 @@ function _addAndPushApi {
 }
 
 function _prepareAuthServer {
-    echo "Start Auth test server in background"
     yarn --frozen-lockfile --cache-folder ~/.cache/yarn
     cd src && cat $(find . -type f -name 'aws-exports*') && pwd
     cd .. && pwd
-    # export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
+}
+
+function _prepareApiServer {
+    yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+    cd src && cat $(find . -type f -name 'aws-exports*') && pwd
+    cd .. && pwd
 }
 
 function _runIntegAuthTests {
@@ -364,7 +368,7 @@ function _integrationTest {
     yarn add cypress@6.8.0 --save
 
     echo "Initializing new amplify project for auth"
-    cd ../aws-amplify-cypress-auth && pwd
+    pwd
     _integTestAmplifyInit
     
     echo "Adding auth and pushing"
@@ -373,8 +377,8 @@ function _integrationTest {
 
     echo "preparing auth server"
     _prepareAuthServer
-    echo "running auth server in background"
 
+    echo "running auth server in background"
     export NODE_OPTIONS=--openssl-legacy-provider
 	nohup yarn start > server_output.txt & disown $!
     echo "Polling for server ready message"
@@ -382,7 +386,7 @@ function _integrationTest {
 	echo "server started"
 
     echo "Running auth tests now"
-    cat $(find ../amplify-cli -type f -name 'auth_spec*')
+    cat $(find . -type f -name 'auth_spec*')
     export NODE_OPTIONS=--max-old-space-size=5120
     _runIntegAuthTests
     echo "Finished auth tests"
@@ -410,4 +414,19 @@ function _integrationTest {
     _addAndPushApi
     echo "end push"
 
+    echo "preparing api server"
+    _prepareApiServer
+
+    echo "running api server in background"
+    export NODE_OPTIONS=--openssl-legacy-provider
+	nohup yarn start > server_output.txt & disown $!
+    echo "Polling for server ready message"
+    while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "ready message not found yet" && sleep 1; done
+	echo "server started"
+
+    # echo "Running auth tests now"
+    # cat $(find ../amplify-cli -type f -name 'auth_spec*')
+    # export NODE_OPTIONS=--max-old-space-size=5120
+    # _runIntegAuthTests
+    # echo "Finished auth tests"
 }
