@@ -375,6 +375,7 @@ function _integrationTest {
 
     echo "Running tests now"
     cat $(find ../amplify-cli -type f -name 'auth_spec*')
+    export NODE_OPTIONS=--max-old-space-size=5120
     _runIntegTests
 
 }
