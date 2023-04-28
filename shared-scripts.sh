@@ -306,7 +306,13 @@ function _integTestAmplifyInit {
 function _addAndPushAuth {
     chmod +x ../amplify-cli/codebuild_specs/sh-files/auth.sh
     chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
+
+    echo "before expect server"
+
     expect ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
+
+    echo "after expect"
+
     amplify-dev push --yes
     amplify-dev status
 }
