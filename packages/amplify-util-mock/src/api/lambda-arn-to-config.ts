@@ -1,5 +1,12 @@
 import { keys } from 'lodash';
-import { $TSAny, $TSContext, stateManager, ApiCategoryFacade, getGraphQLTransformerFunctionDocLink, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  stateManager,
+  ApiCategoryFacade,
+  getGraphQLTransformerFunctionDocLink,
+  AmplifyFault,
+} from '@aws-amplify/amplify-cli-core';
 import _ = require('lodash');
 import { ServiceName } from '@aws-amplify/amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
@@ -34,7 +41,7 @@ export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promi
     throw new AmplifyFault('MockProcessFault', {
       message: `Did not find a Lambda matching ARN [${JSON.stringify(
         arn,
-        )}] in the project. Local mocking only supports Lambdas that are configured in the project.`,
+      )}] in the project. Local mocking only supports Lambdas that are configured in the project.`,
       resolution: `Use 'amplify add function' in the root of your app directory to create a new Lambda Function. To connect an AWS Lambda resolver to the GraphQL API, add the @function directive to a field in your schema.`,
       link: `${errorSuffix}`,
     });

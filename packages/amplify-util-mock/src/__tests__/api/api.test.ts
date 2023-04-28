@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, AmplifyError, pathManager} from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';
 import { APITest } from '../../api/api';
 import * as lambdaInvoke from '../../api/lambda-invoke';
 import { getMockSearchableTriggerDirectory } from '../../utils';
@@ -21,7 +21,6 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     getLocalEnvInfo: jest.fn(),
     localEnvInfoExists: jest.fn(),
   },
-
 }));
 jest.mock('amplify-dynamodb-simulator', () => jest.fn());
 jest.mock('fs-extra');
@@ -97,9 +96,11 @@ describe('Test Mock API methods', () => {
         message: 'No AppSync API is added to the project',
         resolution: `Use 'amplify add api' in the root of your app directory to create a GraphQL API.`,
         link: 'https://docs.amplify.aws/cli/graphql/troubleshooting/',
-      })
+      }),
     );
-    expect(mockContext.print.green).toHaveBeenCalledWith('\n For troubleshooting the GraphQL API, visit https://docs.amplify.aws/cli/graphql/troubleshooting/ ');  
+    expect(mockContext.print.green).toHaveBeenCalledWith(
+      '\n For troubleshooting the GraphQL API, visit https://docs.amplify.aws/cli/graphql/troubleshooting/ ',
+    );
   });
 
   it('shows error message & resolution when amplify environment is not initialized', async () => {
@@ -113,14 +114,14 @@ describe('Test Mock API methods', () => {
       parameters: {
         options: {
           help: false,
+        },
       },
-    },
       amplify: {
         getEnvInfo: jest.fn(() => {
           throw new AmplifyError('EnvironmentNotInitializedError', {
             message: 'Current environment cannot be determined.',
             resolution: `Use 'amplify init' in the root of your app directory to create a new environment.`,
-          }); 
+          });
         }),
         loadRuntimePlugin: jest.fn().mockReturnValue({}),
         addCleanUpTask: jest.fn,
@@ -129,11 +130,11 @@ describe('Test Mock API methods', () => {
           getGitIgnoreFilePath: jest.fn(),
         },
         stateManager: {
-          localEnvInfoExists: false
+          localEnvInfoExists: false,
         },
         readJsonFile: jest.fn().mockReturnValue({ api: {} }),
         getProjectDetails: {},
-      }
+      },
     } as unknown as $TSContext;
     await run(mockContext);
     await expect(mockContext.print.error).toHaveBeenCalledWith('Failed to start API Mocking.');

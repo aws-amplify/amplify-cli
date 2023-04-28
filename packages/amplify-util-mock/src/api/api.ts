@@ -38,7 +38,7 @@ export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
 export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
 export const MOCK_API_KEY = 'da2-fakeApiId123456';
 export const MOCK_API_PORT = 20002;
-const errorSuffix = `\n For troubleshooting the GraphQL API, visit ${AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url} `
+const errorSuffix = `\n For troubleshooting the GraphQL API, visit ${AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url} `;
 
 export class APITest {
   private apiName: string;
@@ -93,13 +93,13 @@ export class APITest {
       const errMessage = 'Failed to start API Mocking.';
       context.print.error(errMessage + ' Running cleanup tasks.');
       await this.stop(context);
-      if (e.resolution == undefined || e.link == undefined ) {
+      if (e.resolution == undefined || e.link == undefined) {
         context.print.red(`Reason: ${e.message}`);
       } else {
         context.print.red(`Reason: ${e.message}\nResolution: ${e.resolution}`);
         context.print.green(`${e.link}`);
       }
-    } 
+    }
   }
 
   async stop(context) {
