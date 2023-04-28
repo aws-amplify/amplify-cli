@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { lambdaArnToConfig } from '../../api/lambda-arn-to-config';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import { loadLambdaConfig } from '../../utils/lambda/load-lambda-config';
@@ -75,7 +75,7 @@ describe('lambda arn to config', () => {
 
   it('throws when arn is valid but no matching lambda found in the project', async () => {
     expect(lambdaArnToConfig(context_stub, 'validformat::but::no::matchinglambda')).rejects.toThrowError(
-      new AmplifyFault('MockProcessFault', {
+      new AmplifyError('MockProcessError', {
         message: `Did not find a Lambda matching ARN [\"validformat::but::no::matchinglambda\"] in the project. Local mocking only supports Lambdas that are configured in the project.`,
         resolution: `Use 'amplify add function' in the root of your app directory to create a new Lambda Function. To connect an AWS Lambda resolver to the GraphQL API, add the @function directive to a field in your schema.`,
         link: expect.any(String),

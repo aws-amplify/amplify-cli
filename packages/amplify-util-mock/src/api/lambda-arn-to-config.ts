@@ -5,7 +5,7 @@ import {
   stateManager,
   ApiCategoryFacade,
   getGraphQLTransformerFunctionDocLink,
-  AmplifyFault,
+  AmplifyError,
 } from '@aws-amplify/amplify-cli-core';
 import _ = require('lodash');
 import { ServiceName } from '@aws-amplify/amplify-category-function';
@@ -38,7 +38,7 @@ export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promi
     .map(([key]) => key);
   const foundLambdaName = lambdaNames.find((name) => searchString.includes(name));
   if (!foundLambdaName) {
-    throw new AmplifyFault('MockProcessFault', {
+    throw new AmplifyError('MockProcessError', {
       message: `Did not find a Lambda matching ARN [${JSON.stringify(
         arn,
       )}] in the project. Local mocking only supports Lambdas that are configured in the project.`,
