@@ -9,12 +9,7 @@ import {
   deleteProjectDir,
   generateRandomShortId,
   getAppId,
-  getProjectMeta,
-  getUserPool,
-  getUserPoolClients,
-  initJSProjectWithProfile,
-  isDeploymentSecretForEnvExists,
-  validateNodeModulesDirRemoval,
+  initJSProjectWithProfile
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
@@ -40,11 +35,9 @@ describe('amplify add auth...', () => {
     await addAuthWithDefaultSocial(projRoot);
     await amplifyPushAuth(projRoot);
     const appId = getAppId(projRoot);
-    const meta = getProjectMeta(projRoot);
     // amplify pull should work
     const functionName = `testcorsfunction${generateRandomShortId()}`;
     await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
     await amplifyPull(projRoot2, { emptyDir: true, appId, envName: 'integtest', yesFlag: true });
-    await amplifyPushAuth(projRoot2);
   });
 });
