@@ -319,7 +319,7 @@ function _prepareAuthServer {
     # export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
 }
 
-function _runIntegTests {
+function _runIntegAuthTests {
     cp ../amplify-cli/cypress.json .
     cp -R ../amplify-cli/cypress .
     yarn cypress run --spec $(find . -type f -name 'auth_spec*')
@@ -373,9 +373,12 @@ function _integrationTest {
     while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "ready message not found yet" && sleep 1; done
 	echo "server started"
 
-    echo "Running tests now"
+    echo "Running auth tests now"
     cat $(find ../amplify-cli -type f -name 'auth_spec*')
     export NODE_OPTIONS=--max-old-space-size=5120
-    _runIntegTests
+    _runIntegAuthTests
+    echo "Finished auth tests"
+
+
 
 }
