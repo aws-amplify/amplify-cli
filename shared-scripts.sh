@@ -369,12 +369,13 @@ function _integrationTest {
     echo "running auth server in background"
     nohup yarn start & echo $! > ~/auth-server-pid-file
     jobs
-    
-    codebuild-breakpoint
 
     echo "Running tests now"
     cat $(find ../repo -type f -name 'auth_spec*')
     cd ../aws-amplify-cypress-auth
+    
+    codebuild-breakpoint
+
     _runIntegTests
 
 }
