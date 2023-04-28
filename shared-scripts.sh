@@ -316,7 +316,7 @@ function _prepareAuthServer {
     yarn --frozen-lockfile --cache-folder ~/.cache/yarn
     cd src && cat $(find . -type f -name 'aws-exports*') && pwd
     cd .. && pwd
-    export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
+    # export NODE_OPTIONS=--openssl-legacy-provider # necesary on node 18
 }
 
 function _runIntegTests {
