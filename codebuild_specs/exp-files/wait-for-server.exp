@@ -1,0 +1,3 @@
+#!/usr/bin/expect
+expect "You can now view aws-amplify-cypress-auth in the browser."
+interact
