@@ -334,6 +334,12 @@ function _prepareApiServer {
 function _runIntegAuthTests {
     cp ../amplify-cli/cypress.json .
     cp -R ../amplify-cli/cypress .
+    yarn cypress run --spec $(find . -type f -name 'auth_spec*')
+}
+
+function _runIntegApiTests {
+    cp ../amplify-cli/cypress.json .
+    cp -R ../amplify-cli/cypress .
     yarn cypress run --spec $(find . -type f -name 'api_spec*')
 }
 
@@ -400,6 +406,9 @@ function _integrationTest {
     expect ../amplify-cli/codebuild_specs/exp-files/delete_auth.exp
     aws s3 rb "$DEPLOYMENT_BUCKET" --force
 
+
+
+
     echo "Clone API test package"
     cd .. && pwd
     git clone $API_CLONE_URL
@@ -414,8 +423,6 @@ function _integrationTest {
     _addAndPushApi
     echo "end push"
 
-    codebuild-breakpoint
-
     echo "preparing api server"
     _prepareApiServer
 
@@ -428,6 +435,6 @@ function _integrationTest {
 
     echo "Running auth tests now"
     export NODE_OPTIONS=--max-old-space-size=5120
-    _runIntegAuthTests
+    _runIntegApiTests
     echo "Finished auth tests"
 }
