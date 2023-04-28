@@ -306,13 +306,7 @@ function _integTestAmplifyInit {
 function _addAndPushAuth {
     chmod +x ../amplify-cli/codebuild_specs/sh-files/auth.sh
     chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
-
-    echo "before expect server"
-
     expect ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
-
-    echo "after expect"
-
     amplify-dev push --yes
     amplify-dev status
 }
@@ -374,7 +368,11 @@ function _integrationTest {
     echo "running auth server in background"
     nohup yarn start & echo $! > ~/auth-server-pid-file
     jobs
+
+    echo "before expect server"
     expect ../amplify-cli/codebuild_specs/exp-files/wait-for-server.exp
+    echo "after expect server"
+
 
     echo "Running tests now"
     cat $(find ../amplify-cli -type f -name 'auth_spec*')
