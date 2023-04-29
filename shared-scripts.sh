@@ -386,10 +386,10 @@ function _integrationTest {
 
     echo "running auth server in background"
     export NODE_OPTIONS=--openssl-legacy-provider
-	nohup yarn start > server_output.txt & disown $!
+    nohup yarn start > server_output.txt & disown $!
     echo "Polling for server ready message"
     while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
-	echo "server started"
+    echo "server started"
 
     echo "Running auth tests now"
     cat $(find . -type f -name 'auth_spec*')
