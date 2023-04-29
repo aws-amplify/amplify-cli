@@ -402,8 +402,8 @@ function _integrationTest {
 
     echo "Deleting amplify app"
     export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
-    chmod +x ../amplify-cli/codebuild_specs/sh-files/delete_auth.sh
-    expect ../amplify-cli/codebuild_specs/exp-files/delete_auth.exp
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/delete.sh
+    expect ../amplify-cli/codebuild_specs/exp-files/delete.exp
     aws s3 rb "$DEPLOYMENT_BUCKET" --force
 
 
@@ -442,8 +442,8 @@ function _integrationTest {
 
     echo "Deleting amplify app"
     export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
-    chmod +x ../amplify-cli/codebuild_specs/sh-files/delete_auth.sh
-    expect ../amplify-cli/codebuild_specs/exp-files/delete_auth.exp
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/delete.sh
+    expect ../amplify-cli/codebuild_specs/exp-files/delete.exp
     aws s3 rb "$DEPLOYMENT_BUCKET" --force
 
     echo "Ensuring that some artifacts exist"
