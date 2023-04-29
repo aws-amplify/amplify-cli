@@ -388,7 +388,7 @@ function _integrationTest {
     export NODE_OPTIONS=--openssl-legacy-provider
 	nohup yarn start > server_output.txt & disown $!
     echo "Polling for server ready message"
-    while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "ready message not found yet" && sleep 1; done
+    while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
 	echo "server started"
 
     echo "Running auth tests now"
@@ -429,7 +429,7 @@ function _integrationTest {
     export NODE_OPTIONS=--openssl-legacy-provider
 	nohup yarn start > server_output.txt & disown $!
     echo "Polling for server ready message"
-    while ! grep -Fxq "You can now view aws-amplify-cypress-api in the browser." server_output.txt; do echo "ready message not found yet" && sleep 1; done
+    while ! grep -Fxq "You can now view aws-amplify-cypress-api in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
 	echo "server started"
 
     echo "Running auth tests now"
