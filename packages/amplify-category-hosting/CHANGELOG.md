@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.6...@aws-amplify/amplify-category-hosting@3.5.7) (2023-04-29)
+
+
+### Bug Fixes
+
+* remove use of object ACLs [#10283](https://github.com/aws-amplify/amplify-cli/issues/10283) ([9067018](https://github.com/aws-amplify/amplify-cli/commit/9067018685ca2a1591db884e52d931944519efc1))
+
+
+
+
+
 ## [3.5.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.5...@aws-amplify/amplify-category-hosting@3.5.6) (2023-04-24)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-hosting
