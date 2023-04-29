@@ -1,6 +1,7 @@
 import { $TSContext, pathManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildType, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { categoryName } from '../../../constants';
+import { AmplifyError } from 'amplify-cli-core';
 
 export const buildFunction = async (
   context: $TSContext,
