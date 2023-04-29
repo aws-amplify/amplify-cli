@@ -1,4 +1,4 @@
-const { AmplifyError } = require('amplify-cli-core');
+const { AmplifyError } = require('@aws-amplify/amplify-cli-core');
 const { prompter } = require('@aws-amplify/amplify-prompts');
 const sequential = require('promise-sequential');
 const path = require('path');
