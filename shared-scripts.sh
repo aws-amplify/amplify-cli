@@ -291,4 +291,9 @@ function _deploy {
     source .circleci/local_publish_helpers.sh
     _loadS3AccountCredentials
     uploadPkgCli
+
+    ./out/amplify-pkg-linux-x64 --version
+    echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+
+    source ./.circleci/publish.sh
 }
