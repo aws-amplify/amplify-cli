@@ -150,6 +150,14 @@ function _verifyVersionsMatch {
     changeNpmGlobalPath
     checkPackageVersionsInLocalNpmRegistry
 }
+function _verifyPkgBinaries {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache repo-out-arm $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-linux $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-macos $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-win $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers.sh && verifyPkgBinaries
+}
 function _mockE2ETests {
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
@@ -274,4 +282,13 @@ function _scanArtifacts {
         git clean -fdx
         exit 1
     fi
+}
+
+function _deploy {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+
+    source .circleci/local_publish_helpers.sh
+    _loadS3AccountCredentials
+    uploadPkgCli
 }
