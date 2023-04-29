@@ -363,7 +363,7 @@ function _integrationTest {
 
     echo "Configuring Amplify CLI"
     yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
-    export PATH=$(yarn global bin):$PATH # changed from CCI: echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV. see https://circleci.com/docs/env-vars/#example-configuration-of-environment-variables
+    export PATH=$(yarn global bin):$PATH
     amplify-dev
 
     echo "Cloning auth test package"
@@ -427,10 +427,10 @@ function _integrationTest {
 
     echo "running api server in background"
     export NODE_OPTIONS=--openssl-legacy-provider
-	nohup yarn start > server_output.txt & disown $!
+    nohup yarn start > server_output.txt & disown $!
     echo "Polling for server ready message"
     while ! grep -Fxq "You can now view aws-amplify-cypress-api in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
-	echo "server started"
+    echo "server started"
 
     echo "Running auth tests now"
     export NODE_OPTIONS=--max-old-space-size=5120
