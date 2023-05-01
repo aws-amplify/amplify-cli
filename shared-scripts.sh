@@ -443,11 +443,11 @@ function _integrationTest {
 
     echo "Ensuring that some artifacts exist"
     export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/videos
-    mkdir -p artifact_path && touch artifact_path/empty.txt
+    mkdir -p $artifact_path && touch $artifact_path/empty.txt
     export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/screenshots
-    mkdir -p artifact_path && touch artifact_path/empty.txt
+    mkdir -p $artifact_path && touch $artifact_path/empty.txt
     export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/videos
-    mkdir -p artifact_path && touch artifact_path/empty.txt
+    mkdir -p $artifact_path && touch $artifact_path/empty.txt
     export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/screenshots
-    mkdir -p artifact_path && touch artifact_path/empty.txt
+    mkdir -p $artifact_path && touch $artifact_path/empty.txt
 }
