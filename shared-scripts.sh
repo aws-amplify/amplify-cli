@@ -346,7 +346,7 @@ function _runIntegApiTests {
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
-    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    # loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
     echo "Loading test account credentials"
     _loadTestAccountCredentials
