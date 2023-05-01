@@ -9,7 +9,7 @@ import {
   deleteProjectDir,
   generateRandomShortId,
   getAppId,
-  initJSProjectWithProfile
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
