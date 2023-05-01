@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as pty from 'node-pty';
-import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { initJSProjectWithProfile, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 jest.retryTimes(0);
 
 export const NPM = {
@@ -68,9 +68,8 @@ export class Amplify {
   constructor(projectDirectory: string) {
     this.executionArgs = { cwd: projectDirectory, encoding: 'utf8' };
   }
-  init = async () => {
-    const args = ['init', '-y'];
-    return spawn('amplify', args, this.executionArgs).runAsync();
+  init = async (cwd: string) => {
+    return initJSProjectWithProfile(cwd, {});
   };
   delete = async () => {
     const args = ['delete', '--force'];
@@ -217,14 +216,14 @@ function writeBanner(text: string) {
 }
 
 describe('Release Smoke Tests', () => {
-  const createCommands = (amplify: Amplify, cliVersion: string): Command[] => [
+  const createCommands = (amplify: Amplify, cliVersion: string, directory: string): Command[] => [
     {
       description: `Install @aws-amplify/cli@${cliVersion}`,
       run: () => NPM.install(`@aws-amplify/cli@${cliVersion}`, true),
     },
     {
       description: 'Create an Amplify project',
-      run: () => amplify.init(),
+      run: () => amplify.init(directory),
     },
     {
       description: 'Add an API to the Amplify project',
@@ -290,7 +289,7 @@ describe('Release Smoke Tests', () => {
     }
     assertEmpty(args.projectDirectory);
 
-    const commands = createCommands(amplify, args.cliVersion);
+    const commands = createCommands(amplify, args.cliVersion, args.projectDirectory);
     for (const command of commands) {
       writeBanner(command.description);
       await command.run();
