@@ -1,5 +1,4 @@
 import { ProviderMeta, ProviderCreds, ProviderParameters } from '../auth-stack-builder/types';
-import { socialSignInKeys } from '../constants';
 
 export const generateNestedStackParameters = (
   hostedUIProviderMeta: ProviderMeta[],
