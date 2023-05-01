@@ -126,6 +126,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/geo-update-2.test.ts',
     'src/__tests__/git-clone-attach.test.ts',
     'src/__tests__/hooks-a.test.ts',
+    'src/__tests__/hooks-c.test.ts',
     'src/__tests__/import_auth_1a.test.ts',
     'src/__tests__/import_auth_1b.test.ts',
     'src/__tests__/import_auth_2a.test.ts',
