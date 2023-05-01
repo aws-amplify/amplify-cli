@@ -285,12 +285,12 @@ function _putCredsInProfile {
 function _installIntegTestsDependencies {
     apt-get update
     apt-get install -y sudo
-    sudo apt-get install -y tcl
-    sudo apt-get install -y expect
-    sudo apt-get install -y zip
+    # sudo apt-get install -y tcl
+    # sudo apt-get install -y expect
+    # sudo apt-get install -y zip
     sudo apt-get install -y lsof
     sudo apt-get install -y python3 python3-pip libpython3-dev
-    sudo apt-get install -y jq
+    # sudo apt-get install -y jq
     sudo apt-get install -y libgbm-dev #
     pip install awscli
 }
