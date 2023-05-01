@@ -288,7 +288,6 @@ function _installIntegTestsDependencies {
     sudo apt-get install -y lsof
     sudo apt-get install -y python3 python3-pip libpython3-dev
     sudo apt-get install -y libgbm-dev
-    # pip install awscli
 }
 
 function _integTestAmplifyInit {
@@ -339,6 +338,10 @@ function _runIntegApiTests {
     yarn cypress run --spec $(find . -type f -name 'api_spec*')
 }
 
+function waitForIntegTestServer {
+    while ! grep -Fxq $1 server_output.txt; do echo "Waiting for server to start" && sleep 1; done
+}
+
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
@@ -383,7 +386,7 @@ function _integrationTest {
     export NODE_OPTIONS=--openssl-legacy-provider
     nohup yarn start > server_output.txt & disown $!
     echo "Polling for server ready message"
-    while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
+    waitForIntegTestServer "You can now view aws-amplify-cypress-auth in the browser."
     echo "server started"
 
     echo "Running auth tests now"
@@ -424,7 +427,7 @@ function _integrationTest {
     export NODE_OPTIONS=--openssl-legacy-provider
     nohup yarn start > server_output.txt & disown $!
     echo "Polling for server ready message"
-    while ! grep -Fxq "You can now view aws-amplify-cypress-api in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
+    waitForIntegTestServer "You can now view aws-amplify-cypress-api in the browser."
     echo "server started"
 
     echo "Running auth tests now"
