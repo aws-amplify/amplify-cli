@@ -1077,7 +1077,7 @@ export const formNestedStack = async (
       let templateURL: any;
 
       if (resourceDetails.providerPlugin) {
-        let parameters = <$TSObject>loadResourceParameters(context, category, resource);
+        const parameters = <$TSObject>loadResourceParameters(context, category, resource);
         const { dependsOn } = resourceDetails;
         if (dependsOn) {
           for (let i = 0; i < dependsOn.length; i += 1) {
