@@ -56,7 +56,7 @@ export const deleteEnvironmentParametersForResources = async (
 };
 
 const deleteParametersFromParameterStore = async (ssmClient: SSMType, parameterKeys: string[]): Promise<void> => {
-  if (!Array.isArray(parameterKeys) || parameterKeys.length === 0) {
+  if (parameterKeys.length === 0) {
     return;
   }
   try {
