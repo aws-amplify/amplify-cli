@@ -110,7 +110,6 @@
       "default",
       "jest-junit"
     ],
-    "testEnvironment": "node",
     "testEnvironmentOptions": {
       "url": "http://localhost"
     },
