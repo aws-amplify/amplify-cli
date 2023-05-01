@@ -31,7 +31,6 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
 }));
 
-
 describe('migrate step for removing lambda callouts', () => {
   let props: CognitoStackOptions;
 
@@ -100,11 +99,11 @@ describe('migrate step for removing lambda callouts', () => {
     it('does not create providers without "hostedUIDomainName"', async () => {
       const testApp = new cdk.App();
       const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
-  
+
       delete props.hostedUIDomainName;
-  
+
       cognitoStack.createHostedUIDomainResource(props);
-  
+
       expect(cognitoStack.hostedUIDomainResource).toBeUndefined();
     });
 
@@ -112,19 +111,14 @@ describe('migrate step for removing lambda callouts', () => {
       it('creates delete lambda callout and cfn-code-created providers', () => {
         const testApp = new cdk.App();
         const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
-    
+
         cognitoStack.createHostedUIDomainResource(props);
 
-        const {
-          hostedUICustomResource,
-          hostedUIDomainResource,
-        } = cognitoStack;
+        const { hostedUICustomResource, hostedUIDomainResource } = cognitoStack;
 
         expect(hostedUICustomResource?.cfnResourceType).toBe('AWS::Lambda::Function');
-        expect((hostedUICustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatch(
-          'deleteUserPoolDomain(inputDomainName)'
-        );
-          
+        expect((hostedUICustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatch('deleteUserPoolDomain(inputDomainName)');
+
         expect(hostedUIDomainResource).toBeDefined();
       });
     });
@@ -134,11 +128,11 @@ describe('migrate step for removing lambda callouts', () => {
     it('does not create providers without "hostedUIProvderMeta"', async () => {
       const testApp = new cdk.App();
       const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
-  
+
       delete props.hostedUIProviderMeta;
-  
+
       cognitoStack.createHostedUIProvidersResources(props);
-  
+
       expect(cognitoStack.hostedUIProviderResources.length).toEqual(0);
     });
 
@@ -146,17 +140,14 @@ describe('migrate step for removing lambda callouts', () => {
       it('creates delete lambda callout and cfn-code-created providers', () => {
         const testApp = new cdk.App();
         const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
-    
+
         cognitoStack.createHostedUIProvidersResources(props);
 
-        const {
-          hostedUIProvidersCustomResource,
-          hostedUIProviderResources,
-        } = cognitoStack;
-        
+        const { hostedUIProvidersCustomResource, hostedUIProviderResources } = cognitoStack;
+
         expect(hostedUIProvidersCustomResource?.cfnResourceType).toBe('AWS::Lambda::Function');
         expect((hostedUIProvidersCustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatch(
-          'hostedUIProviderMeta.forEach(({ ProviderName }) => providerPromises.push(deleteIdentityProvider(ProviderName)));'
+          'hostedUIProviderMeta.forEach(({ ProviderName }) => providerPromises.push(deleteIdentityProvider(ProviderName)));',
         );
 
         expect(hostedUIProviderResources.length).toEqual(4);
@@ -169,17 +160,14 @@ describe('migrate step for removing lambda callouts', () => {
       it('creates delete lambda callout and cfn-code-created provider', () => {
         const testApp = new cdk.App();
         const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
-    
+
         cognitoStack.createOpenIdcResource(props);
 
-        const {
-          openIdLambda,
-          openIdcResource,
-        } = cognitoStack;
-        
+        const { openIdLambda, openIdcResource } = cognitoStack;
+
         expect(openIdLambda?.cfnResourceType).toBe('AWS::Lambda::Function');
         expect((openIdLambda?.code as CfnFunction.CodeProperty).zipFile).toMatch(
-          'await iam.deleteOpenIDConnectProvider({ OpenIDConnectProviderArn: providerArn }).promise();'
+          'await iam.deleteOpenIDConnectProvider({ OpenIDConnectProviderArn: providerArn }).promise();',
         );
 
         expect(openIdcResource?.url).toEqual('https://accounts.google.com');

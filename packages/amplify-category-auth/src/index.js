@@ -29,6 +29,7 @@ const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/
 const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
 const { getSupportedServices } = require('./provider-utils/supported-services');
 const { generateAuthStackTemplate } = require('./provider-utils/awscloudformation/utils/generate-auth-stack-template');
+const { generateNestedStackParameters } = require('./provider-utils/awscloudformation/utils/generate-nested-stack-parameters');
 const { AmplifyAuthTransform, AmplifyUserPoolGroupTransform } = require('./provider-utils/awscloudformation/auth-stack-builder');
 const {
   doesConfigurationIncludeSMS,
@@ -571,6 +572,7 @@ module.exports = {
   AuthParameters,
   getFrontendConfig,
   generateAuthStackTemplate,
+  generateNestedStackParameters,
   AmplifyAuthTransform,
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,
