@@ -701,7 +701,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUICustomResource.addDependency(this.userPoolClientRole!);
+
+    if (this.userPoolClientRole) {
+      this.hostedUICustomResource.addDependency(this.userPoolClientRole);
+    }
 
     // userPool client lambda policy
     /**
@@ -771,7 +774,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   /**
    * Creates Custom lambda resource to update 3rd party providers on userpool
    */
-  createHostedUIProviderCustomResource(): void {
+  deleteExistingHostedUIProviderCustomResource(): void {
     // lambda function
     this.hostedUIProvidersCustomResource = new lambda.CfnFunction(this, 'HostedUIProvidersCustomResource', {
       code: {
@@ -782,7 +785,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole!);
+
+    if (this.userPoolClientRole) {
+      this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole);
+    }
 
     // userPool client lambda policy
     /**
@@ -1249,7 +1255,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     const providerCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider';
 
     if (lambdaCalloutCreatedInCloud && !providerCreatedInCloud) {
-      this.createHostedUIProviderCustomResource();
+      this.deleteExistingHostedUIProviderCustomResource();
     }
 
     if (props.hostedUIProviderCreds) {
