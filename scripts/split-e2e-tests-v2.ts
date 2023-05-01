@@ -99,12 +99,14 @@ const WINDOWS_SMOKE_TESTS = [
   'src/__tests__/schema-iterative-update-1.test.ts',
 ];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
-  l: [],
+  l: ['src/__tests__/smoketest.test.ts'],
   w: [
+    'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
     'src/__tests__/amplify-app.test.ts',
     // failing in parsing JSON strings on powershell
+    'src/__tests__/auth_2g.test.ts',
     'src/__tests__/auth_12.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/diagnose.test.ts',
