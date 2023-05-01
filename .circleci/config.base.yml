@@ -746,6 +746,7 @@ jobs:
           command: |
             yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
             echo 'export PATH="$(pwd)/.bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
             amplify-dev
       - run:
           name: Clone auth test package
