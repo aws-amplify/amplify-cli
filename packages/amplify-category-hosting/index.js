@@ -1,3 +1,4 @@
+const { AmplifyError } = require('@aws-amplify/amplify-cli-core');
 const { prompter } = require('@aws-amplify/amplify-prompts');
 const sequential = require('promise-sequential');
 const path = require('path');
@@ -58,9 +59,20 @@ async function configure(context) {
 
 function publish(context, service, args) {
   const { enabledServices } = categoryManager.getCategoryStatus(context);
-
   if (enabledServices.length > 0) {
     if (enabledServices.includes(service)) {
+      // checks if hosting with S3 and CloudFront and has a secure URL otherwise,
+      // the user is hosting from S3 without CloudFront distribution and should throw an error
+      if (service === 'S3AndCloudFront') {
+        const cfnOutput = context.exeInfo?.amplifyMeta?.hosting?.S3AndCloudFront?.output;
+        if (typeof cfnOutput === 'object' && cfnOutput.CloudFrontSecureURL === undefined) {
+          throw new AmplifyError('ProjectPublishError', {
+            message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
+            details: 'You will need to deploy your application to PROD or use this workaround for non-public dev apps only.',
+            link: 'https://github.com/aws-amplify/amplify-cli/issues/12503',
+          });
+        }
+      }
       return categoryManager.runServiceAction(context, service, 'publish', args);
     }
     throw new Error(`Hosting service ${service} is NOT enabled.`);
