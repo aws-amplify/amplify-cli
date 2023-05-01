@@ -18,7 +18,7 @@
     "@aws-amplify/amplify-prompts": "2.6.8",
     "@aws-amplify/codegen-ui": "2.12.2",
     "@aws-amplify/codegen-ui-react": "2.12.2",
-    "amplify-codegen": "^3.4.2",
+    "amplify-codegen": "^3.4.3",
     "aws-sdk": "^2.1354.0",
     "fs-extra": "^8.1.0",
     "ora": "^4.0.3",

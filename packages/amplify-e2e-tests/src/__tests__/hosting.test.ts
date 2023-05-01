@@ -5,7 +5,7 @@ import {
   resetBuildCommand,
   initJSProjectWithProfile,
   deleteProject,
-  addDEVHosting,
+  addPRODHosting,
   removeHosting,
   amplifyPushWithoutCodegen,
   extractHostingBucketInfo,
@@ -23,7 +23,7 @@ describe('amplify add hosting', () => {
   beforeAll(async () => {
     projRoot = await createReactTestProject();
     await initJSProjectWithProfile(projRoot, {});
-    await addDEVHosting(projRoot);
+    await addPRODHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
   });
 

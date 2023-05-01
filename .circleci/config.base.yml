@@ -134,7 +134,7 @@ jobs:
     steps:
       - checkout
       - run: yarn config set npmRegistryServer https://registry.npmjs.org
-      - run: yarn install
+      - run: yarn install --immutable
       - run:
           name: Build tests
           command: yarn build-tests
@@ -446,9 +446,6 @@ jobs:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Update OS Packages
-          command: sudo apt-get update
       - run:
           name: Start verdaccio and Install Amplify CLI as sudo
           command: |
