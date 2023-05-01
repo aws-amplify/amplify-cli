@@ -8894,7 +8894,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/prompt@npm:17.6.1":
+"@commitlint/prompt@npm:^17.6.1":
   version: 17.6.1
   resolution: "@commitlint/prompt@npm:17.6.1"
   dependencies:
@@ -13450,7 +13450,7 @@ __metadata:
     "@commitlint/config-conventional": ^17.6.1
     "@commitlint/config-lerna-scopes": ^17.4.2
     "@commitlint/cz-commitlint": ^17.5.0
-    "@commitlint/prompt": 17.6.1
+    "@commitlint/prompt": ^17.6.1
     "@microsoft/api-extractor": ^7.33.5
     "@types/glob": ^7.1.1
     "@types/jest": ^29.0.0
