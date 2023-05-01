@@ -285,14 +285,10 @@ function _putCredsInProfile {
 function _installIntegTestsDependencies {
     apt-get update
     apt-get install -y sudo
-    # sudo apt-get install -y tcl
-    # sudo apt-get install -y expect
-    # sudo apt-get install -y zip
     sudo apt-get install -y lsof
     sudo apt-get install -y python3 python3-pip libpython3-dev
-    # sudo apt-get install -y jq
-    sudo apt-get install -y libgbm-dev #
-    pip install awscli
+    sudo apt-get install -y libgbm-dev
+    # pip install awscli
 }
 
 function _integTestAmplifyInit {
@@ -346,7 +342,6 @@ function _runIntegApiTests {
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
-    # loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
     echo "Loading test account credentials"
     _loadTestAccountCredentials
