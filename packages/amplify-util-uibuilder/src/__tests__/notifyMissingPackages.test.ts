@@ -68,8 +68,8 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as unknown as $TSContext, false);
-    expect(printerDependency.printer.warn).toBeCalledTimes(2);
+    notifyMissingPackages(context as unknown as $TSContext);
+    expect(printerDependency.printer.warn).toBeCalledTimes(1);
   });
 
   it('notifies for all dependencies except storage if user is not using StorageManager', () => {

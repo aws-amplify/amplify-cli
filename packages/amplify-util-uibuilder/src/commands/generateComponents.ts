@@ -16,7 +16,8 @@ import {
   isStudioForm,
   isFormDetachedFromModel,
   deleteDetachedForms,
-  hasStorageManager,
+  hasStorageField,
+  isFormSchema,
 } from './utils';
 
 /**
@@ -69,7 +70,8 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
           successfulSchemas.push(result.schema);
           if (key === 'form') {
             hasSuccessfulForm = true;
-            if (!hasStorageManagerField && 'fields' in result.schema && hasStorageManager(result.schema)) {
+
+            if (!hasStorageManagerField && isFormSchema(result.schema) && hasStorageField(result.schema)) {
               hasStorageManagerField = true;
             }
           }

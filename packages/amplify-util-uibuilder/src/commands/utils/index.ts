@@ -6,4 +6,4 @@ export * from './notifyMissingPackages';
 export * from './shouldRenderComponents';
 export * from './syncAmplifyUiBuilderComponents';
 export * from './detachedFormCleanup';
-export * from './hasStorageManager';
+export * from './storageManager';
