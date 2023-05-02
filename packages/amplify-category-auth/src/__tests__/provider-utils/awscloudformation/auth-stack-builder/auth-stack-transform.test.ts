@@ -117,16 +117,6 @@ const inputPayload1 = {
     AllowedOAuthFlows: 'code',
     AllowedOAuthScopes: ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'],
     authProvidersUserPool: ['Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'],
-    facebookAppIdUserPool: 'sdcsdc',
-    facebookAppSecretUserPool: 'bfdsvsr',
-    googleAppIdUserPool: 'avearver',
-    googleAppSecretUserPool: 'vcvereger',
-    loginwithamazonAppIdUserPool: 'vercvdsavcer',
-    loginwithamazonAppSecretUserPool: 'revfdsavrtv',
-    signinwithappleClientIdUserPool: 'vfdvergver',
-    signinwithappleTeamIdUserPool: 'ervervre',
-    signinwithappleKeyIdUserPool: 'vfdavervfer',
-    signinwithapplePrivateKeyUserPool: 'vaveb',
     selectedParties:
       '{"graph.facebook.com":"dfvsdcsdc","accounts.google.com":"svsdvsv","www.amazon.com":"sdsafggas","appleid.apple.com":"gfdbvafergew"}',
     hostedUIProviderMeta:
@@ -172,97 +162,6 @@ const inputPayload2 = {
     useDefault: 'default',
     userPoolGroupList: [],
     serviceName: 'Cognito',
-    usernameCaseSensitive: false,
-  },
-};
-
-const inputPayload3 = {
-  cognitoConfig: {
-    identityPoolName: 'extauth387063394_identitypool_87063394',
-    allowUnauthenticatedIdentities: true,
-    resourceNameTruncated: 'extaut87063394',
-    userPoolName: 'extauth387063394_userpool_87063394',
-    autoVerifiedAttributes: ['email'],
-    mfaConfiguration: 'ON',
-    mfaTypes: ['SMS Text Message', 'TOTP'],
-    smsAuthenticationMessage: 'Your authentication code is {####}',
-    smsVerificationMessage: 'Your verification code is {####}',
-    emailVerificationSubject: 'Your verification code',
-    emailVerificationMessage: 'Your verification code is {####}',
-    defaultPasswordPolicy: true,
-    passwordPolicyMinLength: 8,
-    passwordPolicyCharacters: ['Requires Lowercase', 'Requires Uppercase', 'Requires Numbers', 'Requires Symbols'],
-    requiredAttributes: [
-      'address',
-      'birthdate',
-      'email',
-      'family_name',
-      'middle_name',
-      'gender',
-      'locale',
-      'given_name',
-      'name',
-      'nickname',
-      'phone_number',
-      'preferred_username',
-      'picture',
-      'profile',
-      'updated_at',
-      'website',
-      'zoneinfo',
-    ],
-    userpoolClientGenerateSecret: false,
-    userpoolClientRefreshTokenValidity: 30,
-    userpoolClientWriteAttributes: ['address', 'email'],
-    userpoolClientReadAttributes: ['address', 'email'],
-    userpoolClientLambdaRole: 'extaut87063394_userpoolclient_lambda_role',
-    userpoolClientSetAttributes: true,
-    sharedId: '87063394',
-    resourceName: 'extauth38706339487063394',
-    authSelections: 'identityPoolAndUserPool',
-    authRoleArn: {
-      'Fn::GetAtt': ['AuthRole', 'Arn'],
-    },
-    unauthRoleArn: {
-      'Fn::GetAtt': ['UnauthRole', 'Arn'],
-    },
-    useDefault: 'manual',
-    thirdPartyAuth: true,
-    authProviders: ['graph.facebook.com', 'accounts.google.com', 'www.amazon.com', 'appleid.apple.com'],
-    facebookAppId: 'dfvsdcsdc',
-    googleClientId: 'svsdvsv',
-    amazonAppId: 'sdsafggas',
-    appleAppId: 'gfdbvafergew',
-    userPoolGroups: true,
-    adminQueries: false,
-    triggers: {
-      CreateAuthChallenge: ['captcha-create-challenge'],
-      CustomMessage: ['verification-link'],
-      DefineAuthChallenge: ['captcha-define-challenge'],
-      PostAuthentication: ['custom'],
-      PostConfirmation: ['add-to-group'],
-      PreAuthentication: ['custom'],
-      PreSignup: ['email-filter-allowlist'],
-      VerifyAuthChallengeResponse: ['captcha-verify'],
-      PreTokenGeneration: ['alter-claims'],
-    },
-    hostedUI: true,
-    hostedUIDomainName: 'extauth387063394-87063394',
-    newCallbackURLs: ['https://localhost:3000/'],
-    newLogoutURLs: ['https://localhost:3000/'],
-    AllowedOAuthFlows: 'code',
-    AllowedOAuthScopes: ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'],
-    authProvidersUserPool: ['Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'],
-    selectedParties:
-      '{"graph.facebook.com":"dfvsdcsdc","accounts.google.com":"svsdvsv","www.amazon.com":"sdsafggas","appleid.apple.com":"gfdbvafergew"}',
-    hostedUIProviderMeta:
-      '[{"ProviderName":"Facebook","authorize_scopes":"email,public_profile","AttributeMapping":{"email":"email","username":"id"}},{"ProviderName":"Google","authorize_scopes":"openid email profile","AttributeMapping":{"email":"email","username":"sub"}},{"ProviderName":"LoginWithAmazon","authorize_scopes":"profile profile:user_id","AttributeMapping":{"email":"email","username":"user_id"}},{"ProviderName":"SignInWithApple","authorize_scopes":"email","AttributeMapping":{"email":"email"}}]',
-    hostedUIProviderCreds:
-      '[{"ProviderName":"Facebook","client_id":"sdcsdc","client_secret":"bfdsvsr"},{"ProviderName":"Google","client_id":"avearver","client_secret":"vcvereger"},{"ProviderName":"LoginWithAmazon","client_id":"vercvdsavcer","client_secret":"revfdsavrtv"},{"ProviderName":"SignInWithApple","client_id":"vfdvergver","team_id":"ervervre","key_id":"vfdavervfer","private_key":"vaveb"}]',
-    oAuthMetadata:
-      '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"],"LogoutURLs":["https://localhost:3000/"]}',
-    serviceName: 'Cognito',
-    verificationBucketName: 'extauth38706339487063394verificationbucket',
     usernameCaseSensitive: false,
   },
 };
@@ -434,11 +333,11 @@ describe('Check Auth Template', () => {
     expect(mock_template.Resources?.UserPoolClientWeb.Properties.LogoutURLs).toMatchInlineSnapshot(`undefined`);
   });
 
-  it('includes social sign in parameters with no echo params', async () => {
+  it('includes social sign in "Parameters" with no echo params', async () => {
     getCLIInputPayload_mock.mockReset();
     getCLIInputPayload_mock.mockReturnValue({
       cognitoConfig: {
-        ...inputPayload3.cognitoConfig,
+        ...inputPayload1.cognitoConfig,
         oAuthMetadata:
           '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"]}',
       },
@@ -561,7 +460,7 @@ describe('Check Auth Template', () => {
     );
   });
 
-  it('includes social sign in resources', async () => {
+  it('includes social sign in "Resources"', async () => {
     getCLIInputPayload_mock.mockReset();
     getCLIInputPayload_mock.mockReturnValue({
       cognitoConfig: {

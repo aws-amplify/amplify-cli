@@ -29,7 +29,6 @@ const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/
 const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
 const { getSupportedServices } = require('./provider-utils/supported-services');
 const { generateAuthStackTemplate } = require('./provider-utils/awscloudformation/utils/generate-auth-stack-template');
-const { generateNestedStackParameters } = require('./provider-utils/awscloudformation/utils/generate-nested-stack-parameters');
 const { AmplifyAuthTransform, AmplifyUserPoolGroupTransform } = require('./provider-utils/awscloudformation/auth-stack-builder');
 const {
   doesConfigurationIncludeSMS,
@@ -150,12 +149,12 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const authPropsValues = authExists
     ? Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements)
     : Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, {
-        resourceName: currentAuthName,
-        sharedId: defaults.sharedId,
-        serviceName: 'Cognito',
-        useDefault: 'manual',
-        authSelections: requirements.authSelections,
-      });
+      resourceName: currentAuthName,
+      sharedId: defaults.sharedId,
+      serviceName: 'Cognito',
+      useDefault: 'manual',
+      authSelections: requirements.authSelections,
+    });
   const { roles } = defaults;
   let authProps = {
     ...authPropsValues,
@@ -572,7 +571,6 @@ module.exports = {
   AuthParameters,
   getFrontendConfig,
   generateAuthStackTemplate,
-  generateNestedStackParameters,
   AmplifyAuthTransform,
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,

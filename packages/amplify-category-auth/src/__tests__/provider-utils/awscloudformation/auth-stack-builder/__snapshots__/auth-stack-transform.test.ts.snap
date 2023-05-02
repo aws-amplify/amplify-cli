@@ -588,9 +588,11 @@ Object {
       "Type": "String",
     },
     "facebookAppIdUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "facebookAppSecretUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "facebookAuthorizeScopes": Object {
@@ -598,9 +600,11 @@ Object {
       "Type": "String",
     },
     "googleAppIdUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "googleAppSecretUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "googleAuthorizeScopes": Object {
@@ -627,9 +631,11 @@ Object {
       "Type": "String",
     },
     "loginwithamazonAppIdUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "loginwithamazonAppSecretUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "loginwithamazonAuthorizeScopes": Object {
@@ -683,15 +689,19 @@ Object {
       "Type": "String",
     },
     "signinwithappleClientIdUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "signinwithappleKeyIdUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "signinwithapplePrivateKeyUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "signinwithappleTeamIdUserPool": Object {
+      "NoEcho": true,
       "Type": "String",
     },
     "smsAuthenticationMessage": Object {
