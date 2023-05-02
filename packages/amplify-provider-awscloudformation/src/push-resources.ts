@@ -41,7 +41,7 @@ import {
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { generateNestedStackParameters } from '@aws-amplify/amplify-category-auth';
+import { generateAuthNestedStackParameters } from './utils/generate-auth-nested-stack-params';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -1187,7 +1187,7 @@ export const formNestedStack = async (
           const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta);
           const hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
 
-          Object.assign(parameters, generateNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
+          Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
         }
 
         if (resourceDetails.providerMetadata) {

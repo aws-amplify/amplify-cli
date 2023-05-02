@@ -1,6 +1,6 @@
-import { ProviderMeta, ProviderCreds, ProviderParameters } from '../auth-stack-builder/types';
+import { ProviderMeta, ProviderCreds, ProviderParameters } from './auth-types';
 
-export const generateNestedStackParameters = (
+export const generateAuthNestedStackParameters = (
   hostedUIProviderMeta: ProviderMeta[],
   hostedUIProviderCreds: ProviderCreds[],
 ): ProviderParameters => {
