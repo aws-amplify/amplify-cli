@@ -1,19 +1,12 @@
 {
-  "editor.rulers": [
-    140
-  ],
+  "editor.rulers": [140],
   "files.exclude": {
     "**/.git": true,
     "**/build": true
   },
   "files.insertFinalNewline": true,
   "editor.formatOnSave": true,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "eslint.lintTask.enable": true,
   "eslint.packageManager": "yarn",
   "eslint.quiet": false,
