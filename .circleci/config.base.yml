@@ -151,6 +151,8 @@ jobs:
           steps:
             - install_node_windows
             - checkout
+            - run: yarn cache clean --all
+            - run: YARN_CHECKSUM_BEHAVIOR=update yarn
             - run: yarn --immutable
             - run: yarn production-build
             - run:
