@@ -8609,7 +8609,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/api-extractor@npm:^7.33.5":
+"@microsoft/api-extractor@npm:^7.34.6":
   version: 7.34.7
   resolution: "@microsoft/api-extractor@npm:7.34.7"
   dependencies:
@@ -11591,7 +11591,7 @@ __metadata:
     "@commitlint/config-lerna-scopes": ^17.4.2
     "@commitlint/cz-commitlint": ^17.5.0
     "@commitlint/prompt": ^17.6.1
-    "@microsoft/api-extractor": ^7.33.5
+    "@microsoft/api-extractor": ^7.34.6
     "@types/glob": ^7.1.1
     "@types/jest": ^29.0.0
     "@types/js-yaml": ^4.0.0
