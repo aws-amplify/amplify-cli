@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@aws-amplify/appsync-modelgen-plugin": "^2.4.0",
+    "@aws-amplify/codegen-ui": " @aws-amplify/codegen-ui",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^26.0.20",
     "@types/semver": "^7.1.0",

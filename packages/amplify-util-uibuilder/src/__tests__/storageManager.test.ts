@@ -1,5 +1,4 @@
-// @aws-amplify/codegen-ui is in project dependencies
-import { StudioSchema } from '@aws-amplify/codegen-ui'; // eslint-disable-line import/no-extraneous-dependencies
+import { StudioSchema } from '@aws-amplify/codegen-ui';
 import { hasStorageField } from '../commands/utils';
 
 const formWithNoCustomization: StudioSchema = {
