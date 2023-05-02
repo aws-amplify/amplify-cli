@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest --logHeapUsage",
+    "test": "jest",
     "test-ci": "jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
