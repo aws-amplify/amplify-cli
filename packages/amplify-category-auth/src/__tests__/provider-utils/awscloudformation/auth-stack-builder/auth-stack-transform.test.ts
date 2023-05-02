@@ -117,16 +117,6 @@ const inputPayload1 = {
     AllowedOAuthFlows: 'code',
     AllowedOAuthScopes: ['phone', 'email', 'openid', 'profile', 'aws.cognito.signin.user.admin'],
     authProvidersUserPool: ['Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'],
-    facebookAppIdUserPool: 'sdcsdc',
-    facebookAppSecretUserPool: 'bfdsvsr',
-    googleAppIdUserPool: 'avearver',
-    googleAppSecretUserPool: 'vcvereger',
-    loginwithamazonAppIdUserPool: 'vercvdsavcer',
-    loginwithamazonAppSecretUserPool: 'revfdsavrtv',
-    signinwithappleClientIdUserPool: 'vfdvergver',
-    signinwithappleTeamIdUserPool: 'ervervre',
-    signinwithappleKeyIdUserPool: 'vfdavervfer',
-    signinwithapplePrivateKeyUserPool: 'vaveb',
     selectedParties:
       '{"graph.facebook.com":"dfvsdcsdc","accounts.google.com":"svsdvsv","www.amazon.com":"sdsafggas","appleid.apple.com":"gfdbvafergew"}',
     hostedUIProviderMeta:
@@ -175,6 +165,7 @@ const inputPayload2 = {
     usernameCaseSensitive: false,
   },
 };
+
 const getCLIInputPayload_mock = jest.fn().mockReturnValueOnce(inputPayload1).mockReturnValueOnce(inputPayload2);
 
 const isCLIInputsValid_mock = jest.fn().mockReturnValue('true');
@@ -340,5 +331,274 @@ describe('Check Auth Template', () => {
       ]
     `);
     expect(mock_template.Resources?.UserPoolClientWeb.Properties.LogoutURLs).toMatchInlineSnapshot(`undefined`);
+  });
+
+  it('includes social sign in "Parameters" with no echo params', async () => {
+    getCLIInputPayload_mock.mockReset();
+    getCLIInputPayload_mock.mockReturnValue({
+      cognitoConfig: {
+        ...inputPayload1.cognitoConfig,
+        oAuthMetadata:
+          '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"]}',
+      },
+    });
+
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    const mock_template = await authTransform.transform(context_stub_typed);
+
+    expect(mock_template.Parameters!.facebookAppIdUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+    expect(mock_template.Parameters!.facebookAppSecretUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+
+    expect(mock_template.Parameters!.googleAppIdUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+    expect(mock_template.Parameters!.googleAppSecretUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+
+    expect(mock_template.Parameters!.loginwithamazonAppIdUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+    expect(mock_template.Parameters!.loginwithamazonAppSecretUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+
+    expect(mock_template.Parameters!.signinwithappleClientIdUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+    expect(mock_template.Parameters!.signinwithappleKeyIdUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+    expect(mock_template.Parameters!.signinwithapplePrivateKeyUserPool).toMatchInlineSnapshot(
+      {
+        Type: 'String',
+        NoEcho: true,
+      },
+      `
+      Object {
+        "NoEcho": true,
+        "Type": "String",
+      }
+    `,
+    );
+  });
+
+  it('includes social sign in "Resources"', async () => {
+    getCLIInputPayload_mock.mockReset();
+    getCLIInputPayload_mock.mockReturnValue({
+      cognitoConfig: {
+        ...inputPayload1.cognitoConfig,
+        oAuthMetadata:
+          '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"]}',
+      },
+    });
+
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    const mock_template = await authTransform.transform(context_stub_typed);
+
+    expect(mock_template.Resources!.HostedUIFacebookProviderResource.Properties.AttributeMapping).toMatchInlineSnapshot(
+      { email: 'email', username: 'id' },
+      `
+      Object {
+        "email": "email",
+        "username": "id",
+      }
+    `,
+    );
+    expect(mock_template.Resources!.HostedUIFacebookProviderResource.Properties.ProviderDetails).toMatchInlineSnapshot(
+      {
+        authorize_scopes: { Ref: 'facebookAuthorizeScopes' },
+        client_id: { Ref: 'facebookAppIdUserPool' },
+        client_secret: { Ref: 'facebookAppSecretUserPool' },
+      },
+      `
+      Object {
+        "authorize_scopes": Object {
+          "Ref": "facebookAuthorizeScopes",
+        },
+        "client_id": Object {
+          "Ref": "facebookAppIdUserPool",
+        },
+        "client_secret": Object {
+          "Ref": "facebookAppSecretUserPool",
+        },
+      }
+    `,
+    );
+
+    expect(mock_template.Resources!.HostedUIGoogleProviderResource.Properties.AttributeMapping).toMatchInlineSnapshot(
+      { email: 'email', username: 'sub' },
+      `
+      Object {
+        "email": "email",
+        "username": "sub",
+      }
+    `,
+    );
+    expect(mock_template.Resources!.HostedUIGoogleProviderResource.Properties.ProviderDetails).toMatchInlineSnapshot(
+      {
+        authorize_scopes: { Ref: 'googleAuthorizeScopes' },
+        client_id: { Ref: 'googleAppIdUserPool' },
+        client_secret: { Ref: 'googleAppSecretUserPool' },
+      },
+      `
+      Object {
+        "authorize_scopes": Object {
+          "Ref": "googleAuthorizeScopes",
+        },
+        "client_id": Object {
+          "Ref": "googleAppIdUserPool",
+        },
+        "client_secret": Object {
+          "Ref": "googleAppSecretUserPool",
+        },
+      }
+    `,
+    );
+
+    expect(mock_template.Resources!.HostedUILoginWithAmazonProviderResource.Properties.AttributeMapping).toMatchInlineSnapshot(
+      { email: 'email', username: 'user_id' },
+      `
+      Object {
+        "email": "email",
+        "username": "user_id",
+      }
+    `,
+    );
+    expect(mock_template.Resources!.HostedUILoginWithAmazonProviderResource.Properties.ProviderDetails).toMatchInlineSnapshot(
+      {
+        authorize_scopes: { Ref: 'loginwithamazonAuthorizeScopes' },
+        client_id: { Ref: 'loginwithamazonAppIdUserPool' },
+        client_secret: { Ref: 'loginwithamazonAppSecretUserPool' },
+      },
+      `
+      Object {
+        "authorize_scopes": Object {
+          "Ref": "loginwithamazonAuthorizeScopes",
+        },
+        "client_id": Object {
+          "Ref": "loginwithamazonAppIdUserPool",
+        },
+        "client_secret": Object {
+          "Ref": "loginwithamazonAppSecretUserPool",
+        },
+      }
+    `,
+    );
+
+    expect(mock_template.Resources!.HostedUISignInWithAppleProviderResource.Properties.AttributeMapping).toMatchInlineSnapshot(
+      { email: 'email' },
+      `
+      Object {
+        "email": "email",
+      }
+    `,
+    );
+    expect(mock_template.Resources!.HostedUISignInWithAppleProviderResource.Properties.ProviderDetails).toMatchInlineSnapshot(
+      {
+        authorize_scopes: { Ref: 'signinwithappleAuthorizeScopes' },
+        client_id: { Ref: 'signinwithappleClientIdUserPool' },
+        key_id: { Ref: 'signinwithappleKeyIdUserPool' },
+        private_key: { Ref: 'signinwithapplePrivateKeyUserPool' },
+        team_id: { Ref: 'signinwithappleTeamIdUserPool' },
+      },
+      `
+      Object {
+        "authorize_scopes": Object {
+          "Ref": "signinwithappleAuthorizeScopes",
+        },
+        "client_id": Object {
+          "Ref": "signinwithappleClientIdUserPool",
+        },
+        "key_id": Object {
+          "Ref": "signinwithappleKeyIdUserPool",
+        },
+        "private_key": Object {
+          "Ref": "signinwithapplePrivateKeyUserPool",
+        },
+        "team_id": Object {
+          "Ref": "signinwithappleTeamIdUserPool",
+        },
+      }
+    `,
+    );
   });
 });

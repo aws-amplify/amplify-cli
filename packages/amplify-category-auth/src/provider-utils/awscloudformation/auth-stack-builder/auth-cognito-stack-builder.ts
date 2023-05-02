@@ -8,9 +8,16 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { hostedUILambdaFilePath, hostedUIProviderLambdaFilePath, mfaLambdaFilePath, openIdLambdaFilePath } from '../constants';
+import {
+  hostedUILambdaFilePath,
+  hostedUIProviderLambdaFilePath,
+  mfaLambdaFilePath,
+  openIdLambdaFilePath,
+  SignInWithApple,
+} from '../constants';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
+import { OAuthMetaData, ProviderMeta } from './types';
 
 const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
 const { readJson } = JSONUtilities;
@@ -71,12 +78,13 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   hostedUICustomResourcePolicy?: iam.CfnPolicy;
   hostedUICustomResourceLogPolicy?: iam.CfnPolicy;
   hostedUICustomResourceInputs?: cdk.CustomResource;
-  hostedUIDomainResource?: cognito.CfnUserPoolDomain | undefined;
+  hostedUIDomainResource?: cognito.CfnUserPoolDomain;
   // custom resource HostedUI Provider
   hostedUIProvidersCustomResource?: lambda.CfnFunction;
   hostedUIProvidersCustomResourcePolicy?: iam.CfnPolicy;
   hostedUIProvidersCustomResourceLogPolicy?: iam.CfnPolicy;
   hostedUIProvidersCustomResourceInputs?: cdk.CustomResource;
+  hostedUIProviderResources: cognito.CfnUserPoolIdentityProvider[];
   // custom resource MFA
   mfaLambda?: lambda.CfnFunction;
   mfaLogPolicy?: iam.CfnPolicy;
@@ -99,6 +107,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
     this.lambdaConfigPermissions = {};
     this.lambdaTriggerPermissions = {};
+    this.hostedUIProviderResources = [];
   }
 
   /**
@@ -481,7 +490,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (props.hostedUIProviderMeta) {
-        this.createHostedUIProviderCustomResource();
+        this.createHostedUIProvidersResources(props);
       }
 
       if (!props.useEnabledMfas && props.mfaConfiguration !== 'OFF') {
@@ -692,7 +701,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUICustomResource.addDependency(this.userPoolClientRole!);
+
+    if (this.userPoolClientRole) {
+      this.hostedUICustomResource.addDependency(this.userPoolClientRole);
+    }
 
     // userPool client lambda policy
     /**
@@ -762,7 +774,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   /**
    * Creates Custom lambda resource to update 3rd party providers on userpool
    */
-  createHostedUIProviderCustomResource(): void {
+  deleteExistingHostedUIProviderCustomResource(): void {
     // lambda function
     this.hostedUIProvidersCustomResource = new lambda.CfnFunction(this, 'HostedUIProvidersCustomResource', {
       code: {
@@ -773,7 +785,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       runtime: 'nodejs16.x',
       timeout: 300,
     });
-    this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole!);
+
+    if (this.userPoolClientRole) {
+      this.hostedUIProvidersCustomResource.addDependency(this.userPoolClientRole);
+    }
 
     // userPool client lambda policy
     /**
@@ -1228,13 +1243,57 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       this.hostedUIDomainResource.addDependency(this.hostedUICustomResource);
     }
   };
-}
 
-type OAuthMetaData = {
-  AllowedOAuthFlows?: Array<string>;
-  AllowedOAuthFlowsUserPoolClient?: boolean;
-  AllowedOAuthScopes?: Array<string>;
-  CallbackURLs?: Array<string>;
-  LogoutURLs?: Array<string>;
-  SupportedIdentityProviders?: Array<string>;
-};
+  createHostedUIProvidersResources = (props: CognitoStackOptions) => {
+    if (!props.hostedUIProviderMeta) {
+      return;
+    }
+
+    const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', props.resourceName);
+    const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
+    const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProvidersCustomResource?.Type === 'AWS::Lambda::Function';
+    const providerCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider';
+
+    if (lambdaCalloutCreatedInCloud && !providerCreatedInCloud) {
+      this.deleteExistingHostedUIProviderCustomResource();
+    }
+
+    if (props.hostedUIProviderCreds) {
+      JSON.parse(props.hostedUIProviderMeta).forEach(this.createHostedUIProviderResource);
+    }
+  };
+
+  createHostedUIProviderResource = ({ ProviderName, AttributeMapping }: ProviderMeta) => {
+    const providerDetails =
+      ProviderName === SignInWithApple ? this.createHostedUIAppleProviderDetails() : this.createHostedUIProviderDetails(ProviderName);
+
+    const resourceParams: cognito.CfnUserPoolIdentityProviderProps = {
+      attributeMapping: AttributeMapping,
+      providerDetails,
+      providerName: ProviderName,
+      providerType: ProviderName,
+      userPoolId: cdk.Fn.ref('UserPool'),
+    };
+
+    const provider = new cognito.CfnUserPoolIdentityProvider(this, `HostedUI${ProviderName}ProviderResource`, resourceParams);
+    this.hostedUIProviderResources.push(provider);
+  };
+
+  createHostedUIProviderDetails = (providerName: string) => {
+    const providerNameLower = providerName.toLowerCase();
+
+    return {
+      authorize_scopes: cdk.Fn.ref(`${providerNameLower}AuthorizeScopes`),
+      client_id: cdk.Fn.ref(`${providerNameLower}AppIdUserPool`),
+      client_secret: cdk.Fn.ref(`${providerNameLower}AppSecretUserPool`),
+    };
+  };
+
+  createHostedUIAppleProviderDetails = () => ({
+    authorize_scopes: cdk.Fn.ref('signinwithappleAuthorizeScopes'),
+    client_id: cdk.Fn.ref('signinwithappleClientIdUserPool'),
+    key_id: cdk.Fn.ref('signinwithappleKeyIdUserPool'),
+    private_key: cdk.Fn.ref('signinwithapplePrivateKeyUserPool'),
+    team_id: cdk.Fn.ref('signinwithappleTeamIdUserPool'),
+  });
+}

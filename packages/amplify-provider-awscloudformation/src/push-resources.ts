@@ -41,6 +41,7 @@ import {
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { generateAuthNestedStackParameters } from './utils/generate-auth-nested-stack-params';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
@@ -1181,6 +1182,14 @@ export const formNestedStack = async (
             parameters.unauthRoleName = unauthRoleName || { Ref: 'UnauthRoleName' }; // if only a user pool is imported, we ref the root stack UnauthRoleName because the child stacks still need this parameter
           }
         }
+
+        if (category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds != '[]') {
+          const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta);
+          const hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
+
+          Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
+        }
+
         if (resourceDetails.providerMetadata) {
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
 
