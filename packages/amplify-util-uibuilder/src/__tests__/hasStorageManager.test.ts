@@ -1,0 +1,43 @@
+// @aws-amplify/codegen-ui is in project dependencies
+import { StudioSchema } from '@aws-amplify/codegen-ui'; // eslint-disable-line import/no-extraneous-dependencies
+import { hasStorageManager } from '../commands/utils';
+
+const formWithNoCustomization: StudioSchema = {
+  id: 'f-123456',
+  name: 'BlogCreateForm',
+  formActionType: 'create',
+  dataType: {
+    dataSourceType: 'DataStore',
+    dataTypeName: 'Blog',
+  },
+  fields: {},
+  sectionalElements: {},
+  style: {},
+  cta: {},
+};
+
+const formWithNoStorageField: StudioSchema = {
+  ...formWithNoCustomization,
+  dataType: { dataSourceType: 'Custom', dataTypeName: 'Blog' },
+  fields: {
+    name: { inputType: { type: 'TextField' } },
+  },
+};
+
+const formWithStorageField: StudioSchema = {
+  ...formWithNoCustomization,
+  dataType: { dataSourceType: 'Custom', dataTypeName: 'Blog' },
+  fields: {
+    name: { inputType: { type: 'StorageField' } },
+  },
+};
+
+describe('hasStorageManager', () => {
+  it('should return false for form with no StorageManager config', () => {
+    expect(hasStorageManager(formWithNoStorageField)).toBe(false);
+  });
+
+  it('should return true for form with StorageManager config', () => {
+    expect(hasStorageManager(formWithStorageField)).toBe(true);
+  });
+});
