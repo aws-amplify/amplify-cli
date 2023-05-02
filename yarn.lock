@@ -6797,7 +6797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:^7.16.0":
+"@babel/preset-typescript@npm:^7.16.0, @babel/preset-typescript@npm:^7.21.5":
   version: 7.21.5
   resolution: "@babel/preset-typescript@npm:7.21.5"
   dependencies:
@@ -11587,6 +11587,7 @@ __metadata:
     "@babel/plugin-proposal-numeric-separator": ^7.10.4
     "@babel/plugin-transform-modules-commonjs": 7.10.4
     "@babel/plugin-transform-typescript": 7.10.5
+    "@babel/preset-typescript": ^7.21.5
     "@commitlint/cli": ^17.6.1
     "@commitlint/config-conventional": ^17.6.1
     "@commitlint/config-lerna-scopes": ^17.4.2
