@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "5.0.3",
+  "version": "5.1.0-replace-lambda-callouts-tests.0",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -27,13 +27,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.3",
-    "@aws-amplify/amplify-environment-parameters": "1.4.3",
-    "@aws-amplify/amplify-prompts": "2.6.8",
-    "@aws-amplify/amplify-util-import": "2.4.2",
-    "@aws-amplify/cli-extensibility-helper": "3.0.3",
-    "amplify-headless-interface": "1.17.3",
-    "amplify-util-headless-input": "1.9.12",
+    "@aws-amplify/amplify-cli-core": "4.0.4-replace-lambda-callouts-tests.0",
+    "@aws-amplify/amplify-environment-parameters": "1.5.0-replace-lambda-callouts-tests.0",
+    "@aws-amplify/amplify-prompts": "2.7.0-replace-lambda-callouts-tests.0",
+    "@aws-amplify/amplify-util-import": "2.5.0-replace-lambda-callouts-tests.0",
+    "@aws-amplify/cli-extensibility-helper": "3.0.4-replace-lambda-callouts-tests.0",
+    "amplify-headless-interface": "1.17.4-replace-lambda-callouts-tests.0",
+    "amplify-util-headless-input": "1.9.13-replace-lambda-callouts-tests.0",
     "aws-cdk-lib": "~2.68.0",
     "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",

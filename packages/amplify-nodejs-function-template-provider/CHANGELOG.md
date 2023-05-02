@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0-replace-lambda-callouts-tests.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.7.5...@aws-amplify/amplify-nodejs-function-template-provider@2.8.0-replace-lambda-callouts-tests.0) (2023-05-02)
+
+
+### Features
+
+* create new NodeJS functions with nodejs18.x runtime ([#12394](https://github.com/aws-amplify/amplify-cli/issues/12394)) ([c896259](https://github.com/aws-amplify/amplify-cli/commit/c896259c1c15813d2bd561bd562adae22e0b3ce5))
+
+
+
+
+
 ## [2.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.7.3...@aws-amplify/amplify-nodejs-function-template-provider@2.7.5) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider

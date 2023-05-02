@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-replace-lambda-callouts-tests.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.3...@aws-amplify/amplify-category-auth@3.1.0-replace-lambda-callouts-tests.0) (2023-05-02)
+
+
+### Bug Fixes
+
+* add catch error to lambdas to prevent hanging CFN and return success on notfound exceptions ([eab91c5](https://github.com/aws-amplify/amplify-cli/commit/eab91c5c2f7ee02add65a74db016db6c68e2ae1c))
+* add missing types file ([1a75271](https://github.com/aws-amplify/amplify-cli/commit/1a75271a34092c8ea3dda3aa7668533b1523c859))
+* add more error exception for not found to lambda ([0358894](https://github.com/aws-amplify/amplify-cli/commit/035889453ec770020711bdb3d9dd9d5c31a9e286))
+* block auth w/ triggers push if not migrated to cli-inputs ([#12337](https://github.com/aws-amplify/amplify-cli/issues/12337)) ([758f10a](https://github.com/aws-amplify/amplify-cli/commit/758f10a52321f542d1b3da7b61c032110d3aaca9))
+* change names of methods to reflect lambda responsibility and wrap addDep in if statement ([8bc6219](https://github.com/aws-amplify/amplify-cli/commit/8bc6219b8d72ec34ad41323e25158687cf957a53))
+* change template write to check if prop exists ([1a49f30](https://github.com/aws-amplify/amplify-cli/commit/1a49f308fe353042e0637662ce9a409b07612cad))
+* refactor tests ([c4c077a](https://github.com/aws-amplify/amplify-cli/commit/c4c077a1fca315acdbf95e855cf037769188f984))
+* remove debugger from app code ([a9a9d82](https://github.com/aws-amplify/amplify-cli/commit/a9a9d829cc8a1dd4b64cba8ae31e0893c66792a1))
+* remove unused import ([c9f67a7](https://github.com/aws-amplify/amplify-cli/commit/c9f67a7f9f1604a2bf94e1e00a14d89385412e36))
+* removes userPool client lambda and update appclient secret ([#12376](https://github.com/aws-amplify/amplify-cli/issues/12376)) ([a391baf](https://github.com/aws-amplify/amplify-cli/commit/a391baf5cb0241052638e780a737691e08f4d9bf))
+* support flutter project for idp with social providers ([#12381](https://github.com/aws-amplify/amplify-cli/issues/12381)) ([cb3b0fc](https://github.com/aws-amplify/amplify-cli/commit/cb3b0fca6c575c9b9154627f08c03a092ef9ade0))
+
+
+### Features
+
+*  replace role map lambda with cfn code ([#12231](https://github.com/aws-amplify/amplify-cli/issues/12231)) ([0bd9dd1](https://github.com/aws-amplify/amplify-cli/commit/0bd9dd1bd89af187354c3358dae61b170ad5e5c8))
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+* create social providers with cfn when lambda callout does not exist ([4989bf1](https://github.com/aws-amplify/amplify-cli/commit/4989bf1ee539fb7138a02d59bee1bf8f2b8ca6ff))
+* replace hosted ui lambda with user pool domain cfn code ([#12274](https://github.com/aws-amplify/amplify-cli/issues/12274)) ([d660adc](https://github.com/aws-amplify/amplify-cli/commit/d660adcbd55afcd38b59e148e172eea7e5d22c6c))
+* replace lambda callout with oidc cfn code ([#12404](https://github.com/aws-amplify/amplify-cli/issues/12404)) ([fe5c34f](https://github.com/aws-amplify/amplify-cli/commit/fe5c34f111a7aa3c895d499d16a61c2786edefb8))
+* replace lambda code with deleting resources ([78c2872](https://github.com/aws-amplify/amplify-cli/commit/78c2872c833dd3aa0631542486076f9d3b035dc3))
+* replace oauth lambda with cfn ([#12442](https://github.com/aws-amplify/amplify-cli/issues/12442)) ([ceca069](https://github.com/aws-amplify/amplify-cli/commit/ceca0699e17e3de27056ca7179cd56c8420e83c1))
+
+
+### Reverts
+
+* Revert "chore: prepend headless scopes (#12415)" (#12439) ([88b2508](https://github.com/aws-amplify/amplify-cli/commit/88b2508777425ef2459c976a664f1fbbb04bf6d5)), closes [#12415](https://github.com/aws-amplify/amplify-cli/issues/12415) [#12439](https://github.com/aws-amplify/amplify-cli/issues/12439)
+* readd the hosted ui lambdas and the base role for the lambda callouts ([#12426](https://github.com/aws-amplify/amplify-cli/issues/12426)) ([d83ac11](https://github.com/aws-amplify/amplify-cli/commit/d83ac111b83e374b23b39a8dcfd83ea96943dc99))
+
+
+
+
+
 ## [3.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.1...@aws-amplify/amplify-category-auth@3.0.3) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

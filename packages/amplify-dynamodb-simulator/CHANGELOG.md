@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0-replace-lambda-callouts-tests.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.12...amplify-dynamodb-simulator@2.6.0-replace-lambda-callouts-tests.0) (2023-05-02)
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+
+
+
+
+
 ## [2.5.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.5.10...amplify-dynamodb-simulator@2.5.12) (2023-04-14)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

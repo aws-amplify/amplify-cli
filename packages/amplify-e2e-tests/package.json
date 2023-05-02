@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.0.3",
+  "version": "4.1.0-replace-lambda-callouts-tests.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,17 +24,17 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "3.0.3",
-    "@aws-amplify/amplify-cli-core": "4.0.3",
-    "@aws-amplify/amplify-e2e-core": "4.8.3",
-    "@aws-amplify/amplify-opensearch-simulator": "1.2.5",
+    "@aws-amplify/amplify-category-auth": "3.1.0-replace-lambda-callouts-tests.0",
+    "@aws-amplify/amplify-cli-core": "4.0.4-replace-lambda-callouts-tests.0",
+    "@aws-amplify/amplify-e2e-core": "5.0.0-replace-lambda-callouts-tests.0",
+    "@aws-amplify/amplify-opensearch-simulator": "1.3.0-replace-lambda-callouts-tests.0",
     "@aws-amplify/graphql-transformer-core": "^1.2.1-ownerfield-pk-fix.0",
     "@aws-sdk/client-appsync": "^3.303.0",
     "@aws-sdk/client-dynamodb": "^3.303.0",
     "@aws-sdk/client-ssm": "^3.303.0",
-    "amplify-dynamodb-simulator": "2.5.12",
-    "amplify-headless-interface": "1.17.3",
-    "amplify-storage-simulator": "1.7.6",
+    "amplify-dynamodb-simulator": "2.6.0-replace-lambda-callouts-tests.0",
+    "amplify-headless-interface": "1.17.4-replace-lambda-callouts-tests.0",
+    "amplify-storage-simulator": "1.8.0-replace-lambda-callouts-tests.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.68.0",

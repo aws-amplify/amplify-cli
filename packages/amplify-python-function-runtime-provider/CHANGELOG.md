@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.17-replace-lambda-callouts-tests.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.16...amplify-python-function-runtime-provider@2.4.17-replace-lambda-callouts-tests.0) (2023-05-02)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [2.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.14...amplify-python-function-runtime-provider@2.4.16) (2023-04-14)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider
