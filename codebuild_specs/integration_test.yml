@@ -4,4 +4,11 @@ env:
 phases:
   build:
     commands:
-      - echo integration testing
+      - echo "integration testing"
+      - source ./shared-scripts.sh && _integrationTest
+artifacts:
+  files:
+    - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/videos/*
+    - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/screenshots/*
+    - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/videos/*
+    - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/screenshots/*
