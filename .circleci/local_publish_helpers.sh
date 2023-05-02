@@ -36,7 +36,7 @@ function uploadPkgCli {
     export hash=$(git rev-parse HEAD | cut -c 1-12)
     export version=$(./amplify-pkg-linux-x64 --version)
 
-    if [[ "$BRANCH_NAME" == "release" ]] || [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^release_rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
+    if [[ "$BRANCH_NAME" == "release" ]] || [[ "$BRANCH_NAME" =~ ^release_rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
         aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-win-x64-$(echo $hash).tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-x64-$(echo $hash).tgz
         aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash).tgz

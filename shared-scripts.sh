@@ -211,8 +211,13 @@ function _uploadPkgBinaries {
     echo Done loading binaries
     ls $CODEBUILD_SRC_DIR/out
 
-    # source .circleci/local_publish_helpers.sh
-    # uploadPkgCli
+    source .circleci/local_publish_helpers.sh
+    if [[ "$BRANCH_NAME" == "release" ]] || [[ "$BRANCH_NAME" =~ ^release_rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
+        _loadS3AccountCredentials
+        uploadPkgCli
+    else
+        echo only release pipelines can upload binaries
+    fi
 
     storeCache $CODEBUILD_SRC_DIR/out all-binaries
 }
@@ -284,6 +289,34 @@ function _scanArtifacts {
     fi
 }
 
+function _githubPrerelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
+    cd out
+    mv amplify-pkg-macos-x64 amplify-pkg-macos
+    mv amplify-pkg-linux-x64 amplify-pkg-linux
+    mv amplify-pkg-win-x64.exe amplify-pkg-win.exe
+    tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
+    tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
+    tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
+    cd $CODEBUILD_SRC_DIR
+    echo Publish Amplify CLI GitHub prerelease
+    commit=$(git rev-parse HEAD)
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/github-prerelease.ts $version $commit
+}
+function _githubPrereleaseInstallSanityCheck {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Install packaged Amplify CLI
+    version=$(cat .amplify-pkg-version)
+    curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash
+    echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
+    echo Sanity check install
+    amplify version
+}
 function _deploy {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
@@ -293,7 +326,17 @@ function _deploy {
     uploadPkgCli
 
     ./out/amplify-pkg-linux-x64 --version
+    echo Authenticate with npm
     echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
 
-    source ./.circleci/publish.sh
+    source ./.circleci/publish-codebuild.sh
+}
+function _githubRelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Publish Amplify CLI GitHub release
+    commit=$(git rev-parse HEAD)
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/github-release.ts $version $commit
 }
