@@ -1,5 +1,4 @@
-module.exports = {
-  preset: 'ts-jest',
+const config = {
   bail: false,
   verbose: true,
   testRunner: 'jest-circus/runner',
@@ -49,3 +48,5 @@ module.exports = {
     // '<rootDir>/packages/amplify-velocity-template', // todo: enable after migration to Jest
   ],
 };
+
+module.exports = config;
