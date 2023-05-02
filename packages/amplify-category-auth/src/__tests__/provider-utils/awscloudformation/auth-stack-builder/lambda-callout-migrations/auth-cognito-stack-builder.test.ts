@@ -1,9 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { AmplifyAuthCognitoStack } from '../../../../../provider-utils/awscloudformation/auth-stack-builder/auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from '../../../../../provider-utils/awscloudformation/auth-stack-builder/stack-synthesizer';
-import {
-  CognitoStackOptions
-} from '../../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
+import { CognitoStackOptions } from '../../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({

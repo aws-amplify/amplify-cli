@@ -149,12 +149,12 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const authPropsValues = authExists
     ? Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements)
     : Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, {
-      resourceName: currentAuthName,
-      sharedId: defaults.sharedId,
-      serviceName: 'Cognito',
-      useDefault: 'manual',
-      authSelections: requirements.authSelections,
-    });
+        resourceName: currentAuthName,
+        sharedId: defaults.sharedId,
+        serviceName: 'Cognito',
+        useDefault: 'manual',
+        authSelections: requirements.authSelections,
+      });
   const { roles } = defaults;
   let authProps = {
     ...authPropsValues,
