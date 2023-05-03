@@ -71,7 +71,7 @@ const meta_stub = {
 
 describe('populate cfn params', () => {
   it('includes CFN pseudo parameters', () => {
-    expect(populateCfnParams(undefined)).toMatchObject({
+    expect(populateCfnParams('test')).toMatchObject({
       env: 'test',
       'AWS::Region': 'test-region',
       'AWS::AccountId': '1234',
