@@ -918,8 +918,8 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.0.4
     "@aws-amplify/amplify-prompts": 2.6.8
     "@aws-amplify/appsync-modelgen-plugin": ^2.4.0
-    "@aws-amplify/codegen-ui": 2.12.2
-    "@aws-amplify/codegen-ui-react": 2.12.2
+    "@aws-amplify/codegen-ui": 2.13.1
+    "@aws-amplify/codegen-ui-react": 2.13.1
     "@types/fs-extra": ^8.0.1
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
@@ -1172,11 +1172,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/codegen-ui-react@npm:2.12.2":
-  version: 2.12.2
-  resolution: "@aws-amplify/codegen-ui-react@npm:2.12.2"
+"@aws-amplify/codegen-ui-react@npm:2.13.1":
+  version: 2.13.1
+  resolution: "@aws-amplify/codegen-ui-react@npm:2.13.1"
   dependencies:
-    "@aws-amplify/codegen-ui": 2.12.2
+    "@aws-amplify/codegen-ui": 2.13.1
     "@typescript/vfs": ~1.3.5
     prettier: 2.3.2
     typescript: <=4.5.0
@@ -1186,17 +1186,17 @@ __metadata:
   dependenciesMeta:
     prettier:
       optional: true
-  checksum: dd9d61df4aea7730282c46651accada121ff399fe56d80f9a64a997952d24a22bd37cc441807b03c9355fd5b967ec6b8cbbf8d605c20d9b880bc9d3a95743760
+  checksum: 68688081d1e55a51f8a26e14c7edfccb6acb9af8a201f39467ae25df3ed1622a2f0826dbb906bdb196ab1c2de554f7be944495f29537c338190047d12ad4128e
   languageName: node
   linkType: hard
 
-"@aws-amplify/codegen-ui@npm:2.12.2":
-  version: 2.12.2
-  resolution: "@aws-amplify/codegen-ui@npm:2.12.2"
+"@aws-amplify/codegen-ui@npm:2.13.1":
+  version: 2.13.1
+  resolution: "@aws-amplify/codegen-ui@npm:2.13.1"
   dependencies:
     change-case: ^4.1.2
     yup: ^0.32.11
-  checksum: d07938cff577795130af06c7a796e80762b84b970a3b0873a8a8d315e7e03f69e72570973613ae7425805299e17bd80352859c1cafb4e30235692a9e867a9428
+  checksum: 8404d1dfcdae43879bc41e5c6bca5e9ebbd4728e7fd1a06c02be8939fd79e20281f654a2bbe3f6bc1d52e97c0a56c10832b38e10c7aba5dbc9a70530f36d4d46
   languageName: node
   linkType: hard
 
@@ -20687,7 +20687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:1.5.16":
+"graphiql@npm:^1.5.16":
   version: 1.5.16
   resolution: "graphiql@npm:1.5.16"
   dependencies:
