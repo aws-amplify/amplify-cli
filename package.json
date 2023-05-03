@@ -17,7 +17,7 @@
     "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "coverage": "codecov || exit 0",
     "e2e": "lerna run e2e",
-    "extract-api": "lerna run extract-api --concurrency 1",
+    "extract-api": "lerna run extract-api --concurrency 4",
     "extract-formatting-changes": "yarn ts-node ./scripts/extract-formatting-changes.ts",
     "finish-release": "ts-node ./scripts/finish-release.ts",
     "link-aa-dev": "mkdir -p .bin/ && cd packages/amplify-app && ln -s \"$(pwd)/bin/amplify-app\" ../../.bin/amplify-app-dev && cd ../../",
