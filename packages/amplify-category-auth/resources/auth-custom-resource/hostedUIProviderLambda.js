@@ -25,7 +25,8 @@ exports.handler = (event, context) => {
         console.log(err.stack);
 
         if (err.name === 'NotFoundException') {
-          return response.send(event, context, response.SUCCESS);
+          response.send(event, context, response.SUCCESS);
+          return;
         }
 
         response.send(event, context, response.FAILED, { err });

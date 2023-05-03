@@ -772,7 +772,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   /**
-   * Creates Custom lambda resource to update 3rd party providers on userpool
+   * Deletes existing Custom lambda resource to update 3rd party providers on userpool
    */
   deleteExistingHostedUIProviderCustomResource(): void {
     // lambda function
