@@ -1,5 +1,6 @@
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
+import * as os from 'os';
 
 const stackTraceRegex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
 const ARNRegex =
@@ -54,15 +55,15 @@ const processPaths = (paths: string[]): string[] => {
     return result;
   }
   const longestString = paths.reduce((a, b) => (a.length > b.length ? a : b));
-  const directoriesToRemove = longestString.split('/');
+  const directoriesToRemove = [...longestString.split('/'), os.homedir()];
   const directoriesRemoved = new Set<string>();
   directoriesToRemove.forEach((directory) => {
     if (directory === '') {
       return;
     }
     for (let i = 0; i < result.length; i++) {
-      if (result[i].startsWith(`/${directory}`) && result[i] !== longestString) {
-        result[i] = result[i].replace(`/${directory}`, '');
+      if (result[i].startsWith(path.join('/', directory)) && result[i] !== longestString) {
+        result[i] = result[i].replace(path.join('/', directory), '');
         directoriesRemoved.add(directory);
       }
     }

@@ -3,27 +3,27 @@
 exports[`set registry pending delete handles regKey does not exist 1`] = `
 "Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager]
-\\"PendingFileRenameOperations\\"=hex(7):5c,00,3f,00,3f,00,5c,00,68,00,6f,00,6d,00,65,00,64,00,69,00,72,00,2f,00,70,00,65,00,6e,00,64,00,69,00,6e,00,67,00,2d,00,64,00,65,00,6c,00,65,00,74,00,65,00,2e,00,65,00,78,00,65,00,00,00,00,00,00,00"
+[HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager]
+"PendingFileRenameOperations"=hex(7):5c,00,3f,00,3f,00,5c,00,68,00,6f,00,6d,00,65,00,64,00,69,00,72,00,2f,00,70,00,65,00,6e,00,64,00,69,00,6e,00,67,00,2d,00,64,00,65,00,6c,00,65,00,74,00,65,00,2e,00,65,00,78,00,65,00,00,00,00,00,00,00"
 `;
 
 exports[`set registry pending delete handles regKey empty 1`] = `
 "Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager]
-\\"PendingFileRenameOperations\\"=hex(7):5c,00,3f,00,3f,00,5c,00,68,00,6f,00,6d,00,65,00,64,00,69,00,72,00,2f,00,70,00,65,00,6e,00,64,00,69,00,6e,00,67,00,2d,00,64,00,65,00,6c,00,65,00,74,00,65,00,2e,00,65,00,78,00,65,00,00,00,00,00,00,00"
+[HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager]
+"PendingFileRenameOperations"=hex(7):5c,00,3f,00,3f,00,5c,00,68,00,6f,00,6d,00,65,00,64,00,69,00,72,00,2f,00,70,00,65,00,6e,00,64,00,69,00,6e,00,67,00,2d,00,64,00,65,00,6c,00,65,00,74,00,65,00,2e,00,65,00,78,00,65,00,00,00,00,00,00,00"
 `;
 
 exports[`set registry pending delete handles unicode characters in registry 1`] = `
 "Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager]
-\\"PendingFileRenameOperations\\"=hex(7):5c,00,3f,00,3f,00,5c,00,43,00,3a,00,5c,00,10,01,26,01,49,01,5c,00,60,4f,7d,59,2e,00,74,00,78,00,74,00,00,00,00,00,5c,00,3f,00,3f,00,5c,00,68,00,6f,00,6d,00,65,00,64,00,69,00,72,00,2f,00,70,00,65,00,6e,00,64,00,69,00,6e,00,67,00,2d,00,64,00,65,00,6c,00,65,00,74,00,65,00,2e,00,65,00,78,00,65,00,00,00,00,00,00,00"
+[HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager]
+"PendingFileRenameOperations"=hex(7):5c,00,3f,00,3f,00,5c,00,43,00,3a,00,5c,00,10,01,26,01,49,01,5c,00,60,4f,7d,59,2e,00,74,00,78,00,74,00,00,00,00,00,5c,00,3f,00,3f,00,5c,00,68,00,6f,00,6d,00,65,00,64,00,69,00,72,00,2f,00,70,00,65,00,6e,00,64,00,69,00,6e,00,67,00,2d,00,64,00,65,00,6c,00,65,00,74,00,65,00,2e,00,65,00,78,00,65,00,00,00,00,00,00,00"
 `;
 
 exports[`set registry pending delete writes reg import file, imports and cleans up import file 1`] = `
 "Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager]
-\\"PendingFileRenameOperations\\"=hex(7):5c,00,3f,00,3f,00,5c,00,68,00,6f,00,6d,00,65,00,64,00,69,00,72,00,2f,00,70,00,65,00,6e,00,64,00,69,00,6e,00,67,00,2d,00,64,00,65,00,6c,00,65,00,74,00,65,00,2e,00,65,00,78,00,65,00,00,00,00,00,00,00"
+[HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager]
+"PendingFileRenameOperations"=hex(7):5c,00,3f,00,3f,00,5c,00,68,00,6f,00,6d,00,65,00,64,00,69,00,72,00,2f,00,70,00,65,00,6e,00,64,00,69,00,6e,00,67,00,2d,00,64,00,65,00,6c,00,65,00,74,00,65,00,2e,00,65,00,78,00,65,00,00,00,00,00,00,00"
 `;
