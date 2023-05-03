@@ -82,10 +82,10 @@ describe('generateCognitoStackResources', () => {
     cognitoStack.createOAuthCustomResource();
     expect(cognitoStack.oAuthCustomResource).toBeDefined();
     expect(
-cognitoStack.
-oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.logicalId).
-map((logicalIdToken) => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1])).
-toMatchInlineSnapshot(`
+      cognitoStack
+        .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.logicalId)
+        .map((logicalIdToken) => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1]),
+    ).toMatchInlineSnapshot(`
 [
   "HostedUICustomResourceInputs",
   "HostedUIProvidersCustomResourceInputs",

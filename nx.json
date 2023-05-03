@@ -5,14 +5,7 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "test",
-          "lint",
-          "package",
-          "prepare",
-          "extract-api"
-        ],
+        "cacheableOperations": ["build", "test", "lint", "package", "prepare", "extract-api"],
         "parallel": 8
       }
     }
@@ -35,71 +28,33 @@
   },
   "targetDefaults": {
     "build": {
-      "inputs": [
-        "default",
-        "^production"
-      ],
-      "dependsOn": [
-        "^build"
-      ]
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^build"]
     },
     "build-tests": {
-      "inputs": [
-        "default",
-        "^production"
-      ],
-      "dependsOn": [
-        "build",
-        "^build"
-      ]
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build", "^build"]
     },
     "prepare": {
-      "inputs": [
-        "default",
-        "^default"
-      ],
-      "dependsOn": [
-        "^prepare"
-      ]
+      "inputs": ["default", "^default"],
+      "dependsOn": ["^prepare"]
     },
     "package": {
-      "inputs": [
-        "default",
-        "^default"
-      ],
-      "dependsOn": [
-        "^package"
-      ]
+      "inputs": ["default", "^default"],
+      "dependsOn": ["^package"]
     },
     "smoketest": {
-      "inputs": [
-        "default",
-        "^production"
-      ],
-      "dependsOn": [
-        "build"
-      ]
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build"]
     },
     "test": {
-      "inputs": [
-        "default",
-        "^production"
-      ],
-      "dependsOn": [
-        "build"
-      ]
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build"]
     },
     "extract-api": {
-      "dependsOn": [
-        "build"
-      ],
-      "inputs": [
-        "{projectRoot}/src/**/*",
-        "!{projectRoot}/src/__tests__/**/*"
-      ],
-      "outputs": [
-        "{projectRoot}/API.md"
-      ]
+      "dependsOn": ["build"],
+      "inputs": ["{projectRoot}/src/**/*", "!{projectRoot}/src/__tests__/**/*"],
+      "outputs": ["{projectRoot}/API.md"]
     }
   },
   "affected": {

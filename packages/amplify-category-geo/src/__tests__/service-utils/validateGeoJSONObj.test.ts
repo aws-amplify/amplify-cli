@@ -13,7 +13,9 @@ describe('Geo JSON file validation test', () => {
     expect(() => validateGeoJSONObj(loadGeoJSONObj('validGeofence.json'))).not.toThrow();
   });
   it('should throw error for a invalid Geo JSON file with first and last position not identical', () => {
-    expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.notSameFirstAndLast.json'))).toThrowErrorMatchingInlineSnapshot(`"Linear ring of feature "notSameFirstAndLast" should have identical values for the first and last position."`);
+    expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.notSameFirstAndLast.json'))).toThrowErrorMatchingInlineSnapshot(
+      `"Linear ring of feature "notSameFirstAndLast" should have identical values for the first and last position."`,
+    );
   });
   it('should throw error for a invalid Geo JSON file with less than 4 points in a linear ring', () => {
     expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.lessThanFourPoints.json'))).toThrowErrorMatchingInlineSnapshot(`
@@ -42,8 +44,10 @@ describe('Geo JSON file validation test', () => {
   });
   it('should throw error for a invalid Geo JSON file with same identifier', () => {
     expect(() =>
-validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.sameIdentifier.json'), 'name', IdentifierOption.CustomProperty)).
-toThrowErrorMatchingInlineSnapshot(`"Identifier field "name" is not unique in GeoJSON. The following duplicate values are founded: ["myGeofence", "myGeofence2"]"`);
+      validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.sameIdentifier.json'), 'name', IdentifierOption.CustomProperty),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Identifier field "name" is not unique in GeoJSON. The following duplicate values are founded: ["myGeofence", "myGeofence2"]"`,
+    );
   });
   it('should throw error for a invalid Geo JSON file with counter-clockwise interior ring', () => {
     expect(() =>

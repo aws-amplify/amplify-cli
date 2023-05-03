@@ -252,7 +252,8 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
 export class AmplifyNodePkgDetector {
     constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
     // (undocumented)
-    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [
+    ];
 }
 
 // @public (undocumented)

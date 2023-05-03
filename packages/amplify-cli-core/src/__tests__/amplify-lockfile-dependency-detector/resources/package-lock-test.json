@@ -495,9 +495,7 @@
       "version": "1.172.0",
       "resolved": "https://registry.npmjs.org/@aws-cdk/aws-cognito/-/aws-cognito-1.172.0.tgz",
       "integrity": "sha512-Owq17lrFsTk5SHt9szc1y406cXlBPshBwkpGgGCpzm9nnCVlOR72Swfp1BRSemYt8IlObS8lxlz1vgCus+qqhw==",
-      "bundleDependencies": [
-        "punycode"
-      ],
+      "bundleDependencies": ["punycode"],
       "license": "Apache-2.0",
       "dependencies": {
         "@aws-cdk/aws-certificatemanager": "1.172.0",
@@ -1234,10 +1232,7 @@
       "version": "1.172.0",
       "resolved": "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-1.172.0.tgz",
       "integrity": "sha512-Y+o/ZYT23lcoUsLJWZmpgICxuzFHDh5oNzro7ip2GG1Gs3UlZ5rMS755f22vHBNxJ8lgTFrbsI7Wr7kDGGnyNw==",
-      "bundleDependencies": [
-        "jsonschema",
-        "semver"
-      ],
+      "bundleDependencies": ["jsonschema", "semver"],
       "license": "Apache-2.0",
       "dependencies": {
         "jsonschema": "^1.4.1",
@@ -1295,12 +1290,7 @@
       "version": "1.172.0",
       "resolved": "https://registry.npmjs.org/@aws-cdk/core/-/core-1.172.0.tgz",
       "integrity": "sha512-Hy7jNNzkNSf+oCmhhXnTcybunejTtCuGmfEFNZXsizcWBUjm0zD0K1X3kjD7Fqs0p+4xbaorCTgIB3Cu9qrF1Q==",
-      "bundleDependencies": [
-        "fs-extra",
-        "minimatch",
-        "@balena/dockerignore",
-        "ignore"
-      ],
+      "bundleDependencies": ["fs-extra", "minimatch", "@balena/dockerignore", "ignore"],
       "license": "Apache-2.0",
       "dependencies": {
         "@aws-cdk/cloud-assembly-schema": "1.172.0",
@@ -1464,9 +1454,7 @@
       "version": "1.172.0",
       "resolved": "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-1.172.0.tgz",
       "integrity": "sha512-1dZpOzHM1J4wFTe4Wu+TmDx3b+WFlJyGm9DRyA3QDaqw8fIx0PEjxLbqnKb6B+UlY0Foxlu1V6jc/O1Sv929Xw==",
-      "bundleDependencies": [
-        "semver"
-      ],
+      "bundleDependencies": ["semver"],
       "license": "Apache-2.0",
       "dependencies": {
         "@aws-cdk/cloud-assembly-schema": "1.172.0",

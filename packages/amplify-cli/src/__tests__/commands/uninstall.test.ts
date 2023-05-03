@@ -38,9 +38,9 @@ describe('uninstall node CLI', () => {
   it('does nothing when running using node', async () => {
     await run(context_stub_typed);
 
-    expect(context_stub.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(`""uninstall" is not available in this installation of Amplify."`
-
-);
+    expect(context_stub.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(
+      `""uninstall" is not available in this installation of Amplify."`,
+    );
     expect(context_stub.print.info.mock.calls[0][0]).toMatchInlineSnapshot(`"Use npm uninstall -g @aws-amplify/cli instead."`);
   });
 });
