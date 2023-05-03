@@ -1183,7 +1183,7 @@ export const formNestedStack = async (
           }
         }
 
-        if (category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds != '[]') {
+        if (category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds !== '[]') {
           const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta);
           const hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
 
