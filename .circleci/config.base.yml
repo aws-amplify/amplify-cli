@@ -107,7 +107,6 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
-      - run: yarn config set npmRegistryServer https://registry.npmjs.org
       - run: yarn --immutable
       - run: yarn production-build
       - run:
@@ -133,7 +132,6 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
-      - run: yarn config set npmRegistryServer https://registry.npmjs.org
       - run: yarn install --immutable
       - run:
           name: Build tests
