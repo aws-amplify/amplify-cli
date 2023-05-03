@@ -87,6 +87,21 @@ export const privateKeys = [
   'additionalQuestions',
 ];
 
+export const socialSignInKeys: { [key: string]: string[] } = {
+  Facebook: ['facebookAppIdUserPool', 'facebookAuthorizeScopes', 'facebookAppSecretUserPool'],
+  Google: ['googleAppIdUserPool', 'googleAuthorizeScopes', 'googleAppSecretUserPool'],
+  LoginWithAmazon: ['loginwithamazonAppIdUserPool', 'loginwithamazonAuthorizeScopes', 'loginwithamazonAppSecretUserPool'],
+  SignInWithApple: [
+    'signinwithappleAuthorizeScopes',
+    'signinwithappleClientIdUserPool',
+    'signinwithappleKeyIdUserPool',
+    'signinwithapplePrivateKeyUserPool',
+    'signinwithappleTeamIdUserPool',
+  ],
+};
+
+export const SignInWithApple = 'SignInWithApple';
+
 // amplify console auth options
 export const UserPool = 'User Pool';
 export const IdentityPool = 'Identity Pool';

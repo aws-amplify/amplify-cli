@@ -29,6 +29,7 @@ import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigge
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from './stack-synthesizer';
+import { socialSignInKeys } from '../constants';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 
 /**
@@ -556,6 +557,20 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         'hostedUIProviderCreds',
       );
     }
+
+    JSON.parse(props.hostedUIProviderCreds || '[]').forEach(({ ProviderName }: { ProviderName: string }) => {
+      socialSignInKeys[ProviderName].forEach((key: string) => {
+        if (!Object.keys(props).includes(key)) {
+          this._authTemplateObj.addCfnParameter(
+            {
+              type: 'String',
+              noEcho: true,
+            },
+            key,
+          );
+        }
+      });
+    });
   };
 
   /**
