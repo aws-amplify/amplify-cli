@@ -131,7 +131,6 @@
       "src/**/*.{ts,tsx,js,jsx}",
       "!src/__tests__/"
     ],
-    "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
