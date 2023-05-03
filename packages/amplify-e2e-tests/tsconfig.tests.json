@@ -8,7 +8,7 @@
     "rootDir": "./src",
     "types": ["jest", "node"],
     "outDir": "lib",
-    "lib": ["ES2019.Array", "es2015", "es2016.array.include", "esnext.asynciterable", "dom"],
+    "lib": ["es2015", "es2016.array.include", "esnext.asynciterable", "dom"],
     "declaration": true,
     "typeRoots": ["../../node_modules/@types", "node_modules/@types", "./typings"]
   },
