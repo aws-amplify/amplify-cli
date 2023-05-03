@@ -43,5 +43,10 @@
     "@types/node": "^12.12.6",
     "@types/openpgp": "^4.4.18",
     "uuid": "^8.3.2"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

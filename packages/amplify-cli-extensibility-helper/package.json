@@ -50,5 +50,10 @@
       "node"
     ],
     "collectCoverage": true
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

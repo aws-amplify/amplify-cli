@@ -32,5 +32,10 @@
     "graphql-config": "^2.2.1",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

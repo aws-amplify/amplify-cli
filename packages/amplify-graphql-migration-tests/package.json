@@ -66,5 +66,10 @@
     "graphql-predictions-transformer": "^3.2.52",
     "graphql-transformer-core": "^8.0.3",
     "graphql-versioned-transformer": "^5.2.52"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

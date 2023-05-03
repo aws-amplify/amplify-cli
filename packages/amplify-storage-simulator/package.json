@@ -45,5 +45,10 @@
     "@types/uuid": "^8.3.1",
     "@types/xml": "^1.0.4",
     "aws-sdk": "^2.1354.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

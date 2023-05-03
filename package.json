@@ -4,26 +4,25 @@
   "description": "amplify-cli",
   "scripts": {
     "addwords": "node ./scripts/add-to-dict.js",
-    "build-and-verify": "yarn clean && yarn dev-build && yarn prettier-check && yarn lint-check && yarn verify-api-extract",
-    "build-tests-changed": "nx affected --target=build-tests",
-    "build-tests": "nx run-many --target=build-tests --all",
-    "build": "nx run-many --target=build --all",
+    "build-and-verify": "yarn clean && yarn build && yarn prettier-check && yarn lint-check && yarn verify-api-extract",
+    "build-tests-changed": "lerna run build-tests --since dev",
+    "build-tests": "lerna run build-tests",
+    "build": "lerna run build",
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
-    "clean": "nx reset && nx run-many --target=clean --all && yarn rimraf tsconfig.tsbuildinfo",
+    "clean": "lerna run clean && yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "cloud-e2e-with-rc": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e-with-rc/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "commit": "git-cz",
     "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "coverage": "codecov || exit 0",
-    "dev-build": "yarn --cache-folder ~/.cache/yarn && nx run-many --target=build --all",
-    "e2e": "nx run e2e",
-    "extract-api": "nx run-many --target=extract-api --all",
+    "e2e": "lerna run e2e",
+    "extract-api": "lerna run extract-api",
     "extract-formatting-changes": "yarn ts-node ./scripts/extract-formatting-changes.ts",
     "finish-release": "ts-node ./scripts/finish-release.ts",
-    "link-aa-dev": "cd packages/amplify-app && ln -s \"$(pwd)/bin/amplify-app\" \"$(yarn global bin)/amplify-app-dev\" && cd -",
+    "link-aa-dev": "mkdir -p .bin/ && cd packages/amplify-app && ln -s \"$(pwd)/bin/amplify-app\" ../../.bin/amplify-app-dev && cd ../../",
     "link-aa-win": "node ./scripts/link-bin.js packages/amplify-app/bin/amplify-app amplify-app-dev",
-    "link-dev": "cd packages/amplify-cli && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
+    "link-dev": "mkdir -p .bin/ && cd packages/amplify-cli && ln -s \"$(pwd)/bin/amplify\" ../../.bin/amplify-dev && cd ../../",
     "link-win": "node ./scripts/link-bin.js packages/amplify-cli/bin/amplify amplify-dev",
     "lint-check": "yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=844",
     "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
@@ -36,21 +35,21 @@
     "prettier-check": "yarn prettier --check .",
     "prettier-changes": "git diff --name-only --diff-filter MRA dev | xargs yarn prettier --write",
     "prettier-write": "yarn prettier --write .",
-    "production-build": "yarn --frozen-lockfile --network-concurrency 1 --cache-folder ~/.cache/yarn && nx run-many --target=build --all",
+    "production-build": "lerna run build --concurrency 3 --stream",
     "promote-rc": "./scripts/promote-rc.sh",
     "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access",
     "release-rc": "./scripts/release-rc.sh",
-    "rm-aa-dev-link": "rimraf -f \"$(yarn global bin)/amplify-app-dev\"",
-    "rm-dev-link": "rimraf -f \"$(yarn global bin)/amplify-dev\"",
-    "setup-dev-win": "yarn dev-build && yarn link-win && yarn link-aa-win",
-    "setup-dev": "yarn dev-build && yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev",
-    "smoketest": "nx run-many --parallel=1 --target=smoketest --all --output-style=stream-without-prefixes",
-    "smoketest@latest": "CLI_VERSION=latest nx run-many --parallel=1 --target=smoketest --all --output-style=stream-without-prefixes",
-    "smoketest@rc": "CLI_VERSION=rc nx run-many --parallel=1 --target=smoketest --all --output-style=stream-without-prefixes",
+    "rm-aa-dev-link": "rimraf -f \".bin/amplify-app-dev\"",
+    "rm-dev-link": "rimraf -f \".bin/amplify-dev\"",
+    "setup-dev-win": "yarn build && yarn link-win && yarn link-aa-win",
+    "setup-dev": "yarn build && yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev",
+    "smoketest": "lerna run smoketest --output-style=stream-without-prefixes",
+    "smoketest@latest": "CLI_VERSION=latest lerna run smoketest --output-style=stream-without-prefixes",
+    "smoketest@rc": "CLI_VERSION=rc lerna run smoketest --output-style=stream-without-prefixes",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
-    "test-changed": "nx affected --target=test",
-    "test-ci": "nx run-many --parallel=4 --target=test --all -- --ci --runInBand",
-    "test": "nx run-many --target=test --all -- --runInBand",
+    "test-changed": "lerna run test --since dev",
+    "test-ci": "lerna run test --concurrency 4 -- --ci -i",
+    "test": "lerna run test",
     "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
     "update-test-timing-data": "ts-node ./scripts/cci-get-job-metrics.ts && ts-node ./scripts/cci-extract-test-timings-from-job-metrics.ts",
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
@@ -59,12 +58,11 @@
     "verdaccio-disconnect": "source .circleci/local_publish_helpers.sh && unsetNpmRegistryUrl",
     "verdaccio-start": "source .circleci/local_publish_helpers.sh && startLocalRegistry \"$(pwd)/.circleci/verdaccio.yaml\"",
     "verdaccio-stop": "kill -9 $(lsof -n -t -iTCP:4873 -sTCP:LISTEN) || true",
-    "verify-api-extract:clean": "yarn clean && yarn dev-build && yarn verify-api-extract",
+    "verify-api-extract:clean": "yarn clean && yarn build && yarn verify-api-extract",
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
-    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
-    "yarn-use-bash": "yarn config set script-shell /bin/bash"
+    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -86,16 +84,13 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^6.4.1",
+    "lerna": "^6.6.1",
+    "node-gyp": "^9.3.1",
     "strip-ansi": "^6.0.0"
   },
   "workspaces": {
     "packages": [
       "packages/*"
-    ],
-    "nohoist": [
-      "@aws-amplify/cli-internal/amplify-codegen",
-      "@aws-amplify/cli-internal/@aws-amplify/amplify-category-api"
     ]
   },
   "devDependencies": {
@@ -138,8 +133,8 @@
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-report": "^3.0.0",
     "istanbul-reports": "^3.1.5",
-    "jest": "^27.0.0",
-    "jest-circus": "^27.0.0",
+    "jest": "^29.0.0",
+    "jest-circus": "^29.0.0",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
     "lnk": "1.1.0",
@@ -148,20 +143,26 @@
     "pkg": "^5.8.1",
     "prettier": "^2.8.4",
     "rimraf": "^3.0.0",
-    "ts-jest": "^27.0.0",
+    "ts-jest": "^29.0.0",
     "ts-node": "^8.10.1",
     "typescript": "^4.9.4"
   },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  },
+  "packageManager": "yarn@3.5.0",
   "resolutions": {
-    "**/aws-sdk": "^2.1354.0",
-    "**/cross-fetch": "^2.2.6",
-    "**/glob-parent": "^6.0.2",
-    "**/got": "^11.8.5",
-    "**/istanbul/async": "^2.6.4",
-    "**/jake/async": "^2.6.4",
-    "**/json5": "^2.2.3",
-    "**/nth-check": "^2.0.1",
-    "**/undici": "^5.8.0",
-    "**/pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
+    "aws-sdk": "^2.1354.0",
+    "cross-fetch": "^2.2.6",
+    "glob-parent": "^6.0.2",
+    "got": "^11.8.5",
+    "istanbul/async": "^2.6.4",
+    "jake/async": "^2.6.4",
+    "json5": "^2.2.3",
+    "nth-check": "^2.0.1",
+    "undici": "^5.8.0",
+    "pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
   }
 }

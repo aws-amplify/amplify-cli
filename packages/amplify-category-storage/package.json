@@ -72,5 +72,10 @@
       "json",
       "html"
     ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

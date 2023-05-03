@@ -39,5 +39,10 @@
     "@aws-amplify/cli-internal": "11.1.1",
     "@types/tar": "^6.1.1",
     "rimraf": "^3.0.2"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

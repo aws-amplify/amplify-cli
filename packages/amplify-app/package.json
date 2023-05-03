@@ -14,9 +14,7 @@
     "amplify",
     "aws"
   ],
-  "bin": {
-    "amplify-app": "bin/amplify-app"
-  },
+  "bin": "bin/amplify-app",
   "publishConfig": {
     "access": "public"
   },
@@ -46,5 +44,10 @@
   },
   "devDependencies": {
     "@types/glob": "^7.1.1"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }
