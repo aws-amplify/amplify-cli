@@ -1,15 +1,10 @@
 //special handling needed to test prediction
 //This test will faile due to a possible AppSync bug, see details below the test code
-import path from 'path';
-import fs from 'fs-extra';
-import aws from 'aws-sdk';
 import gql from 'graphql-tag';
-import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import { addAuthWithDefault, addS3Storage, addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
 
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 import { updateSchemaInTestProject } from '../common';
-
-const imageKey = 'public/myimage.jpg';
 
 export async function runTest(projectDir: string, testModule: any) {
   await addAuthWithDefault(projectDir);
@@ -18,9 +13,6 @@ export async function runTest(projectDir: string, testModule: any) {
   updateSchemaInTestProject(projectDir, testModule.schema);
 
   await amplifyPush(projectDir);
-
-  await uploadImageFile(projectDir);
-
   const apiKey = getApiKey(projectDir);
   const awsconfig = configureAmplify(projectDir);
   const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
@@ -38,33 +30,6 @@ export async function runTest(projectDir: string, testModule: any) {
   } catch (err) {
     //#error: the query will fail due to an AppSync bug, see below
   }
-}
-
-async function uploadImageFile(projectDir: string) {
-  const imageFilePath = path.join(__dirname, 'predictions-usage-image.jpg');
-  const s3Client = new aws.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
-    region: process.env.AWS_DEFAULT_REGION,
-  });
-
-  const amplifyMeta = getBackendAmplifyMeta(projectDir);
-  const storageResourceName = Object.keys(amplifyMeta.storage).find((key: any) => {
-    return amplifyMeta.storage[key].service === 'S3';
-  }) as any;
-
-  const bucketName = amplifyMeta.storage[storageResourceName].output.BucketName;
-
-  const fileStream = fs.createReadStream(imageFilePath);
-  const uploadParams = {
-    Bucket: bucketName,
-    Key: imageKey,
-    Body: fileStream,
-    ContentType: 'image/jpeg',
-    ACL: 'public-read',
-  };
-  await s3Client.upload(uploadParams).promise();
 }
 
 //schema

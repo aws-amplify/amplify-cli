@@ -101,10 +101,12 @@ const WINDOWS_SMOKE_TESTS = [
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
     'src/__tests__/amplify-app.test.ts',
     // failing in parsing JSON strings on powershell
+    'src/__tests__/auth_2g.test.ts',
     'src/__tests__/auth_12.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/diagnose.test.ts',
@@ -124,6 +126,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/geo-update-2.test.ts',
     'src/__tests__/git-clone-attach.test.ts',
     'src/__tests__/hooks-a.test.ts',
+    'src/__tests__/hooks-c.test.ts',
     'src/__tests__/import_auth_1a.test.ts',
     'src/__tests__/import_auth_1b.test.ts',
     'src/__tests__/import_auth_2a.test.ts',

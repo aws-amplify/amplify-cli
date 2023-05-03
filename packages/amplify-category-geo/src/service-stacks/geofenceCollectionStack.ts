@@ -94,7 +94,7 @@ export class GeofenceCollectionStack extends BaseStack {
     const customGeofenceCollectionLambda = new lambda.Function(this, 'CustomGeofenceCollectionLambda', {
       code: lambda.Code.fromInline(customGeofenceCollectionLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_16_X,
+      runtime: Runtime.NODEJS_18_X,
       timeout: Duration.seconds(300),
     });
     customGeofenceCollectionLambda.addToRolePolicy(geoCreateCollectionStatement);

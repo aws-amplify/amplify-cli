@@ -448,9 +448,6 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Update OS Packages
-          command: sudo apt-get update
-      - run:
           name: Start verdaccio and Install Amplify CLI as sudo
           command: |
             source .circleci/local_publish_helpers.sh
@@ -1023,7 +1020,6 @@ workflows:
                 - beta
                 - release
                 - /release_rc\/.*/
-                - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
       - verify-api-extract:
           requires:

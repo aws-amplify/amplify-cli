@@ -1,7 +1,15 @@
 import inquirer from 'inquirer';
 import path from 'path';
 const TransformPackage = require('graphql-transformer-core');
-import { AmplifyCategories, stateManager, ResourceDoesNotExistError, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
+import {
+  AmplifyCategories,
+  stateManager,
+  ResourceDoesNotExistError,
+  exitOnNextTick,
+  AmplifyError,
+  AmplifyFault,
+  $TSAny,
+} from '@aws-amplify/amplify-cli-core';
 
 export async function askDynamoDBQuestions(context: any, currentProjectOnly = false): Promise<{ resourceName: string }> {
   const dynamoDbTypeQuestion = {
@@ -118,8 +126,29 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
 
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(backendDir, 'api', targetResourceName);
-  const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
-  const directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+  let project;
+  let directiveMap: $TSAny;
+  try {
+    project = await TransformPackage.readProjectConfiguration(resourceDirPath);
+    directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+  } catch (err) {
+    if (err.message?.includes('Syntax Error')) {
+      throw new AmplifyError(
+        'GraphQLError',
+        {
+          message: err?.message,
+        },
+        err,
+      );
+    }
+    throw new AmplifyFault(
+      'GraphQLTransformerV1Fault',
+      {
+        message: err?.message,
+      },
+      err,
+    );
+  }
   const modelNames = Object.keys(directiveMap.types).filter((typeName) => directiveMap.types[typeName].includes('model'));
 
   let targetModelNames: string[] = [];
