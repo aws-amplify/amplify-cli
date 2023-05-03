@@ -28,13 +28,11 @@
   "dependencies": {
     "@aws-amplify/amplify-category-api": "^5.2.1",
     "@aws-amplify/amplify-cli-core": "4.0.4",
+    "@aws-amplify/amplify-environment-parameters": "1.5.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1"
-  },
-  "peerDependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.4.3"
   },
   "jest": {
     "collectCoverage": true,
