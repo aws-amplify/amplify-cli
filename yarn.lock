@@ -233,6 +233,7 @@ __metadata:
     enquirer: ^2.3.6
     fs-extra: ^8.1.0
     inquirer: ^7.3.3
+    jest: ^29.5.0
     lodash: ^4.17.21
     mime-types: ^2.1.26
     ora: ^4.0.3
@@ -23660,7 +23661,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^29.0.0":
+"jest@npm:^29.0.0, jest@npm:^29.5.0":
   version: 29.5.0
   resolution: "jest@npm:29.5.0"
   dependencies:
