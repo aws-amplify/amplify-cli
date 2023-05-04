@@ -276,7 +276,7 @@ function _convertCoverage {
     # .../$NODE_V8_COVERAGE - generated with setting NODE_V8_COVERAGE env var
     # .../coverage/<reporter> - generated with c8 command above
     loadCache e2e-test-coverage-raw $E2E_TEST_COVERAGE_DIR
-    npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --all --src ./packages -x "**/node_modules/**" -x "**/__tests__/**" --exclude-after-remap "**/node_modules/**" -x "**/amplify-e2e-*/**" -x "**/.yarn/** --allow-external --reporter clover
+    npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --all --src ./packages -x "**/node_modules/**" -x "**/__tests__/**" --exclude-after-remap "**/node_modules/**" -x "**/amplify-e2e-*/**" -x "**/.yarn/**" --allow-external --reporter clover
 }
 # https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader
 function _uploadCoverageLinux {
