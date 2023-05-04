@@ -6,7 +6,6 @@ process.env.CLI_ENV = 'development';
 
 // suppress deprecation warnings
 process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
-process['noDeprecation'] = true;
 
 const startTime = Date.now();
 if (process.pkg) {
