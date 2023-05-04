@@ -149,6 +149,7 @@ jobs:
           steps:
             - install_node_windows
             - checkout
+            - run: sed -i '/24e2b385b6510538b4253aba62f243f7a1783fa544970c0712bcc3dd3c10159f7eab741f8dfaf409afed5ed8e0c334ea2c046ffbd11b93901c41847142a34b5e/d' .yarn.lock
             - run: yarn --immutable
             - run: yarn production-build
             - run:
