@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.8-ym-tagged-release.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.7...@aws-amplify/amplify-graphiql-explorer@2.5.8-ym-tagged-release.0) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
+
+
+
+
+
 ## [2.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.5...@aws-amplify/amplify-graphiql-explorer@2.5.7) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
