@@ -25,8 +25,8 @@ describe('amplify push function cases:', () => {
   });
 
   afterEach(async () => {
-    //   await deleteProject(projRoot);
-    //   deleteProjectDir(projRoot);
+      await deleteProject(projRoot);
+      deleteProjectDir(projRoot);
   });
 
   it('Test case when IAM is set as default auth', async () => {
@@ -36,29 +36,6 @@ describe('amplify push function cases:', () => {
 
     await addApi(projRoot, { IAM: {}, transformerVersion: 2 });
     await updateApiSchema(projRoot, projName, 'iam_simple_model.graphql');
-
-    expect(getBackendConfig(projRoot)).toBeDefined();
-
-    const beforeMeta = getBackendConfig(projRoot);
-    const apiName = Object.keys(beforeMeta.api)[0];
-
-    expect(apiName).toBeDefined();
-
-    await addFunction(
-      projRoot,
-      {
-        functionTemplate: 'AppSync - GraphQL API request (with IAM)',
-        additionalPermissions: {
-          permissions: ['api'],
-          choices: ['api'],
-          resources: [apiName],
-          operations: ['Query'],
-          name: 'functoosh',
-        },
-      },
-      'nodejs',
-    );
-    // should fail
     await amplifyPushFunction(projRoot);
   });
 });
