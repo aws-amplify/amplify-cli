@@ -1,112 +1,75 @@
-<a href="https://aws-amplify.github.io/" target="_blank">
-    <img src="https://s3.amazonaws.com/aws-mobile-hub-images/aws-amplify-logo.png" alt="AWS Amplify" width="550" >
-</a>
+AWS Amplify CLI:-
 
-<p>
-  <a href="https://discord.gg/jWVbPfC" target="_blank">
-    <img src="https://img.shields.io/discord/308323056592486420?logo=discord"" alt="Discord Chat" />  
-  </a>
-  <a href="https://www.npmjs.com/package/@aws-amplify/cli">
-    <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
-  </a>
-  <a href="https://circleci.com/gh/aws-amplify/amplify-cli">
-    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-cli/master.svg" alt="build:started">
-  </a>
-</p>
+AWS యాంప్లిఫై CLI అనేది మొబైల్ మరియు వెబ్ అప్లికేషన్ డెవలప్‌మెంట్‌ను సులభతరం చేయడానికి బలమైన ఫీచర్ సెట్‌ను కలిగి ఉన్న టూల్‌చెయిన్. CLI మీరు మీ ఖాతాలో అమలు చేయడానికి ముందు స్థానికంగా కాన్ఫిగరేషన్‌లను జోడించడానికి లేదా సవరించడానికి మిమ్మల్ని అనుమతించడానికి AWS క్లౌడ్‌ఫార్మేషన్ మరియు నెస్టెడ్ స్టాక్‌లను ఉపయోగిస్తుంది.
 
-### Reporting Bugs/Feature Requests
+Install the CLI
+Commands Summary
+Tutorials
+Contributing
+Start building your app
+Changelog
 
-[![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-cli/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
-[![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-cli/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
-[![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-cli?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aclosed+)
+Install the CLI
+Node.js® వెర్షన్ 18 లేదా తదుపరిది అవసరం
+యాంప్లిఫై CLIని ఈ క్రింది విధంగా ఇన్‌స్టాల్ చేసి కాన్ఫిగర్ చేయండి:
 
-# AWS Amplify CLI
-
-The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks to allow you to add or modify configurations locally before you push them for execution in your account.
-
-- [Install the CLI](#install-the-cli)
-- [Commands Summary](#commands-summary)
-- [Tutorials](#tutorials)
-- [Contributing](#contributing)
-- [Start building your app](https://aws-amplify.github.io/docs)
-- [Changelog](https://github.com/aws-amplify/amplify-cli/releases/latest)
-
-## Install the CLI
-
-- Requires Node.js® version 18 or later
-
-Install and configure the Amplify CLI as follows:
-
-```bash
 $ npm install -g @aws-amplify/cli
 $ amplify configure
-```
 
-**_Note_**: If you're having permission issues on your system installing the CLI, please try the following command:
-
-```bash
+గమనిక: CLIని ఇన్‌స్టాల్ చేస్తున్నప్పుడు మీ సిస్టమ్‌లో మీకు అనుమతి సమస్యలు ఉంటే, దయచేసి కింది ఆదేశాన్ని ప్రయత్నించండి:
 $ sudo npm install -g @aws-amplify/cli --unsafe-perm=true
 $ amplify configure
-```
 
-## Commands Summary
+Commands Summary
+యాంప్లిఫై CLI కింది పట్టికలో చూపిన ఆదేశాలకు మద్దతు ఇస్తుంది.
+Command	Description
+amplify configure	Configures the AWS access credentials, AWS Region and sets up a new AWS User Profile
+amplify init	Initializes a new project, sets up deployment resources in the cloud and prepares your project for Amplify.
+amplify configure project	Updates configuration settings used to setup the project during the init step.
+amplify add <category>	Adds cloud features to your app.
+amplify update <category>	Updates existing cloud features in your app.
+amplify push [--no-gql-override]	Provisions cloud resources with the latest local developments. The 'no-gql-override' flag does not automatically compile your annotated GraphQL schema and will override your local AppSync resolvers and templates.
+amplify pull	Fetch upstream backend environment definition changes from the cloud and updates the local environment to match that definition.
+amplify publish	Runs amplify push, publishes a static assets to Amazon S3 and Amazon CloudFront (*hosting category is required).
+amplify status [ <category>...]	Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete).
+amplify status -v [ <category>...]	Verbose mode - Shows the detailed verbose diff between local and deployed resources, including cloudformation-diff
+amplify serve	Runs amplify push, and then executes the project's start command to test run the client-side application.
+amplify delete	Deletes resources tied to the project.
+amplify help | amplify <category> help	Displays help for the core CLI.
+amplify codegen add | generate	Performs generation of strongly typed objects using a GraphQL schema.
+amplify env add | list | remove | get | pull | import | checkout	See the multienv docs.
 
-The Amplify CLI supports the commands shown in the following table.
+Category specific commands:
+auth (Amazon Cognito)
+storage (Amazon S3 & Amazon DynamoDB)
+function (AWS Lambda)
+api (AWS AppSync & Amazon API Gateway)
+analytics (Amazon Pinpoint)
+hosting (Amazon S3 and Amazon CloudFront distribution)
+notifications (Amazon Pinpoint)
+interactions (Amazon Lex)
+predictions (Amazon Rekognition, Amazon Textract, Amazon Translate, Amazon Polly, Amazon Transcribe, Amazon Comprehend, and Amazon SageMaker)
+Tutorials
+Getting Started guide
+GraphQL transform tutorial
+Native development with Amplify CLI and AWS AppSync
 
-| Command                                                                | Description                                                                                                                                                                                                          |
-| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| amplify configure                                                      | Configures the AWS access credentials, AWS Region and sets up a new AWS User Profile                                                                                                                                 |
-| amplify init                                                           | Initializes a new project, sets up deployment resources in the cloud and prepares your project for Amplify.                                                                                                          |
-| amplify configure project                                              | Updates configuration settings used to setup the project during the init step.                                                                                                                                       |
-| amplify add `<category>`                                               | Adds cloud features to your app.                                                                                                                                                                                     |
-| amplify update `<category>`                                            | Updates existing cloud features in your app.                                                                                                                                                                         |
-| amplify push [--no-gql-override]                                       | Provisions cloud resources with the latest local developments. The 'no-gql-override' flag does not automatically compile your annotated GraphQL schema and will override your local AppSync resolvers and templates. |
-| amplify pull                                                           | Fetch upstream backend environment definition changes from the cloud and updates the local environment to match that definition.                                                                                     |
-| amplify publish                                                        | Runs `amplify push`, publishes a static assets to Amazon S3 and Amazon CloudFront (\*hosting category is required).                                                                                                  |
-| amplify status [ `<category>`...]                                      | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete).                                                                                                                  |
-| amplify status -v [ `<category>`...]                                   | Verbose mode - Shows the detailed verbose diff between local and deployed resources, including cloudformation-diff                                                                                                   |
-| amplify serve                                                          | Runs `amplify push`, and then executes the project's start command to test run the client-side application.                                                                                                          |
-| amplify delete                                                         | Deletes resources tied to the project.                                                                                                                                                                               |
-| amplify help \| amplify `<category>` help                              | Displays help for the core CLI.                                                                                                                                                                                      |
-| amplify codegen add \| generate                                        | Performs generation of strongly typed objects using a GraphQL schema.                                                                                                                                                |
-| amplify env add \| list \| remove \| get \| pull \| import \| checkout | See the [multienv docs](https://docs.amplify.aws/cli/teams/overview).                                                                                                                                                |
+Developing
+మీ స్థానిక అభివృద్ధి వాతావరణాన్ని సెటప్ చేయడానికి, స్థానిక పర్యావరణ సెటప్‌కి వెళ్లండి.
 
-### Category specific commands:
-
-- [auth (Amazon Cognito)](packages/amplify-category-auth/Readme.md)
-- [storage (Amazon S3 & Amazon DynamoDB)](packages/amplify-category-storage/Readme.md)
-- [function (AWS Lambda)](packages/amplify-category-function/Readme.md)
-- [api (AWS AppSync & Amazon API Gateway)](packages/amplify-category-api/Readme.md)
-- [analytics (Amazon Pinpoint)](packages/amplify-category-analytics/Readme.md)
-- [hosting (Amazon S3 and Amazon CloudFront distribution)](packages/amplify-category-hosting/Readme.md)
-- [notifications (Amazon Pinpoint)](packages/amplify-category-notifications/Readme.md)
-- [interactions (Amazon Lex)](packages/amplify-category-interactions/Readme.md)
-- [predictions (Amazon Rekognition, Amazon Textract, Amazon Translate, Amazon Polly, Amazon Transcribe, Amazon Comprehend, and Amazon SageMaker)](packages/amplify-category-predictions/Readme.md)
-
-## Tutorials
-
-- [Getting Started guide](https://docs.amplify.aws/start)
-- [GraphQL transform tutorial](https://docs.amplify.aws/cli/graphql-transformer/overview)
-- [Native development with Amplify CLI and AWS AppSync](https://docs.amplify.aws/cli/graphql-transformer/codegen)
-
-## Developing
-
-To set up your local development environment, go to [Local Environment Setup](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md#local-environment-setup).
-
-To test your category, do the following:
-
-```sh
+మీ వర్గాన్ని పరీక్షించడానికి, ఈ క్రింది వాటిని చేయండి:
 cd <your-test-front-end-project>
 amplify-dev init
 amplify-dev <your-category> <subcommand>
-```
 
-Before pushing code or sending a pull request, do the following:
+కోడ్‌ని నెట్టడానికి లేదా పుల్ అభ్యర్థనను పంపడానికి ముందు, ఈ క్రింది వాటిని చేయండి:
 
-- At the command line, run `yarn lint` at the top-level directory. This invokes eslint to check for lint errors in all of our packages.
-- You can use `yarn lint` to find some of the lint errors. To attempt fix them, go to the package that has errors and run `yarn lint-fix`
-- If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step.
+కమాండ్ లైన్ వద్ద, టాప్-లెవల్ డైరెక్టరీలో నూలు లింట్‌ను అమలు చేయండి. ఇది మా ప్యాకేజీలన్నింటిలో లింట్ ఎర్రర్‌లను తనిఖీ చేయడానికి ఎస్లింట్‌ను ప్రేరేపిస్తుంది.
+మీరు కొన్ని మెత్తటి లోపాలను కనుగొనడానికి నూలు మెత్తని ఉపయోగించవచ్చు. వాటిని పరిష్కరించడానికి ప్రయత్నించడానికి, లోపాలు ఉన్న ప్యాకేజీకి వెళ్లి, నూలు లింట్-ఫిక్స్‌ని అమలు చేయండి
+ఏవైనా మిగిలిన లింట్ లోపాలు ఉంటే, వాటిని మాన్యువల్‌గా పరిష్కరించండి. మీ కోడ్‌ను లింటింగ్ చేయడం అనేది మంచి కోడ్ నాణ్యతను నిర్ధారించే ఒక ఉత్తమ అభ్యాసం కాబట్టి మీరు ఈ దశను దాటవేయకుండా ఉండటం ముఖ్యం.
 
-## Contributing
+Contributing
+సంఘం నుండి ఏవైనా సహకారాలు అందించినందుకు మేము కృతజ్ఞులం. మా సహకార మార్గదర్శకాలను చూడండి.
 
-We are thankful for any contributions from the community. Look at our [Contribution Guidelines](https://github.com/aws-amplify/amplify-cli/blob/dev/CONTRIBUTING.md).
+
+
