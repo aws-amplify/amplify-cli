@@ -101,5 +101,8 @@
     "plugins": [
       "@yarn/plugin-typescript"
     ]
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }
