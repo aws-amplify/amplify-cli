@@ -101,9 +101,9 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
 export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
 }
-export function saveConfig(config: any, batch: number): void {
+export function saveConfig(config: any): void {
   const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true })];
-  fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}_${batch}.yml`, output.join('\n'));
+  fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}.yml`, output.join('\n'));
 }
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   return glob.sync(pattern, { cwd: dir });
@@ -327,25 +327,8 @@ function main(): void {
     },
   );
   let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
-  let batch = 1;
-  const maxBatchSize = 100;
-  let currentBatch = [...baseBuildGraph];
-  let shouldSave = true;
-  for (let build of allBuilds) {
-    if (currentBatch.length < maxBatchSize) {
-      currentBatch.push(build);
-      shouldSave = true;
-    } else {
-      configBase.batch['build-graph'] = currentBatch;
-      saveConfig(configBase, batch);
-      batch++;
-      currentBatch = [...baseBuildGraph];
-      shouldSave = false;
-    }
-  }
-  if (shouldSave) {
-    configBase.batch['build-graph'] = currentBatch;
-    saveConfig(configBase, batch);
-  }
+  let currentBatch = [...baseBuildGraph, ...allBuilds];
+  configBase.batch['build-graph'] = currentBatch;
+  saveConfig(configBase);
 }
 main();
