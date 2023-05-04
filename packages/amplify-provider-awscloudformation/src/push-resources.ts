@@ -192,7 +192,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
      * calling transform schema here to support old project with out overrides
      */
     const appSyncAPIPresent = resources.filter((resource: { service: string }) => resource.service === 'AppSync');
-    if(appSyncAPIPresent.length > 0){
+    if (appSyncAPIPresent.length > 0) {
       await ApiCategoryFacade.transformGraphQLSchema(context, {
         handleMigration: (opts) => updateStackForAPIMigration(context, 'api', undefined, opts),
         minify: options.minify || context.input.options?.minify,
