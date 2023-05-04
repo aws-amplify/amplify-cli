@@ -5,30 +5,6 @@ import _ from 'lodash';
 import { spawnSync } from 'child_process';
 import { getBackendAmplifyMeta } from '../utils';
 
-export function addDEVHosting(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
-      .wait('Select the plugin module to execute')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Select the environment setup:')
-      .sendCarriageReturn()
-      .wait('hosting bucket name')
-      .sendCarriageReturn()
-      .wait('index doc for the website')
-      .sendCarriageReturn()
-      .wait('error doc for the website')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
 export function enableContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
@@ -71,9 +47,6 @@ export function addPRODHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Select the environment setup:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('hosting bucket name')

@@ -195,6 +195,7 @@ export type AmplifyFaultType =
   | 'DeploymentFault'
   | 'DeploymentStateUploadFault'
   | 'FileNotFoundFault'
+  | 'GraphQLTransformerV1Fault'
   | 'LockFileNotFoundFault'
   | 'LockFileParsingFault'
   | 'MockProcessFault'
