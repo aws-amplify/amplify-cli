@@ -44,7 +44,12 @@
     "testRunner": "@aws-amplify/amplify-e2e-core/runner",
     "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "diagnostics": true
+        }
+      ]
     },
     "testEnvironmentOptions": {
       "url": "http://localhost"
@@ -84,11 +89,9 @@
     "setupFilesAfterEnv": [
       "<rootDir>/src/setup-tests.ts"
     ],
-    "globals": {
-      "window": {},
-      "ts-jest": {
-        "diagnostics": true
-      }
+    "moduleNameMapper": {
+      "^uuid$": "require.resolve('uuid')",
+      "^yaml$": "require.resolve('yaml')"
     }
   },
   "jest-junit": {
