@@ -141,10 +141,10 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.4.2":
-  version "2.4.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.2.tgz#aebdc3c7dffe76c64d66cf675cfc67893f921c07"
-  integrity sha512-xPJzpElQn18h3r2SChLDdVi3QFgRvxEZqdhdKDLvQQ3Z17IZLujBusDnKcLrACR9gJmYKHq+3jym+48QJ/VeLg==
+"@aws-amplify/appsync-modelgen-plugin@2.4.3":
+  version "2.4.3"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.3.tgz#6a5b456990df11c07e4a56d189a6212d191548e0"
+  integrity sha512-BIsPar7n3Zml0M8KqSbgUroRN24y+9CeZXvzp9zGw8NGYW0erDti5YOXIe0wGgznwfSsfBXze4OZJCt7omuAvQ==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.18.8"
     "@graphql-codegen/visitor-plugin-common" "^1.22.0"
@@ -282,14 +282,13 @@
     graphql-transformer-common "4.24.5"
     libphonenumber-js "1.9.47"
 
-"@aws-amplify/graphql-docs-generator@3.0.3":
-  version "3.0.3"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-3.0.3.tgz#1bc720b6b70293b14bdc8195b47b0fc196aaf4e7"
-  integrity sha512-N1njpO941FgVeOjxlWC8t9czLHGBkcj2EdRSbO6qBzCUErJTeDJ402qtShsbyaBdJfreCeUhBidau+rUxCtJ1w==
+"@aws-amplify/graphql-docs-generator@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-4.0.0.tgz#4ab5b47a88f53755b777d0ff5c48ed4d17d575a1"
+  integrity sha512-tjSxhi2IOrcskGdZEjzN3z4vmgWeLRO5XQovH8HQ3tDDvc8/F28iJ1F4P7NK9ognBJa8jGX7AHEoTuOvDjOccQ==
   dependencies:
     graphql "^15.5.0"
     handlebars "4.7.7"
-    prettier "^1.19.1"
     yargs "^15.1.0"
 
 "@aws-amplify/graphql-function-transformer@1.2.1", "@aws-amplify/graphql-function-transformer@^1.2.1":
@@ -10005,13 +10004,13 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.4.3:
-  version "3.4.3"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.3.tgz#df90d4515c7760405a94c3dbca3c687af408cac0"
-  integrity sha512-OtXzcrik1Pie6a+WVt/qxYkbnuzqVA81MlGhMwtkHP03s/n2tBDC/7w1GErLKCqFZRVmBASPWtfIDA7AQW8sCA==
+amplify-codegen@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-4.0.0.tgz#6b4a3516e86ef77181a0b3f93539468b8a222174"
+  integrity sha512-PpmLwpSc44R9/eqIcT4sCJp8Qju4nFvQQdu3iWW2iB3z7RSfVJsCJsufimff85UlzXDb51ePjtY2Mv9cVt3oUQ==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.4.2"
-    "@aws-amplify/graphql-docs-generator" "3.0.3"
+    "@aws-amplify/appsync-modelgen-plugin" "2.4.3"
+    "@aws-amplify/graphql-docs-generator" "4.0.0"
     "@aws-amplify/graphql-types-generator" "3.0.1"
     "@graphql-codegen/core" "2.6.6"
     chalk "^3.0.0"
@@ -10023,6 +10022,7 @@ amplify-codegen@^3.4.3:
     inquirer "^7.3.3"
     js-yaml "^4.0.0"
     ora "^4.0.3"
+    prettier "^1.19.1"
     semver "^7.3.5"
     slash "^3.0.0"
 
