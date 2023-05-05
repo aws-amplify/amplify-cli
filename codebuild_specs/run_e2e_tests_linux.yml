@@ -47,4 +47,4 @@ reports:
     files:
       - '*.xml'
     file-format: 'JUNITXML'
-    base-directory: 'reports'
+    base-directory: '$CODEBUILD_SRC_DIR/reports'
