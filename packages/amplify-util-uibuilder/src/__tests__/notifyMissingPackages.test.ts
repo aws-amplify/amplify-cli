@@ -24,7 +24,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as unknown as $TSContext);
+    notifyMissingPackages(context as unknown as $TSContext, false);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -40,7 +40,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as unknown as $TSContext);
+    notifyMissingPackages(context as unknown as $TSContext, false);
     expect(printerDependency.printer.debug).toBeCalledTimes(1);
   });
 
@@ -52,7 +52,7 @@ describe('should notify when packages are missing', () => {
         },
       },
     };
-    notifyMissingPackages(context as unknown as $TSContext);
+    notifyMissingPackages(context as unknown as $TSContext, true);
     expect(printerDependency.printer.warn).toBeCalledTimes(3);
   });
 
@@ -69,6 +69,18 @@ describe('should notify when packages are missing', () => {
       },
     };
     notifyMissingPackages(context as unknown as $TSContext);
+    expect(printerDependency.printer.warn).toBeCalledTimes(1);
+  });
+
+  it('notifies for all dependencies except storage if user is not using StorageManager', () => {
+    const context = {
+      input: {
+        options: {
+          localEnvFilePath: __dirname + '/mock.json',
+        },
+      },
+    };
+    notifyMissingPackages(context as unknown as $TSContext, false);
     expect(printerDependency.printer.warn).toBeCalledTimes(2);
   });
 });

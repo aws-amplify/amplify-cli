@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-container-hosting",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",
@@ -26,8 +26,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.2.1-ownerfield-pk-fix.0",
-    "@aws-amplify/amplify-cli-core": "4.0.3",
+    "@aws-amplify/amplify-category-api": "^5.2.1",
+    "@aws-amplify/amplify-cli-core": "4.0.4",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
