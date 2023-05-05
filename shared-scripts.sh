@@ -345,3 +345,179 @@ function _scanArtifacts {
         exit 1
     fi
 }
+
+function _putCredsInProfile {
+    mkdir -p ~/.aws
+    touch ~/.aws/config ~/.aws/credentials 
+    python3 codebuild_specs/sh-files/aws-configure-credentials.py
+}
+
+function _installIntegTestsDependencies {
+    apt-get update
+    apt-get install -y sudo
+    sudo apt-get install -y lsof
+    sudo apt-get install -y python3 python3-pip libpython3-dev
+    sudo apt-get install -y libgbm-dev
+    # pip install awscli
+}
+
+function _integTestAmplifyInit {
+    export REACTCONFIG="{\"SourceDir\":\"src\",\"DistributionDir\":\"build\",\"BuildCommand\":\"npm run-script build\",\"StartCommand\":\"npm run-script start\"}"
+    export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
+    export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
+    export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"    
+    amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
+}
+
+function _addAndPushAuth {
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/auth.sh
+    chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
+    expect ../amplify-cli/codebuild_specs/exp-files/enable_auth.exp
+    amplify-dev push --yes
+    amplify-dev status
+}
+
+function _addAndPushApi {
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/api.sh
+    chmod +x ../amplify-cli/codebuild_specs/exp-files/enable_api.exp
+    expect ../amplify-cli/codebuild_specs/exp-files/enable_api.exp
+    amplify-dev push --yes
+    amplify-dev status
+}
+
+function _prepareAuthServer {
+    yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+    cd src && cat $(find . -type f -name 'aws-exports*') && pwd
+    cd .. && pwd
+}
+
+function _prepareApiServer {
+    yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+    cd src && cat $(find . -type f -name 'aws-exports*') && pwd
+    cd .. && pwd
+}
+
+function _runIntegAuthTests {
+    cp ../amplify-cli/cypress.json .
+    cp -R ../amplify-cli/cypress .
+    yarn cypress run --spec $(find . -type f -name 'auth_spec*')
+}
+
+function _runIntegApiTests {
+    cp ../amplify-cli/cypress.json .
+    cp -R ../amplify-cli/cypress .
+    yarn cypress run --spec $(find . -type f -name 'api_spec*')
+}
+
+function _integrationTest {
+    echo "Restoring Cache"
+    loadCache repo $CODEBUILD_SRC_DIR
+
+    echo "Loading test account credentials"
+    _loadTestAccountCredentials
+
+    echo "Running aws_configure.sh"
+    chmod +x ./codebuild_specs/sh-files/aws.sh
+    expect ./codebuild_specs/exp-files/aws_configure.exp
+
+    echo "Adding credentials to default aws profile"
+    _putCredsInProfile
+
+    echo "Setting Up Dependencies"
+    _installIntegTestsDependencies
+
+    echo "Configuring Amplify CLI"
+    yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
+    export PATH=$(yarn global bin):$PATH
+    amplify-dev
+
+    echo "Cloning auth test package"
+    cd .. && pwd
+    git clone $AUTH_CLONE_URL
+    cd aws-amplify-cypress-auth && pwd
+    yarn --cache-folder ~/.cache/yarn
+    yarn add cypress@6.8.0 --save
+
+    echo "Initializing new amplify project for auth"
+    pwd
+    _integTestAmplifyInit
+    
+    echo "Adding auth and pushing"
+    _addAndPushAuth
+    echo "end push"
+
+    echo "preparing auth server"
+    _prepareAuthServer
+
+    echo "running auth server in background"
+    export NODE_OPTIONS=--openssl-legacy-provider
+    nohup yarn start > server_output.txt & disown $!
+    echo "Polling for server ready message"
+    while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
+    echo "server started"
+
+    echo "Running auth tests now"
+    cat $(find . -type f -name 'auth_spec*')
+    export NODE_OPTIONS=--max-old-space-size=5120
+    _runIntegAuthTests
+    echo "Finished auth tests"
+
+    echo "Killing server"
+    sudo kill -9 $(lsof -t -i:3000)
+
+    echo "Deleting amplify app"
+    export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/delete.sh
+    expect ../amplify-cli/codebuild_specs/exp-files/delete.exp
+    aws s3 rb "$DEPLOYMENT_BUCKET" --force
+
+
+    echo "Clone API test package"
+    cd .. && pwd
+    git clone $API_CLONE_URL
+    cd aws-amplify-cypress-api
+    yarn --cache-folder ~/.cache/yarn
+    yarn add cypress@6.8.0 --save
+
+    echo "Initializing new amplify project for api"
+    cd ../aws-amplify-cypress-api && pwd
+    _integTestAmplifyInit
+
+    echo "Adding api and pushing"
+    _addAndPushApi
+    echo "end push"
+
+    echo "preparing api server"
+    _prepareApiServer
+
+    echo "running api server in background"
+    export NODE_OPTIONS=--openssl-legacy-provider
+    nohup yarn start > server_output.txt & disown $!
+    echo "Polling for server ready message"
+    while ! grep -Fxq "You can now view aws-amplify-cypress-api in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
+    echo "server started"
+
+    echo "Running auth tests now"
+    export NODE_OPTIONS=--max-old-space-size=5120
+    _runIntegApiTests
+    echo "Finished api tests"
+
+    echo "Killing server"
+    sudo kill -9 $(lsof -t -i:3000)
+
+    echo "Deleting amplify app"
+    export DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
+    chmod +x ../amplify-cli/codebuild_specs/sh-files/delete.sh
+    expect ../amplify-cli/codebuild_specs/exp-files/delete.exp
+    aws s3 rb "$DEPLOYMENT_BUCKET" --force
+
+    echo "Ensuring that some artifacts exist"
+    export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/videos
+    mkdir -p $artifact_path && touch $artifact_path/empty.txt
+    export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/screenshots
+    mkdir -p $artifact_path && touch $artifact_path/empty.txt
+    export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/videos
+    mkdir -p $artifact_path && touch $artifact_path/empty.txt
+    export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/screenshots
+    mkdir -p $artifact_path && touch $artifact_path/empty.txt
+}

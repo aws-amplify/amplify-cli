@@ -116,3 +116,10 @@ batch:
       depend-on:
         - build_windows
         - upload_pkg_binaries
+    - identifier: integration_test
+      buildspec: codebuild_specs/integration_test.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
+      depend-on:
+        - build_linux
