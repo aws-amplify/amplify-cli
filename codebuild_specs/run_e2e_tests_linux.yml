@@ -3,7 +3,7 @@ env:
   shell: bash
   variables:
     CLI_REGION: us-east-1
-    TEST_SUITE: src/__tests__/amplify-app.test.ts
+    TEST_SUITE: src/__tests__/geo-add-b.test.ts
     E2E_TEST_COVERAGE_DIR: node_v8_coverage
     CI: true
     CIRCLECI: true
