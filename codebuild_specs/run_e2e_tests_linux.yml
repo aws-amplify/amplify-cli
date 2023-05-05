@@ -29,6 +29,7 @@ phases:
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
+      - echo test
       - source ./shared-scripts.sh && _runE2ETestsLinux
   post_build:
     commands:
