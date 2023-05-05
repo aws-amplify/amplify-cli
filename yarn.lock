@@ -10004,7 +10004,7 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@4.0.0:
+amplify-codegen@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-4.0.0.tgz#6b4a3516e86ef77181a0b3f93539468b8a222174"
   integrity sha512-PpmLwpSc44R9/eqIcT4sCJp8Qju4nFvQQdu3iWW2iB3z7RSfVJsCJsufimff85UlzXDb51ePjtY2Mv9cVt3oUQ==
