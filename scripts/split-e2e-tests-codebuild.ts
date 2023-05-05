@@ -232,10 +232,11 @@ const splitTestsV3 = (
         ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
         identifier: getIdentifier(j.os, names),
       };
-      tmp.env.TEST_SUITE = j.tests.join('|');
-      tmp.env.CLI_REGION = j.region;
+      tmp.env.variables = {};
+      tmp.env.variables.TEST_SUITE = j.tests.join('|');
+      tmp.env.variables.CLI_REGION = j.region;
       if (j.useParentAccount) {
-        tmp.env.USE_PARENT_ACCOUNT = 1;
+        tmp.env.variables.USE_PARENT_ACCOUNT = 1;
       }
       result.push(tmp);
     }
@@ -247,9 +248,10 @@ const splitTestsV3 = (
         ...JSON.parse(JSON.stringify(baseJobWindows)), // deep clone base job
         identifier: getIdentifier(j.os, names),
       };
-      tmp.env.TEST_SUITE = j.tests.join('|');
-      tmp.env.CLI_REGION = j.region;
-      tmp.env.USE_PARENT_ACCOUNT = j.useParentAccount;
+      tmp.env.variables = {};
+      tmp.env.variables.TEST_SUITE = j.tests.join('|');
+      tmp.env.variables.CLI_REGION = j.region;
+      tmp.env.variables.USE_PARENT_ACCOUNT = j.useParentAccount;
       result.push(tmp);
     }
   });
