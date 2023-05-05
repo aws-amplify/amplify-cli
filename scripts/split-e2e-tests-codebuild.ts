@@ -217,7 +217,12 @@ const splitTestsV3 = (
   const linuxJobs = generateJobsForOS('l');
   const windowsJobs = generateJobsForOS('w');
   const getIdentifier = (os: string, names: string) => {
-    return `${os}_${names.replace(/-/g, '_')}`.substring(0, 127);
+    let jobName = `${os}_${names.replace(/-/g, '_')}`.substring(0, 127);
+    if (isMigration) {
+      const startIndex = baseJobLinux.identifier.lastIndexOf('_');
+      jobName = jobName + baseJobLinux.identifier.substring(startIndex);
+    }
+    return jobName;
   };
   const result: any[] = [];
   linuxJobs.forEach((j) => {
