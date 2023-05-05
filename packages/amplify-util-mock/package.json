@@ -40,7 +40,7 @@
     "@aws-amplify/amplify-prompts": "2.6.8",
     "@aws-amplify/amplify-provider-awscloudformation": "8.1.0",
     "@hapi/topo": "^5.0.0",
-    "amplify-codegen": "^3.4.3",
+    "amplify-codegen": "4.0.0",
     "amplify-dynamodb-simulator": "2.6.0",
     "amplify-storage-simulator": "1.8.0",
     "chokidar": "^3.5.3",
