@@ -88,7 +88,7 @@ batch:
         - build_pkg_binaries_arm
         - build_pkg_binaries_linux
         - build_pkg_binaries_macos
-          - build_pkg_binaries_win
+        - build_pkg_binaries_win
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
       depend-on:
