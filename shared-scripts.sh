@@ -237,33 +237,6 @@ function _install_packaged_cli_linux {
     export PATH=$AMPLIFY_DIR:$PATH
     cd $CODEBUILD_SRC_DIR
 }
-# COVERAGE FUNCTIONS
-#
-# run_e2e_tests_linux.yml
-#	shared-scripts.sh: _runE2ETests(Linux/Windows)
-#		local_publish_helpers.sh: retry runE2ETest
-#			local_publish_helpers.sh: runE2ETest
-#
-# I really think this should probably be part of runE2ETest.
-# That way we can clean up after ourselves in a retry. Is that
-# required? Won't we overwrite all these files anyway?
-function _setupCoverage {
-    _teardownCoverage
-    echo "Setup Coverage ($E2E_TEST_COVERAGE_DIR)"
-    if [ ! -d $E2E_TEST_COVERAGE_DIR ]
-    then
-        mkdir -p $E2E_TEST_COVERAGE_DIR
-    fi
-    NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR
-}
-function _teardownCoverage {
-    NODE_V8_COVERAGE=""
-    if [ -d $E2E_TEST_COVERAGE_DIR ]
-    then
-        echo "Teardown Coverage ($E2E_TEST_COVERAGE_DIR)"
-        rm -r $E2E_TEST_COVERAGE_DIR
-    fi
-}
 function _convertCoverage {
     echo Convert Coverage
     
@@ -324,11 +297,9 @@ function _runE2ETestsLinux {
     _loadTestAccountCredentials
 
     #retry runE2eTest
-    _setupCoverage
-    NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+    runE2eTest
     _unassumeTestAccountCredentials
     storeCache $E2E_TEST_COVERAGE_DIR e2e-test-coverage-raw
-    _teardownCoverage
 }
 function _unassumeTestAccountCredentials {
     echo "Unassume Role"
@@ -336,7 +307,6 @@ function _unassumeTestAccountCredentials {
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
 }
-
 
 function _scanArtifacts {
     if ! yarn ts-node .circleci/scan_artifacts_codebuild.ts; then
