@@ -237,6 +237,38 @@ function _install_packaged_cli_linux {
     export PATH=$AMPLIFY_DIR:$PATH
     cd $CODEBUILD_SRC_DIR
 }
+function _convertCoverage {
+    echo Convert Coverage
+    
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+
+    # needs to pick up the new coverage directory
+    # for reference, assuming e2e tests are run from the amplify-e2e-tests directory:
+    # .../$NODE_V8_COVERAGE - generated with setting NODE_V8_COVERAGE env var
+    # .../coverage/<reporter> - generated with c8 command above
+    loadCache e2e-test-coverage-raw $E2E_TEST_COVERAGE_DIR
+    npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --all --src ./packages -x "**/node_modules/**" -x "**/__tests__/**" --exclude-after-remap "**/node_modules/**" -x "**/amplify-e2e-*/**" -x "**/.yarn/**" --allow-external --reporter clover
+}
+# https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader
+function _uploadCoverageLinux {
+    if [ -z ${CODECOV_TOKEN+x} ]
+    then
+        echo "CODECOV_TOKEN not set: No coverage will be uploaded."
+    else
+        curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+        curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+        gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+        shasum -a 256 -c codecov.SHA256SUM
+
+        chmod +x codecov
+        ./codecov -t ${CODECOV_TOKEN} 
+    fi
+}
+# END COVERAGE FUNCTIONS
 function _runE2ETestsLinux {
     echo RUN E2E Tests Linux
     
@@ -264,9 +296,17 @@ function _runE2ETestsLinux {
 
     _loadTestAccountCredentials
 
-    retry runE2eTest
+    #retry runE2eTest
+    runE2eTest
+    _unassumeTestAccountCredentials
+    storeCache $E2E_TEST_COVERAGE_DIR e2e-test-coverage-raw
 }
-
+function _unassumeTestAccountCredentials {
+    echo "Unassume Role"
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+}
 
 function _scanArtifacts {
     if ! yarn ts-node .circleci/scan_artifacts_codebuild.ts; then
