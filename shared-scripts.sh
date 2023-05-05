@@ -265,6 +265,7 @@ function _runE2ETestsLinux {
     _loadTestAccountCredentials
 
     retry runE2eTest
+    codebuild-breakpoint
 }
 
 

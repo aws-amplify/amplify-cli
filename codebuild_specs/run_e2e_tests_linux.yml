@@ -33,7 +33,6 @@ phases:
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
       - source ./shared-scripts.sh && _runE2ETestsLinux
-      - codebuild-breakpoint
   post_build:
     commands:
       - aws sts get-caller-identity
