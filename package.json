@@ -153,7 +153,7 @@
     "typescript": "^4.9.4"
   },
   "resolutions": {
-    "**/aws-sdk": "^2.1350.0",
+    "**/aws-sdk": "^2.1354.0",
     "**/cross-fetch": "^2.2.6",
     "**/glob-parent": "^6.0.2",
     "**/got": "^11.8.5",

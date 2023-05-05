@@ -1,5 +1,5 @@
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
-import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError, AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
 import {
   IdentityProviderType,
@@ -78,21 +78,21 @@ export const importResource = async (
 };
 
 const printSuccess = (context: $TSContext, authSelections: AuthSelections, userPool: UserPoolType, identityPool?: IdentityPool): void => {
-  context.print.info('');
+  printer.blankLine();
   if (authSelections === 'userPoolOnly') {
-    context.print.info(importMessages.UserPoolOnlySuccess(userPool.Name!));
+    printer.info(importMessages.UserPoolOnlySuccess(userPool.Name!));
   } else {
-    context.print.info(importMessages.UserPoolAndIdentityPoolSuccess(userPool.Name!, identityPool!.IdentityPoolName));
+    printer.info(importMessages.UserPoolAndIdentityPoolSuccess(userPool.Name!, identityPool!.IdentityPoolName));
   }
-  context.print.info('');
-  context.print.info('Next steps:');
-  context.print.info('');
-  context.print.info("- This resource will be available for GraphQL APIs ('amplify add api')");
-  context.print.info('- Use Amplify libraries to add sign up, sign in, and sign out capabilities to your client');
-  context.print.info('  application.');
-  context.print.info('  - iOS: https://docs.amplify.aws/lib/auth/getting-started/q/platform/ios');
-  context.print.info('  - Android: https://docs.amplify.aws/lib/auth/getting-started/q/platform/android');
-  context.print.info('  - JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js');
+  printer.blankLine();
+  printer.info('Next steps:');
+  printer.blankLine();
+  printer.info("- This resource will be available for GraphQL APIs ('amplify add api')");
+  printer.info('- Use Amplify libraries to add sign up, sign in, and sign out capabilities to your client');
+  printer.info('  application.');
+  printer.info('  - iOS: https://docs.amplify.aws/lib/auth/getting-started/q/platform/ios');
+  printer.info('  - Android: https://docs.amplify.aws/lib/auth/getting-started/q/platform/android');
+  printer.info('  - JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js');
 };
 
 const importServiceWalkthrough = async (
@@ -100,7 +100,7 @@ const importServiceWalkthrough = async (
   providerName: string,
   providerUtils: ProviderUtils,
   previousResourceParameters: ResourceParameters | undefined,
-): Promise<{ questionParameters: ImportParameters; answers: ImportAnswers; projectType: string | undefined } | undefined> => {
+): Promise<{ questionParameters: ImportParameters; answers: ImportAnswers; projectType: AmplifyFrontend | undefined } | undefined> => {
   const cognito = await providerUtils.createCognitoUserPoolService(context);
   const identity = await providerUtils.createIdentityPoolService(context);
   const amplifyMeta = stateManager.getMeta();
@@ -111,7 +111,7 @@ const importServiceWalkthrough = async (
 
   // Return it no UserPools found in the project's region
   if (_.isEmpty(userPoolList)) {
-    context.print.info(importMessages.NoUserPoolsInRegion(Region));
+    printer.info(importMessages.NoUserPoolsInRegion(Region));
     return undefined;
   }
 
@@ -169,12 +169,12 @@ const importServiceWalkthrough = async (
     );
 
     if (typeof validationResult === 'string') {
-      context.print.info(importMessages.OneUserPoolNotValid(questionParameters.userPoolList[0].value));
-      context.print.error(validationResult);
+      printer.info(importMessages.OneUserPoolNotValid(questionParameters.userPoolList[0].value));
+      printer.error(validationResult);
       return undefined;
     }
 
-    context.print.info(importMessages.OneUserPoolValid(questionParameters.userPoolList[0].value));
+    printer.info(importMessages.OneUserPoolValid(questionParameters.userPoolList[0].value));
 
     answers.userPoolId = questionParameters.userPoolList[0].value;
     answers.userPool = await cognito.getUserPoolDetails(answers.userPoolId);
@@ -222,14 +222,14 @@ const importServiceWalkthrough = async (
       } else {
         // There are no Identity Pool candidates print out a message and signal to skip further checks to get back into the loop.
         // This is a fail safe check as we already filtered the Identity Pools upon User Pool selection.
-        context.print.error(importMessages.NoIdentityPoolsForSelectedAppClientsFound);
+        printer.error(importMessages.NoIdentityPoolsForSelectedAppClientsFound);
 
         // If validation failed for some reason and both app clients were auto picked then exit the loop
         // to not to get into an infinite one.
         if (questionParameters.bothAppClientsWereAutoSelected) {
           oauthLoopFinished = true;
         } else {
-          context.print.info(importMessages.OAuth.SelectNewAppClients);
+          printer.info(importMessages.OAuth.SelectNewAppClients);
         }
 
         // reset values in answers
@@ -248,7 +248,7 @@ const importServiceWalkthrough = async (
       continue;
     }
     if (_.isEmpty(answers.appClientWeb?.SupportedIdentityProviders) && _.isEmpty(answers.appClientNative?.SupportedIdentityProviders)) {
-      context.print.info(importMessages.NoOAuthConfigurationOnAppClients());
+      printer.info(importMessages.NoOAuthConfigurationOnAppClients());
 
       oauthLoopFinished = true;
       userPoolSelectionSucceeded = true;
@@ -269,7 +269,7 @@ const importServiceWalkthrough = async (
         if (questionParameters.bothAppClientsWereAutoSelected) {
           oauthLoopFinished = true;
         } else {
-          context.print.info(importMessages.OAuth.SelectNewAppClients);
+          printer.info(importMessages.OAuth.SelectNewAppClients);
         }
 
         // If app clients are not matching then we show a message and asking if customer wants to select
@@ -294,7 +294,7 @@ const importServiceWalkthrough = async (
     if (questionParameters.validatedIdentityPools!.length === 1) {
       const { identityPool } = questionParameters.validatedIdentityPools![0];
 
-      context.print.info(importMessages.OneIdentityPoolValid(identityPool.IdentityPoolName, identityPool.IdentityPoolId));
+      printer.info(importMessages.OneIdentityPoolValid(identityPool.IdentityPoolName, identityPool.IdentityPoolId));
 
       answers.identityPoolId = identityPool.IdentityPoolId;
       answers.identityPool = identityPool;
@@ -319,7 +319,7 @@ const importServiceWalkthrough = async (
         footer: importMessages.Questions.AutoCompleteFooter,
       };
 
-      context.print.info(importMessages.MultipleIdentityPools);
+      printer.info(importMessages.MultipleIdentityPools);
 
       // any case needed because async validation TS definition is not up to date
       const { identityPoolId } = await enquirer.prompt(identityPoolQuestion as $TSAny);
@@ -352,7 +352,7 @@ const importServiceWalkthrough = async (
   }
 
   // Import questions succeeded, create the create the required CLI resource state from the answers.
-  const projectType: string = projectConfig.frontend;
+  const projectType: AmplifyFrontend = projectConfig.frontend;
 
   return {
     questionParameters,
@@ -438,7 +438,7 @@ const selectAppClients = async (
       // eslint-disable-next-line prefer-destructuring, no-param-reassign
       answers.appClientWeb = questionParameters.webClients![0];
 
-      context.print.info(importMessages.SingleAppClientSelected('Web', answers.appClientWeb.ClientName!));
+      printer.info(importMessages.SingleAppClientSelected('Web', answers.appClientWeb.ClientName!));
 
       autoSelected++;
     } else {
@@ -459,7 +459,7 @@ const selectAppClients = async (
         footer: importMessages.Questions.AutoCompleteFooter,
       };
 
-      context.print.info(importMessages.MultipleAppClients('Web'));
+      printer.info(importMessages.MultipleAppClients('Web'));
 
       const { appClientWebId } = await enquirer.prompt(appClientSelectQuestion);
       // eslint-disable-next-line no-param-reassign
@@ -473,8 +473,8 @@ const selectAppClients = async (
       // eslint-disable-next-line prefer-destructuring, no-param-reassign
       answers.appClientNative = questionParameters.nativeClients![0];
 
-      context.print.info(importMessages.SingleAppClientSelected('Native', answers.appClientNative.ClientName!));
-      context.print.warning(importMessages.WarnAppClientReuse);
+      printer.info(importMessages.SingleAppClientSelected('Native', answers.appClientNative.ClientName!));
+      printer.warn(importMessages.WarnAppClientReuse);
       autoSelected++;
     } else {
       const appClientChoices = questionParameters
@@ -494,7 +494,7 @@ const selectAppClients = async (
         footer: importMessages.Questions.AutoCompleteFooter,
       };
 
-      context.print.info(importMessages.MultipleAppClients('Native'));
+      printer.info(importMessages.MultipleAppClients('Native'));
 
       const { appClientNativeId } = await enquirer.prompt(appClientSelectQuestion);
       // eslint-disable-next-line no-param-reassign
@@ -551,8 +551,8 @@ const appClientsOAuthPropertiesMatching = async (
   }
 
   if (!propertiesMatching) {
-    context.print.error(importMessages.OAuth.SomePropertiesAreNotMatching);
-    context.print.info('');
+    printer.error(importMessages.OAuth.SomePropertiesAreNotMatching);
+    printer.blankLine();
 
     if (!supportedIdentityProvidersMatching) {
       showValidationTable(
@@ -671,10 +671,10 @@ const showValidationTable = (
     tableOptions.push([webNames[i], nativeNames[i]]);
   }
 
-  context.print.info(title);
-  context.print.info('');
+  printer.info(title);
+  printer.blankLine();
   context.print.table(tableOptions, { format: 'markdown' });
-  context.print.info('');
+  printer.blankLine();
 };
 
 const isArraysEqual = (left: string[], right: string[]): boolean => {
@@ -688,7 +688,7 @@ const updateStateFiles = async (
   context: $TSContext,
   questionParameters: ImportParameters,
   answers: ImportAnswers,
-  projectType: string | undefined,
+  projectType: AmplifyFrontend | undefined,
   updateEnvSpecificParameters: boolean,
 ): Promise<{
   backendConfiguration: BackendConfiguration;
@@ -835,7 +835,7 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
 const createEnvSpecificResourceParameters = (
   answers: ImportAnswers,
   hasOAuthConfig: boolean,
-  projectType: string | undefined,
+  projectType: AmplifyFrontend | undefined,
 ): EnvSpecificResourceParameters => {
   const userPool = answers.userPool!;
 
@@ -872,13 +872,14 @@ const createEnvSpecificResourceParameters = (
           break;
         case 'accounts.google.com': {
           switch (projectType) {
-            case 'javascript':
+            case AmplifyFrontend.javascript:
+            case AmplifyFrontend.flutter:
               envSpecificResourceParameters.googleClientId = answers.identityPool!.SupportedLoginProviders![key];
               break;
-            case 'ios':
+            case AmplifyFrontend.ios:
               envSpecificResourceParameters.googleIos = answers.identityPool!.SupportedLoginProviders![key];
               break;
-            case 'android':
+            case AmplifyFrontend.android:
               envSpecificResourceParameters.googleAndroid = answers.identityPool!.SupportedLoginProviders![key];
               break;
             default:
@@ -896,7 +897,7 @@ const createEnvSpecificResourceParameters = (
   return envSpecificResourceParameters;
 };
 
-const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
+export const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
   const credentials = identityProviders.map((idp) => {
     if (idp.ProviderName === 'SignInWithApple') {
       return {
@@ -991,7 +992,7 @@ export const importedAuthEnvInit = async (
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
   if (resourceParameters.region !== Region) {
-    context.print.warning(importMessages.NewEnvDifferentRegion(resourceName, resourceParameters.region, Region));
+    printer.warn(importMessages.NewEnvDifferentRegion(resourceName, resourceParameters.region, Region));
 
     return {
       doServiceWalkthrough: true,
@@ -1073,7 +1074,7 @@ export const importedAuthEnvInit = async (
         (resourceParameters.authSelections === 'identityPoolAndUserPool' && currentEnvSpecificParameters.identityPoolId))
     )
   ) {
-    context.print.info(importMessages.ImportNewResourceRequired(resourceName));
+    printer.info(importMessages.ImportNewResourceRequired(resourceName));
 
     return {
       doServiceWalkthrough: true,
@@ -1117,10 +1118,8 @@ export const importedAuthEnvInit = async (
   const validationResult = await validateUserPool(cognito, identity, questionParameters, answers, currentEnvSpecificParameters.userPoolId);
 
   if (typeof validationResult === 'string') {
-    context.print.info(
-      importMessages.UserPoolValidation(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId),
-    );
-    context.print.error(validationResult);
+    printer.info(importMessages.UserPoolValidation(currentEnvSpecificParameters.userPoolName, currentEnvSpecificParameters.userPoolId));
+    printer.error(validationResult);
 
     return {
       succeeded: false,
@@ -1131,7 +1130,7 @@ export const importedAuthEnvInit = async (
   answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.webClientId);
 
   if (!answers.appClientWeb) {
-    context.print.error(importMessages.AppClientNotFound('Web', currentEnvSpecificParameters.webClientId));
+    printer.error(importMessages.AppClientNotFound('Web', currentEnvSpecificParameters.webClientId));
 
     return {
       succeeded: false,
@@ -1141,7 +1140,7 @@ export const importedAuthEnvInit = async (
   answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.nativeClientId);
 
   if (!answers.appClientNative) {
-    context.print.error(importMessages.AppClientNotFound('Native', currentEnvSpecificParameters.nativeClientId));
+    printer.error(importMessages.AppClientNotFound('Native', currentEnvSpecificParameters.nativeClientId));
 
     return {
       succeeded: false,
@@ -1171,7 +1170,7 @@ export const importedAuthEnvInit = async (
     );
 
     if (identityPools.length !== 1) {
-      context.print.info(
+      printer.info(
         importMessages.IdentityPoolNotFound(currentEnvSpecificParameters.identityPoolName!, currentEnvSpecificParameters.identityPoolId!),
       );
 
@@ -1207,7 +1206,7 @@ export const importedAuthEnvInit = async (
   }
 
   // Import questions succeeded, create the create the required CLI resource state from the answers.
-  const projectType: string = projectConfig.frontend;
+  const projectType: AmplifyFrontend = projectConfig.frontend;
 
   const newState = await updateStateFiles(context, questionParameters, answers, projectType, false);
 
@@ -1360,7 +1359,7 @@ export const headlessImport = async (
   }
 
   // Import questions succeeded, create the create the required CLI resource state from the answers.
-  const projectType: string = projectConfig.frontend;
+  const projectType: AmplifyFrontend = projectConfig.frontend;
 
   const newState = await updateStateFiles(context, questionParameters, answers, projectType, true);
 

@@ -448,9 +448,6 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Update OS Packages
-          command: sudo apt-get update
-      - run:
           name: Start verdaccio and Install Amplify CLI as sudo
           command: |
             source .circleci/local_publish_helpers.sh
@@ -849,6 +846,10 @@ jobs:
           command: |
             bash ./.circleci/publish.sh
       - run: *scan_e2e_test_artifacts
+      - run:
+          name: Smoke test release
+          command: |
+            yarn smoketest
   github_prerelease:
     <<: *linux-e2e-executor-large
     steps:
@@ -1020,7 +1021,6 @@ workflows:
                 - beta
                 - release
                 - /release_rc\/.*/
-                - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
       - verify-api-extract:
           requires:

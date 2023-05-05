@@ -35,7 +35,9 @@ export const prePushHandler = async (context: $TSContext): Promise<void> => {
 };
 
 const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
-  const backendConfig = stateManager.getBackendConfig();
+  const backendConfig = stateManager.getBackendConfig(undefined, {
+    throwIfNotExist: false,
+  });
   const functionNames = Object.keys(backendConfig?.[categoryName] || {});
   for (const funcName of functionNames) {
     if (getLocalFunctionSecretNames(funcName).length > 0) {

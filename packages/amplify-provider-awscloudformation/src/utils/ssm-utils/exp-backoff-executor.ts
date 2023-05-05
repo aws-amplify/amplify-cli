@@ -1,7 +1,8 @@
 export const executeSdkPromisesWithExponentialBackOff = async <T>(sdkPromises: (() => Promise<T>)[]): Promise<T[]> => {
   const MAX_RETRIES = 5;
   const MAX_BACK_OFF_IN_MS = 10 * 1000; // 10 seconds
-  let backOffSleepTimeInMs = 200;
+  const MIN_BACK_OFF_IN_MS = 1000; // 1 second
+  let backOffSleepTimeInMs = 500;
   let consecutiveRetries = 0;
 
   let i = 0;
@@ -11,7 +12,7 @@ export const executeSdkPromisesWithExponentialBackOff = async <T>(sdkPromises: (
       promiseResults.push(await sdkPromises[i]());
       ++i;
       // In case previously throttled, reset backoff
-      backOffSleepTimeInMs = 200;
+      backOffSleepTimeInMs = 500;
       consecutiveRetries = 0;
     } catch (e) {
       if (e?.code === 'ThrottlingException' || e?.code === 'Throttling') {
@@ -19,7 +20,7 @@ export const executeSdkPromisesWithExponentialBackOff = async <T>(sdkPromises: (
           ++consecutiveRetries;
           await new Promise((resolve) => setTimeout(resolve, backOffSleepTimeInMs));
           backOffSleepTimeInMs = 2 ** consecutiveRetries * backOffSleepTimeInMs;
-          backOffSleepTimeInMs = Math.min(Math.random() * backOffSleepTimeInMs, MAX_BACK_OFF_IN_MS);
+          backOffSleepTimeInMs = Math.max(Math.min(Math.random() * backOffSleepTimeInMs, MAX_BACK_OFF_IN_MS), MIN_BACK_OFF_IN_MS);
           continue;
         }
       }

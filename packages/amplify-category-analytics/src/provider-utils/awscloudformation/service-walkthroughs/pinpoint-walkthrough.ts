@@ -155,7 +155,7 @@ const writeCfnFile = async (context: $TSContext, resourceDirPath: string, force 
   if (!fs.existsSync(templateFilePath) || force) {
     const templateSourceFilePath = path.join(__dirname, '..', 'cloudformation-templates', templateFileName);
     const templateSource = context.amplify.readJsonFile(templateSourceFilePath);
-    templateSource.Mappings = await getPinpointRegionMappings(context);
+    templateSource.Mappings = await getPinpointRegionMappings();
     JSONUtilities.writeJson(templateFilePath, templateSource);
   }
 };

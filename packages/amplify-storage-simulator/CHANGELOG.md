@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.6...amplify-storage-simulator@1.8.0) (2023-04-24)
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-cli/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
+## [1.7.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.4...amplify-storage-simulator@1.7.6) (2023-04-14)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
 ## [1.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.4-rc.e9e0d157d.0...amplify-storage-simulator@1.7.4) (2023-03-23)
 
 **Note:** Version bump only for package amplify-storage-simulator

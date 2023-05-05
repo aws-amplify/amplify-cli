@@ -15,5 +15,6 @@
   },
   "prettier.requireConfig": true,
   "prettier.configPath": "./.prettierrc",
-  "prettier.prettierPath": "../node_modules/prettier"
+  "prettier.prettierPath": "../node_modules/prettier",
+  "jest.jestCommandLine": "./node_modules/.bin/jest"
 }

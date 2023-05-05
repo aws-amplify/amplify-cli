@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as pty from 'node-pty';
-import { nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { initJSProjectWithProfile, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 jest.retryTimes(0);
 
 export const NPM = {
@@ -37,7 +37,7 @@ export type SmoketestArgs = {
 };
 
 function getArgs(): SmoketestArgs {
-  const { DESTRUCTIVE = 'false', CLI_VERSION, PROJECT_DIRECTORY = path.join(os.tmpdir(), 'smoketest') } = process.env;
+  const { DESTRUCTIVE = 'false', CLI_VERSION = 'latest', PROJECT_DIRECTORY = path.join(os.tmpdir(), 'smoketest') } = process.env;
   return {
     projectDirectory: PROJECT_DIRECTORY,
     cliVersion: CLI_VERSION,
@@ -68,9 +68,8 @@ export class Amplify {
   constructor(projectDirectory: string) {
     this.executionArgs = { cwd: projectDirectory, encoding: 'utf8' };
   }
-  init = async () => {
-    const args = ['init', '-y'];
-    return spawn('amplify', args, this.executionArgs).runAsync();
+  init = async (cwd: string) => {
+    return initJSProjectWithProfile(cwd, {});
   };
   delete = async () => {
     const args = ['delete', '--force'];
@@ -217,78 +216,68 @@ function writeBanner(text: string) {
 }
 
 describe('Release Smoke Tests', () => {
-  const createCommands = (amplify: Amplify, cliVersion?: string): Command[] => {
-    const commands: Command[] = [];
-    if (cliVersion) {
-      commands.push({
-        description: `Install @aws-amplify/cli@${cliVersion}`,
-        run: () => NPM.install(`@aws-amplify/cli@${cliVersion}`, true),
-      });
-    } else {
-      commands.push({
-        description: 'Using locally installed version of Amplify',
-        run: () => Promise.resolve(),
-      });
-    }
-    return commands.concat([
-      {
-        description: 'Create an Amplify project',
-        run: () => amplify.init(),
-      },
-      {
-        description: 'Add an API to the Amplify project',
-        run: () => amplify.addApi(),
-      },
-      {
-        description: 'Get project status',
-        run: () => amplify.status(),
-      },
-      {
-        description: 'Add Auth to the Amplify project',
-        run: () => amplify.addAuth(),
-      },
-      {
-        description: 'Get project status',
-        run: () => amplify.status(),
-      },
-      {
-        description: 'Push the Amplify project',
-        run: () => amplify.push(),
-      },
-      {
-        description: 'Get project status',
-        run: () => amplify.status(),
-      },
-      {
-        description: 'Modify the GraphQL schema',
-        run: () => amplify.modifyGraphQlSchema(newGraphqlSchema),
-      },
-      {
-        description: 'Update Auth',
-        run: () => amplify.updateAuth(),
-      },
-      {
-        description: 'Push the Amplify project',
-        run: () => amplify.push(),
-      },
-      {
-        description: 'Add REST API',
-        run: () => amplify.addRestApi(),
-      },
-      {
-        description: 'Get project status',
-        run: () => amplify.status(),
-      },
-      {
-        description: 'Push the Amplify project',
-        run: () => amplify.push(),
-      },
-      {
-        description: 'Delete the Amplify project',
-        run: () => amplify.delete(),
-      },
-    ]);
-  };
+  const createCommands = (amplify: Amplify, cliVersion: string, directory: string): Command[] => [
+    {
+      description: `Install @aws-amplify/cli@${cliVersion}`,
+      run: () => NPM.install(`@aws-amplify/cli@${cliVersion}`, true),
+    },
+    {
+      description: 'Create an Amplify project',
+      run: () => amplify.init(directory),
+    },
+    {
+      description: 'Add an API to the Amplify project',
+      run: () => amplify.addApi(),
+    },
+    {
+      description: 'Get project status',
+      run: () => amplify.status(),
+    },
+    {
+      description: 'Add Auth to the Amplify project',
+      run: () => amplify.addAuth(),
+    },
+    {
+      description: 'Get project status',
+      run: () => amplify.status(),
+    },
+    {
+      description: 'Push the Amplify project',
+      run: () => amplify.push(),
+    },
+    {
+      description: 'Get project status',
+      run: () => amplify.status(),
+    },
+    {
+      description: 'Modify the GraphQL schema',
+      run: () => amplify.modifyGraphQlSchema(newGraphqlSchema),
+    },
+    {
+      description: 'Update Auth',
+      run: () => amplify.updateAuth(),
+    },
+    {
+      description: 'Push the Amplify project',
+      run: () => amplify.push(),
+    },
+    {
+      description: 'Add REST API',
+      run: () => amplify.addRestApi(),
+    },
+    {
+      description: 'Get project status',
+      run: () => amplify.status(),
+    },
+    {
+      description: 'Push the Amplify project',
+      run: () => amplify.push(),
+    },
+    {
+      description: 'Delete the Amplify project',
+      run: () => amplify.delete(),
+    },
+  ];
   test('An amplify project can be created without error', async () => {
     const args = getArgs();
 
@@ -300,7 +289,7 @@ describe('Release Smoke Tests', () => {
     }
     assertEmpty(args.projectDirectory);
 
-    const commands = createCommands(amplify, args.cliVersion);
+    const commands = createCommands(amplify, args.cliVersion, args.projectDirectory);
     for (const command of commands) {
       writeBanner(command.description);
       await command.run();
