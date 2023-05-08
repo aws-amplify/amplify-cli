@@ -27,7 +27,7 @@ phases:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
       - export NODE_OPTIONS=--max-old-space-size=8096
-      # - export CODEBUILD_SOURCE_VERSION=4610160556171f344780aeb2f0d01b7b20147b5d
+      - export CODEBUILD_SOURCE_VERSION=718cba4bfd1d39d2931a4f07c69c5531630c6882
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
