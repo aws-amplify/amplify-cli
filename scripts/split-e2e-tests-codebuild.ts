@@ -49,7 +49,6 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
     'src/__tests__/amplify-app.test.ts',
-    // failing in parsing JSON strings on powershell
     'src/__tests__/auth_12.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/diagnose.test.ts',
@@ -260,8 +259,6 @@ const splitTestsV3 = (
 function main(): void {
   const configBase: any = loadConfigBase();
   const baseBuildGraph = configBase.batch['build-graph'];
-
-  const counts = { w: 0, l: 0 };
   const splitE2ETests = splitTestsV3(
     {
       identifier: 'run_e2e_tests_linux',
