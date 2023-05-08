@@ -35,3 +35,8 @@ const createUserPoolWithOAuthSettings = (projectPrefix: string, shortId: string)
       '----BEGIN PRIVATE KEY----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----',
   };
 };
+
+export const expectNoLambdasInCfnTemplate = async (template: Record<string, any>) => {
+  expect(template?.Resources).toBeDefined();
+  expect(Object.values(template?.Resources).filter((r: Record<string, any>) => r?.type?.includes('Lambda')).length).toBe(0);
+};

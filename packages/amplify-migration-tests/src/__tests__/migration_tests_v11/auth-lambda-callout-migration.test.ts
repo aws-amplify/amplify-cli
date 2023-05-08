@@ -13,6 +13,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
+import { expectNoLambdasInCfnTemplate } from '../../migration-helpers-v11/auth-helpers/utilities';
 import { initIosProjectWithProfile11, initJSProjectWithProfileV11 } from '../../migration-helpers-v11/init';
 
 const defaultsSettings = {
@@ -37,11 +38,6 @@ describe('lambda callouts', () => {
     deleteProjectDir(projRoot);
   });
 
-  const expectNoLambdasInCfnTemplate = async (template: Record<string, any>) => {
-    expect(template?.Resources).toBeDefined();
-    expect(Object.values(template?.Resources).filter((r: Record<string, any>) => r?.type?.includes('Lambda')).length).toBe(0);
-  };
-
   it('should be migrated after force pushing auth with max settings', async () => {
     await initJSProjectWithProfileV11(projRoot, defaultsSettings);
     const resourceName = `test${generateRandomShortId()}`;
@@ -50,7 +46,7 @@ describe('lambda callouts', () => {
     // force push with latest should regenerate auth stack and remove lambda callouts
     await amplifyPushForce(projRoot, true);
 
-    // validate Lambda resources do not exist in template and cloud
+    // validate Lambda resources do not exist in template
     const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(template);
   });
@@ -71,7 +67,7 @@ describe('lambda callouts', () => {
     });
     await amplifyPushAuth(projRoot, true);
 
-    // validate Lambda resources do not exist in template and cloud
+    // validate Lambda resources do not exist in template
     const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(template);
   });
@@ -106,7 +102,7 @@ describe('lambda callouts', () => {
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
 
-    // validate Lambda resources do not exist in template and cloud
+    // validate Lambda resources do not exist in template
     const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(template);
   });
