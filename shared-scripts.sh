@@ -45,7 +45,7 @@ function loadCache {
         exit 0
     fi
     # load cache and unzip it
-    if ! (cd $localPath && aws s3 cp $s3Path - | tar xz); then
+    if ! (cd $localPath && aws s3 cp $s3Path - | tar xzk); then
         echo "Something went wrong fetching the cache. Continuing anyway."
     fi
     echo done loading cache
