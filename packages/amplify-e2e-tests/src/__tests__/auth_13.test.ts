@@ -7,7 +7,7 @@ import {
   deleteProjectDir,
   generateRandomShortId,
   get,
-  getCLIInputsJson,
+  getCLIInputs,
   getProjectMeta,
   initAndroidProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
@@ -30,7 +30,7 @@ describe('auth with OIDC enabled', () => {
     await addAuthWithOidcForNonJSProject(projRoot, { resourceName: authName });
     await amplifyPushAuth(projRoot);
 
-    const inputs = getCLIInputsJson(projRoot, 'auth', authName);
+    const inputs = getCLIInputs(projRoot, 'auth', authName);
     expect(inputs?.cognitoConfig?.thirdPartyAuth).toBe(true);
     expect(inputs?.cognitoConfig?.audiences?.length).toBe(2);
 

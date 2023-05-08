@@ -12,7 +12,6 @@ export * from './admin-ui';
 export * from './api';
 export * from './appsync';
 export * from './envVars';
-export * from './get-cli-inputs-json';
 export * from './getAppId';
 export * from './git-operations';
 export * from './headless';

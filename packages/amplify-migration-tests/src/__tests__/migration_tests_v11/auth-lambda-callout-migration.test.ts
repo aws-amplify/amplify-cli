@@ -57,14 +57,11 @@ describe('lambda callouts', () => {
     expectNoLambdasInCfnTemplate(template);
   });
 
-  it('should be migrated after force pushing auth with OIDC', async () => {
+  it('should be migrated after updating auth with OIDC', async () => {
     await initIosProjectWithProfile11(projRoot, defaultsSettings);
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithOidcForNonJSProject(projRoot, { resourceName, frontend: 'ios' });
     await amplifyPushAuth(projRoot, false);
-
-    // force push with latest should regenerate auth stack and remove lambda callouts
-    // await amplifyPushForce(projRoot, true);
 
     await updateAuthSignInSignOutUrl(projRoot, {
       skipThree: true,
