@@ -34,6 +34,7 @@ phases:
       - echo $AMPLIFY_PATH
       - yarn install ts-node
       - source ./shared-scripts.sh && _runE2ETestsLinux
+      - ls -R $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports
   post_build:
     commands:
       - aws sts get-caller-identity
