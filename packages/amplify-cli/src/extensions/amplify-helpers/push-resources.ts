@@ -44,7 +44,7 @@ export const pushResources = async (
     }
     context.exeInfo.iterativeRollback = true;
   }
-  // amplify push <envName> ?
+
   if (context.parameters.options?.env) {
     const envName: string = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs();
