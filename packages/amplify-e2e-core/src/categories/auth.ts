@@ -385,7 +385,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
     }
     chain.wait('What do you want to do?');
 
-    if (settings?.skipThree) {
+    if (settings?.socialProvidersAlreadyExist) {
       chain.sendKeyDown(3);
     } else {
       chain.sendKeyDown(2);

@@ -58,7 +58,7 @@ describe('lambda callouts', () => {
     await amplifyPushAuth(projRoot, false);
 
     await updateAuthSignInSignOutUrl(projRoot, {
-      skipThree: true,
+      socialProvidersAlreadyExist: true,
       signinUrl: 'https://www.google.com/',
       signoutUrl: 'https://www.nytimes.com/',
       updatesigninUrl: 'https://www.amazon.com/',
