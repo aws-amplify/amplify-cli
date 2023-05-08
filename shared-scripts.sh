@@ -238,9 +238,10 @@ function _install_packaged_cli_linux {
     cd $CODEBUILD_SRC_DIR
 }
 function _runE2ETestsLinux {
+    console.log('HERE v1');
     echo RUN E2E Tests Linux
     
-    loadCache repo $CODEBUILD_SRC_DIR
+    # loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
