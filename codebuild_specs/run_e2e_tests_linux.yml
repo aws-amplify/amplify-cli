@@ -3,7 +3,7 @@ env:
   shell: bash
   variables:
     CLI_REGION: us-east-1
-    TEST_SUITE: src/__tests__/auth_2a.test.ts
+    TEST_SUITE: src/__tests__/fake-test-remember-to-delete.test.ts
     CI: true
     CIRCLECI: true
     # mock values to test artifact scanning
