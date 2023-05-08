@@ -11,9 +11,7 @@ import {
   updateAuthSignInSignOutUrl,
   updateHeadlessAuth,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  UpdateAuthRequest,
-} from 'amplify-headless-interface';
+import { UpdateAuthRequest } from 'amplify-headless-interface';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
 import { initIosProjectWithProfile11, initJSProjectWithProfileV11 } from '../../migration-helpers-v11/init';
 
@@ -103,9 +101,9 @@ describe('lambda callouts', () => {
           identitySocialFederation: [{ provider: 'GOOGLE', clientId: 'fakeClientId' }],
         },
       },
-    }
+    };
 
-    await updateHeadlessAuth( projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
+    await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
 
     // validate Lambda resources do not exist in template and cloud
