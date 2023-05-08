@@ -27,12 +27,12 @@ phases:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
       - export NODE_OPTIONS=--max-old-space-size=8096
-      # - export CODEBUILD_SOURCE_VERSION=718cba4bfd1d39d2931a4f07c69c5531630c6882
+      - export CODEBUILD_SOURCE_VERSION=d43a76587d506760e4c2196023a7de3ef53d3ad4
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
-      - npm install ts-node
+      - yarn install ts-node
       - source ./shared-scripts.sh && _runE2ETestsLinux
   post_build:
     commands:
