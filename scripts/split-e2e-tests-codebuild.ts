@@ -6,7 +6,6 @@ import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
 import { REPO_ROOT } from './cci-utils';
 import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
-const CIRCLECI_GENERATED_CONFIG_BASE_PATH = join(REPO_ROOT, '.circleci', 'generated_config.yml');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated');
 const RUN_SOLO = [
