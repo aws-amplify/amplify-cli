@@ -48,4 +48,4 @@ reports:
     files:
       - '*.xml'
     file-format: 'JUNITXML'
-    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports'
+    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit'
