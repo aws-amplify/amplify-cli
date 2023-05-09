@@ -269,14 +269,18 @@ const splitTestsV3 = (
       },
       phases: {
         build: {
-          commands: ['echo "Aggregating reports"', 'echo sync here'],
+          commands: [
+            'echo "Aggregating reports"',
+            'mkdir -p $CODEBUILD_SRC_DIR/aggregate-reports',
+            'aws s3 sync TODO_BUCKET_NAME $CODEBUILD_SRC_DIR/aggregate-reports',
+          ],
         },
       },
       reports: {
         'e2e-reports': {
           files: ['*.xml'],
           'file-format': 'JUNITXML',
-          'base-directory': '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit',
+          'base-directory': '$CODEBUILD_SRC_DIR/aggregate-reports',
         },
       },
       'depend-on': dependeeIdentifiers,
