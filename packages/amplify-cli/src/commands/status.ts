@@ -94,7 +94,7 @@ const showApiAuthAcm = async (context): Promise<void> => {
 
   const apiName = apiNames[0];
   const apiResourceDir = path.join(pathManager.getBackendDirPath(), 'api', apiName);
-  const schema = await readProjectSchema(apiResourceDir);
+  const { schema } = await readProjectSchema(apiResourceDir);
   const cliOptions = context?.input?.options ?? {};
   const { showACM } = await import('../extensions/amplify-helpers/show-auth-acm');
 

@@ -30,7 +30,7 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-logger": "1.3.2",
     "@aws-amplify/amplify-prompts": "2.6.8",
-    "@aws-amplify/graphql-transformer-interfaces": "^2.1.1",
+    "@aws-amplify/graphql-transformer-interfaces": "^2.2.0-sync-fix.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
     "aws-cdk-lib": "~2.68.0",
