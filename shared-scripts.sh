@@ -466,5 +466,4 @@ function _uploadReportsToS3 {
     for filename in $(ls); do
         aws s3 cp "$filename" "s3://$bucket_name/$source_version/$build_identifier-$filename" 
     done
-    cd $CODEBUILD_SRC_DIR
 }
