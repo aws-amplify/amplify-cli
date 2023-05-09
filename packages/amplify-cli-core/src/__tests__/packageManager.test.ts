@@ -38,7 +38,7 @@ describe('packageManager tests', () => {
 
     const packageManager = await getPackageManager(testDirectory);
 
-    expect(which_mock.sync).toBeCalledTimes(2);
+    expect(which_mock.sync).toBeCalledTimes(1);
     expect(packageManager).toBeDefined();
     expect(packageManager!.packageManager).toEqual('yarn');
   });

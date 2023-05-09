@@ -11,8 +11,10 @@ import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import * as execa from 'execa';
 import opn from 'open';
 import { Ora } from 'ora';
+import { SemVer } from 'semver';
 import { Template as Template_2 } from 'cloudform-types';
 
 // @public (undocumented)
@@ -120,7 +122,7 @@ export class AmplifyError extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'CustomPoliciesFormatError' | 'DebugConfigValueNotSetError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DestructiveMigrationError' | 'DiagnoseReportUploadError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'ExportError' | 'FeatureFlagsValidationError' | 'FileSystemPermissionsError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'GraphQLError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidDirectiveError' | 'InvalidGSIMigrationError' | 'InvalidMigrationError' | 'InvalidOverrideError' | 'InvalidStackError' | 'InvalidTransformerError' | 'IterativeRollbackError' | 'LambdaFunctionInvokeError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'PackagingLambdaFunctionError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'APIRateExceededError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceCountLimitExceedError' | 'ResourceDoesNotExistError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'ResourceRemoveError' | 'SchemaNotFoundError' | 'SchemaValidationError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'StackNotFoundError' | 'StackStateError' | 'StorageImportError' | 'TransformerContractError' | 'UnknownDirectiveError' | 'UnsupportedLockFileTypeError' | 'UserInputError';
+export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'APIRateExceededError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'CustomPoliciesFormatError' | 'DebugConfigValueNotSetError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DestructiveMigrationError' | 'DiagnoseReportUploadError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'ExportError' | 'FeatureFlagsValidationError' | 'FileSystemPermissionsError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'GraphQLError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidDirectiveError' | 'InvalidGSIMigrationError' | 'InvalidMigrationError' | 'InvalidOverrideError' | 'InvalidStackError' | 'InvalidTransformerError' | 'IterativeRollbackError' | 'LambdaFunctionInvokeError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'PackagingLambdaFunctionError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceCountLimitExceedError' | 'ResourceDoesNotExistError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'ResourceRemoveError' | 'SchemaNotFoundError' | 'SchemaValidationError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'ShellCommandExecutionError' | 'StackNotFoundError' | 'StackStateError' | 'StorageImportError' | 'TransformerContractError' | 'UnknownDirectiveError' | 'UnsupportedLockFileTypeError' | 'UserInputError';
 
 // @public (undocumented)
 export enum AmplifyEvent {
@@ -250,9 +252,10 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
 
 // @public (undocumented)
 export class AmplifyNodePkgDetector {
-    constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps);
     // (undocumented)
     detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+    // (undocumented)
+    static getInstance: (amplifyDetectorProps: AmplifyNodePkgDetectorProps) => Promise<AmplifyNodePkgDetector>;
 }
 
 // @public (undocumented)
@@ -782,6 +785,9 @@ export type ErrorParameter = {
 export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
+export const execAsStringPromise: (command: string, opts?: execa.Options) => Promise<string>;
+
+// @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
 
 declare namespace ExeInfo {
@@ -933,7 +939,7 @@ export type GetOptions<T> = {
 export type GetPackageAssetPaths = () => Promise<string[]>;
 
 // @public (undocumented)
-export const getPackageManager: (rootPath?: string) => PackageManager | null;
+export const getPackageManager: (rootPath?: string) => Promise<PackageManager | null>;
 
 // @public (undocumented)
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
@@ -1475,7 +1481,7 @@ export type PackageManager = {
     packageManager: PackageManagerType;
     lockFile: string;
     executable: string;
-    yarnrcPath?: string;
+    version?: SemVer;
 };
 
 // @public (undocumented)

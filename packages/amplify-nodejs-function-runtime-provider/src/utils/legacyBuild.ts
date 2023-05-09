@@ -1,17 +1,9 @@
-import {
-  $TSObject,
-  getPackageManager,
-  JSONUtilities,
-  AmplifyError,
-  PackageManager,
-  execAsStringPromise,
-} from '@aws-amplify/amplify-cli-core';
+import { $TSObject, getPackageManager, JSONUtilities, AmplifyError, PackageManager } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import glob from 'glob';
 import * as path from 'path';
-import { coerce } from 'semver';
 
 /**
  * copied from the former build-resources.js file in amplify-cli with changes for new interface

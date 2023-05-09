@@ -51,7 +51,7 @@ export class AmplifyNodePkgDetector {
     this.packageManager = packageManager;
     this.pkgJsonObj = this.parsePkgJson(amplifyDetectorProps.projectRoot);
     this.lockFileContents = this.getLockFileContent(amplifyDetectorProps.projectRoot);
-    this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager.packageManager);
+    this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager);
   }
 
   /**

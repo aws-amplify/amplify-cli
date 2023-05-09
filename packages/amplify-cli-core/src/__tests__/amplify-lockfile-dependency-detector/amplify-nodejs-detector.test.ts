@@ -7,14 +7,14 @@ jest.mock('../../utils/packageManager');
 
 describe('no package Manager cases', () => {
   it('error thrown when no package manager found', async () => {
-    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(null);
+    (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(new Promise((resolve) => resolve(null)));
     const projectRoot = path.join(__dirname, 'resources');
     expect(
       async () =>
         await AmplifyNodePkgDetector.getInstance({
           projectRoot,
         }),
-    ).toThrowErrorMatchingInlineSnapshot(`"No package manager found."`);
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"No package manager found."`);
   });
 });
 
@@ -36,7 +36,7 @@ describe('parsing yarn lock files', () => {
         await AmplifyNodePkgDetector.getInstance({
           projectRoot,
         }),
-    ).toThrowError();
+    ).rejects.toThrowError();
   });
 
   it('throw error on corrupted lock file', async () => {
@@ -56,7 +56,7 @@ describe('parsing yarn lock files', () => {
     };
     expect(async () =>
       (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies('@aws-cdk/core'),
-    ).toThrowErrorMatchingInlineSnapshot(`"yarn.lock parsing failed with an error: Invalid value type 1:16 in lockfile"`);
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"yarn.lock parsing failed with an error: Invalid value type 1:16 in lockfile"`);
   });
 
   it('correctly detect dependencies for @aws-cdk/core', async () => {
@@ -261,7 +261,7 @@ describe('parsing package lock files', () => {
         await AmplifyNodePkgDetector.getInstance({
           projectRoot,
         }),
-    ).toThrowError();
+    ).rejects.toThrowError();
   });
 
   it('throw error on corrupted package lock file', async () => {
@@ -280,7 +280,9 @@ describe('parsing package lock files', () => {
     };
     expect(async () =>
       (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies('@aws-cdk/core'),
-    ).toThrowErrorMatchingInlineSnapshot(`"package-lock.json parsing failed with an error: 'jsonString' argument missing or empty"`);
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"package-lock.json parsing failed with an error: 'jsonString' argument missing or empty"`,
+    );
   });
 
   it('correctly detect dependencies', async () => {
@@ -496,7 +498,7 @@ describe('parsing yarn2 lock files', () => {
           executable: 'yarn',
           lockFile: 'yarn-2-test.lock',
           packageManager: 'yarn',
-          version: coerce('2.0.0'),
+          version: coerce('1.22.0') ?? undefined,
         }),
       ),
     );
@@ -506,7 +508,9 @@ describe('parsing yarn2 lock files', () => {
     };
     expect(async () =>
       (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies('@aws-cdk/core'),
-    ).toThrowErrorMatchingInlineSnapshot(`"yarn.lock parsing failed"`);
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"yarn.lock parsing failed with an error: Unknown token: { line: 3, col: 2, type: 'INVALID', value: undefined } 3:2 in lockfile"`,
+    );
   });
 
   it('correctly detect dependencies for @aws-cdk/core', async () => {
@@ -516,7 +520,7 @@ describe('parsing yarn2 lock files', () => {
           executable: 'yarn',
           lockFile: 'yarn-2-test.lock',
           packageManager: 'yarn',
-          version: coerce('2.0.0'),
+          version: coerce('2.0.0') ?? undefined,
         }),
       ),
     );
@@ -565,7 +569,7 @@ describe('parsing yarn2 lock files', () => {
           executable: 'yarn',
           lockFile: 'yarn-2-test.lock',
           packageManager: 'yarn',
-          version: coerce('2.0.0'),
+          version: coerce('2.0.0') ?? undefined,
         }),
       ),
     );
@@ -607,7 +611,7 @@ describe('parsing yarn2 lock files', () => {
           executable: 'yarn',
           lockFile: 'yarn-2-test.lock',
           packageManager: 'yarn',
-          version: coerce('2.0.0'),
+          version: coerce('2.0.0') ?? undefined,
         }),
       ),
     );
@@ -663,7 +667,7 @@ describe('parsing yarn2 lock files', () => {
           executable: 'yarn',
           lockFile: 'yarn-2-test.lock',
           packageManager: 'yarn',
-          version: coerce('2.0.0'),
+          version: coerce('2.0.0') ?? undefined,
         }),
       ),
     );
