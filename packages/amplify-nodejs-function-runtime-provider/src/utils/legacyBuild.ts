@@ -1,4 +1,4 @@
-import { $TSObject, getPackageManager, JSONUtilities, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSObject, getPackageManager, JSONUtilities, AmplifyError, PackageManager } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -48,8 +48,7 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
     return;
   }
 
-  const useYarn = packageManager.packageManager === 'yarn';
-  const args = toPackageManagerArgs(useYarn, buildType, scriptName);
+  const args = toPackageManagerArgs(packageManager, buildType, scriptName);
   try {
     execa.sync(packageManager.executable, args, {
       cwd,
@@ -85,18 +84,37 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
   }
 };
 
-const toPackageManagerArgs = (useYarn: boolean, buildType?: BuildType, scriptName?: string): string[] => {
-  if (scriptName) {
-    return useYarn ? [scriptName] : ['run-script', scriptName];
+const toPackageManagerArgs = (packageManager: PackageManager, buildType?: BuildType, scriptName?: string): string[] => {
+  switch (packageManager.executable) {
+    case 'yarn': {
+      const useYarn2 = packageManager.yarnrcPath !== undefined;
+
+      if (scriptName) {
+        return [scriptName];
+      }
+
+      const args = useYarn2 ? [] : ['--no-bin-links'];
+
+      if (buildType === BuildType.PROD) {
+        args.push('--production');
+      }
+
+      return args;
+    }
+    default: {
+      if (scriptName) {
+        return ['run-script', scriptName];
+      }
+
+      const args = ['install', '--no-bin-links'];
+
+      if (buildType === BuildType.PROD) {
+        args.push('--production');
+      }
+
+      return args;
+    }
   }
-
-  const args = useYarn ? ['--no-bin-links'] : ['install', '--no-bin-links'];
-
-  if (buildType === BuildType.PROD) {
-    args.push('--production');
-  }
-
-  return args;
 };
 
 const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, buildType: BuildType, lastBuildType?: BuildType): boolean => {

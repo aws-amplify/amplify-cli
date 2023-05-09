@@ -17,7 +17,7 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest --verbose --config=jest.config.js",
+    "e2e": "yarn setup-profile && jest --verbose --config=jest.config.js",
     "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
