@@ -12360,6 +12360,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/semver@npm:^7":
+  version: 7.5.0
+  resolution: "@types/semver@npm:7.5.0"
+  checksum: ca4ba4642b5972b6e88e73c5bc02bbaceb8d76bce71748d86e3e95042d4e5a44603113a1dcd2cb9b73ad6f91f6e4ab73185eb41bbfc9c73b11f0ed3db3b7443a
+  languageName: node
+  linkType: hard
+
 "@types/semver@npm:^7.1.0":
   version: 7.3.9
   resolution: "@types/semver@npm:7.3.9"
@@ -13708,10 +13715,12 @@ __metadata:
     "@aws-amplify/amplify-function-plugin-interface": 1.10.2
     "@types/exit": ^0.1.31
     "@types/node": ^12.12.6
+    "@types/semver": ^7
     execa: ^5.1.1
     exit: ^0.1.2
     fs-extra: ^8.1.0
     glob: ^7.2.0
+    semver: ^7.5.0
   languageName: unknown
   linkType: soft
 
@@ -30144,6 +30153,17 @@ node-pty@beta:
   bin:
     semver: ./bin/semver.js
   checksum: 1f4959e15bcfbaf727e964a4920f9260141bb8805b399793160da4e7de128e42a7d1f79c1b7d5cd21a6073fba0d55feb9966f5fef3e5ccb8e1d7ead3d7527458
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.5.0":
+  version: 7.5.0
+  resolution: "semver@npm:7.5.0"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 203a556d7189c277b9774a325fd2695187b2822069094e0dbfcc56dfd10a1fd646a94e73812f249802a661f6437b2370ccb8ee330e7b9888b38e53c5a8216222
   languageName: node
   linkType: hard
 

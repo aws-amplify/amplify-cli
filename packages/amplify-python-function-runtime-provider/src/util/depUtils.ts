@@ -1,6 +1,7 @@
 import { CheckDependenciesResult } from '@aws-amplify/amplify-function-plugin-interface';
-import { execAsStringPromise, getPythonBinaryName } from './pyUtils';
+import { getPythonBinaryName } from './pyUtils';
 import { coerce, lt } from 'semver';
+import { execAsStringPromise } from '@aws-amplify/amplify-cli-core';
 
 export const minPyVersion = coerce('3.8')!;
 const pythonErrMsg =

@@ -1,8 +1,9 @@
+import { execAsStringPromise } from '@aws-amplify/amplify-cli-core';
 import { PackageRequest, PackageResult, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
 import * as path from 'path';
-import { execAsStringPromise, getPipenvDir, getPythonBinaryName, majMinPyVersion } from './pyUtils';
+import { getPipenvDir, getPythonBinaryName, majMinPyVersion } from './pyUtils';
 
 // packages python lambda functions and writes the archive to the specified file
 export async function pythonPackage(context: any, params: PackageRequest): Promise<PackageResult> {
