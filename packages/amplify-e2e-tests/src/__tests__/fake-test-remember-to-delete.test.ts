@@ -3,11 +3,11 @@ describe('fake test remember to delete', () => {
   const y = 1;
   const z = 2;
 
-  it('will pass', async () => {
+  it('aaaaa', async () => {
     expect(x).toEqual(y);
   });
 
-  it('will pass 2', async () => {
-    expect(x).toEqual(x);
+  it('bbbbb', async () => {
+    expect(x).toEqual(z);
   });
 });
