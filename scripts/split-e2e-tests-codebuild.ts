@@ -150,6 +150,7 @@ const splitTestsV3 = (
   testDirectory: string,
   isMigration: boolean,
   pickTests: ((testSuites: string[]) => string[]) | undefined,
+  withReports = false,
 ) => {
   const output: any[] = [];
   let testSuites = getTestFiles(testDirectory);
@@ -223,12 +224,15 @@ const splitTestsV3 = (
     return jobName;
   };
   const result: any[] = [];
+  const dependeeIdentifiers: string[] = [];
   linuxJobs.forEach((j) => {
     if (j.tests.length !== 0) {
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const identifier = getIdentifier(j.os, names);
+      dependeeIdentifiers.push(identifier);
       const tmp = {
         ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
-        identifier: getIdentifier(j.os, names),
+        identifier,
       };
       tmp.env.variables = {};
       tmp.env.variables.TEST_SUITE = j.tests.join('|');
@@ -242,9 +246,11 @@ const splitTestsV3 = (
   windowsJobs.forEach((j) => {
     if (j.tests.length !== 0) {
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const identifier = getIdentifier(j.os, names);
+      dependeeIdentifiers.push(identifier);
       const tmp = {
         ...JSON.parse(JSON.stringify(baseJobWindows)), // deep clone base job
-        identifier: getIdentifier(j.os, names),
+        identifier,
       };
       tmp.env.variables = {};
       tmp.env.variables.TEST_SUITE = j.tests.join('|');
@@ -253,10 +259,35 @@ const splitTestsV3 = (
       result.push(tmp);
     }
   });
+
+  if (withReports) {
+    const reportsAggregator = {
+      identifier: 'aggregate_e2e_reports',
+      env: {
+        'compute-type': 'BUILD_GENERAL1_MEDIUM',
+        shell: 'bash',
+      },
+      phases: {
+        build: {
+          commands: ['echo "Aggregating reports"', 'echo sync here'],
+        },
+      },
+      reports: {
+        'e2e-reports': {
+          files: ['*.xml'],
+          'file-format': 'JUNITXML',
+          'base-directory': '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit',
+        },
+      },
+      'depend-on': dependeeIdentifiers,
+    };
+    result.push(reportsAggregator);
+  }
+
   return result;
 };
 
-const reportsBuildspecComponent = {
+const reportsBuildspecComponentE2E = {
   reports: {
     'e2e-reports': {
       files: ['*.xml'],
@@ -277,7 +308,7 @@ function main(): void {
         'compute-type': 'BUILD_GENERAL1_MEDIUM',
       },
       'depend-on': ['upload_pkg_binaries'],
-      ...reportsBuildspecComponent,
+      ...reportsBuildspecComponentE2E,
     },
     {
       identifier: 'run_e2e_tests_windows',
@@ -288,11 +319,12 @@ function main(): void {
         image: '$WINDOWS_IMAGE_2019',
       },
       'depend-on': ['build_windows', 'upload_pkg_binaries'],
-      ...reportsBuildspecComponent,
+      ...reportsBuildspecComponentE2E,
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
     undefined,
+    true,
   );
   const splitMigrationV5Tests = splitTestsV3(
     {
