@@ -455,6 +455,7 @@ function _integrationTest {
 }
 
 function _uploadReportsToS3 {
+    echo "I am here v1"
     source_version=$1
     build_identifier=$2
     bucket_name="amplify-cli-e2e-test-reports"
