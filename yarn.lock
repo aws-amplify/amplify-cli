@@ -425,6 +425,7 @@ __metadata:
     globby: ^11.0.3
     hjson: ^3.2.1
     inquirer: ^7.3.3
+    jest: ^29.5.0
     js-yaml: ^4.0.0
     lodash: ^4.17.21
     nock: ^13.0.11

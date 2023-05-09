@@ -48,7 +48,7 @@ const installDependencies = async (resourceDir: string, buildType: BuildType): P
 };
 
 const runPackageManager = async (resourceDir: string, buildType?: BuildType, scriptName?: string): Promise<void> => {
-  const packageManager = getPackageManager(resourceDir);
+  const packageManager = await getPackageManager(resourceDir);
 
   if (packageManager === null) {
     // If no package manager was detected, it means that this functions or layer has no package.json, so no package operations
@@ -56,9 +56,11 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
     return;
   }
 
-  const args = await toPackageManagerArgs(resourceDir, packageManager, buildType, scriptName);
+  const args = await toPackageManagerArgs(packageManager, buildType, scriptName);
   try {
     execa.sync(packageManager.executable, args, {
+      preferLocal: true,
+      localDir: resourceDir,
       cwd: resourceDir,
       stdio: 'pipe',
       encoding: 'utf-8',
@@ -84,17 +86,11 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
   }
 };
 
-const toPackageManagerArgs = async (
-  resourceDir: string,
-  packageManager: PackageManager,
-  buildType?: BuildType,
-  scriptName?: string,
-): Promise<string[]> => {
+const toPackageManagerArgs = async (packageManager: PackageManager, buildType?: BuildType, scriptName?: string): Promise<string[]> => {
   switch (packageManager.executable) {
     case 'yarn': {
-      const yarnVersion = coerce(await execAsStringPromise(`${packageManager.executable} --version`, { cwd: resourceDir }));
-      const useYarnModern = yarnVersion?.major && yarnVersion?.major > 1;
-
+      const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
+      console.log(`Using ${useYarnModern ? 'yarn 2' : 'yarn 1'}`);
       if (scriptName) {
         return [scriptName];
       }
@@ -102,7 +98,7 @@ const toPackageManagerArgs = async (
       const args = useYarnModern ? [] : ['--no-bin-links'];
 
       if (buildType === BuildType.PROD) {
-        args.push(useYarnModern ? 'workspaces focus --production' : '--production');
+        args.push(useYarnModern ? 'build' : '--production');
       }
 
       return args;
