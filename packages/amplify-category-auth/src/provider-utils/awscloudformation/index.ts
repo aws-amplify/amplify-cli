@@ -10,6 +10,7 @@ import { getAddAuthHandler, getUpdateAuthHandler } from './handlers/resource-han
 import { getSupportedServices } from '../supported-services';
 import { importResource, importedAuthEnvInit } from './import';
 import { AuthContext } from '../../context';
+import { getOAuthObjectFromCognito } from './utils/get-oauth-secrets-from-cognito';
 
 export { importResource } from './import';
 
@@ -133,6 +134,14 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
 
   if (hostedUIProviderMeta) {
     currentEnvSpecificValues = getOAuthProviderKeys(currentEnvSpecificValues, resourceParams);
+    const authParamsFromCognito = await getOAuthObjectFromCognito(context, resourceParams.userPoolName);
+    // fill in the OAuthProvider Keys from userpool if missing from currentEnvValues
+    if (authParamsFromCognito) {
+      currentEnvSpecificValues = {
+        ...getOAuthProviderKeys({ hostedUIProviderCreds: JSON.stringify(authParamsFromCognito) }, resourceParams),
+        ...currentEnvSpecificValues,
+      };
+    }
   }
 
   // legacy headless mode (only supports init)

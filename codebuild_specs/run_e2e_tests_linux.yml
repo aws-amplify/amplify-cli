@@ -2,8 +2,6 @@ version: 0.2
 env:
   shell: bash
   variables:
-    CLI_REGION: us-east-1
-    TEST_SUITE: src/__tests__/geo-add-b.test.ts
     E2E_TEST_COVERAGE_DIR: node_v8_coverage
     CI: true
     CIRCLECI: true
@@ -36,7 +34,6 @@ phases:
       - source ./shared-scripts.sh && _runE2ETestsLinux
   post_build:
     commands:
-      - aws sts get-caller-identity
       - source ./shared-scripts.sh && _scanArtifacts
 artifacts:
   files:

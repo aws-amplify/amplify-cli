@@ -269,9 +269,7 @@ function _uploadCoverageLinux {
     fi
 }
 # END COVERAGE FUNCTIONS
-function _runE2ETestsLinux {
-    echo RUN E2E Tests Linux
-    
+function _loadE2ECache {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
@@ -279,25 +277,20 @@ function _runE2ETestsLinux {
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
-
+}
+function _runE2ETestsLinux {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
     _install_packaged_cli_linux
-
     # verify installation
     amplify version
-
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
-    # source $BASH_ENV
-
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
-    
     cd packages/amplify-e2e-tests
-
     _loadTestAccountCredentials
-
-    #retry runE2eTest
-    runE2eTest
+    retry runE2eTest
     _unassumeTestAccountCredentials
     storeCache $E2E_TEST_COVERAGE_DIR e2e-test-coverage-raw
 }
@@ -306,6 +299,35 @@ function _unassumeTestAccountCredentials {
     unset AWS_ACCESS_KEY_ID
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
+}
+function _runMigrationV5Test {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn run migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationV6Test {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationV10Test {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    unset IS_AMPLIFY_CI
+    echo $IS_AMPLIFY_CI
+    _loadTestAccountCredentials
+    retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
 }
 
 function _scanArtifacts {
