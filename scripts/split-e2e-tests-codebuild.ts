@@ -255,6 +255,17 @@ const splitTestsV3 = (
   });
   return result;
 };
+
+const reportsBuildspecComponent = {
+  reports: {
+    'e2e-reports': {
+      files: ['*.xml'],
+      'file-format': 'JUNITXML',
+      'base-directory': '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit',
+    },
+  },
+};
+
 function main(): void {
   const configBase: any = loadConfigBase();
   const baseBuildGraph = configBase.batch['build-graph'];
@@ -266,6 +277,7 @@ function main(): void {
         'compute-type': 'BUILD_GENERAL1_MEDIUM',
       },
       'depend-on': ['upload_pkg_binaries'],
+      ...reportsBuildspecComponent,
     },
     {
       identifier: 'run_e2e_tests_windows',
@@ -276,6 +288,7 @@ function main(): void {
         image: '$WINDOWS_IMAGE_2019',
       },
       'depend-on': ['build_windows', 'upload_pkg_binaries'],
+      ...reportsBuildspecComponent,
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
@@ -332,6 +345,7 @@ function main(): void {
   let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
   let currentBatch = [...baseBuildGraph, ...allBuilds];
   configBase.batch['build-graph'] = currentBatch;
+
   saveConfig(configBase);
 }
 main();
