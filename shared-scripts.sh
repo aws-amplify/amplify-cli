@@ -244,10 +244,9 @@ function _convertCoverage {
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
 
-    # needs to pick up the new coverage directory
-    # for reference, assuming e2e tests are run from the amplify-e2e-tests directory:
-    # .../$NODE_V8_COVERAGE - generated with setting NODE_V8_COVERAGE env var
-    # .../coverage/<reporter> - generated with c8 command above
+    # assuming e2e tests are run from the amplify-e2e-tests directory:
+    # .../amplify-e2e-tests/$NODE_V8_COVERAGE - generated with setting NODE_V8_COVERAGE env var
+    # .../amplify-e2e-tests/coverage/<reporter> - generated with c8 command
     loadCache e2e-test-coverage-raw $E2E_TEST_COVERAGE_DIR
     npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --all --src ./packages -x "**/node_modules/**" -x "**/__tests__/**" --exclude-after-remap "**/node_modules/**" -x "**/amplify-e2e-*/**" -x "**/.yarn/**" --allow-external --reporter clover
 }

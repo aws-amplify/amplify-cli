@@ -4,13 +4,10 @@ env:
   variables:
     CLI_REGION: us-east-1
     E2E_TEST_COVERAGE_DIR: node_v8_coverage
-  secrets-manager:
-    CODECOV_TOKEN: arn:aws:secretsmanager:us-east-1:052112422291:secret:testing/codecov/token-OB8isC
 phases:
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
-      - export CODEBUILD_SOURCE_VERSION=00f31ea25fc27aa865198398e5014ea4d6a126d9
       - export NODE_OPTIONS=--max-old-space-size=8096
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
