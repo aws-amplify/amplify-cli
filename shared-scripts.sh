@@ -460,7 +460,11 @@ function _uploadReportsToS3 {
     build_identifier=$2
     bucket_name="amplify-cli-e2e-test-reports"
     reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
-    for filename in $(ls -d $reports_dir); do
+    cd $reports_dir
+    echo "ls reports_dir"
+    ls
+    for filename in $(ls); do
         aws s3 cp "$filename" "s3://$bucket_name/$source_version/$build_identifier-$filename" 
     done
+    cd $CODEBUILD_SRC_DIR
 }
