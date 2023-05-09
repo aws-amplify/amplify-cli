@@ -48,5 +48,5 @@ module.exports = {
     '<rootDir>/scripts',
     // '<rootDir>/packages/amplify-velocity-template', // todo: enable after migration to Jest
   ],
-  reporters: ['default', ['jest-junit', { outputDirectory: 'jest-reports', outputName: 'report.xml' }]],
+  reporters: ['default', ['jest-junit', { outputDirectory: 'reports', outputName: 'report.xml' }]],
 };

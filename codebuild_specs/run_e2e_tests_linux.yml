@@ -27,7 +27,7 @@ phases:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
       - export NODE_OPTIONS=--max-old-space-size=8096
-      - export CODEBUILD_SOURCE_VERSION=d43a76587d506760e4c2196023a7de3ef53d3ad4
+      # - export CODEBUILD_SOURCE_VERSION=d43a76587d506760e4c2196023a7de3ef53d3ad4
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
@@ -49,4 +49,4 @@ reports:
     files:
       - '*.xml'
     file-format: 'JUNITXML'
-    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/jest-reports/junit'
+    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit'
