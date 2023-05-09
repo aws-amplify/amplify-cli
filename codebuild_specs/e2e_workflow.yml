@@ -96,6 +96,7 @@ batch:
     #   buildspec: codebuild_specs/verify_versions_match.yml
     #   depend-on:
     #     - publish_to_local_registry
+
     - identifier: run_e2e_tests_linux
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:

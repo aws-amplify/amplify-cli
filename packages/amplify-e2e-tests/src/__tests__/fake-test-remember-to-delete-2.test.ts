@@ -8,6 +8,6 @@ describe('fake test remember to delete 2', () => {
   });
 
   it('ddddd', async () => {
-    expect(x).toEqual(z);
+    expect(x).toEqual(y);
   });
 });
