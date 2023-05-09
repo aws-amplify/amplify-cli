@@ -38,7 +38,7 @@ phases:
     commands:
       - aws sts get-caller-identity
       - source ./shared-scripts.sh && _scanArtifacts
-      - echo "HERE LINE 41"
+      - echo "HERE LINE  41"
       - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER
 
 artifacts:
