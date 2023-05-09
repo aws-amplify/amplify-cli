@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.2-sync-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.9.1...@aws-amplify/amplify-e2e-core@4.9.2-sync-fix.0) (2023-05-09)
+
+
+### Bug Fixes
+
+* **api:** use sync fix version ([f5c882a](https://github.com/aws-amplify/amplify-cli/commit/f5c882a2473f952f09be5ffd5a754aad497dd56b))
+
+
+
+
+
 ## [4.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.9.0...@aws-amplify/amplify-e2e-core@4.9.1) (2023-04-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core

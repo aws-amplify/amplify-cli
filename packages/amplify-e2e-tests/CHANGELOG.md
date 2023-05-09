@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2-sync-fix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.1...amplify-e2e-tests@4.1.2-sync-fix.0) (2023-05-09)
+
+
+### Bug Fixes
+
+* **api:** use sync fix version ([f5c882a](https://github.com/aws-amplify/amplify-cli/commit/f5c882a2473f952f09be5ffd5a754aad497dd56b))
+
+
+
+
+
 ## [4.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.0...amplify-e2e-tests@4.1.1) (2023-04-29)
 
 **Note:** Version bump only for package amplify-e2e-tests

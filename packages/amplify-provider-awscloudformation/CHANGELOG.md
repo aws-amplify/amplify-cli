@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.1.1-sync-fix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.1.0...@aws-amplify/amplify-provider-awscloudformation@8.1.1-sync-fix.0) (2023-05-09)
+
+
+### Bug Fixes
+
+* **api:** use sync fix version ([f5c882a](https://github.com/aws-amplify/amplify-cli/commit/f5c882a2473f952f09be5ffd5a754aad497dd56b))
+
+
+
+
+
 # [8.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.0.5...@aws-amplify/amplify-provider-awscloudformation@8.1.0) (2023-04-24)
 
 
