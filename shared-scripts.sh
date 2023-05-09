@@ -238,7 +238,7 @@ function _install_packaged_cli_linux {
     cd $CODEBUILD_SRC_DIR
 }
 function _runE2ETestsLinux {
-    echo 'here v1'
+    echo 'here v2'
     echo RUN E2E Tests Linux
     
     loadCache repo $CODEBUILD_SRC_DIR

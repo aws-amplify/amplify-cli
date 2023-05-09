@@ -32,7 +32,7 @@ phases:
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
-      - npm install ts-node
+      - npm install -g ts-node
       - source ./shared-scripts.sh && _runE2ETestsLinux
       - ls -R $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports
   post_build:
