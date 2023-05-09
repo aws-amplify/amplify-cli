@@ -36,4 +36,4 @@ phases:
 
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports/*
+    - $CODEBUILD_SRC_DIR/packages/amplify-migration-tests/amplify-migration-reports/*
