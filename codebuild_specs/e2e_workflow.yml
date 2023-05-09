@@ -101,8 +101,8 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
       debug-session: true
-      # depend-on:
-      #   - upload_pkg_binaries
+      depend-on:
+        - upload_pkg_binaries
 
     # - identifier: run_e2e_tests_windows
     #   buildspec: codebuild_specs/run_e2e_tests_windows.yml
