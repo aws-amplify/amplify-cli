@@ -152,6 +152,14 @@ const splitTestsV3 = (
   pickTests: ((testSuites: string[]) => string[]) | undefined,
   withReports = false,
 ) => {
+  if (!withReports && baseJobLinux?.reports) {
+    delete baseJobLinux.reports;
+  }
+
+  if (!withReports && baseJobWindows?.reports) {
+    delete baseJobWindows.reports;
+  }
+
   const output: any[] = [];
   let testSuites = getTestFiles(testDirectory);
   if (pickTests && typeof pickTests === 'function') {
