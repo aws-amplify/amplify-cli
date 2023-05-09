@@ -101,6 +101,8 @@ batch:
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          TEST_SUITE: src/__tests__/fake-test-remember-to-delete.test.ts
       debug-session: true
       depend-on:
         - upload_pkg_binaries
@@ -108,6 +110,8 @@ batch:
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          TEST_SUITE: src/__tests__/fake-test-remember-to-delete-2.test.ts
       debug-session: true
       depend-on:
         - upload_pkg_binaries

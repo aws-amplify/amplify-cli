@@ -453,3 +453,13 @@ function _integrationTest {
     export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/screenshots
     mkdir -p $artifact_path && touch $artifact_path/empty.txt
 }
+
+function _uploadReportsToS3 {
+    source_version=$1
+    build_identifier=$2
+    bucket_name="amplify-cli-e2e-test-reports"
+    reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
+    for filename in $reports_dir; do
+        aws s3 cp "$filename" "s3://$bucket_name/$source_version/$build_identifier-$filename" 
+    done
+}
