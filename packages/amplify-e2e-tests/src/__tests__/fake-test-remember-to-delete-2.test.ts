@@ -7,7 +7,7 @@ describe('fake test remember to delete', () => {
     expect(x).toEqual(y);
   });
 
-  it('will pass 4', async () => {
-    expect(x).toEqual(x);
+  it('will fail 4', async () => {
+    expect(x).toEqual(z);
   });
 });
