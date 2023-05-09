@@ -13,7 +13,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
-import { expectNoLambdasInCfnTemplate } from '../../migration-helpers-v11/auth-helpers/utilities';
+import { expectLambdasInCfnTemplate, expectNoLambdasInCfnTemplate } from '../../migration-helpers-v11/auth-helpers/utilities';
 import { initIosProjectWithProfile11, initJSProjectWithProfileV11 } from '../../migration-helpers-v11/init';
 
 const defaultsSettings = {
@@ -38,17 +38,41 @@ describe('lambda callouts', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('should be migrated after force pushing auth with max settings', async () => {
+  it('should be migrated when auth is in the create state, then reverted back', async () => {
     await initJSProjectWithProfileV11(projRoot, defaultsSettings);
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName });
 
+    const preMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
+    expectLambdasInCfnTemplate(preMigrationTemplate);
+
+    // push with latest should regenerate auth stack and remove lambda callouts
+    await amplifyPushAuth(projRoot, true);
+
+    const postMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
+    expectNoLambdasInCfnTemplate(postMigrationTemplate);
+
+    // revert back to previous CLI version
+    await amplifyPushForce(projRoot, false);
+
+    const revertTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
+    expectNoLambdasInCfnTemplate(revertTemplate);
+  });
+
+  it('should be migrated when existing auth is force pushed', async () => {
+    await initJSProjectWithProfileV11(projRoot, defaultsSettings);
+    const resourceName = `test${generateRandomShortId()}`;
+    await addAuthWithMaxOptions(projRoot, { name: resourceName });
+    await amplifyPushAuth(projRoot, false);
+
+    const preMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
+    expectLambdasInCfnTemplate(preMigrationTemplate);
+
     // force push with latest should regenerate auth stack and remove lambda callouts
     await amplifyPushForce(projRoot, true);
 
-    // validate Lambda resources do not exist in template
-    const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectNoLambdasInCfnTemplate(template);
+    const postMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
+    expectNoLambdasInCfnTemplate(postMigrationTemplate);
   });
 
   it('should be migrated after updating auth with OIDC', async () => {
@@ -67,7 +91,6 @@ describe('lambda callouts', () => {
     });
     await amplifyPushAuth(projRoot, true);
 
-    // validate Lambda resources do not exist in template
     const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(template);
   });
@@ -102,7 +125,6 @@ describe('lambda callouts', () => {
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
 
-    // validate Lambda resources do not exist in template
     const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(template);
   });

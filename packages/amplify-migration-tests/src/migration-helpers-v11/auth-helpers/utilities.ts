@@ -36,7 +36,18 @@ const createUserPoolWithOAuthSettings = (projectPrefix: string, shortId: string)
   };
 };
 
-export const expectNoLambdasInCfnTemplate = async (template: Record<string, any>) => {
+const getLambdasInCfnTemplate = (template: Record<string, any>): any[] => {
+  const lambdaResources = Object.values(template?.Resources).filter((r: Record<string, any>) => r?.type === 'AWS::Lambda::Function');
+  return lambdaResources;
+};
+
+export const expectLambdasInCfnTemplate = (template: Record<string, any>): void => {
+  expect(template?.Resources).toBeDefined();
+  const lambdaResources = getLambdasInCfnTemplate(template);
+  expect(lambdaResources.length).not.toBe(0);
+};
+
+export const expectNoLambdasInCfnTemplate = (template: Record<string, any>): void => {
   expect(template?.Resources).toBeDefined();
   expect(Object.values(template?.Resources).filter((r: Record<string, any>) => r?.type?.includes('Lambda')).length).toBe(0);
 };
