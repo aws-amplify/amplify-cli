@@ -59,37 +59,37 @@ describe('parsing yarn lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-cdk/core",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-cdk/core",
+  },
+]
+`);
   });
   it('correctly detect dependencies for amplify-cli-core', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
@@ -102,30 +102,30 @@ describe('parsing yarn lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "3.4.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "3.4.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "3.4.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "3.4.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "3.4.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "3.4.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+]
+`);
   });
 
   it('correctly detect dependencies for fs-extra', async () => {
@@ -139,44 +139,44 @@ describe('parsing yarn lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "9.1.0",
-          },
-          "packageName": "@aws-cdk/core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "9.1.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "9.1.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "9.1.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "9.1.0",
-          },
-          "packageName": "fs-extra",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "9.1.0",
+    },
+    "packageName": "@aws-cdk/core",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "9.1.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "9.1.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "9.1.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "9.1.0",
+    },
+    "packageName": "fs-extra",
+  },
+]
+`);
   });
 
   it('correctly detect dependencies for aws-cdk-lib', async () => {
@@ -189,7 +189,7 @@ describe('parsing yarn lock files', () => {
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
     });
-    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`Array []`);
+    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`[]`);
   });
 
   it('should handle cycle in graph with yarn 1', async () => {
@@ -204,7 +204,7 @@ describe('parsing yarn lock files', () => {
       projectRoot,
     });
     dec.detectAffectedDirectDependencies('@aws-cdk/core');
-    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`Array []`);
+    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`[]`);
   });
 });
 
@@ -250,37 +250,37 @@ describe('parsing package lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-cdk/core",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-cdk/core",
+  },
+]
+`);
   });
 
   it('correctly detect dependencies for @aws-cdk/core when present in peer dependencies', async () => {
@@ -294,16 +294,16 @@ describe('parsing package lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.188.0",
-          },
-          "packageName": "@aws-cdk/core",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.188.0",
+    },
+    "packageName": "@aws-cdk/core",
+  },
+]
+`);
   });
   it('correctly detect dependencies for amplify-cli-core', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
@@ -316,30 +316,30 @@ describe('parsing package lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "2.12.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "2.12.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "2.12.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "2.12.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "2.12.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "2.12.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+]
+`);
   });
 
   it('correctly detect dependencies for fs-extra', async () => {
@@ -353,44 +353,44 @@ describe('parsing package lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "8.1.0",
-          },
-          "packageName": "@aws-cdk/core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "8.1.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "8.1.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "8.1.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "8.1.0",
-          },
-          "packageName": "fs-extra",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "8.1.0",
+    },
+    "packageName": "@aws-cdk/core",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "8.1.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "8.1.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "8.1.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "8.1.0",
+    },
+    "packageName": "fs-extra",
+  },
+]
+`);
   });
 
   it('correctly detect dependencies for aws-cdk-lib', async () => {
@@ -403,7 +403,7 @@ describe('parsing package lock files', () => {
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
     });
-    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`Array []`);
+    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`[]`);
   });
 
   it('should handle cycle in graph with npm', async () => {
@@ -416,7 +416,7 @@ describe('parsing package lock files', () => {
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
     });
-    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`Array []`);
+    expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`[]`);
   });
 });
 
@@ -449,37 +449,37 @@ describe('parsing yarn2 lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('@aws-cdk/core')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "@aws-cdk/core",
-            "version": "1.172.0",
-          },
-          "packageName": "@aws-cdk/core",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "@aws-cdk/core",
+      "version": "1.172.0",
+    },
+    "packageName": "@aws-cdk/core",
+  },
+]
+`);
   });
 
   it('correctly detect dependencies for amplify-cli-core', async () => {
@@ -494,30 +494,30 @@ describe('parsing yarn2 lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('amplify-cli-core')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "3.5.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "3.5.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "amplify-cli-core",
-            "version": "3.5.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "3.5.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "3.5.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "amplify-cli-core",
+      "version": "3.5.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+]
+`);
   });
 
   it('correctly detect dependencies for fs-extra', async () => {
@@ -531,44 +531,44 @@ describe('parsing yarn2 lock files', () => {
       projectRoot,
     });
     expect(dec.detectAffectedDirectDependencies('fs-extra')).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "9.1.0",
-          },
-          "packageName": "@aws-cdk/core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "9.1.0",
-          },
-          "packageName": "amplify-cli-core",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "8.1.0",
-          },
-          "packageName": "@aws-amplify/amplify-category-custom",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "8.1.0",
-          },
-          "packageName": "@aws-amplify/cli-extensibility-helper",
-        },
-        Object {
-          "dependentPackage": Object {
-            "name": "fs-extra",
-            "version": "9.1.0",
-          },
-          "packageName": "fs-extra",
-        },
-      ]
-    `);
+[
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "9.1.0",
+    },
+    "packageName": "@aws-cdk/core",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "9.1.0",
+    },
+    "packageName": "amplify-cli-core",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "8.1.0",
+    },
+    "packageName": "@aws-amplify/amplify-category-custom",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "8.1.0",
+    },
+    "packageName": "@aws-amplify/cli-extensibility-helper",
+  },
+  {
+    "dependentPackage": {
+      "name": "fs-extra",
+      "version": "9.1.0",
+    },
+    "packageName": "fs-extra",
+  },
+]
+`);
   });
 
   it('correctly detect dependencies for aws-cdk-lib', async () => {
@@ -582,6 +582,6 @@ describe('parsing yarn2 lock files', () => {
     const dec = new AmplifyNodePkgDetector({
       projectRoot,
     });
-    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`Array []`);
+    expect(dec.detectAffectedDirectDependencies('aws-cdk-lib')).toMatchInlineSnapshot(`[]`);
   });
 });

@@ -55,7 +55,7 @@
     "semver": "^7.3.5",
     "typescript-json-schema": "~0.52.0",
     "which": "^2.0.2",
-    "yaml": "^2.2.1"
+    "yaml": "^2.2.2"
   },
   "devDependencies": {
     "@aws-amplify/amplify-function-plugin-interface": "1.10.2",

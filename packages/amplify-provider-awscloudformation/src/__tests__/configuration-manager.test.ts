@@ -4,15 +4,14 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as configManager from '../configuration-manager';
 import { loadConfigurationForEnv } from '../configuration-manager';
-import { mocked } from 'ts-jest/utils';
 
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('fs-extra');
 jest.mock('../system-config-manager');
 
-const pathManager_mock = mocked(pathManager);
-const JSONUtilities_mock = mocked(JSONUtilities);
-const fs_mock = mocked(fs);
+const pathManager_mock = jest.mocked(pathManager);
+const JSONUtilities_mock = jest.mocked(JSONUtilities);
+const fs_mock = jest.mocked(fs);
 
 const testPath = path.join('test', 'path');
 pathManager_mock.getDotConfigDirPath.mockReturnValue(testPath);
@@ -59,12 +58,12 @@ describe('load configuration for env', () => {
     } as $TSContext;
     const result = await loadConfigurationForEnv(contextStub, 'test');
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "accessKeyId": "testAccessKey",
-        "region": "us-test-1",
-        "secretAccessKey": "testSecretKey",
-      }
-    `);
+{
+  "accessKeyId": "testAccessKey",
+  "region": "us-test-1",
+  "secretAccessKey": "testSecretKey",
+}
+`);
     expect(resolveRegionSpy).not.toBeCalled();
   });
 
@@ -83,12 +82,12 @@ describe('load configuration for env', () => {
     process.env.AWS_REGION = 'us-test-2';
     const result = await loadConfigurationForEnv(contextStub, 'test');
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "accessKeyId": "testAccessKey",
-        "region": "us-test-2",
-        "secretAccessKey": "testSecretKey",
-      }
-    `);
+{
+  "accessKeyId": "testAccessKey",
+  "region": "us-test-2",
+  "secretAccessKey": "testSecretKey",
+}
+`);
     process.env.AWS_REGION = origRegion;
   });
 });

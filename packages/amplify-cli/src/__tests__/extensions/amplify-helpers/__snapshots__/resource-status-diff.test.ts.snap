@@ -3,77 +3,77 @@
 exports[`resource-status-diff helpers should show the diff between local and remote cloudformation 1`] = `
 TemplateDiff {
   "conditions": DifferenceCollection {
-    "diffs": Object {},
+    "diffs": {},
   },
   "iamChanges": IamChanges {
     "managedPolicies": DiffableCollection {
-      "additions": Array [],
-      "newElements": Array [],
-      "oldElements": Array [],
-      "removals": Array [],
+      "additions": [],
+      "newElements": [],
+      "oldElements": [],
+      "removals": [],
     },
     "statements": DiffableCollection {
-      "additions": Array [],
-      "newElements": Array [],
-      "oldElements": Array [],
-      "removals": Array [],
+      "additions": [],
+      "newElements": [],
+      "oldElements": [],
+      "removals": [],
     },
   },
   "mappings": DifferenceCollection {
-    "diffs": Object {},
+    "diffs": {},
   },
   "metadata": DifferenceCollection {
-    "diffs": Object {},
+    "diffs": {},
   },
   "outputs": DifferenceCollection {
-    "diffs": Object {},
+    "diffs": {},
   },
   "parameters": DifferenceCollection {
-    "diffs": Object {},
+    "diffs": {},
   },
   "resources": DifferenceCollection {
-    "diffs": Object {
+    "diffs": {
       "CustomResourcesjson": ResourceDifference {
         "isAddition": false,
         "isRemoval": false,
-        "newValue": Object {
-          "DependsOn": Array [
+        "newValue": {
+          "DependsOn": [
             "GraphQLAPI",
             "GraphQLSchema",
             "Todo",
             "Todo1",
             "Todo2",
           ],
-          "Properties": Object {
-            "Parameters": Object {
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+          "Properties": {
+            "Parameters": {
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
-            "TemplateURL": Object {
-              "Fn::Join": Array [
+            "TemplateURL": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -84,42 +84,42 @@ TemplateDiff {
           },
           "Type": "AWS::CloudFormation::Stack",
         },
-        "oldValue": Object {
-          "DependsOn": Array [
+        "oldValue": {
+          "DependsOn": [
             "GraphQLAPI",
             "GraphQLSchema",
             "Todo",
           ],
-          "Properties": Object {
-            "Parameters": Object {
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+          "Properties": {
+            "Parameters": {
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
-            "TemplateURL": Object {
-              "Fn::Join": Array [
+            "TemplateURL": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -130,17 +130,17 @@ TemplateDiff {
           },
           "Type": "AWS::CloudFormation::Stack",
         },
-        "otherDiffs": Object {
+        "otherDiffs": {
           "DependsOn": Difference {
             "isDifferent": true,
-            "newValue": Array [
+            "newValue": [
               "GraphQLAPI",
               "GraphQLSchema",
               "Todo",
               "Todo1",
               "Todo2",
             ],
-            "oldValue": Array [
+            "oldValue": [
               "GraphQLAPI",
               "GraphQLSchema",
               "Todo",
@@ -152,47 +152,47 @@ TemplateDiff {
             "oldValue": "AWS::CloudFormation::Stack",
           },
         },
-        "propertyDiffs": Object {
+        "propertyDiffs": {
           "Parameters": PropertyDifference {
             "changeImpact": "NO_CHANGE",
             "isDifferent": false,
-            "newValue": Object {
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+            "newValue": {
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
-            "oldValue": Object {
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+            "oldValue": {
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
@@ -200,15 +200,15 @@ TemplateDiff {
           "TemplateURL": PropertyDifference {
             "changeImpact": "NO_CHANGE",
             "isDifferent": false,
-            "newValue": Object {
-              "Fn::Join": Array [
+            "newValue": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -216,15 +216,15 @@ TemplateDiff {
                 ],
               ],
             },
-            "oldValue": Object {
-              "Fn::Join": Array [
+            "oldValue": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -234,7 +234,7 @@ TemplateDiff {
             },
           },
         },
-        "resourceTypes": Object {
+        "resourceTypes": {
           "newType": "AWS::CloudFormation::Stack",
           "oldType": "AWS::CloudFormation::Stack",
         },
@@ -242,56 +242,56 @@ TemplateDiff {
       "DataStore": ResourceDifference {
         "isAddition": true,
         "isRemoval": false,
-        "newValue": Object {
-          "Properties": Object {
-            "AttributeDefinitions": Array [
-              Object {
+        "newValue": {
+          "Properties": {
+            "AttributeDefinitions": [
+              {
                 "AttributeName": "ds_pk",
                 "AttributeType": "S",
               },
-              Object {
+              {
                 "AttributeName": "ds_sk",
                 "AttributeType": "S",
               },
             ],
             "BillingMode": "PAY_PER_REQUEST",
-            "KeySchema": Array [
-              Object {
+            "KeySchema": [
+              {
                 "AttributeName": "ds_pk",
                 "KeyType": "HASH",
               },
-              Object {
+              {
                 "AttributeName": "ds_sk",
                 "KeyType": "RANGE",
               },
             ],
-            "TableName": Object {
-              "Fn::If": Array [
+            "TableName": {
+              "Fn::If": [
                 "HasEnvironmentParameter",
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "-",
-                    Array [
+                    [
                       "AmplifyDataStore",
-                      Object {
-                        "Fn::GetAtt": Array [
+                      {
+                        "Fn::GetAtt": [
                           "GraphQLAPI",
                           "ApiId",
                         ],
                       },
-                      Object {
+                      {
                         "Ref": "env",
                       },
                     ],
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "-",
-                    Array [
+                    [
                       "AmplifyDataStore",
-                      Object {
-                        "Fn::GetAtt": Array [
+                      {
+                        "Fn::GetAtt": [
                           "GraphQLAPI",
                           "ApiId",
                         ],
@@ -301,7 +301,7 @@ TemplateDiff {
                 },
               ],
             },
-            "TimeToLiveSpecification": Object {
+            "TimeToLiveSpecification": {
               "AttributeName": "_ttl",
               "Enabled": true,
             },
@@ -309,9 +309,9 @@ TemplateDiff {
           "Type": "AWS::DynamoDB::Table",
         },
         "oldValue": undefined,
-        "otherDiffs": Object {},
-        "propertyDiffs": Object {},
-        "resourceTypes": Object {
+        "otherDiffs": {},
+        "propertyDiffs": {},
+        "resourceTypes": {
           "newType": "AWS::DynamoDB::Table",
           "oldType": undefined,
         },
@@ -319,62 +319,62 @@ TemplateDiff {
       "GraphQLAPI": ResourceDifference {
         "isAddition": false,
         "isRemoval": false,
-        "newValue": Object {
-          "Properties": Object {
+        "newValue": {
+          "Properties": {
             "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "Name": Object {
-              "Fn::If": Array [
+            "Name": {
+              "Fn::If": [
                 "HasEnvironmentParameter",
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "-",
-                    Array [
-                      Object {
+                    [
+                      {
                         "Ref": "AppSyncApiName",
                       },
-                      Object {
+                      {
                         "Ref": "env",
                       },
                     ],
                   ],
                 },
-                Object {
+                {
                   "Ref": "AppSyncApiName",
                 },
               ],
             },
-            "UserPoolConfig": Object {
-              "AwsRegion": Object {
+            "UserPoolConfig": {
+              "AwsRegion": {
                 "Ref": "AWS::Region",
               },
               "DefaultAction": "ALLOW",
-              "UserPoolId": Object {
+              "UserPoolId": {
                 "Ref": "AuthCognitoUserPoolId",
               },
             },
           },
           "Type": "AWS::AppSync::GraphQLApi",
         },
-        "oldValue": Object {
-          "Properties": Object {
+        "oldValue": {
+          "Properties": {
             "AuthenticationType": "API_KEY",
-            "Name": Object {
-              "Fn::If": Array [
+            "Name": {
+              "Fn::If": [
                 "HasEnvironmentParameter",
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "-",
-                    Array [
-                      Object {
+                    [
+                      {
                         "Ref": "AppSyncApiName",
                       },
-                      Object {
+                      {
                         "Ref": "env",
                       },
                     ],
                   ],
                 },
-                Object {
+                {
                   "Ref": "AppSyncApiName",
                 },
               ],
@@ -382,14 +382,14 @@ TemplateDiff {
           },
           "Type": "AWS::AppSync::GraphQLApi",
         },
-        "otherDiffs": Object {
+        "otherDiffs": {
           "Type": Difference {
             "isDifferent": false,
             "newValue": "AWS::AppSync::GraphQLApi",
             "oldValue": "AWS::AppSync::GraphQLApi",
           },
         },
-        "propertyDiffs": Object {
+        "propertyDiffs": {
           "AuthenticationType": PropertyDifference {
             "changeImpact": "WILL_UPDATE",
             "isDifferent": true,
@@ -399,44 +399,44 @@ TemplateDiff {
           "Name": PropertyDifference {
             "changeImpact": "NO_CHANGE",
             "isDifferent": false,
-            "newValue": Object {
-              "Fn::If": Array [
+            "newValue": {
+              "Fn::If": [
                 "HasEnvironmentParameter",
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "-",
-                    Array [
-                      Object {
+                    [
+                      {
                         "Ref": "AppSyncApiName",
                       },
-                      Object {
+                      {
                         "Ref": "env",
                       },
                     ],
                   ],
                 },
-                Object {
+                {
                   "Ref": "AppSyncApiName",
                 },
               ],
             },
-            "oldValue": Object {
-              "Fn::If": Array [
+            "oldValue": {
+              "Fn::If": [
                 "HasEnvironmentParameter",
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "-",
-                    Array [
-                      Object {
+                    [
+                      {
                         "Ref": "AppSyncApiName",
                       },
-                      Object {
+                      {
                         "Ref": "env",
                       },
                     ],
                   ],
                 },
-                Object {
+                {
                   "Ref": "AppSyncApiName",
                 },
               ],
@@ -445,19 +445,19 @@ TemplateDiff {
           "UserPoolConfig": PropertyDifference {
             "changeImpact": "WILL_UPDATE",
             "isDifferent": true,
-            "newValue": Object {
-              "AwsRegion": Object {
+            "newValue": {
+              "AwsRegion": {
                 "Ref": "AWS::Region",
               },
               "DefaultAction": "ALLOW",
-              "UserPoolId": Object {
+              "UserPoolId": {
                 "Ref": "AuthCognitoUserPoolId",
               },
             },
             "oldValue": undefined,
           },
         },
-        "resourceTypes": Object {
+        "resourceTypes": {
           "newType": "AWS::AppSync::GraphQLApi",
           "oldType": "AWS::AppSync::GraphQLApi",
         },
@@ -465,19 +465,19 @@ TemplateDiff {
       "GraphQLAPIKey": ResourceDifference {
         "isAddition": false,
         "isRemoval": false,
-        "newValue": Object {
+        "newValue": {
           "Condition": "ShouldCreateAPIKey",
-          "Properties": Object {
-            "ApiId": Object {
-              "Fn::GetAtt": Array [
+          "Properties": {
+            "ApiId": {
+              "Fn::GetAtt": [
                 "GraphQLAPI",
                 "ApiId",
               ],
             },
-            "Expires": Object {
-              "Fn::If": Array [
+            "Expires": {
+              "Fn::If": [
                 "APIKeyExpirationEpochIsPositive",
-                Object {
+                {
                   "Ref": "APIKeyExpirationEpoch",
                 },
                 1625095600,
@@ -486,20 +486,20 @@ TemplateDiff {
           },
           "Type": "AWS::AppSync::ApiKey",
         },
-        "oldValue": Object {
+        "oldValue": {
           "Condition": "ShouldCreateAPIKey",
-          "Properties": Object {
-            "ApiId": Object {
-              "Fn::GetAtt": Array [
+          "Properties": {
+            "ApiId": {
+              "Fn::GetAtt": [
                 "GraphQLAPI",
                 "ApiId",
               ],
             },
             "Description": "demo",
-            "Expires": Object {
-              "Fn::If": Array [
+            "Expires": {
+              "Fn::If": [
                 "APIKeyExpirationEpochIsPositive",
-                Object {
+                {
                   "Ref": "APIKeyExpirationEpoch",
                 },
                 1624238916,
@@ -508,7 +508,7 @@ TemplateDiff {
           },
           "Type": "AWS::AppSync::ApiKey",
         },
-        "otherDiffs": Object {
+        "otherDiffs": {
           "Condition": Difference {
             "isDifferent": false,
             "newValue": "ShouldCreateAPIKey",
@@ -520,18 +520,18 @@ TemplateDiff {
             "oldValue": "AWS::AppSync::ApiKey",
           },
         },
-        "propertyDiffs": Object {
+        "propertyDiffs": {
           "ApiId": PropertyDifference {
             "changeImpact": "NO_CHANGE",
             "isDifferent": false,
-            "newValue": Object {
-              "Fn::GetAtt": Array [
+            "newValue": {
+              "Fn::GetAtt": [
                 "GraphQLAPI",
                 "ApiId",
               ],
             },
-            "oldValue": Object {
-              "Fn::GetAtt": Array [
+            "oldValue": {
+              "Fn::GetAtt": [
                 "GraphQLAPI",
                 "ApiId",
               ],
@@ -546,19 +546,19 @@ TemplateDiff {
           "Expires": PropertyDifference {
             "changeImpact": "WILL_UPDATE",
             "isDifferent": true,
-            "newValue": Object {
-              "Fn::If": Array [
+            "newValue": {
+              "Fn::If": [
                 "APIKeyExpirationEpochIsPositive",
-                Object {
+                {
                   "Ref": "APIKeyExpirationEpoch",
                 },
                 1625095600,
               ],
             },
-            "oldValue": Object {
-              "Fn::If": Array [
+            "oldValue": {
+              "Fn::If": [
                 "APIKeyExpirationEpochIsPositive",
-                Object {
+                {
                   "Ref": "APIKeyExpirationEpoch",
                 },
                 1624238916,
@@ -566,7 +566,7 @@ TemplateDiff {
             },
           },
         },
-        "resourceTypes": Object {
+        "resourceTypes": {
           "newType": "AWS::AppSync::ApiKey",
           "oldType": "AWS::AppSync::ApiKey",
         },
@@ -574,22 +574,22 @@ TemplateDiff {
       "GraphQLSchema": ResourceDifference {
         "isAddition": false,
         "isRemoval": false,
-        "newValue": Object {
-          "Properties": Object {
-            "ApiId": Object {
-              "Fn::GetAtt": Array [
+        "newValue": {
+          "Properties": {
+            "ApiId": {
+              "Fn::GetAtt": [
                 "GraphQLAPI",
                 "ApiId",
               ],
             },
-            "DefinitionS3Location": Object {
-              "Fn::Sub": Array [
+            "DefinitionS3Location": {
+              "Fn::Sub": [
                 "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/schema.graphql",
-                Object {
-                  "S3DeploymentBucket": Object {
+                {
+                  "S3DeploymentBucket": {
                     "Ref": "S3DeploymentBucket",
                   },
-                  "S3DeploymentRootKey": Object {
+                  "S3DeploymentRootKey": {
                     "Ref": "S3DeploymentRootKey",
                   },
                 },
@@ -598,22 +598,22 @@ TemplateDiff {
           },
           "Type": "AWS::AppSync::GraphQLSchema",
         },
-        "oldValue": Object {
-          "Properties": Object {
-            "ApiId": Object {
-              "Fn::GetAtt": Array [
+        "oldValue": {
+          "Properties": {
+            "ApiId": {
+              "Fn::GetAtt": [
                 "GraphQLAPI",
                 "ApiId",
               ],
             },
-            "DefinitionS3Location": Object {
-              "Fn::Sub": Array [
+            "DefinitionS3Location": {
+              "Fn::Sub": [
                 "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/schema.graphql",
-                Object {
-                  "S3DeploymentBucket": Object {
+                {
+                  "S3DeploymentBucket": {
                     "Ref": "S3DeploymentBucket",
                   },
-                  "S3DeploymentRootKey": Object {
+                  "S3DeploymentRootKey": {
                     "Ref": "S3DeploymentRootKey",
                   },
                 },
@@ -622,25 +622,25 @@ TemplateDiff {
           },
           "Type": "AWS::AppSync::GraphQLSchema",
         },
-        "otherDiffs": Object {
+        "otherDiffs": {
           "Type": Difference {
             "isDifferent": false,
             "newValue": "AWS::AppSync::GraphQLSchema",
             "oldValue": "AWS::AppSync::GraphQLSchema",
           },
         },
-        "propertyDiffs": Object {
+        "propertyDiffs": {
           "ApiId": PropertyDifference {
             "changeImpact": "NO_CHANGE",
             "isDifferent": false,
-            "newValue": Object {
-              "Fn::GetAtt": Array [
+            "newValue": {
+              "Fn::GetAtt": [
                 "GraphQLAPI",
                 "ApiId",
               ],
             },
-            "oldValue": Object {
-              "Fn::GetAtt": Array [
+            "oldValue": {
+              "Fn::GetAtt": [
                 "GraphQLAPI",
                 "ApiId",
               ],
@@ -649,27 +649,27 @@ TemplateDiff {
           "DefinitionS3Location": PropertyDifference {
             "changeImpact": "NO_CHANGE",
             "isDifferent": false,
-            "newValue": Object {
-              "Fn::Sub": Array [
+            "newValue": {
+              "Fn::Sub": [
                 "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/schema.graphql",
-                Object {
-                  "S3DeploymentBucket": Object {
+                {
+                  "S3DeploymentBucket": {
                     "Ref": "S3DeploymentBucket",
                   },
-                  "S3DeploymentRootKey": Object {
+                  "S3DeploymentRootKey": {
                     "Ref": "S3DeploymentRootKey",
                   },
                 },
               ],
             },
-            "oldValue": Object {
-              "Fn::Sub": Array [
+            "oldValue": {
+              "Fn::Sub": [
                 "s3://\${S3DeploymentBucket}/\${S3DeploymentRootKey}/schema.graphql",
-                Object {
-                  "S3DeploymentBucket": Object {
+                {
+                  "S3DeploymentBucket": {
                     "Ref": "S3DeploymentBucket",
                   },
-                  "S3DeploymentRootKey": Object {
+                  "S3DeploymentRootKey": {
                     "Ref": "S3DeploymentRootKey",
                   },
                 },
@@ -677,7 +677,7 @@ TemplateDiff {
             },
           },
         },
-        "resourceTypes": Object {
+        "resourceTypes": {
           "newType": "AWS::AppSync::GraphQLSchema",
           "oldType": "AWS::AppSync::GraphQLSchema",
         },
@@ -685,70 +685,70 @@ TemplateDiff {
       "Todo": ResourceDifference {
         "isAddition": false,
         "isRemoval": false,
-        "newValue": Object {
-          "DependsOn": Array [
+        "newValue": {
+          "DependsOn": [
             "GraphQLSchema",
           ],
-          "Properties": Object {
-            "Parameters": Object {
-              "APIKeyExpirationEpoch": Object {
+          "Properties": {
+            "Parameters": {
+              "APIKeyExpirationEpoch": {
                 "Ref": "APIKeyExpirationEpoch",
               },
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "AuthCognitoUserPoolId": Object {
+              "AuthCognitoUserPoolId": {
                 "Ref": "AuthCognitoUserPoolId",
               },
-              "CreateAPIKey": Object {
+              "CreateAPIKey": {
                 "Ref": "CreateAPIKey",
               },
-              "DynamoDBBillingMode": Object {
+              "DynamoDBBillingMode": {
                 "Ref": "DynamoDBBillingMode",
               },
-              "DynamoDBEnablePointInTimeRecovery": Object {
+              "DynamoDBEnablePointInTimeRecovery": {
                 "Ref": "DynamoDBEnablePointInTimeRecovery",
               },
-              "DynamoDBEnableServerSideEncryption": Object {
+              "DynamoDBEnableServerSideEncryption": {
                 "Ref": "DynamoDBEnableServerSideEncryption",
               },
-              "DynamoDBModelTableReadIOPS": Object {
+              "DynamoDBModelTableReadIOPS": {
                 "Ref": "DynamoDBModelTableReadIOPS",
               },
-              "DynamoDBModelTableWriteIOPS": Object {
+              "DynamoDBModelTableWriteIOPS": {
                 "Ref": "DynamoDBModelTableWriteIOPS",
               },
-              "GetAttGraphQLAPIApiId": Object {
-                "Fn::GetAtt": Array [
+              "GetAttGraphQLAPIApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
-            "TemplateURL": Object {
-              "Fn::Join": Array [
+            "TemplateURL": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -759,70 +759,70 @@ TemplateDiff {
           },
           "Type": "AWS::CloudFormation::Stack",
         },
-        "oldValue": Object {
-          "DependsOn": Array [
+        "oldValue": {
+          "DependsOn": [
             "GraphQLSchema",
           ],
-          "Properties": Object {
-            "Parameters": Object {
-              "APIKeyExpirationEpoch": Object {
+          "Properties": {
+            "Parameters": {
+              "APIKeyExpirationEpoch": {
                 "Ref": "APIKeyExpirationEpoch",
               },
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "AuthCognitoUserPoolId": Object {
+              "AuthCognitoUserPoolId": {
                 "Ref": "AuthCognitoUserPoolId",
               },
-              "CreateAPIKey": Object {
+              "CreateAPIKey": {
                 "Ref": "CreateAPIKey",
               },
-              "DynamoDBBillingMode": Object {
+              "DynamoDBBillingMode": {
                 "Ref": "DynamoDBBillingMode",
               },
-              "DynamoDBEnablePointInTimeRecovery": Object {
+              "DynamoDBEnablePointInTimeRecovery": {
                 "Ref": "DynamoDBEnablePointInTimeRecovery",
               },
-              "DynamoDBEnableServerSideEncryption": Object {
+              "DynamoDBEnableServerSideEncryption": {
                 "Ref": "DynamoDBEnableServerSideEncryption",
               },
-              "DynamoDBModelTableReadIOPS": Object {
+              "DynamoDBModelTableReadIOPS": {
                 "Ref": "DynamoDBModelTableReadIOPS",
               },
-              "DynamoDBModelTableWriteIOPS": Object {
+              "DynamoDBModelTableWriteIOPS": {
                 "Ref": "DynamoDBModelTableWriteIOPS",
               },
-              "GetAttGraphQLAPIApiId": Object {
-                "Fn::GetAtt": Array [
+              "GetAttGraphQLAPIApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
-            "TemplateURL": Object {
-              "Fn::Join": Array [
+            "TemplateURL": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -833,13 +833,13 @@ TemplateDiff {
           },
           "Type": "AWS::CloudFormation::Stack",
         },
-        "otherDiffs": Object {
+        "otherDiffs": {
           "DependsOn": Difference {
             "isDifferent": false,
-            "newValue": Array [
+            "newValue": [
               "GraphQLSchema",
             ],
-            "oldValue": Array [
+            "oldValue": [
               "GraphQLSchema",
             ],
           },
@@ -849,107 +849,107 @@ TemplateDiff {
             "oldValue": "AWS::CloudFormation::Stack",
           },
         },
-        "propertyDiffs": Object {
+        "propertyDiffs": {
           "Parameters": PropertyDifference {
             "changeImpact": "NO_CHANGE",
             "isDifferent": false,
-            "newValue": Object {
-              "APIKeyExpirationEpoch": Object {
+            "newValue": {
+              "APIKeyExpirationEpoch": {
                 "Ref": "APIKeyExpirationEpoch",
               },
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "AuthCognitoUserPoolId": Object {
+              "AuthCognitoUserPoolId": {
                 "Ref": "AuthCognitoUserPoolId",
               },
-              "CreateAPIKey": Object {
+              "CreateAPIKey": {
                 "Ref": "CreateAPIKey",
               },
-              "DynamoDBBillingMode": Object {
+              "DynamoDBBillingMode": {
                 "Ref": "DynamoDBBillingMode",
               },
-              "DynamoDBEnablePointInTimeRecovery": Object {
+              "DynamoDBEnablePointInTimeRecovery": {
                 "Ref": "DynamoDBEnablePointInTimeRecovery",
               },
-              "DynamoDBEnableServerSideEncryption": Object {
+              "DynamoDBEnableServerSideEncryption": {
                 "Ref": "DynamoDBEnableServerSideEncryption",
               },
-              "DynamoDBModelTableReadIOPS": Object {
+              "DynamoDBModelTableReadIOPS": {
                 "Ref": "DynamoDBModelTableReadIOPS",
               },
-              "DynamoDBModelTableWriteIOPS": Object {
+              "DynamoDBModelTableWriteIOPS": {
                 "Ref": "DynamoDBModelTableWriteIOPS",
               },
-              "GetAttGraphQLAPIApiId": Object {
-                "Fn::GetAtt": Array [
+              "GetAttGraphQLAPIApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
-            "oldValue": Object {
-              "APIKeyExpirationEpoch": Object {
+            "oldValue": {
+              "APIKeyExpirationEpoch": {
                 "Ref": "APIKeyExpirationEpoch",
               },
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "AuthCognitoUserPoolId": Object {
+              "AuthCognitoUserPoolId": {
                 "Ref": "AuthCognitoUserPoolId",
               },
-              "CreateAPIKey": Object {
+              "CreateAPIKey": {
                 "Ref": "CreateAPIKey",
               },
-              "DynamoDBBillingMode": Object {
+              "DynamoDBBillingMode": {
                 "Ref": "DynamoDBBillingMode",
               },
-              "DynamoDBEnablePointInTimeRecovery": Object {
+              "DynamoDBEnablePointInTimeRecovery": {
                 "Ref": "DynamoDBEnablePointInTimeRecovery",
               },
-              "DynamoDBEnableServerSideEncryption": Object {
+              "DynamoDBEnableServerSideEncryption": {
                 "Ref": "DynamoDBEnableServerSideEncryption",
               },
-              "DynamoDBModelTableReadIOPS": Object {
+              "DynamoDBModelTableReadIOPS": {
                 "Ref": "DynamoDBModelTableReadIOPS",
               },
-              "DynamoDBModelTableWriteIOPS": Object {
+              "DynamoDBModelTableWriteIOPS": {
                 "Ref": "DynamoDBModelTableWriteIOPS",
               },
-              "GetAttGraphQLAPIApiId": Object {
-                "Fn::GetAtt": Array [
+              "GetAttGraphQLAPIApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
@@ -957,15 +957,15 @@ TemplateDiff {
           "TemplateURL": PropertyDifference {
             "changeImpact": "NO_CHANGE",
             "isDifferent": false,
-            "newValue": Object {
-              "Fn::Join": Array [
+            "newValue": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -973,15 +973,15 @@ TemplateDiff {
                 ],
               ],
             },
-            "oldValue": Object {
-              "Fn::Join": Array [
+            "oldValue": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -991,7 +991,7 @@ TemplateDiff {
             },
           },
         },
-        "resourceTypes": Object {
+        "resourceTypes": {
           "newType": "AWS::CloudFormation::Stack",
           "oldType": "AWS::CloudFormation::Stack",
         },
@@ -999,70 +999,70 @@ TemplateDiff {
       "Todo1": ResourceDifference {
         "isAddition": true,
         "isRemoval": false,
-        "newValue": Object {
-          "DependsOn": Array [
+        "newValue": {
+          "DependsOn": [
             "GraphQLSchema",
           ],
-          "Properties": Object {
-            "Parameters": Object {
-              "APIKeyExpirationEpoch": Object {
+          "Properties": {
+            "Parameters": {
+              "APIKeyExpirationEpoch": {
                 "Ref": "APIKeyExpirationEpoch",
               },
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "AuthCognitoUserPoolId": Object {
+              "AuthCognitoUserPoolId": {
                 "Ref": "AuthCognitoUserPoolId",
               },
-              "CreateAPIKey": Object {
+              "CreateAPIKey": {
                 "Ref": "CreateAPIKey",
               },
-              "DynamoDBBillingMode": Object {
+              "DynamoDBBillingMode": {
                 "Ref": "DynamoDBBillingMode",
               },
-              "DynamoDBEnablePointInTimeRecovery": Object {
+              "DynamoDBEnablePointInTimeRecovery": {
                 "Ref": "DynamoDBEnablePointInTimeRecovery",
               },
-              "DynamoDBEnableServerSideEncryption": Object {
+              "DynamoDBEnableServerSideEncryption": {
                 "Ref": "DynamoDBEnableServerSideEncryption",
               },
-              "DynamoDBModelTableReadIOPS": Object {
+              "DynamoDBModelTableReadIOPS": {
                 "Ref": "DynamoDBModelTableReadIOPS",
               },
-              "DynamoDBModelTableWriteIOPS": Object {
+              "DynamoDBModelTableWriteIOPS": {
                 "Ref": "DynamoDBModelTableWriteIOPS",
               },
-              "GetAttGraphQLAPIApiId": Object {
-                "Fn::GetAtt": Array [
+              "GetAttGraphQLAPIApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
-            "TemplateURL": Object {
-              "Fn::Join": Array [
+            "TemplateURL": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -1074,9 +1074,9 @@ TemplateDiff {
           "Type": "AWS::CloudFormation::Stack",
         },
         "oldValue": undefined,
-        "otherDiffs": Object {},
-        "propertyDiffs": Object {},
-        "resourceTypes": Object {
+        "otherDiffs": {},
+        "propertyDiffs": {},
+        "resourceTypes": {
           "newType": "AWS::CloudFormation::Stack",
           "oldType": undefined,
         },
@@ -1084,70 +1084,70 @@ TemplateDiff {
       "Todo2": ResourceDifference {
         "isAddition": true,
         "isRemoval": false,
-        "newValue": Object {
-          "DependsOn": Array [
+        "newValue": {
+          "DependsOn": [
             "GraphQLSchema",
           ],
-          "Properties": Object {
-            "Parameters": Object {
-              "APIKeyExpirationEpoch": Object {
+          "Properties": {
+            "Parameters": {
+              "APIKeyExpirationEpoch": {
                 "Ref": "APIKeyExpirationEpoch",
               },
-              "AppSyncApiId": Object {
-                "Fn::GetAtt": Array [
+              "AppSyncApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "AppSyncApiName": Object {
+              "AppSyncApiName": {
                 "Ref": "AppSyncApiName",
               },
-              "AuthCognitoUserPoolId": Object {
+              "AuthCognitoUserPoolId": {
                 "Ref": "AuthCognitoUserPoolId",
               },
-              "CreateAPIKey": Object {
+              "CreateAPIKey": {
                 "Ref": "CreateAPIKey",
               },
-              "DynamoDBBillingMode": Object {
+              "DynamoDBBillingMode": {
                 "Ref": "DynamoDBBillingMode",
               },
-              "DynamoDBEnablePointInTimeRecovery": Object {
+              "DynamoDBEnablePointInTimeRecovery": {
                 "Ref": "DynamoDBEnablePointInTimeRecovery",
               },
-              "DynamoDBEnableServerSideEncryption": Object {
+              "DynamoDBEnableServerSideEncryption": {
                 "Ref": "DynamoDBEnableServerSideEncryption",
               },
-              "DynamoDBModelTableReadIOPS": Object {
+              "DynamoDBModelTableReadIOPS": {
                 "Ref": "DynamoDBModelTableReadIOPS",
               },
-              "DynamoDBModelTableWriteIOPS": Object {
+              "DynamoDBModelTableWriteIOPS": {
                 "Ref": "DynamoDBModelTableWriteIOPS",
               },
-              "GetAttGraphQLAPIApiId": Object {
-                "Fn::GetAtt": Array [
+              "GetAttGraphQLAPIApiId": {
+                "Fn::GetAtt": [
                   "GraphQLAPI",
                   "ApiId",
                 ],
               },
-              "S3DeploymentBucket": Object {
+              "S3DeploymentBucket": {
                 "Ref": "S3DeploymentBucket",
               },
-              "S3DeploymentRootKey": Object {
+              "S3DeploymentRootKey": {
                 "Ref": "S3DeploymentRootKey",
               },
-              "env": Object {
+              "env": {
                 "Ref": "env",
               },
             },
-            "TemplateURL": Object {
-              "Fn::Join": Array [
+            "TemplateURL": {
+              "Fn::Join": [
                 "/",
-                Array [
+                [
                   "https://s3.amazonaws.com",
-                  Object {
+                  {
                     "Ref": "S3DeploymentBucket",
                   },
-                  Object {
+                  {
                     "Ref": "S3DeploymentRootKey",
                   },
                   "stacks",
@@ -1159,9 +1159,9 @@ TemplateDiff {
           "Type": "AWS::CloudFormation::Stack",
         },
         "oldValue": undefined,
-        "otherDiffs": Object {},
-        "propertyDiffs": Object {},
-        "resourceTypes": Object {
+        "otherDiffs": {},
+        "propertyDiffs": {},
+        "resourceTypes": {
           "newType": "AWS::CloudFormation::Stack",
           "oldType": undefined,
         },
@@ -1170,20 +1170,20 @@ TemplateDiff {
   },
   "securityGroupChanges": SecurityGroupChanges {
     "egress": DiffableCollection {
-      "additions": Array [],
-      "newElements": Array [],
-      "oldElements": Array [],
-      "removals": Array [],
+      "additions": [],
+      "newElements": [],
+      "oldElements": [],
+      "removals": [],
     },
     "ingress": DiffableCollection {
-      "additions": Array [],
-      "newElements": Array [],
-      "oldElements": Array [],
-      "removals": Array [],
+      "additions": [],
+      "newElements": [],
+      "oldElements": [],
+      "removals": [],
     },
   },
   "unknown": DifferenceCollection {
-    "diffs": Object {},
+    "diffs": {},
   },
 }
 `;

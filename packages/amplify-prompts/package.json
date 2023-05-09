@@ -40,7 +40,9 @@
   },
   "jest": {
     "collectCoverage": true,
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "roots": [
       "<rootDir>/src"
     ],

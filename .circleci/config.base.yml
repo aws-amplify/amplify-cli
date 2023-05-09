@@ -107,7 +107,6 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
-      - run: yarn config set npmRegistryServer https://registry.npmjs.org
       - run: yarn --immutable
       - run: yarn production-build
       - run:
@@ -133,7 +132,6 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
-      - run: yarn config set npmRegistryServer https://registry.npmjs.org
       - run: yarn install --immutable
       - run:
           name: Build tests
@@ -746,6 +744,7 @@ jobs:
           command: |
             yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
             echo 'export PATH="$(pwd)/.bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
             amplify-dev
       - run:
           name: Clone auth test package
@@ -753,7 +752,7 @@ jobs:
             cd ..
             git clone $AUTH_CLONE_URL
             cd aws-amplify-cypress-auth
-            yarn --cache-folder ~/.cache/yarn
+            yarn
             yarn add cypress@6.8.0 --save
       - run: cd .circleci/ && chmod +x auth.sh
       - run: cd .circleci/ && chmod +x amplify_init.sh
@@ -761,7 +760,7 @@ jobs:
       - run: expect .circleci/amplify_init.exp ../aws-amplify-cypress-auth
       - run: expect .circleci/enable_auth.exp
       - run: cd ../aws-amplify-cypress-auth
-      - run: yarn --immutable --cache-folder ~/.cache/yarn
+      - run: yarn --immutable
       - run: cd ../aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*')
       - run:
           name: Start Auth test server in background
@@ -787,12 +786,12 @@ jobs:
             cd ..
             git clone $API_CLONE_URL
             cd aws-amplify-cypress-api
-            yarn --cache-folder ~/.cache/yarn
+            yarn
       - run: cd .circleci/ && chmod +x api.sh
       - run: expect .circleci/amplify_init.exp ../aws-amplify-cypress-api
       - run: expect .circleci/enable_api.exp
       - run: cd ../aws-amplify-cypress-api
-      - run: yarn --immutable --cache-folder ~/.cache/yarn
+      - run: yarn --immutable
       - run: cd ../aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')
       - run:
           name: Start API test server in background

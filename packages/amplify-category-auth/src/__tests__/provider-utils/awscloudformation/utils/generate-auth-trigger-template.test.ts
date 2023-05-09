@@ -30,54 +30,54 @@ describe('generate Auth Trigger Template', () => {
     ];
     const cfn = await createCustomResourceForAuthTrigger(mockAuthTriggerConnections, false, mockAuthTriggerPermissions);
     expect(cfn.Resources.AmplifyfunctionrandomFnNamePostConfirmationAddToGroupCognito1120888F).toMatchInlineSnapshot(`
-      Object {
-        "Properties": Object {
-          "PolicyDocument": Object {
-            "Statement": Array [
-              Object {
-                "Action": Array [
-                  "cognito-idp:AdminAddUserToGroup",
-                  "cognito-idp:GetGroup",
-                  "cognito-idp:CreateGroup",
+{
+  "Properties": {
+    "PolicyDocument": {
+      "Statement": [
+        {
+          "Action": [
+            "cognito-idp:AdminAddUserToGroup",
+            "cognito-idp:GetGroup",
+            "cognito-idp:CreateGroup",
+          ],
+          "Effect": "Allow",
+          "Resource": {
+            "Ref": "userpoolArn",
+          },
+        },
+      ],
+      "Version": "2012-10-17",
+    },
+    "PolicyName": "AddToGroupCognito",
+    "Roles": [
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Ref": "functionrandomFnLambdaExecutionRole",
+                      },
+                    ],
+                  },
                 ],
-                "Effect": "Allow",
-                "Resource": Object {
-                  "Ref": "userpoolArn",
-                },
               },
             ],
-            "Version": "2012-10-17",
           },
-          "PolicyName": "AddToGroupCognito",
-          "Roles": Array [
-            Object {
-              "Fn::Select": Array [
-                1,
-                Object {
-                  "Fn::Split": Array [
-                    "/",
-                    Object {
-                      "Fn::Select": Array [
-                        5,
-                        Object {
-                          "Fn::Split": Array [
-                            ":",
-                            Object {
-                              "Ref": "functionrandomFnLambdaExecutionRole",
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        "Type": "AWS::IAM::Policy",
-      }
-    `);
+        ],
+      },
+    ],
+  },
+  "Type": "AWS::IAM::Policy",
+}
+`);
   });
 
   it('does not generate iam policies for Auth trigger when permissions are empty', async () => {

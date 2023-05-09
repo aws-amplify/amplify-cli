@@ -81,7 +81,6 @@
     "@types/uuid": "^8.0.0"
   },
   "jest": {
-    "testEnvironment": "node",
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx,js,jsx}",
       "!src/__tests__/"

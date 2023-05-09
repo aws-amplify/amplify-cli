@@ -56,7 +56,7 @@ function generatePkgCli {
 
   # install package depedencies
   cp ../yarn.lock ./
-  yarn --production
+  yarn workspaces focus --production
 
   # Optimize package size
   find . \
