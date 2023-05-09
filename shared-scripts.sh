@@ -241,7 +241,7 @@ function _runE2ETestsLinux {
     echo 'here v2'
     echo RUN E2E Tests Linux
     
-    loadCache repo $CODEBUILD_SRC_DIR
+    # loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
