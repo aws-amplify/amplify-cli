@@ -141,6 +141,8 @@ export class Binary {
 
     const [, , ...args] = process.argv;
     const result = spawnSync(this.binaryPath, args, { cwd: process.cwd(), stdio: 'inherit' });
+
+    // if we're uninstalling, uninstall from package manager, too
     if (args[0] === 'uninstall') {
       let packageManagerUninstallCommand = 'npm uninstall --global @aws-amplify/cli';
       const packageManager = whichPmRuns();
@@ -155,6 +157,7 @@ export class Binary {
         }
         default: {
           // fallback to npm
+          break;
         }
       }
       const [command, ...args] = packageManagerUninstallCommand.split(' ');
