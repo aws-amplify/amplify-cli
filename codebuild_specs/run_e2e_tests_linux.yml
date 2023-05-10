@@ -2,6 +2,7 @@ version: 0.2
 env:
   shell: bash
   variables:
+    E2E_TEST_COVERAGE_DIR: node_v8_coverage
     CI: true
     CIRCLECI: true
     # mock values to test artifact scanning
@@ -33,7 +34,8 @@ phases:
   post_build:
     commands:
       - source ./shared-scripts.sh && _scanArtifacts
-
+      - source ./shared-scripts.sh && storeCache packages/amplify-e2e-tests/$E2E_TEST_COVERAGE_DIR e2e-test-coverage-raw
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports/*
+    - '**/*'
+  base-directory: packages/amplify-e2e-tests/$E2E_TEST_COVERAGE_DIR
