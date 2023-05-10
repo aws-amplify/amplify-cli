@@ -1,4 +1,4 @@
-const { JSONUtilities, pathManager } = require('amplify-cli-core');
+const { JSONUtilities, pathManager } = require('@aws-amplify/amplify-cli-core');
 const path = require('path');
 const { generateUserPoolGroupStackTemplate } = require('./generate-user-pool-group-stack-template');
 

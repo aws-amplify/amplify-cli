@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { $TSObject } from 'amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 
 export const pagedAWSCall = async <TAPIResult, TData, TNextToken, TParams = $TSObject>(
   action: (params: TParams, nextToken?: TNextToken) => Promise<TAPIResult>,

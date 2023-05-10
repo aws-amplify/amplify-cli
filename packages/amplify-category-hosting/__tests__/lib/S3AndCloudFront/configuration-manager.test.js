@@ -1,6 +1,6 @@
-const amplifyPrompts = require('amplify-prompts');
+const amplifyPrompts = require('@aws-amplify/amplify-prompts');
 
-jest.mock('amplify-prompts', () => ({
+jest.mock('@aws-amplify/amplify-prompts', () => ({
   prompter: {
     input: jest.fn(),
     yesOrNo: jest.fn(),

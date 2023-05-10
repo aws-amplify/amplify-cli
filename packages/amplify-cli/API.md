@@ -6,20 +6,20 @@
 
 /// <reference types="node" />
 
-import { CommandLineInput } from 'amplify-cli-core/src/types';
-import { CommandLineInput as CommandLineInput_2 } from 'amplify-cli-core';
+import { CommandLineInput } from '@aws-amplify/amplify-cli-core/src/types';
+import { CommandLineInput as CommandLineInput_2 } from '@aws-amplify/amplify-cli-core';
 import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { ICommandInput } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
-import { InputOptions } from 'amplify-cli-core';
-import { IPluginPlatform } from 'amplify-cli-core';
-import { IUsageData } from 'amplify-cli-core';
-import { IUsageDataPayload } from 'amplify-cli-core';
-import { ProjectSettings } from 'amplify-cli-core';
-import { StartableTimedCodePath } from 'amplify-cli-core';
-import { StoppableTimedCodePath } from 'amplify-cli-core';
-import { TimedCodePath } from 'amplify-cli-core';
+import { InputOptions } from '@aws-amplify/amplify-cli-core';
+import { IPluginPlatform } from '@aws-amplify/amplify-cli-core';
+import { IUsageData } from '@aws-amplify/amplify-cli-core';
+import { IUsageDataPayload } from '@aws-amplify/amplify-cli-core';
+import { ProjectSettings } from '@aws-amplify/amplify-cli-core';
+import { StartableTimedCodePath } from '@aws-amplify/amplify-cli-core';
+import { StoppableTimedCodePath } from '@aws-amplify/amplify-cli-core';
+import { TimedCodePath } from '@aws-amplify/amplify-cli-core';
 import { TypeOptionFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { UrlWithStringQuery } from 'url';
 

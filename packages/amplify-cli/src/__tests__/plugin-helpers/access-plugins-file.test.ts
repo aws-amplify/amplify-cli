@@ -1,5 +1,5 @@
 import { readPluginsJsonFile, writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
-import { JSONUtilities, PluginPlatform } from 'amplify-cli-core';
+import { JSONUtilities, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 
 jest.spyOn(JSONUtilities, 'readJson');
 jest.spyOn(JSONUtilities, 'writeJson');

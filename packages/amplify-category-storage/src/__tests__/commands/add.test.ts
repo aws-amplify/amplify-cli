@@ -1,9 +1,9 @@
-import { $TSContext, AmplifySupportedService } from 'amplify-cli-core';
+import { $TSContext, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/storage/add';
 import * as providerController from '../../provider-utils/awscloudformation/index';
 
 jest.mock('../../provider-utils/awscloudformation/index');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const providerController_mock = providerController as jest.Mocked<typeof providerController>;
 providerController_mock.addResource.mockImplementation = jest.fn().mockImplementation(async () => {

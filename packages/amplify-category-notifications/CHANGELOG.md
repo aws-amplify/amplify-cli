@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.24.5...@aws-amplify/amplify-category-notifications@2.24.6) (2023-04-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-notifications
+
+
+
+
+
+## [2.24.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.24.3...@aws-amplify/amplify-category-notifications@2.24.5) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-notifications
+
+
+
+
+
+## [2.24.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.24.3-rc.e9e0d157d.0...@aws-amplify/amplify-category-notifications@2.24.3) (2023-03-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-notifications
+
+
+
+
+
+## [2.24.3-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.24.2...@aws-amplify/amplify-category-notifications@2.24.3-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* change FCM ApiKey to Server Key label as displayed in firebase console ([#12133](https://github.com/aws-amplify/amplify-cli/issues/12133)) ([a595186](https://github.com/aws-amplify/amplify-cli/commit/a595186eeb53139350a91dbba670f26b10e9798a))
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+
+
+
+
+
 ## [2.24.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.24.1...@aws-amplify/amplify-category-notifications@2.24.2) (2023-03-13)
 
 

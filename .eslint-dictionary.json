@@ -124,8 +124,6 @@
   "doctype",
   "dotenv",
   "dotnet",
-  "dotnetcore3",
-  "dotnetcore31",
   "durations",
   "dynamodb",
   "ecluster",

@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';

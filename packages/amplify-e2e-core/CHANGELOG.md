@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.9.0...@aws-amplify/amplify-e2e-core@4.9.1) (2023-04-29)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
+# [4.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.3...@aws-amplify/amplify-e2e-core@4.9.0) (2023-04-24)
+
+
+### Bug Fixes
+
+* **api:** add null placeholder for nested stack during api rebuild ([#11460](https://github.com/aws-amplify/amplify-cli/issues/11460)) ([23168f0](https://github.com/aws-amplify/amplify-cli/commit/23168f04e3f339bce1fbf57a4a21621e64050664))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([73dc361](https://github.com/aws-amplify/amplify-cli/commit/73dc3614a687658bd01a958abb8bcff6eb874f32))
+* env param fail-fast checks don't fatal on missing appId or envName ([#12373](https://github.com/aws-amplify/amplify-cli/issues/12373)) ([756b6c3](https://github.com/aws-amplify/amplify-cli/commit/756b6c3c1642c6aceb279e8a57f5c7bec4e7caab))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([0b6e562](https://github.com/aws-amplify/amplify-cli/commit/0b6e562445a5ec9e6c7b0a7f93a66bbde4d23fe8))
+* fixes unit test and pin gql transformer v1 version ([bfeb9c4](https://github.com/aws-amplify/amplify-cli/commit/bfeb9c421c90a8afced1c89d6430d66705e49a35))
+* multi select race conditions ([#12356](https://github.com/aws-amplify/amplify-cli/issues/12356)) ([e5b2842](https://github.com/aws-amplify/amplify-cli/commit/e5b284259a67139169a1cca2e7567fe776575d85))
+* source temp aws creds and ec2 instance credentials  using general level config ([#12181](https://github.com/aws-amplify/amplify-cli/issues/12181)) ([2c10f7e](https://github.com/aws-amplify/amplify-cli/commit/2c10f7ed68c3e41c042b8bb9d44c52c84912e012))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-cli/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
+## [4.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.1...@aws-amplify/amplify-e2e-core@4.8.3) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
+## [4.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.1-rc.e9e0d157d.0...@aws-amplify/amplify-e2e-core@4.8.1) (2023-03-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
+## [4.8.1-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.8.0...@aws-amplify/amplify-e2e-core@4.8.1-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* custom resource tests ([#12253](https://github.com/aws-amplify/amplify-cli/issues/12253)) ([ecd4d76](https://github.com/aws-amplify/amplify-cli/commit/ecd4d76e1fc4cad97d3a2e762f17a0f1585aef7e))
+* export storage types bug ([#12146](https://github.com/aws-amplify/amplify-cli/issues/12146)) ([9531ed2](https://github.com/aws-amplify/amplify-cli/commit/9531ed22575347aeae821d4cff6f1ca48d031a38))
+* invalid method call in interactions walkthrough ([#12108](https://github.com/aws-amplify/amplify-cli/issues/12108)) ([2d3b3b6](https://github.com/aws-amplify/amplify-cli/commit/2d3b3b6f6a343a5895acf4c51b26f7104e0fc794))
+
+
+
+
+
 # [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.7.1...@aws-amplify/amplify-e2e-core@4.8.0) (2023-03-13)
 
 

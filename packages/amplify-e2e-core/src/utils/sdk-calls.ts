@@ -20,7 +20,7 @@ import {
 } from 'aws-sdk';
 import * as path from 'path';
 import _ from 'lodash';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { getProjectMeta } from './projectMeta';
 
 export const getDDBTable = async (tableName: string, region: string) => {
@@ -398,6 +398,22 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     .getParameters({
       Names: parameterNames.map((name) => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
       WithDecryption: true,
+    })
+    .promise();
+};
+
+export const deleteSSMParameter = async (
+  region: string,
+  appId: string,
+  envName: string,
+  category: string,
+  funcName: string,
+  parameterName: string,
+) => {
+  const ssmClient = new SSM({ region });
+  return await ssmClient
+    .deleteParameter({
+      Name: path.posix.join('/amplify', appId, envName, `AMPLIFY_${category}_${funcName}_${parameterName}`),
     })
     .promise();
 };

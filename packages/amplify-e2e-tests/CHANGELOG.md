@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.0...amplify-e2e-tests@4.1.1) (2023-04-29)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.3...amplify-e2e-tests@4.1.0) (2023-04-24)
+
+
+### Bug Fixes
+
+* **api:** add null placeholder for nested stack during api rebuild ([#11460](https://github.com/aws-amplify/amplify-cli/issues/11460)) ([23168f0](https://github.com/aws-amplify/amplify-cli/commit/23168f04e3f339bce1fbf57a4a21621e64050664))
+* codegen version in snapshots ([#12362](https://github.com/aws-amplify/amplify-cli/issues/12362)) ([f3ce1ad](https://github.com/aws-amplify/amplify-cli/commit/f3ce1ad219d800fff3cf2fd39e2a0150cb1db2b4))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([73dc361](https://github.com/aws-amplify/amplify-cli/commit/73dc3614a687658bd01a958abb8bcff6eb874f32))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([0b6e562](https://github.com/aws-amplify/amplify-cli/commit/0b6e562445a5ec9e6c7b0a7f93a66bbde4d23fe8))
+* fixes unit test and pin gql transformer v1 version ([bfeb9c4](https://github.com/aws-amplify/amplify-cli/commit/bfeb9c421c90a8afced1c89d6430d66705e49a35))
+* generate model introspection regardless of studio and datastore ([#12258](https://github.com/aws-amplify/amplify-cli/issues/12258)) ([7930fc6](https://github.com/aws-amplify/amplify-cli/commit/7930fc6c243b631e6a370d45ed5b221f0b63152e))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f29c140](https://github.com/aws-amplify/amplify-cli/commit/f29c140125a7c626c4d3ea0877641b7b13ff7763))
+* source temp aws creds and ec2 instance credentials  using general level config ([#12181](https://github.com/aws-amplify/amplify-cli/issues/12181)) ([2c10f7e](https://github.com/aws-amplify/amplify-cli/commit/2c10f7ed68c3e41c042b8bb9d44c52c84912e012))
+* updated snapshot ([374a34c](https://github.com/aws-amplify/amplify-cli/commit/374a34c65af1247b3e2f7ed8b0b7a675d70caa98))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-cli/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.1...amplify-e2e-tests@4.0.3) (2023-04-14)
+
+
+### Bug Fixes
+
+* **api:** bump api with ownerfield hotfix of 5.1.1 ([dacff4a](https://github.com/aws-amplify/amplify-cli/commit/dacff4ac65fc10d32ab3effbb61c604343f0a1a0))
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.1-rc.e9e0d157d.0...amplify-e2e-tests@4.0.1) (2023-03-23)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [4.0.1-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.0.0...amplify-e2e-tests@4.0.1-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* broken build ([#12220](https://github.com/aws-amplify/amplify-cli/issues/12220)) ([8dad1f3](https://github.com/aws-amplify/amplify-cli/commit/8dad1f3386ddc74f1956da429c1f905ba3dcb4b3))
+* custom resource tests ([#12253](https://github.com/aws-amplify/amplify-cli/issues/12253)) ([ecd4d76](https://github.com/aws-amplify/amplify-cli/commit/ecd4d76e1fc4cad97d3a2e762f17a0f1585aef7e))
+* export storage types bug ([#12146](https://github.com/aws-amplify/amplify-cli/issues/12146)) ([9531ed2](https://github.com/aws-amplify/amplify-cli/commit/9531ed22575347aeae821d4cff6f1ca48d031a38))
+* fix failing custom storage e2e test ([#12222](https://github.com/aws-amplify/amplify-cli/issues/12222)) ([b2ee7b6](https://github.com/aws-amplify/amplify-cli/commit/b2ee7b645f15f85d1f4e6e238c62c163e35d2f58))
+* invalid method call in interactions walkthrough ([#12108](https://github.com/aws-amplify/amplify-cli/issues/12108)) ([2d3b3b6](https://github.com/aws-amplify/amplify-cli/commit/2d3b3b6f6a343a5895acf4c51b26f7104e0fc794))
+* windows test failing on long paths ([#12229](https://github.com/aws-amplify/amplify-cli/issues/12229)) ([ddd9295](https://github.com/aws-amplify/amplify-cli/commit/ddd9295e2e084860c7d8b83487b36c5047865321))
+* windows test failing on long paths (typo in test) ([#12238](https://github.com/aws-amplify/amplify-cli/issues/12238)) ([b2a768a](https://github.com/aws-amplify/amplify-cli/commit/b2a768ae1a84bd2dc4cd8011d88226534aa45bf2))
+
+
+
+
+
 # [4.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.18.1...amplify-e2e-tests@4.0.0) (2023-03-13)
 
 

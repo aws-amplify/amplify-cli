@@ -1,15 +1,15 @@
-describe('amplify env: ', () => {
-  const mockExit = jest.fn();
-  jest.mock('amplify-cli-core', () => ({
-    exitOnNextTick: mockExit,
-    pathManager: { getAmplifyMetaFilePath: jest.fn().mockReturnValue('test_file_does_not_exist') },
-    constants: jest.requireActual('amplify-cli-core').constants,
-  }));
-  const { run: runEnvCmd } = require('../../commands/env');
-  const { run: runAddEnvCmd } = require('../../commands/env/add');
-  const envList = require('../../commands/env/list');
-  jest.mock('../../commands/env/list');
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+jest.mock('../../commands/init');
+jest.mock('@aws-amplify/amplify-cli-core');
+import { run as runEnvCmd } from '../../commands/env';
+import { run as runAddEnvCmd } from '../../commands/env/add';
+import * as envList from '../../commands/env/list';
 
+const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
+
+AmplifyErrorMock.mockImplementation(() => new Error('test error') as AmplifyError);
+
+describe('amplify env: ', () => {
   it('env run method should exist', () => {
     expect(runEnvCmd).toBeDefined();
   });
@@ -18,24 +18,28 @@ describe('amplify env: ', () => {
     expect(runAddEnvCmd).toBeDefined();
   });
 
-  it('env add method should throw if meta file does not exist', () => {
-    expect(async () => await runAddEnvCmd()).rejects.toThrow();
+  it('env add method should throw if meta file does not exist', async () => {
+    await expect(runAddEnvCmd({} as $TSContext)).rejects.toThrow();
   });
 
   it('env ls is an alias for env list', async () => {
     const mockEnvListRun = jest.spyOn(envList, 'run');
-    await runEnvCmd({
+    const mockContext = {
+      print: {
+        table: jest.fn(),
+      },
+      amplify: {
+        getAllEnvs: jest.fn().mockReturnValue(['testa', 'testb']),
+        getEnvInfo: jest.fn().mockReturnValue({ envName: 'testa' }),
+      },
       input: {
         subCommands: ['list'],
       },
       parameters: {},
-    });
-    await runEnvCmd({
-      input: {
-        subCommands: ['ls'],
-      },
-      parameters: {},
-    });
+    };
+    await runEnvCmd(mockContext);
+    mockContext.input.subCommands = ['ls'];
+    await runEnvCmd(mockContext);
     expect(mockEnvListRun).toHaveBeenCalledTimes(2);
   });
 

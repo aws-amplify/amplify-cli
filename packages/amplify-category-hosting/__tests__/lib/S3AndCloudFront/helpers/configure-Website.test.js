@@ -1,8 +1,8 @@
-const { prompter } = require('amplify-prompts');
+const { prompter } = require('@aws-amplify/amplify-prompts');
 const mockTemplate = require('../../../../__mocks__/mockTemplate-noCloudFront');
 const configureWebsite = require('../../../../lib/S3AndCloudFront/helpers/configure-Website');
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('configure-Website', () => {
   const mockContext = {

@@ -5,12 +5,12 @@ import {
   UnrecognizedFrontendError,
   validateExportDirectoryPath,
   PathConstants,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { getResourceOutputs } from '../extensions/amplify-helpers/get-resource-outputs';
 import Ora from 'ora';
-import { getResources } from './build';
+import { getChangedResources } from './build';
 import * as _ from 'lodash';
 
 export const run = async (context: $TSContext) => {
@@ -77,7 +77,7 @@ async function exportBackend(context: $TSContext, exportPath: string) {
 }
 
 async function buildAllResources(context: $TSContext) {
-  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
 }
 

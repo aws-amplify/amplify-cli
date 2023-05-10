@@ -1,4 +1,4 @@
-import { stateManager, $TSContext, AmplifyError } from 'amplify-cli-core';
+import { stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * returns app ID from amplify-meta.json or inputParams

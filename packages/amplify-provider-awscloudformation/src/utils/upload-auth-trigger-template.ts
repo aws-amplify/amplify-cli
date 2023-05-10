@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError, FeatureFlags, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, FeatureFlags, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
 // eslint-disable-next-line import/no-cycle

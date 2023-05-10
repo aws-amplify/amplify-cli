@@ -1,6 +1,6 @@
 import * as path from 'path';
 import fs from 'fs-extra';
-import { $TSAny, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 const { readJson } = JSONUtilities;
 

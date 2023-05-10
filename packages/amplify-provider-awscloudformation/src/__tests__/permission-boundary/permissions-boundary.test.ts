@@ -1,4 +1,4 @@
-import { $TSContext, setPermissionsBoundaryArn, getPermissionsBoundaryArn, stateManager } from 'amplify-cli-core';
+import { $TSContext, setPermissionsBoundaryArn, getPermissionsBoundaryArn, stateManager } from '@aws-amplify/amplify-cli-core';
 import { prompt } from 'inquirer';
 import { IAM } from 'aws-sdk';
 import { configurePermissionsBoundaryForInit } from '../../permissions-boundary/permissions-boundary';
@@ -8,9 +8,8 @@ const permissionsBoundaryArn = 'arn:aws:iam::123456789012:policy/some-policy-nam
 const argName = 'permissions-boundary';
 const envName = 'newEnvName';
 
-// jest.mock('amplify-cli-core');
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   stateManager: {
     getLocalEnvInfo: jest.fn(),
   },

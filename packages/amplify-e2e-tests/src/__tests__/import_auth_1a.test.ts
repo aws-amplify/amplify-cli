@@ -1,4 +1,4 @@
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   addAuthUserPoolOnlyWithOAuth,

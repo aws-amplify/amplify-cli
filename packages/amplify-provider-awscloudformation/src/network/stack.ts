@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as discovery from 'aws-cdk-lib/aws-servicediscovery';
 import * as cdk from 'aws-cdk-lib';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { Construct } from 'constructs';
 
 export const RESOURCE_TAG = 'amplify-env';

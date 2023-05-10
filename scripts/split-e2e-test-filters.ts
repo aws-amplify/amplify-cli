@@ -44,9 +44,9 @@ export const migrationFromV10Tests = [
   'src/__tests__/migration_tests_v10/auth-add-all.migration.test.ts',
   'src/__tests__/migration_tests_v10/auth-override.migration.test.ts',
   'src/__tests__/migration_tests_v10/custom-stack.migration.test.ts',
-  'src/__tests__/migration_tests_v10/dotnet_runtime_update_migration.test.ts',
   'src/__tests__/migration_tests_v10/git-clone-migration-tests.test.ts',
   'src/__tests__/migration_tests_v10/geo.migration.test.ts',
   'src/__tests__/migration_tests_v10/scaffold.test.ts',
   'src/__tests__/migration_tests_v10/storage.migration.test.ts',
+  'src/__tests__/migration_tests_v10/pinpoint-region.migration.test.ts',
 ];

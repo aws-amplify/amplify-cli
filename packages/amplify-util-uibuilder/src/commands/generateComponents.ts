@@ -2,7 +2,7 @@
 import { StudioSchema } from '@aws-amplify/codegen-ui';
 import ora from 'ora';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyStudioClient } from '../clients';
 import {
   notifyMissingPackages,
@@ -16,6 +16,8 @@ import {
   isStudioForm,
   isFormDetachedFromModel,
   deleteDetachedForms,
+  hasStorageField,
+  isFormSchema,
 } from './utils';
 
 /**
@@ -51,6 +53,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
         formSchemas.entities,
         dataSchema,
         studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported,
+        studioClient.metadata.formFeatureFlags,
       ),
     };
 
@@ -59,6 +62,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
     let hasSuccessfulForm = false;
     const failedResponseNames: string[] = [];
     const modelNames = dataSchema?.models ? new Set(Object.keys(dataSchema.models)) : new Set<string>();
+    let hasStorageManagerField = false;
 
     Object.entries(generatedResults).forEach(([key, results]) => {
       results.forEach((result) => {
@@ -66,6 +70,10 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
           successfulSchemas.push(result.schema);
           if (key === 'form') {
             hasSuccessfulForm = true;
+
+            if (!hasStorageManagerField && isFormSchema(result.schema) && hasStorageField(result.schema)) {
+              hasStorageManagerField = true;
+            }
           }
         } else {
           const failedSchema = result.schema;
@@ -111,7 +119,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       );
     }
 
-    notifyMissingPackages(context);
+    notifyMissingPackages(context, hasStorageManagerField);
 
     await deleteDetachedForms(detachedForms, studioClient);
   } catch (e) {

@@ -1,11 +1,11 @@
-import { $TSObject, $TSContext } from 'amplify-cli-core';
+import { $TSObject, $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { printCdkMigrationWarning } from '../print-cdk-migration-warning';
 
 const detectAffectedDirectDependenciesMock = jest.fn();
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 jest.mock('fs-extra');
 
@@ -13,8 +13,8 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 
 const printerMock = printer as jest.Mocked<typeof printer>;
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as $TSObject),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as $TSObject),
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
     getResourceOverrideFilePath: jest.fn().mockReturnValue('mockDirPath/override.ts'),
@@ -51,6 +51,42 @@ const mockContext = {
 
 describe('print migration warning tests', () => {
   beforeEach(() => jest.clearAllMocks());
+
+  it('no migration message when detector failed for some reason', async () => {
+    const resourcesToBeCreated = [
+      {
+        category: 'function',
+        resourceName: 'someResource',
+        service: 'Lambda',
+      },
+    ];
+    const resourcesToBeDeleted = [
+      {
+        category: 'auth',
+        resourceName: 'someResource1',
+        service: 'Cognito',
+      },
+    ];
+    const resourcesToBeUpdated = [
+      {
+        category: 'storage',
+        resourceName: 'someResource2',
+        service: 'S3',
+      },
+    ];
+
+    const allResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
+    mockContext.amplify.getResourceStatus.mockResolvedValue({ allResources });
+    // amplify-node-detector plug
+    detectAffectedDirectDependenciesMock.mockImplementation(() => {
+      throw new Error();
+    });
+    // override plug
+    fsMock.existsSync.mockReturnValue(false);
+    printerMock.warn.mockReturnValue(undefined);
+    await printCdkMigrationWarning(mockContext as unknown as $TSContext);
+    expect(printerMock.warn).not.toBeCalled();
+  });
 
   it('no migration message when there are no override and custom resources', async () => {
     const resourcesToBeCreated = [

@@ -1,4 +1,4 @@
-import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import inquirer, { InputQuestion } from 'inquirer';
 import _ from 'lodash';
 import { ServiceName } from '../utils/constants';
@@ -47,6 +47,7 @@ export async function createLayerWalkthrough(
   _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion()));
 
   for (const permission of layerInputParameters.layerPermissions) {
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (permission) {
       case PermissionEnum.AwsAccounts:
         layerInputParameters.accountIds = await layerAccountAccessPrompt();
@@ -146,6 +147,7 @@ export async function updateLayerWalkthrough(
     const layerInputParameters: LayerInputParams = await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions));
     // get the account and/or org IDs based on the permissions selected and pass defaults in the questions workflow
     for (const permission of layerInputParameters.layerPermissions) {
+      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
       switch (permission) {
         case PermissionEnum.AwsAccounts:
           layerInputParameters.accountIds = await layerAccountAccessPrompt(defaultAccounts);

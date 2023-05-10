@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, AmplifyError, AmplifyFault } from 'amplify-cli-core';
+import { $TSContext, stateManager, AmplifyError, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { pullBackend } from '../pull-backend';
 import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';

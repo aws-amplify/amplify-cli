@@ -60,7 +60,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
       .wait('Choose your default editor:')
       .sendCarriageReturn()
       .wait("Choose the type of app that you're building")
-      .sendCarriageReturn()
+      .sendLine('javascript')
       .wait('What javascript framework are you using')
       .sendCarriageReturn()
       .wait('Source Directory Path:')

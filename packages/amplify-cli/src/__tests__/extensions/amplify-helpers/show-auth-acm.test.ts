@@ -1,8 +1,8 @@
 import { DEFAULT_GROUP_CLAIM } from '@aws-amplify/graphql-auth-transformer';
 import { showACM } from '../../../extensions/amplify-helpers/show-auth-acm';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   FeatureFlags: {
     getBoolean: () => true,
   },

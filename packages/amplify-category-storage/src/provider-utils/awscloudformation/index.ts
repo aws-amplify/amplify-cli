@@ -9,7 +9,7 @@ import {
   NotImplementedError,
   open,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import _ from 'lodash';
 import { categoryName } from '../../constants';
@@ -183,7 +183,7 @@ export const console = async (amplifyMeta: $TSMeta, provider: string, service: s
     }
     const { BucketName: bucket, Region: region } = s3Resource.output;
     const url = `https://s3.console.aws.amazon.com/s3/buckets/${bucket}?region=${region}`;
-    open(url, { wait: false });
+    await open(url, { wait: false });
   } else if (service === AmplifySupportedService.DYNAMODB) {
     type Pickchoice = { name: string; value: { tableName: string; region: string } };
     const tables: Pickchoice[] = Object.values<any>(amplifyMeta[categoryName])
@@ -199,6 +199,6 @@ export const console = async (amplifyMeta: $TSMeta, provider: string, service: s
     }
     const { tableName, region } = await prompter.pick<'one', Pickchoice['value']>('Select DynamoDB table to open on your browser', tables);
     const url = `https://${region}.console.aws.amazon.com/dynamodbv2/home?region=${region}#table?name=${tableName}&tab=overview`;
-    open(url, { wait: false });
+    await open(url, { wait: false });
   }
 };

@@ -3,7 +3,7 @@ const ddbSimulator = require('amplify-dynamodb-simulator');
 const fs = require('fs-extra');
 
 jest.setTimeout(90 * 1000);
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue(path.join(process.cwd(), '../', '/amplify-dynamodb-simulator')),
   },

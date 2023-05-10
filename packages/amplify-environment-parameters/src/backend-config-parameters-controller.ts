@@ -1,4 +1,4 @@
-import { ResourceTuple, stateManager, AmplifyError } from 'amplify-cli-core';
+import { ResourceTuple, stateManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import Ajv from 'ajv';
 import { BackendParameters } from './backend-parameters';
 import parameterMapSchema from './schemas/BackendParameters.schema.json';

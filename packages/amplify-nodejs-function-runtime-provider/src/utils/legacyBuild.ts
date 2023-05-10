@@ -1,4 +1,4 @@
-import { $TSObject, getPackageManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSObject, getPackageManager, JSONUtilities, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -58,11 +58,29 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
     });
   } catch (error) {
     if (error.code === 'ENOENT') {
-      throw new Error(`Packaging lambda function failed. Could not find ${packageManager.packageManager} executable in the PATH.`);
+      throw new AmplifyError(
+        'PackagingLambdaFunctionError',
+        {
+          message: `Packaging lambda function failed. Could not find ${packageManager.packageManager} executable in the PATH.`,
+        },
+        error,
+      );
     } else if (error.stdout?.includes('YN0050: The --production option is deprecated')) {
-      throw new Error('Packaging lambda function failed. Yarn 2 is not supported. Use Yarn 1.x and push again.');
+      throw new AmplifyError(
+        'PackagingLambdaFunctionError',
+        {
+          message: 'Packaging lambda function failed. Yarn 2 is not supported. Use Yarn 1.x and push again.',
+        },
+        error,
+      );
     } else {
-      throw new Error(`Packaging lambda function failed with the error \n${error.message}`);
+      throw new AmplifyError(
+        'PackagingLambdaFunctionError',
+        {
+          message: `Packaging lambda function failed with the error \n${error.message}`,
+        },
+        error,
+      );
     }
   }
 };

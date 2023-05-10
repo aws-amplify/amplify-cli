@@ -1,4 +1,4 @@
-import { $TSContext, $TSAny, AmplifyFault } from 'amplify-cli-core';
+import { $TSContext, $TSAny, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as pinpointHelper from './utils/pinpoint-helper';
@@ -12,6 +12,7 @@ export {
   analyticsPluginAPICreateResource,
   analyticsPluginAPIToggleNotificationChannel,
   analyticsPluginAPIPinpointHasInAppMessagingPolicy,
+  analyticsGetPinpointRegionMapping,
   analyticsPluginAPIMigrations,
   analyticsPluginAPIPostPush,
   analyticsPluginAPIPush,

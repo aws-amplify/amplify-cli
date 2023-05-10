@@ -1,5 +1,5 @@
 import { hashLayerResource } from '@aws-amplify/amplify-category-function';
-import { AmplifyException, stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { hashElement } from 'folder-hash';
 import * as fs from 'fs-extra';
 import {
@@ -59,8 +59,8 @@ const backendDirPathStub = 'backendDirPath';
 const currentBackendDirPathStub = 'currentBackendDirPathStub';
 const projectRootPath = 'projectRootPath';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, never>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, never>),
   stateManager: {
     getCurrentMeta: jest.fn(),
     getMeta: jest.fn(),

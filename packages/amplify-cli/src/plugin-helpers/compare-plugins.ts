@@ -1,4 +1,4 @@
-import { PluginInfo } from 'amplify-cli-core';
+import { PluginInfo } from '@aws-amplify/amplify-cli-core';
 
 export function twoPluginsAreTheSame(plugin0: PluginInfo, plugin1: PluginInfo) {
   if (plugin0.packageLocation === plugin1.packageLocation) {

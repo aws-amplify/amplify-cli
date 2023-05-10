@@ -1,5 +1,5 @@
 import { CircleCIConfig, WorkflowJob } from './cci-types';
-import { FORCE_US_WEST_2, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
+import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 import { AWS_REGIONS_TO_RUN_TESTS as regions, getTestFiles } from './cci-utils';
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
@@ -33,6 +33,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
+  'src/__tests__/transformer-migrations/searchable-migration.test.ts',
 ];
 /**
  * Most Windows tests only run on 'dev', except for this list of smoke tests.
@@ -71,6 +72,8 @@ const WINDOWS_SMOKE_TESTS = [
   'src/__tests__/env-1.test.ts',
   // export and pull
   'src/__tests__/export-pull-a.test.ts',
+  // feature flags
+  'src/__tests__/feature-flags.test.ts',
   // functions
   'src/__tests__/function_10.test.ts',
   // notifications with function permissions
@@ -98,45 +101,32 @@ const WINDOWS_SMOKE_TESTS = [
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
-    'src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts',
     'src/__tests__/amplify-app.test.ts',
-    'src/__tests__/analytics-2.test.ts',
-    'src/__tests__/api_2a.test.ts',
-    'src/__tests__/api_2b.test.ts',
-    'src/__tests__/api_3.test.ts',
-    'src/__tests__/api_5.test.ts',
-    'src/__tests__/custom_policies_container.test.ts',
-    // TODO: this is required to jump over breaking change between 2.53 and 2.68 of CDK.
-    // Remove exclusion for both custom resource tests after we ship new extensibility helper.
-    'src/__tests__/custom_resources.test.ts',
-    'src/__tests__/custom-resource-with-storage.test.ts',
+    // failing in parsing JSON strings on powershell
+    'src/__tests__/auth_2g.test.ts',
+    'src/__tests__/auth_12.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
-    'src/__tests__/delete.test.ts',
     'src/__tests__/diagnose.test.ts',
     'src/__tests__/env-2.test.ts',
-    'src/__tests__/env-3.test.ts',
     'src/__tests__/export.test.ts',
-    'src/__tests__/function_1.test.ts',
-    'src/__tests__/function_2a.test.ts',
-    'src/__tests__/function_2b.test.ts',
     'src/__tests__/function_3a.test.ts',
     'src/__tests__/function_3b.test.ts',
     'src/__tests__/function_4.test.ts',
     'src/__tests__/function_6.test.ts',
     'src/__tests__/function_7.test.ts',
     'src/__tests__/function_8.test.ts',
-    'src/__tests__/geo-add-c.test.ts',
     'src/__tests__/geo-add-e.test.ts',
     'src/__tests__/geo-add-f.test.ts',
-    'src/__tests__/geo-remove-1.test.ts',
     'src/__tests__/geo-remove-2.test.ts',
     'src/__tests__/geo-remove-3.test.ts',
     'src/__tests__/geo-update-1.test.ts',
     'src/__tests__/geo-update-2.test.ts',
     'src/__tests__/git-clone-attach.test.ts',
     'src/__tests__/hooks-a.test.ts',
+    'src/__tests__/hooks-c.test.ts',
     'src/__tests__/import_auth_1a.test.ts',
     'src/__tests__/import_auth_1b.test.ts',
     'src/__tests__/import_auth_2a.test.ts',
@@ -145,34 +135,15 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/import_dynamodb_2a.test.ts',
     'src/__tests__/import_dynamodb_2b.test.ts',
     'src/__tests__/import_dynamodb_2c.test.ts',
-    'src/__tests__/import_s3_1.test.ts',
     'src/__tests__/import_s3_2a.test.ts',
     'src/__tests__/import_s3_2b.test.ts',
     'src/__tests__/import_s3_2c.test.ts',
     'src/__tests__/layer-2.test.ts',
     'src/__tests__/mock-api.test.ts',
-    'src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts',
-    'src/__tests__/notifications-analytics-compatibility-sms-1.test.ts',
-    'src/__tests__/notifications-analytics-compatibility-sms-2.test.ts',
-    'src/__tests__/notifications-in-app-messaging-env-1.test.ts',
-    'src/__tests__/notifications-in-app-messaging-env-2.test.ts',
-    'src/__tests__/notifications-lifecycle.test.ts',
-    'src/__tests__/notifications-sms-pull.test.ts',
-    'src/__tests__/notifications-sms.test.ts',
     'src/__tests__/pull.test.ts',
-    'src/__tests__/schema-auth-11-a.test.ts',
-    'src/__tests__/schema-auth-15.test.ts',
-    'src/__tests__/schema-auth-9-a.test.ts',
-    'src/__tests__/schema-auth-9-b.test.ts',
-    'src/__tests__/schema-auth-9-c.test.ts',
     'src/__tests__/schema-iterative-rollback-1.test.ts',
     'src/__tests__/schema-iterative-rollback-2.test.ts',
-    'src/__tests__/storage-2.test.ts',
     'src/__tests__/storage-5.test.ts',
-    'src/__tests__/studio-modelgen.test.ts',
-    'src/__tests__/transformer-migrations/http-migration.test.ts',
-    'src/__tests__/transformer-migrations/model-migration.test.ts',
-    'src/__tests__/transformer-migrations/searchable-migration.test.ts',
     'src/__tests__/uibuilder.test.ts',
     'src/__tests__/pinpoint/android-analytics-pinpoint-config.test.ts',
     'src/__tests__/pinpoint/android-notifications-pinpoint-config.test.ts',
@@ -185,7 +156,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/pinpoint/notifications-pinpoint-config-util.ts',
   ],
 };
-const MAX_WORKERS = 3;
+const MAX_WORKERS = 4;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
   region: string;
@@ -252,17 +223,19 @@ export const splitTestsV2 = function splitTests(
       }
       // when we are not running E2E on 'dev', we only run a subset of tests on Windows
       const isNotDevBranch = process.env.CIRCLE_BRANCH !== 'dev';
-      if (isNotDevBranch && os === 'w' && !WINDOWS_SMOKE_TESTS.includes(test)) {
+      const shouldForceAllTests = process.env.CIRCLE_BRANCH?.endsWith('/run-all-tests') ?? false;
+      const shouldFilterWindowsTests = isNotDevBranch && !shouldForceAllTests;
+      if (shouldFilterWindowsTests && os === 'w' && !WINDOWS_SMOKE_TESTS.includes(test)) {
         continue; // skip this test
       }
-      const US_WEST_2 = FORCE_US_WEST_2.find((t) => test.startsWith(t));
+      const FORCE_REGION = FORCE_REGION_MAP.get(test);
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
         const newSoloJob = createRandomJob(os);
         newSoloJob.tests.push(test);
-        if (US_WEST_2) {
-          newSoloJob.region = 'us-west-2';
+        if (FORCE_REGION) {
+          newSoloJob.region = FORCE_REGION;
         }
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
@@ -273,8 +246,8 @@ export const splitTestsV2 = function splitTests(
 
       // add the test
       currentJob.tests.push(test);
-      if (US_WEST_2) {
-        currentJob.region = 'us-west-2';
+      if (FORCE_REGION) {
+        currentJob.region = FORCE_REGION;
       }
       if (USE_PARENT) {
         currentJob.useParentAccount = true;

@@ -1,7 +1,7 @@
 import { appsyncTableSuffix } from './constants';
 import { getAppSyncResourceName } from './appSyncHelper';
 import * as path from 'path';
-import { $TSAny, pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
+import { $TSAny, pathManager, readCFNTemplate, writeCFNTemplate, AmplifyError, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { categoryName } from '../../../constants';
 import { getTableNameForModel, readProjectConfiguration } from 'graphql-transformer-core';
 
@@ -267,6 +267,25 @@ function apiResourceAddCheck(currentResources, newResources, apiResourceName, re
 async function mapModelNameToTableName(modelName: string): Promise<string> {
   const appSyncResourceName = getAppSyncResourceName();
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'api', appSyncResourceName);
-  const project = await readProjectConfiguration(resourceDirPath);
-  return getTableNameForModel(project.schema, modelName);
+  try {
+    const project = await readProjectConfiguration(resourceDirPath);
+    return getTableNameForModel(project.schema, modelName);
+  } catch (err) {
+    if (err.message?.includes('Syntax Error')) {
+      throw new AmplifyError(
+        'GraphQLError',
+        {
+          message: err?.message,
+        },
+        err,
+      );
+    }
+    throw new AmplifyFault(
+      'GraphQLTransformerV1Fault',
+      {
+        message: err?.message,
+      },
+      err,
+    );
+  }
 }

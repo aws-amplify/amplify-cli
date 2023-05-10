@@ -1,4 +1,4 @@
-import { JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject } from '@aws-amplify/amplify-cli-core';
 import { lambdaFunctionHandler } from '../../CFNParser/resource-processors/lambda';
 import * as path from 'path';
 import { populateCfnParams } from './populate-cfn-params';

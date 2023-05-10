@@ -1,10 +1,10 @@
 import { printSMSSandboxWarning } from '../../../../provider-utils/awscloudformation/utils/message-printer';
-import { BannerMessage } from 'amplify-cli-core';
+import { BannerMessage } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import os from 'os';
-jest.mock('amplify-cli-core');
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('printSMSSandboxWarning', () => {
   const mockedGetMessage = jest.spyOn(BannerMessage, 'getMessage');

@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.3...@aws-amplify/amplify-category-auth@3.1.0) (2023-04-24)
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-cli/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
+## [3.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.1...@aws-amplify/amplify-category-auth@3.0.3) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [3.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.1-rc.e9e0d157d.0...@aws-amplify/amplify-category-auth@3.0.1) (2023-03-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [3.0.1-rc.e9e0d157d.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.0...@aws-amplify/amplify-category-auth@3.0.1-rc.e9e0d157d.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* lint warnings ([#12180](https://github.com/aws-amplify/amplify-cli/issues/12180)) ([83d9bf3](https://github.com/aws-amplify/amplify-cli/commit/83d9bf35fa709084605c23bd2f54feadb3bdbb87))
+
+
+
+
+
 # [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.15.4...@aws-amplify/amplify-category-auth@3.0.0) (2023-03-13)
 
 

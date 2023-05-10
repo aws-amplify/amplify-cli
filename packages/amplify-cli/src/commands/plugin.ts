@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { JSONUtilities, exitOnNextTick } from 'amplify-cli-core';
+import { JSONUtilities, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 import { Context } from '../domain/context';
 
 export const run = async (context: Context) => {

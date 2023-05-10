@@ -1,4 +1,4 @@
-import { $TSAny, FeatureFlags } from 'amplify-cli-core';
+import { $TSAny, FeatureFlags } from '@aws-amplify/amplify-cli-core';
 
 const supportedServices = {
   Cognito: {

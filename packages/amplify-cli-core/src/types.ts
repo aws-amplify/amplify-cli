@@ -429,6 +429,7 @@ export enum AmplifyFrontend {
   android = 'android',
   ios = 'ios',
   javascript = 'javascript',
+  flutter = 'flutter',
 }
 
 /**
@@ -481,7 +482,7 @@ interface AmplifyToolkit {
    * @deprecated
    */
   getProjectMeta: () => $TSMeta;
-  getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
+  getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => Promise<$TSAny>;
   getResourceOutputs: () => $TSAny;
   getWhen: () => $TSAny;
   /**

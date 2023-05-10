@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { openConsole } from '../../provider-controllers';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';

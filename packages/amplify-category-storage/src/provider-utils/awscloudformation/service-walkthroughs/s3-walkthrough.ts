@@ -10,7 +10,7 @@ import {
   getMigrateResourceMessageForOverride,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -343,6 +343,7 @@ export async function addTrigger(
 ): Promise<string | undefined> {
   const triggerStateEvent = getCLITriggerStateEvent(triggerFlowType, existingTriggerFunction);
   let triggerFunction: string | undefined = existingTriggerFunction;
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (triggerStateEvent) {
     case S3CLITriggerStateEvent.ERROR:
       throw new Error("Lambda Trigger is already enabled, please use 'amplify update storage'");

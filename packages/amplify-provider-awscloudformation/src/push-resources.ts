@@ -37,7 +37,7 @@ import {
   AmplifyError,
   AmplifyFault,
   ManuallyTimedCodePath,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from '@aws-amplify/amplify-prompts';
@@ -79,6 +79,7 @@ import { invokePostPushAnalyticsUpdate } from './plugin-client-api-analytics';
 import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 import { minifyJSONFile } from './utils/minify-json';
 import { handleCloudFormationError } from './cloud-formation-error-handler';
+import { handleCommonSdkError } from './handle-common-sdk-errors';
 
 const logger = fileLogger('push-resources');
 
@@ -87,6 +88,7 @@ const ApiServiceNameElasticContainer = 'ElasticContainer';
 
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
+const nestedStackTemplateGlobPattern = 'stacks/*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
 export const defaultRootStackFileName = 'rootStackTemplate.json';
 export const rootStackFileName = 'root-cloudformation-stack.json';
@@ -329,7 +331,11 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
         }
         const s3 = await S3.getInstance(context);
         if (stateFolder.cloud) {
-          await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
+          try {
+            await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
+          } catch (error) {
+            throw handleCommonSdkError(error);
+          }
         }
         await postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
@@ -584,7 +590,13 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
     Key: s3Key,
   };
   logger('packageResources.s3.uploadFile', [{ Key: s3Key }])();
-  const s3Bucket = await s3.uploadFile(s3Params);
+
+  let s3Bucket;
+  try {
+    s3Bucket = await s3.uploadFile(s3Params);
+  } catch (error) {
+    throw handleCommonSdkError(error);
+  }
 
   // Update cfn template
   const { category, resourceName }: { category: string; resourceName: string } = resource;
@@ -700,7 +712,7 @@ const getAllUniqueCategories = (resources: $TSObject[]): $TSObject[] => {
 /**
  *
  */
-export const getCfnFiles = (category: string, resourceName: string, options?: glob.IOptions) => {
+export const getCfnFiles = (category: string, resourceName: string, includeAllNestedStacks = false, options?: glob.IOptions) => {
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
@@ -716,6 +728,16 @@ export const getCfnFiles = (category: string, resourceName: string, options?: gl
       ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
       ...options,
     });
+
+    if (includeAllNestedStacks) {
+      cfnFiles.push(
+        ...glob.sync(nestedStackTemplateGlobPattern, {
+          cwd: resourceBuildDir,
+          ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
+          ...options,
+        }),
+      );
+    }
 
     if (cfnFiles.length > 0) {
       return {
@@ -783,7 +805,12 @@ export const uploadTemplateToS3 = async (
   };
 
   logger('uploadTemplateToS3.s3.uploadFile', [{ Key: s3Params.Key }])();
-  const projectBucket = await s3.uploadFile(s3Params, false);
+  let projectBucket;
+  try {
+    projectBucket = await s3.uploadFile(s3Params, false);
+  } catch (error) {
+    throw handleCommonSdkError(error);
+  }
 
   if (amplifyMeta) {
     const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${category}/${cfnFile}`;
@@ -810,7 +837,7 @@ const createResourceObject = (
 const getCategoryResources = (file: string, resourceDir: string) => {
   const cloudFormationJsonPath = path.join(resourceDir, file);
   const { cfnTemplate } = readCFNTemplate(cloudFormationJsonPath);
-  const categoryResources = Object.keys(cfnTemplate.Resources);
+  const categoryResources = cfnTemplate.Resources ? Object.keys(cfnTemplate.Resources) : [];
   return categoryResources;
 };
 
@@ -821,6 +848,7 @@ type EventMap = {
   rootResources: { key: string; category: string }[];
   eventToCategories: Map<string, string>;
   categories: { name: string; size: number }[];
+  logicalResourceNames: string[];
 };
 
 /**
@@ -841,6 +869,7 @@ const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSA
   eventMap.rootResources = [];
   eventMap.eventToCategories = new Map();
   eventMap.categories = [];
+  eventMap.logicalResourceNames = [];
 
   // Type script throws an error unless I explicitly convert to string
   const resources = getAllUniqueCategories(resourcesToBeCreatedOrUpdated).map((item) => `${item}`);
@@ -857,9 +886,10 @@ const createEventMap = (context: $TSContext, resourcesToBeCreatedOrUpdated: $TSA
   return eventMap;
 };
 
+// Retrieve cfn template files and build eventMap that is later used for showing deployment progress and error reporting
 const handleCfnFiles = (eventMap: EventMap, category: string, resource: string, updatedResources: string[]) => {
-  // Getting corresponding cfn template files
-  const { resourceDir, cfnFiles } = getCfnFiles(category, resource);
+  // Build part of eventMap that is used for showing event progress. Only uses first level nested stacks to keep the console uncluttered.
+  const { resourceDir, cfnFiles } = getCfnFiles(category, resource, false);
   cfnFiles.forEach((file) => {
     const categoryResources = getCategoryResources(file, resourceDir);
     // Mapping Resource events to categories.
@@ -869,6 +899,14 @@ const handleCfnFiles = (eventMap: EventMap, category: string, resource: string, 
     if (updatedResources.includes(category)) {
       eventMap.categories.push({ name: `${category}-${resource}`, size: categoryResources.length });
     }
+  });
+
+  // Build part of EventMap that is used for error reporting. Get all resources from all nested stacks.
+  const { cfnFiles: allCfnFiles } = getCfnFiles(category, resource, true);
+  allCfnFiles.forEach((file) => {
+    const categoryResources = getCategoryResources(file, resourceDir);
+    // Adding all the resources
+    categoryResources.forEach((res) => eventMap.logicalResourceNames.push(res));
   });
 };
 
@@ -1216,7 +1254,11 @@ export const generateAndUploadRootStack = async (context: $TSContext, destinatio
     Key: destinationS3Key,
   };
 
-  await s3Client.uploadFile(s3Params, false);
+  try {
+    await s3Client.uploadFile(s3Params, false);
+  } catch (error) {
+    throw handleCommonSdkError(error);
+  }
 };
 
 const rollbackLambdaLayers = (layerResources: $TSAny[]) => {

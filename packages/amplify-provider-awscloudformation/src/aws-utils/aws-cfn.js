@@ -12,14 +12,14 @@ const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
-const { stateManager, pathManager, AmplifyError, AmplifyFault } = require('amplify-cli-core');
+const { stateManager, pathManager, AmplifyError, AmplifyFault } = require('@aws-amplify/amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 const { pagedAWSCall } = require('./paged-call');
 const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
 const { getStatusToErrorMsg, collectStackErrorMessages } = require('./cloudformation-error-serializer');
 
-const { printer } = require('amplify-prompts');
+const { printer } = require('@aws-amplify/amplify-prompts');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = (process.env.IS_AMPLIFY_CI ? 30 : 5) * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -117,10 +117,10 @@ class CloudFormation {
     // add root stack to see the new stacks
     this.readStackEvents(stackName);
     // wait for the poll queue to drain
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.pollQueue.once('empty', () => {
         const failedStacks = this.stackEvents.filter((ev) => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
-
+        const customStackIds = this.getCustomStackIds(failedStacks);
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
           printer.error('The following resources failed to deploy:');
@@ -128,9 +128,9 @@ class CloudFormation {
             console.log(t);
             console.log('\n');
           });
-          resolve(collectStackErrorMessages(this.filterFailedStackEvents(failedStacks)));
+          resolve(collectStackErrorMessages(this.filterFailedStackEvents(failedStacks), customStackIds));
         } catch (e) {
-          Promise.reject(e);
+          reject(e);
         } finally {
           if (this.pollForEvents) {
             clearTimeout(this.pollForEvents);
@@ -138,6 +138,19 @@ class CloudFormation {
         }
       });
     });
+  }
+
+  getCustomStackIds(eventsWithFailure) {
+    return eventsWithFailure
+      .filter((stack) => stack.ResourceType === 'AWS::CloudFormation::Stack')
+      .filter(
+        (stack) =>
+          this.eventMap['rootResources'] &&
+          this.eventMap['rootResources'].some(
+            (resource) => resource.category.includes('custom-') && resource.key === stack.LogicalResourceId,
+          ),
+      )
+      .map((stack) => stack.PhysicalResourceId);
   }
 
   /**
@@ -172,7 +185,7 @@ class CloudFormation {
       )
       .filter(
         (stack) =>
-          (this.eventMap['eventToCategories'] && this.eventMap['eventToCategories'].has(stack.LogicalResourceId)) ||
+          (this.eventMap.logicalResourceNames && this.eventMap.logicalResourceNames.includes(stack.LogicalResourceId)) ||
           (this.eventMap['rootResources'] && this.eventMap['rootResources'].some((resource) => resource.key === stack.LogicalResourceId)),
       )
       .filter((stack) => !RESOURCE_CASCADE_FAIL_REASONS.includes(stack.ResourceStatusReason));
@@ -245,6 +258,7 @@ class CloudFormation {
       showEvents(_.uniqBy(newEvents, 'EventId'));
     }
 
+    CFNLOG = CFNLOG.concat(_.uniqBy(newEvents, 'EventId').reverse());
     this.stackEvents = [...allShownEvents, ...newEvents];
   }
 
@@ -396,20 +410,21 @@ class CloudFormation {
                     }
                     return reject(updateErr);
                   }
-                  cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
+                  cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, async (completeErr) => {
                     if (self.pollForEvents) {
                       clearTimeout(self.pollForEvents);
                     }
                     this.progressBar?.stop();
 
                     if (completeErr) {
-                      this.collectStackErrors(cfnParentStackParams.StackName).then((errorDetails) => {
+                      await this.collectStackErrors(cfnParentStackParams.StackName).then((errorDetails) => {
                         completeErr.details = errorDetails;
                         reject(completeErr);
                       });
                     } else {
                       self.context.usageData.calculatePushNormalizationFactor(this.stackEvents, stackId);
-                      return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
+                      await self.updateamplifyMetaFileWithStackOutputs(stackName);
+                      return resolve();
                     }
                   });
                 });
@@ -562,12 +577,12 @@ class CloudFormation {
     const log = logger('listExports.cfn.listExports', [{ NextToken: nextToken }]);
     return new Promise((resolve, reject) => {
       log();
-      this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, (err, data) => {
+      this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, async (err, data) => {
         if (err) {
           log(err);
           reject(err);
         } else if (data.NextToken) {
-          this.listExports(data.NextToken).then((innerExports) => resolve([...data.Exports, ...innerExports]));
+          await this.listExports(data.NextToken).then((innerExports) => resolve([...data.Exports, ...innerExports]));
         } else {
           resolve(data.Exports);
         }
@@ -643,10 +658,10 @@ class CloudFormation {
               console.log(`Error deleting stack ${stackName}`);
               return reject(deleteErr);
             }
-            cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, (completeErr) => {
+            cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, async (completeErr) => {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
-                this.collectStackErrors(stackName).then((errorDetails) => {
+                await this.collectStackErrors(stackName).then((errorDetails) => {
                   completeErr.details = errorDetails;
                   reject(completeErr);
                 });
@@ -704,7 +719,6 @@ function showEvents(events) {
       columns: COLUMNS,
       showHeaders: false,
     });
-    CFNLOG = CFNLOG.concat(events);
     console.log(formattedEvents);
   }
 }

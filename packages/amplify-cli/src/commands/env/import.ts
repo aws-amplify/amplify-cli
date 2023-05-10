@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, stateManager, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, stateManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 
 /**

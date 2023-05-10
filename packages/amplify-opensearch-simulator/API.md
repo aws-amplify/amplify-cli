@@ -6,9 +6,9 @@
 
 /// <reference types="node" />
 
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import execa from 'execa';
-import { GetPackageAssetPaths } from 'amplify-cli-core';
+import { GetPackageAssetPaths } from '@aws-amplify/amplify-cli-core';
 
 // Warning: (ae-forgotten-export) The symbol "OpenSearchEmulatorOptions" needs to be exported by the entry point index.d.ts
 //

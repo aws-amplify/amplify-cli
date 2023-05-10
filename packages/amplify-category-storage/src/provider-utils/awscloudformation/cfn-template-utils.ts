@@ -1,9 +1,8 @@
-import { pathManager, readCFNTemplate } from 'amplify-cli-core';
+import { pathManager, readCFNTemplate, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import { Template } from 'cloudform-types';
 import Table, { AttributeDefinition, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 import _ from 'lodash';
 import * as path from 'path';
-import { AmplifyCategories } from 'amplify-cli-core';
 import { FieldType } from './service-walkthrough-types/dynamoDB-user-input-types';
 
 export const getCloudFormationTemplatePath = (resourceName: string) => {

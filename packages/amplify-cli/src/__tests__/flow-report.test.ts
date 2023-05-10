@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   AddS3ServiceConfiguration,
   AddStorageRequest,
@@ -33,7 +33,7 @@ describe('Test FlowReport Logging', () => {
     flowReport.setIsHeadless(true);
     flowReport.setVersion(mockInputs.version);
     // Mock the state-manager functions
-    jest.mock('amplify-cli-core');
+    jest.mock('@aws-amplify/amplify-cli-core');
     jest.spyOn(stateManager, 'getProjectName').mockReturnValue(mockInputs.projectName);
     jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValueOnce(mockInputs.envName);
     jest.spyOn(stateManager, 'getAppID').mockReturnValue(mockInputs.appID);

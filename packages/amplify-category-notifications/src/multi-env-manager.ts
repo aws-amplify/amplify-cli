@@ -7,7 +7,7 @@ import {
   IAnalyticsResource,
   $TSMeta,
   AmplifyError,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as authHelper from './auth-helper';
@@ -261,7 +261,7 @@ export const deletePinpointAppForEnv = async (context: $TSContext, envName: stri
     const params = {
       ApplicationId: pinpointApp.Id,
     };
-    const pinpointClient = await getPinpointClient(context, 'delete', envName);
+    const pinpointClient = await getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'delete', envName);
 
     await authHelper.deleteRolePolicy(context);
     return pinpointClient
