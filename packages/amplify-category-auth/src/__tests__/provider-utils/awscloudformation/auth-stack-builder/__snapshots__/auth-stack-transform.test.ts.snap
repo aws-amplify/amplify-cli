@@ -1319,6 +1319,10 @@ Object {
     },
     "UserPoolClient": Object {
       "DependsOn": Array [
+        "HostedUIFacebookProviderResource",
+        "HostedUIGoogleProviderResource",
+        "HostedUILoginWithAmazonProviderResource",
+        "HostedUISignInWithAppleProviderResource",
         "UserPool",
       ],
       "Properties": Object {
@@ -1420,6 +1424,10 @@ Object {
     },
     "UserPoolClientWeb": Object {
       "DependsOn": Array [
+        "HostedUIFacebookProviderResource",
+        "HostedUIGoogleProviderResource",
+        "HostedUILoginWithAmazonProviderResource",
+        "HostedUISignInWithAppleProviderResource",
         "UserPool",
       ],
       "Properties": Object {
