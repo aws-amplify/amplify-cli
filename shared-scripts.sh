@@ -290,8 +290,6 @@ function _runE2ETestsLinux {
     cd packages/amplify-e2e-tests
     _loadTestAccountCredentials
     retry runE2eTest
-    _unassumeTestAccountCredentials
-    storeCache $E2E_TEST_COVERAGE_DIR e2e-test-coverage-raw
 }
 function _unassumeTestAccountCredentials {
     echo "Unassume Role"
