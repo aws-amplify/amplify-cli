@@ -21,15 +21,14 @@ exports.handler = (event, context) => {
 
     hostedUIProviderMeta.forEach(({ ProviderName }) => providerPromises.push(deleteIdentityProvider(ProviderName)));
 
-    Promise.allSettled(providerPromises)
-      .then((results) => {
-        if (results.every(deleteSuccessOrNotFound)) {
-          response.send(event, context, response.SUCCESS);
-        } else {
-          const firstFailure = results.find((result) => result.status === 'rejected');
-          response.send(event, context, response.FAILED, firstFailure);
-        }
-      });
+    Promise.allSettled(providerPromises).then((results) => {
+      if (results.every(deleteSuccessOrNotFound)) {
+        response.send(event, context, response.SUCCESS);
+      } else {
+        const firstFailure = results.find((result) => result.status === 'rejected');
+        response.send(event, context, response.FAILED, firstFailure);
+      }
+    });
   } catch (err) {
     console.log(err.stack);
     response.send(event, context, response.FAILED, { err });
