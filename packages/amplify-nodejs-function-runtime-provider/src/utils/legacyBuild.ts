@@ -82,7 +82,6 @@ const toPackageManagerArgs = async (packageManager: PackageManager, buildType?: 
   switch (packageManager.executable) {
     case 'yarn': {
       const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
-      console.log(`Using ${useYarnModern ? 'yarn 2' : 'yarn 1'}`);
       if (scriptName) {
         return [scriptName];
       }

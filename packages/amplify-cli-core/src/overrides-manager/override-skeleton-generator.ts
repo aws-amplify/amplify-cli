@@ -69,6 +69,8 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
 
   try {
     execa.sync(packageManager.executable, ['install'], {
+      localDir: cwd,
+      preferLocal: true,
       cwd,
       stdio: 'pipe',
       encoding: 'utf-8',
@@ -94,6 +96,8 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
       });
     }
     execa.sync(localTscExecutablePath, [`--project`, `${tsConfigDestFilePath}`], {
+      localDir: tsConfigDir,
+      preferLocal: true,
       cwd: tsConfigDir,
       stdio: 'pipe',
       encoding: 'utf-8',

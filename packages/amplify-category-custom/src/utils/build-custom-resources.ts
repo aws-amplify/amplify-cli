@@ -81,6 +81,8 @@ const buildResource = async (resource: ResourceMeta): Promise<void> => {
 
   try {
     execa.sync(packageManager.executable, ['install'], {
+      localDir: targetDir,
+      preferLocal: true,
       cwd: targetDir,
       stdio: 'pipe',
       encoding: 'utf-8',
@@ -106,6 +108,8 @@ const buildResource = async (resource: ResourceMeta): Promise<void> => {
 
   try {
     execa.sync(localTscExecutablePath, {
+      localDir: targetDir,
+      preferLocal: true,
       cwd: targetDir,
       stdio: 'pipe',
       encoding: 'utf-8',
