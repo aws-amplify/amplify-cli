@@ -164,7 +164,6 @@ describe('migrate step for removing lambda callouts', () => {
 
         expect(openIdLambda?.cfnResourceType).toBe('AWS::Lambda::Function');
         expect((openIdLambda?.code as CfnFunction.CodeProperty).zipFile).toMatchSnapshot();
-
         expect(openIdcResource?.url).toEqual('https://accounts.google.com');
       });
     });
