@@ -1281,6 +1281,14 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (this.hostedUIProvidersCustomResource) {
       provider.addDependency(this.hostedUIProvidersCustomResource);
     }
+
+    if (this.userPoolClient) {
+      this.userPoolClient.addDependency(provider);
+    }
+
+    if (this.userPoolClientWeb) {
+      this.userPoolClientWeb.addDependency(provider);
+    }
   };
 
   createHostedUIProviderDetails = (providerName: string) => {
