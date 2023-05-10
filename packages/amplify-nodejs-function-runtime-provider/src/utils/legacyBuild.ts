@@ -50,6 +50,9 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
 
   const args = await toPackageManagerArgs(packageManager, buildType, scriptName);
   try {
+    console.log(`Running command ${packageManager.executable} ${args.join(' ')}`);
+    console.log(`Yarn version: ${packageManager.version?.raw}`);
+
     execa.sync(packageManager.executable, args, {
       preferLocal: true,
       localDir: resourceDir,
