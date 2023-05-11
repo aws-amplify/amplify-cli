@@ -79,6 +79,8 @@ function generatePkgCli {
   # Build pkg cli
   cp package.json ../build/node_modules/package.json
 
+  rm -rf yarn.lock .yarn
+
   if [[ "$@" =~ 'arm' ]]; then
     npx pkg --no-bytecode --public-packages "*" --public -t node18-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
     tar -czvf ../out/amplify-pkg-linux-arm64.tgz ../out/amplify-pkg-linux-arm64
