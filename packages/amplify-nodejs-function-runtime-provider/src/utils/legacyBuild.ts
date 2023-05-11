@@ -82,6 +82,7 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
 };
 
 const toPackageManagerArgs = async (packageManager: PackageManager, buildType?: BuildType, scriptName?: string): Promise<string[]> => {
+  console.log(`Using package manager: ${packageManager.packageManager}`);
   switch (packageManager.executable) {
     case 'yarn': {
       const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
