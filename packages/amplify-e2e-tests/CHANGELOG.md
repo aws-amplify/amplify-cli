@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.1...amplify-e2e-tests@4.2.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* apply overrides when forcePush is set with init ([#12464](https://github.com/aws-amplify/amplify-cli/issues/12464)) ([a0bebf2](https://github.com/aws-amplify/amplify-cli/commit/a0bebf28cd9336b65f467ca86020fe6e89c95c80))
+* codegen version in snapshot ([3ee14c7](https://github.com/aws-amplify/amplify-cli/commit/3ee14c73ab7bab5e729723fa51a81492f286c745))
+* codeql findings ([a4142e8](https://github.com/aws-amplify/amplify-cli/commit/a4142e89faf60e7af0320654b2d41bf9559f1ef4))
+* generate OAuth keys from cognito for amplify pull workflow ([#12518](https://github.com/aws-amplify/amplify-cli/issues/12518)) ([663737a](https://github.com/aws-amplify/amplify-cli/commit/663737a0bd1c49d2102308e67795c9d84a90704b))
+* support flutter project for idp with social providers ([#12381](https://github.com/aws-amplify/amplify-cli/issues/12381)) ([cb3b0fc](https://github.com/aws-amplify/amplify-cli/commit/cb3b0fca6c575c9b9154627f08c03a092ef9ade0))
+
+
+### Reverts
+
+* Revert "chore: prepend headless scopes (#12415)" (#12439) ([88b2508](https://github.com/aws-amplify/amplify-cli/commit/88b2508777425ef2459c976a664f1fbbb04bf6d5)), closes [#12415](https://github.com/aws-amplify/amplify-cli/issues/12415) [#12439](https://github.com/aws-amplify/amplify-cli/issues/12439)
+
+
+
+## 11.0.4 (2023-04-10)
+
+
+### Bug Fixes
+
+* add util mock to dependencies for e2e tests ([cddc267](https://github.com/aws-amplify/amplify-cli/commit/cddc2673457f5be42b342863096b809e7623746e))
+* api hotfix for ownerfield as pk ([#12422](https://github.com/aws-amplify/amplify-cli/issues/12422)) ([fe4347a](https://github.com/aws-amplify/amplify-cli/commit/fe4347a21f7ec45930332e053df9dfe8f526f2c9))
+* **api:** add null placeholder for nested stack during api rebuild ([#11460](https://github.com/aws-amplify/amplify-cli/issues/11460)) ([33f9b34](https://github.com/aws-amplify/amplify-cli/commit/33f9b3415ce73d5318bb065f3e970daa90b8b8f1))
+* **api:** API hotfix for ownerfield as pk ([#12422](https://github.com/aws-amplify/amplify-cli/issues/12422)) ([2a63df0](https://github.com/aws-amplify/amplify-cli/commit/2a63df058e6544ed499f793b838a927fd013978f))
+* codegen version in snapshots ([#12362](https://github.com/aws-amplify/amplify-cli/issues/12362)) ([0cbdd7d](https://github.com/aws-amplify/amplify-cli/commit/0cbdd7d30b7e036552627b43da49e0bc5aeb2da0))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* generate model introspection regardless of studio and datastore ([#12258](https://github.com/aws-amplify/amplify-cli/issues/12258)) ([8056b01](https://github.com/aws-amplify/amplify-cli/commit/8056b01ac144268797ff40e734a04fd7b665872f))
+* skip backend sync on force push ([#12262](https://github.com/aws-amplify/amplify-cli/issues/12262)) ([f8c47cb](https://github.com/aws-amplify/amplify-cli/commit/f8c47cbf38f02cd982051b434fed94a20f8542b7))
+* source temp aws creds and ec2 instance credentials  using general level config ([#12181](https://github.com/aws-amplify/amplify-cli/issues/12181)) ([68d267c](https://github.com/aws-amplify/amplify-cli/commit/68d267cef06da727f06839498202091cfba283a0))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+* create new NodeJS functions with nodejs18.x runtime ([#12394](https://github.com/aws-amplify/amplify-cli/issues/12394)) ([c896259](https://github.com/aws-amplify/amplify-cli/commit/c896259c1c15813d2bd561bd562adae22e0b3ce5))
+
+
+### Reverts
+
+* Revert "chore: some QoL improvements for locally debugging e2e tests (#12321)" (#12393) ([34737ca](https://github.com/aws-amplify/amplify-cli/commit/34737ca4b83c4a67bd05fd52c56535a8fdcdeaab)), closes [#12321](https://github.com/aws-amplify/amplify-cli/issues/12321) [#12393](https://github.com/aws-amplify/amplify-cli/issues/12393)
+
+
+
+
+
 ## [4.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.0...amplify-e2e-tests@4.1.1) (2023-04-29)
 
 **Note:** Version bump only for package amplify-e2e-tests
