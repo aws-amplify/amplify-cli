@@ -1200,7 +1200,7 @@ export const formNestedStack = async (
         }
 
         if (category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds !== '[]') {
-          const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta);
+          const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta || '[]');
           const hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
 
           Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
