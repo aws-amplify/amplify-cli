@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.7.6...@aws-amplify/amplify-nodejs-function-template-provider@2.8.0) (2023-05-11)
+
+
+### Features
+
+* create new NodeJS functions with nodejs18.x runtime ([#12394](https://github.com/aws-amplify/amplify-cli/issues/12394)) ([c896259](https://github.com/aws-amplify/amplify-cli/commit/c896259c1c15813d2bd561bd562adae22e0b3ce5))
+
+
+
+
+
 ## [2.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.7.5...@aws-amplify/amplify-nodejs-function-template-provider@2.7.6) (2023-04-24)
 
 **Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider

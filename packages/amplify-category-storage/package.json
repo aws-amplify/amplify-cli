@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -27,11 +27,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4",
-    "@aws-amplify/amplify-environment-parameters": "1.5.0",
-    "@aws-amplify/amplify-prompts": "2.6.8",
-    "@aws-amplify/amplify-util-import": "2.5.0",
-    "@aws-amplify/cli-extensibility-helper": "3.0.4",
+    "@aws-amplify/amplify-cli-core": "4.0.5",
+    "@aws-amplify/amplify-environment-parameters": "1.6.0",
+    "@aws-amplify/amplify-prompts": "2.7.0",
+    "@aws-amplify/amplify-util-import": "2.6.0",
+    "@aws-amplify/cli-extensibility-helper": "3.0.5",
     "amplify-headless-interface": "1.17.3",
     "amplify-util-headless-input": "1.9.12",
     "aws-cdk-lib": "~2.68.0",
