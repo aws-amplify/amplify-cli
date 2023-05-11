@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.1.0...@aws-amplify/amplify-category-predictions@5.2.0) (2023-05-11)
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+
+
+
+
+
 # [5.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.0.5...@aws-amplify/amplify-category-predictions@5.1.0) (2023-04-24)
 
 

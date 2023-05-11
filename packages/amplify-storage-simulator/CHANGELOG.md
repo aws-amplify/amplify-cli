@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.8.0...amplify-storage-simulator@1.9.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* codeql warning for abrupt server crash ([#12387](https://github.com/aws-amplify/amplify-cli/issues/12387)) ([1048912](https://github.com/aws-amplify/amplify-cli/commit/10489122d4e0fdb919f39d7703f0c2b4455ab2d0))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.7.6...amplify-storage-simulator@1.8.0) (2023-04-24)
 
 
