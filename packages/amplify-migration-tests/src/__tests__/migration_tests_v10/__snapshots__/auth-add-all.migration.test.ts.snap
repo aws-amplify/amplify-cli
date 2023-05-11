@@ -62,11 +62,19 @@ Resources
 [-] AWS::IAM::Policy HostedUICustomResourcePolicy destroy
 [-] AWS::IAM::Policy HostedUICustomResourceLogPolicy destroy
 [-] Custom::LambdaCallout HostedUICustomResourceInputs destroy
+[-] AWS::Lambda::Function HostedUIProvidersCustomResource destroy
+[-] AWS::IAM::Policy HostedUIProvidersCustomResourcePolicy destroy
+[-] AWS::IAM::Policy HostedUIProvidersCustomResourceLogPolicy destroy
+[-] Custom::LambdaCallout HostedUIProvidersCustomResourceInputs destroy
 [-] AWS::Lambda::Function OAuthCustomResource destroy
 [-] AWS::IAM::Policy OAuthCustomResourcePolicy destroy
 [-] AWS::IAM::Policy OAuthCustomResourceLogPolicy destroy
 [-] Custom::LambdaCallout OAuthCustomResourceInputs destroy
 [+] AWS::Cognito::UserPoolDomain HostedUIDomainResource 
+[+] AWS::Cognito::UserPoolIdentityProvider HostedUIFacebookProviderResource 
+[+] AWS::Cognito::UserPoolIdentityProvider HostedUIGoogleProviderResource 
+[+] AWS::Cognito::UserPoolIdentityProvider HostedUILoginWithAmazonProviderResource 
+[+] AWS::Cognito::UserPoolIdentityProvider HostedUISignInWithAppleProviderResource 
 [~] AWS::Cognito::UserPoolClient UserPoolClientWeb 
  ├─ [+] AllowedOAuthFlows
  │   └─ [\\"code\\"]
@@ -78,14 +86,8 @@ Resources
  │   └─ [\\"https://signin1/\\"]
  ├─ [+] LogoutURLs
  │   └─ [\\"https://signout1/\\"]
- ├─ [+] SupportedIdentityProviders
- │   └─ [\\"Facebook\\",\\"Google\\",\\"LoginWithAmazon\\",\\"SignInWithApple\\",\\"COGNITO\\"]
- └─ [~] DependsOn
-     └─ @@ -1,3 +1,4 @@
-        [ ] [
-        [+]   \\"HostedUIProvidersCustomResourceInputs\\",
-        [ ]   \\"UserPool\\"
-        [ ] ]
+ └─ [+] SupportedIdentityProviders
+     └─ [\\"Facebook\\",\\"Google\\",\\"LoginWithAmazon\\",\\"SignInWithApple\\",\\"COGNITO\\"]
 [~] AWS::Cognito::UserPoolClient UserPoolClient 
  ├─ [+] AllowedOAuthFlows
  │   └─ [\\"code\\"]
