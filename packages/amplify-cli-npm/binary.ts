@@ -153,26 +153,18 @@ export class Binary {
    */
   private extract(): tar.Extract {
     const extract = tar.extract();
-    const chunks: Uint8Array[] = [];
     extract.on('entry', (header, extractStream, next) => {
       if (header.type === 'file') {
-        extractStream.on('data', (chunk) => {
-          chunks.push(chunk);
+        const fileWriteStream = fs.createWriteStream(this.binaryPath, {
+          mode: 0o755,
         });
+        extractStream.pipe(fileWriteStream);
       }
       extractStream.on('end', () => {
         next();
       });
 
       extractStream.resume();
-    });
-    extract.on('finish', () => {
-      if (chunks.length) {
-        const data = Buffer.concat(chunks);
-        fs.writeFileSync(this.binaryPath, data, {
-          mode: 0o755,
-        });
-      }
     });
     return extract;
   }
