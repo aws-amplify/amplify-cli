@@ -48,10 +48,9 @@ describe('add s3 walkthrough tests', () => {
         getUserPoolGroupList: () => {
           return [];
         },
-        // eslint-disable-next-line
-        getResourceStatus: () => {
+        getResourceStatus: async () => {
           return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
-        }, //eslint-disable-line
+        },
         copyBatch: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
         updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
         pathManager: {
@@ -173,7 +172,7 @@ describe('add s3 walkthrough tests', () => {
     });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
     //Add Existing Lambda functions in resource status
-    mockContext.amplify.getResourceStatus = () => {
+    mockContext.amplify.getResourceStatus = async () => {
       return { allResources: S3MockDataBuilder.getMockGetAllResources2ExistingLambdas() };
     };
 
@@ -539,7 +538,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
     //Then we expect that the saveCliInputPayload is called with the newly selected Lambda trigger [ expectedCLIInputsJSON ]
 
     //Add Existing Lambda functions in resource status
-    mockContext.amplify.getResourceStatus = () => {
+    mockContext.amplify.getResourceStatus = async () => {
       return { allResources: S3MockDataBuilder.getMockGetAllResources2ExistingLambdas() };
     };
 
@@ -586,7 +585,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
     //Then we expect that the saveCliInputPayload is called with the newly created lambda function trigger[ expectedCLIInputsJSON ]
 
     //Add Existing Lambda functions in resource status
-    mockContext.amplify.getResourceStatus = () => {
+    mockContext.amplify.getResourceStatus = async () => {
       return { allResources: S3MockDataBuilder.getMockGetAllResources2ExistingLambdas() };
     };
 
@@ -635,7 +634,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
     //Then we expect that the saveCliInputPayload is called with the newly created lambda function trigger[ expectedCLIInputsJSON ]
 
     //Add Existing Lambda functions in resource status
-    mockContext.amplify.getResourceStatus = () => {
+    mockContext.amplify.getResourceStatus = async () => {
       return { allResources: S3MockDataBuilder.getMockGetAllResources2ExistingLambdas() };
     };
 
@@ -708,10 +707,9 @@ describe('migrate s3 and update s3 permission walkthrough tests', () => {
             },
           };
         },
-        // eslint-disable-next-line
-        getResourceStatus: () => {
+        getResourceStatus: async () => {
           return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
-        }, //eslint-disable-line
+        },
         copyBatch: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
         updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
         pathManager: {
