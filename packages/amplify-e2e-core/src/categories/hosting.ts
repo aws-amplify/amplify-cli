@@ -61,32 +61,6 @@ export function addPRODHosting(cwd: string): Promise<void> {
   });
 }
 
-export function removePRODCloudFront(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'hosting'], { cwd, stripColors: true })
-      .wait('Specify the section to configure')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Remove CloudFront from hosting')
-      .send('y')
-      .sendCarriageReturn()
-      .wait('index doc for the website')
-      .sendCarriageReturn()
-      .wait('error doc for the website')
-      .sendCarriageReturn()
-      .wait('Specify the section to configure')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
 export const amplifyPushWithUpdate = async (cwd: string): Promise<void> => {
   return spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
     .wait('Are you sure you want to continue?')
