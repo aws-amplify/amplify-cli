@@ -49,13 +49,7 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
   }
 
   const args = await toPackageManagerArgs(packageManager, buildType, scriptName);
-
-  const originalYarnIgnoreCwd = process.env.YARN_IGNORE_CWD;
-  delete process.env.YARN_IGNORE_CWD;
   try {
-    console.log(`Running command ${packageManager.executable} ${args.join(' ')}`);
-    console.log(`Yarn version: ${packageManager.version?.raw}`);
-
     execa.sync(packageManager.executable, args, {
       preferLocal: true,
       localDir: resourceDir,
@@ -81,13 +75,10 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
         error,
       );
     }
-  } finally {
-    process.env.YARN_IGNORE_CWD = originalYarnIgnoreCwd;
   }
 };
 
 const toPackageManagerArgs = async (packageManager: PackageManager, buildType?: BuildType, scriptName?: string): Promise<string[]> => {
-  console.log(`Using package manager: ${packageManager.packageManager}`);
   switch (packageManager.packageManager) {
     case 'yarn': {
       const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
@@ -103,7 +94,7 @@ const toPackageManagerArgs = async (packageManager: PackageManager, buildType?: 
 
       return args;
     }
-    default: {
+    case 'npm': {
       if (scriptName) {
         return ['run-script', scriptName];
       }
@@ -115,6 +106,11 @@ const toPackageManagerArgs = async (packageManager: PackageManager, buildType?: 
       }
 
       return args;
+    }
+    default: {
+      throw new AmplifyError('PackagingLambdaFunctionError', {
+        message: `Packaging lambda function failed. Unsupported package manager ${packageManager.packageManager}`,
+      });
     }
   }
 };

@@ -31,6 +31,11 @@ export type AmplifyNodePkgDetectorProps = {
  * by parsing lock files
  */
 export class AmplifyNodePkgDetector {
+  private readonly packageManager: PackageManager;
+  private readonly pkgJsonObj: PackageJson;
+  private readonly lockFileContents: string;
+  private readonly lockFileParser: LockfileParser;
+
   public static getInstance = async (amplifyDetectorProps: AmplifyNodePkgDetectorProps): Promise<AmplifyNodePkgDetector> => {
     const packageManager = await getPackageManager(amplifyDetectorProps.projectRoot);
     if (packageManager === null) {
@@ -41,11 +46,6 @@ export class AmplifyNodePkgDetector {
     }
     return new AmplifyNodePkgDetector(amplifyDetectorProps, packageManager);
   };
-
-  private readonly packageManager: PackageManager;
-  private readonly pkgJsonObj: PackageJson;
-  private readonly lockFileContents: string;
-  private readonly lockFileParser: LockfileParser;
 
   private constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps, packageManager: PackageManager) {
     this.packageManager = packageManager;
