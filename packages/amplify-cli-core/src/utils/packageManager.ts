@@ -81,6 +81,7 @@ export const getPackageManager = async (rootPath?: string): Promise<PackageManag
 const getYarnPackageManager = async (rootPath: string | undefined): Promise<PackageManager | null> => {
   return {
     ...packageManagers.yarn,
-    version: coerce(await execAsStringPromise(`${packageManagers.yarn.executable} --version`, { cwd: rootPath })) ?? undefined,
+    version:
+      coerce(await execAsStringPromise(`${packageManagers.yarn.executable} --version`, { cwd: rootPath, preferLocal: true })) ?? undefined,
   };
 };
