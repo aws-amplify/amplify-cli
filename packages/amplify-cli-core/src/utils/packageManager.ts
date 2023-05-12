@@ -7,7 +7,7 @@ import { execAsStringPromise } from './shell-utils';
 /**
  * package managers type
  */
-export type PackageManagerType = 'yarn' | 'npm' | 'yarn2';
+export type PackageManagerType = 'yarn' | 'npm';
 
 const packageJson = 'package.json';
 

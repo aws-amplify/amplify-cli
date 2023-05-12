@@ -49,6 +49,9 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
   }
 
   const args = await toPackageManagerArgs(packageManager, buildType, scriptName);
+
+  const originalYarnIgnoreCwd = process.env.YARN_IGNORE_CWD;
+  delete process.env.YARN_IGNORE_CWD;
   try {
     console.log(`Running command ${packageManager.executable} ${args.join(' ')}`);
     console.log(`Yarn version: ${packageManager.version?.raw}`);
@@ -78,12 +81,14 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
         error,
       );
     }
+  } finally {
+    process.env.YARN_IGNORE_CWD = originalYarnIgnoreCwd;
   }
 };
 
 const toPackageManagerArgs = async (packageManager: PackageManager, buildType?: BuildType, scriptName?: string): Promise<string[]> => {
   console.log(`Using package manager: ${packageManager.packageManager}`);
-  switch (packageManager.executable) {
+  switch (packageManager.packageManager) {
     case 'yarn': {
       const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
       if (scriptName) {
