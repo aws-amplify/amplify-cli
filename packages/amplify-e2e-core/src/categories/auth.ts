@@ -874,7 +874,7 @@ export function addAuthUserPoolOnly(cwd: string): Promise<void> {
       APPLE_TEAM_ID,
       APPLE_KEY_ID,
       APPLE_PRIVATE_KEY,
-    } = getSocialProviders();
+    } = getSocialProviders(true);
 
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -1174,7 +1174,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
     APPLE_TEAM_ID,
     APPLE_KEY_ID,
     APPLE_PRIVATE_KEY,
-  } = getSocialProviders();
+  } = getSocialProviders(true);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
