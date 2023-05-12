@@ -1,3 +1,11 @@
+const removeYarnPaths = () => {
+  process.env.PATH = process.env.PATH.split(':')
+    .filter((p) => !p.includes('/tmp/xfs-'))
+    .join(':');
+};
+
+removeYarnPaths();
+
 // tslint:disable-next-line: no-magic-numbers
 const JEST_TIMEOUT = 1000 * 60 * 60; // 1 hour
 
