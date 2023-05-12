@@ -163,19 +163,7 @@ describe('migrate step for removing lambda callouts', () => {
         const { openIdLambda, openIdcResource } = cognitoStack;
 
         expect(openIdLambda?.cfnResourceType).toBe('AWS::Lambda::Function');
-        expect((openIdLambda?.code as CfnFunction.CodeProperty).zipFile)
-          .toMatch(`.deleteOpenIDConnectProvider({ OpenIDConnectProviderArn: providerArn })
-          .promise()
-          .catch((err) => {
-            console.log(err);
-
-            if (err.name === 'NotFoundException') {
-              return response.send(event, context, response.SUCCESS);
-            }
-
-            response.send(event, context, response.FAILED, { err });
-          });`);
-
+        expect((openIdLambda?.code as CfnFunction.CodeProperty).zipFile).toMatchSnapshot();
         expect(openIdcResource?.url).toEqual('https://accounts.google.com');
       });
     });

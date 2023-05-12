@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-import",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Resource import support package",
   "main": "lib/index.js",
   "scripts": {
