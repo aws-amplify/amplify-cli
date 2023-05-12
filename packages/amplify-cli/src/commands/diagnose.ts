@@ -97,7 +97,6 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     DebugConfig.Instance.getCanSendReport();
   } catch (DebugConfigValueNotSetError) {
     const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
-    console.log(result);
     DebugConfig.Instance.setAndWriteShareProject(result);
   }
 
