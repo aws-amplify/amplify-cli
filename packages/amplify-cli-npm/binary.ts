@@ -121,7 +121,10 @@ export class Binary {
     console.log(`Downloading release from ${getCompressedBinaryUrl()}`);
     try {
       const res = await axios({ url: getCompressedBinaryUrl(), responseType: 'stream' });
-      await pipeline(res.data, createGunzip(), this.extract());
+      // Dummy array to collect a promise from nested pipeline that extracts tar content to a file.
+      const extractPromiseCollector: Array<Promise<void>> = [];
+      await pipeline(res.data, createGunzip(), this.extract(extractPromiseCollector));
+      await extractPromiseCollector[0];
 
       console.log('amplify has been installed!');
       spawnSync(this.binaryPath, ['version'], { cwd: process.cwd(), stdio: 'inherit' });
@@ -151,14 +154,16 @@ export class Binary {
    *
    * @returns tar.Extract
    */
-  private extract(): tar.Extract {
+  private extract(extractPromiseCollector: Array<Promise<void>>): tar.Extract {
     const extract = tar.extract();
     extract.on('entry', (header, extractStream, next) => {
       if (header.type === 'file') {
         const fileWriteStream = fs.createWriteStream(this.binaryPath, {
           mode: 0o755,
         });
-        extractStream.pipe(fileWriteStream);
+        // pipe tar entry to file stream
+        // and collect a promise so that top level process can await it
+        extractPromiseCollector.push(pipeline(extractStream, fileWriteStream));
       }
       extractStream.on('end', () => {
         next();
