@@ -121,7 +121,11 @@ export class Binary {
     console.log(`Downloading release from ${getCompressedBinaryUrl()}`);
     try {
       const res = await axios({ url: getCompressedBinaryUrl(), responseType: 'stream' });
-      // Dummy array to collect a promise from nested pipeline that extracts tar content to a file.
+      // An array to collect a promises from nested pipeline that extracts tar content to a file.
+      // The tar file to actual file on disk streaming is kicked off by asynchronous events
+      // of extract step. So top level pipeline may complete before streaming is completed.
+      // We capture a Promise from that process to await it before proceeding,
+      // so that we don't call spawnSync prematurely before content streaming completes.
       const extractPromiseCollector: Array<Promise<void>> = [];
       await pipeline(res.data, createGunzip(), this.extract(extractPromiseCollector));
       await Promise.all(extractPromiseCollector);
