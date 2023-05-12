@@ -51,7 +51,7 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
   const args = await toPackageManagerArgs(packageManager, buildType, scriptName);
   try {
     execa.sync(packageManager.executable, args, {
-      resourceDir,
+      cwd: resourceDir,
       stdio: 'pipe',
       encoding: 'utf-8',
     });
