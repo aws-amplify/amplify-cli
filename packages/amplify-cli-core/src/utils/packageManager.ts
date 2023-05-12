@@ -32,7 +32,7 @@ const packageManagers: Record<string, PackageManager> = {
   yarn: {
     packageManager: 'yarn',
     lockFile: 'yarn.lock',
-    executable: isWindows ? 'yarn.cmd' : 'yarn',
+    executable: isWindows ? 'yarn.cmd' : '/home/development/yarn-wrapper.sh',
   },
 };
 
