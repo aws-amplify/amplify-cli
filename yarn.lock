@@ -720,6 +720,7 @@ __metadata:
     lodash: ^4.17.21
     semver: ^7.3.5
     strip-ansi: ^6.0.0
+    ts-node: ^10.9.1
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
@@ -31991,7 +31992,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.4.0, ts-node@npm:^10.8.1":
+"ts-node@npm:^10.4.0, ts-node@npm:^10.8.1, ts-node@npm:^10.9.1":
   version: 10.9.1
   resolution: "ts-node@npm:10.9.1"
   dependencies:
