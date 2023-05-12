@@ -1485,7 +1485,7 @@ export type PackageManager = {
 };
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm' | 'yarn2';
+export type PackageManagerType = 'yarn' | 'npm';
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {

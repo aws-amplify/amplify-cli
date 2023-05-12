@@ -67,7 +67,6 @@ export const getPackageManager = async (rootPath?: string): Promise<PackageManag
   // checks for npm
   tempFilePath = path.join(effectiveRootPath, packageManagers.npm.lockFile);
   if (fs.existsSync(tempFilePath)) {
-    console.log('npm detected: ' + tempFilePath);
     return packageManagers.npm;
   }
 
@@ -76,7 +75,6 @@ export const getPackageManager = async (rootPath?: string): Promise<PackageManag
     return await getYarnPackageManager(rootPath);
   }
 
-  console.log('fallback to npm');
   return packageManagers.npm;
 };
 
