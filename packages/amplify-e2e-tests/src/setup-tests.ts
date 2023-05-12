@@ -1,5 +1,13 @@
 import { toBeIAMRoleWithArn, toHaveValidPolicyConditionMatchingIdpId, toBeAS3Bucket } from './aws-matchers';
 
+const removeYarnPaths = () => {
+  process.env.PATH = process.env.PATH.split(':')
+    .filter((p) => !p.includes('/tmp/xfs-'))
+    .join(':');
+};
+
+removeYarnPaths();
+
 expect.extend({ toBeIAMRoleWithArn });
 expect.extend({ toHaveValidPolicyConditionMatchingIdpId });
 expect.extend({ toBeAS3Bucket });
