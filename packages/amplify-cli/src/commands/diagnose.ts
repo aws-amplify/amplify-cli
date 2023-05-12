@@ -44,12 +44,10 @@ export const reportError = async (context: Context, error: Error | undefined): P
       DebugConfig.Instance.setAndWriteShareProject(sendReport);
     }
   } else {
-    if (DebugConfig.Instance.promptSendReport()) {
-      const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
-      DebugConfig.Instance.setAndWriteShareProject(result);
-    } else {
-      await zipSend(context, true, error);
-    }
+    sendReport = DebugConfig.Instance.getCanSendReport();
+  }
+  if (sendReport) {
+    await zipSend(context, true, error);
   }
 };
 
