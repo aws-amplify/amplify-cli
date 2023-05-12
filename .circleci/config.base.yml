@@ -454,6 +454,10 @@ jobs:
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setSudoNpmRegistryUrlToLocal
             changeSudoNpmGlobalPath
+            # limit memory for new processes to 1GB
+            # this is to make sure that install can work on small VMs
+            # i.e. not buffer content in memory while installing binary
+            ulimit -Sv 1000000
             sudo npm install -g @aws-amplify/cli
             unsetSudoNpmRegistryUrl
             amplify version
