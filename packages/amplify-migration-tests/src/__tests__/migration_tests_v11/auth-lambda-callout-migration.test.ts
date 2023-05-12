@@ -56,7 +56,7 @@ describe('lambda callouts', () => {
     await amplifyPushForce(projRoot, false);
 
     const revertTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectNoLambdasInCfnTemplate(revertTemplate);
+    expectLambdasInCfnTemplate(revertTemplate);
   });
 
   it('should be migrated when existing auth is force pushed', async () => {

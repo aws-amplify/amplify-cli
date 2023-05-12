@@ -1,8 +1,8 @@
 import type { $TSObject } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthUserPoolOnlyWithOAuth,
-  amplifyPushAuth,
   AddAuthUserPoolOnlyWithOAuthSettings,
+  amplifyPushAuth,
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
 
@@ -40,8 +40,10 @@ const createUserPoolWithOAuthSettings = (projectPrefix: string, shortId: string)
   };
 };
 
+const lambdaCalloutFilter = (r: $TSObject) => r?.Type === 'AWS::Lambda::Function' || r?.Type === 'Custom::LambdaCallout';
+
 const getLambdasInCfnTemplate = (template: $TSObject): $TSObject[] => {
-  const lambdaResources = Object.values(template?.Resources).filter((r: $TSObject) => r?.type === 'AWS::Lambda::Function');
+  const lambdaResources = Object.values(template.Resources).filter(lambdaCalloutFilter);
   return lambdaResources;
 };
 
@@ -53,5 +55,5 @@ export const expectLambdasInCfnTemplate = (template: $TSObject): void => {
 
 export const expectNoLambdasInCfnTemplate = (template: $TSObject): void => {
   expect(template?.Resources).toBeDefined();
-  expect(Object.values(template.Resources).filter((r: $TSObject) => r?.type?.includes('Lambda')).length).toBe(0);
+  expect(Object.values(template.Resources).filter(lambdaCalloutFilter).length).toBe(0);
 };
