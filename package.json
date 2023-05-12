@@ -30,7 +30,7 @@
     "lint-check-package-json": "yarn eslint --no-eslintrc --config .eslint.package.json.js '**/package.json'",
     "mergewords": "yarn ts-node ./scripts/handle-dict-conflicts.ts",
     "pkg-all-local": "yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
-    "pkg-all": "bash -c 'source .circleci/local_publish_helpers.sh && generatePkgCli'",
+    "pkg-all": "bash -c 'source .circleci/local_publish_helpers.sh && generatePkgCli linux'",
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",
     "prettier-check": "yarn prettier --check .",
     "prettier-changes": "git diff --name-only --diff-filter MRA dev | xargs yarn prettier --write",
