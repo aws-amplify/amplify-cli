@@ -87,9 +87,7 @@ const showLearnMore = (showOptOut: boolean): void => {
 };
 
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
-  try {
-    DebugConfig.Instance.getCanSendReport();
-  } catch (DebugConfigValueNotSetError) {
+  if (DebugConfig.Instance.promptSendReport()) {
     const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
     DebugConfig.Instance.setAndWriteShareProject(result);
   }
