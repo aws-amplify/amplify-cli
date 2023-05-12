@@ -1,4 +1,12 @@
-import { stateManager, pathManager, spinner, DiagnoseReportUploadError, projectNotInitializedError } from '@aws-amplify/amplify-cli-core';
+import {
+  CLIContextEnvironmentProvider,
+  FeatureFlags,
+  stateManager,
+  pathManager,
+  spinner,
+  DiagnoseReportUploadError,
+  projectNotInitializedError,
+} from '@aws-amplify/amplify-cli-core';
 import archiver from 'archiver';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -85,6 +93,14 @@ const showLearnMore = (showOptOut: boolean): void => {
 };
 
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
+  try {
+    DebugConfig.Instance.getCanSendReport();
+  } catch (DebugConfigValueNotSetError) {
+    const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
+    console.log(result);
+    DebugConfig.Instance.setAndWriteShareProject(result);
+  }
+
   const choices = ['Generate report', 'Nothing'];
   if (!skipPrompts) {
     const diagnoseAction = await prompter.pick('What would you like to do?', choices);

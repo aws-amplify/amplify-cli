@@ -71,7 +71,7 @@ export class DebugConfig {
    * Gets the flag, throws error if not written to file
    */
   getCanSendReport(): boolean {
-    if (this.dirty) {
+    if (this.debug.shareProjectConfig === undefined) {
       throw new DebugConfigValueNotSetError();
     }
 
