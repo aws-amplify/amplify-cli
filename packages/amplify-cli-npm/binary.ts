@@ -124,7 +124,7 @@ export class Binary {
       // Dummy array to collect a promise from nested pipeline that extracts tar content to a file.
       const extractPromiseCollector: Array<Promise<void>> = [];
       await pipeline(res.data, createGunzip(), this.extract(extractPromiseCollector));
-      await extractPromiseCollector[0];
+      await Promise.all(extractPromiseCollector);
 
       console.log('amplify has been installed!');
       spawnSync(this.binaryPath, ['version'], { cwd: process.cwd(), stdio: 'inherit' });
