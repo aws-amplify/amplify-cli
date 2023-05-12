@@ -17,11 +17,10 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "yarn remove-yarn-path && yarn setup-profile && jest --verbose --config=jest.config.js",
+    "e2e": "yarn setup-profile && jest --verbose --config=jest.config.js",
     "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
-    "remove-yarn-path": "ts-node ../../scripts/remove_yarn_path.ts",
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
     "smoketest": "jest --runInBand --testPathPattern='smoketest'"
   },
