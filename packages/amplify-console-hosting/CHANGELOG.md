@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.4...@aws-amplify/amplify-console-hosting@2.5.5) (2023-05-11)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/aws-amplify/amplify-cli/issues/12293)) ([0aba514](https://github.com/aws-amplify/amplify-cli/commit/0aba514462ce94c0c6ea44a0dcb0defacacc5595))
+* **amplify-console-hosting:** handle undefined errors ([#12505](https://github.com/aws-amplify/amplify-cli/issues/12505)) ([458f641](https://github.com/aws-amplify/amplify-cli/commit/458f6414cd5a480fa01dda036e131260a9e466cb))
+
+
+
+
+
 ## [2.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.3...@aws-amplify/amplify-console-hosting@2.5.4) (2023-04-24)
 
 

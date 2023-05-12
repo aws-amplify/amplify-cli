@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.1.0...@aws-amplify/amplify-util-mock@5.2.0) (2023-05-11)
+
+
+### Features
+
+* mock and mock function adds capabilities for function and resource selection ([#12268](https://github.com/aws-amplify/amplify-cli/issues/12268)) ([d18e1a6](https://github.com/aws-amplify/amplify-cli/commit/d18e1a65f885ebd289637d4f77e197b2c6cfe44c))
+
+
+
+## 11.0.4 (2023-04-10)
+
+
+### Bug Fixes
+
+* add util mock to dependencies for e2e tests ([cddc267](https://github.com/aws-amplify/amplify-cli/commit/cddc2673457f5be42b342863096b809e7623746e))
+* api hotfix for ownerfield as pk ([#12422](https://github.com/aws-amplify/amplify-cli/issues/12422)) ([fe4347a](https://github.com/aws-amplify/amplify-cli/commit/fe4347a21f7ec45930332e053df9dfe8f526f2c9))
+* **api:** API hotfix for ownerfield as pk ([#12422](https://github.com/aws-amplify/amplify-cli/issues/12422)) ([2a63df0](https://github.com/aws-amplify/amplify-cli/commit/2a63df058e6544ed499f793b838a927fd013978f))
+* build exe context for mock push ([03bdec8](https://github.com/aws-amplify/amplify-cli/commit/03bdec8b011081aefc3ed80867aa6b17cb6348b7))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+
+
+
+
+
 # [5.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.0.7...@aws-amplify/amplify-util-mock@5.1.0) (2023-04-24)
 
 
