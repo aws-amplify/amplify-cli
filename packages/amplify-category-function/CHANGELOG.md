@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.2.0...@aws-amplify/amplify-category-function@5.3.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* catch undefined LogicalName when Lambda Layer versions are deleted from the console ([#12351](https://github.com/aws-amplify/amplify-cli/issues/12351)) ([2e4cfb9](https://github.com/aws-amplify/amplify-cli/commit/2e4cfb92b87499b1cdf2595e72b13b1857a60cb5))
+* display mfa prompt during lambda layer data fetching ([#12267](https://github.com/aws-amplify/amplify-cli/issues/12267)) ([0a6e952](https://github.com/aws-amplify/amplify-cli/commit/0a6e9527f4649c9b86d1859731cf0f24af8eee0c))
+* don't throw for missing backend in prepush function handler ([#12531](https://github.com/aws-amplify/amplify-cli/issues/12531)) ([8eaf6c3](https://github.com/aws-amplify/amplify-cli/commit/8eaf6c3c6bdbc3f4c708356fadb008e2365fdd39))
+* env param fail-fast checks don't fatal on missing appId or envName ([#12373](https://github.com/aws-amplify/amplify-cli/issues/12373)) ([4a4caf3](https://github.com/aws-amplify/amplify-cli/commit/4a4caf39320276215a882bc829bb459bd7896ae9))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+* support flutter project for idp with social providers ([#12381](https://github.com/aws-amplify/amplify-cli/issues/12381)) ([cb3b0fc](https://github.com/aws-amplify/amplify-cli/commit/cb3b0fca6c575c9b9154627f08c03a092ef9ade0))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+
+
+### Reverts
+
+* [#12351](https://github.com/aws-amplify/amplify-cli/issues/12351) ([#12412](https://github.com/aws-amplify/amplify-cli/issues/12412)) ([329a606](https://github.com/aws-amplify/amplify-cli/commit/329a606deccb91f511372bdeabd2899318b6d40b))
+
+
+
+
+
 # [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.1.3...@aws-amplify/amplify-category-function@5.2.0) (2023-04-24)
 
 
