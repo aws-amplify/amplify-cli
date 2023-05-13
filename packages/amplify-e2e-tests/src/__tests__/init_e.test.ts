@@ -89,7 +89,7 @@ describe('amplify init e', () => {
     // check if overrides are applied
     const gitClonedMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(await listRolePolicies(gitClonedMeta.AuthRoleName, gitClonedMeta.Region)).toMatchInlineSnapshot(`
-      Array [
+      [
         "ApiGatewayPolicy",
         "RekognitionPolicy",
       ]

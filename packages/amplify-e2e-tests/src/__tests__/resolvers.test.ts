@@ -85,9 +85,9 @@ describe('user created resolvers', () => {
         getResolverAppsyncFunctions.some((func2) => func1['Fn::GetAtt'][0] === func2['Fn::GetAtt'][0]),
       );
       expect(filterFunctions).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "Fn::GetAtt": Array [
+        [
+          {
+            "Fn::GetAtt": [
               "QuerygetTodopostAuth0FunctionQuerygetTodopostAuth0FunctionAppSyncFunction6BE14593",
               "FunctionId",
             ],
@@ -96,9 +96,9 @@ describe('user created resolvers', () => {
       `);
       expect(listResolverAppsyncFunctions.filter((obj) => obj['Fn::GetAtt'][0].includes('QuerylistTodosauth0Function')))
         .toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "Fn::GetAtt": Array [
+        [
+          {
+            "Fn::GetAtt": [
               "QuerylistTodosauth0FunctionQuerylistTodosauth0FunctionAppSyncFunction7D761961",
               "FunctionId",
             ],
