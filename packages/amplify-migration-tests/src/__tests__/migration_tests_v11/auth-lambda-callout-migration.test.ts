@@ -63,7 +63,6 @@ describe('lambda callouts', () => {
     expectLambdasInCfnTemplate(revertTemplate);
   });
 
-
   it('should migrate when force pushing without affecting userpool functionality', async () => {
     await initJSProjectWithProfileV11(projRoot, defaultsSettings);
 
@@ -79,8 +78,9 @@ describe('lambda callouts', () => {
     expect(meta?.providers?.awscloudformation?.Region).toBeDefined();
     expect(meta?.auth).toBeDefined();
     const region = meta.providers.awscloudformation.Region;
-    const { UserPoolId } = Object.values(meta.auth as Record<string, IAmplifyResource & { output: { UserPoolId: string } }>)
-      .find((resource) => resource.service === 'Cognito').output;
+    const { UserPoolId } = Object.values(meta.auth as Record<string, IAmplifyResource & { output: { UserPoolId: string } }>).find(
+      (resource) => resource.service === 'Cognito',
+    ).output;
 
     await addUserToUserPool(UserPoolId, region);
 

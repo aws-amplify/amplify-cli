@@ -215,7 +215,7 @@ export const listUsersInUserPool = async (userPoolId: string, region: string): P
     UserPoolId: userPoolId /* required */,
   };
   const { Users } = await provider.listUsers(params).promise();
-  return Users.map(u => u.Username);
+  return Users.map((u) => u.Username);
 };
 
 /**
