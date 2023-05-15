@@ -97,7 +97,7 @@ batch:
     #   depend-on:
     #     - publish_to_local_registry
 
-    - identifier: run_e2e_tests_linux
+    - identifier: run_e2e_tests_linux_1
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
