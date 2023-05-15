@@ -2,7 +2,7 @@
 
 exports[`amplify migration test auth ...should add auth with overrides and work fine on latest version 1`] = `
 "Resources
-[~] AWS::Lambda::Function UserPoolClientLambda 
+[~] AWS::Lambda::Function UserPoolClientLambda
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -62,7 +62,7 @@ exports.handler = (event, context, callback) => {
 
 exports[`amplify migration test auth ...should add auth with overrides and work fine on latest version 2`] = `
 "Resources
-[~] AWS::Lambda::Function UserPoolClientLambda 
+[~] AWS::Lambda::Function UserPoolClientLambda
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');

@@ -18,11 +18,11 @@
   "private": true,
   "scripts": {
     "e2e": "yarn setup-profile && jest --verbose --config=jest.config.js",
-    "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose",
+    "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose --config=jest.config.js",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
-    "smoketest": "jest --runInBand --testPathPattern='smoketest'"
+    "smoketest": "jest --runInBand --testPathPattern='smoketest' --config=jest.config.js"
   },
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "3.2.0",
