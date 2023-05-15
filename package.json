@@ -63,7 +63,7 @@
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
     "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
-    "deep-clean-install": "yarn verdaccio-clean && yarn cache clean && yarn clean && git clean -fdx -e .vscode && yarn"
+    "deep-clean-install": "yarn verdaccio-clean && yarn cache clean && yarn clean && git clean -fdx -e .vscode -e .env && yarn"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"

@@ -2,7 +2,7 @@ import { toBeIAMRoleWithArn, toHaveValidPolicyConditionMatchingIdpId, toBeAS3Buc
 
 const removeYarnPaths = () => {
   process.env.PATH = process.env.PATH.split(':')
-    .filter((p) => !p.includes('/tmp/xfs-'))
+    .filter((p) => !p.includes('/tmp/xfs-') && !p.includes('\\Temp\\xfs-'))
     .join(':');
 };
 
