@@ -2,7 +2,7 @@
 
 exports[`api lambda migration tests ...adds lambda with multiple rest APIs with v10 and pulls without drift in latest version 1`] = `
 "Resources
-[~] AWS::Lambda::Function UserPoolClientLambda
+[~] AWS::Lambda::Function UserPoolClientLambda 
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');

@@ -2,7 +2,7 @@
 
 exports[`storage category migration from v10 to latest ...pull and push should not drift with new amplify version 1`] = `
 "Resources
-[~] AWS::Lambda::Function UserPoolClientLambda
+[~] AWS::Lambda::Function UserPoolClientLambda 
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
