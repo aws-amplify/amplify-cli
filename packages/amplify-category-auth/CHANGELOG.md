@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-uibuilder-codegen-service.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.2.0...@aws-amplify/amplify-category-auth@3.3.0-uibuilder-codegen-service.0) (2023-05-15)
+
+
+### Features
+
+* update console auth command url to v2 dashboard ([#12612](https://github.com/aws-amplify/amplify-cli/issues/12612)) ([a9f21e5](https://github.com/aws-amplify/amplify-cli/commit/a9f21e5d684ad29b30b0d341b6601d8bb76c2364))
+
+
+
+
+
 # [3.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.1.0...@aws-amplify/amplify-category-auth@3.2.0) (2023-05-11)
 
 

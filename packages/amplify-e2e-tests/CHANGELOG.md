@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.1-uibuilder-codegen-service.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.0...amplify-e2e-tests@4.2.1-uibuilder-codegen-service.0) (2023-05-15)
+
+
+### Bug Fixes
+
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+
+
+
+
+
 # [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.1...amplify-e2e-tests@4.2.0) (2023-05-11)
 
 
