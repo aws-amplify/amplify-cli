@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`amplify add api (GraphQL) updates AppSync API in headless mode 1`] = `
-Object {
+{
   "ElasticsearchWarning": true,
-  "ResolverConfig": Object {
-    "project": Object {
+  "ResolverConfig": {
+    "project": {
       "ConflictDetection": "VERSION",
       "ConflictHandler": "OPTIMISTIC_CONCURRENCY",
     },
