@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.1.0...@aws-amplify/amplify-category-auth@3.2.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* block auth w/ triggers push if not migrated to cli-inputs ([#12337](https://github.com/aws-amplify/amplify-cli/issues/12337)) ([758f10a](https://github.com/aws-amplify/amplify-cli/commit/758f10a52321f542d1b3da7b61c032110d3aaca9))
+* generate OAuth keys from cognito for amplify pull workflow ([#12518](https://github.com/aws-amplify/amplify-cli/issues/12518)) ([663737a](https://github.com/aws-amplify/amplify-cli/commit/663737a0bd1c49d2102308e67795c9d84a90704b))
+* support flutter project for idp with social providers ([#12381](https://github.com/aws-amplify/amplify-cli/issues/12381)) ([cb3b0fc](https://github.com/aws-amplify/amplify-cli/commit/cb3b0fca6c575c9b9154627f08c03a092ef9ade0))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+* run auth triggers on node18 ([#12479](https://github.com/aws-amplify/amplify-cli/issues/12479)) ([5fedbaf](https://github.com/aws-amplify/amplify-cli/commit/5fedbaf93e61f36c1d621a8ff8d372f88f02100e))
+
+
+### Reverts
+
+* Revert "chore: prepend headless scopes (#12415)" (#12439) ([88b2508](https://github.com/aws-amplify/amplify-cli/commit/88b2508777425ef2459c976a664f1fbbb04bf6d5)), closes [#12415](https://github.com/aws-amplify/amplify-cli/issues/12415) [#12439](https://github.com/aws-amplify/amplify-cli/issues/12439)
+
+
+
+
+
 # [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.0.3...@aws-amplify/amplify-category-auth@3.1.0) (2023-04-24)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.6.8...@aws-amplify/amplify-prompts@2.7.0) (2023-05-11)
+
+
+### Features
+
+* mock and mock function adds capabilities for function and resource selection ([#12268](https://github.com/aws-amplify/amplify-cli/issues/12268)) ([d18e1a6](https://github.com/aws-amplify/amplify-cli/commit/d18e1a65f885ebd289637d4f77e197b2c6cfe44c))
+
+
+
+
+
 ## [2.6.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@2.6.6...amplify-prompts@2.6.8) (2023-04-14)
 
 **Note:** Version bump only for package amplify-prompts
