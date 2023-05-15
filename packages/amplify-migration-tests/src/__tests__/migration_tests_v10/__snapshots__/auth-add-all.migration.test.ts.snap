@@ -2,20 +2,20 @@
 
 exports[`amplify migration test auth ...should add auth with max options and work on the latest version 1`] = `
 "Resources
-[~] AWS::Lambda::Function RoleMapFunction 
+[~] AWS::Lambda::Function RoleMapFunction
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
 
 Parameters
-[-] Parameter facebookAppId: {\\"Type\\":\\"String\\"}
-[-] Parameter googleClientId: {\\"Type\\":\\"String\\"}
-[-] Parameter amazonAppId: {\\"Type\\":\\"String\\"}
-[-] Parameter appleAppId: {\\"Type\\":\\"String\\"}
-[~] Parameter hostedUIProviderCreds: {\\"Type\\":\\"String\\"} to {\\"Type\\":\\"String\\",\\"NoEcho\\":true}
+[-] Parameter facebookAppId: {\"Type\":\"String\"}
+[-] Parameter googleClientId: {\"Type\":\"String\"}
+[-] Parameter amazonAppId: {\"Type\":\"String\"}
+[-] Parameter appleAppId: {\"Type\":\"String\"}
+[~] Parameter hostedUIProviderCreds: {\"Type\":\"String\"} to {\"Type\":\"String\",\"NoEcho\":true}
 
 Resources
-[~] AWS::Lambda::Function UserPoolClientLambda 
+[~] AWS::Lambda::Function UserPoolClientLambda
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -69,7 +69,7 @@ exports.handler = (event, context, callback) => {
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
-[~] AWS::Lambda::Function HostedUICustomResource 
+[~] AWS::Lambda::Function HostedUICustomResource
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -239,7 +239,7 @@ exports.handler = (event, context, callback) => {
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
-[~] AWS::Lambda::Function HostedUIProvidersCustomResource 
+[~] AWS::Lambda::Function HostedUIProvidersCustomResource
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -455,7 +455,7 @@ exports.handler = (event, context, callback) => {
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
-[~] AWS::Lambda::Function OAuthCustomResource 
+[~] AWS::Lambda::Function OAuthCustomResource
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -555,10 +555,10 @@ exports.handler = (event, context, callback) => {
      └─ [+] nodejs16.x
 
 Outputs
-[-] Output GoogleWebClient: {\\"Value\\":{\\"Ref\\":\\"googleClientId\\"}}
-[-] Output FacebookWebClient: {\\"Value\\":{\\"Ref\\":\\"facebookAppId\\"}}
-[-] Output AmazonWebClient: {\\"Value\\":{\\"Ref\\":\\"amazonAppId\\"}}
-[-] Output AppleWebClient: {\\"Value\\":{\\"Ref\\":\\"appleAppId\\"}}
+[-] Output GoogleWebClient: {\"Value\":{\"Ref\":\"googleClientId\"}}
+[-] Output FacebookWebClient: {\"Value\":{\"Ref\":\"facebookAppId\"}}
+[-] Output AmazonWebClient: {\"Value\":{\"Ref\":\"amazonAppId\"}}
+[-] Output AppleWebClient: {\"Value\":{\"Ref\":\"appleAppId\"}}
 
 "
 `;
