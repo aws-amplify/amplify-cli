@@ -670,6 +670,8 @@ jobs:
           name: Run tests using general profile
           command: |
             source .circleci/local_publish_helpers.sh
+            source $BASH_ENV
+            amplify version
             cd packages/amplify-e2e-tests
             retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
