@@ -134,11 +134,11 @@ describe('populate cfn params', () => {
     expect(typeof result).toBe('object');
     expect(result.apimyApiGraphQLAPIEndpointOutput).toBeUndefined();
     expect(warningMock.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "No output found for attribute 'GraphQLAPIEndpointOutput' on resource 'myApi' in category 'api'",
         ],
-        Array [
+        [
           "This attribute will be undefined in the mock environment until you run \`amplify push\`",
         ],
       ]
