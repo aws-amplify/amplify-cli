@@ -1,5 +1,5 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { getProjectMeta, getBackendAmplifyMeta } from '@aws-amplify/amplify-e2e-core';
+import { getProjectMeta, getBackendAmplifyMeta } from './projectMeta';
 import Amplify, { Auth } from 'aws-amplify';
 import fs from 'fs-extra';
 import path from 'path';
