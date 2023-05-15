@@ -12,8 +12,6 @@ export const diagnoseSendReport = async (cwd: string): Promise<string> => {
     path = text.substring(index + 1).trim();
   };
   await spawn(getCLIPath(), ['diagnose', '--send-report'], { cwd, stripColors: true })
-    .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-    .sendYes()
     .wait(/Report saved/, callback)
     .wait(/Done/)
     .sendEof()
@@ -27,8 +25,6 @@ export const diagnoseSendReport = async (cwd: string): Promise<string> => {
  */
 export const diagnoseSendReport_ZipFailed = async (cwd: string): Promise<void> => {
   await spawn(getCLIPath(), ['diagnose', '--send-report'], { cwd, stripColors: true })
-    .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-    .sendYes()
     .wait('File at path:')
     .wait(/Creating Zip/)
     .sendEof()
