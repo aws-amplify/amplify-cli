@@ -241,7 +241,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             checkPackageVersionsInLocalNpmRegistry
 
   mock_e2e_tests:
@@ -340,7 +339,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli linux
             unsetNpmRegistryUrl
       - save_cache:
@@ -363,7 +361,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli macos
             unsetNpmRegistryUrl
       - save_cache:
@@ -386,7 +383,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli win
             unsetNpmRegistryUrl
       - save_cache:
@@ -674,7 +670,6 @@ jobs:
           name: Run tests using general profile
           command: |
             source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
             cd packages/amplify-e2e-tests
             retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
@@ -1388,7 +1383,6 @@ commands:
                   source $BASH_ENV
                   startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
                   setNpmRegistryUrlToLocal
-                  changeNpmGlobalPath
                   amplify version
                   cd packages/amplify-e2e-tests
                   retry runE2eTest
