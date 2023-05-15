@@ -65,7 +65,7 @@ exports[`storage category migration from v10 to latest ...pull and push should n
 [+] Output LambdaExecutionRoleArn: {\"Value\":{\"Fn::GetAtt\":[\"LambdaExecutionRole\",\"Arn\"]}}
 
 Resources
-[~] AWS::Lambda::Function UserPoolClientLambda
+[~] AWS::Lambda::Function UserPoolClientLambda 
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
