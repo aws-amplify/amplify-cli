@@ -1,32 +1,28 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
+  addApiWithoutSchema,
+  addFeatureFlag,
   amplifyPush,
   amplifyPushUpdate,
-  addFeatureFlag,
-  createRandomName,
-  updateApiSchema,
+  configureAmplify,
   createNewProjectDir,
+  createRandomName,
+  deleteProject,
   deleteProjectDir,
+  getApiKey,
+  getConfiguredAppsyncClientAPIKeyAuth,
+  getConfiguredAppsyncClientCognitoAuth,
+  getConfiguredAppsyncClientIAMAuth,
+  getUserPoolId,
+  initJSProjectWithProfile,
+  setupUser,
+  signInUser,
+  updateApiSchema,
   updateApiWithMultiAuth,
-  addApiWithoutSchema,
   updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { Auth } from 'aws-amplify';
 import moment from 'moment';
 import { IAM } from 'aws-sdk';
-import {
-  configureAmplify,
-  getUserPoolId,
-  getConfiguredAppsyncClientCognitoAuth,
-  getConfiguredAppsyncClientAPIKeyAuth,
-  getApiKey,
-  getConfiguredAppsyncClientIAMAuth,
-  setupUser,
-  signInUser,
-} from '../../schema-api-directives';
 
 (global as any).fetch = require('node-fetch');
 
