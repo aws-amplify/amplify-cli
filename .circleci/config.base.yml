@@ -349,6 +349,8 @@ jobs:
           key: amplify-pkg-binaries-linux-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_macos:
     <<: *linux-e2e-executor-large
@@ -372,6 +374,8 @@ jobs:
           key: amplify-pkg-binaries-macos-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_win:
     <<: *linux-e2e-executor-large
@@ -395,6 +399,8 @@ jobs:
           key: amplify-pkg-binaries-win-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_arm:
     <<: *linux-e2e-executor-large
@@ -418,6 +424,8 @@ jobs:
           key: amplify-pkg-binaries-arm-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   verify_pkg_binaries:
     <<: *linux-e2e-executor-large
