@@ -449,7 +449,7 @@ const openAdminUI = async (context: $TSContext, appId: string, region: string): 
 };
 
 const openUserPoolConsole = async (context: $TSContext, region: string, userPoolId: string): Promise<void> => {
-  const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
+  const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/v2/idp/user-pools/${userPoolId}/users?region=${region}`;
   await open(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
