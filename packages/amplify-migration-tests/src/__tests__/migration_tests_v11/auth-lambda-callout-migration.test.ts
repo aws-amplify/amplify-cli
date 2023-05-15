@@ -1,13 +1,17 @@
+import type { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithMaxOptions,
   addAuthWithOidcForNonJSProject,
+  addUserToUserPool,
   amplifyPushAuth,
   amplifyPushForce,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   generateRandomShortId,
+  getProjectMeta,
   getCloudFormationTemplate,
+  listUsersInUserPool,
   updateAuthSignInSignOutUrl,
   updateHeadlessAuth,
 } from '@aws-amplify/amplify-e2e-core';
@@ -18,7 +22,7 @@ import { initIosProjectWithProfile11, initJSProjectWithProfileV11 } from '../../
 
 const defaultsSettings = {
   name: 'authTest',
-  disableAmplifyAppCreation: false,
+  disableAmplifyAppCreation: true,
 };
 
 describe('lambda callouts', () => {
@@ -59,20 +63,34 @@ describe('lambda callouts', () => {
     expectLambdasInCfnTemplate(revertTemplate);
   });
 
-  it('should be migrated when existing auth is force pushed', async () => {
+
+  it('should migrate when force pushing without affecting userpool functionality', async () => {
     await initJSProjectWithProfileV11(projRoot, defaultsSettings);
+
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName });
-    await amplifyPushAuth(projRoot, false);
 
     const preMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectLambdasInCfnTemplate(preMigrationTemplate);
 
-    // force push with latest should regenerate auth stack and remove lambda callouts
+    await amplifyPushAuth(projRoot, false);
+
+    const meta = getProjectMeta(projRoot);
+    expect(meta?.providers?.awscloudformation?.Region).toBeDefined();
+    expect(meta?.auth).toBeDefined();
+    const region = meta.providers.awscloudformation.Region;
+    const { UserPoolId } = Object.values(meta.auth as Record<string, IAmplifyResource & { output: { UserPoolId: string } }>)
+      .find((resource) => resource.service === 'Cognito').output;
+
+    await addUserToUserPool(UserPoolId, region);
+
     await amplifyPushForce(projRoot, true);
 
-    const postMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectNoLambdasInCfnTemplate(postMigrationTemplate);
+    const users = await listUsersInUserPool(UserPoolId, region);
+    expect(users).toBe(['testUser']);
+
+    const postigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
+    expectNoLambdasInCfnTemplate(postigrationTemplate);
   });
 
   it('should be migrated after updating auth with OIDC', async () => {

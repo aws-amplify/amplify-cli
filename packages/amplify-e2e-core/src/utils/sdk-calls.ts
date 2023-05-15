@@ -201,9 +201,21 @@ export const addUserToUserPool = async (userPoolId: string, region: string) => {
     UserAttributes: [{ Name: 'email', Value: 'username@amazon.com' }],
     Username: 'testUser',
     MessageAction: 'SUPPRESS',
-    TemporaryPassword: 'password',
+    TemporaryPassword: 'tempP@ssword1',
   };
   await provider.adminCreateUser(params).promise();
+};
+
+/**
+ * list all users in a Cognito user pool
+ */
+export const listUsersInUserPool = async (userPoolId: string, region: string): Promise<string[]> => {
+  const provider = new CognitoIdentityServiceProvider({ region });
+  const params = {
+    UserPoolId: userPoolId /* required */,
+  };
+  const { Users } = await provider.listUsers(params).promise();
+  return Users.map(u => u.Username);
 };
 
 /**
