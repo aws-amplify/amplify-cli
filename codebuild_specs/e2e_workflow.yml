@@ -107,25 +107,23 @@ batch:
       depend-on:
         - upload_pkg_binaries
 
-    # - identifier: aggregate_e2e_reports
-    #   env:
-    #     compute-type: BUILD_GENERAL1_LARGE
-    #     shell: bash
-    #   phases:
-    #     build:
-    #       commands:
-    #         - mkdir aggregate-reports
-    #         - aws s3 sync s3://amplify-cli-e2e-test-reports/$CODEBUILD_SOURCE_VERSION aggregate-reports
-    #   debug-session: true
-    #   depend-on:
-    #     - run_e2e_tests_linux
-    #     - run_e2e_tests_linux_2
-    #   reports:
-    #     e2e-reports-aggregate:
-    #       files:
-    #         - '*.xml'
-    #       file-format: 'JUNITXML'
-    #       base-directory: 'aggregate-reports'
+    - identifier: aggregate_e2e_reports
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        shell: bash
+      phases:
+        build:
+          commands:
+            - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
+      debug-session: true
+      depend-on:
+        - run_e2e_tests_linux_1
+      reports:
+        e2e-reports-aggregate:
+          files:
+            - '*.xml'
+          file-format: 'JUNITXML'
+          base-directory: '$CODEBUILD_SRC_DIR/agregate_reports'
 
     # - identifier: run_e2e_tests_windows
     #   buildspec: codebuild_specs/run_e2e_tests_windows.yml
