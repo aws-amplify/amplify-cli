@@ -1,0 +1,14 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - export $CODEBUILD_SOURCE_VERSION="d8bf5fd16f1e6dca817da669f765e091d5a93bf0"
+      - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
+reports:
+  e2e-reports:
+    files:
+      - '*.xml'
+    file-format: 'JUNITXML'
+    base-directory: '$CODEBUILD_SRC_DIR/agregate_reports'
