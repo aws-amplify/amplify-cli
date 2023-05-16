@@ -11,6 +11,7 @@ export * from './add-circleci-tags';
 export * from './admin-ui';
 export * from './api';
 export * from './appsync';
+export * from './auth-utils';
 export * from './envVars';
 export * from './getAppId';
 export * from './git-operations';

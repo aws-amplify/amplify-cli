@@ -1,5 +1,5 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { getProjectMeta, getBackendAmplifyMeta } from '@aws-amplify/amplify-e2e-core';
+import { getProjectMeta, getBackendAmplifyMeta } from './projectMeta';
 import Amplify, { Auth } from 'aws-amplify';
 import fs from 'fs-extra';
 import path from 'path';
@@ -64,7 +64,7 @@ export function getConfiguredCognitoClient(): CognitoIdentityServiceProvider {
   return cognitoClient;
 }
 
-export function getConfiguredAppsyncClientCognitoAuth(url: string, region: string, user: any): any {
+export function getConfiguredAppsyncClientCognitoAuth(url: string, region: string, user: any) {
   return new AWSAppSyncClient({
     url,
     region,
@@ -76,7 +76,7 @@ export function getConfiguredAppsyncClientCognitoAuth(url: string, region: strin
   });
 }
 
-export function getConfiguredAppsyncClientOIDCAuth(url: string, region: string, user: any): any {
+export function getConfiguredAppsyncClientOIDCAuth(url: string, region: string, user: any) {
   return new AWSAppSyncClient({
     url,
     region,
@@ -100,7 +100,7 @@ export function getConfiguredAppsyncClientAPIKeyAuth(url: string, region: string
   });
 }
 
-export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): any {
+export function getConfiguredAppsyncClientIAMAuth(url: string, region: string) {
   return new AWSAppSyncClient({
     url,
     region,
@@ -136,25 +136,25 @@ export function getAWSExports(projectDir: string) {
 
 export function getUserPoolId(projectDir: string): string {
   const amplifyMeta = getProjectMeta(projectDir);
-  const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
+  const cognitoResource = Object.values<{ service: string; output: { UserPoolId: string } }>(amplifyMeta.auth).find((res) => {
     return res.service === 'Cognito';
-  }) as any;
+  });
   return cognitoResource.output.UserPoolId;
 }
 
 export function getCognitoResourceName(projectDir: string): string {
   const amplifyMeta = getBackendAmplifyMeta(projectDir);
-  const cognitoResourceName = Object.keys(amplifyMeta.auth).find((key: any) => {
+  const cognitoResourceName = Object.keys(amplifyMeta.auth).find((key: string) => {
     return amplifyMeta.auth[key].service === 'Cognito';
-  }) as any;
+  });
   return cognitoResourceName;
 }
 
 export function getApiKey(projectDir: string): string {
   const amplifyMeta = getProjectMeta(projectDir);
-  const appsyncResource = Object.values(amplifyMeta.api).find((res: any) => {
+  const appsyncResource = Object.values<{ service: string; output: { GraphQLAPIKeyOutput: string } }>(amplifyMeta.api).find((res) => {
     return res.service === 'AppSync';
-  }) as any;
+  });
   return appsyncResource.output.GraphQLAPIKeyOutput;
 }
 
@@ -168,9 +168,9 @@ export async function authenticateUser(username: string, tempPassword: string, p
 
 export function getUserPoolIssUrl(projectDir: string) {
   const amplifyMeta = getProjectMeta(projectDir);
-  const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
+  const cognitoResource = Object.values<{ service: string; output: { UserPoolId: string } }>(amplifyMeta.auth).find((res) => {
     return res.service === 'Cognito';
-  }) as any;
+  });
 
   const userPoolId = cognitoResource.output.UserPoolId;
   const region = amplifyMeta.providers.awscloudformation.Region;
@@ -180,9 +180,9 @@ export function getUserPoolIssUrl(projectDir: string) {
 
 export function getAppClientIDWeb(projectDir: string) {
   const amplifyMeta = getProjectMeta(projectDir);
-  const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
+  const cognitoResource = Object.values<{ service: string; output: { AppClientIDWeb: string } }>(amplifyMeta.auth).find((res) => {
     return res.service === 'Cognito';
-  }) as any;
+  });
 
   return cognitoResource.output.AppClientIDWeb;
 }
