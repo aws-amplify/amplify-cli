@@ -79,8 +79,7 @@ function _loadTestAccountCredentials {
     echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
     export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
     export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
-    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
-    
+    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")   
 }
 
 
