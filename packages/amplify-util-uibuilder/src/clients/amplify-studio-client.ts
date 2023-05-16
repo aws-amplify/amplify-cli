@@ -1,7 +1,7 @@
 import { $TSContext, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
-import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-import type { CreateComponentData, Component, Theme, Form } from 'aws-sdk/clients/amplifyuibuilder';
-import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';
+import type { ServiceConfigurationOptions } from '../local_modules/aws-sdk/lib/service';
+import type { CreateComponentData, Component, Theme, Form, StartCodegenJobData } from '../local_modules/aws-sdk/clients/amplifyuibuilder';
+import { AmplifyUIBuilder, AmplifyBackend } from '../local_modules/aws-sdk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getAppId, getEnvName } from '../commands/utils/environmentHelpers';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
@@ -164,7 +164,7 @@ export default class AmplifyStudioClient {
         uiBuilderComponents.push(...response.entities);
         nextToken = response.nextToken;
       } while (nextToken);
-      printer.debug(JSON.stringify(uiBuilderComponents, null, 2));
+      // printer.debug(JSON.stringify(uiBuilderComponents, null, 2));
       return { entities: uiBuilderComponents };
     } catch (err) {
       throw new Error(`Failed to list components: ${err.message}`);
@@ -192,7 +192,7 @@ export default class AmplifyStudioClient {
         uiBuilderThemes.push(...response.entities);
         nextToken = response.nextToken;
       } while (nextToken);
-      printer.debug(JSON.stringify(uiBuilderThemes, null, 2));
+      // printer.debug(JSON.stringify(uiBuilderThemes, null, 2));
       return { entities: uiBuilderThemes };
     } catch (err) {
       throw new Error(`Failed to list themes: ${err.message}`);
@@ -216,7 +216,7 @@ export default class AmplifyStudioClient {
         uibuilderForms.push(...response.entities);
         nextToken = response.nextToken;
       } while (nextToken);
-      printer.debug(JSON.stringify(uibuilderForms, null, 2));
+      // printer.debug(JSON.stringify(uibuilderForms, null, 2));
       return { entities: uibuilderForms };
     } catch (err) {
       throw new Error(`Failed to list forms: ${err.message}`);
@@ -250,6 +250,45 @@ export default class AmplifyStudioClient {
       throw err;
     }
   };
+
+  startCodegenJob = async (codegenJobToCreate: StartCodegenJobData, appId?: string, envName?: string) => {
+    const environmentName = envName || this.#envName;
+    const resolvedAppId = appId || this.#appId;
+    try {
+      const response = await this.#amplifyUiBuilder.startCodegenJob({
+        appId: resolvedAppId, 
+        environmentName, 
+        codegenJobToCreate
+      }).promise();
+      if (!response.entity || !response.entity.id) {
+        throw new Error('Error starting codegen job');
+      }
+      return response.entity.id
+    } catch (err) {
+      printer.debug('Failed to start job');
+      printer.debug(err.stack);
+      throw err;
+    }
+  }
+
+  getCodegenJob = async (jobId: string, appId?: string, envName?: string) => {
+    const environmentName = envName || this.#envName;
+    const resolvedAppId = appId || this.#appId;
+    try {
+      const {job} = await this.#amplifyUiBuilder.getCodegenJob({
+        id: jobId,
+        appId: resolvedAppId,
+        environmentName
+      }).promise();
+      if (!job) {
+        throw new Error('Error getting codegen job');
+      }
+      return job;
+    } catch (err) {
+      printer.debug(err.toString());
+      throw err;
+    }
+  }
 
   getModels = async (resourceName: string, envName?: string, appId?: string): Promise<string | undefined> => {
     try {

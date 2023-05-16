@@ -1,6 +1,6 @@
 /* eslint-disable spellcheck/spell-checker */
 import { AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import aws from '../local_modules/aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import {
   generateUiBuilderComponents,
   generateUiBuilderThemes,
