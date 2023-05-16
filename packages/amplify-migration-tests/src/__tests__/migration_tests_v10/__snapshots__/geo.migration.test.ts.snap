@@ -58,7 +58,7 @@ exports.handler = (event, context, callback) => {
      └─ [+] nodejs16.x
 
 Resources
-[~] AWS::Lambda::Function RoleMapFunction
+[~] AWS::Lambda::Function RoleMapFunction 
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
@@ -124,7 +124,7 @@ exports.handler = (event, context, callback) => {
      └─ [+] nodejs16.x
 
 Resources
-[~] AWS::Lambda::Function RoleMapFunction
+[~] AWS::Lambda::Function RoleMapFunction 
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
