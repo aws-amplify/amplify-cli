@@ -20,5 +20,5 @@ mwinit
 echo Loading E2E account credentials...
 ada cred update --profile="${PROFILE}" --account="${ACCOUNT}" --role=CodeBuildE2E --provider=isengard --once
 echo Submitting Build Request
-RESULT=$(aws codebuild start-build-batch --profile="${PROFILE}" --project-name AmplifyCLI-E2E-Testing --source-version=$CURR_BRANCH --query 'buildBatch.id' --output text)
+RESULT=$(aws codebuild start-build-batch --profile="${PROFILE}" --project-name AmplifyCLI-E2E-Testing --source-version=$UPSTREAM_BRANCH --query 'buildBatch.id' --output text)
 echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$ACCOUNT/projects/AmplifyCLI-E2E-Testing/batch/$RESULT?region=us-east-1"
