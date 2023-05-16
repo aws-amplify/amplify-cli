@@ -457,21 +457,17 @@ function _integrationTest {
 function _uploadReportsToS3 {
     source_version=$1
     build_identifier=$2
-    bucket_name="amplify-cli-e2e-test-reports"
     reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
     cd $reports_dir
-    for filename in $(ls); do
-        aws s3 cp "$filename" "s3://$bucket_name/$source_version/$build_identifier-$filename" 
-    done
+    for filename in $(ls); do aws s3 cp "$filename" "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$build_identifier-$filename"; done
 }
 
 function _downloadReportsFromS3 {
     source_version=$1
-    bucket_name="amplify-cli-e2e-test-reports"
     reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
     agregate_reports_dir="$CODEBUILD_SRC_DIR/agregate_reports"
     mkdir $agregate_reports_dir
-    cd $agregate_reports
-    aws s3 sync "s3://$bucket_name/$source_version" .
+    cd $agregate_reports_dir
+    aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done
 }
