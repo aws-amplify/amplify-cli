@@ -468,6 +468,6 @@ function _downloadReportsFromS3 {
     agregate_reports_dir="$CODEBUILD_SRC_DIR/agregate_reports"
     mkdir $agregate_reports_dir
     cd $agregate_reports_dir
-    aws s3 sync "s3://amplify-cli-e2e-test-reports/$source_version" .
+    aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done
 }
