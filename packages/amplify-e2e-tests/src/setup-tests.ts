@@ -6,13 +6,11 @@ const removeYarnPaths = () => {
     .join(':');
 };
 
-removeYarnPaths();
-
 expect.extend({ toBeIAMRoleWithArn });
 expect.extend({ toHaveValidPolicyConditionMatchingIdpId });
 expect.extend({ toBeAS3Bucket });
 
-process.env.YARN_ENABLE_INLINE_BUILDS = undefined;
+removeYarnPaths();
 
 const JEST_TIMEOUT = 1000 * 60 * 60; // 1 hour
 jest.setTimeout(JEST_TIMEOUT);
