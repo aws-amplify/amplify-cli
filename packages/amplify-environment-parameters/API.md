@@ -61,6 +61,9 @@ export const saveAll: (serviceUploadHandler?: ServiceUploadHandler) => Promise<v
 export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
 
 // @public (undocumented)
+export type ServiceParameterCheckHandler = (key: string) => Promise<boolean>;
+
+// @public (undocumented)
 export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
 
 // (No @packageDocumentation comment for this package)
