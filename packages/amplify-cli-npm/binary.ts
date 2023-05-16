@@ -121,7 +121,14 @@ export class Binary {
     console.log(`Downloading release from ${getCompressedBinaryUrl()}`);
     try {
       const res = await axios({ url: getCompressedBinaryUrl(), responseType: 'stream' });
-      await pipeline(res.data, createGunzip(), this.extract());
+      // An array to collect a promises from nested pipeline that extracts tar content to a file.
+      // The tar file to actual file on disk streaming is kicked off by asynchronous events
+      // of extract step. So top level pipeline may complete before streaming is completed.
+      // We capture a Promise from that process to await it before proceeding,
+      // so that we don't call spawnSync prematurely before content streaming completes.
+      const extractPromiseCollector: Array<Promise<void>> = [];
+      await pipeline(res.data, createGunzip(), this.extract(extractPromiseCollector));
+      await Promise.all(extractPromiseCollector);
 
       console.log('amplify has been installed!');
       spawnSync(this.binaryPath, ['version'], { cwd: process.cwd(), stdio: 'inherit' });
@@ -151,28 +158,22 @@ export class Binary {
    *
    * @returns tar.Extract
    */
-  private extract(): tar.Extract {
+  private extract(extractPromiseCollector: Array<Promise<void>>): tar.Extract {
     const extract = tar.extract();
-    const chunks: Uint8Array[] = [];
     extract.on('entry', (header, extractStream, next) => {
       if (header.type === 'file') {
-        extractStream.on('data', (chunk) => {
-          chunks.push(chunk);
+        const fileWriteStream = fs.createWriteStream(this.binaryPath, {
+          mode: 0o755,
         });
+        // pipe tar entry to file stream
+        // and collect a promise so that top level process can await it
+        extractPromiseCollector.push(pipeline(extractStream, fileWriteStream));
       }
       extractStream.on('end', () => {
         next();
       });
 
       extractStream.resume();
-    });
-    extract.on('finish', () => {
-      if (chunks.length) {
-        const data = Buffer.concat(chunks);
-        fs.writeFileSync(this.binaryPath, data, {
-          mode: 0o755,
-        });
-      }
     });
     return extract;
   }

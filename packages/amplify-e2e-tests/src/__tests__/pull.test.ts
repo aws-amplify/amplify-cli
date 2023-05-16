@@ -14,6 +14,7 @@ import {
   getBackendAmplifyMeta,
   getTeamProviderInfo,
   amplifyPullNonInteractive,
+  amplifyPullWithCtrlCOnFrameworkPrompt,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -43,6 +44,18 @@ describe('amplify pull in two directories', () => {
     const appId = getAppId(projRoot);
     await amplifyPull(projRoot2, { appId, emptyDir: true, noUpdateBackend: true });
     await amplifyPull(projRoot2, { appId, noUpdateBackend: true });
+  });
+
+  it('works if previous pull is interrupted', async () => {
+    const envName = 'integtest';
+    await initJSProjectWithProfile(projRoot, {
+      disableAmplifyAppCreation: false,
+      envName,
+      name: 'testapi',
+    });
+    const appId = getAppId(projRoot);
+    await amplifyPullWithCtrlCOnFrameworkPrompt(projRoot2, { appId, envName });
+    await amplifyPull(projRoot2, { appId, envName, emptyDir: true });
   });
 });
 
