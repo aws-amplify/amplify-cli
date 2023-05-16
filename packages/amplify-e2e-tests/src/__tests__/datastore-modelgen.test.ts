@@ -60,6 +60,6 @@ describe('data store modelgen tests', () => {
 
     await expect(generateModels(projRoot)).resolves.not.toThrow();
     updateApiSchema(projRoot, projName, schemaWithError);
-    await expect(generateModels(projRoot)).rejects.toThrowError();
+    await expect(generateModels(projRoot)).rejects.toThrow();
   });
 });
