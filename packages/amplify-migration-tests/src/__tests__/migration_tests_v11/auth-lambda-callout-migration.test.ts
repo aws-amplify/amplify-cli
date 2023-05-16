@@ -2,16 +2,18 @@ import type { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithMaxOptions,
   addAuthWithOidcForNonJSProject,
-  addUserToUserPool,
   amplifyPushAuth,
   amplifyPushForce,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   generateRandomShortId,
-  getProjectMeta,
   getCloudFormationTemplate,
+  getProjectMeta,
   listUsersInUserPool,
+  setupUser,
+  signInUser,
+  signOutUser,
   updateAuthSignInSignOutUrl,
   updateHeadlessAuth,
 } from '@aws-amplify/amplify-e2e-core';
@@ -82,12 +84,20 @@ describe('lambda callouts', () => {
       (resource) => resource.service === 'Cognito',
     ).output;
 
-    await addUserToUserPool(UserPoolId, region);
+    const username = 'testUser';
+    const password = 'Password12#';
+    await setupUser(UserPoolId, username, 'Password12#', 'userPoolGroup1');
+
+    await signInUser(username, password);
+    await signOutUser();
 
     await amplifyPushForce(projRoot, true);
 
     const users = await listUsersInUserPool(UserPoolId, region);
-    expect(users).toBe(['testUser']);
+    expect(users).toBe([username]);
+
+    await signInUser(username, password);
+    await signOutUser();
 
     const postigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(postigrationTemplate);

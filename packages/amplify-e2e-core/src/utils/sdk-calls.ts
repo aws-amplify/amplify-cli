@@ -201,7 +201,7 @@ export const addUserToUserPool = async (userPoolId: string, region: string) => {
     UserAttributes: [{ Name: 'email', Value: 'username@amazon.com' }],
     Username: 'testUser',
     MessageAction: 'SUPPRESS',
-    TemporaryPassword: 'tempP@ssword1',
+    TemporaryPassword: 'password',
   };
   await provider.adminCreateUser(params).promise();
 };

@@ -1,15 +1,15 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { getProjectMeta, getBackendAmplifyMeta } from './projectMeta';
 import Amplify, { Auth } from 'aws-amplify';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { getBackendAmplifyMeta, getProjectMeta } from './projectMeta';
 
-const tempPassword = 'tempPassword';
+const tempPassword = 'tempPassword1@';
 
 //setupUser will add user to a cognito group and make its status to be "CONFIRMED",
 //if groupName is specified, add the user to the group.
-export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string) {
+export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string): Promise<void> {
   const cognitoClient = getConfiguredCognitoClient();
   await cognitoClient
     .adminCreateUser({
@@ -39,7 +39,7 @@ export async function addUserToGroup(
   userPoolId: string,
   username: string,
   groupName?: string,
-) {
+): Promise<void> {
   await cognitoClient
     .adminAddUserToGroup({
       UserPoolId: userPoolId,
@@ -121,6 +121,10 @@ export async function signInUser(username: string, password: string) {
   return user;
 }
 
+export async function signOutUser(): Promise<void> {
+  await Auth.signOut({ global: true });
+}
+
 export function configureAmplify(projectDir: string) {
   const awsconfig = getAWSExports(projectDir);
   Amplify.configure(awsconfig);
@@ -166,7 +170,7 @@ export async function authenticateUser(username: string, tempPassword: string, p
   }
 }
 
-export function getUserPoolIssUrl(projectDir: string) {
+export function getUserPoolIssUrl(projectDir: string): string {
   const amplifyMeta = getProjectMeta(projectDir);
   const cognitoResource = Object.values<{ service: string; output: { UserPoolId: string } }>(amplifyMeta.auth).find((res) => {
     return res.service === 'Cognito';
