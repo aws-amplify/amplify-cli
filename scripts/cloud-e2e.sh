@@ -12,6 +12,7 @@ echo Submitting CodeBuild Request to AWS Account: $ACCOUNT
 CURR_BRANCH=$(git branch --show-current)
 UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH
 git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease
+aws configure set region us-east-1 --profile $PROFILE
 echo Current branch is: $CURR_BRANCH
 echo Upstream branch is: $UPSTREAM_BRANCH
 echo Authenticating terminal...
