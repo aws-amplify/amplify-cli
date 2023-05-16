@@ -1,4 +1,11 @@
 #!/bin/bash -e
+export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+if [ "$BRANCH_NAME" = "" ] ; then
+  BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+fi
+git checkout $BRANCH_NAME
+echo "fetching tags"
+git fetch --tags https://github.com/aws-amplify/amplify-cli
 
 # lerna has a bug (https://github.com/lerna/lerna/issues/1066) where failed publishes do not set the exit code properly
 # this causes the script to keep running even after failed publishes
@@ -34,13 +41,13 @@ else
   git config --global user.name $GITHUB_USER
 fi
 
-if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-  if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
+if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
+  if [[ "$BRANCH_NAME" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
     # Remove tagged-release-without-e2e-tests/
-    export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
-  elif [[ "$CIRCLE_BRANCH" =~ ^tagged-release\/.* ]]; then
+    export NPM_TAG="${BRANCH_NAME/tagged-release-without-e2e-tests\//}"
+  elif [[ "$BRANCH_NAME" =~ ^tagged-release\/.* ]]; then
     # Remove tagged-release/
-    export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
+    export NPM_TAG="${BRANCH_NAME/tagged-release\//}"
   fi
   if [ -z "$NPM_TAG" ]; then
     echo "Tag name is missing. Name your branch with either tagged-release/<tag-name> or tagged-release-without-e2e-tests/<tag-name>"
@@ -56,7 +63,7 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   fi
 
 # @latest release
-elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
+elif [[ "$BRANCH_NAME" == "release" ]]; then
   # create release commit and release tags
   npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
 
@@ -70,7 +77,7 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   fi
 
   # push release commit
-  git push origin "$CIRCLE_BRANCH"
+  git push origin "$BRANCH_NAME"
 
   # push release tags
   git tag --points-at HEAD | xargs git push origin
@@ -88,33 +95,33 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   git push origin hotfix
 
 # release candidate or local publish for testing / building binary
-elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+elif [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
 
   # force @aws-amplify/cli-internal to be versioned in case this pipeline run does not have any commits that modify the CLI packages
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     force_publish_local_args="--force-publish '@aws-amplify/cli-internal'"
   fi
   # create release commit and release tags
-  git checkout "${CODEBUILD_WEBHOOK_TRIGGER#branch/*}" && npx lerna version --preid=rc.$CODEBUILD_RESOLVED_SOURCE_VERSION --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
+  npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
 
 
   # if publishing locally to verdaccio
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     # publish to verdaccio with no dist tag (default to latest)
-    lernaPublishExitOnFailure from-package --git-head $CODEBUILD_RESOLVED_SOURCE_VERSION --yes --no-push
+    lernaPublishExitOnFailure from-git --yes --no-push
     echo "Published packages to verdaccio"
     echo "Exiting without pushing release commit or release tags"
     exit 0
   fi
 
   # publish versions that were just computed
-  lernaPublishExitOnFailure from-package --git-head $CODEBUILD_RESOLVED_SOURCE_VERSION --yes --no-push --dist-tag rc
+  lernaPublishExitOnFailure from-git --yes --no-push --dist-tag rc
 
   # push release commit
-  git push origin "${CODEBUILD_WEBHOOK_TRIGGER#branch/*}"
+  git push origin "$BRANCH_NAME"
 
   # push release tags
   git tag --points-at HEAD | xargs git push origin
 else
-  echo "branch name" "${CODEBUILD_WEBHOOK_TRIGGER#branch/*}" "did not match any branch publish rules. Skipping publish"
+  echo "branch name" "$BRANCH_NAME" "did not match any branch publish rules. Skipping publish"
 fi
