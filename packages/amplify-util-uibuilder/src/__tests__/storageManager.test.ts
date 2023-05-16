@@ -1,7 +1,9 @@
-import { StudioSchema } from '@aws-amplify/codegen-ui';
 import { hasStorageField } from '../commands/utils';
+import { Form } from 'aws-sdk/clients/amplifyuibuilder';
 
-const formWithNoCustomization: StudioSchema = {
+const formWithNoCustomization: Form = {
+  appId: 'appId123',
+  environmentName: 'staging',
   id: 'f-123456',
   name: 'BlogCreateForm',
   formActionType: 'create',
@@ -13,9 +15,10 @@ const formWithNoCustomization: StudioSchema = {
   sectionalElements: {},
   style: {},
   cta: {},
+  schemaVersion: '1.0'
 };
 
-const formWithNoStorageField: StudioSchema = {
+const formWithNoStorageField: Form = {
   ...formWithNoCustomization,
   dataType: { dataSourceType: 'Custom', dataTypeName: 'Blog' },
   fields: {
@@ -23,7 +26,7 @@ const formWithNoStorageField: StudioSchema = {
   },
 };
 
-const formWithStorageField: StudioSchema = {
+const formWithStorageField: Form = {
   ...formWithNoCustomization,
   dataType: { dataSourceType: 'Custom', dataTypeName: 'Blog' },
   fields: {

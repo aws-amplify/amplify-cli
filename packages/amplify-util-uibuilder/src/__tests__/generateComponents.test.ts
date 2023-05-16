@@ -1,4 +1,4 @@
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import aws from '../local_modules/aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import * as utils from '../commands/utils';
 import { run } from '../commands/generateComponents';
 
@@ -10,6 +10,8 @@ const utilsMock = utils as any;
 utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
 utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
 utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue({});
+utilsMock.extractUIComponents = jest.fn().mockReturnValue(undefined);
+utilsMock.pollCodegenJob = jest.fn().mockReturnValue({asset: {downloadUrl: 'amazon.com'}});
 
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
@@ -76,6 +78,12 @@ describe('can generate components', () => {
           },
         }),
       }),
+      startCodegenJob: jest.fn().mockReturnValue({
+        promise: jest.fn().mockReturnValue({entity: {id: 'jobId123'}})
+      }),
+      getCodegenJob: jest.fn().mockReturnValue({
+        promise: jest.fn().mockReturnValue({status: 'succeeded'})
+      })
     });
     utilsMock.generateUiBuilderComponents = jest.fn().mockReturnValue(schemas.entities);
     utilsMock.generateUiBuilderThemes = jest.fn().mockReturnValue(schemas.entities);
@@ -89,9 +97,9 @@ describe('can generate components', () => {
   it('runs generateComponents', async () => {
     await run(context, 'PostPull');
     expect(mockedExport).toBeCalledTimes(3);
-    expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(1);
-    expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(1);
-    expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(1);
+    expect(utilsMock.pollCodegenJob).toBeCalledTimes(1);
+    expect(utilsMock.getUiBuilderComponentsPath).toBeCalledTimes(1);
+    expect(utilsMock.extractUIComponents).toBeCalledTimes(1);
     expect(utilsMock.deleteDetachedForms).toBeCalledTimes(1);
   });
 });

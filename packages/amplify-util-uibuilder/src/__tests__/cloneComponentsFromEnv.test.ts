@@ -1,4 +1,4 @@
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import aws from '../local_modules/aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import * as extractArgsDependency from '../commands/utils/extractArgs';
 import { run } from '../commands/cloneComponentsFromEnv';
 
