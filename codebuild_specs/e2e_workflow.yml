@@ -107,7 +107,7 @@ batch:
     #   depend-on:
     #     - upload_pkg_binaries
 
-    - identifier: run_e2e_tests_linux_1
+    - identifier: aggregate_e2e_reports
       buildspec: codebuild_specs/aggregate_e2e_reports.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
