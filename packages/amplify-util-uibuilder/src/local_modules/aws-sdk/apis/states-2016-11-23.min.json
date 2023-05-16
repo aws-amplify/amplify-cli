@@ -1,0 +1,1449 @@
+{
+  "version": "2.0",
+  "metadata": {
+    "apiVersion": "2016-11-23",
+    "endpointPrefix": "states",
+    "jsonVersion": "1.0",
+    "protocol": "json",
+    "serviceAbbreviation": "AWS SFN",
+    "serviceFullName": "AWS Step Functions",
+    "serviceId": "SFN",
+    "signatureVersion": "v4",
+    "targetPrefix": "AWSStepFunctions",
+    "uid": "states-2016-11-23"
+  },
+  "operations": {
+    "CreateActivity": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "name"
+        ],
+        "members": {
+          "name": {},
+          "tags": {
+            "shape": "S3"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "activityArn",
+          "creationDate"
+        ],
+        "members": {
+          "activityArn": {},
+          "creationDate": {
+            "type": "timestamp"
+          }
+        }
+      },
+      "idempotent": true
+    },
+    "CreateStateMachine": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "name",
+          "definition",
+          "roleArn"
+        ],
+        "members": {
+          "name": {},
+          "definition": {
+            "shape": "Sb"
+          },
+          "roleArn": {},
+          "type": {},
+          "loggingConfiguration": {
+            "shape": "Sd"
+          },
+          "tags": {
+            "shape": "S3"
+          },
+          "tracingConfiguration": {
+            "shape": "Sj"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "stateMachineArn",
+          "creationDate"
+        ],
+        "members": {
+          "stateMachineArn": {},
+          "creationDate": {
+            "type": "timestamp"
+          }
+        }
+      },
+      "idempotent": true
+    },
+    "DeleteActivity": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "activityArn"
+        ],
+        "members": {
+          "activityArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {}
+      }
+    },
+    "DeleteStateMachine": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "stateMachineArn"
+        ],
+        "members": {
+          "stateMachineArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {}
+      }
+    },
+    "DescribeActivity": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "activityArn"
+        ],
+        "members": {
+          "activityArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "activityArn",
+          "name",
+          "creationDate"
+        ],
+        "members": {
+          "activityArn": {},
+          "name": {},
+          "creationDate": {
+            "type": "timestamp"
+          }
+        }
+      }
+    },
+    "DescribeExecution": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "executionArn"
+        ],
+        "members": {
+          "executionArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "executionArn",
+          "stateMachineArn",
+          "status",
+          "startDate"
+        ],
+        "members": {
+          "executionArn": {},
+          "stateMachineArn": {},
+          "name": {},
+          "status": {},
+          "startDate": {
+            "type": "timestamp"
+          },
+          "stopDate": {
+            "type": "timestamp"
+          },
+          "input": {
+            "shape": "Sv"
+          },
+          "inputDetails": {
+            "shape": "Sw"
+          },
+          "output": {
+            "shape": "Sv"
+          },
+          "outputDetails": {
+            "shape": "Sw"
+          },
+          "traceHeader": {},
+          "mapRunArn": {},
+          "error": {
+            "shape": "S10"
+          },
+          "cause": {
+            "shape": "S11"
+          }
+        }
+      }
+    },
+    "DescribeMapRun": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "mapRunArn"
+        ],
+        "members": {
+          "mapRunArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "mapRunArn",
+          "executionArn",
+          "status",
+          "startDate",
+          "maxConcurrency",
+          "toleratedFailurePercentage",
+          "toleratedFailureCount",
+          "itemCounts",
+          "executionCounts"
+        ],
+        "members": {
+          "mapRunArn": {},
+          "executionArn": {},
+          "status": {},
+          "startDate": {
+            "type": "timestamp"
+          },
+          "stopDate": {
+            "type": "timestamp"
+          },
+          "maxConcurrency": {
+            "type": "integer"
+          },
+          "toleratedFailurePercentage": {
+            "type": "float"
+          },
+          "toleratedFailureCount": {
+            "type": "long"
+          },
+          "itemCounts": {
+            "type": "structure",
+            "required": [
+              "pending",
+              "running",
+              "succeeded",
+              "failed",
+              "timedOut",
+              "aborted",
+              "total",
+              "resultsWritten"
+            ],
+            "members": {
+              "pending": {
+                "type": "long"
+              },
+              "running": {
+                "type": "long"
+              },
+              "succeeded": {
+                "type": "long"
+              },
+              "failed": {
+                "type": "long"
+              },
+              "timedOut": {
+                "type": "long"
+              },
+              "aborted": {
+                "type": "long"
+              },
+              "total": {
+                "type": "long"
+              },
+              "resultsWritten": {
+                "type": "long"
+              }
+            }
+          },
+          "executionCounts": {
+            "type": "structure",
+            "required": [
+              "pending",
+              "running",
+              "succeeded",
+              "failed",
+              "timedOut",
+              "aborted",
+              "total",
+              "resultsWritten"
+            ],
+            "members": {
+              "pending": {
+                "type": "long"
+              },
+              "running": {
+                "type": "long"
+              },
+              "succeeded": {
+                "type": "long"
+              },
+              "failed": {
+                "type": "long"
+              },
+              "timedOut": {
+                "type": "long"
+              },
+              "aborted": {
+                "type": "long"
+              },
+              "total": {
+                "type": "long"
+              },
+              "resultsWritten": {
+                "type": "long"
+              }
+            }
+          }
+        }
+      }
+    },
+    "DescribeStateMachine": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "stateMachineArn"
+        ],
+        "members": {
+          "stateMachineArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "stateMachineArn",
+          "name",
+          "definition",
+          "roleArn",
+          "type",
+          "creationDate"
+        ],
+        "members": {
+          "stateMachineArn": {},
+          "name": {},
+          "status": {},
+          "definition": {
+            "shape": "Sb"
+          },
+          "roleArn": {},
+          "type": {},
+          "creationDate": {
+            "type": "timestamp"
+          },
+          "loggingConfiguration": {
+            "shape": "Sd"
+          },
+          "tracingConfiguration": {
+            "shape": "Sj"
+          },
+          "label": {}
+        }
+      }
+    },
+    "DescribeStateMachineForExecution": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "executionArn"
+        ],
+        "members": {
+          "executionArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "stateMachineArn",
+          "name",
+          "definition",
+          "roleArn",
+          "updateDate"
+        ],
+        "members": {
+          "stateMachineArn": {},
+          "name": {},
+          "definition": {
+            "shape": "Sb"
+          },
+          "roleArn": {},
+          "updateDate": {
+            "type": "timestamp"
+          },
+          "loggingConfiguration": {
+            "shape": "Sd"
+          },
+          "tracingConfiguration": {
+            "shape": "Sj"
+          },
+          "mapRunArn": {},
+          "label": {}
+        }
+      }
+    },
+    "GetActivityTask": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "activityArn"
+        ],
+        "members": {
+          "activityArn": {},
+          "workerName": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {
+          "taskToken": {},
+          "input": {
+            "type": "string",
+            "sensitive": true
+          }
+        }
+      }
+    },
+    "GetExecutionHistory": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "executionArn"
+        ],
+        "members": {
+          "executionArn": {},
+          "maxResults": {
+            "type": "integer"
+          },
+          "reverseOrder": {
+            "type": "boolean"
+          },
+          "nextToken": {},
+          "includeExecutionData": {
+            "type": "boolean"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "events"
+        ],
+        "members": {
+          "events": {
+            "type": "list",
+            "member": {
+              "type": "structure",
+              "required": [
+                "timestamp",
+                "type",
+                "id"
+              ],
+              "members": {
+                "timestamp": {
+                  "type": "timestamp"
+                },
+                "type": {},
+                "id": {
+                  "type": "long"
+                },
+                "previousEventId": {
+                  "type": "long"
+                },
+                "activityFailedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "activityScheduleFailedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "activityScheduledEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resource"
+                  ],
+                  "members": {
+                    "resource": {},
+                    "input": {
+                      "shape": "Sv"
+                    },
+                    "inputDetails": {
+                      "shape": "S1y"
+                    },
+                    "timeoutInSeconds": {
+                      "type": "long"
+                    },
+                    "heartbeatInSeconds": {
+                      "type": "long"
+                    }
+                  }
+                },
+                "activityStartedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "workerName": {}
+                  }
+                },
+                "activitySucceededEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "output": {
+                      "shape": "Sv"
+                    },
+                    "outputDetails": {
+                      "shape": "S1y"
+                    }
+                  }
+                },
+                "activityTimedOutEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "taskFailedEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resourceType",
+                    "resource"
+                  ],
+                  "members": {
+                    "resourceType": {},
+                    "resource": {},
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "taskScheduledEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resourceType",
+                    "resource",
+                    "region",
+                    "parameters"
+                  ],
+                  "members": {
+                    "resourceType": {},
+                    "resource": {},
+                    "region": {},
+                    "parameters": {
+                      "type": "string",
+                      "sensitive": true
+                    },
+                    "timeoutInSeconds": {
+                      "type": "long"
+                    },
+                    "heartbeatInSeconds": {
+                      "type": "long"
+                    },
+                    "taskCredentials": {
+                      "shape": "S28"
+                    }
+                  }
+                },
+                "taskStartFailedEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resourceType",
+                    "resource"
+                  ],
+                  "members": {
+                    "resourceType": {},
+                    "resource": {},
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "taskStartedEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resourceType",
+                    "resource"
+                  ],
+                  "members": {
+                    "resourceType": {},
+                    "resource": {}
+                  }
+                },
+                "taskSubmitFailedEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resourceType",
+                    "resource"
+                  ],
+                  "members": {
+                    "resourceType": {},
+                    "resource": {},
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "taskSubmittedEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resourceType",
+                    "resource"
+                  ],
+                  "members": {
+                    "resourceType": {},
+                    "resource": {},
+                    "output": {
+                      "shape": "Sv"
+                    },
+                    "outputDetails": {
+                      "shape": "S1y"
+                    }
+                  }
+                },
+                "taskSucceededEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resourceType",
+                    "resource"
+                  ],
+                  "members": {
+                    "resourceType": {},
+                    "resource": {},
+                    "output": {
+                      "shape": "Sv"
+                    },
+                    "outputDetails": {
+                      "shape": "S1y"
+                    }
+                  }
+                },
+                "taskTimedOutEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resourceType",
+                    "resource"
+                  ],
+                  "members": {
+                    "resourceType": {},
+                    "resource": {},
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "executionFailedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "executionStartedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "input": {
+                      "shape": "Sv"
+                    },
+                    "inputDetails": {
+                      "shape": "S1y"
+                    },
+                    "roleArn": {}
+                  }
+                },
+                "executionSucceededEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "output": {
+                      "shape": "Sv"
+                    },
+                    "outputDetails": {
+                      "shape": "S1y"
+                    }
+                  }
+                },
+                "executionAbortedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "executionTimedOutEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "mapStateStartedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "length": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "mapIterationStartedEventDetails": {
+                  "shape": "S2m"
+                },
+                "mapIterationSucceededEventDetails": {
+                  "shape": "S2m"
+                },
+                "mapIterationFailedEventDetails": {
+                  "shape": "S2m"
+                },
+                "mapIterationAbortedEventDetails": {
+                  "shape": "S2m"
+                },
+                "lambdaFunctionFailedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "lambdaFunctionScheduleFailedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "lambdaFunctionScheduledEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "resource"
+                  ],
+                  "members": {
+                    "resource": {},
+                    "input": {
+                      "shape": "Sv"
+                    },
+                    "inputDetails": {
+                      "shape": "S1y"
+                    },
+                    "timeoutInSeconds": {
+                      "type": "long"
+                    },
+                    "taskCredentials": {
+                      "shape": "S28"
+                    }
+                  }
+                },
+                "lambdaFunctionStartFailedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "lambdaFunctionSucceededEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "output": {
+                      "shape": "Sv"
+                    },
+                    "outputDetails": {
+                      "shape": "S1y"
+                    }
+                  }
+                },
+                "lambdaFunctionTimedOutEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                },
+                "stateEnteredEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "name"
+                  ],
+                  "members": {
+                    "name": {},
+                    "input": {
+                      "shape": "Sv"
+                    },
+                    "inputDetails": {
+                      "shape": "S1y"
+                    }
+                  }
+                },
+                "stateExitedEventDetails": {
+                  "type": "structure",
+                  "required": [
+                    "name"
+                  ],
+                  "members": {
+                    "name": {},
+                    "output": {
+                      "shape": "Sv"
+                    },
+                    "outputDetails": {
+                      "shape": "S1y"
+                    }
+                  }
+                },
+                "mapRunStartedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "mapRunArn": {}
+                  }
+                },
+                "mapRunFailedEventDetails": {
+                  "type": "structure",
+                  "members": {
+                    "error": {
+                      "shape": "S10"
+                    },
+                    "cause": {
+                      "shape": "S11"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "nextToken": {}
+        }
+      }
+    },
+    "ListActivities": {
+      "input": {
+        "type": "structure",
+        "members": {
+          "maxResults": {
+            "type": "integer"
+          },
+          "nextToken": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "activities"
+        ],
+        "members": {
+          "activities": {
+            "type": "list",
+            "member": {
+              "type": "structure",
+              "required": [
+                "activityArn",
+                "name",
+                "creationDate"
+              ],
+              "members": {
+                "activityArn": {},
+                "name": {},
+                "creationDate": {
+                  "type": "timestamp"
+                }
+              }
+            }
+          },
+          "nextToken": {}
+        }
+      }
+    },
+    "ListExecutions": {
+      "input": {
+        "type": "structure",
+        "members": {
+          "stateMachineArn": {},
+          "statusFilter": {},
+          "maxResults": {
+            "type": "integer"
+          },
+          "nextToken": {},
+          "mapRunArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "executions"
+        ],
+        "members": {
+          "executions": {
+            "type": "list",
+            "member": {
+              "type": "structure",
+              "required": [
+                "executionArn",
+                "stateMachineArn",
+                "name",
+                "status",
+                "startDate"
+              ],
+              "members": {
+                "executionArn": {},
+                "stateMachineArn": {},
+                "name": {},
+                "status": {},
+                "startDate": {
+                  "type": "timestamp"
+                },
+                "stopDate": {
+                  "type": "timestamp"
+                },
+                "mapRunArn": {},
+                "itemCount": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "nextToken": {}
+        }
+      }
+    },
+    "ListMapRuns": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "executionArn"
+        ],
+        "members": {
+          "executionArn": {},
+          "maxResults": {
+            "type": "integer"
+          },
+          "nextToken": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "mapRuns"
+        ],
+        "members": {
+          "mapRuns": {
+            "type": "list",
+            "member": {
+              "type": "structure",
+              "required": [
+                "executionArn",
+                "mapRunArn",
+                "stateMachineArn",
+                "startDate"
+              ],
+              "members": {
+                "executionArn": {},
+                "mapRunArn": {},
+                "stateMachineArn": {},
+                "startDate": {
+                  "type": "timestamp"
+                },
+                "stopDate": {
+                  "type": "timestamp"
+                }
+              }
+            }
+          },
+          "nextToken": {}
+        }
+      }
+    },
+    "ListStateMachines": {
+      "input": {
+        "type": "structure",
+        "members": {
+          "maxResults": {
+            "type": "integer"
+          },
+          "nextToken": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "stateMachines"
+        ],
+        "members": {
+          "stateMachines": {
+            "type": "list",
+            "member": {
+              "type": "structure",
+              "required": [
+                "stateMachineArn",
+                "name",
+                "type",
+                "creationDate"
+              ],
+              "members": {
+                "stateMachineArn": {},
+                "name": {},
+                "type": {},
+                "creationDate": {
+                  "type": "timestamp"
+                }
+              }
+            }
+          },
+          "nextToken": {}
+        }
+      }
+    },
+    "ListTagsForResource": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "resourceArn"
+        ],
+        "members": {
+          "resourceArn": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {
+          "tags": {
+            "shape": "S3"
+          }
+        }
+      }
+    },
+    "SendTaskFailure": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "taskToken"
+        ],
+        "members": {
+          "taskToken": {},
+          "error": {
+            "shape": "S10"
+          },
+          "cause": {
+            "shape": "S11"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {}
+      }
+    },
+    "SendTaskHeartbeat": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "taskToken"
+        ],
+        "members": {
+          "taskToken": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {}
+      }
+    },
+    "SendTaskSuccess": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "taskToken",
+          "output"
+        ],
+        "members": {
+          "taskToken": {},
+          "output": {
+            "shape": "Sv"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {}
+      }
+    },
+    "StartExecution": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "stateMachineArn"
+        ],
+        "members": {
+          "stateMachineArn": {},
+          "name": {},
+          "input": {
+            "shape": "Sv"
+          },
+          "traceHeader": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "executionArn",
+          "startDate"
+        ],
+        "members": {
+          "executionArn": {},
+          "startDate": {
+            "type": "timestamp"
+          }
+        }
+      },
+      "idempotent": true
+    },
+    "StartSyncExecution": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "stateMachineArn"
+        ],
+        "members": {
+          "stateMachineArn": {},
+          "name": {},
+          "input": {
+            "shape": "Sv"
+          },
+          "traceHeader": {}
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "executionArn",
+          "startDate",
+          "stopDate",
+          "status"
+        ],
+        "members": {
+          "executionArn": {},
+          "stateMachineArn": {},
+          "name": {},
+          "startDate": {
+            "type": "timestamp"
+          },
+          "stopDate": {
+            "type": "timestamp"
+          },
+          "status": {},
+          "error": {
+            "shape": "S10"
+          },
+          "cause": {
+            "shape": "S11"
+          },
+          "input": {
+            "shape": "Sv"
+          },
+          "inputDetails": {
+            "shape": "Sw"
+          },
+          "output": {
+            "shape": "Sv"
+          },
+          "outputDetails": {
+            "shape": "Sw"
+          },
+          "traceHeader": {},
+          "billingDetails": {
+            "type": "structure",
+            "members": {
+              "billedMemoryUsedInMB": {
+                "type": "long"
+              },
+              "billedDurationInMilliseconds": {
+                "type": "long"
+              }
+            }
+          }
+        }
+      },
+      "endpoint": {
+        "hostPrefix": "sync-"
+      }
+    },
+    "StopExecution": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "executionArn"
+        ],
+        "members": {
+          "executionArn": {},
+          "error": {
+            "shape": "S10"
+          },
+          "cause": {
+            "shape": "S11"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "stopDate"
+        ],
+        "members": {
+          "stopDate": {
+            "type": "timestamp"
+          }
+        }
+      }
+    },
+    "TagResource": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "resourceArn",
+          "tags"
+        ],
+        "members": {
+          "resourceArn": {},
+          "tags": {
+            "shape": "S3"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {}
+      }
+    },
+    "UntagResource": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "resourceArn",
+          "tagKeys"
+        ],
+        "members": {
+          "resourceArn": {},
+          "tagKeys": {
+            "type": "list",
+            "member": {}
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {}
+      }
+    },
+    "UpdateMapRun": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "mapRunArn"
+        ],
+        "members": {
+          "mapRunArn": {},
+          "maxConcurrency": {
+            "type": "integer"
+          },
+          "toleratedFailurePercentage": {
+            "type": "float"
+          },
+          "toleratedFailureCount": {
+            "type": "long"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "members": {}
+      }
+    },
+    "UpdateStateMachine": {
+      "input": {
+        "type": "structure",
+        "required": [
+          "stateMachineArn"
+        ],
+        "members": {
+          "stateMachineArn": {},
+          "definition": {
+            "shape": "Sb"
+          },
+          "roleArn": {},
+          "loggingConfiguration": {
+            "shape": "Sd"
+          },
+          "tracingConfiguration": {
+            "shape": "Sj"
+          }
+        }
+      },
+      "output": {
+        "type": "structure",
+        "required": [
+          "updateDate"
+        ],
+        "members": {
+          "updateDate": {
+            "type": "timestamp"
+          }
+        }
+      },
+      "idempotent": true
+    }
+  },
+  "shapes": {
+    "S3": {
+      "type": "list",
+      "member": {
+        "type": "structure",
+        "members": {
+          "key": {},
+          "value": {}
+        }
+      }
+    },
+    "Sb": {
+      "type": "string",
+      "sensitive": true
+    },
+    "Sd": {
+      "type": "structure",
+      "members": {
+        "level": {},
+        "includeExecutionData": {
+          "type": "boolean"
+        },
+        "destinations": {
+          "type": "list",
+          "member": {
+            "type": "structure",
+            "members": {
+              "cloudWatchLogsLogGroup": {
+                "type": "structure",
+                "members": {
+                  "logGroupArn": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Sj": {
+      "type": "structure",
+      "members": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Sv": {
+      "type": "string",
+      "sensitive": true
+    },
+    "Sw": {
+      "type": "structure",
+      "members": {
+        "included": {
+          "type": "boolean"
+        }
+      }
+    },
+    "S10": {
+      "type": "string",
+      "sensitive": true
+    },
+    "S11": {
+      "type": "string",
+      "sensitive": true
+    },
+    "S1y": {
+      "type": "structure",
+      "members": {
+        "truncated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "S28": {
+      "type": "structure",
+      "members": {
+        "roleArn": {}
+      }
+    },
+    "S2m": {
+      "type": "structure",
+      "members": {
+        "name": {},
+        "index": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
