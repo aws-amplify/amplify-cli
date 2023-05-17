@@ -483,7 +483,7 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
       .map(({ category, resourceName }) => context.amplify.removeDeploymentSecrets(context, category, resourceName));
 
     await adminModelgen(context, resources);
-    await deleteEnvironmentParametersForResources(context, context.amplify.getEnvInfo().envName, [
+    await deleteEnvironmentParametersForResources(context, stateManager.getLocalEnvInfo().envName, [
       ...resourcesToBeDeleted,
       ...resourcesToBeSynced.filter((r) => r.sync === 'unlink'),
     ]);
