@@ -35,13 +35,12 @@ phases:
   post_build:
     commands:
       - source ./shared-scripts.sh && _scanArtifacts
+      - source ./shared-scripts.sh && storeCache packages/amplify-e2e-tests/$E2E_TEST_COVERAGE_DIR e2e-test-coverage-raw
       - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER
-
 artifacts:
   files:
     - '**/*'
   base-directory: packages/amplify-e2e-tests/$E2E_TEST_COVERAGE_DIR
-
 reports:
   e2e-reports:
     files:
