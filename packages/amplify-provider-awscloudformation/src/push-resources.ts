@@ -191,11 +191,14 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     /**
      * calling transform schema here to support old project with out overrides
      */
-    await ApiCategoryFacade.transformGraphQLSchema(context, {
-      handleMigration: (opts) => updateStackForAPIMigration(context, 'api', undefined, opts),
-      minify: options.minify || context.input.options?.minify,
-      promptApiKeyCreation: true,
-    });
+    const appSyncAPIPresent = resources.filter((resource: { service: string }) => resource.service === 'AppSync');
+    if (appSyncAPIPresent.length > 0) {
+      await ApiCategoryFacade.transformGraphQLSchema(context, {
+        handleMigration: (opts) => updateStackForAPIMigration(context, 'api', undefined, opts),
+        minify: options.minify || context.input.options?.minify,
+        promptApiKeyCreation: true,
+      });
+    }
 
     await prePushLambdaLayerPrompt(context, resources);
     await context.amplify.invokePluginMethod(

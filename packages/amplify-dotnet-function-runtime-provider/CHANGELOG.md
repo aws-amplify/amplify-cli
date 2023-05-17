@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.7.7...amplify-dotnet-function-runtime-provider@2.0.0) (2023-05-11)
+
+
+* feat!: use NodeJS 18 runtime (#12043) ([4ae0cde](https://github.com/aws-amplify/amplify-cli/commit/4ae0cde8681810b49b88a4ce7c5ae90724706f5e)), closes [#12043](https://github.com/aws-amplify/amplify-cli/issues/12043)
+
+
+### BREAKING CHANGES
+
+* Updated NodeJS runtime to 18, removed support for .NET Core 3.1.
+
+
+
+
+
 ## [1.7.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.7.6...amplify-dotnet-function-runtime-provider@1.7.7) (2023-04-24)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider
