@@ -4,7 +4,7 @@ env:
 phases:
   build:
     commands:
-      - export CODEBUILD_SOURCE_VERSION="2d77f067218eabacbd7d70f6d420e48f27b19e0e"
+      # - export CODEBUILD_SOURCE_VERSION="2d77f067218eabacbd7d70f6d420e48f27b19e0e"
       - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
 reports:
   e2e-reports:
