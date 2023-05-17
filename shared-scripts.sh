@@ -469,6 +469,9 @@ function _downloadReportsFromS3 {
     mkdir $agregate_reports_dir
     cd $agregate_reports_dir
     echo bucket name $AGGREGATED_REPORTS_BUCKET_NAME
+    touch x.txt
+    aws s3 cp x.txt "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
+    echo copied
     aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done
