@@ -79,7 +79,7 @@ function _loadTestAccountCredentials {
     echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
     export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
     export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
-    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
+    export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")   
 }
 
 
@@ -509,4 +509,23 @@ function _integrationTest {
     mkdir -p $artifact_path && touch $artifact_path/empty.txt
     export artifact_path=$CODEBUILD_SRC_DIR/../aws-amplify-cypress-api/cypress/screenshots
     mkdir -p $artifact_path && touch $artifact_path/empty.txt
+}
+
+function _uploadReportsToS3 {
+    source_version=$1
+    build_identifier=$2
+    reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
+    cd $reports_dir
+    for filename in $(ls); do aws s3 cp "$filename" "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$build_identifier-$filename"; done
+}
+
+function _downloadReportsFromS3 {
+    source_version=$1
+    reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
+    agregate_reports_dir="$CODEBUILD_SRC_DIR/agregate_reports"
+    mkdir $agregate_reports_dir
+    cd $agregate_reports_dir
+    aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
+    aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
+    for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done
 }

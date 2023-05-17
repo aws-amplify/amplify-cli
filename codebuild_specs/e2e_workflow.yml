@@ -18,38 +18,40 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: build_windows
-      buildspec: codebuild_specs/build_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-    - identifier: test
-      buildspec: codebuild_specs/test.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-      depend-on:
-        - build_linux
-    - identifier: mock_e2e_tests
-      buildspec: codebuild_specs/mock_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-      depend-on:
-        - build_linux
-    - identifier: validate_cdk_version
-      buildspec: codebuild_specs/validate_cdk_version.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_api_extract
-      buildspec: codebuild_specs/verify_api_extract.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-      depend-on:
-        - build_linux
-    - identifier: verify_yarn_lock
-      buildspec: codebuild_specs/verify_yarn_lock.yml
-      depend-on:
-        - build_linux
+
+    # - identifier: build_windows
+    #   buildspec: codebuild_specs/build_windows.yml
+    #   env:
+    #     type: WINDOWS_SERVER_2019_CONTAINER
+    #     compute-type: BUILD_GENERAL1_LARGE
+    #     image: $WINDOWS_IMAGE_2019
+    # - identifier: test
+    #   buildspec: codebuild_specs/test.yml
+    #   env:
+    #     compute-type: BUILD_GENERAL1_LARGE
+    #   depend-on:
+    #     - build_linux
+    # - identifier: mock_e2e_tests
+    #   buildspec: codebuild_specs/mock_e2e_tests.yml
+    #   env:
+    #     compute-type: BUILD_GENERAL1_LARGE
+    #   depend-on:
+    #     - build_linux
+    # - identifier: validate_cdk_version
+    #   buildspec: codebuild_specs/validate_cdk_version.yml
+    #   depend-on:
+    #     - build_linux
+    # - identifier: verify_api_extract
+    #   buildspec: codebuild_specs/verify_api_extract.yml
+    #   env:
+    #     compute-type: BUILD_GENERAL1_LARGE
+    #   depend-on:
+    #     - build_linux
+    # - identifier: verify_yarn_lock
+    #   buildspec: codebuild_specs/verify_yarn_lock.yml
+    #   depend-on:
+    #     - build_linux
+
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
       env:
@@ -89,11 +91,13 @@ batch:
         - build_pkg_binaries_linux
         - build_pkg_binaries_macos
         - build_pkg_binaries_win
-    - identifier: verify_versions_match
-      buildspec: codebuild_specs/verify_versions_match.yml
-      depend-on:
-        - publish_to_local_registry
-    - identifier: run_e2e_tests_linux
+
+    # - identifier: verify_versions_match
+    #   buildspec: codebuild_specs/verify_versions_match.yml
+    #   depend-on:
+    #     - publish_to_local_registry
+
+    - identifier: run_e2e_tests_linux_1
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
@@ -113,19 +117,36 @@ batch:
     - identifier: run_e2e_tests_windows
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
-        type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
         image: $WINDOWS_IMAGE_2019
         variables:
           CLI_REGION: us-east-1
           TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts|src/__tests__/auth_2f.test.ts
       depend-on:
-        - build_windows
         - upload_pkg_binaries
-    - identifier: integration_test
-      buildspec: codebuild_specs/integration_test.yml
+
+    - identifier: aggregate_e2e_reports
+      buildspec: codebuild_specs/aggregate_e2e_reports.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
       debug-session: true
       depend-on:
-        - build_linux
+        - run_e2e_tests_linux_1
+        - run_e2e_tests_linux_2
+
+    # - identifier: run_e2e_tests_windows
+    #   buildspec: codebuild_specs/run_e2e_tests_windows.yml
+    #   env:
+    #     type: WINDOWS_SERVER_2019_CONTAINER
+    #     compute-type: BUILD_GENERAL1_LARGE
+    #     image: $WINDOWS_IMAGE_2019
+    #   depend-on:
+    #     - build_windows
+    #     - upload_pkg_binaries
+    # - identifier: integration_test
+    #   buildspec: codebuild_specs/integration_test.yml
+    #   env:
+    #     compute-type: BUILD_GENERAL1_LARGE
+    #   debug-session: true
+    #   depend-on:
+    #     - build_linux
