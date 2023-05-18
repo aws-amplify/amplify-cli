@@ -522,9 +522,9 @@ function _uploadReportsToS3 {
 function _downloadReportsFromS3 {
     source_version=$1
     reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
-    agregate_reports_dir="$CODEBUILD_SRC_DIR/agregate_reports"
-    mkdir $agregate_reports_dir
-    cd $agregate_reports_dir
+    aggregate_reports_dir="$CODEBUILD_SRC_DIR/aggregate_reports"
+    mkdir $aggregate_reports_dir
+    cd $aggregate_reports_dir
     aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done

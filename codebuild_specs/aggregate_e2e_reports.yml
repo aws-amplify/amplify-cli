@@ -11,4 +11,4 @@ reports:
     files:
       - '*.xml'
     file-format: 'JUNITXML'
-    base-directory: '$CODEBUILD_SRC_DIR/agregate_reports'
+    base-directory: '$CODEBUILD_SRC_DIR/aggregate_reports'
