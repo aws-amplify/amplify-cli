@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.7.0...@aws-amplify/amplify-util-uibuilder@1.8.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* **amplify-util-uibuilder:** update codegen-ui to 2.11.0 ([#12265](https://github.com/aws-amplify/amplify-cli/issues/12265)) ([f5cebf5](https://github.com/aws-amplify/amplify-cli/commit/f5cebf532894bf4a22d9f938933c38fc4f8e4b1a))
+* **amplify-util-uibuilder:** update codegen-ui to 2.11.1 ([#12352](https://github.com/aws-amplify/amplify-cli/issues/12352)) ([78590b8](https://github.com/aws-amplify/amplify-cli/commit/78590b8d4face7bbc0b174337b77b118affc525b))
+* exclude smoketests on windows; remove extraneous dependency ([#12572](https://github.com/aws-amplify/amplify-cli/issues/12572)) ([0d6bca4](https://github.com/aws-amplify/amplify-cli/commit/0d6bca41ff7ef4a8a203b3044123b328b77b2b0e))
+
+
+### Features
+
+* **amplify-util-uibuilder:** formFeatureFlags metadata ([#12369](https://github.com/aws-amplify/amplify-cli/issues/12369)) ([e520c6c](https://github.com/aws-amplify/amplify-cli/commit/e520c6c686fa5e7112993745626f737612fa9145))
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+* **amplify-util-uibuilder:** update codegen-ui to 2.13.1 ([#12565](https://github.com/aws-amplify/amplify-cli/issues/12565)) ([687dcc2](https://github.com/aws-amplify/amplify-cli/commit/687dcc276adf72502c87116f6c632b97f4eb649e))
+
+
+
+
+
 # [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.6.14...@aws-amplify/amplify-util-uibuilder@1.7.0) (2023-04-24)
 
 
