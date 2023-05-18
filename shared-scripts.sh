@@ -88,7 +88,7 @@ function _setShell {
     # yarn config set script-shell $(which bash)
 }
 function _buildLinux {
-    _setShell
+    # _setShell
     echo Linux Build
     yarn run production-build
     yarn build-tests
