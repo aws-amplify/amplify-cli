@@ -1409,6 +1409,7 @@ commands:
                 shell: bash.exe
                 command: |
                   source .circleci/local_publish_helpers.sh
+                  echo "export PATH=$PATH:/home/circleci/repo/node_modules/.bin/" >> $BASH_ENV
                   source $BASH_ENV
                   amplify version
                   cd packages/amplify-e2e-tests
@@ -1424,6 +1425,7 @@ commands:
                 name: Run E2e Tests
                 command: |
                   source .circleci/local_publish_helpers.sh
+                  echo "export PATH=$PATH:/home/circleci/repo/node_modules/.bin/" >> $BASH_ENV
                   source $BASH_ENV
                   startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
                   setNpmRegistryUrlToLocal

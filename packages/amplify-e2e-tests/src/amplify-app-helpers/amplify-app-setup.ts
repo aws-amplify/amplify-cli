@@ -3,7 +3,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-const spawnCommand = path.join(__dirname, '..', '..', '..', '..', 'node_modules', '@aws-amplify', 'amplify-app', 'bin', 'amplify-app');
+const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
+const spawnCommand = isCI() ? 'amplify-app' : amplifyAppBinPath;
 
 function amplifyAppAndroid(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
