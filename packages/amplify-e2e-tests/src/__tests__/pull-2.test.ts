@@ -1,6 +1,6 @@
-import { addAuthIdentityPoolAndUserPoolWithOAuth } from '../../../amplify-e2e-core/src/categories/auth';
 /* eslint-disable spellcheck/spell-checker */
 import {
+  addAuthIdentityPoolAndUserPoolWithOAuth,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,

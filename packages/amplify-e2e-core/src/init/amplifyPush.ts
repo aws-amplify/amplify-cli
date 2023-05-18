@@ -244,6 +244,26 @@ export const amplifyPushFunction = async (cwd: string, testingWithLatestCode = f
 };
 
 /**
+ * amplify push command for pushing amplify category resources
+ */
+export const amplifyPushCategoryWithYesFlag = async (
+  cwd: string,
+  category: string,
+  changesDetected: boolean,
+  testingWithLatestCode = false,
+): Promise<void> => {
+  const chain = spawn(getCLIPath(testingWithLatestCode), ['push', `${category}`], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: pushTimeoutMS,
+  });
+  if (changesDetected) {
+    chain.wait('Are you sure you want to continue?').sendCarriageReturn();
+  }
+  return chain.runAsync();
+};
+
+/**
  * Function to test amplify push with allowDestructiveUpdates flag and when dependent function is removed from schema.graphql
  */
 export function amplifyPushUpdateForDependentModel(
