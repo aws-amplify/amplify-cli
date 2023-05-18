@@ -527,7 +527,7 @@ function _downloadReportsFromS3 {
     cd $aggregate_reports_dir
     aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
-    for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done
+    for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done #This line moves all files into the top level directory so that the reports can be consumed by CB
 }
 
 function _waitForJobs {
