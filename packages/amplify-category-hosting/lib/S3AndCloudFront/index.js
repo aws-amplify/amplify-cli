@@ -13,19 +13,12 @@ const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
 const parametersFileName = 'parameters.json';
 
-const DEV = 'DEV (S3 only with HTTP)';
-const PROD = 'PROD (S3 with CloudFront using HTTPS)';
-const Environments = [DEV, PROD];
-
 async function enable(context) {
   let templateFilePath = path.join(__dirname, templateFileName);
   context.exeInfo.template = context.amplify.readJsonFile(templateFilePath);
 
   let parametersFilePath = path.join(__dirname, parametersFileName);
   context.exeInfo.parameters = context.amplify.readJsonFile(parametersFilePath);
-
-  // will take this out once cloudformation invoke and wait are separated;
-  await checkCDN(context);
 
   await configManager.init(context);
 
@@ -50,29 +43,6 @@ async function enable(context) {
     providerPlugin,
   };
   return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, metaData);
-}
-
-async function checkCDN(context) {
-  const answer = await prompter.pick('Select the environment setup:', Environments, { initial: byValue(DEV) });
-  if (answer === DEV) {
-    removeCDN(context);
-  } else {
-    makeBucketPrivate(context);
-  }
-}
-
-function removeCDN(context) {
-  delete context.exeInfo.template.Resources.OriginAccessIdentity;
-  delete context.exeInfo.template.Resources.CloudFrontDistribution;
-  delete context.exeInfo.template.Resources.PrivateBucketPolicy;
-  delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
-  delete context.exeInfo.template.Outputs.CloudFrontDomainName;
-  delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-  delete context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity;
-}
-
-function makeBucketPrivate(context) {
-  delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
 }
 
 async function configure(context) {
