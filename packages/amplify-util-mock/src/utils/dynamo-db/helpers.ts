@@ -19,13 +19,16 @@ export async function waitTillTableStateIsActive(
         resolve();
       }
     };
-    intervalHandle = setInterval(void checkStatus, 1000);
+    intervalHandle = setInterval(() => {
+      void (async () => {
+        await checkStatus();
+      })();
+    }, 1000);
     timeoutHandle = setTimeout(() => {
+      console.log('timed out');
       clearTimeout(timeoutHandle);
       clearInterval(intervalHandle);
       reject(new Error('Waiting for table status to turn ACTIVE timed out'));
     }, maximumWait);
-
-    void checkStatus();
   });
 }

@@ -9,6 +9,7 @@ import { CreateTableInput, GlobalSecondaryIndex } from 'aws-sdk/clients/dynamodb
 jest.mock('../../../utils/dynamo-db/utils');
 
 describe('createAndUpdateTable', () => {
+  const describeTablesMock = jest.fn();
   const table1Input: CreateTableInput = {
     TableName: 'table1',
     AttributeDefinitions: [
@@ -68,47 +69,38 @@ describe('createAndUpdateTable', () => {
     TableName: 'table2',
     GlobalSecondaryIndexes: [indexByName, indexByContent],
   };
-  const listTablesMock = jest.fn();
 
   beforeEach(() => {
     jest.resetAllMocks();
     jest.useFakeTimers();
     AWSMock.setSDKInstance(AWS);
-    AWSMock.mock('DynamoDB', 'listTables', listTablesMock);
   });
 
   it('should create new tables when they are missing', async () => {
     const mockDDBConfig: MockDynamoDBConfig = {
-      tables: [{ Properties: table1Input }],
+      tables: [{ Properties: table1Input, isNewlyAdded: true }],
     };
-    listTablesMock.mockImplementation((cb) => {
-      cb(null, {
-        TableNames: [],
-      });
+
+    const mockListTables = jest.fn().mockReturnValue({
+      promise: jest.fn().mockResolvedValue({ TableNames: [] }),
     });
-    (describeTables as jest.Mock).mockReturnValue({});
-    const client = new DynamoDB();
-    await createAndUpdateTable(client, mockDDBConfig);
-    expect(createTables).toHaveBeenCalledWith(client, [table1Input]);
+
+    describeTablesMock.mockReturnValue({});
+
+    const ddbClient = {
+      describeTables: describeTablesMock,
+      listTables: mockListTables,
+    };
+    await createAndUpdateTable(ddbClient as unknown as DynamoDB, mockDDBConfig);
+    expect(createTables).toHaveBeenCalledWith(ddbClient, [table1Input]);
     expect(getUpdateTableInput).not.toHaveBeenCalled();
-    expect(updateTables).toHaveBeenCalledWith(client, []);
+    expect(updateTables).toHaveBeenCalledWith(ddbClient, []);
   });
 
   it('should update existing table with new GSI', async () => {
-    const mockDDBConfig: MockDynamoDBConfig = {
-      tables: [{ Properties: table1Input }, { Properties: table2Input }],
-    };
+    const createTablesMock = jest.fn();
+    const mockListTables = jest.fn();
 
-    listTablesMock.mockImplementation((cb) => {
-      cb(null, {
-        TableNames: [table1Input.TableName, table2Input.TableName],
-      });
-    });
-
-    (describeTables as jest.Mock).mockReturnValue({
-      [table1Input.TableName]: table1Input.TableName,
-      [table2Input.TableName]: { ...table2Input, GlobalSecondaryIndex: [] },
-    });
     const getUpdateTableInputResult = [
       {
         ...table2Input,
@@ -124,12 +116,36 @@ describe('createAndUpdateTable', () => {
       },
     ];
 
+    createTablesMock.mockReturnValue(() => {
+      jest.fn().mockResolvedValue([]);
+    });
+
+    mockListTables.mockReturnValue({
+      promise: jest.fn().mockResolvedValue({ TableNames: [table1Input.TableName, table2Input.TableName] }),
+    });
+
     (getUpdateTableInput as jest.Mock).mockImplementation((input) => (input === table2Input ? getUpdateTableInputResult : []));
 
-    const client = new DynamoDB();
-    await createAndUpdateTable(client, mockDDBConfig);
-    expect(createTables).toHaveBeenCalledWith(client, []);
+    (describeTables as jest.Mock).mockReturnValue({
+      [table1Input.TableName]: table1Input.TableName,
+      [table2Input.TableName]: { ...table2Input, GlobalSecondaryIndex: [] },
+    });
+
+    const mockDDBConfig: MockDynamoDBConfig = {
+      tables: [
+        { Properties: table1Input, isNewlyAdded: false },
+        { Properties: table2Input, isNewlyAdded: false },
+      ],
+    };
+    const ddbClient = {
+      createTables: createTablesMock,
+      listTables: mockListTables,
+      getUpdateTableInput,
+    };
+
+    await createAndUpdateTable(ddbClient as unknown as DynamoDB, mockDDBConfig);
+    expect(createTables).toHaveBeenCalledWith(ddbClient, []);
     expect(getUpdateTableInput).toHaveBeenCalledWith(table2Input, { ...table2Input, GlobalSecondaryIndex: [] });
-    expect(updateTables).toHaveBeenCalledWith(client, getUpdateTableInputResult);
+    expect(updateTables).toHaveBeenCalledWith(ddbClient, getUpdateTableInputResult);
   });
 });
