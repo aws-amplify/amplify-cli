@@ -21,7 +21,9 @@ prompterMock.pick.mockResolvedValueOnce(['GraphQL API', 'Function', 'Storage']);
 const apiServerStartMock = apiServerStart as jest.MockedFunction<typeof apiServerStart>;
 const storageServerStartMock = storageServerStart as jest.MockedFunction<typeof storageServerStart>;
 const lambdaServerStartMock = lambdaServerStart as jest.MockedFunction<typeof lambdaServerStart>;
+const mockProjectRoot = 'mock-app';
 
+jest.mock('amplify-dynamodb-simulator', () => jest.fn());
 const mockContext = {
   amplify: {
     inputValidation: () => () => true,
@@ -31,7 +33,7 @@ const mockContext = {
       resourcesToBeUpdated: [{}],
       resourcesToBeCreated: [{}],
     }),
-    getEnvInfo: () => ({ envName: 'testing' }),
+    getEnvInfo: jest.fn().mockReturnValue({ projectPath: mockProjectRoot }),
   },
 };
 
