@@ -84,12 +84,12 @@ function _loadTestAccountCredentials {
 
 function _setShell {
     echo Setting Shell
-    yarn install
-    # yarn config set script-shell $(which bash)
+    yarn config set script-shell $(which bash)
 }
 function _buildLinux {
     # _setShell
     echo Linux Build
+    yarn --immutable
     yarn run production-build
     yarn build-tests
     storeCache $CODEBUILD_SRC_DIR repo
