@@ -13,6 +13,7 @@
     "clean": "nx reset && nx run-many --target=clean --all && yarn rimraf tsconfig.tsbuildinfo",
     "cloud-e2e": "source ./scripts/cloud-e2e.sh && cloudE2E",
     "cloud-e2e-beta": "source ./scripts/cloud-e2e.sh && cloudE2EBeta",
+    "cloud-e2e-local": "source ./scripts/cloud-e2e.sh && cloudE2ELocal",
     "commit": "git-cz",
     "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "coverage": "codecov || exit 0",
