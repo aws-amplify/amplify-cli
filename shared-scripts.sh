@@ -84,8 +84,8 @@ function _loadTestAccountCredentials {
 
 function _setShell {
     echo Setting Shell
-    yarn version
-    yarn config set script-shell $(which bash)
+    yarn install
+    # yarn config set script-shell $(which bash)
 }
 function _buildLinux {
     _setShell
