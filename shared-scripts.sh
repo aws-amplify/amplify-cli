@@ -88,6 +88,7 @@ function _setShell {
 }
 function _buildLinux {
     # _setShell
+    codebuild-breakpoint
     echo Linux Build
     yarn --immutable
     yarn run production-build
