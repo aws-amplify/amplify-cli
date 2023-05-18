@@ -168,6 +168,9 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
+        name: populate lib files
+        command: amplify version
+      - run:
           name: Run tests
           command: yarn test-ci
       - run:
