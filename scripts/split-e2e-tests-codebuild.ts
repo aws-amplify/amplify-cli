@@ -276,6 +276,7 @@ const splitTestsV3 = (
         variables: { WAIT_FOR_IDS: dependeeIdentifiers.join(',') },
       },
       buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
+      'depend-on': ['upload_pkg_binaries'],
     };
     result.push(reportsAggregator);
   }
