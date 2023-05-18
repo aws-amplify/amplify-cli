@@ -1,0 +1,9 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    NODE_OPTIONS: --max-old-space-size=4096
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _testLinux

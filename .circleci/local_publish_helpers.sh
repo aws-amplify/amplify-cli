@@ -5,11 +5,12 @@ default_verdaccio_package=verdaccio@5.1.2
 
 function startLocalRegistry {
     # Start local registry
-    tmp_registry_log=$(mktemp)
+    tmp_registry_log="$(mktemp)"
     echo "Registry output file: $tmp_registry_log"
     (cd && nohup npx ${VERDACCIO_PACKAGE:-$default_verdaccio_package} -c $1 &>$tmp_registry_log &)
     # Wait for Verdaccio to boot
-    grep -q 'http address' <(tail -f $tmp_registry_log)
+    sleep 60
+    # grep -q 'http address' <(tail -f $tmp_registry_log)
 }
 
 function uploadPkgCli {
@@ -152,7 +153,7 @@ function unsetSudoNpmRegistryUrl {
 }
 
 function changeNpmGlobalPath {
-    mkdir -p ~/.npm-global
+    mkdir -p ~/.npm-global/{bin,lib}
     npm config set prefix '~/.npm-global'
     export PATH=~/.npm-global/bin:$PATH
 }
@@ -268,14 +269,15 @@ function setAwsAccountCredentials {
 }
 
 function runE2eTest {
+    _setupCoverage
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
     else
-        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
     fi
 }
 
