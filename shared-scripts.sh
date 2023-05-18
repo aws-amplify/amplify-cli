@@ -558,7 +558,7 @@ function _waitForJobs {
 		batch_build_id=$(echo $batch_build_id | tr -d '"')
 		jobs_in_batch=$(aws codebuild batch-get-build-batches --region us-east-1 --ids $(echo $batch_build_id | tr -d '"') | jq --arg job_id "$job_id" '.buildBatches[0].buildGroups')
         echo "jobs_in_batch $jobs_in_batch"
-		incomplete_job_ids_in_batch=$(echo $jobs_in_batch | jq -c '[map(select(.currentBuildSummary.buildStatus == "IN_PROGRESS")) | .[].identifier]')
+		incomplete_job_ids_in_batch=$(echo $jobs_in_batch | jq -c '[map(select(.currentBuildSummary.buildStatus == "IN_PROGRESS" or .currentBuildSummary.buildStatus == "PENDING")) | .[].identifier]')
 		intersecting_jobs=$(jq -n --argjson incomplete_job_ids_in_batch "$incomplete_job_ids_in_batch" --argjson jobs_depended_on_json "$jobs_depended_on_json" '$incomplete_job_ids_in_batch - ($incomplete_job_ids_in_batch - $jobs_depended_on_json)')
 		echo "Waiting for these jobs: $intersecting_jobs"
 		num_incomplete_jobs=$(echo $intersecting_jobs | jq '. | length')
