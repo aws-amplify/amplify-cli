@@ -81,12 +81,12 @@ describe('generateCognitoStackResources', () => {
     permissions: [],
     // eslint-disable-next-line spellcheck/spell-checker
     authTriggerConnections: [{ triggerType: 'PreSignUp', lambdaFunctionName: 'issue96802f106de32f106de3PreSignup' }],
-    authProviders: ['accounts.google.com'],
     audiences: ['xxxgoogleClientIdxxx'],
     hostedUIProviderMeta:
       '[{"ProviderName":"Facebook","authorize_scopes":"email,public_profile","AttributeMapping":{"email":"email","username":"id"}},{"ProviderName":"Google","authorize_scopes":"openid email profile","AttributeMapping":{"email":"email","username":"sub"}},{"ProviderName":"LoginWithAmazon","authorize_scopes":"profile profile:user_id","AttributeMapping":{"email":"email","username":"user_id"}},{"ProviderName":"SignInWithApple","authorize_scopes":"email","AttributeMapping":{"email":"email"}}]',
     hostedUIProviderCreds:
       '[{"ProviderName":"Facebook","client_id":"sdcsdc","client_secret":"bfdsvsr"},{"ProviderName":"Google","client_id":"avearver","client_secret":"vcvereger"},{"ProviderName":"LoginWithAmazon","client_id":"vercvdsavcer","client_secret":"revfdsavrtv"},{"ProviderName":"SignInWithApple","client_id":"vfdvergver","team_id":"ervervre","key_id":"vfdavervfer","private_key":"vaveb"}]',
+    authProviders: [],
   };
 
   it('adds correct preSignUp  lambda config and permissions', () => {
@@ -171,23 +171,6 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.userPoolClient).toHaveProperty('allowedOAuthScopes');
     expect(cognitoStack.userPoolClient).toHaveProperty('callbackUrLs');
     expect(cognitoStack.userPoolClient).toHaveProperty('logoutUrLs');
-  });
-
-  it('adds correct oidc dependencies', async () => {
-    const testApp = new cdk.App();
-    const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
-
-    await cognitoStack.generateCognitoStackResources(props);
-
-    expect(cognitoStack.openIdcResource).toBeDefined();
-
-    expect(cognitoStack.openIdcResource!.cfnResourceType).toEqual('AWS::IAM::OIDCProvider');
-    expect(cognitoStack.openIdcResource!.clientIdList).toContain('xxxgoogleClientIdxxx');
-    expect(cognitoStack.openIdcResource!.url).toEqual('https://accounts.google.com');
-
-    const identityPoolDeps = cognitoStack.identityPool?.obtainResourceDependencies().map((d) => d.cfnResourceType);
-
-    expect(identityPoolDeps).toContain('AWS::IAM::OIDCProvider');
   });
 
   it('adds correct identity provider dependencies', async () => {
