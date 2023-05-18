@@ -133,6 +133,6 @@ batch:
       buildspec: codebuild_specs/aggregate_e2e_reports.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          WAIT_FOR_IDS: run_e2e_tests_linux
       debug-session: true
-      depend-on:
-        - run_e2e_tests_linux

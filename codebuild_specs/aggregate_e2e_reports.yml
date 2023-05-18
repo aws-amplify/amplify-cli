@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - source ./shared-scripts.sh && _waitForJobs $CODEBUILD_SOURCE_VERSION $WAIT_FOR_IDS
       - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
 reports:
   e2e-reports:
