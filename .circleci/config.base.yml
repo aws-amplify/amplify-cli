@@ -349,6 +349,8 @@ jobs:
           key: amplify-pkg-binaries-linux-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_macos:
     <<: *linux-e2e-executor-large
@@ -372,6 +374,8 @@ jobs:
           key: amplify-pkg-binaries-macos-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_win:
     <<: *linux-e2e-executor-large
@@ -395,6 +399,8 @@ jobs:
           key: amplify-pkg-binaries-win-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_arm:
     <<: *linux-e2e-executor-large
@@ -418,6 +424,8 @@ jobs:
           key: amplify-pkg-binaries-arm-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   verify_pkg_binaries:
     <<: *linux-e2e-executor-large
@@ -456,6 +464,30 @@ jobs:
             changeSudoNpmGlobalPath
             sudo npm install -g @aws-amplify/cli
             unsetSudoNpmRegistryUrl
+            amplify version
+
+  amplify_install_test:
+    <<: *defaults
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio and Install Amplify CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            # limit memory for new processes to 1GB
+            # this is to make sure that install can work on small VMs
+            # i.e. not buffer content in memory while installing binary
+            ulimit -Sv 1000000
+            npm install -g @aws-amplify/cli
+            unsetNpmRegistryUrl
             amplify version
 
   amplify_e2e_tests_pkg:
@@ -1091,6 +1123,17 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
+      - amplify_install_test:
+          context: amplify-ecr-image-pull
+          requires:
+            - upload_pkg_binaries
+          filters:
+            branches:
+              only:
+                - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
       - cleanup_resources:
           context:
             - cleanup-resources
@@ -1269,6 +1312,7 @@ workflows:
             - integration_test
             - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
+            - amplify_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_v10
             - amplify_migration_tests_v6

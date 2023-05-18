@@ -8,7 +8,4 @@ process.env.CLI_ENV = 'development';
 process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
 
 const startTime = Date.now();
-if (process.pkg) {
-  require('../lib/utils/copy-override').copyOverride();
-}
 require('../lib/index').run(startTime);

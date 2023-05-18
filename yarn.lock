@@ -141,10 +141,10 @@
     "@aws-amplify/api-graphql" "2.2.18"
     "@aws-amplify/api-rest" "2.0.29"
 
-"@aws-amplify/appsync-modelgen-plugin@2.4.2":
-  version "2.4.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.2.tgz#aebdc3c7dffe76c64d66cf675cfc67893f921c07"
-  integrity sha512-xPJzpElQn18h3r2SChLDdVi3QFgRvxEZqdhdKDLvQQ3Z17IZLujBusDnKcLrACR9gJmYKHq+3jym+48QJ/VeLg==
+"@aws-amplify/appsync-modelgen-plugin@2.4.4", "@aws-amplify/appsync-modelgen-plugin@^2.4.4":
+  version "2.4.4"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.4.tgz#a4f49fa964e3ae83aca4f8e7c19e9c5788679644"
+  integrity sha512-+eFyuT0j9b35Vk+fI64uE50JCtMFCwp5J5XutFmZPXqR8LLnh4Zgpae7pULehj+HqDwAoiG5ZWbb3QjjfrpChg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.18.8"
     "@graphql-codegen/visitor-plugin-common" "^1.22.0"
@@ -153,25 +153,6 @@
     "@types/pluralize" "0.0.29"
     chalk "^3.0.0"
     change-case "^4.1.1"
-    dart-style "1.3.2-dev"
-    lower-case-first "^2.0.1"
-    pluralize "^8.0.0"
-    strip-indent "^3.0.0"
-    ts-dedent "^1.1.0"
-
-"@aws-amplify/appsync-modelgen-plugin@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-2.4.0.tgz#0448d2d5938f7fa411ff34bb5b525e17f050bf30"
-  integrity sha512-cOXsQ9qcvc7q31riKJL7kYYQFpriFws6rAO2GG7xRwT+0Dqn5LACSAgPHXBMx8vXI4nQcEYZ/EtxTchD845U6Q==
-  dependencies:
-    "@graphql-codegen/plugin-helpers" "^1.18.8"
-    "@graphql-codegen/visitor-plugin-common" "^1.22.0"
-    "@graphql-tools/utils" "^6.0.18"
-    "@types/node" "^12.12.6"
-    "@types/pluralize" "0.0.29"
-    chalk "^3.0.0"
-    change-case "^4.1.1"
-    dart-style "1.3.2-dev"
     lower-case-first "^2.0.1"
     pluralize "^8.0.0"
     strip-indent "^3.0.0"
@@ -282,14 +263,13 @@
     graphql-transformer-common "4.24.5"
     libphonenumber-js "1.9.47"
 
-"@aws-amplify/graphql-docs-generator@3.0.3":
-  version "3.0.3"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-3.0.3.tgz#1bc720b6b70293b14bdc8195b47b0fc196aaf4e7"
-  integrity sha512-N1njpO941FgVeOjxlWC8t9czLHGBkcj2EdRSbO6qBzCUErJTeDJ402qtShsbyaBdJfreCeUhBidau+rUxCtJ1w==
+"@aws-amplify/graphql-docs-generator@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-4.0.1.tgz#50ad04ab0d88d45408adf93d3ab2fc9969ac69bc"
+  integrity sha512-7K+9pJZnUwUAiLeOo0adrOzS2IDPFHYhsiDdJCnYP++wzQCc6JF60AEdluE+N9HbyeGaIYw9g4XoQV91RRPTIQ==
   dependencies:
     graphql "^15.5.0"
     handlebars "4.7.7"
-    prettier "^1.19.1"
     yargs "^15.1.0"
 
 "@aws-amplify/graphql-function-transformer@1.2.1", "@aws-amplify/graphql-function-transformer@^1.2.1":
@@ -438,10 +418,10 @@
     graphql-transformer-common "4.24.5"
     lodash "^4.17.21"
 
-"@aws-amplify/graphql-types-generator@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.1.tgz#739e98505687e21da2938e3e9e7b0d8444aefe3f"
-  integrity sha512-g9iUquLGiy2XLrOuJwFLSgnDmzOOpfakuKmanWMCV/u+GG5zCipsfU3SOyhhRCAF9JJwxOMhMYBoquJw/vrsiA==
+"@aws-amplify/graphql-types-generator@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.0.2.tgz#bf0a0ef54ea263408b0991484dcde7a3ffefd60a"
+  integrity sha512-jgZak4VWWhwAKMvyzGsGvqp+FYqb1zMb9yQPADgk4cBb5FIaMdP/bwvtB9hJJDWZlY0Vnbgtwwz+yQ0elBT13w==
   dependencies:
     "@babel/generator" "7.0.0-beta.4"
     "@babel/types" "7.0.0-beta.4"
@@ -10005,14 +9985,14 @@ amdefine@>=0.0.4:
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^3.4.3:
-  version "3.4.3"
-  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.3.tgz#df90d4515c7760405a94c3dbca3c687af408cac0"
-  integrity sha512-OtXzcrik1Pie6a+WVt/qxYkbnuzqVA81MlGhMwtkHP03s/n2tBDC/7w1GErLKCqFZRVmBASPWtfIDA7AQW8sCA==
+amplify-codegen@^3.4.4:
+  version "3.4.4"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-3.4.4.tgz#3ab60344932dc4209f7b698f6fbb6f6c888c65b8"
+  integrity sha512-cz5XcQcn+wgnoMpAVmFeHyk7OZl4gyvUSLyj3iv8bby8cc3wj3DkMabBikJvAYqdugR+bCYDMuYOEwkLwrmquA==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "2.4.2"
-    "@aws-amplify/graphql-docs-generator" "3.0.3"
-    "@aws-amplify/graphql-types-generator" "3.0.1"
+    "@aws-amplify/appsync-modelgen-plugin" "2.4.4"
+    "@aws-amplify/graphql-docs-generator" "4.0.1"
+    "@aws-amplify/graphql-types-generator" "3.0.2"
     "@graphql-codegen/core" "2.6.6"
     chalk "^3.0.0"
     fs-extra "^8.1.0"
@@ -10023,6 +10003,7 @@ amplify-codegen@^3.4.3:
     inquirer "^7.3.3"
     js-yaml "^4.0.0"
     ora "^4.0.3"
+    prettier "^1.19.1"
     semver "^7.3.5"
     slash "^3.0.0"
 
@@ -12928,11 +12909,6 @@ dargs@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmjs.org/dargs/-/dargs-7.0.0.tgz#04015c41de0bcb69ec84050f3d9be0caf8d6d5cc"
   integrity sha512-2iy1EkLdlBzQGvbweYRFxmFath8+K7+AKB0TlhHWkNuH+TmovaMH/Wp7V7R4u7f4SnX3OgLsU9t1NI9ioDnUpg==
-
-dart-style@1.3.2-dev:
-  version "1.3.2-dev"
-  resolved "https://registry.npmjs.org/dart-style/-/dart-style-1.3.2-dev.tgz#d21a80ff0b7f9d800584ec6a6a659ac3242ac855"
-  integrity sha512-NFI4UQYvG32t/cEkQAdkXT2ZT72tjF61tMWoALmnGwj03d2Co94zwGfbnFfdQUQvrhUNx8Wz2jKSVxGrmFaVJQ==
 
 dashdash@^1.12.0:
   version "1.14.1"
@@ -24233,9 +24209,9 @@ unc-path-regex@^0.1.2:
   integrity sha512-eXL4nmJT7oCpkZsHZUOJo8hcX3GbsiDOa0Qu9F646fi8dT3XuSVopVqAcEiVzSKKH7UoDti23wNX3qGFxcW5Qg==
 
 undici@^4.9.3, undici@^5.8.0:
-  version "5.22.0"
-  resolved "https://registry.npmjs.org/undici/-/undici-5.22.0.tgz#5e205d82a5aecc003fc4388ccd3d2c6e8674a0ad"
-  integrity sha512-fR9RXCc+6Dxav4P9VV/sp5w3eFiSdOjJYsbtWfd4s5L5C4ogyuVpdKIVHeW0vV1MloM65/f7W45nR9ZxwVdyiA==
+  version "5.22.1"
+  resolved "https://registry.npmjs.org/undici/-/undici-5.22.1.tgz#877d512effef2ac8be65e695f3586922e1a57d7b"
+  integrity sha512-Ji2IJhFXZY0x/0tVBXeQwgPlLWw13GVzpsWPQ3rV50IFMMof2I55PZZxtm4P6iNq+L5znYN9nSTAq0ZyE6lSJw==
   dependencies:
     busboy "^1.6.0"
 
@@ -24617,9 +24593,9 @@ verror@1.10.0:
     extsprintf "^1.2.0"
 
 vm2@^3.9.16, vm2@^3.9.3, vm2@^3.9.8:
-  version "3.9.17"
-  resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.17.tgz#251b165ff8a0e034942b5181057305e39570aeab"
-  integrity sha512-AqwtCnZ/ERcX+AVj9vUsphY56YANXxRuqMb7GsDtAr0m0PcQX3u0Aj3KWiXM0YAHy7i6JEeHrwOnwXbGYgRpAw==
+  version "3.9.18"
+  resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.18.tgz#d919848bee191a0410c5cc1c5aac58adfd03ce9a"
+  integrity sha512-iM7PchOElv6Uv6Q+0Hq7dcgDtWWT6SizYqVcvol+1WQc+E9HlgTCnPozbQNSP3yDV9oXHQOEQu530w2q/BCVZg==
   dependencies:
     acorn "^8.7.0"
     acorn-walk "^8.2.0"
