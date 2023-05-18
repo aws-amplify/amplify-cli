@@ -361,7 +361,6 @@ function main(): void {
   let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
   let currentBatch = [...baseBuildGraph, ...allBuilds];
   configBase.batch['build-graph'] = currentBatch;
-
   saveConfig(configBase);
 }
 main();
