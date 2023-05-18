@@ -514,14 +514,16 @@ function _integrationTest {
 function _uploadReportsToS3 {
     source_version=$1
     build_identifier=$2
-    reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
+    test_package=$3
+    reports_dir=$CODEBUILD_SRC_DIR/packages/$test_package/reports/junit
     cd $reports_dir
     for filename in $(ls); do aws s3 cp "$filename" "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$build_identifier-$filename"; done
 }
 
 function _downloadReportsFromS3 {
     source_version=$1
-    reports_dir=$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit
+    test_package=$2
+    reports_dir=$CODEBUILD_SRC_DIR/packages/$test_package/reports/junit
     aggregate_reports_dir="$CODEBUILD_SRC_DIR/aggregate_reports"
     mkdir $aggregate_reports_dir
     cd $aggregate_reports_dir
@@ -536,7 +538,7 @@ function _waitForJobs {
     jobs_depended_on_json=$(echo $jobs_depended_on | jq -R 'split(",")')
     echo "jobs depended on $jobs_depended_on_json"
     fail_flag="0"
-    all_batch_build_ids=$(aws codebuild list-build-batches-for-project --region us-east-1 --project-name AmplifyCLI-E2E-Testing --output json | jq '.ids | .[]')
+    all_batch_build_ids=$(aws codebuild list-build-batches-for-project --region us-east-1 --project-name AmplifyCLI-E2E-Testing --filter '{ "status": "IN_PROGRESS" }' --output json | jq '.ids | .[]')
     for batch_build_id in $all_batch_build_ids
     do
         current_source_version=$(aws codebuild batch-get-build-batches --region us-east-1 --ids $(echo $batch_build_id | tr -d '"') | jq '.buildBatches[0].sourceVersion' | tr -d '"')

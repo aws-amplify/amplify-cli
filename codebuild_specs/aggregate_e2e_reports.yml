@@ -5,7 +5,7 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _waitForJobs $CODEBUILD_SOURCE_VERSION $WAIT_FOR_IDS
-      - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
+      - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION amplify-e2e-tests
 reports:
   e2e-reports:
     files:
