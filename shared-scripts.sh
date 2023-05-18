@@ -523,7 +523,6 @@ function _uploadReportsToS3 {
 function _downloadReportsFromS3 {
     source_version=$1
     test_package=$2
-    reports_dir=$CODEBUILD_SRC_DIR/packages/$test_package/reports/junit
     aggregate_reports_dir="$CODEBUILD_SRC_DIR/aggregate_reports"
     mkdir $aggregate_reports_dir
     cd $aggregate_reports_dir
