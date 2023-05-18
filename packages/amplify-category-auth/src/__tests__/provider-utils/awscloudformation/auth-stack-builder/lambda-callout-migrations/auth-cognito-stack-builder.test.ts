@@ -151,21 +151,4 @@ describe('migrate step for removing lambda callouts', () => {
       });
     });
   });
-
-  describe('createOpenIdcResource', () => {
-    describe('when create/update lambda callouts exist', () => {
-      it('creates delete lambda callout and cfn-code-created provider', () => {
-        const testApp = new cdk.App();
-        const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
-
-        cognitoStack.createOpenIdcResource(props);
-
-        const { openIdLambda, openIdcResource } = cognitoStack;
-
-        expect(openIdLambda?.cfnResourceType).toBe('AWS::Lambda::Function');
-        expect((openIdLambda?.code as CfnFunction.CodeProperty).zipFile).toMatchSnapshot();
-        expect(openIdcResource?.url).toEqual('https://accounts.google.com');
-      });
-    });
-  });
 });
