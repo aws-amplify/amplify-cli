@@ -536,8 +536,9 @@ function _downloadReportsFromS3 {
 
 function _waitForJobs {
     expected_source_version=$1
-    jobs_depended_on=$2 #comma seperate identifiers with no spaces
-    jobs_depended_on_json=$(echo $jobs_depended_on | jq -R 'split(",")')
+    jobs_depended_on_file_path=$2 #comma seperate identifiers with no spaces
+    jobs_depended_on=$(cat $jobs_depended_on_file_path)
+    jobs_depended_on_json=$(echo $jobs_depended_on | jq -R 'split(" ")')
     echo "jobs depended on $jobs_depended_on_json"
     fail_flag="0"
     all_batch_build_ids=$(aws codebuild list-build-batches-for-project --region us-east-1 --project-name AmplifyCLI-E2E-Testing --filter '{ "status": "IN_PROGRESS" }' --output json | jq '.ids | .[]')
