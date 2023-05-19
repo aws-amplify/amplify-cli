@@ -15,7 +15,7 @@
     "aws"
   ],
   "bin": {
-    "amplify": "./lib/run.js"
+    "amplify": "./bin/amplify"
   },
   "publishConfig": {
     "access": "public"
