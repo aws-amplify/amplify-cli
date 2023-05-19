@@ -536,7 +536,7 @@ function _downloadReportsFromS3 {
 
 function _waitForJobs {
     expected_source_version=$1
-    jobs_depended_on_file_path=$2 #space seperate identifiers with no spaces
+    jobs_depended_on_file_path=$2 #space seperate identifiers
     jobs_depended_on=$(cat $jobs_depended_on_file_path)
     jobs_depended_on_json=$(echo $jobs_depended_on | jq -R 'split(" ")')
     echo "jobs depended on $jobs_depended_on_json"
