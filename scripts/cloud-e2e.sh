@@ -20,6 +20,14 @@ function triggerBuild {
     RESULT=$(aws codebuild start-build-batch --profile="${CLOUD_E2E_PROFILE}" --project-name AmplifyCLI-E2E-Testing --source-version=$TARGET_BRANCH --query 'buildBatch.id' --output text)
     echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$CLOUD_E2E_ACCOUNT/projects/AmplifyCLI-E2E-Testing/batch/$RESULT?region=us-east-1"
 }
+function cloudE2ELocal {
+    echo Running Local E2E Test Suite
+    export CLOUD_E2E_PROFILE=AmplifyCLIE2ELocal
+    export CLOUD_E2E_ACCOUNT=$E2E_ACCOUNT_LOCAL
+    export TARGET_BRANCH=$CURR_BRANCH
+    authenticate
+    triggerBuild
+}
 function cloudE2EBeta {
     echo Running Beta E2E Test Suite
     export CLOUD_E2E_PROFILE=AmplifyCLIE2EBeta
