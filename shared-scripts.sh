@@ -83,7 +83,6 @@ function _loadTestAccountCredentials {
 }
 
 function _buildLinux {
-    codebuild-breakpoint
     echo Linux Build
     yarn --immutable
     yarn run production-build
