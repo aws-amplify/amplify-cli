@@ -99,7 +99,17 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           CLI_REGION: us-east-1
-          TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts|src/__tests__/auth_2f.test.ts
+          TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts
+      debug-session: true
+      depend-on:
+        - upload_pkg_binaries
+    - identifier: run_e2e_tests_linux_2
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          CLI_REGION: us-east-1
+          TEST_SUITE: src/__tests__/auth_2f.test.ts
       debug-session: true
       depend-on:
         - upload_pkg_binaries
@@ -110,6 +120,7 @@ batch:
       debug-session: true
       depend-on:
         - run_e2e_tests_linux
+        - run_e2e_tests_linux_2
     - identifier: run_e2e_tests_windows
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
@@ -129,3 +140,12 @@ batch:
       debug-session: true
       depend-on:
         - build_linux
+    - identifier: aggregate_e2e_reports
+      buildspec: codebuild_specs/aggregate_e2e_reports.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          WAIT_FOR_IDS: run_e2e_tests_linux,run_e2e_tests_linux_2
+      debug-session: true
+      depend-on:
+        - upload_pkg_binaries

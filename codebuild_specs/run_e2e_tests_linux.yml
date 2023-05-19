@@ -30,12 +30,20 @@ phases:
       - export AMPLIFY_PATH=$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
+      - npm install -g ts-node
       - source ./shared-scripts.sh && _runE2ETestsLinux
   post_build:
     commands:
       - source ./shared-scripts.sh && _scanArtifacts
       - source ./shared-scripts.sh && storeCache packages/amplify-e2e-tests/$E2E_TEST_COVERAGE_DIR e2e-test-coverage-raw
+      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-e2e-tests
 artifacts:
   files:
     - '**/*'
   base-directory: packages/amplify-e2e-tests/$E2E_TEST_COVERAGE_DIR
+reports:
+  e2e-reports:
+    files:
+      - '*.xml'
+    file-format: 'JUNITXML'
+    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit'

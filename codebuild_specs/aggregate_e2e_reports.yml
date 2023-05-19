@@ -1,0 +1,14 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _waitForJobs $CODEBUILD_SOURCE_VERSION $WAIT_FOR_IDS
+      - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
+reports:
+  e2e-reports:
+    files:
+      - '*.xml'
+    file-format: 'JUNITXML'
+    base-directory: '$CODEBUILD_SRC_DIR/aggregate_reports'

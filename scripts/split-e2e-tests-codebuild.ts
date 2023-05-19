@@ -150,7 +150,16 @@ const splitTestsV3 = (
   testDirectory: string,
   isMigration: boolean,
   pickTests: ((testSuites: string[]) => string[]) | undefined,
+  withAggregateReports = false,
 ) => {
+  if (!withAggregateReports && baseJobLinux?.reports) {
+    delete baseJobLinux.reports;
+  }
+
+  if (!withAggregateReports && baseJobWindows?.reports) {
+    delete baseJobWindows.reports;
+  }
+
   const output: any[] = [];
   let testSuites = getTestFiles(testDirectory);
   if (pickTests && typeof pickTests === 'function') {
@@ -223,12 +232,15 @@ const splitTestsV3 = (
     return jobName;
   };
   const result: any[] = [];
+  const dependeeIdentifiers: string[] = [];
   linuxJobs.forEach((j) => {
     if (j.tests.length !== 0) {
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const identifier = getIdentifier(j.os, names);
+      dependeeIdentifiers.push(identifier);
       const tmp = {
         ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
-        identifier: getIdentifier(j.os, names),
+        identifier,
       };
       tmp.env.variables = {};
       tmp.env.variables.TEST_SUITE = j.tests.join('|');
@@ -242,9 +254,11 @@ const splitTestsV3 = (
   windowsJobs.forEach((j) => {
     if (j.tests.length !== 0) {
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const identifier = getIdentifier(j.os, names);
+      dependeeIdentifiers.push(identifier);
       const tmp = {
         ...JSON.parse(JSON.stringify(baseJobWindows)), // deep clone base job
-        identifier: getIdentifier(j.os, names),
+        identifier,
       };
       tmp.env.variables = {};
       tmp.env.variables.TEST_SUITE = j.tests.join('|');
@@ -253,6 +267,20 @@ const splitTestsV3 = (
       result.push(tmp);
     }
   });
+
+  if (withAggregateReports) {
+    const reportsAggregator = {
+      identifier: 'aggregate_e2e_reports',
+      env: {
+        'compute-type': 'BUILD_GENERAL1_MEDIUM',
+        variables: { WAIT_FOR_IDS: dependeeIdentifiers.join(',') },
+      },
+      buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
+      'depend-on': ['upload_pkg_binaries'],
+    };
+    result.push(reportsAggregator);
+  }
+
   return result;
 };
 function main(): void {
@@ -280,6 +308,7 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
     undefined,
+    true,
   );
   const splitMigrationV5Tests = splitTestsV3(
     {
