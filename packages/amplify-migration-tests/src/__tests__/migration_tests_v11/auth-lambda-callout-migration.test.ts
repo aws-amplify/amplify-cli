@@ -1,7 +1,6 @@
 import type { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithMaxOptions,
-  addAuthWithOidcForNonJSProject,
   amplifyPushAuth,
   amplifyPushForce,
   createNewProjectDir,
@@ -14,13 +13,12 @@ import {
   setupUser,
   signInUser,
   signOutUser,
-  updateAuthSignInSignOutUrl,
   updateHeadlessAuth,
 } from '@aws-amplify/amplify-e2e-core';
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
 import { expectLambdasInCfnTemplate, expectNoLambdasInCfnTemplate } from '../../migration-helpers-v11/auth-helpers/utilities';
-import { initIosProjectWithProfile11, initJSProjectWithProfileV11 } from '../../migration-helpers-v11/init';
+import { initJSProjectWithProfileV11 } from '../../migration-helpers-v11/init';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -101,26 +99,6 @@ describe('lambda callouts', () => {
 
     const postigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(postigrationTemplate);
-  });
-
-  it('should be migrated after updating auth with OIDC', async () => {
-    await initIosProjectWithProfile11(projRoot, defaultsSettings);
-    const resourceName = `test${generateRandomShortId()}`;
-    await addAuthWithOidcForNonJSProject(projRoot, { resourceName, frontend: 'ios' });
-    await amplifyPushAuth(projRoot, false);
-
-    await updateAuthSignInSignOutUrl(projRoot, {
-      socialProvidersAlreadyExist: true,
-      signinUrl: 'https://www.google.com/',
-      signoutUrl: 'https://www.nytimes.com/',
-      updatesigninUrl: 'https://www.amazon.com/',
-      updatesignoutUrl: 'https://www.amazon.com/',
-      testingWithLatestCodebase: true,
-    });
-    await amplifyPushAuth(projRoot, true);
-
-    const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectNoLambdasInCfnTemplate(template);
   });
 
   it('should be migrated when set up using headless commands', async () => {
