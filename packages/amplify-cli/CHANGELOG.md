@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.1.0-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.0.0...@aws-amplify/cli-internal@12.1.0-yarn-berry.0) (2023-05-19)
+
+
+### Bug Fixes
+
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+* plugin lookup directory ([42ceba8](https://github.com/aws-amplify/amplify-cli/commit/42ceba80b281b8ce409bbd04ee9dee8b4f5ace1c))
+
+
+### Features
+
+* lambda yarn 2 support ([b73c680](https://github.com/aws-amplify/amplify-cli/commit/b73c680353aef07383ecfd253d235eda38036614))
+* lambda yarn 2 support ([9d83bf3](https://github.com/aws-amplify/amplify-cli/commit/9d83bf31e276bb51442176bfbd1c458296eae6c8))
+* lambda yarn 2 support ([69b39ba](https://github.com/aws-amplify/amplify-cli/commit/69b39ba0a1a5730b784dd2253c9acabcada1fd4e))
+* lambda yarn 2 support ([3bdeaef](https://github.com/aws-amplify/amplify-cli/commit/3bdeaef7eeb675ff23af5db40ad07ba2c6c8f72c))
+* lambda yarn 2 support ([12ebe0a](https://github.com/aws-amplify/amplify-cli/commit/12ebe0a6f17bfad03a194abefefa66d1016b3218))
+* support for yarn 2 lambda function ([93f8fc4](https://github.com/aws-amplify/amplify-cli/commit/93f8fc42c58bd7f277f31f81a9671adc64d28db6))
+
+
+
+
+
 # [12.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.1.1...@aws-amplify/cli-internal@12.0.0) (2023-05-11)
 
 

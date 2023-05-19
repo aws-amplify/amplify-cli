@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.0...amplify-e2e-tests@4.3.0-yarn-berry.0) (2023-05-19)
+
+
+### Bug Fixes
+
+* add jest dependency ([f47467f](https://github.com/aws-amplify/amplify-cli/commit/f47467f67bda665a94674ec87f9bc53688931741))
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+
+
+### Features
+
+* lambda yarn 2 support ([c8f4236](https://github.com/aws-amplify/amplify-cli/commit/c8f423688c3d259ebd57efb947695b76598a0c73))
+* lambda yarn 2 support ([104e146](https://github.com/aws-amplify/amplify-cli/commit/104e146be548733888727d78474fabddd15c3303))
+* lambda yarn 2 support ([ee5e674](https://github.com/aws-amplify/amplify-cli/commit/ee5e674e945d7679e91a78f98d83f008460f6313))
+
+
+
+
+
 # [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.1...amplify-e2e-tests@4.2.0) (2023-05-11)
 
 

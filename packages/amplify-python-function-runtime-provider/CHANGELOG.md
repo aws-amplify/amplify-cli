@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.18...amplify-python-function-runtime-provider@2.5.0-yarn-berry.0) (2023-05-19)
+
+
+### Features
+
+* lambda yarn 2 support ([104e146](https://github.com/aws-amplify/amplify-cli/commit/104e146be548733888727d78474fabddd15c3303))
+
+
+
+
+
 ## [2.4.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.17...amplify-python-function-runtime-provider@2.4.18) (2023-05-11)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

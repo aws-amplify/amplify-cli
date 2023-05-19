@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.2.0...@aws-amplify/amplify-util-mock@5.2.1-yarn-berry.0) (2023-05-19)
+
+
+### Bug Fixes
+
+* failing util-mock tests for yarn2 migration ([#12639](https://github.com/aws-amplify/amplify-cli/issues/12639)) ([26f422c](https://github.com/aws-amplify/amplify-cli/commit/26f422c84b284cd2d17065549cc7d0ab4e93c4bd))
+
+
+
+
+
 # [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.1.0...@aws-amplify/amplify-util-mock@5.2.0) (2023-05-11)
 
 

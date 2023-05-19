@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.19-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@2.3.18...amplify-java-function-runtime-provider@2.3.19-yarn-berry.0) (2023-05-19)
+
+**Note:** Version bump only for package amplify-java-function-runtime-provider
+
+
+
+
+
 ## [2.3.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@2.3.17...amplify-java-function-runtime-provider@2.3.18) (2023-05-11)
 
 **Note:** Version bump only for package amplify-java-function-runtime-provider

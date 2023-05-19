@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.5...@aws-amplify/amplify-category-custom@3.1.0-yarn-berry.0) (2023-05-19)
+
+
+### Features
+
+* lambda yarn 2 support ([0d3cfb8](https://github.com/aws-amplify/amplify-cli/commit/0d3cfb8afe2fc216eb8172a21eb8cd64e88bd5c0))
+* support for yarn 2 lambda function ([93f8fc4](https://github.com/aws-amplify/amplify-cli/commit/93f8fc42c58bd7f277f31f81a9671adc64d28db6))
+
+
+
+
+
 ## [3.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.4...@aws-amplify/amplify-category-custom@3.0.5) (2023-05-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom
