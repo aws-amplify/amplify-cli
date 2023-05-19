@@ -82,12 +82,7 @@ function _loadTestAccountCredentials {
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
 
-function _setShell {
-    echo Setting Shell
-    yarn config set script-shell $(which bash)
-}
 function _buildLinux {
-    # _setShell
     codebuild-breakpoint
     echo Linux Build
     yarn --immutable
