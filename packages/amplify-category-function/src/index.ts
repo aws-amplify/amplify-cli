@@ -1,4 +1,4 @@
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, getParametersControllerInstance } from '@aws-amplify/amplify-environment-parameters';
 import { $TSAny, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import _ from 'lodash';
@@ -206,9 +206,17 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
       const resourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
       // if the function has secrets, set the appId key in team-provider-info and checking local functions first
       const localFunctionSecretNames = getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: false });
-      const cloudFunctionSecretNames = getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: true });
-      if (localFunctionSecretNames.length > 0 || cloudFunctionSecretNames.length > 0) {
+      if (localFunctionSecretNames.length > 0) {
         resourceParamManager.setParam(secretsPathAmplifyAppIdKey, getAppId());
+      } else {
+        if (resourceParamManager.hasParam(secretsPathAmplifyAppIdKey)) {
+          resourceParamManager.deleteParam(secretsPathAmplifyAppIdKey);
+        }
+        const backendConfigFunctionKey = `AMPLIFY_function_${resourceName}_${secretsPathAmplifyAppIdKey}`;
+        // removing parameter in backend-config if present
+        if (getParametersControllerInstance().hasParameter(backendConfigFunctionKey)) {
+          getParametersControllerInstance().removeParameter(backendConfigFunctionKey);
+        }
       }
     });
   const sourceEnvParamManager = (await ensureEnvParamManager(sourceEnv)).instance;

@@ -55,13 +55,17 @@ import { getApiKeyConfig } from './utils/api-key-helpers';
 import { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
 export { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
 
-import { getEnvParametersUploadHandler, getEnvParametersDownloadHandler, getEnvParametersCheckHandler } from './utils/ssm-utils/env-parameter-ssm-helpers';
+import {
+  getEnvParametersUploadHandler,
+  getEnvParametersDownloadHandler,
+  getEnvParametersCheckHandler,
+} from './utils/ssm-utils/env-parameter-ssm-helpers';
 export {
   getEnvParametersUploadHandler,
   getEnvParametersDownloadHandler,
   DownloadHandler,
   PrimitiveRecord,
-  getEnvParametersCheckHandler
+  getEnvParametersCheckHandler,
 } from './utils/ssm-utils/env-parameter-ssm-helpers';
 
 function init(context) {

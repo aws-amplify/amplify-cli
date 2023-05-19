@@ -389,6 +389,27 @@ export const getPermissionsBoundary = async (roleName: string, region) => {
   return (await iamClient.getRole({ RoleName: roleName }).promise())?.Role?.PermissionsBoundary?.PermissionsBoundaryArn;
 };
 
+export const putSSMParameter = async (
+  region: string,
+  appId: string,
+  envName: string,
+  funcName: string,
+  parameterName: string,
+  parameterValue: string,
+) => {
+  const ssmClient = new SSM({ region });
+  if (!parameterName) {
+    throw new Error('no parameterNames specified');
+  }
+  return await ssmClient
+    .putParameter({
+      Name: parameterName,
+      Value: parameterValue,
+      Type: 'SecureString',
+    })
+    .promise();
+};
+
 export const getSSMParameters = async (region: string, appId: string, envName: string, funcName: string, parameterNames: string[]) => {
   const ssmClient = new SSM({ region });
   if (!parameterNames || parameterNames.length === 0) {

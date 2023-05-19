@@ -4,7 +4,9 @@
 
 ```ts
 
+import { BackendParameters } from './backend-parameters';
 import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
+import { ResourceTuple } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export const cloneEnvParamManager: (srcEnvParamManager: IEnvironmentParameterManager, destEnvName: string) => Promise<void>;
@@ -16,6 +18,20 @@ export const ensureEnvParamManager: (envName?: string) => Promise<{
 
 // @public (undocumented)
 export const getEnvParamManager: (envName?: string) => IEnvironmentParameterManager;
+
+// @public (undocumented)
+export const getParametersControllerInstance: () => IBackendParametersController;
+
+// @public (undocumented)
+export type IBackendParametersController = {
+    save: () => Promise<void>;
+    addParameter: (name: string, usedBy: ResourceTuple[]) => IBackendParametersController;
+    addAllParameters: (parameterMap: BackendParameters) => IBackendParametersController;
+    removeParameter: (name: string) => IBackendParametersController;
+    removeAllParameters: () => IBackendParametersController;
+    getParameters: () => Readonly<BackendParameters>;
+    hasParameter: (name: string) => boolean;
+};
 
 // @public (undocumented)
 export type IEnvironmentParameterManager = {
