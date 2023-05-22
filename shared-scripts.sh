@@ -172,10 +172,7 @@ function _publishToLocalRegistry {
     unsetNpmRegistryUrl
 
     echo Generate Change Log
-    # Leaving this breadcrumb here "git reset --soft HEAD~1"
-    # we commented this out because the publish script is now checking out the current branch, and this started to fail as a result
-    # if we run into problems in the future, we should revisit this
-    # git reset --soft HEAD~1
+    git reset --soft HEAD~1
     yarn ts-node scripts/unified-changelog.ts
     cat UNIFIED_CHANGELOG.md
     
@@ -544,7 +541,7 @@ function _waitForJobs {
     all_batch_build_ids=$(aws codebuild list-build-batches-for-project --region us-east-1 --project-name AmplifyCLI-E2E-Testing --filter '{ "status": "IN_PROGRESS" }' --output json | jq '.ids | .[]')
     for batch_build_id in $all_batch_build_ids
     do
-        current_source_version=$(aws codebuild batch-get-build-batches --region us-east-1 --ids $(echo $batch_build_id | tr -d '"') | jq '.buildBatches[0].sourceVersion' | tr -d '"')
+        current_source_version=$(aws codebuild batch-get-build-batches --region us-east-1 --ids $(echo $batch_build_id | tr -d '"') | jq '.buildBatches[0].resolvedSourceVersion' | tr -d '"')
         if [ $current_source_version = $expected_source_version ]
         then
             fail_flag="1"
