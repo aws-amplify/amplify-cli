@@ -31,11 +31,6 @@ const runStrategy = (quickstart: boolean) =>
 export const run = async (context: $TSContext): Promise<void> => {
   constructExeInfo(context);
   checkForNestedProject();
-  if (context?.input?.options?.forcePush === true) {
-    await verifyExpectedEnvParams(context);
-    // raising PrePush event here because init with --forcePush will do a push after initializing
-    await raisePrePushEvent(context as unknown as Context);
-  }
 
   const steps = runStrategy(!!context?.parameters?.options?.quickstart);
   for (const step of steps) {
