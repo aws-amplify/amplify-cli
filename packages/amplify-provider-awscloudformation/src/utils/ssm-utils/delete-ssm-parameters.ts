@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyFault, IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../../aws-utils/aws-ssm';
@@ -7,7 +7,7 @@ import { executeSdkPromisesWithExponentialBackOff } from './exp-backoff-executor
 import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersByPath } from './get-ssm-sdk-parameters';
 
 /**
- * Delete CloudFormation parameters from the service
+ * Delete all CloudFormation parameters from the service for a given environment
  */
 export const deleteEnvironmentParametersFromService = async (context: $TSContext, envName: string): Promise<void> => {
   let appId;
@@ -18,16 +18,49 @@ export const deleteEnvironmentParametersFromService = async (context: $TSContext
     return;
   }
   const { client } = await SSM.getInstance(context);
-  await deleteParametersFromParameterStore(appId, envName, client);
+  const envKeysInParameterStore = await getAllEnvParametersFromParameterStore(appId, envName, client);
+  await deleteParametersFromParameterStore(client, envKeysInParameterStore);
 };
 
-const deleteParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<void> => {
+/**
+ * Delete CloudFormation parameters from the service for an array of resources
+ */
+export const deleteEnvironmentParametersForResources = async (
+  context: $TSContext,
+  envName: string,
+  resources: IAmplifyResource[],
+): Promise<void> => {
+  if (resources.length === 0) {
+    return;
+  }
+  let appId;
   try {
-    const envKeysInParameterStore: Array<string> = await getAllEnvParametersFromParameterStore(appId, envName, ssmClient);
-    if (!envKeysInParameterStore.length) {
-      return;
+    appId = resolveAppId(context);
+  } catch {
+    printer.debug(`No AppId found when deleting parameters for environment ${envName}`);
+    return;
+  }
+  const { client } = await SSM.getInstance(context);
+  const envKeysInParameterStore = await getAllEnvParametersFromParameterStore(appId, envName, client);
+  const removedParameterKeys = envKeysInParameterStore.filter((key: string) => {
+    const keyAfterPaths = key.split('/').pop();
+    const [, categoryName, resourceName] = keyAfterPaths.split('_');
+    for (const resource of resources) {
+      if (resource.category === categoryName && resource.resourceName === resourceName) {
+        return true;
+      }
     }
-    const chunkedKeys: Array<Array<string>> = chunkForParameterStore(envKeysInParameterStore);
+    return false;
+  });
+  await deleteParametersFromParameterStore(client, removedParameterKeys);
+};
+
+const deleteParametersFromParameterStore = async (ssmClient: SSMType, parameterKeys: string[]): Promise<void> => {
+  if (parameterKeys.length === 0) {
+    return;
+  }
+  try {
+    const chunkedKeys = chunkForParameterStore(parameterKeys);
     const deleteKeysFromPSPromises = chunkedKeys.map((keys) => {
       const ssmArgument = getSsmSdkParametersDeleteParameters(keys);
       return () => ssmClient.deleteParameters(ssmArgument).promise();
