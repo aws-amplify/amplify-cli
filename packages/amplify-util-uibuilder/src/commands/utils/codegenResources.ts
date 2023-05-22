@@ -188,6 +188,7 @@ export const generateAmplifyUiBuilderUtilFile = (context: $TSContext, { hasForms
     utils.add('validation');
     utils.add('formatter');
     utils.add('fetchByPath');
+    utils.add('processFile');
   }
 
   if (hasViews) {
