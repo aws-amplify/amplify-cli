@@ -1,4 +1,11 @@
 #!/bin/bash -e
+export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+if [ "$BRANCH_NAME" = "" ] ; then
+  BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+fi
+git checkout $BRANCH_NAME
+echo "fetching tags"
+git fetch --tags https://github.com/aws-amplify/amplify-cli
 
 export BRANCH_NAME=${CODEBUILD_WEBHOOK_TRIGGER#branch/*};
 
@@ -97,15 +104,12 @@ elif [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^relea
     force_publish_local_args="--force-publish '@aws-amplify/cli-internal'"
   fi
   # create release commit and release tags
-  git checkout "$BRANCH_NAME"
-  npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
-  # git checkout "$BRANCH_NAME" && npx lerna version --preid=rc.$CODEBUILD_RESOLVED_SOURCE_VERSION --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
+  npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
 
 
   # if publishing locally to verdaccio
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     # publish to verdaccio with no dist tag (default to latest)
-    # lernaPublishExitOnFailure from-package --git-head $CODEBUILD_RESOLVED_SOURCE_VERSION --yes --no-push
     lernaPublishExitOnFailure from-git --yes --no-push
     echo "Published packages to verdaccio"
     echo "Exiting without pushing release commit or release tags"
@@ -113,7 +117,6 @@ elif [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^relea
   fi
 
   # publish versions that were just computed
-  # lernaPublishExitOnFailure from-package --git-head $CODEBUILD_RESOLVED_SOURCE_VERSION --yes --no-push --dist-tag rc
   lernaPublishExitOnFailure from-git --yes --no-push --dist-tag rc
 
   # push release commit

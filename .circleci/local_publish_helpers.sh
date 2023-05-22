@@ -168,7 +168,7 @@ function unsetSudoNpmRegistryUrl {
 }
 
 function changeNpmGlobalPath {
-    mkdir -p ~/.npm-global
+    mkdir -p ~/.npm-global/{bin,lib}
     npm config set prefix '~/.npm-global'
     export PATH=~/.npm-global/bin:$PATH
 }
@@ -284,14 +284,32 @@ function setAwsAccountCredentials {
 }
 
 function runE2eTest {
+    _setupCoverage
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+function _setupCoverage {
+    _teardownCoverage
+    echo "Setup Coverage ($E2E_TEST_COVERAGE_DIR)"
+    if [ ! -d $E2E_TEST_COVERAGE_DIR ]
+    then
+        mkdir -p $E2E_TEST_COVERAGE_DIR
+    fi
+}
+
+function _teardownCoverage {
+    if [ -d $E2E_TEST_COVERAGE_DIR ]
+    then
+        echo "Teardown Coverage ($E2E_TEST_COVERAGE_DIR)"
+        rm -r $E2E_TEST_COVERAGE_DIR
     fi
 }
 
