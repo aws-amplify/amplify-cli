@@ -35,6 +35,7 @@ const main = async () => {
   const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepath, 'utf8');
   const jobsDependedOn = JSON.parse(jobsDependedOnRaw);
   console.log(`Depending on these jobs: ${jobsDependedOn}`);
+  console.log(`Number of jobs depended on: ${jobsDependedOn.length}`);
   const allBatchBuildIds = await getBatchesInProject(cb, codeBuildProjectName);
   console.log(`allBatchBuildIds: ${allBatchBuildIds}`);
   let batchId = '';

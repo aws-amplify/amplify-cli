@@ -16,25 +16,17 @@ batch:
   build-graph:
     - identifier: job1
       env:
-        compute-type: BUILD_GENERAL1_LARGE
-        shell: bash
-      phases:
-        build:
-          commands:
-            - echo starting
-            - sleep 180
-            - echo ending
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          SLEEP_TIME: 180
+      buildspec: codebuild_specs/dummy_job.yml
 
     - identifier: job2
       env:
-        compute-type: BUILD_GENERAL1_LARGE
-        shell: bash
-      phases:
-        build:
-          commands:
-            - echo starting
-            - sleep 230
-            - echo ending
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          SLEEP_TIME: 120
+      buildspec: codebuild_specs/dummy_job.yml
 
     - identifier: aggregate_e2e_reports
       env:

@@ -1,0 +1,9 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - echo starting
+      - sleep $SLEEP_TIME
+      - echo ending
