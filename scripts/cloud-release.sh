@@ -3,8 +3,9 @@ source ./scripts/cloud-cli-utils.sh
 export RELEASE_ROLE_NAME=CodebuildRelease
 export RELEASE_PROFILE_NAME=AmplifyCLIRelease
 export RC_PROJECT_NAME=RC
+export RELEASE_PROJECT_NAME=RELEASE
 
-function releaseRCLocal {
+function RCLocal {
     echo Running Local RC
     if [[ -z ${1+x} ]]; then
         echo "Include the release candidate commit ref you wish to release as the first argument"
@@ -17,7 +18,7 @@ function releaseRCLocal {
 
     triggerProjectBatch $RELEASE_ACCOUNT_LOCAL $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Local" $RC_PROJECT_NAME $branch_name
 }
-function releaseRCBeta {
+function RCBeta {
     echo Running Beta RC
     echo You must be on the Beta repository to perform this action, or build will fail.
     if [[ -z ${1+x} ]]; then
@@ -30,7 +31,7 @@ function releaseRCBeta {
     git push "origin" "$branch_name"
     triggerProjectBatch $RELEASE_ACCOUNT_BETA $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Beta" $RC_PROJECT_NAME $branch_name
 }
-function releaseRCProd {
+function RCProd {
     echo Running Prod RC
     if [[ -z ${1+x} ]]; then
         echo "Include the release candidate commit ref you wish to release as the first argument"
