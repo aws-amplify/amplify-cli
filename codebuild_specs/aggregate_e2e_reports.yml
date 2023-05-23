@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - npm install -g ts-node
       - ts-node ./scripts/wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $WAIT_FOR_IDS_FILE_PATH AmplifyCLI-E2E-Testing
       - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
 reports:
