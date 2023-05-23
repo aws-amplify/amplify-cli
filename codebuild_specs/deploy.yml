@@ -4,4 +4,5 @@ env:
 phases:
   build:
     commands:
+      - export CODEBUILD_SOURCE_VERSION=d6579bd7b6241e7260d1f0e0b0eaf8a0c3d2454f
       - source ./shared-scripts.sh && _deploy
