@@ -54,46 +54,64 @@ describe('Dart configuration file', () => {
     fs.rmSync(tmpDir, { recursive: true });
   });
 
-  const writeTempConfig = config => {
+  const writeTempConfig = (config) => {
     const filepath = `${tmpDir}/amplifyconfiguration.dart`;
     fs.writeFileSync(filepath, config);
     return filepath;
   };
 
-  const runTest = (name, config) => {
-    it(name, () => {
-      const configPath = writeTempConfig(config);
-      const parsedConfig = readJsonFromDart(configPath);
-      expect(parsedConfig).toMatchObject({
-        UserAgent: 'aws-amplify-cli/2.0',
-        Version: '1.0',
-      });
-    });
+  const parseConfig = (config) => {
+    const configPath = writeTempConfig(config);
+    return readJsonFromDart(configPath);
   };
 
-  runTest('parses old format', `const amplifyconfig = ''' {
+  it('parses old format', () => {
+    const parsedConfig = parseConfig(`const amplifyconfig = ''' {
     "UserAgent": "aws-amplify-cli/2.0",
     "Version": "1.0"
 }''';`);
+    expect(parsedConfig).toMatchObject({
+      UserAgent: 'aws-amplify-cli/2.0',
+      Version: '1.0',
+    });
+  });
 
-  runTest('parses new format', `const amplifyconfig = '''{
-    "UserAgent": "aws-amplify-cli/2.0",
-    "Version": "1.0"
-}''';`);
+  it('parses new format', () => {
+    const parsedConfig = parseConfig(`const amplifyconfig = '''{
+      "UserAgent": "aws-amplify-cli/2.0",
+      "Version": "1.0"
+  }''';`);
+    expect(parsedConfig).toMatchObject({
+      UserAgent: 'aws-amplify-cli/2.0',
+      Version: '1.0',
+    });
+  });
 
-  runTest('parses with data before', `
+  it('parses with data before', () => {
+    const parsedConfig = parseConfig(`
     const someOtherConfig = '{}';
 
     const amplifyconfig = '''{
         "UserAgent": "aws-amplify-cli/2.0",
         "Version": "1.0"
     }''';`);
+    expect(parsedConfig).toMatchObject({
+      UserAgent: 'aws-amplify-cli/2.0',
+      Version: '1.0',
+    });
+  });
 
-  runTest('parses with data after', `
+  it('parses with data after', () => {
+    const parsedConfig = parseConfig(`
   const amplifyconfig = '''{
         "UserAgent": "aws-amplify-cli/2.0",
         "Version": "1.0"
     }''';
     
     const someOtherConfig = {};`);
+    expect(parsedConfig).toMatchObject({
+      UserAgent: 'aws-amplify-cli/2.0',
+      Version: '1.0',
+    });
+  });
 });
