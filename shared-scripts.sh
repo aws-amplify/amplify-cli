@@ -383,9 +383,7 @@ function _deploy {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
 
-    source .circleci/local_publish_helpers.sh
-    _loadS3AccountCredentials
-    uploadPkgCli
+    _uploadPkgBinaries
 
     ./out/amplify-pkg-linux-x64 --version
     echo Authenticate with npm
