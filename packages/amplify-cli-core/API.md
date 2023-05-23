@@ -569,6 +569,7 @@ export const constants: {
     PARENT_DIRECTORY: string;
     GLOBAL_NODE_MODULES: string;
     PACKAGED_NODE_MODULES: string;
+    DEV_NODE_MODULES: string;
     EXECUTE_AMPLIFY_COMMAND: string;
     EXECUTE_AMPLIFY_HEADLESS_COMMAND: string;
     HANDLE_AMPLIFY_EVENT: string;
