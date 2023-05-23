@@ -65,12 +65,16 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);
+    const usageTrackingConfig = stateManager.getUsageTrackingConfig();
 
-    printer.info(`Amplify CLI collects anonymized usage data, which is used to help understand`);
-    printer.info(`how to improve the product. If you don't wish to send anonymized Amplify CLI`);
-    printer.info(`usage data to AWS, run${EOL}`);
-    printer.info(`${chalk.blue.italic('amplify configure --usage-data-off')}`);
-    printer.info(`Learn more - https://docs.amplify.aws/cli/reference/usage-data${EOL}`);
+    if (!usageTrackingConfig.usageDataConfig.usageDataConsentSeen) {
+      printer.info(`Amplify CLI collects anonymized usage data, which is used to help understand`);
+      printer.info(`how to improve the product. If you don't wish to send anonymized Amplify CLI`);
+      printer.info(`usage data to AWS, run${EOL}`);
+      printer.info(`${chalk.blue.italic('amplify configure --usage-data-off')}`);
+      printer.info(`Learn more - https://docs.amplify.aws/cli/reference/usage-data${EOL}`);
+      stateManager.toggleUsageTrackingConsentSeen();
+    }
   }
   for (const provider of context.exeInfo.projectConfig.providers) {
     // eslint-disable-next-line

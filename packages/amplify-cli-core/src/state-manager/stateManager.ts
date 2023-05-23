@@ -63,6 +63,17 @@ export class StateManager {
     return data;
   };
 
+  getUsageTrackingConfig = (): $TSAny =>
+    JSONUtilities.readJson<$TSAny>(pathManager.getAmplifyUsageDataFilePath(), {
+      throwIfNotExist: false,
+    });
+
+  toggleUsageTrackingConsentSeen = (): $TSAny => {
+    const usageTrackingConfig = this.getUsageTrackingConfig();
+    usageTrackingConfig.usageDataConfig.usageDataConsentSeen = !usageTrackingConfig.usageDataConfig.usageDataConsentSeen;
+    JSONUtilities.writeJson(pathManager.getAmplifyUsageDataFilePath(), usageTrackingConfig);
+  };
+
   getDeploymentSecrets = (): DeploymentSecrets =>
     JSONUtilities.readJson<DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
       throwIfNotExist: false,

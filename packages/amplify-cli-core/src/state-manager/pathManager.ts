@@ -11,6 +11,7 @@ export const PathConstants = {
   AWSConfig: 'config',
   DeploymentSecretsFileName: 'deployment-secrets.json',
   AmplifyAdminDirName: 'admin',
+  UsageDataFileName: 'amplify-configuration.json',
 
   // in project root
   AmplifyDirName: 'amplify',
@@ -95,6 +96,8 @@ export class PathManager {
   getHomeDotAmplifyDirPath = (): string => this.homeDotAmplifyDirPath;
 
   getAmplifyAdminDirPath = (): string => this.constructPath(this.getHomeDotAmplifyDirPath(), [PathConstants.AmplifyAdminDirName]);
+
+  getAmplifyUsageDataFilePath = (): string => this.constructPath(this.getHomeDotAmplifyDirPath(), [PathConstants.UsageDataFileName]);
 
   getAmplifyAdminConfigFilePath = (): string =>
     this.constructPath(this.getAmplifyAdminDirPath(), [PathConstants.AmplifyAdminConfigFileName]);

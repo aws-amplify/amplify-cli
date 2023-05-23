@@ -1499,6 +1499,7 @@ export const PathConstants: {
     AWSConfig: string;
     DeploymentSecretsFileName: string;
     AmplifyAdminDirName: string;
+    UsageDataFileName: string;
     AmplifyDirName: string;
     DotAmplifyDirName: string;
     DotConfigDirName: string;
@@ -1558,6 +1559,8 @@ export class PathManager {
     getAmplifyPackageLibDirPath: (packageName: string) => string;
     // (undocumented)
     getAmplifyRcFilePath: (projectPath?: string) => string;
+    // (undocumented)
+    getAmplifyUsageDataFilePath: () => string;
     // (undocumented)
     getAWSConfigFilePath: () => string;
     // (undocumented)
@@ -1999,6 +2002,8 @@ export class StateManager {
     // (undocumented)
     getTeamProviderInfo: (projectPath?: string, options?: GetOptions<$TSTeamProviderInfo>) => $TSTeamProviderInfo;
     // (undocumented)
+    getUsageTrackingConfig: () => $TSAny;
+    // (undocumented)
     isTagFilePresent: (projectPath?: string | undefined) => boolean;
     // (undocumented)
     localAWSInfoExists: (projectPath?: string) => boolean;
@@ -2044,6 +2049,8 @@ export class StateManager {
     setTeamProviderInfo: (projectPath: string | undefined, teamProviderInfo: $TSTeamProviderInfo) => void;
     // (undocumented)
     teamProviderInfoExists: (projectPath?: string) => boolean;
+    // (undocumented)
+    toggleUsageTrackingConsentSeen: () => $TSAny;
 }
 
 // @public (undocumented)
