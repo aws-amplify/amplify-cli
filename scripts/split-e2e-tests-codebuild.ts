@@ -261,8 +261,8 @@ const splitTestsV3 = (
   });
 
   if (withAggregateReports) {
-    const dependeeIdentifiersFileContents = dependeeIdentifiers.join(' ');
-    const waitForIdsFilePath = 'codebuild_specs/wait_for_ids.txt';
+    const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
+    const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
     fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
     const reportsAggregator = {
       identifier: 'aggregate_e2e_reports',
