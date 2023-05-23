@@ -42,5 +42,3 @@ if [[ $merge_exit_code -gt 0 ]]; then
   kill -TSTP $$
 fi
 git push "$remote_name" "$branch_name"
-echo "CircleCI is publishing the release candidate. Check progress at"
-echo "https://app.circleci.com/pipelines/github/$repo_name?branch=$branch_name"
