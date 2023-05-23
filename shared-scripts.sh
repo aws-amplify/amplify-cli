@@ -401,6 +401,7 @@ function _githubRelease {
     commit=$(git rev-parse HEAD)
     version=$(cat .amplify-pkg-version)
     yarn ts-node scripts/github-release.ts $version $commit
+}
 function _putCredsInProfile {
     mkdir -p ~/.aws
     touch ~/.aws/config ~/.aws/credentials 
