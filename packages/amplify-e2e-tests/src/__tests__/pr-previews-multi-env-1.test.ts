@@ -1,11 +1,9 @@
 import {
-  addFunction,
   addManualHosting,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  generateRandomShortId,
   getAmplifyInitConfig,
   getAwsProviderConfig,
   getProjectConfig,
@@ -14,7 +12,7 @@ import {
   gitCommitAll,
   gitInit,
   initJSProjectWithProfile,
-  nonInteractiveInitWithForcePushAttach,
+  nonInteractiveInitWithForcePushAttach
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('environment commands with functions secrets handling', () => {
@@ -24,15 +22,12 @@ describe('environment commands with functions secrets handling', () => {
 
   beforeAll(async () => {
     projRoot = await createNewProjectDir('env-test');
-    // add func with secret
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, envName: 'dev' });
     await addManualHosting(projRoot);
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     appId = meta.providers.awscloudformation.AmplifyAppId;
     region = meta.providers.awscloudformation.Region;
-    console.log(appId);
-    console.log(region);
   });
 
   afterAll(async () => {
@@ -40,7 +35,7 @@ describe('environment commands with functions secrets handling', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('simulating PR previwes when merging to new env ', async () => {
+  it('simulating PR previwes', async () => {
     const { projectName } = getProjectConfig(projRoot);
     await gitInit(projRoot);
     await gitCommitAll(projRoot);
