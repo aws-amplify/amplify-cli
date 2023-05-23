@@ -19,7 +19,7 @@ const getBatchSourceVersionFromBatchId = async (cb: CodeBuild, batchId: string):
   return '';
 };
 
-const getJobIdsFromBatchId = async (cb: CodeBuild, batchId: string): Promise<string[]> => {
+const getIncompleteJobIdsFromBatchId = async (cb: CodeBuild, batchId: string): Promise<string[]> => {
   const retrievedBatchInfo = await cb.batchGetBuildBatches({ ids: [batchId] }).promise();
   const ids = ((retrievedBatchInfo.buildBatches as CodeBuild.BuildBatches)[0].buildGroups as CodeBuild.BuildGroups)
     .filter((group) => group.currentBuildSummary?.buildStatus === 'IN_PROGRESS' || group.currentBuildSummary?.buildStatus === 'PENDING')
@@ -55,7 +55,7 @@ const main = async () => {
   let intersectingIncompleteJobs: string[];
   do {
     await new Promise((r) => setTimeout(r, 3 * 1000)); // sleep for 60 seconds
-    const incompleteJobsInBatch = await getJobIdsFromBatchId(cb, batchId);
+    const incompleteJobsInBatch = await getIncompleteJobIdsFromBatchId(cb, batchId);
     console.log(`These are all of the incomplete jobs in the batch: ${incompleteJobsInBatch}`);
     intersectingIncompleteJobs = incompleteJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
     console.log(`Still waiting for these jobs: ${intersectingIncompleteJobs}`);
