@@ -11,7 +11,7 @@ import { defaultSupportedExt, hookFileSeparator } from './hooksConstants';
 import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { pathManager, stateManager } from '../state-manager';
 
-const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
+const logger = getLogger('@aws-amplify/amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
 /**
  *  runtime for hooks
@@ -34,17 +34,15 @@ export const executeHooks = async (hooksMetadata: HooksMeta): Promise<void> => {
 
   const hooksConfig: HooksConfig = stateManager.getHooksConfigJson(projectPath) ?? {};
 
-  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMetadata.getHookEvent(), hooksConfig);
-
-  const executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
-
   if (hooksMetadata.getHookEvent().forcePush) {
     // we want to run push related hooks when forcePush flag is enabled
     hooksMetadata.setEventCommand('push');
     hooksMetadata.setEventSubCommand(undefined);
-    const { commandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMetadata.getHookEvent(), hooksConfig);
-    executionQueue.push(commandHookFileMeta);
   }
+
+  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetadata(hooksDirPath, hooksMetadata.getHookEvent(), hooksConfig);
+
+  const executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
 
   for (const execFileMeta of executionQueue) {
     if (!execFileMeta) {

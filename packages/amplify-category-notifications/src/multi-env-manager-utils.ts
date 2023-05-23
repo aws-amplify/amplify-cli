@@ -1,5 +1,13 @@
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
-import { $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifyFault, AmplifySupportedService, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  $TSMeta,
+  AmplifyCategories,
+  AmplifyFault,
+  AmplifySupportedService,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { getEnabledChannelsFromAppMeta, getNotificationsAppMeta } from './notifications-amplify-meta-api';
 import { getNotificationsAppConfig } from './notifications-backend-cfg-api';

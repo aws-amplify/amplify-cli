@@ -10,6 +10,7 @@ import { getAddAuthHandler, getUpdateAuthHandler } from './handlers/resource-han
 import { getSupportedServices } from '../supported-services';
 import { importResource, importedAuthEnvInit } from './import';
 import { AuthContext } from '../../context';
+import { getOAuthObjectFromCognito } from './utils/get-oauth-secrets-from-cognito';
 
 export { importResource } from './import';
 
@@ -59,7 +60,7 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
   // cloud deployed values.
   if (resource && resource.serviceType === 'imported') {
     let envSpecificParametersResult;
-    const { doServiceWalkthrough, succeeded, envSpecificParameters } = await importedAuthEnvInit(
+    const { doServiceWalkthrough, succeeded, resourceCleanupRequired, envSpecificParameters } = await importedAuthEnvInit(
       context,
       service,
       resource,
@@ -93,9 +94,12 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
         throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
       }
     } else if (succeeded) {
+      if (resourceCleanupRequired) {
+        // returning undefined as auth resource cleanup required
+        return {};
+      }
       envSpecificParametersResult = envSpecificParameters;
     } else {
-      // succeeded === false | undefined
       throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
     }
 
@@ -130,6 +134,14 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
 
   if (hostedUIProviderMeta) {
     currentEnvSpecificValues = getOAuthProviderKeys(currentEnvSpecificValues, resourceParams);
+    const authParamsFromCognito = await getOAuthObjectFromCognito(context, resourceParams.userPoolName);
+    // fill in the OAuthProvider Keys from userpool if missing from currentEnvValues
+    if (authParamsFromCognito) {
+      currentEnvSpecificValues = {
+        ...getOAuthProviderKeys({ hostedUIProviderCreds: JSON.stringify(authParamsFromCognito) }, resourceParams),
+        ...currentEnvSpecificValues,
+      };
+    }
   }
 
   // legacy headless mode (only supports init)
@@ -143,8 +155,8 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
       const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
       const missingParams: any[] = [];
       requiredParams.forEach((param: any) => {
-        if (Object.keys(mergedValues!).includes(param)) {
-          envParams[param] = mergedValues![param];
+        if (Object.keys(mergedValues ?? {}).includes(param)) {
+          envParams[param] = mergedValues?.[param];
         } else {
           missingParams.push(param);
         }
@@ -437,7 +449,7 @@ const openAdminUI = async (context: $TSContext, appId: string, region: string): 
 };
 
 const openUserPoolConsole = async (context: $TSContext, region: string, userPoolId: string): Promise<void> => {
-  const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
+  const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/v2/idp/user-pools/${userPoolId}/users?region=${region}`;
   await open(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);

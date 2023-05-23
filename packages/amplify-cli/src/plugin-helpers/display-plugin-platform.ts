@@ -1,6 +1,6 @@
 import util from 'util';
 import { Context } from '../domain/context';
-import { PluginInfo, PluginCollection, PluginPlatform } from 'amplify-cli-core';
+import { PluginInfo, PluginCollection, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 
 const defaultIndentationStr = '  ';
 

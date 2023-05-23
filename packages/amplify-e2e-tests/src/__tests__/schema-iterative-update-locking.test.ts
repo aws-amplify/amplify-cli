@@ -15,7 +15,7 @@ import {
   sleep,
 } from '@aws-amplify/amplify-e2e-core';
 import S3 from 'aws-sdk/clients/s3';
-import { DeploymentState, DeploymentStatus, JSONUtilities } from 'amplify-cli-core';
+import { DeploymentState, DeploymentStatus, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 describe('Schema iterative update - locking', () => {
   let projectRoot: string;

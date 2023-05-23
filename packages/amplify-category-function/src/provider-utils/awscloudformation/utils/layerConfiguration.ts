@@ -1,4 +1,4 @@
-import { $TSAny, $TSObject, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSObject, JSONUtilities, pathManager, recursiveOmit, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 import { deleteVersionsField, ephemeralField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';

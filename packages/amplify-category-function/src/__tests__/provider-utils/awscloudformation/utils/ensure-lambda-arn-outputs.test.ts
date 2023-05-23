@@ -1,7 +1,7 @@
-import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from 'amplify-cli-core';
+import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from '@aws-amplify/amplify-cli-core';
 import { ensureLambdaExecutionRoleOutputs } from '../../../../provider-utils/awscloudformation/utils/ensure-lambda-arn-outputs';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const readCFNTemplateMock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;
@@ -10,13 +10,13 @@ const writeCFNTemplateMock = writeCFNTemplate as jest.MockedFunction<typeof writ
 describe('test ensureLambdaExecutionRoleOutputs function', () => {
   beforeEach(() => {
     pathManagerMock.getBackendDirPath = jest.fn().mockReturnValue('backend');
-    stateManagerMock.getMeta = jest.fn();
+    stateManagerMock.getBackendConfig = jest.fn();
   });
 
   afterEach(() => jest.resetAllMocks());
 
   it(' when no functions are present', async () => {
-    stateManagerMock.getMeta.mockReturnValue({
+    stateManagerMock.getBackendConfig.mockReturnValue({
       auth: {
         authtriggertestb3a9da62b3a9da62: {
           customAuth: false,
@@ -31,7 +31,7 @@ describe('test ensureLambdaExecutionRoleOutputs function', () => {
   });
 
   it(' when functions have no role arns in outputs', async () => {
-    stateManagerMock.getMeta.mockReturnValue({
+    stateManagerMock.getBackendConfig.mockReturnValue({
       auth: {
         authtriggertestb3a9da62b3a9da62: {
           customAuth: false,

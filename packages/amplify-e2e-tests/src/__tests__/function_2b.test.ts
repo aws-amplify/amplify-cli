@@ -61,7 +61,7 @@ describe('nodejs', () => {
         'nodejs',
       );
 
-      const functionCode = loadFunctionTestFile('dynamodb-scan.js');
+      const functionCode = loadFunctionTestFile('dynamodb-scan-v3.js');
 
       overrideFunctionSrcNode(projRoot, fnName, functionCode);
 
@@ -119,7 +119,7 @@ describe('nodejs', () => {
         'nodejs',
       );
 
-      const functionCode = loadFunctionTestFile('dynamodb-scan.js');
+      const functionCode = loadFunctionTestFile('dynamodb-scan-v3.js');
 
       overrideFunctionSrcNode(projRoot, fnName, functionCode);
 

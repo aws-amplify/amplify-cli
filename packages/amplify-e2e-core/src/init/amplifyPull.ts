@@ -58,7 +58,7 @@ export const amplifyPull = (
       .wait('Choose your default editor:')
       .sendCarriageReturn()
       .wait("Choose the type of app that you're building")
-      .sendCarriageReturn()
+      .sendLine('javascript')
       .wait('What javascript framework are you using')
       .sendCarriageReturn()
       .wait('Source Directory Path:')
@@ -172,4 +172,36 @@ export const amplifyStudioHeadlessPull = (
   };
   const args = ['pull', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];
   return spawn(getCLIPath(useDevCLI), args, { cwd, stripColors: true }).wait('Successfully pulled backend environment').runAsync();
+};
+
+/**
+ * Interrupt amplify pull command with Ctrl + C
+ */
+export const amplifyPullWithCtrlCOnFrameworkPrompt = (
+  cwd: string,
+  settings: {
+    appId: string;
+    envName?: string;
+  },
+  testingWithLatestCodebase = false,
+): Promise<void> => {
+  const args = ['pull', '--appId', settings.appId];
+
+  if (settings.envName) {
+    args.push('--envName', settings.envName);
+  }
+
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true })
+    .wait('Select the authentication method you want to use:')
+    .sendCarriageReturn()
+    .wait('Please choose the profile you want to use')
+    .sendCarriageReturn()
+    .wait('Choose your default editor:')
+    .sendCarriageReturn()
+    .wait("Choose the type of app that you're building")
+    .sendLine('javascript')
+    .wait('What javascript framework are you using')
+    .sendCtrlC();
+
+  return chain.runAsync();
 };

@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { execSync } from 'child_process';
 import _ from 'lodash';
 import * as path from 'path';

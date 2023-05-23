@@ -1,60 +1,67 @@
-import { getInvoker, category, isMockable, getBuilder } from '@aws-amplify/amplify-category-function';
 import * as path from 'path';
-import * as inquirer from 'inquirer';
-import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import _ from 'lodash';
+
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
+import { getInvoker, category, isMockable, getBuilder } from '@aws-amplify/amplify-category-function';
+import { prompter, printer } from '@aws-amplify/amplify-prompts';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+
+import _ from 'lodash';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 
 const DEFAULT_TIMEOUT_SECONDS = 10;
 
-export async function start(context: $TSContext) {
+export async function start(context: $TSContext): Promise<void> {
   const ampMeta = stateManager.getMeta();
-  let resourceName = context?.input?.subCommands?.[0];
-  if (!resourceName) {
+  const resourceNameInput = context?.input?.subCommands?.[0];
+  const resourceNames = [resourceNameInput];
+  if (!resourceNameInput) {
     const choices = _.keys(_.get(ampMeta, ['function'])).filter((resourceName) => isMockable(context, resourceName).isMockable);
     if (choices.length < 1) {
       throw new Error('There are no mockable functions in the project. Use `amplify add function` to create one.');
-    } else if (choices.length == 1) {
-      resourceName = choices[0];
+    } else if (choices.length === 1) {
+      resourceNames.push(choices[0]);
     } else {
-      const resourceNameQuestion = [
-        {
-          type: 'list',
-          name: 'resourceName',
-          message: 'Select the function to mock',
-          choices,
-        },
-      ];
-      ({ resourceName } = await inquirer.prompt<{ resourceName: string }>(resourceNameQuestion));
+      // prompt for functions
+      resourceNames.push(
+        ...(await prompter.pick<'many', string>('Select the Function', choices, {
+          returnSize: 'many',
+        })),
+      );
     }
   } else {
-    const mockable = isMockable(context, resourceName);
+    const mockable = isMockable(context, resourceNameInput);
     if (!mockable.isMockable) {
-      throw new Error(`Unable to mock ${resourceName}. ${mockable.reason}`);
+      throw new Error(`Unable to mock ${resourceNameInput}. ${mockable.reason}`);
     }
   }
 
-  const event = await resolveEvent(context, resourceName);
-  const lambdaConfig = await loadLambdaConfig(context, resourceName);
-  if (!lambdaConfig?.handler) {
-    throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
-  }
-  context.print.blue('Ensuring latest function changes are built...');
-  await getBuilder(context, resourceName, BuildType.DEV)();
-  const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
-  context.print.blue('Starting execution...');
-  try {
-    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options as InvokerOptions);
-    const stringResult =
-      typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? 'undefined' : result;
-    context.print.success('Result:');
-    context.print.info(typeof result === 'undefined' ? '' : stringResult);
-  } catch (err) {
-    context.print.error(`${resourceName} failed with the following error:`);
-    context.print.info(err);
-  } finally {
-    context.print.blue('Finished execution.');
+  // iterate over each of the selected functions, removing any `undefined` results
+  for (const resourceName of resourceNames.filter(Boolean)) {
+    const event = await resolveEvent(context, resourceName);
+    const lambdaConfig = await loadLambdaConfig(context, resourceName);
+    if (!lambdaConfig?.handler) {
+      throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
+    }
+    printer.info('Ensuring latest function changes are built...');
+    await getBuilder(context, resourceName, BuildType.DEV)();
+    const invoker = await getInvoker(context, {
+      resourceName,
+      handler: lambdaConfig.handler,
+      envVars: lambdaConfig.environment,
+    });
+    printer.info('Starting execution...');
+    try {
+      const result = await timeConstrainedInvoker(invoker({ event }), context.input.options as InvokerOptions);
+      const stringResult =
+        typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? 'undefined' : result;
+      printer.success('Result:');
+      printer.info(typeof result === 'undefined' ? '' : stringResult);
+    } catch (err) {
+      printer.error(`${resourceName} failed with the following error:`);
+      printer.info(err);
+    } finally {
+      printer.info('Finished execution.');
+    }
   }
 }
 
@@ -100,24 +107,21 @@ const resolveEvent = async (context: $TSContext, resourceName: string): Promise<
     const validatorOutput = eventNameValidator(eventName);
     const isValid = typeof validatorOutput !== 'string';
     if (!isValid) {
-      context.print.warning(validatorOutput as string);
+      printer.warn(validatorOutput as string);
     } else {
       promptForEvent = false;
     }
   }
 
   if (promptForEvent) {
-    const eventNameQuestion = [
-      {
-        type: 'input',
-        name: 'eventName',
-        message: `Provide the path to the event JSON object relative to ${resourcePath}`,
-        validate: eventNameValidator,
-        default: 'src/event.json',
+    const question = `Provide the path to the event JSON object relative to ${resourcePath}`;
+    eventName = await prompter.input(question, {
+      validate: (value) => {
+        const validatorOutput = eventNameValidator(value);
+        return typeof validatorOutput === 'string' ? validatorOutput : true;
       },
-    ];
-    const resourceAnswers = await inquirer.prompt(eventNameQuestion);
-    eventName = resourceAnswers.eventName as string;
+      initial: 'src/event.json',
+    });
   }
 
   return JSONUtilities.readJson(path.resolve(path.join(resourcePath, eventName)));

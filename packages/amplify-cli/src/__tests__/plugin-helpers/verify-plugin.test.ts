@@ -1,9 +1,9 @@
 import { verifyPlugin, validPluginName } from '../../plugin-helpers/verify-plugin';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { PluginVerificationError, PluginVerificationResult } from 'amplify-cli-core';
-import { PluginManifest, AmplifyEvent } from 'amplify-cli-core';
+import { PluginVerificationError, PluginVerificationResult } from '@aws-amplify/amplify-cli-core';
+import { PluginManifest, AmplifyEvent } from '@aws-amplify/amplify-cli-core';
 
 const corePluginJson = {
   name: 'core',

@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, AmplifyError, AmplifyFault } from 'amplify-cli-core';
+import { $TSContext, stateManager, AmplifyError, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { pullBackend } from '../pull-backend';
 import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
@@ -32,7 +32,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   if (stateManager.currentMetaFileExists(projectPath)) {
     const { appId: inputAppId, envName: inputEnvName } = inputParams.amplify;
-    const { envName } = stateManager.getLocalEnvInfo(projectPath);
+    const { envName } = stateManager.getLocalEnvInfo(projectPath, { throwIfNotExist: false }) || {};
 
     const appId = getAmplifyAppId();
 

@@ -1,5 +1,5 @@
 import { CircleCIConfig, WorkflowJob } from './cci-types';
-import { FORCE_US_WEST_2, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
+import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 import { AWS_REGIONS_TO_RUN_TESTS as regions, getTestFiles } from './cci-utils';
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
@@ -101,13 +101,13 @@ const WINDOWS_SMOKE_TESTS = [
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
     'src/__tests__/amplify-app.test.ts',
-    // TODO: this is required to jump over breaking change between 2.53 and 2.68 of CDK.
-    // Remove exclusion for both custom resource tests after we ship new extensibility helper.
-    'src/__tests__/custom_resources.test.ts',
-    'src/__tests__/custom-resource-with-storage.test.ts',
+    // failing in parsing JSON strings on powershell
+    'src/__tests__/auth_2g.test.ts',
+    'src/__tests__/auth_12.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/diagnose.test.ts',
     'src/__tests__/env-2.test.ts',
@@ -126,6 +126,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/geo-update-2.test.ts',
     'src/__tests__/git-clone-attach.test.ts',
     'src/__tests__/hooks-a.test.ts',
+    'src/__tests__/hooks-c.test.ts',
     'src/__tests__/import_auth_1a.test.ts',
     'src/__tests__/import_auth_1b.test.ts',
     'src/__tests__/import_auth_2a.test.ts',
@@ -227,14 +228,14 @@ export const splitTestsV2 = function splitTests(
       if (shouldFilterWindowsTests && os === 'w' && !WINDOWS_SMOKE_TESTS.includes(test)) {
         continue; // skip this test
       }
-      const US_WEST_2 = FORCE_US_WEST_2.find((t) => test.startsWith(t));
+      const FORCE_REGION = FORCE_REGION_MAP.get(test);
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
 
       if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
         const newSoloJob = createRandomJob(os);
         newSoloJob.tests.push(test);
-        if (US_WEST_2) {
-          newSoloJob.region = 'us-west-2';
+        if (FORCE_REGION) {
+          newSoloJob.region = FORCE_REGION;
         }
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
@@ -245,8 +246,8 @@ export const splitTestsV2 = function splitTests(
 
       // add the test
       currentJob.tests.push(test);
-      if (US_WEST_2) {
-        currentJob.region = 'us-west-2';
+      if (FORCE_REGION) {
+        currentJob.region = FORCE_REGION;
       }
       if (USE_PARENT) {
         currentJob.useParentAccount = true;

@@ -1,4 +1,4 @@
-import { $TSContext, exitOnNextTick, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, exitOnNextTick, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';

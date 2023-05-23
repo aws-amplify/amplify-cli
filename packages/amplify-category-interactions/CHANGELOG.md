@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.0.6...@aws-amplify/amplify-category-interactions@5.1.0) (2023-05-11)
+
+
+### Features
+
+* run interactions lambda on nodejs18 ([#12482](https://github.com/aws-amplify/amplify-cli/issues/12482)) ([398688d](https://github.com/aws-amplify/amplify-cli/commit/398688d743cefb22de530e8f469d7ba5394bb760))
+
+
+
+
+
+## [5.0.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.0.5...@aws-amplify/amplify-category-interactions@5.0.6) (2023-04-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-interactions
+
+
+
+
+
+## [5.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.0.3...@aws-amplify/amplify-category-interactions@5.0.5) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-interactions
+
+
+
+
+
 ## [5.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.0.3-rc.e9e0d157d.0...@aws-amplify/amplify-category-interactions@5.0.3) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-interactions

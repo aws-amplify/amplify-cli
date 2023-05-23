@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, AmplifyError, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, $TSAny, AmplifyError, AmplifyFault, pathManager } from '@aws-amplify/amplify-cli-core';
 import path from 'path';
 import { readProjectConfiguration, collectDirectivesByTypeNames, getTableNameForModel } from 'graphql-transformer-core';
 
@@ -74,8 +74,29 @@ const getTableNames = async (backendDir: string, apiResourceName: string): Promi
   // need all object type name definition node with @model directives present
   const appsyncTableSuffix = '@model(appsync)';
   const resourceDirPath = path.join(backendDir, 'api', apiResourceName);
-  const project = await readProjectConfiguration(resourceDirPath);
-  const directivesMap: $TSAny = collectDirectivesByTypeNames(project.schema);
+  let project;
+  let directivesMap: $TSAny;
+  try {
+    project = await readProjectConfiguration(resourceDirPath);
+    directivesMap = collectDirectivesByTypeNames(project.schema);
+  } catch (err) {
+    if (err.message?.includes('Syntax Error')) {
+      throw new AmplifyError(
+        'GraphQLError',
+        {
+          message: err?.message,
+        },
+        err,
+      );
+    }
+    throw new AmplifyFault(
+      'GraphQLTransformerV1Fault',
+      {
+        message: err?.message,
+      },
+      err,
+    );
+  }
   const modelNames = Object.keys(directivesMap.types).filter((typeName) => directivesMap.types[typeName].includes('model'));
   const tableNames = modelNames
     .map((modelName) => getTableNameForModel(project.schema, modelName))

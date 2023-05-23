@@ -7,7 +7,7 @@ import {
   buildOverrideDir,
   stateManager,
   ApiCategoryFacade,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-package/types';
 import * as fs from 'fs-extra';
 
@@ -25,7 +25,7 @@ const mockMeta = jest.fn(() => {
   };
 });
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta = mockMeta;
 stateManager_mock.getTeamProviderInfo = jest.fn().mockReturnValue({});

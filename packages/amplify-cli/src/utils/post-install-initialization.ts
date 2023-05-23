@@ -1,4 +1,4 @@
-import { GetPackageAssetPaths, pathManager } from 'amplify-cli-core';
+import { GetPackageAssetPaths, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 

@@ -1,4 +1,13 @@
-import { $TSAny, $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  exitOnNextTick,
+  FeatureFlags,
+  pathManager,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import { DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse } from 'graphql';
@@ -36,8 +45,29 @@ export const notifyFieldAuthSecurityChange = async (context: $TSContext): Promis
     return false;
   }
 
-  const project = await readProjectConfiguration(apiResourceDir);
-  const directiveMap = collectDirectivesByType(project.schema);
+  let project;
+  let directiveMap;
+  try {
+    project = await readProjectConfiguration(apiResourceDir);
+    directiveMap = collectDirectivesByType(project.schema);
+  } catch (err) {
+    if (err.message?.includes('Syntax Error')) {
+      throw new AmplifyError(
+        'GraphQLError',
+        {
+          message: err?.message,
+        },
+        err,
+      );
+    }
+    throw new AmplifyFault(
+      'GraphQLTransformerV1Fault',
+      {
+        message: err?.message,
+      },
+      err,
+    );
+  }
   const doc: DocumentNode = parse(project.schema);
   const fieldDirectives: Set<string> = hasFieldAuthDirectives(doc);
 
@@ -90,7 +120,27 @@ export const notifyListQuerySecurityChange = async (context: $TSContext): Promis
     return false;
   }
 
-  const project = await readProjectConfiguration(apiResourceDir);
+  let project;
+  try {
+    project = await readProjectConfiguration(apiResourceDir);
+  } catch (err) {
+    if (err.message?.includes('Syntax Error')) {
+      throw new AmplifyError(
+        'GraphQLError',
+        {
+          message: err?.message,
+        },
+        err,
+      );
+    }
+    throw new AmplifyFault(
+      'GraphQLTransformerV1Fault',
+      {
+        message: err?.message,
+      },
+      err,
+    );
+  }
   const resolvers = await loadResolvers(apiResourceDir);
 
   const resolversToCheck = Object.entries(resolvers)
@@ -298,7 +348,19 @@ export const notifySecurityEnhancement = async (context: $TSContext): Promise<vo
       return;
     }
 
-    const project = await readProjectConfiguration(apiResourceDir);
+    let project;
+    try {
+      project = await readProjectConfiguration(apiResourceDir);
+    } catch (err) {
+      if (err.message?.includes('Syntax Error')) {
+        throw new AmplifyError('GraphQLError', {
+          message: err?.message,
+        });
+      }
+      throw new AmplifyFault('GraphQLTransformerV1Fault', {
+        message: err?.message,
+      });
+    }
 
     const directiveMap = collectDirectivesByTypeNames(project.schema);
     const notifyAuthWithKey = Object.keys(directiveMap.types).some(

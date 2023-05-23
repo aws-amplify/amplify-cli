@@ -5,30 +5,6 @@ import _ from 'lodash';
 import { spawnSync } from 'child_process';
 import { getBackendAmplifyMeta } from '../utils';
 
-export function addDEVHosting(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
-      .wait('Select the plugin module to execute')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Select the environment setup:')
-      .sendCarriageReturn()
-      .wait('hosting bucket name')
-      .sendCarriageReturn()
-      .wait('index doc for the website')
-      .sendCarriageReturn()
-      .wait('error doc for the website')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
 export function enableContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
@@ -73,36 +49,7 @@ export function addPRODHosting(cwd: string): Promise<void> {
       .wait('Select the plugin module to execute')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Select the environment setup:')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
       .wait('hosting bucket name')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
-export function removePRODCloudFront(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'hosting'], { cwd, stripColors: true })
-      .wait('Specify the section to configure')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Remove CloudFront from hosting')
-      .send('y')
-      .sendCarriageReturn()
-      .wait('index doc for the website')
-      .sendCarriageReturn()
-      .wait('error doc for the website')
-      .sendCarriageReturn()
-      .wait('Specify the section to configure')
-      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
@@ -174,7 +121,7 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync(getNpxPath(), ['create-react-app', '--scripts-version', '4.0.3', projectName], { cwd: projectDir });
+  spawnSync(getNpxPath(), ['create-react-app', '--scripts-version', '5.0.1', projectName], { cwd: projectDir });
 
   return projRoot;
 }

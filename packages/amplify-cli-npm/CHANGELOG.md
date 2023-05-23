@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.1.1...@aws-amplify/cli@12.0.0) (2023-05-11)
+
+
+* feat!: use NodeJS 18 runtime (#12043) ([4ae0cde](https://github.com/aws-amplify/amplify-cli/commit/4ae0cde8681810b49b88a4ce7c5ae90724706f5e)), closes [#12043](https://github.com/aws-amplify/amplify-cli/issues/12043)
+
+
+### BREAKING CHANGES
+
+* Updated NodeJS runtime to 18, removed support for .NET Core 3.1.
+
+
+
+
+
+## [11.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.1.0...@aws-amplify/cli@11.1.1) (2023-04-29)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [11.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.0.5...@aws-amplify/cli@11.1.0) (2023-04-24)
+
+
+### Features
+
+* minor version bump ([f7af76d](https://github.com/aws-amplify/amplify-cli/commit/f7af76d5c97908b4ff06b89a019bc8ac9129fb71))
+
+
+
+
+
+## [11.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.0.3...@aws-amplify/cli@11.0.5) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [11.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.0.3-rc.e9e0d157d.0...@aws-amplify/cli@11.0.3) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/cli

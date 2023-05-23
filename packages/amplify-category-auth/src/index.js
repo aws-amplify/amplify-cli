@@ -8,8 +8,8 @@ const path = require('path');
 const sequential = require('promise-sequential');
 
 const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
-const { stateManager, AmplifySupportedService, JSONUtilities } = require('amplify-cli-core');
-const { printer } = require('amplify-prompts');
+const { stateManager, AmplifySupportedService, JSONUtilities } = require('@aws-amplify/amplify-cli-core');
+const { printer } = require('@aws-amplify/amplify-prompts');
 const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const { getAuthResourceName } = require('./utils/getAuthResourceName');
@@ -22,6 +22,7 @@ const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigge
 const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
+const { printAuthExistsWarning } = require('./provider-utils/awscloudformation/utils/print-auth-exists-warning');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
 const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
@@ -39,6 +40,7 @@ const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
 const { run: authRunPush } = require('./commands/auth/push');
 const { getAuthTriggerStackCfnParameters } = require('./provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parameters');
+const { prePushHandler } = require('./events/prePushHandler');
 
 // this function is being kept for temporary compatability.
 async function add(context, skipNextSteps = false) {
@@ -296,7 +298,7 @@ async function checkRequirements(requirements, context, category, targetResource
     result.allowUnauthenticatedIdentities = true;
   } else {
     result.allowUnauthenticatedIdentities = false;
-    result.errors.push(`Auth configuration is required to allow unauthenticated users, but it is not configured properly.`);
+    result.errors.push(`Specified resource configuration requires Cognito Identity Provider unauthenticated access but it is not enabled.`);
   }
 
   result.requirementsMet = result.authSelections && result.allowUnauthenticatedIdentities;
@@ -440,7 +442,8 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
   context.usageData.pushHeadlessFlow(headlessPayload, context.input);
   switch (context.input.command) {
     case 'add':
-      if (projectHasAuth(context)) {
+      if (projectHasAuth()) {
+        printAuthExistsWarning(context);
         return;
       }
       await validateAddAuthRequest(headlessPayload)
@@ -457,7 +460,8 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
         .then(getUpdateAuthHandler(context));
       return;
     case 'import':
-      if (projectHasAuth(context)) {
+      if (projectHasAuth()) {
+        printAuthExistsWarning(context);
         return;
       }
       await validateImportAuthRequest(headlessPayload);
@@ -485,8 +489,13 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
 };
 
 async function handleAmplifyEvent(context, args) {
-  context.print.info(`${category} handleAmplifyEvent to be implemented`);
-  context.print.info(`Received event args ${args}`);
+  switch (args.event) {
+    case 'PrePush':
+      await prePushHandler(context);
+      break;
+    default:
+      printer.info(`Event handler for ${args.event} not implemented by ${category} category`);
+  }
 }
 
 async function prePushAuthHook(context) {

@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.5.0...@aws-amplify/amplify-environment-parameters@1.6.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* env param fail-fast checks don't fatal on missing appId or envName ([#12373](https://github.com/aws-amplify/amplify-cli/issues/12373)) ([4a4caf3](https://github.com/aws-amplify/amplify-cli/commit/4a4caf39320276215a882bc829bb459bd7896ae9))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([e914703](https://github.com/aws-amplify/amplify-cli/commit/e914703261c8d4855b09cc0a5bc01a7b5de44591))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+
+
+
+
+
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.3...@aws-amplify/amplify-environment-parameters@1.5.0) (2023-04-24)
+
+
+### Bug Fixes
+
+* env param fail-fast checks don't fatal on missing appId or envName ([#12373](https://github.com/aws-amplify/amplify-cli/issues/12373)) ([756b6c3](https://github.com/aws-amplify/amplify-cli/commit/756b6c3c1642c6aceb279e8a57f5c7bec4e7caab))
+* fail `init --forcePush` fast if environment parameters or secrets are missing in the environment ([#12279](https://github.com/aws-amplify/amplify-cli/issues/12279)) ([0b6e562](https://github.com/aws-amplify/amplify-cli/commit/0b6e562445a5ec9e6c7b0a7f93a66bbde4d23fe8))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-cli/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
+## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1...@aws-amplify/amplify-environment-parameters@1.4.3) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-environment-parameters
+
+
+
+
+
 ## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.4.1-rc.e9e0d157d.0...@aws-amplify/amplify-environment-parameters@1.4.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

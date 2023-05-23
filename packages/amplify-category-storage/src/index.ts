@@ -1,4 +1,11 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifySupportedService,
+  IAmplifyResource,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import {
   validateAddStorageRequest,

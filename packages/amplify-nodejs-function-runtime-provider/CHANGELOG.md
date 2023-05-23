@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.3.17...amplify-nodejs-function-runtime-provider@2.4.0) (2023-05-11)
+
+
+### Features
+
+* create new NodeJS functions with nodejs18.x runtime ([#12394](https://github.com/aws-amplify/amplify-cli/issues/12394)) ([c896259](https://github.com/aws-amplify/amplify-cli/commit/c896259c1c15813d2bd561bd562adae22e0b3ce5))
+
+
+
+
+
+## [2.3.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.3.16...amplify-nodejs-function-runtime-provider@2.3.17) (2023-04-24)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+## [2.3.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.3.14...amplify-nodejs-function-runtime-provider@2.3.16) (2023-04-14)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
 ## [2.3.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.3.14-rc.e9e0d157d.0...amplify-nodejs-function-runtime-provider@2.3.14) (2023-03-23)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider

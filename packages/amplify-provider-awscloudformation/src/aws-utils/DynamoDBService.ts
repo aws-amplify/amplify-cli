@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { IDynamoDBService } from '@aws-amplify/amplify-util-import';
 import DynamoDB, { ListTablesInput, ListTablesOutput, TableDescription, TableName } from 'aws-sdk/clients/dynamodb';
 import { loadConfiguration } from '../configuration-manager';

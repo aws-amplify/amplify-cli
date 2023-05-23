@@ -7,7 +7,7 @@ import {
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getAmplifyMetaFilePath: jest.fn().mockReturnValue('/home/user/project/amplify/backend/amplify-meta.json'),
     getBackendConfigFilePath: jest.fn().mockReturnValue('/home/user/project/amplify/backend/backend-config.json'),

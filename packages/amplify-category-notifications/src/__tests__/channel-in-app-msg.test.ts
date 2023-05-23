@@ -5,7 +5,7 @@ import {
   INotificationsResourceMeta,
   IPluginCapabilityAPIResponse,
   NotificationChannels,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import ora from 'ora';
 
 import { prompter } from '@aws-amplify/amplify-prompts';
@@ -18,14 +18,21 @@ import { INotificationsResourceBackendConfig } from '../notifications-backend-cf
 import { buildPinpointChannelResponseSuccess, getPinpointAppStatusFromMeta } from '../pinpoint-helper';
 import * as analyticsClient from '../plugin-client-api-analytics';
 
-jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
+  FeatureFlags: {
+    getBoolean: jest.fn(),
+    getNumber: jest.fn(),
+    getObject: jest.fn(),
+    getString: jest.fn(),
+  },
   stateManager: {
     getCurrentBackendConfig: jest.fn(),
     getCurrentEnvName: jest.fn(),
     getCurrentMeta: jest.fn(),
   },
 }));
+
 jest.mock('ora', () => {
   const mockSpinnerInstance = {
     fail: jest.fn(),

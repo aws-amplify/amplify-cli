@@ -1,9 +1,9 @@
-import { DeploymentStatus, DeploymentStepStatus, IDeploymentStateManager } from 'amplify-cli-core';
+import { DeploymentStatus, DeploymentStepStatus, IDeploymentStateManager } from '@aws-amplify/amplify-cli-core';
 import { DeploymentStateManager } from '../../iterative-deployment/deployment-state-manager';
 import { S3 } from '../../aws-utils/aws-s3';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
   stateManager: {
     getMeta: jest.fn().mockReturnValue({
       providers: {

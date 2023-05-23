@@ -16,7 +16,7 @@ parameters:
 executors:
   w_medium: &windows-e2e-executor-medium
     machine:
-      image: 'windows-server-2019-vs2019:stable'
+      image: 'windows-server-2022-gui:current'
       resource_class: 'windows.medium'
       shell: bash.exe
     working_directory: ~/repo
@@ -26,7 +26,7 @@ executors:
 
   w_xlarge: &windows-e2e-executor-xlarge
     machine:
-      image: 'windows-server-2019-vs2019:stable'
+      image: 'windows-server-2022-gui:current'
       resource_class: 'windows.xlarge'
       shell: bash.exe
     working_directory: ~/repo
@@ -35,7 +35,7 @@ executors:
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
   l_xlarge: &linux-e2e-executor-xlarge
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: xlarge
     environment:
@@ -44,7 +44,7 @@ executors:
   # If you update this name, make sure to update it in split-e2e-tests.ts as well
   l_large: &linux-e2e-executor-large
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -53,7 +53,7 @@ executors:
   # If you update this name, make sure to update it in split-e2e-tests.ts as well
   l_medium: &linux-e2e-executor-medium
     docker:
-      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/j4f5f3h7/amplify-cli-e2e-base-image-repo-public:node18
     working_directory: ~/repo
     resource_class: medium
     environment:
@@ -135,7 +135,7 @@ jobs:
       - checkout
       - run: yarn config set registry https://registry.npmjs.org
       - run: yarn config set script-shell $(which bash)
-      - run: yarn install
+      - run: yarn install --network-concurrency 1
       - run:
           name: Build tests
           command: yarn build-tests
@@ -150,7 +150,7 @@ jobs:
           condition:
             equal: [*windows-e2e-executor-xlarge, << parameters.os >>]
           steps:
-            - install_node14_windows
+            - install_node_windows
             - checkout
             - run: yarn config set script-shell $(which bash)
             - run: yarn run production-build
@@ -177,7 +177,7 @@ jobs:
           name: Collect code coverage
           command: yarn coverage
     environment:
-      NODE_OPTIONS: --max-old-space-size=4096
+      NODE_OPTIONS: --max-old-space-size=5120
 
   validate_cdk_version:
     <<: *linux-e2e-executor-medium
@@ -201,6 +201,8 @@ jobs:
       - run: yarn lint-check
       - run: yarn lint-check-package-json
       - run: yarn prettier-check
+    environment:
+      NODE_OPTIONS: --max-old-space-size=5120
 
   verify-api-extract:
     <<: *linux-e2e-executor-xlarge
@@ -347,6 +349,8 @@ jobs:
           key: amplify-pkg-binaries-linux-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_macos:
     <<: *linux-e2e-executor-large
@@ -370,6 +374,8 @@ jobs:
           key: amplify-pkg-binaries-macos-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_win:
     <<: *linux-e2e-executor-large
@@ -393,6 +399,8 @@ jobs:
           key: amplify-pkg-binaries-win-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   build_pkg_binaries_arm:
     <<: *linux-e2e-executor-large
@@ -416,6 +424,8 @@ jobs:
           key: amplify-pkg-binaries-arm-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
+      - store_artifacts:
+          path: ~/repo/out
 
   verify_pkg_binaries:
     <<: *linux-e2e-executor-large
@@ -446,9 +456,6 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Update OS Packages
-          command: sudo apt-get update
-      - run:
           name: Start verdaccio and Install Amplify CLI as sudo
           command: |
             source .circleci/local_publish_helpers.sh
@@ -457,6 +464,30 @@ jobs:
             changeSudoNpmGlobalPath
             sudo npm install -g @aws-amplify/cli
             unsetSudoNpmRegistryUrl
+            amplify version
+
+  amplify_install_test:
+    <<: *defaults
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio and Install Amplify CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            # limit memory for new processes to 1GB
+            # this is to make sure that install can work on small VMs
+            # i.e. not buffer content in memory while installing binary
+            ulimit -Sv 1000000
+            npm install -g @aws-amplify/cli
+            unsetNpmRegistryUrl
             amplify version
 
   amplify_e2e_tests_pkg:
@@ -471,7 +502,7 @@ jobs:
           condition:
             equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
-            - install_node14_windows
+            - install_node_windows
             - attach_workspace:
                 at: ~/.
             - run:
@@ -989,7 +1020,6 @@ workflows:
                 - beta
                 - release
                 - /release_rc\/.*/
-                - /tagged-release-without-e2e-tests\/.*/
                 - /run-e2e\/.*/
       - verify-api-extract:
           requires:
@@ -1083,6 +1113,17 @@ workflows:
             - build_pkg_binaries_win
             - build_pkg_binaries_arm
       - amplify_sudo_install_test:
+          context: amplify-ecr-image-pull
+          requires:
+            - upload_pkg_binaries
+          filters:
+            branches:
+              only:
+                - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+      - amplify_install_test:
           context: amplify-ecr-image-pull
           requires:
             - upload_pkg_binaries
@@ -1271,6 +1312,7 @@ workflows:
             - integration_test
             - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
+            - amplify_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_v10
             - amplify_migration_tests_v6
@@ -1413,15 +1455,15 @@ commands:
               exit 1
             fi
           when: always
-  install_node14_windows:
-    description: Install Node 14 on Windows
+  install_node_windows:
+    description: Install Node 18 on Windows
     steps:
       - run:
-          name: Install Node 14
+          name: Install Node 18
           command: |
             nvm version
-            nvm install 14.18
-            nvm use 14.18
+            nvm install 18.15.0
+            nvm use 18.15.0
             nvm ls
       - run:
           name: Check Node, install yarn

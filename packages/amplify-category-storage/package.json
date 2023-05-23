@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "5.0.1",
+  "version": "5.2.0",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -27,15 +27,15 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.4.1",
-    "@aws-amplify/amplify-prompts": "2.6.6",
-    "@aws-amplify/amplify-util-import": "2.4.0",
-    "@aws-amplify/cli-extensibility-helper": "3.0.1",
-    "amplify-cli-core": "4.0.1",
-    "amplify-headless-interface": "1.17.1",
-    "amplify-util-headless-input": "1.9.10",
+    "@aws-amplify/amplify-cli-core": "4.0.5",
+    "@aws-amplify/amplify-environment-parameters": "1.6.0",
+    "@aws-amplify/amplify-prompts": "2.7.0",
+    "@aws-amplify/amplify-util-import": "2.6.0",
+    "@aws-amplify/cli-extensibility-helper": "3.0.5",
+    "amplify-headless-interface": "1.17.3",
+    "amplify-util-headless-input": "1.9.12",
     "aws-cdk-lib": "~2.68.0",
-    "aws-sdk": "^2.1233.0",
+    "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
     "constructs": "^10.0.5",
     "enquirer": "^2.3.6",
@@ -43,7 +43,7 @@
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2",
-    "vm2": "^3.9.8"
+    "vm2": "^3.9.16"
   },
   "devDependencies": {
     "cloudform-types": "^4.2.0",

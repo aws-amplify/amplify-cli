@@ -1,5 +1,5 @@
 import { JSONUtilities } from '../../../../amplify-cli-core/lib';
-import { PluginInfo, PluginManifest, PluginPlatform } from 'amplify-cli-core';
+import { PluginInfo, PluginManifest, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 import { checkPlatformHealth, getOfficialPlugins } from '../../plugin-helpers/platform-health-check';
 
 jest.mock('chalk', () => ({

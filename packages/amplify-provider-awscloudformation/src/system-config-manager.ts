@@ -1,6 +1,6 @@
-import { $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner } from '@aws-amplify/amplify-cli-core';
 
-import { STS, ProcessCredentials } from 'aws-sdk';
+import { STS, ProcessCredentials, CredentialProviderChain } from 'aws-sdk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as ini from 'ini';
@@ -95,17 +95,19 @@ export const getProfiledAwsConfig = async (
       // need to force AWS_SDK_LOAD_CONFIG to a truthy value to force ProcessCredentials to prefer the credential process in ~/.aws/config instead of ~/.aws/credentials
       const sdkLoadConfigOriginal = process.env.AWS_SDK_LOAD_CONFIG;
       process.env.AWS_SDK_LOAD_CONFIG = '1';
-      const credentialProcess = new ProcessCredentials({ profile: profileName });
-      await credentialProcess.getPromise();
-      process.env.AWS_SDK_LOAD_CONFIG = sdkLoadConfigOriginal;
+      const chain = new CredentialProviderChain();
+      const processProvider = () => new ProcessCredentials({ profile: profileName });
+      chain.providers.push(processProvider);
 
+      const credentials = await chain.resolvePromise();
       awsConfigInfo = {
         region: profileConfig.region,
-        accessKeyId: credentialProcess.accessKeyId,
-        secretAccessKey: credentialProcess.secretAccessKey,
-        sessionToken: credentialProcess.sessionToken,
-        expiration: credentialProcess.expireTime,
+        accessKeyId: credentials.accessKeyId,
+        secretAccessKey: credentials.secretAccessKey,
+        sessionToken: credentials.sessionToken,
+        expiration: credentials.expireTime,
       };
+      process.env.AWS_SDK_LOAD_CONFIG = sdkLoadConfigOriginal;
     } else {
       logger('getProfiledAwsConfig.getProfileCredentials', [profileName]);
       const profileCredentials = getProfileCredentials(profileName);

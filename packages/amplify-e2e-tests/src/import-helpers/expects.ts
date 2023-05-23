@@ -1,7 +1,7 @@
 import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from '@aws-amplify/amplify-e2e-core';
 import { AuthParameters } from '@aws-amplify/amplify-category-auth';
 // eslint-disable-next-line import/no-cycle
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails } from '.';
 import { getAWSExports } from '../aws-exports/awsExports';
 

@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.1.0...@aws-amplify/amplify-category-storage@5.2.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/aws-amplify/amplify-cli/issues/12293)) ([0aba514](https://github.com/aws-amplify/amplify-cli/commit/0aba514462ce94c0c6ea44a0dcb0defacacc5595))
+* support flutter project for idp with social providers ([#12381](https://github.com/aws-amplify/amplify-cli/issues/12381)) ([cb3b0fc](https://github.com/aws-amplify/amplify-cli/commit/cb3b0fca6c575c9b9154627f08c03a092ef9ade0))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+* generate S3 and DynamoDB triggers for node18 runtime ([#12436](https://github.com/aws-amplify/amplify-cli/issues/12436)) ([0d4d44c](https://github.com/aws-amplify/amplify-cli/commit/0d4d44c4c23db8fdb82a10c8236bae14d29bb331))
+
+
+### Reverts
+
+* Revert "chore: prepend headless scopes (#12415)" (#12439) ([88b2508](https://github.com/aws-amplify/amplify-cli/commit/88b2508777425ef2459c976a664f1fbbb04bf6d5)), closes [#12415](https://github.com/aws-amplify/amplify-cli/issues/12415) [#12439](https://github.com/aws-amplify/amplify-cli/issues/12439)
+
+
+
+
+
+# [5.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.0.3...@aws-amplify/amplify-category-storage@5.1.0) (2023-04-24)
+
+
+### Bug Fixes
+
+* all floating promises ([#12293](https://github.com/aws-amplify/amplify-cli/issues/12293)) ([9a4dc3d](https://github.com/aws-amplify/amplify-cli/commit/9a4dc3d183cb8b5886dd0e8e3d3d823faa6bca4d))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-cli/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
+## [5.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.0.1...@aws-amplify/amplify-category-storage@5.0.3) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-storage
+
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.0.1-rc.e9e0d157d.0...@aws-amplify/amplify-category-storage@5.0.1) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

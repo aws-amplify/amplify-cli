@@ -2,7 +2,7 @@ import { existsSync, createWriteStream } from 'fs-extra';
 import { InvokeOptions } from './invoke';
 import path from 'path';
 import exit from 'exit';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 process.on('message', (options: InvokeOptions) => {
   const parentPipe = createWriteStream('', { fd: 3 });

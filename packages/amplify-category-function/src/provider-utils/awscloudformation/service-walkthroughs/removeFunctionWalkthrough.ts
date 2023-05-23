@@ -1,8 +1,8 @@
-import { $TSAny, stateManager, getAmplifyResourceByCategories, AmplifyError } from 'amplify-cli-core';
-import inquirer from 'inquirer';
+import { $TSAny, stateManager, getAmplifyResourceByCategories, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { categoryName } from '../../../constants';
 import { ServiceName } from '../utils/constants';
+import { prompter } from '@aws-amplify/amplify-prompts';
 
 export async function removeResource(resourceName?: string): Promise<$TSAny> {
   const enabledCategoryResources = getEnabledResources();
@@ -18,17 +18,7 @@ export async function removeResource(resourceName?: string): Promise<$TSAny> {
     return resource.value;
   }
 
-  const question = [
-    {
-      name: 'resource',
-      message: 'Choose the resource you would want to remove',
-      type: 'list',
-      choices: enabledCategoryResources,
-    },
-  ];
-  const answer = await inquirer.prompt(question);
-
-  return answer.resource;
+  return await prompter.pick<'one', $TSAny>('Choose the resource you would want to remove', enabledCategoryResources);
 }
 
 function getEnabledResources(): { name: string; value: { resourceName: string; isLambdaLayer: boolean } }[] {

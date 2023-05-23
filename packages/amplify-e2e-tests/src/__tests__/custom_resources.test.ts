@@ -1,4 +1,4 @@
-import { isWindowsPlatform, JSONUtilities } from 'amplify-cli-core';
+import { isWindowsPlatform, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addCDKCustomResource,
   addCFNCustomResource,
@@ -64,9 +64,6 @@ describe('adding custom resources test', () => {
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
 
-    // TODO: this is required to jump over breaking change between 2.53 and 2.68 of CDK.
-    // Remove after we ship new extensibility helper.
-    useLatestExtensibilityHelper(projRoot, cdkResourceName);
     await buildCustomResources(projRoot);
 
     // check if latest @aws-amplify/cli-extensibility-helper works

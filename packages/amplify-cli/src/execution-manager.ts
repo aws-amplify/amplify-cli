@@ -15,7 +15,7 @@ import {
   HooksMeta,
   PluginInfo,
   constants,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 
 /**
@@ -252,7 +252,11 @@ const raisePreInitEvent = async (context: Context): Promise<void> => {
   await raiseEvent(context, { event: AmplifyEvent.PreInit, data: {} });
 };
 
-const raisePrePushEvent = async (context: Context): Promise<void> => {
+/**
+ * This is exported so that the init handler can call it if the --forcePush flag is specified before it does a push internally
+ * @param context
+ */
+export const raisePrePushEvent = async (context: Context): Promise<void> => {
   await raiseEvent(context, { event: AmplifyEvent.PrePush, data: {} });
 };
 
@@ -336,13 +340,9 @@ export const raiseEvent = async <T extends AmplifyEvent>(context: Context, args:
       })
       .map((plugin) => {
         const eventHandler = async (): Promise<void> => {
-          try {
-            await attachContextExtensions(context, plugin);
-            const pluginModule = await import(plugin.packageLocation);
-            await pluginModule.handleAmplifyEvent(context, args);
-          } catch {
-            // no need to need anything
-          }
+          await attachContextExtensions(context, plugin);
+          const pluginModule = await import(plugin.packageLocation);
+          await pluginModule.handleAmplifyEvent(context, args);
         };
         return eventHandler;
       });

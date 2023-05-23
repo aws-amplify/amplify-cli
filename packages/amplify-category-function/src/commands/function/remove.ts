@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { categoryName } from '../../constants';
 import {
   FunctionSecretsStateManager,
@@ -7,6 +7,7 @@ import {
 import { isFunctionPushed } from '../../provider-utils/awscloudformation/utils/funcionStateUtils';
 import { removeResource } from '../../provider-utils/awscloudformation/service-walkthroughs/removeFunctionWalkthrough';
 import { removeWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const subcommand = 'remove';
 
@@ -24,14 +25,14 @@ export const run = async (context: $TSContext): Promise<void> => {
   const response = await removeResource(resourceName);
 
   if (response.isLambdaLayer) {
-    context.print.info(
+    printer.info(
       'When you delete a layer version, you can no longer configure functions to use it.\nHowever, any function that already uses the layer version continues to have access to it.',
     );
 
     resourceToBeDeleted = await removeWalkthrough(context, response.resourceName);
 
     if (!resourceToBeDeleted) {
-      return undefined;
+      return;
     }
 
     resourceName = resourceToBeDeleted;
@@ -45,22 +46,21 @@ export const run = async (context: $TSContext): Promise<void> => {
     hasSecrets = getLocalFunctionSecretNames(funcName).length > 0;
   };
 
-  return amplify
-    .removeResource(context, categoryName, resourceName, undefined, resourceNameCallback)
-    .then(async () => {
-      // if the resource has not been pushed and it has secrets, we need to delete them now
-      // otherwise we will orphan the secrets in the cloud
-      if (!isFunctionPushed(resourceName) && hasSecrets) {
-        await (await FunctionSecretsStateManager.getInstance(context)).deleteAllFunctionSecrets(resourceName);
-      }
-    })
-    .catch((err) => {
-      if (err.stack) {
-        context.print.info(err.stack);
-        context.print.error('An error occurred when removing the function resource');
-      }
-
-      void context.usageData.emitError(err);
-      process.exitCode = 1;
-    });
+  try {
+    await amplify.removeResource(context, categoryName, resourceName, undefined, resourceNameCallback);
+    // if the resource has not been pushed and it has secrets, we need to delete them now
+    // otherwise we will orphan the secrets in the cloud
+    if (!isFunctionPushed(resourceName) && hasSecrets) {
+      const functionSecretsManager = await FunctionSecretsStateManager.getInstance(context);
+      await functionSecretsManager.deleteAllFunctionSecrets(resourceName);
+    }
+  } catch (e) {
+    throw new AmplifyFault(
+      'ResourceRemoveFault',
+      {
+        message: 'An error occurred when removing the function resource',
+      },
+      e,
+    );
+  }
 };

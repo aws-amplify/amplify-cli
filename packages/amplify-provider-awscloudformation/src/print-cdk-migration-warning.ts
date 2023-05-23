@@ -5,7 +5,7 @@ import {
   AmplifyNodePkgDetector,
   IAmplifyResource,
   pathManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -22,19 +22,23 @@ export type AmplifyWarning = {
  * print cdk migration warning if required
  */
 export const printCdkMigrationWarning = async (context: $TSContext): Promise<void> => {
-  const resourcesToBuild: IAmplifyResource[] = [];
-  const { allResources } = await context.amplify.getResourceStatus();
-  allResources.forEach((resource) => {
-    resourcesToBuild.push({
-      service: resource.service as string,
-      category: resource.category as string,
-      resourceName: resource.resourceName as string,
+  try {
+    const resourcesToBuild: IAmplifyResource[] = [];
+    const { allResources } = await context.amplify.getResourceStatus();
+    allResources.forEach((resource) => {
+      resourcesToBuild.push({
+        service: resource.service as string,
+        category: resource.category as string,
+        resourceName: resource.resourceName as string,
+      });
     });
-  });
-  // check for override.ts file enabled
-  const migrationString = getMigrationMessage(resourcesToBuild);
-  if (!_.isEmpty(migrationString)) {
-    printer.warn(migrationString);
+    // check for override.ts file enabled
+    const migrationString = getMigrationMessage(resourcesToBuild);
+    if (!_.isEmpty(migrationString)) {
+      printer.warn(migrationString);
+    }
+  } catch (error) {
+    // suppress error if cdk detection fails for some reason
   }
 };
 

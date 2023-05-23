@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { migrationCheck } from '../migrations/index';
 import * as apiAnalyticsClient from '../plugin-client-api-analytics';
 import { isNotificationChannelEnabled } from '../notifications-amplify-meta-api';
@@ -7,6 +7,15 @@ const mockContext = {
   input: { command: undefined },
 } as unknown as $TSContext;
 
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
+  FeatureFlags: {
+    getBoolean: jest.fn(),
+    getNumber: jest.fn(),
+    getObject: jest.fn(),
+    getString: jest.fn(),
+  },
+}));
 jest.mock('../plugin-client-api-analytics', () => ({ invokeAnalyticsMigrations: jest.fn() }));
 
 describe('notifications tests', () => {

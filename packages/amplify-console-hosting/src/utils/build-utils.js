@@ -2,7 +2,7 @@ const { command: executeCommand } = require('execa');
 const fs = require('fs-extra');
 const path = require('path');
 const archiver = require('archiver');
-const { AmplifyError } = require('amplify-cli-core');
+const { AmplifyError } = require('@aws-amplify/amplify-cli-core');
 
 const DIR_NOT_FOUND_ERROR_MESSAGE = 'Please ensure your build artifacts path exists.';
 

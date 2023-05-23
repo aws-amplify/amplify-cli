@@ -1,4 +1,4 @@
-import { $TSObject, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSObject, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { isDataStoreEnabled } from 'graphql-transformer-core';
 import * as path from 'path';
 import _ from 'lodash';

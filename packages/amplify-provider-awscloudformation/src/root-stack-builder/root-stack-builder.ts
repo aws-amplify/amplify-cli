@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { IStackSynthesizer } from 'aws-cdk-lib';
-import { AmplifyError, AmplifyFault, JSONUtilities } from 'amplify-cli-core';
+import { AmplifyError, AmplifyFault, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Construct } from 'constructs';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';

@@ -7,8 +7,8 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } from '../../service-walkthroughs/placeIndexWalkthrough';
 import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('Search walkthrough works as expected', () => {
   const projectName = 'mockProject';

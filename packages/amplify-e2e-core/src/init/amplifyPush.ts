@@ -244,6 +244,26 @@ export const amplifyPushFunction = async (cwd: string, testingWithLatestCode = f
 };
 
 /**
+ * amplify push command for pushing amplify category resources
+ */
+export const amplifyPushCategoryWithYesFlag = async (
+  cwd: string,
+  category: string,
+  changesDetected: boolean,
+  testingWithLatestCode = false,
+): Promise<void> => {
+  const chain = spawn(getCLIPath(testingWithLatestCode), ['push', `${category}`], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: pushTimeoutMS,
+  });
+  if (changesDetected) {
+    chain.wait('Are you sure you want to continue?').sendCarriageReturn();
+  }
+  return chain.runAsync();
+};
+
+/**
  * Function to test amplify push with allowDestructiveUpdates flag and when dependent function is removed from schema.graphql
  */
 export function amplifyPushUpdateForDependentModel(
@@ -335,7 +355,7 @@ export const amplifyPushIterativeRollback = (cwd: string, testingWithLatestCodeb
  */
 export const amplifyPushMissingEnvVar = (cwd: string, newEnvVarValue: string) =>
   spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-    .wait('Enter the missing environment variable value of')
+    .wait('Enter a value for')
     .sendLine(newEnvVarValue)
     .wait('Are you sure you want to continue?')
     .sendYes()

@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.7.1...@aws-amplify/amplify-console-integration-tests@2.8.0) (2023-05-11)
+
+
+### Bug Fixes
+
+* support flutter project for idp with social providers ([#12381](https://github.com/aws-amplify/amplify-console-integration-tests/issues/12381)) ([cb3b0fc](https://github.com/aws-amplify/amplify-console-integration-tests/commit/cb3b0fca6c575c9b9154627f08c03a092ef9ade0))
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-console-integration-tests/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-console-integration-tests/commit/f158f102059ae90cced25560b04887b7df2eb246))
+
+
+
+
+
+## [2.7.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.7.0...@aws-amplify/amplify-console-integration-tests@2.7.1) (2023-04-29)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
+# [2.7.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.11...@aws-amplify/amplify-console-integration-tests@2.7.0) (2023-04-24)
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-console-integration-tests/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-console-integration-tests/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
+## [2.6.11](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.9...@aws-amplify/amplify-console-integration-tests@2.6.11) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
 ## [2.6.9](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.6.9-rc.e9e0d157d.0...@aws-amplify/amplify-console-integration-tests@2.6.9) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests

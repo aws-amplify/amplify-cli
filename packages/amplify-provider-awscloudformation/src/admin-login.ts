@@ -1,7 +1,7 @@
 import util from 'util';
 import readline from 'readline';
 import { Writable } from 'stream';
-import { $TSContext, AmplifyError, AMPLIFY_DOCS_URL, open } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, AMPLIFY_DOCS_URL, open, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { printer, AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import { adminVerifyUrl, adminBackendMap, isAmplifyAdminApp } from './utils/admin-helpers'; // eslint-disable-line
 import { AdminLoginServer } from './utils/admin-login-server';
@@ -100,12 +100,12 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
               await adminLoginServer.storeTokens(tokenJson, appId);
             } catch (e) {
               printer.error('Provided token was invalid.');
-              rl.close();
+              closeReadline(rl);
               reject(new Error('Provided token was invalid.'));
               return;
             }
             finished = true;
-            rl.close();
+            closeReadline(rl);
             resolve();
           })
           .catch(reject);
@@ -115,7 +115,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
             return;
           }
           finished = true;
-          rl.close();
+          closeReadline(rl);
           reject();
         };
       });
@@ -136,4 +136,9 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
     spinner.stop();
     printer.error(`Failed to authenticate with Amplify Studio: ${e?.message || e}`);
   }
+};
+
+export const closeReadline = (rl: readline.Interface): void => {
+  (rl as $TSAny).terminal = false;
+  rl.close();
 };

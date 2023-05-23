@@ -1,6 +1,6 @@
 {
   "name": "amplify-java-function-template-provider",
-  "version": "1.5.17",
+  "version": "1.5.20",
   "description": "JAVA templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -22,6 +22,6 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-function-plugin-interface": "1.10.0"
+    "@aws-amplify/amplify-function-plugin-interface": "1.10.2"
   }
 }

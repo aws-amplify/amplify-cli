@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/uninstall';
 import execa from 'execa';
 
@@ -18,7 +18,7 @@ const context_stub = {
   },
 };
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
   },

@@ -4,7 +4,7 @@
 
 ```ts
 
-import { IAmplifyResource } from 'amplify-cli-core';
+import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
 export const cloneEnvParamManager: (srcEnvParamManager: IEnvironmentParameterManager, destEnvName: string) => Promise<void>;
@@ -31,7 +31,7 @@ export type IEnvironmentParameterManager = {
     init: () => Promise<void>;
     removeResourceParamManager: (category: string, resource: string) => void;
     save: (serviceUploadHandler?: ServiceUploadHandler) => Promise<void>;
-    verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[]) => Promise<void>;
+    verifyExpectedEnvParameters: (resourceFilterList?: IAmplifyResource[], appId?: string, envName?: string) => Promise<void>;
 };
 
 // @public (undocumented)
