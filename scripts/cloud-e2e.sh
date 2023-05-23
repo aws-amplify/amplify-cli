@@ -8,7 +8,7 @@ source ./scripts/.env set
 export CURR_BRANCH=$(git branch --show-current)
 function authenticate {
     echo Authenticating terminal...
-    mwinit
+    # mwinit
     echo Loading E2E account credentials...
     ada cred update --profile="${CLOUD_E2E_PROFILE}" --account="${CLOUD_E2E_ACCOUNT}" --role=CodeBuildE2E --provider=isengard --once
     aws configure set region us-east-1 --profile $CLOUD_E2E_PROFILE
