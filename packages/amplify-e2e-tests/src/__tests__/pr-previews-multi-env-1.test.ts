@@ -12,7 +12,7 @@ import {
   gitCommitAll,
   gitInit,
   initJSProjectWithProfile,
-  nonInteractiveInitWithForcePushAttach
+  nonInteractiveInitWithForcePushAttach,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('environment commands with functions secrets handling', () => {
