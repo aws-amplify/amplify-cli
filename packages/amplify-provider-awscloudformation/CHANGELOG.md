@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.2.1-prePushTriggerCheck.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.2.0...@aws-amplify/amplify-provider-awscloudformation@8.2.1-prePushTriggerCheck.0) (2023-05-23)
+
+
+### Bug Fixes
+
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* remove parameters when resource is deleted or unlinked ([#12544](https://github.com/aws-amplify/amplify-cli/issues/12544)) ([f78fb68](https://github.com/aws-amplify/amplify-cli/commit/f78fb686f4719ef8a487251ded8bf01b9df29dbd))
+
+
+
+
+
 # [8.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.1.0...@aws-amplify/amplify-provider-awscloudformation@8.2.0) (2023-05-11)
 
 

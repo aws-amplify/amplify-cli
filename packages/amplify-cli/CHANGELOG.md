@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.0.1-prePushTriggerCheck.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.0.0...@aws-amplify/cli-internal@12.0.1-prePushTriggerCheck.0) (2023-05-23)
+
+
+### Bug Fixes
+
+* added Prepush after init and before deploy ([b698f72](https://github.com/aws-amplify/amplify-cli/commit/b698f7246483455c8237ae4e8b45109ef63582ab))
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+
+
+
+
+
 # [12.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.1.1...@aws-amplify/cli-internal@12.0.0) (2023-05-11)
 
 

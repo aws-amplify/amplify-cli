@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.0.1-prePushTriggerCheck.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.0.0...@aws-amplify/cli@12.0.1-prePushTriggerCheck.0) (2023-05-23)
+
+
+### Bug Fixes
+
+* don't buffer when extracting binary ([#12621](https://github.com/aws-amplify/amplify-cli/issues/12621)) ([0ee53e6](https://github.com/aws-amplify/amplify-cli/commit/0ee53e612981d5441fb00690f05d25a941e96dd0))
+
+
+
+
+
 # [12.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@11.1.1...@aws-amplify/cli@12.0.0) (2023-05-11)
 
 
