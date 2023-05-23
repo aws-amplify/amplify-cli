@@ -2050,7 +2050,7 @@ export class StateManager {
     // (undocumented)
     teamProviderInfoExists: (projectPath?: string) => boolean;
     // (undocumented)
-    toggleUsageTrackingConsentSeen: () => $TSAny;
+    toggleUsageTrackingConsentSeen: () => void;
 }
 
 // @public (undocumented)

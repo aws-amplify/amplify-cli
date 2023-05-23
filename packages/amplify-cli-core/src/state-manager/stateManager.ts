@@ -68,7 +68,7 @@ export class StateManager {
       throwIfNotExist: false,
     });
 
-  toggleUsageTrackingConsentSeen = (): $TSAny => {
+  toggleUsageTrackingConsentSeen = (): void => {
     const usageTrackingConfig = this.getUsageTrackingConfig();
     usageTrackingConfig.usageDataConfig.usageDataConsentSeen = !usageTrackingConfig.usageDataConfig.usageDataConsentSeen;
     JSONUtilities.writeJson(pathManager.getAmplifyUsageDataFilePath(), usageTrackingConfig);
