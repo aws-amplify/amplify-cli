@@ -172,7 +172,10 @@ function _publishToLocalRegistry {
     unsetNpmRegistryUrl
 
     echo Generate Change Log
-    git reset --soft HEAD~1
+    # Leaving this breadcrumb here "git reset --soft HEAD~1"
+    # we commented this out because the publish script is now checking out the current branch, and this started to fail as a result
+    # if we run into problems in the future, we should revisit this
+    # git reset --soft HEAD~1
     yarn ts-node scripts/unified-changelog.ts
     cat UNIFIED_CHANGELOG.md
     
@@ -529,41 +532,4 @@ function _downloadReportsFromS3 {
     aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done #This line moves all files into the top level directory so that the reports can be consumed by CB
-}
-
-function _waitForJobs {
-    expected_source_version=$1
-    jobs_depended_on_file_path=$2 #space seperate identifiers
-    jobs_depended_on=$(cat $jobs_depended_on_file_path)
-    jobs_depended_on_json=$(echo $jobs_depended_on | jq -R 'split(" ")')
-    echo "jobs depended on $jobs_depended_on_json"
-    fail_flag="0"
-    all_batch_build_ids=$(aws codebuild list-build-batches-for-project --region us-east-1 --project-name AmplifyCLI-E2E-Testing --filter '{ "status": "IN_PROGRESS" }' --output json | jq '.ids | .[]')
-    for batch_build_id in $all_batch_build_ids
-    do
-        current_source_version=$(aws codebuild batch-get-build-batches --region us-east-1 --ids $(echo $batch_build_id | tr -d '"') | jq '.buildBatches[0].resolvedSourceVersion' | tr -d '"')
-        if [ $current_source_version = $expected_source_version ]
-        then
-            fail_flag="1"
-            break
-        fi
-    done
-    if [ $fail_flag = "0" ]
-    then
-        echo "Could not find batch with matching source version"
-        exit 1
-    fi
-    num_incomplete_jobs="1"
-    while [ "$num_incomplete_jobs" -gt "0" ]
-    do
-        sleep 60
-        batch_build_id=$(echo $batch_build_id | tr -d '"')
-        jobs_in_batch=$(aws codebuild batch-get-build-batches --region us-east-1 --ids $(echo $batch_build_id | tr -d '"') | jq --arg job_id "$job_id" '.buildBatches[0].buildGroups')
-        incomplete_job_ids_in_batch=$(echo $jobs_in_batch | jq -c '[map(select(.currentBuildSummary.buildStatus == "IN_PROGRESS" or .currentBuildSummary.buildStatus == "PENDING")) | .[].identifier]')
-        intersecting_jobs=$(jq -n --argjson incomplete_job_ids_in_batch "$incomplete_job_ids_in_batch" --argjson jobs_depended_on_json "$jobs_depended_on_json" '$incomplete_job_ids_in_batch - ($incomplete_job_ids_in_batch - $jobs_depended_on_json)')
-        echo "Waiting for these jobs: $intersecting_jobs"
-        num_incomplete_jobs=$(echo $intersecting_jobs | jq '. | length')
-        echo "incomplete_job_ids_in_batch $incomplete_job_ids_in_batch"
-    done
-    echo "No specified jobs still in progress."
 }
