@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.1-yarn-berry-hotfix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.0.0...@aws-amplify/amplify-migration-tests@6.0.1-yarn-berry-hotfix.0) (2023-05-23)
+
+
+### Bug Fixes
+
+* add jest dependency ([f47467f](https://github.com/aws-amplify/amplify-cli/commit/f47467f67bda665a94674ec87f9bc53688931741))
+
+
+
+
+
 # [6.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@5.4.6...@aws-amplify/amplify-migration-tests@6.0.0) (2023-05-11)
 
 

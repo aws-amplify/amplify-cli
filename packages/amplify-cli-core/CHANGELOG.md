@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0-yarn-berry-hotfix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.5...@aws-amplify/amplify-cli-core@4.1.0-yarn-berry-hotfix.0) (2023-05-23)
+
+
+### Features
+
+* lambda yarn 2 support ([c8f4236](https://github.com/aws-amplify/amplify-cli/commit/c8f423688c3d259ebd57efb947695b76598a0c73))
+* lambda yarn 2 support ([a02c1ee](https://github.com/aws-amplify/amplify-cli/commit/a02c1ee17ea076dfbc2a73c912e8fc1bdecee193))
+* lambda yarn 2 support ([0d3cfb8](https://github.com/aws-amplify/amplify-cli/commit/0d3cfb8afe2fc216eb8172a21eb8cd64e88bd5c0))
+* lambda yarn 2 support ([2d58ed9](https://github.com/aws-amplify/amplify-cli/commit/2d58ed924fdf298812021799fe05b7b74ad31f46))
+* lambda yarn 2 support ([104e146](https://github.com/aws-amplify/amplify-cli/commit/104e146be548733888727d78474fabddd15c3303))
+* support for yarn 2 lambda function ([93f8fc4](https://github.com/aws-amplify/amplify-cli/commit/93f8fc42c58bd7f277f31f81a9671adc64d28db6))
+
+
+
+
+
 ## [4.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.4...@aws-amplify/amplify-cli-core@4.0.5) (2023-05-11)
 
 

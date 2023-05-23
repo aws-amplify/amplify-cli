@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.8.0",
+  "version": "1.8.1-yarn-berry-hotfix.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -14,8 +14,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.5",
-    "@aws-amplify/amplify-prompts": "2.7.0",
+    "@aws-amplify/amplify-cli-core": "4.1.0-yarn-berry-hotfix.0",
+    "@aws-amplify/amplify-prompts": "2.7.1-yarn-berry-hotfix.0",
     "@aws-amplify/codegen-ui": "2.13.1",
     "@aws-amplify/codegen-ui-react": "2.13.1",
     "amplify-codegen": "^3.4.4",

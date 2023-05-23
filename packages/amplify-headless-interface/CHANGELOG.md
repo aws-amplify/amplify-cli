@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.4-yarn-berry-hotfix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.3...amplify-headless-interface@1.17.4-yarn-berry-hotfix.0) (2023-05-23)
+
+**Note:** Version bump only for package amplify-headless-interface
+
+
+
+
+
 ## [1.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.1...amplify-headless-interface@1.17.3) (2023-04-14)
 
 **Note:** Version bump only for package amplify-headless-interface

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-yarn-berry-hotfix.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.3.0...@aws-amplify/amplify-category-function@5.4.0-yarn-berry-hotfix.0) (2023-05-23)
+
+
+### Features
+
+* support for yarn 2 lambda function ([93f8fc4](https://github.com/aws-amplify/amplify-cli/commit/93f8fc42c58bd7f277f31f81a9671adc64d28db6))
+
+
+
+
+
 # [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.2.0...@aws-amplify/amplify-category-function@5.3.0) (2023-05-11)
 
 
