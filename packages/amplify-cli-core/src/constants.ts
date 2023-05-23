@@ -20,6 +20,7 @@ export const constants = {
   PARENT_DIRECTORY: 'cli-parent-directory',
   GLOBAL_NODE_MODULES: 'global-node-modules',
   PACKAGED_NODE_MODULES: 'packaged-node-modules',
+  DEV_NODE_MODULES: 'dev-node-modules',
   EXECUTE_AMPLIFY_COMMAND: 'executeAmplifyCommand',
   EXECUTE_AMPLIFY_HEADLESS_COMMAND: 'executeAmplifyHeadlessCommand',
   HANDLE_AMPLIFY_EVENT: 'handleAmplifyEvent',
