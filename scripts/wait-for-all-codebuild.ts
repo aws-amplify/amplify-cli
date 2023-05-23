@@ -55,6 +55,7 @@ const main = async () => {
   do {
     await new Promise((r) => setTimeout(r, 3 * 1000)); // sleep for 60 seconds
     const incompleteJobsInBatch = await getJobIdsFromBatchId(cb, batchId);
+    console.log(`These are all of the incomplete jobs in the batch: ${incompleteJobsInBatch}`);
     intersectingIncompleteJobs = incompleteJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
     console.log(`Still waiting for these jobs: ${intersectingIncompleteJobs}`);
   } while (intersectingIncompleteJobs.length > 0);
