@@ -72,10 +72,10 @@ describe('project with single schema file that exists', () => {
     } as unknown as $TSContext;
     fsMock.existsSync.mockReturnValue(true);
   });
-  
+
   it('invokes codegen functions and writes assets to S3', async () => {
     await adminModelgen(contextStub, resources);
-  
+
     expect(invokePluginMock.mock.calls.length).toBe(2);
     expect(invokePluginMock.mock.calls[0][3]).toBe('generateModels');
     expect(invokePluginMock.mock.calls[1][3]).toBe('generateModelIntrospection');
@@ -105,27 +105,27 @@ describe('project with single schema file that exists', () => {
       ]
     `);
   });
-  
+
   it('resets js config on error', async () => {
     invokePluginMock.mockRejectedValue(new Error('test error'));
     await expect(() => adminModelgen(contextStub, resources)).rejects.toThrowErrorMatchingInlineSnapshot(`"test error"`);
     expect(stateManagerMock.setProjectConfig.mock.calls.length).toBe(2);
     expect(stateManagerMock.setProjectConfig.mock.calls[1][1]).toBe(originalProjectConfig);
   });
-  
+
   it('resets stdout on error', async () => {
     const initialStdoutWriter = process.stdout.write;
     invokePluginMock.mockRejectedValue(new Error('test error'));
     await expect(() => adminModelgen(contextStub, resources)).rejects.toThrowErrorMatchingInlineSnapshot(`"test error"`);
     expect(process.stdout.write).toBe(initialStdoutWriter);
   });
-  
+
   it('removes temp dir on error', async () => {
     invokePluginMock.mockRejectedValue(new Error('test error'));
     await expect(adminModelgen(contextStub, resources)).rejects.toThrowErrorMatchingInlineSnapshot(`"test error"`);
     expect(fsMock.remove.mock.calls.length).toBe(1);
     expect(fsMock.remove.mock.calls[0][0]).toMatchInlineSnapshot(`"mock/project/root/amplify-codegen-temp"`);
-  });  
+  });
 });
 
 describe('project without a single schema file or with multiple schema files', () => {
@@ -138,12 +138,14 @@ describe('project without a single schema file or with multiple schema files', (
     } as unknown as $TSContext;
     fsMock.existsSync.mockReturnValue(false);
   });
-  
+
   it('early returns and throws appropriate warning', async () => {
     await adminModelgen(contextStub, resources);
-  
+
     expect(invokePluginMock.mock.calls.length).toBe(0);
     expect(s3Mock.uploadFile.mock.calls.length).toBe(0);
-    expect(printer.warn).toBeCalledWith(`Could not find the GraphQL schema file at \"mock/resource/dir/path/schema.graphql\". Amplify Studio's schema editor might not work as intended if you're using multiple schema files.`);
+    expect(printer.warn).toBeCalledWith(
+      `Could not find the GraphQL schema file at \"mock/resource/dir/path/schema.graphql\". Amplify Studio's schema editor might not work as intended if you're using multiple schema files.`,
+    );
   });
 });

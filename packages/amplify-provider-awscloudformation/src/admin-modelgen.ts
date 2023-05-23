@@ -30,7 +30,9 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
   const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
   // Early return with useful warning if the schema file does not exist
   if (!fs.existsSync(localSchemaPath)) {
-    printer.warn(`Could not find the GraphQL schema file at "${localSchemaPath}". Amplify Studio's schema editor might not work as intended if you're using multiple schema files.`);
+    printer.warn(
+      `Could not find the GraphQL schema file at "${localSchemaPath}". Amplify Studio's schema editor might not work as intended if you're using multiple schema files.`,
+    );
     return;
   }
 
