@@ -22,7 +22,7 @@ batch:
         build:
           commands:
             - echo starting
-            - sleep 60
+            - sleep 180
             - echo ending
 
     - identifier: job2
@@ -33,7 +33,7 @@ batch:
         build:
           commands:
             - echo starting
-            - sleep 90
+            - sleep 230
             - echo ending
 
     - identifier: aggregate_e2e_reports
