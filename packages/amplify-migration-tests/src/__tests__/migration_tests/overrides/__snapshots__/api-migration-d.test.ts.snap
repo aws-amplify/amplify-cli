@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`api migration update test d updates AppSync API in headless mode 1`] = `
-Object {
+{
   "ElasticsearchWarning": true,
-  "ResolverConfig": Object {
-    "project": Object {
+  "ResolverConfig": {
+    "project": {
       "ConflictDetection": "VERSION",
       "ConflictHandler": "OPTIMISTIC_CONCURRENCY",
     },
@@ -14,14 +14,14 @@ Object {
 `;
 
 exports[`api migration update test d updates AppSync API in headless mode 2`] = `
-Object {
-  "additionalAuthenticationProviders": Array [
-    Object {
-      "apiKeyConfig": Object {},
+{
+  "additionalAuthenticationProviders": [
+    {
+      "apiKeyConfig": {},
       "authenticationType": "API_KEY",
     },
   ],
-  "defaultAuthentication": Object {
+  "defaultAuthentication": {
     "authenticationType": "AWS_IAM",
   },
 }

@@ -17,12 +17,12 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest --verbose",
-    "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose",
+    "e2e": "yarn setup-profile && jest --verbose --config=jest.config.js",
+    "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose --config=jest.config.js",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
-    "smoketest": "jest --runInBand --testPathPattern='smoketest'"
+    "smoketest": "jest --runInBand --testPathPattern='smoketest' --config=jest.config.js"
   },
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "3.2.0",
@@ -67,65 +67,9 @@
     "@types/lodash": "^4.14.149",
     "@types/node": "^18.16.1",
     "@types/ws": "^7.4.4",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.4.0"
-  },
-  "jest": {
-    "verbose": false,
-    "preset": "ts-jest",
-    "testRunner": "@aws-amplify/amplify-e2e-core/runner",
-    "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    },
-    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "lib"
-    ],
-    "collectCoverage": false,
-    "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!**/*.d.ts"
-    ],
-    "reporters": [
-      "default",
-      "jest-junit",
-      [
-        "@aws-amplify/amplify-e2e-core/reporter",
-        {
-          "publicPath": "./amplify-e2e-reports",
-          "filename": "index.html",
-          "expand": true
-        }
-      ],
-      [
-        "@aws-amplify/amplify-e2e-core/failed-test-reporter",
-        {
-          "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
-        }
-      ]
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setup-tests.ts"
-    ],
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false
-      }
-    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

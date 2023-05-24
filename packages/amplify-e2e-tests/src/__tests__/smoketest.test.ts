@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as pty from 'node-pty';
-import { initJSProjectWithProfile, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { getCLIPath, initJSProjectWithProfile, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 jest.retryTimes(0);
 
 export const NPM = {
@@ -73,10 +73,10 @@ export class Amplify {
   };
   delete = async () => {
     const args = ['delete', '--force'];
-    return spawn('amplify', args, this.executionArgs).runAsync();
+    return spawn(getCLIPath(), args, this.executionArgs).runAsync();
   };
   addApi = async () => {
-    return spawn('amplify', ['add', 'api'], this.executionArgs)
+    return spawn(getCLIPath(), ['add', 'api'], this.executionArgs)
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Here is the GraphQL API that we will create.')
@@ -88,7 +88,7 @@ export class Amplify {
       .runAsync();
   };
   push = async () => {
-    return spawn('amplify', ['push', '-y'], this.executionArgs).runAsync();
+    return spawn(getCLIPath(), ['push', '-y'], this.executionArgs).runAsync();
   };
   pull = async (appId?: string, envName?: string) => {
     const args = ['pull', '-y'];
@@ -98,10 +98,10 @@ export class Amplify {
     if (envName) {
       args.push('--envName', envName);
     }
-    return spawn('amplify', args, this.executionArgs).runAsync();
+    return spawn(getCLIPath(), args, this.executionArgs).runAsync();
   };
   addAuth = () => {
-    return spawn('amplify', ['add', 'auth'], this.executionArgs)
+    return spawn(getCLIPath(), ['add', 'auth'], this.executionArgs)
       .wait('Do you want to use the default authentication and security configuration?')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in?')
@@ -111,7 +111,7 @@ export class Amplify {
       .runAsync();
   };
   updateAuth = () => {
-    return spawn('amplify', ['update', 'auth'], this.executionArgs)
+    return spawn(getCLIPath(), ['update', 'auth'], this.executionArgs)
       .wait('What do you want to do?')
       .sendCarriageReturn()
       .wait('What domain name prefix do you want to use?')
@@ -138,7 +138,7 @@ export class Amplify {
       .runAsync();
   };
   addRestApi = () => {
-    return spawn('amplify', ['add', 'api'], { ...this.executionArgs, noOutputTimeout: 3000 })
+    return spawn(getCLIPath(), ['add', 'api'], { ...this.executionArgs, noOutputTimeout: 3000 })
       .wait('Select from one of the below mentioned services')
       .sendKeyDown()
       .sendCarriageReturn()
@@ -167,7 +167,7 @@ export class Amplify {
       .runAsync();
   };
   status = () => {
-    return spawn('amplify', ['status'], this.executionArgs).runAsync();
+    return spawn(getCLIPath(), ['status'], this.executionArgs).runAsync();
   };
   modifyGraphQlSchema = (schema: string) => {
     try {

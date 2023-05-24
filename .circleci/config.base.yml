@@ -149,6 +149,7 @@ jobs:
           steps:
             - install_node_windows
             - checkout
+            - run: yarn ts-node scripts/remove-pkg-fetch-checksum.ts
             - run: yarn --immutable
             - run: yarn production-build
             - run:
@@ -240,7 +241,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             checkPackageVersionsInLocalNpmRegistry
 
   mock_e2e_tests:
@@ -339,7 +339,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli linux
             unsetNpmRegistryUrl
       - save_cache:
@@ -364,7 +363,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli macos
             unsetNpmRegistryUrl
       - save_cache:
@@ -389,7 +387,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli win
             unsetNpmRegistryUrl
       - save_cache:
@@ -693,7 +690,7 @@ jobs:
         default: l_large
     executor: << parameters.os >>
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -705,7 +702,6 @@ jobs:
           name: Run tests using general profile
           command: |
             source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
             cd packages/amplify-e2e-tests
             retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
@@ -1377,7 +1373,7 @@ commands:
                 command: |
                   cd out
                   ln -sf amplify-pkg-linux-x64 amplify
-                  echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
+                  echo "export PATH=$AMPLIFY_DIR:$PATH:/home/circleci/repo/node_modules/.bin/" >> $BASH_ENV
                   source $BASH_ENV
             - run:
                 name: Confirm Amplify CLI is installed and available in PATH
@@ -1428,10 +1424,10 @@ commands:
                 name: Run E2e Tests
                 command: |
                   source .circleci/local_publish_helpers.sh
-                  source $BASH_ENV
                   startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
                   setNpmRegistryUrlToLocal
                   changeNpmGlobalPath
+                  source $BASH_ENV
                   amplify version
                   cd packages/amplify-e2e-tests
                   retry runE2eTest

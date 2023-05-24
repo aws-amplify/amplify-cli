@@ -8,3 +8,4 @@ export * from './recursiveOmit';
 /* eslint-enable */
 export * from './validate-path';
 export * from './windows-utils';
+export * from './shell-utils';
