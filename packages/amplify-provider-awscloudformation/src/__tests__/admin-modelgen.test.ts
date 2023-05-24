@@ -8,7 +8,6 @@ jest.mock('fs-extra');
 jest.mock('../aws-utils/aws-s3');
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('graphql-transformer-core');
-jest.mock('../utils/admin-helpers');
 jest.mock('@aws-amplify/amplify-prompts');
 
 const fsMock = fs as jest.Mocked<typeof fs>;
@@ -37,6 +36,10 @@ fsMock.createWriteStream.mockReturnValue({
   },
 } as unknown as fs.WriteStream);
 fsMock.createReadStream.mockImplementation((filePath) => `mock body of ${filePath}` as unknown as fs.ReadStream);
+jest.mock('../utils/admin-helpers', () => ({
+  ...jest.requireActual('../utils/admin-helpers'),
+  isAmplifyAdminApp: jest.fn().mockResolvedValue({ isAdminApp: true }),
+}));
 
 const s3FactoryMock = S3 as jest.Mocked<typeof S3>;
 
@@ -128,7 +131,7 @@ describe('project with single schema file that exists', () => {
   });
 });
 
-describe('project without a single schema file or with multiple schema files', () => {
+describe('studio enabled project with multiple schema files or non-existent single schema file', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     contextStub = {
@@ -139,7 +142,7 @@ describe('project without a single schema file or with multiple schema files', (
     fsMock.existsSync.mockReturnValue(false);
   });
 
-  it('early returns and throws appropriate warning', async () => {
+  it('early returns and throws appropriate warning for a studio app', async () => {
     await adminModelgen(contextStub, resources);
 
     expect(invokePluginMock.mock.calls.length).toBe(0);

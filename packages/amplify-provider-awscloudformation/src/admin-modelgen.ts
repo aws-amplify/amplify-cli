@@ -5,6 +5,7 @@ import * as path from 'path';
 import { S3 } from './aws-utils/aws-s3';
 import { ProviderName as providerName } from './constants';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { isAmplifyAdminApp } from './utils/admin-helpers';
 
 /**
  * Generates DataStore Models for Admin UI CMS to consume
@@ -28,11 +29,14 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
   }
 
   const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
-  // Early return with useful warning if the schema file does not exist
+  // Early return with a warning if the schema file does not exist
   if (!fs.existsSync(localSchemaPath)) {
-    printer.warn(
-      `Could not find the GraphQL schema file at "${localSchemaPath}". Amplify Studio's schema editor might not work as intended if you're using multiple schema files.`,
-    );
+    const { isAdminApp } = await isAmplifyAdminApp(appId);
+    if (isAdminApp) {
+      printer.warn(
+        `Could not find the GraphQL schema file at "${localSchemaPath}". Amplify Studio's schema editor might not work as intended if you're using multiple schema files.`,
+      );
+    }
     return;
   }
 
