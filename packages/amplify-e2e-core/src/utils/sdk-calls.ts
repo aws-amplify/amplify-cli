@@ -145,6 +145,39 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
+export const deleteUserPoolDomain = async (domain: string, userpoolId: string, region: string) => {
+  config.update({ region });
+  let res;
+  try {
+    res = await new CognitoIdentityServiceProvider().deleteUserPoolDomain({ Domain: domain, UserPoolId: userpoolId }).promise();
+  } catch (e) {
+    console.log(e);
+  }
+  return res;
+};
+
+export const deleteSocialIdpProviders = async (providers: string[], userpoolId: string, region: string) => {
+  config.update({ region });
+  for await (const provider of providers) {
+    try {
+      await new CognitoIdentityServiceProvider().deleteIdentityProvider({ ProviderName: provider, UserPoolId: userpoolId }).promise();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+};
+
+export const listSocialIdpProviders = async (userpoolId: string, region: string) => {
+  let res;
+  config.update({ region });
+  try {
+    res = await new CognitoIdentityServiceProvider().listIdentityProviders({ UserPoolId: userpoolId }).promise();
+  } catch (err) {
+    console.log(err);
+  }
+  return res;
+};
+
 export const getIdentityPoolRoles = async (identityPoolId: string, region: string) => {
   let res;
 

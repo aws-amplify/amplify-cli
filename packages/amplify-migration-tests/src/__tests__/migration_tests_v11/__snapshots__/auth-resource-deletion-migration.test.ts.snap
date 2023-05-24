@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify migration test auth ...should add auth with max options and work on the latest version 1`] = `
+Object {
+  "Providers": Array [
+    Object {
+      "CreationDate": 2023-05-24T19:55:30.255Z,
+      "LastModifiedDate": 2023-05-24T19:55:30.255Z,
+      "ProviderName": "Facebook",
+      "ProviderType": "Facebook",
+    },
+    Object {
+      "CreationDate": 2023-05-24T19:55:30.297Z,
+      "LastModifiedDate": 2023-05-24T19:55:30.297Z,
+      "ProviderName": "Google",
+      "ProviderType": "Google",
+    },
+    Object {
+      "CreationDate": 2023-05-24T19:55:30.307Z,
+      "LastModifiedDate": 2023-05-24T19:55:30.307Z,
+      "ProviderName": "LoginWithAmazon",
+      "ProviderType": "LoginWithAmazon",
+    },
+    Object {
+      "CreationDate": 2023-05-24T19:55:30.303Z,
+      "LastModifiedDate": 2023-05-24T19:55:30.303Z,
+      "ProviderName": "SignInWithApple",
+      "ProviderType": "SignInWithApple",
+    },
+  ],
+}
+`;
+
+exports[`amplify migration test auth ...should add auth with max options and work on the latest version 2`] = `
+Object {
+  "Providers": Array [],
+}
+`;
+
+exports[`amplify migration test auth ...should add auth with max options and work on the latest version 3`] = `"authtest60427604-60427604-integtest"`;
+
+exports[`amplify migration test auth ...should add auth with max options and work on the latest version 4`] = `undefined`;
