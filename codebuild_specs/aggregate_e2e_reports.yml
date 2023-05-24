@@ -5,7 +5,6 @@ phases:
   build:
     commands:
       - cd ./scripts
-      - yarn install
       - npm install -g ts-node
       - npm install aws-sdk
       - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH AmplifyCLI-E2E-Testing
