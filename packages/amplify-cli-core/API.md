@@ -786,10 +786,10 @@ export type ErrorParameter = {
 export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
-export const execWithOutputAsString: (command: string, opts?: execa.Options) => Promise<string>;
+export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
 
 // @public (undocumented)
-export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
+export const execWithOutputAsString: (command: string, opts?: execa.Options) => Promise<string>;
 
 declare namespace ExeInfo {
     export {
