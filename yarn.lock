@@ -8760,20 +8760,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/config-lerna-scopes@npm:^17.4.2":
-  version: 17.4.2
-  resolution: "@commitlint/config-lerna-scopes@npm:17.4.2"
+"@commitlint/config-lerna-scopes@npm:^17.6.3":
+  version: 17.6.3
+  resolution: "@commitlint/config-lerna-scopes@npm:17.6.3"
   dependencies:
+    "@lerna/project": ^6.0.0
     glob: ^8.0.3
     import-from: 4.0.0
-    resolve-pkg: 2.0.0
-    semver: 7.3.8
+    semver: 7.5.0
   peerDependencies:
     lerna: ^5.0.0 || ^6
   peerDependenciesMeta:
     lerna:
       optional: true
-  checksum: 190256a0e451ea3f46b8386bcd29aaadbe7ef49c92691efe82d4d0328c59a9ed9bfbc17645ca7218eb2e447da3b314a4313d6888c2ff0db558e86d9bf4662a4a
+  checksum: 3560c5f5386a0b2cdda5a5e1e90d17f23fff3e0f6a72f4a6435bcda97b86f05372fca5e0e2fb9696b551266a6b742b01cd5997396ca4bc53cae72c51d3dd9bd2
   languageName: node
   linkType: hard
 
@@ -10243,6 +10243,47 @@ __metadata:
     write-pkg: 4.0.0
     yargs: 16.2.0
   checksum: ce380181cda6e3787e5ac267b15a01a4c2e211655267d0389a6ea3127c473211cfc24503ae3f761314a13e649b6c738ef6655105cfe89c01b3785af633f76734
+  languageName: node
+  linkType: hard
+
+"@lerna/package@npm:6.4.1":
+  version: 6.4.1
+  resolution: "@lerna/package@npm:6.4.1"
+  dependencies:
+    load-json-file: ^6.2.0
+    npm-package-arg: 8.1.1
+    write-pkg: ^4.0.0
+  checksum: ad08d0fec7a00c96aa767dc32ca29a6edb64ef38af3b4bb8052023539c0daa91bf58114b74f9a9ec7086aa1d4628ba4ecba0330497aa768558c1057530d39479
+  languageName: node
+  linkType: hard
+
+"@lerna/project@npm:^6.0.0":
+  version: 6.4.1
+  resolution: "@lerna/project@npm:6.4.1"
+  dependencies:
+    "@lerna/package": 6.4.1
+    "@lerna/validation-error": 6.4.1
+    cosmiconfig: ^7.0.0
+    dedent: ^0.7.0
+    dot-prop: ^6.0.1
+    glob-parent: ^5.1.1
+    globby: ^11.0.2
+    js-yaml: ^4.1.0
+    load-json-file: ^6.2.0
+    npmlog: ^6.0.2
+    p-map: ^4.0.0
+    resolve-from: ^5.0.0
+    write-json-file: ^4.3.0
+  checksum: a64be3d54856c88d4c7f5e2c01e0677577000dc96dd8ca607299b3dc7ab890b822bb6029ce46b07356a64871f4aa65f13297890f7f404eae2139960092a13e64
+  languageName: node
+  linkType: hard
+
+"@lerna/validation-error@npm:6.4.1":
+  version: 6.4.1
+  resolution: "@lerna/validation-error@npm:6.4.1"
+  dependencies:
+    npmlog: ^6.0.2
+  checksum: 206926bff6f36f5c404482941b888adac2da59b1ea12980194cb2306caecef00c360bf195184b3d391dd73c1049d1d65ec045f168bd177a38f83d20f69e48da5
   languageName: node
   linkType: hard
 
@@ -13455,7 +13496,7 @@ __metadata:
     "@babel/plugin-transform-typescript": 7.10.5
     "@commitlint/cli": ^17.6.1
     "@commitlint/config-conventional": ^17.6.1
-    "@commitlint/config-lerna-scopes": ^17.4.2
+    "@commitlint/config-lerna-scopes": ^17.6.3
     "@commitlint/cz-commitlint": ^17.5.0
     "@commitlint/prompt": ^17.6.1
     "@microsoft/api-extractor": ^7.34.6
@@ -17814,6 +17855,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"detect-indent@npm:^6.0.0":
+  version: 6.1.0
+  resolution: "detect-indent@npm:6.1.0"
+  checksum: dd83cdeda9af219cf77f5e9a0dc31d828c045337386cfb55ce04fad94ba872ee7957336834154f7647b89b899c3c7acc977c57a79b7c776b506240993f97acc7
+  languageName: node
+  linkType: hard
+
 "detect-libc@npm:^2.0.0":
   version: 2.0.1
   resolution: "detect-libc@npm:2.0.1"
@@ -20609,7 +20657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:11.1.0, globby@npm:^11.1.0":
+"globby@npm:11.1.0, globby@npm:^11.0.2, globby@npm:^11.1.0":
   version: 11.1.0
   resolution: "globby@npm:11.1.0"
   dependencies:
@@ -22425,7 +22473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-plain-obj@npm:^2.1.0":
+"is-plain-obj@npm:^2.0.0, is-plain-obj@npm:^2.1.0":
   version: 2.1.0
   resolution: "is-plain-obj@npm:2.1.0"
   checksum: e5c9814cdaa627a9ad0a0964ded0e0491bfd9ace405c49a5d63c88b30a162f1512c069d5b80997893c4d0181eadc3fed02b4ab4b81059aba5620bfcdfdeb9c53
@@ -24320,7 +24368,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"load-json-file@npm:6.2.0":
+"load-json-file@npm:6.2.0, load-json-file@npm:^6.2.0":
   version: 6.2.0
   resolution: "load-json-file@npm:6.2.0"
   dependencies:
@@ -29503,15 +29551,6 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"resolve-pkg@npm:2.0.0":
-  version: 2.0.0
-  resolution: "resolve-pkg@npm:2.0.0"
-  dependencies:
-    resolve-from: ^5.0.0
-  checksum: c48af43563ae10fef4a20217808d7cc1de450837f5522963b559975d7b0bb28b7eee6f98bd815a93ebd083cc56b3139c520a22c066ee7abea73b819ea2764713
-  languageName: node
-  linkType: hard
-
 "resolve-url-loader@npm:^4.0.0":
   version: 4.0.0
   resolution: "resolve-url-loader@npm:4.0.0"
@@ -30141,16 +30180,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"semver@npm:^6.0.0, semver@npm:^6.1.1, semver@npm:^6.1.2, semver@npm:^6.2.0, semver@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "semver@npm:6.3.0"
-  bin:
-    semver: ./bin/semver.js
-  checksum: 1f4959e15bcfbaf727e964a4920f9260141bb8805b399793160da4e7de128e42a7d1f79c1b7d5cd21a6073fba0d55feb9966f5fef3e5ccb8e1d7ead3d7527458
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.5.0":
+"semver@npm:7.5.0, semver@npm:^7.5.0":
   version: 7.5.0
   resolution: "semver@npm:7.5.0"
   dependencies:
@@ -30158,6 +30188,15 @@ node-pty@beta:
   bin:
     semver: bin/semver.js
   checksum: 203a556d7189c277b9774a325fd2695187b2822069094e0dbfcc56dfd10a1fd646a94e73812f249802a661f6437b2370ccb8ee330e7b9888b38e53c5a8216222
+  languageName: node
+  linkType: hard
+
+"semver@npm:^6.0.0, semver@npm:^6.1.1, semver@npm:^6.1.2, semver@npm:^6.2.0, semver@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "semver@npm:6.3.0"
+  bin:
+    semver: ./bin/semver.js
+  checksum: 1f4959e15bcfbaf727e964a4920f9260141bb8805b399793160da4e7de128e42a7d1f79c1b7d5cd21a6073fba0d55feb9966f5fef3e5ccb8e1d7ead3d7527458
   languageName: node
   linkType: hard
 
@@ -30620,6 +30659,15 @@ node-pty@beta:
   dependencies:
     is-plain-obj: ^1.0.0
   checksum: c11a6313995cb67ccf35fed4b1f6734176cc1d1e350ee311c061a2340ada4f7e23b046db064d518b63adba98c0f763739920c59fb4659a0b8482ec7a1f255081
+  languageName: node
+  linkType: hard
+
+"sort-keys@npm:^4.0.0":
+  version: 4.2.0
+  resolution: "sort-keys@npm:4.2.0"
+  dependencies:
+    is-plain-obj: ^2.0.0
+  checksum: a63304c7ba55ad3640198fbbd105a1f5a78c1d2c3eb4a7f27857b0c5aeb22983b2b16297265c3c9624d0b03955993e61b92b4601107c4886adc0875d8322f0dd
   languageName: node
   linkType: hard
 
@@ -33753,7 +33801,21 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"write-pkg@npm:4.0.0":
+"write-json-file@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "write-json-file@npm:4.3.0"
+  dependencies:
+    detect-indent: ^6.0.0
+    graceful-fs: ^4.1.15
+    is-plain-obj: ^2.0.0
+    make-dir: ^3.0.0
+    sort-keys: ^4.0.0
+    write-file-atomic: ^3.0.0
+  checksum: 042a93096437fddac5125e66e412bb9e091b9cd5eb8357c8c6bc64e9021af2c4f1ec37915fc29519d71e140baba6890a93fd21019ad4930d4bb6a5aed9129ac7
+  languageName: node
+  linkType: hard
+
+"write-pkg@npm:4.0.0, write-pkg@npm:^4.0.0":
   version: 4.0.0
   resolution: "write-pkg@npm:4.0.0"
   dependencies:
