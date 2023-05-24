@@ -7,3 +7,4 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _testLinux
+      - codebuild-breakpoint
