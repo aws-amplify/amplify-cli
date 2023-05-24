@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.18...amplify-python-function-runtime-provider@2.4.19) (2023-05-24)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [2.4.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.17...amplify-python-function-runtime-provider@2.4.18) (2023-05-11)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider
