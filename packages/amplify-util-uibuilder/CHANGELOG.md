@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1-rc.5068623616.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.0...@aws-amplify/amplify-util-uibuilder@1.8.1-rc.5068623616.0) (2023-05-24)
+
+
+### Bug Fixes
+
+* update codegen ui version and add processFile util function ([#12670](https://github.com/aws-amplify/amplify-cli/issues/12670)) ([5068623](https://github.com/aws-amplify/amplify-cli/commit/50686236160f516c893d4db323a9945c89a36108))
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.7.0...@aws-amplify/amplify-util-uibuilder@1.8.0) (2023-05-11)
 
 

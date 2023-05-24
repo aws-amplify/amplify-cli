@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1-rc.5068623616.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.0.0...@aws-amplify/amplify-e2e-core@5.0.1-rc.5068623616.0) (2023-05-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
 # [5.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@4.9.1...@aws-amplify/amplify-e2e-core@5.0.0) (2023-05-11)
 
 
