@@ -1,8 +1,4 @@
 #!/bin/bash -e
-export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
-if [ "$BRANCH_NAME" = "" ] ; then
-  BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
-fi
 git checkout $BRANCH_NAME
 echo "fetching tags"
 git fetch --tags https://github.com/aws-amplify/amplify-cli

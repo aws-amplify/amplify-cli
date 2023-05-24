@@ -26,6 +26,8 @@ function triggerProjectBatch {
     echo AWS Account: $account_number
     echo Project: $project_name 
     echo Target Branch: $target_branch
-    RESULT=$(aws codebuild start-build-batch --profile="${profile_name}" --project-name $project_name --source-version=$target_branch --query 'buildBatch.id' --output text)
+    RESULT=$(aws codebuild start-build-batch --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
+     --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT \
+     --query 'buildBatch.id' --output text)
     echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=us-east-1"
 }
