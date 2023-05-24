@@ -29,8 +29,8 @@ import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigge
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from './stack-synthesizer';
-import { socialSignInKeys } from '../constants';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
+import { ProviderCreds, ProviderMeta } from './types';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
@@ -558,19 +558,45 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       );
     }
 
-    JSON.parse(props.hostedUIProviderCreds || '[]').forEach(({ ProviderName }: { ProviderName: string }) => {
-      socialSignInKeys[ProviderName].forEach((key: string) => {
-        if (!Object.keys(props).includes(key)) {
-          this._authTemplateObj.addCfnParameter(
-            {
-              type: 'String',
-              noEcho: true,
-            },
-            key,
-          );
-        }
-      });
+    const hostedUIProviderMeta = JSON.parse(props.hostedUIProviderMeta || '[]');
+    const hostedUIProviderCreds = JSON.parse(props.hostedUIProviderCreds || '[]');
+
+    hostedUIProviderCreds.forEach((providerCreds: ProviderCreds) => {
+      const { ProviderName } = providerCreds;
+      const providerMeta = hostedUIProviderMeta.find((provider: ProviderMeta) => provider.ProviderName === ProviderName);
+
+      if (ProviderName === 'SignInWithApple' && 'key_id' in providerCreds) {
+        this.addCfnParameterWithNoEcho('signinwithappleAuthorizeScopes', providerMeta.authorize_scopes, true);
+        this.addCfnParameterWithNoEcho('signinwithappleClientIdUserPool', providerCreds.client_id, !props.signinwithappleClientIdUserPool);
+        this.addCfnParameterWithNoEcho('signinwithappleKeyIdUserPool', providerCreds.key_id, !props.signinwithappleKeyIdUserPool);
+        this.addCfnParameterWithNoEcho('signinwithapplePrivateKeyUserPool', providerCreds.private_key, !props.signinwithapplePrivateKeyUserPool);
+        this.addCfnParameterWithNoEcho('signinwithappleTeamIdUserPool', providerCreds.team_id, !props.signinwithappleTeamIdUserPool);
+      } else if (ProviderName === 'Facebook' && 'client_id' in providerCreds) {
+        this.addCfnParameterWithNoEcho('facebookAuthorizeScopes', providerMeta.authorize_scopes, true);
+        this.addCfnParameterWithNoEcho('facebookAppIdUserPool', providerCreds.client_id, !props.facebookAppIdUserPool);
+        this.addCfnParameterWithNoEcho('facebookAppSecretUserPool', providerCreds.client_secret, !props.facebookAppSecretUserPool);
+      } else if (ProviderName === 'Google' && 'client_id' in providerCreds) {
+        this.addCfnParameterWithNoEcho('googleAuthorizeScopes', providerMeta.authorize_scopes, true);
+        this.addCfnParameterWithNoEcho('googleAppIdUserPool', providerCreds.client_id, !props.googleAppIdUserPool);
+        this.addCfnParameterWithNoEcho('googleAppSecretUserPool', providerCreds.client_secret, !props.googleAppSecretUserPool);
+      } else if (ProviderName === 'LoginWithAmazon' && 'client_id' in providerCreds) {
+        this.addCfnParameterWithNoEcho('loginwithamazonAuthorizeScopes', providerMeta.authorize_scopes, true);
+        this.addCfnParameterWithNoEcho('loginwithamazonAppIdUserPool', providerCreds.client_id, !props.loginwithamazonAppIdUserPool);
+        this.addCfnParameterWithNoEcho('loginwithamazonAppSecretUserPool', providerCreds.client_secret, !props.loginwithamazonAppSecretUserPool);
+      }
     });
+  };
+
+  private addCfnParameterWithNoEcho = (key: string, providerCred: string | undefined, propsKeyAbsent: boolean): void => {
+    if (propsKeyAbsent && providerCred) {
+      this._authTemplateObj.addCfnParameter(
+        {
+          type: 'String',
+          noEcho: true,
+        },
+        key,
+      );
+    }
   };
 
   /**
