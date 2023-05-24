@@ -20,7 +20,7 @@
     "build-tests": "tsc --build tsconfig.tests.json",
     "migration_v4.28.2_nonmultienv_layers": "npm run setup-profile 4.28.2 && jest src/__tests__/migration_tests/lambda-layer-migration/layer-migration.test.ts --verbose",
     "migration_v4.52.0_multienv_layers": "npm run setup-profile 4.52.0 && jest src/__tests__/migration_tests/lambda-layer-migration/layer-migration.test.ts --verbose",
-    "migration_v7.6.26": "npm run setup-profile 7.6.26 && jest --verbose",
+    "migration_v8.2.0": "npm run setup-profile 8.2.0 && jest --verbose",
     "migration_v10.5.1": "npm run setup-profile 10.5.1 && jest --verbose",
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },

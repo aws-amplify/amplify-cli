@@ -537,7 +537,7 @@ jobs:
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
-  amplify_migration_tests_v7:
+  amplify_migration_tests_v8:
     parameters:
       os:
         type: executor
@@ -553,12 +553,12 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Run tests migrating from CLI v7.6.26
+          name: Run tests migrating from CLI v8.2.0
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v7.6.26 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn run migration_v8.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -1145,7 +1145,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
-      - amplify_migration_tests_v7:
+      - amplify_migration_tests_v8:
           context:
             - e2e-auth-credentials
             - cleanup-resources
@@ -1271,7 +1271,7 @@ workflows:
             - amplify_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_v10
-            - amplify_migration_tests_v7
+            - amplify_migration_tests_v8
             - amplify_migration_tests_non_multi_env_layers
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
