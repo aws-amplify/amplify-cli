@@ -90,10 +90,13 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     if (DebugConfig.Instance.promptSendReport()) {
       const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
       DebugConfig.Instance.setAndWriteShareProject(result);
-    }
-    const diagnoseAction = await prompter.pick('What would you like to do?', choices);
-    if (diagnoseAction !== choices[0]) {
-      return;
+      if (result === false) {
+        return;
+      }
+      const diagnoseAction = await prompter.pick('What would you like to do?', choices);
+      if (diagnoseAction !== choices[0]) {
+        return;
+      }
     }
   }
   try {
