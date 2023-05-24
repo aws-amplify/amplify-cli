@@ -14,4 +14,4 @@ const removePkgFetchChecksum = (yarnLockPath: string): void => {
   }
 };
 
-removePkgFetchChecksum(path.join(process.cwd(), 'yarn.lock'));
+removePkgFetchChecksum(path.join(process.cwd(), '..', 'yarn.lock'));
