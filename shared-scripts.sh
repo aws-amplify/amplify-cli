@@ -104,6 +104,7 @@ function _testLinux {
     loadCache .cache $HOME/.cache
     # run tests
     yarn test-ci
+    yarn test-awscfn-ci
     # echo collecting coverage
     # yarn coverage
 }
