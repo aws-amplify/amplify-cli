@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as which from 'which';
 import { coerce, SemVer } from 'semver';
-import { execAsStringPromise } from './shell-utils';
+import { execWithOutputAsString } from './shell-utils';
 
 /**
  * package managers type
@@ -81,6 +81,6 @@ export const getPackageManager = async (rootPath?: string): Promise<PackageManag
 const getYarnPackageManager = async (rootPath: string | undefined): Promise<PackageManager | null> => {
   return {
     ...packageManagers.yarn,
-    version: coerce(await execAsStringPromise(`${packageManagers.yarn.executable} --version`, { cwd: rootPath })) ?? undefined,
+    version: coerce(await execWithOutputAsString(`${packageManagers.yarn.executable} --version`, { cwd: rootPath })) ?? undefined,
   };
 };

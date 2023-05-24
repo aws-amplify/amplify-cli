@@ -4,6 +4,7 @@
   "description": "amplify-cli",
   "scripts": {
     "addwords": "node ./scripts/add-to-dict.js",
+    "all-cloud-e2e": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/run-all-tests && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "build-and-verify": "yarn clean && yarn build && yarn prettier-check && yarn lint-check && yarn verify-api-extract",
     "build-tests-changed": "lerna run build-tests --since dev",
     "build-tests": "lerna run build-tests",
@@ -17,6 +18,7 @@
     "commit": "git-cz",
     "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "coverage": "codecov || exit 0",
+    "deep-clean-install": "yarn verdaccio-clean && yarn cache clean && yarn clean && git clean -fdx -e .vscode -e .env && yarn",
     "e2e": "lerna run e2e",
     "extract-api": "lerna run extract-api --concurrency 4",
     "extract-formatting-changes": "yarn ts-node ./scripts/extract-formatting-changes.ts",

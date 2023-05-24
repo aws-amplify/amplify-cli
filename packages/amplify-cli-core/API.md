@@ -569,6 +569,7 @@ export const constants: {
     PARENT_DIRECTORY: string;
     GLOBAL_NODE_MODULES: string;
     PACKAGED_NODE_MODULES: string;
+    DEV_NODE_MODULES: string;
     EXECUTE_AMPLIFY_COMMAND: string;
     EXECUTE_AMPLIFY_HEADLESS_COMMAND: string;
     HANDLE_AMPLIFY_EVENT: string;
@@ -789,6 +790,9 @@ export const execAsStringPromise: (command: string, opts?: execa.Options) => Pro
 
 // @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
+
+// @public (undocumented)
+export const execWithOutputAsString: (command: string, opts?: execa.Options) => Promise<string>;
 
 declare namespace ExeInfo {
     export {

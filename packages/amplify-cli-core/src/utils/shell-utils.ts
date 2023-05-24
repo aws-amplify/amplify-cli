@@ -3,7 +3,7 @@ import { AmplifyError } from '..';
 
 // wrapper for executing a shell command and returning the result as a string promise
 // opts are passed directly to the exec command
-export const execAsStringPromise = async (command: string, opts?: execa.Options): Promise<string> => {
+export const execWithOutputAsString = async (command: string, opts?: execa.Options): Promise<string> => {
   try {
     let stdout = (await execa.command(command, opts)).stdout;
 

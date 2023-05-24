@@ -2,11 +2,11 @@ import path from 'path';
 import fs from 'fs-extra';
 import * as which from 'which';
 import { parse } from 'ini';
-import { AmplifyError, execAsStringPromise } from '@aws-amplify/amplify-cli-core';
+import { AmplifyError, execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
 
 // Gets the pipenv dir where this function's dependencies are located
 export async function getPipenvDir(srcRoot: string): Promise<string> {
-  const pipEnvDir = await execAsStringPromise('pipenv --venv', { cwd: srcRoot });
+  const pipEnvDir = await execWithOutputAsString('pipenv --venv', { cwd: srcRoot });
   const pyBinary = getPythonBinaryName();
 
   if (!pyBinary) {
