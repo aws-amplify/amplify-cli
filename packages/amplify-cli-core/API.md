@@ -786,7 +786,7 @@ export type ErrorParameter = {
 export type EventPrefix = 'pre' | 'post';
 
 // @public (undocumented)
-export const execAsStringPromise: (command: string, opts?: execa.Options) => Promise<string>;
+export const execWithOutputAsString: (command: string, opts?: execa.Options) => Promise<string>;
 
 // @public (undocumented)
 export const executeHooks: (hooksMetadata: HooksMeta) => Promise<void>;
