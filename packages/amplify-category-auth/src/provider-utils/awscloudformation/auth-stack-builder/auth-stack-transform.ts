@@ -569,7 +569,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         this.addCfnParameterWithNoEcho('signinwithappleAuthorizeScopes', providerMeta.authorize_scopes, true);
         this.addCfnParameterWithNoEcho('signinwithappleClientIdUserPool', providerCreds.client_id, !props.signinwithappleClientIdUserPool);
         this.addCfnParameterWithNoEcho('signinwithappleKeyIdUserPool', providerCreds.key_id, !props.signinwithappleKeyIdUserPool);
-        this.addCfnParameterWithNoEcho('signinwithapplePrivateKeyUserPool', providerCreds.private_key, !props.signinwithapplePrivateKeyUserPool);
+        this.addCfnParameterWithNoEcho(
+          'signinwithapplePrivateKeyUserPool',
+          providerCreds.private_key,
+          !props.signinwithapplePrivateKeyUserPool,
+        );
         this.addCfnParameterWithNoEcho('signinwithappleTeamIdUserPool', providerCreds.team_id, !props.signinwithappleTeamIdUserPool);
       } else if (ProviderName === 'Facebook' && 'client_id' in providerCreds) {
         this.addCfnParameterWithNoEcho('facebookAuthorizeScopes', providerMeta.authorize_scopes, true);
@@ -582,7 +586,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       } else if (ProviderName === 'LoginWithAmazon' && 'client_id' in providerCreds) {
         this.addCfnParameterWithNoEcho('loginwithamazonAuthorizeScopes', providerMeta.authorize_scopes, true);
         this.addCfnParameterWithNoEcho('loginwithamazonAppIdUserPool', providerCreds.client_id, !props.loginwithamazonAppIdUserPool);
-        this.addCfnParameterWithNoEcho('loginwithamazonAppSecretUserPool', providerCreds.client_secret, !props.loginwithamazonAppSecretUserPool);
+        this.addCfnParameterWithNoEcho(
+          'loginwithamazonAppSecretUserPool',
+          providerCreds.client_secret,
+          !props.loginwithamazonAppSecretUserPool,
+        );
       }
     });
   };
