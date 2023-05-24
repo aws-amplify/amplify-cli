@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.9.13-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.12...amplify-util-headless-input@1.9.13-yarn-berry.0) (2023-05-19)
-
-**Note:** Version bump only for package amplify-util-headless-input
-
-
-
-
-
 ## [1.9.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.10...amplify-util-headless-input@1.9.12) (2023-04-14)
 
 **Note:** Version bump only for package amplify-util-headless-input

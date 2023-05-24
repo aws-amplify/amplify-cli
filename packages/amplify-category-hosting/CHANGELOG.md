@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.5.9-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.8...@aws-amplify/amplify-category-hosting@3.5.9-yarn-berry.0) (2023-05-19)
-
-**Note:** Version bump only for package @aws-amplify/amplify-category-hosting
-
-
-
-
-
 ## [3.5.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.7...@aws-amplify/amplify-category-hosting@3.5.8) (2023-05-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-hosting

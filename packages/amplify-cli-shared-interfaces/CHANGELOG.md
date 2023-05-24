@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.2.3-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-shared-interfaces@1.2.2...@aws-amplify/amplify-cli-shared-interfaces@1.2.3-yarn-berry.0) (2023-05-19)
-
-**Note:** Version bump only for package @aws-amplify/amplify-cli-shared-interfaces
-
-
-
-
-
 ## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-shared-interfaces@1.2.0...@aws-amplify/amplify-cli-shared-interfaces@1.2.2) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-cli-shared-interfaces

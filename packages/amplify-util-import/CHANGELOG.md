@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.6.1-yarn-berry.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.6.0...@aws-amplify/amplify-util-import@2.6.1-yarn-berry.0) (2023-05-19)
-
-**Note:** Version bump only for package @aws-amplify/amplify-util-import
-
-
-
-
-
 # [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.5.0...@aws-amplify/amplify-util-import@2.6.0) (2023-05-11)
 
 
