@@ -149,7 +149,7 @@ jobs:
           steps:
             - install_node_windows
             - checkout
-            - run: yarn ts-node scripts/remove-pkg-fetch-checksum.ts
+            - run: cd scripts && yarn && yarn ts-node remove-pkg-fetch-checksum.ts && cd -
             - run: yarn --immutable
             - run: yarn production-build
             - run:
