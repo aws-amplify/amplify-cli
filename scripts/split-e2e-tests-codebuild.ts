@@ -100,7 +100,7 @@ export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
 }
 export function saveConfig(config: any): void {
-  const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true })];
+  const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true, lineWidth: -1 })];
   fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}.yml`, output.join('\n'));
 }
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
@@ -110,7 +110,7 @@ type COMPUTE_TYPE = 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE';
 type BatchBuildJob = {
   identifier: string;
   env: {
-    'compute-type': COMPUTE_TYPE;
+    'compute-type'?: COMPUTE_TYPE;
     variables: [string: string];
   };
 };
@@ -272,7 +272,6 @@ const splitTestsV3 = (
     const reportsAggregator = {
       identifier: 'aggregate_e2e_reports',
       env: {
-        'compute-type': 'BUILD_GENERAL1_MEDIUM',
         variables: { WAIT_FOR_IDS: dependeeIdentifiers.join(',') },
       },
       buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
@@ -290,19 +289,13 @@ function main(): void {
     {
       identifier: 'run_e2e_tests_linux',
       buildspec: 'codebuild_specs/run_e2e_tests_linux.yml',
-      env: {
-        'compute-type': 'BUILD_GENERAL1_MEDIUM',
-      },
+      env: {},
       'depend-on': ['upload_pkg_binaries'],
     },
     {
       identifier: 'run_e2e_tests_windows',
       buildspec: 'codebuild_specs/run_e2e_tests_windows.yml',
-      env: {
-        type: 'WINDOWS_SERVER_2019_CONTAINER',
-        'compute-type': 'BUILD_GENERAL1_MEDIUM',
-        image: '$WINDOWS_IMAGE_2019',
-      },
+      env: {},
       'depend-on': ['build_windows', 'upload_pkg_binaries'],
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
