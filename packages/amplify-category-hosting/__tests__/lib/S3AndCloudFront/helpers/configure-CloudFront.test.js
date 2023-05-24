@@ -85,25 +85,6 @@ describe('configure-CloudFront', () => {
     expect(DistributionConfig.DefaultCacheBehavior.MinTTL).toEqual(mockDefaultCacheMinTTL);
   });
 
-  test('configure: remove cloudfront', async () => {
-    const mockTemplatePath = path.join(__dirname, '../../../../__mocks__/mockTemplate.json');
-    const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
-    mockContext.exeInfo.template = mockTemplate;
-    amplifyPrompts.prompter.yesOrNo = jest.fn().mockResolvedValueOnce(true); // Remove CloudFront from hosting
-    amplifyPrompts.prompter.input = jest.fn().mockResolvedValueOnce('index.html').mockResolvedValueOnce('error.html');
-
-    let result = await configureCloudFront.configure(mockContext);
-    expect(result).toEqual(mockContext);
-    expect(mockContext.exeInfo.template.Resources.OriginAccessIdentity).not.toBeDefined();
-    expect(mockContext.exeInfo.template.Resources.CloudFrontDistribution).not.toBeDefined();
-    expect(mockContext.exeInfo.template.Resources.BucketPolicy).not.toBeDefined();
-    expect(mockContext.exeInfo.template.Resources.PrivateBucketPolicy).not.toBeDefined();
-    expect(mockContext.exeInfo.template.Outputs.CloudFrontDistributionID).not.toBeDefined();
-    expect(mockContext.exeInfo.template.Outputs.CloudFrontDomainName).not.toBeDefined();
-    expect(mockContext.exeInfo.template.Outputs.CloudFrontSecureURL).not.toBeDefined();
-    expect(mockContext.exeInfo.template.Resources.S3Bucket.Properties.AccessControl).toBeDefined();
-  });
-
   test('configure: add cloudfront', async () => {
     const mockTemplatePath = path.join(__dirname, '../../../../__mocks__/mockTemplate-noCloudFront.json');
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
@@ -142,10 +123,7 @@ describe('configure-CloudFront', () => {
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
     mockContext.exeInfo.template = mockTemplate;
     amplifyPrompts.byValue = jest.fn().mockReturnValue('list');
-    amplifyPrompts.prompter.yesOrNo = jest
-      .fn()
-      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
-      .mockResolvedValueOnce(true); // Configure Custom Error Responses
+    amplifyPrompts.prompter.yesOrNo = jest.fn().mockResolvedValueOnce(true); // Configure Custom Error Responses
 
     amplifyPrompts.prompter.input = jest
       .fn()
@@ -174,10 +152,7 @@ describe('configure-CloudFront', () => {
       ErrorCachingMinTTL: 300,
     };
     amplifyPrompts.byValue = jest.fn().mockReturnValue('list');
-    amplifyPrompts.prompter.yesOrNo = jest
-      .fn()
-      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
-      .mockResolvedValueOnce(true); // Configure Custom Error Responses
+    amplifyPrompts.prompter.yesOrNo = jest.fn().mockResolvedValueOnce(true); // Configure Custom Error Responses
 
     amplifyPrompts.prompter.input = jest
       .fn()
@@ -220,10 +195,7 @@ describe('configure-CloudFront', () => {
     };
 
     amplifyPrompts.byValue = jest.fn().mockReturnValue('list');
-    amplifyPrompts.prompter.yesOrNo = jest
-      .fn()
-      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
-      .mockResolvedValueOnce(true); // Configure Custom Error Responses
+    amplifyPrompts.prompter.yesOrNo = jest.fn().mockResolvedValueOnce(true); // Configure Custom Error Responses
 
     amplifyPrompts.prompter.input = jest
       .fn()
@@ -261,10 +233,7 @@ describe('configure-CloudFront', () => {
     };
 
     amplifyPrompts.byValue = jest.fn().mockReturnValue('list');
-    amplifyPrompts.prompter.yesOrNo = jest
-      .fn()
-      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
-      .mockResolvedValueOnce(true); // Configure Custom Error Responses
+    amplifyPrompts.prompter.yesOrNo = jest.fn().mockResolvedValueOnce(true); // Configure Custom Error Responses
 
     amplifyPrompts.prompter.input = jest
       .fn()
@@ -290,10 +259,7 @@ describe('configure-CloudFront', () => {
     const mockTemplate = mockContext.amplify.readJsonFile(mockTemplatePath);
     mockContext.exeInfo.template = mockTemplate;
 
-    amplifyPrompts.prompter.yesOrNo = jest
-      .fn()
-      .mockResolvedValueOnce(false) // Remove CloudFront from hosting
-      .mockResolvedValueOnce(true); // Configure Custom Error Responses
+    amplifyPrompts.prompter.yesOrNo = jest.fn().mockResolvedValueOnce(true); // Configure Custom Error Responses
 
     amplifyPrompts.prompter.input = jest
       .fn()

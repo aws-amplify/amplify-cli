@@ -1,5 +1,4 @@
 const path = require('path');
-const configureWebsite = require('./configure-Website');
 const { prompter, byValue } = require('@aws-amplify/amplify-prompts');
 
 const originErrorCodes = {
@@ -38,29 +37,8 @@ async function configure(context) {
       delete context.exeInfo.template.Resources.BucketPolicy;
       delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
     }
-  } else {
-    const removeCloudFront = await prompter.yesOrNo('Remove CloudFront from hosting', false);
-    if (removeCloudFront) {
-      delete context.exeInfo.template.Resources.OriginAccessIdentity;
-      delete context.exeInfo.template.Resources.CloudFrontDistribution;
-      // Don't remove the following line,
-      // customer projects setup by the CLI prior to 2/22/2019 has this resource
-      delete context.exeInfo.template.Resources.BucketPolicy;
-      delete context.exeInfo.template.Resources.PrivateBucketPolicy;
-      delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
-      delete context.exeInfo.template.Outputs.CloudFrontDomainName;
-      delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-      delete context.exeInfo.template.Outputs.CloudFrontOriginAccessIdentity;
+  } 
 
-      const { AccessControl, WebsiteConfiguration } = originalTemplate.Resources.S3Bucket.Properties;
-      context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
-      context.exeInfo.template.Resources.S3Bucket.Properties.WebsiteConfiguration = WebsiteConfiguration;
-
-      context.print.warning('Static webhosting will be enabled for the hosting bucket once you remove CloudFront Distribution.');
-      context.print.info('Set its configuration:');
-      await configureWebsite.configure(context);
-    }
-  }
 
   if (context.exeInfo.template.Resources.CloudFrontDistribution) {
     const { DistributionConfig } = context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
