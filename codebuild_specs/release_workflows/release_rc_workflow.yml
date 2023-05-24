@@ -82,6 +82,7 @@ batch:
       buildspec: codebuild_specs/deploy.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+        git-credential-helper: true
       debug-session: true
       depend-on:
         - upload_pkg_binaries
