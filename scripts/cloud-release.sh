@@ -5,7 +5,7 @@ export RELEASE_PROFILE_NAME=AmplifyCLIRelease
 export RC_PROJECT_NAME=RC
 export RELEASE_PROJECT_NAME=RELEASE
 
-
+############################## RC ##############################
 function RCLocal {
     echo Running Local RC
     if [[ -z ${1+x} ]]; then
@@ -16,7 +16,6 @@ function RCLocal {
     branch_name="release_rc/$rc_sha"
     git checkout -B "$branch_name" "$rc_sha"
     git push "origin" "$branch_name"
-
     triggerProjectBatch $RELEASE_ACCOUNT_LOCAL $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Local" $RC_PROJECT_NAME $branch_name
 }
 function RCBeta {
@@ -42,7 +41,7 @@ function RCProd {
     branch_name=$(git branch --show-current)
     triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RC_PROJECT_NAME $branch_name
 }
-
+############################## RELEASE ##############################
 function ReleaseLocal {
     echo Running Local Release
     if [[ -z ${1+x} ]]; then
