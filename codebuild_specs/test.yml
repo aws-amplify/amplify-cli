@@ -7,7 +7,3 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _testLinux
-      # - export CODEBUILD_SOURCE_VERSION="c10dcb7bba2f55686d87649d9da6978029cb4ef1"
-      # - source ./shared-scripts.sh && loadCache repo $CODEBUILD_SRC_DIR && loadCache .cache $HOME/.cache
-      # - codebuild-breakpoint
-      # - echo after
