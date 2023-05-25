@@ -1240,24 +1240,19 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     const providerDetails =
       ProviderName === SignInWithApple ? this.createHostedUIAppleProviderDetails() : this.createHostedUIProviderDetails(ProviderName);
 
-    let resourceParams: cognito.CfnUserPoolIdentityProviderProps;
+    const additionalParams: { [key: string]: unknown } = {};
 
     if (hasCreds) {
-      resourceParams = {
-        attributeMapping: AttributeMapping,
-        providerDetails,
-        providerName: ProviderName,
-        providerType: ProviderName,
-        userPoolId: cdk.Fn.ref('UserPool'),
-      };
-    } else {
-      resourceParams = {
-        attributeMapping: AttributeMapping,
-        providerName: ProviderName,
-        providerType: ProviderName,
-        userPoolId: cdk.Fn.ref('UserPool'),
-      };
+      additionalParams.providerDetails = providerDetails;
     }
+
+    const resourceParams: cognito.CfnUserPoolIdentityProviderProps = {
+      attributeMapping: AttributeMapping,
+      providerName: ProviderName,
+      providerType: ProviderName,
+      userPoolId: cdk.Fn.ref('UserPool'),
+      ...additionalParams,
+    };
 
     const provider = new cognito.CfnUserPoolIdentityProvider(this, `HostedUI${ProviderName}ProviderResource`, resourceParams);
     this.hostedUIProviderResources.push(provider);
