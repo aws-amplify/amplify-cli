@@ -2,6 +2,7 @@ version: 0.2
 env:
   shell: bash
   compute-type: BUILD_GENERAL1_MEDIUM
+  git-credential-helper: yes
   variables:
     AWS_DEFAULT_REGION: us-east-1
     AWS_REGION: us-east-1
