@@ -152,14 +152,6 @@ const splitTestsV3 = (
   pickTests: ((testSuites: string[]) => string[]) | undefined,
   withAggregateReports = false,
 ) => {
-  if (!withAggregateReports && baseJobLinux?.reports) {
-    delete baseJobLinux.reports;
-  }
-
-  if (!withAggregateReports && baseJobWindows?.reports) {
-    delete baseJobWindows.reports;
-  }
-
   const output: any[] = [];
   let testSuites = getTestFiles(testDirectory);
   if (pickTests && typeof pickTests === 'function') {
@@ -269,11 +261,14 @@ const splitTestsV3 = (
   });
 
   if (withAggregateReports) {
+    const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
+    const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
+    fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
     const reportsAggregator = {
       identifier: 'aggregate_e2e_reports',
       env: {
         'compute-type': 'BUILD_GENERAL1_MEDIUM',
-        variables: { WAIT_FOR_IDS: dependeeIdentifiers.join(',') },
+        variables: { WAIT_FOR_IDS_FILE_PATH: waitForIdsFilePath },
       },
       buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
       'depend-on': ['upload_pkg_binaries'],
