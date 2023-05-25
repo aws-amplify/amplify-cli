@@ -41,7 +41,7 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
 ### Local Environment Setup
 
-1. Ensure you have [Node.js 18](https://nodejs.org/en/download/) installed, which comes bundled with [`npm`](https://github.com/npm/cli). Use it to install or upgrade [`yarn`](https://classic.yarnpkg.com/en/docs/install):
+1. Ensure you have [Node.js 18](https://nodejs.org/en/download/) installed, which comes bundled with [`npm`](https://github.com/npm/cli). Use it to install or upgrade [`yarn`](https://yarnpkg.com/getting-started/install):
 
    ```sh
    npm install --global yarn
