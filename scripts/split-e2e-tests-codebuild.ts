@@ -307,9 +307,7 @@ function main(): void {
     {
       identifier: 'migration_tests_v5',
       buildspec: 'codebuild_specs/migration_tests_v5.yml',
-      env: {
-        'compute-type': 'BUILD_GENERAL1_SMALL',
-      },
+      env: {},
       'depend-on': ['upload_pkg_binaries'],
     },
     undefined,
@@ -323,9 +321,7 @@ function main(): void {
     {
       identifier: 'migration_tests_v6',
       buildspec: 'codebuild_specs/migration_tests_v6.yml',
-      env: {
-        'compute-type': 'BUILD_GENERAL1_SMALL',
-      },
+      env: {},
       'depend-on': ['upload_pkg_binaries'],
     },
     undefined,
@@ -339,9 +335,7 @@ function main(): void {
     {
       identifier: 'migration_tests_v10',
       buildspec: 'codebuild_specs/migration_tests_v10.yml',
-      env: {
-        'compute-type': 'BUILD_GENERAL1_SMALL',
-      },
+      env: {},
       'depend-on': ['upload_pkg_binaries'],
     },
     undefined,

@@ -1,6 +1,7 @@
 version: 0.2
 env:
   shell: bash
+  compute-type: BUILD_GENERAL1_SMALL
   variables:
     CI: true
     CIRCLECI: true
