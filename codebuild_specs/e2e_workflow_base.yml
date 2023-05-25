@@ -80,7 +80,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
-    - identifier: upload_pkg_binaries
+    - identifier: upb
       buildspec: codebuild_specs/upload_pkg_binaries.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE

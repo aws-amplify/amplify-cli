@@ -1,6 +1,8 @@
 version: 0.2
 env:
   shell: powershell.exe
+  type: WINDOWS_SERVER_2019_CONTAINER
+  image: $WINDOWS_IMAGE_2019
   variables:
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts|src/__tests__/auth_2f.test.ts
