@@ -21,10 +21,10 @@ export const hasMatchingContentInFolder = (
     return true;
   } catch (e) {
     // When there is no match exit code is set to 1
-    if ((e as { exitCode: number }).exitCode === 1) {
+    if ((e as { exitCode: number })?.exitCode === 1) {
       return false;
     }
-    if ((e as { message: string }).message.includes('No such file or directory')) {
+    if ((e as { message: string })?.message?.includes('No such file or directory')) {
       console.log('No artifacts found at:', folder);
       return false;
     }
