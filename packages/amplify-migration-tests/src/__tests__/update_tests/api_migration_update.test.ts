@@ -36,7 +36,10 @@ describe('api migration update test', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfile(projRoot, { name: 'apimigration' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'apimigration',
+      includeUsageDataPrompt: false,
+    });
   });
 
   afterEach(async () => {

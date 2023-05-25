@@ -31,7 +31,10 @@ describe('amplify auth migration', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'authMigration',
+      includeUsageDataPrompt: false,
+    });
   });
   afterEach(async () => {
     const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');

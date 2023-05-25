@@ -38,7 +38,7 @@ describe('amplify add/update storage(DDB)', () => {
 
   it('init a project and add/update ddb table with & without trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { includeUsageDataPrompt: false, });
     await addAuthWithDefault(projRoot);
     await addSimpleDDB(projRoot, {});
     await addDDBWithTrigger(projRoot, {});
@@ -110,7 +110,7 @@ describe('amplify add/update storage(S3)', () => {
 
   it('init a project and add s3 bucket & update with new trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { includeUsageDataPrompt: false, });
     await addAuthWithDefault(projRoot);
     await addS3StorageWithAuthOnly(projRoot);
     await amplifyPushAuthV5V6(projRoot);

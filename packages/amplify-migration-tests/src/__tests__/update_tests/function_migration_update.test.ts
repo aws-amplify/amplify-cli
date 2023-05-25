@@ -36,7 +36,10 @@ describe('amplify function migration', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfile(projRoot, { name: 'functionmigration' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'functionmigration',
+      includeUsageDataPrompt: false,
+    });
   });
 
   afterEach(async () => {
