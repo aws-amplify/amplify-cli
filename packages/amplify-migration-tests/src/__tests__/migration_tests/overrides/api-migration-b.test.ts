@@ -36,7 +36,10 @@ describe('api migration update test b', () => {
   // This checks that new versions of the CLI can still update non-migrated APIs
   it('allows api updates without api migration', async () => {
     // init and add api with installed CLI
-    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'simplemodelmultiauth',
+      includeUsageDataPrompt: false
+    });
     await addApiWithoutSchemaOldDx(projRoot);
     await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
     await amplifyPushLegacy(projRoot);

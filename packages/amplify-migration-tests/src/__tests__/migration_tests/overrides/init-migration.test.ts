@@ -32,7 +32,10 @@ describe('amplify init', () => {
 
   it('should init the project and override root and push', async () => {
     const projectName = 'initMigrationTest';
-    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await initJSProjectWithProfile(projRoot, {
+      name: projectName,
+      includeUsageDataPrompt: false,
+    });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     // turn ON feature flag

@@ -68,7 +68,7 @@ describe('api migration update test d', () => {
     },
   };
   it('updates AppSync API in headless mode', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { includeUsageDataPrompt: false });
     await addHeadlessApi(projRoot, addApiRequest, {
       allowDestructiveUpdates: false,
       testingWithLatestCodebase: false,

@@ -34,7 +34,10 @@ describe('api migration update test a', () => {
 
   it('api update migration with multiauth', async () => {
     // init and add api with installed CLI
-    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'simplemodelmultiauth',
+      includeUsageDataPrompt: false
+    });
     await addApiWithoutSchemaOldDx(projRoot);
     await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
     await amplifyPushLegacy(projRoot);

@@ -32,7 +32,7 @@ describe('amplify add notifications', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
-    await initJSProjectWithProfile(projectRoot, {});
+    await initJSProjectWithProfile(projectRoot, { includeUsageDataPrompt: false });
     await addAuthWithDefault(projectRoot, false);
     await amplifyPushAuthV5V6(projectRoot);
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);

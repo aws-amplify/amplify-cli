@@ -20,7 +20,10 @@ describe('API Gateway CDK migration', () => {
     const [shortId] = uuid().split('-');
     const projName = `apigwmig${shortId}`;
     projRoot = await createNewProjectDir(projName);
-    await initJSProjectWithProfile(projRoot, { name: projName });
+    await initJSProjectWithProfile(projRoot, {
+      name: projName,
+      includeUsageDataPrompt: false
+    });
   });
 
   afterEach(async () => {

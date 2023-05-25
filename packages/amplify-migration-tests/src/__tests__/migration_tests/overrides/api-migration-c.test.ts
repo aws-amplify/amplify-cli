@@ -36,7 +36,10 @@ describe('api migration update test c', () => {
   it('init a sync enabled project and update conflict resolution strategy', async () => {
     const name = `syncenabled`;
     // init and add api with locally installed cli
-    await initJSProjectWithProfile(projRoot, { name });
+    await initJSProjectWithProfile(projRoot, {
+      name,
+      includeUsageDataPrompt: false
+    });
     await addApiWithSchemaAndConflictDetectionOldDx(projRoot, 'simple_model.graphql');
     await amplifyPushLegacy(projRoot);
     let transformConfig = getTransformConfig(projRoot, name);

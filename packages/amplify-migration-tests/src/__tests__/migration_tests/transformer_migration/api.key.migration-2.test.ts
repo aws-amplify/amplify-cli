@@ -27,7 +27,10 @@ describe('amplify key force push', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfile(projRoot, { name: 'gqlkeytwomigration' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'gqlkeytwomigration',
+      includeUsageDataPrompt: false,
+    });
   });
 
   afterEach(async () => {

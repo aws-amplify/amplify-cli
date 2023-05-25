@@ -20,6 +20,7 @@ import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-h
 
 const defaultSettings = {
   name: 'authMigration',
+  includeUsageDataPrompt: false,
 };
 describe('amplify auth migration b', () => {
   let projRoot: string;

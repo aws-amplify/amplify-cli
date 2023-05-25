@@ -31,7 +31,10 @@ describe('amplify add notifications', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
-    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false });
+    await initJSProjectWithProfile(projectRoot, {
+      disableAmplifyAppCreation: false,
+      includeUsageDataPrompt: false
+    });
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
