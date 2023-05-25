@@ -158,7 +158,7 @@ export const deleteUserPoolDomain = async (domain: string, userpoolId: string, r
 
 export const deleteSocialIdpProviders = async (providers: string[], userpoolId: string, region: string) => {
   config.update({ region });
-  for await (const provider of providers) {
+  for (const provider of providers) {
     try {
       await new CognitoIdentityServiceProvider().deleteIdentityProvider({ ProviderName: provider, UserPoolId: userpoolId }).promise();
     } catch (err) {
