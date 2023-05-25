@@ -113,11 +113,11 @@ elif [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^relea
   # publish versions that were just computed
   lernaPublishExitOnFailure from-git --yes --no-push --dist-tag rc
 
-  # push release commit
-  git push origin "$BRANCH_NAME"
+  # # push release commit
+  # git push origin "$BRANCH_NAME"
 
-  # push release tags
-  git tag --points-at HEAD | xargs git push origin
+  # # push release tags
+  # git tag --points-at HEAD | xargs git push origin
 else
   echo "branch name" "$BRANCH_NAME" "did not match any branch publish rules. Skipping publish"
 fi

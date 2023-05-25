@@ -1,7 +1,10 @@
 version: 0.2
 env:
   shell: bash
+  git-credential-helper: yes
 phases:
   build:
     commands:
       - source ./shared-scripts.sh && _deploy
+      - codebuild-breakpoint
+      - echo done
