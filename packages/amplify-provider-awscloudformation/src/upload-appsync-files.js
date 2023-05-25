@@ -1,6 +1,7 @@
 const fs = require('fs');
 const fsext = require('fs-extra');
 const path = require('path');
+const { AmplifyCategories, AmplifySupportedService } = require('@aws-amplify/amplify-cli-core');
 
 const TransformPackage = require('graphql-transformer-core');
 const { S3 } = require('./aws-utils/aws-s3');
@@ -225,6 +226,28 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const deploymentRootKey = await getDeploymentRootKey(resourceDir);
     writeUpdatedParametersJson(resource, deploymentRootKey);
+  } else {
+    // case where api is deployed already and non api resources are pushed
+    // this is done to keep the nested stack same if api resource is in update state (updated gql schema)
+    const { resourcesToBeCreated, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.API);
+    const apiResource = allResources.find((resource) => resource.service === AmplifySupportedService.APPSYNC);
+    const apiResourceToBeCreated = resourcesToBeCreated.find((resource) => resource.service === AmplifySupportedService.APPSYNC);
+
+    if (!apiResource) {
+      return;
+    }
+    if (apiResourceToBeCreated) {
+      return;
+    }
+    // get the deployment key from #current-cloud-backend
+    const currentBackEndDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+    const currentResourceDirectoryPath = path.join(currentBackEndDir, apiResource.category, apiResource.resourceName);
+    // check api resource is present in #current-cloud-backend
+    if (fs.existsSync(currentResourceDirectoryPath)) {
+      console.log('reached here');
+      const deploymentRootKey = await getDeploymentRootKey(currentResourceDirectoryPath);
+      writeUpdatedParametersJson(apiResource, deploymentRootKey);
+    }
   }
 }
 
