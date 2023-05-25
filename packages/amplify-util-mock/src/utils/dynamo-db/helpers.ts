@@ -25,7 +25,6 @@ export async function waitTillTableStateIsActive(
       })();
     }, 1000);
     timeoutHandle = setTimeout(() => {
-      console.log('timed out');
       clearTimeout(timeoutHandle);
       clearInterval(intervalHandle);
       reject(new Error('Waiting for table status to turn ACTIVE timed out'));
