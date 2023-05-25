@@ -12,11 +12,12 @@ import {
   getProjectMeta,
   getTransformConfig,
   updateAPIWithResolutionStrategyWithModels,
+  initJSProjectWithProfile
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
-import { addApiWithSchemaAndConflictDetectionOldDx, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
+import { addApiWithSchemaAndConflictDetectionOldDx } from '../../../migration-helpers';
 
 describe('api migration update test c', () => {
   let projRoot: string;
@@ -35,7 +36,7 @@ describe('api migration update test c', () => {
   it('init a sync enabled project and update conflict resolution strategy', async () => {
     const name = `syncenabled`;
     // init and add api with locally installed cli
-    await initJSProjectWithProfileV4_52_0(projRoot, { name });
+    await initJSProjectWithProfile(projRoot, { name });
     await addApiWithSchemaAndConflictDetectionOldDx(projRoot, 'simple_model.graphql');
     await amplifyPushLegacy(projRoot);
     let transformConfig = getTransformConfig(projRoot, name);

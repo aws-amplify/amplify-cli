@@ -10,13 +10,14 @@ import {
   deleteProjectDir,
   getProjectMeta,
   getUserPool,
+  initJSProjectWithProfile,
   updateHeadlessAuth,
 } from '@aws-amplify/amplify-e2e-core';
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as _ from 'lodash';
-import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
@@ -64,7 +65,7 @@ describe('amplify auth migration e', () => {
       },
     };
 
-    await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
+    await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithDefault(projRoot);
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);

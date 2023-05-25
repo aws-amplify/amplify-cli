@@ -15,11 +15,11 @@ import {
   getSchemaPath,
   getTransformConfig,
   updateHeadlessApi,
+  initJSProjectWithProfile
 } from '@aws-amplify/amplify-e2e-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('api migration update test d', () => {
   let projRoot: string;
@@ -68,7 +68,7 @@ describe('api migration update test d', () => {
     },
   };
   it('updates AppSync API in headless mode', async () => {
-    await initJSProjectWithProfileV4_52_0(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addHeadlessApi(projRoot, addApiRequest, {
       allowDestructiveUpdates: false,
       testingWithLatestCodebase: false,

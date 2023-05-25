@@ -12,10 +12,11 @@ import {
   getProjectMeta,
   updateApiSchema,
   updateApiWithMultiAuth,
+  initJSProjectWithProfile
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { addApiWithoutSchemaOldDx, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
+import { addApiWithoutSchemaOldDx } from '../../../migration-helpers';
 
 describe('api migration update test b', () => {
   let projRoot: string;
@@ -35,7 +36,7 @@ describe('api migration update test b', () => {
   // This checks that new versions of the CLI can still update non-migrated APIs
   it('allows api updates without api migration', async () => {
     // init and add api with installed CLI
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'simplemodelmultiauth' });
+    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
     await addApiWithoutSchemaOldDx(projRoot);
     await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
     await amplifyPushLegacy(projRoot);

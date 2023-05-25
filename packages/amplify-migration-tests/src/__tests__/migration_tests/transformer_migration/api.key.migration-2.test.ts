@@ -7,9 +7,9 @@ import {
   deleteProjectDir,
   updateApiSchema,
   getProjectConfig,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import {
-  initJSProjectWithProfileV4_52_0,
   versionCheck,
   addApiWithoutSchemaOldDx,
   allowedVersionsToMigrateFrom,
@@ -27,7 +27,7 @@ describe('amplify key force push', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'gqlkeytwomigration' });
+    await initJSProjectWithProfile(projRoot, { name: 'gqlkeytwomigration' });
   });
 
   afterEach(async () => {

@@ -7,11 +7,11 @@ import {
   deleteProjectDir,
   getCLIInputs,
   getProjectMeta,
+  initJSProjectWithProfile,
   updateAuthAddAdminQueries,
   updateAuthAdminQueriesWithExtMigration,
 } from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 
 describe('API Gateway CDK migration', () => {
   let projRoot: string;
@@ -20,7 +20,7 @@ describe('API Gateway CDK migration', () => {
     const [shortId] = uuid().split('-');
     const projName = `apigwmig${shortId}`;
     projRoot = await createNewProjectDir(projName);
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: projName });
+    await initJSProjectWithProfile(projRoot, { name: projName });
   });
 
   afterEach(async () => {

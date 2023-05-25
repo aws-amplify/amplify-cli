@@ -11,11 +11,12 @@ import {
   deleteProject,
   deleteProjectDir,
   getProjectMeta,
+  initJSProjectWithProfile,
   updateAuthWithoutTrigger,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
@@ -43,7 +44,7 @@ describe('amplify auth migration b', () => {
 
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // init, add and push auth with installed cli
-    await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
+    await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithDefault(projRoot);
     await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);

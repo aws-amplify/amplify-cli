@@ -11,12 +11,13 @@ import {
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
+  initJSProjectWithProfile,
   updateAuthWithoutCustomTrigger,
   updateAuthWithoutTrigger,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
   let projRoot: string;
@@ -30,7 +31,7 @@ describe('amplify auth migration', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'authMigration' });
+    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
   });
   afterEach(async () => {
     const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');

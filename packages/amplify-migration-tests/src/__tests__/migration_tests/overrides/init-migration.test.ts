@@ -7,9 +7,10 @@ import {
   getProjectMeta,
   amplifyPushOverride,
   replaceOverrideFileWithProjectInfo,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 describe('amplify init', () => {
   let projRoot: string;
@@ -31,7 +32,7 @@ describe('amplify init', () => {
 
   it('should init the project and override root and push', async () => {
     const projectName = 'initMigrationTest';
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: projectName });
+    await initJSProjectWithProfile(projRoot, { name: projectName });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     // turn ON feature flag

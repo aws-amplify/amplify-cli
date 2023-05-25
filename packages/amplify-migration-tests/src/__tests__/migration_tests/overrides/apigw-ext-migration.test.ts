@@ -6,9 +6,9 @@ import {
   deleteProjectDir,
   getCLIInputs,
   updateRestApi,
+  initJSProjectWithProfile
 } from '@aws-amplify/amplify-e2e-core';
 import { addRestApiOldDx } from '../../../migration-helpers/api';
-import { initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
 import { v4 as uuid } from 'uuid';
 
 describe('API Gateway CDK migration', () => {
@@ -18,7 +18,7 @@ describe('API Gateway CDK migration', () => {
     const [shortId] = uuid().split('-');
     const projName = `apigwmig${shortId}`;
     projRoot = await createNewProjectDir(projName);
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: projName });
+    await initJSProjectWithProfile(projRoot, { name: projName });
   });
 
   afterEach(async () => {

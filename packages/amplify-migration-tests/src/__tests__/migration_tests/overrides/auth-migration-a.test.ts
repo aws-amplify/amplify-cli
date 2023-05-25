@@ -14,11 +14,12 @@ import {
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
+  initJSProjectWithProfile,
   updateAuthWithoutCustomTrigger,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { versionCheck, allowedVersionsToMigrateFrom, initJSProjectWithProfileV4_52_0 } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
@@ -45,7 +46,7 @@ describe('amplify auth migration a', () => {
   });
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
-    await initJSProjectWithProfileV4_52_0(projRoot, defaultSettings);
+    await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuthV5V6(projRoot);
     const meta = getProjectMeta(projRoot);

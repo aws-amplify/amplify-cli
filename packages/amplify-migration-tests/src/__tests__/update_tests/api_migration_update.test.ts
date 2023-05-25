@@ -12,12 +12,12 @@ import {
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategyWithModels,
   getProjectConfig,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
 import {
-  initJSProjectWithProfileV4_52_0,
   versionCheck,
   addApiWithoutSchemaOldDx,
   addApiWithSchemaAndConflictDetectionOldDx,
@@ -36,7 +36,7 @@ describe('api migration update test', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'apimigration' });
+    await initJSProjectWithProfile(projRoot, { name: 'apimigration' });
   });
 
   afterEach(async () => {

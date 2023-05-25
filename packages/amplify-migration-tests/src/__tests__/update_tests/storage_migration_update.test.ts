@@ -12,10 +12,11 @@ import {
   deleteProjectDir,
   getDDBTable,
   getProjectMeta,
+  initJSProjectWithProfile,
   updateDDBWithTriggerMigration,
   updateS3AddTriggerWithAuthOnlyReqMigration,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
@@ -37,7 +38,7 @@ describe('amplify add/update storage(DDB)', () => {
 
   it('init a project and add/update ddb table with & without trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfileV4_52_0(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addSimpleDDB(projRoot, {});
     await addDDBWithTrigger(projRoot, {});
@@ -109,7 +110,7 @@ describe('amplify add/update storage(S3)', () => {
 
   it('init a project and add s3 bucket & update with new trigger', async () => {
     // init, add storage and push with local cli
-    await initJSProjectWithProfileV4_52_0(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addS3StorageWithAuthOnly(projRoot);
     await amplifyPushAuthV5V6(projRoot);
