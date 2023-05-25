@@ -9,8 +9,9 @@ See the License for the specific language governing permissions and limitations 
 
 <%= props.topLevelComment %>
 
-const express = require('express')
-const bodyParser = require('body-parser')
+const express = require('express');
+const bodyParser = require('body-parser');
+const { getCurrentInvoke } = require("@vendia/serverless-express");
 
 // declare a new express app
 const app = express()
@@ -44,12 +45,14 @@ app.get('<%= props.functionTemplate.parameters.expressPath %>/*', function(req, 
 
 app.post('<%= props.functionTemplate.parameters.expressPath %>', function(req, res) {
   // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
+  const { event, context } = getCurrentInvoke();
+  res.json({success: 'post call succeed!', url: req.url, body: event.body})
 });
 
 app.post('<%= props.functionTemplate.parameters.expressPath %>/*', function(req, res) {
   // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
+  const { event, context } = getCurrentInvoke();
+  res.json({success: 'post call succeed!', url: req.url, body: event.body})
 });
 
 /****************************
@@ -58,12 +61,14 @@ app.post('<%= props.functionTemplate.parameters.expressPath %>/*', function(req,
 
 app.put('<%= props.functionTemplate.parameters.expressPath %>', function(req, res) {
   // Add your code here
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
+  const { event, context } = getCurrentInvoke();
+  res.json({success: 'put call succeed!', url: req.url, body: event.body})
 });
 
 app.put('<%= props.functionTemplate.parameters.expressPath %>/*', function(req, res) {
   // Add your code here
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
+  const { event, context } = getCurrentInvoke();
+  res.json({success: 'put call succeed!', url: req.url, body: event.body})
 });
 
 /****************************

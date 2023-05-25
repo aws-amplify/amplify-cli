@@ -7,5 +7,9 @@
   "headers": {
     "Content-Type": "application/json"
   },
-  "body": "{\"msg\":\"Hello from the event.json body\"}"
+  "body": "{\"msg\":\"Hello from the event.json body\"}",
+  "requestContext": {
+    "resourcePath": "/item",
+    "httpMethod": "POST"
+  }
 }
