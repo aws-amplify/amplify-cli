@@ -3,7 +3,7 @@ source ./scripts/cloud-cli-utils.sh
 export RELEASE_ROLE_NAME=CodebuildRelease
 export RELEASE_PROFILE_NAME=AmplifyCLIRelease
 export RC_PROJECT_NAME=RC
-export RELEASE_PROJECT_NAME=RELEASE
+export RELEASE_PROJECT_NAME=Release
 
 ############################## RC ##############################
 function RCLocal {
