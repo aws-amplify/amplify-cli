@@ -5,7 +5,4 @@ env:
 phases:
   build:
     commands:
-      - export CODEBUILD_SOURCE_VERSION=1e293c88c1bd2979baceacf54c58cb8eae5d6965
       - source ./shared-scripts.sh && _deploy
-      - codebuild-breakpoint
-      - echo done

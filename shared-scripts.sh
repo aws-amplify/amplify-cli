@@ -387,7 +387,7 @@ function _deploy {
 
     ./out/amplify-pkg-linux-x64 --version
     echo Authenticate with npm
-    echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
 
     source ./.circleci/publish-codebuild.sh
 }
