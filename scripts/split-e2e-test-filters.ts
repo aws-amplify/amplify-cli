@@ -1,5 +1,3 @@
-export const migrationFromV4_28_2Tests = ['src/__tests__/migration_tests/lambda-layer-migration/layer-migration.test.ts'];
-export const migrationFromV4_52_0Tests = ['src/__tests__/migration_tests/lambda-layer-migration/layer-migration.test.ts'];
 export const migrationFromV8Tests = [
   'src/__tests__/migration_tests/notifications-migration/notifications-migration-2.test.ts',
   'src/__tests__/migration_tests/notifications-migration/notifications-migration-3.test.ts',
