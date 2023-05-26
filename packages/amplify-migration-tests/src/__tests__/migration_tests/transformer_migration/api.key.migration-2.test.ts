@@ -8,10 +8,10 @@ import {
   updateApiSchema,
   getProjectConfig,
   initJSProjectWithProfile,
+  addApiWithBlankSchema,
 } from '@aws-amplify/amplify-e2e-core';
 import {
   versionCheck,
-  addApiWithoutSchemaOldDx,
   allowedVersionsToMigrateFrom,
 } from '../../../migration-helpers';
 
@@ -42,7 +42,7 @@ describe('amplify key force push', () => {
     const initialSchema = 'migrations_key/initial_schema.graphql';
     // init, add api and push with installed cli
     const { projectName } = getProjectConfig(projRoot);
-    await addApiWithoutSchemaOldDx(projRoot);
+    await addApiWithBlankSchema(projRoot, { testingWithLatestCodebase: false });
     updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPushLegacy(projRoot);
     // add feature flag
