@@ -44,7 +44,7 @@ describe('amplify key force push', () => {
     // add api and push with installed cli
     await addApiWithBlankSchema(projRoot, { testingWithLatestCodebase: false });
     updateApiSchema(projRoot, projectName, initialSchema);
-    setTransformerVersionFlag(projectName, 1);
+    setTransformerVersionFlag(projRoot, 1);
     await amplifyPushLegacy(projRoot);
     // gql-compile and force push with codebase cli
     await apiGqlCompile(projRoot, true);

@@ -44,7 +44,7 @@ describe('amplify key force push', () => {
     const { projectName } = getProjectConfig(projRoot);
     await addApiWithBlankSchema(projRoot, { testingWithLatestCodebase: false });
     updateApiSchema(projRoot, projectName, initialSchema);
-    setTransformerVersionFlag(projectName, 1);
+    setTransformerVersionFlag(projRoot, 1);
     await amplifyPushLegacy(projRoot);
     // add feature flag
     addFeatureFlag(projRoot, 'graphqltransformer', 'secondaryKeyAsGSI', true);
