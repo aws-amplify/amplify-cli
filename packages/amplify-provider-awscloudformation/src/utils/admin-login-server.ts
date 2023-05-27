@@ -31,7 +31,7 @@ export class AdminLoginServer {
   constructor(appId: string, originUrl: string, print: Printer) {
     this.appId = appId;
     this.corsOptions = {
-      origin: [originUrl],
+      origin: [originUrl, originUrl.replace('.admin.amplifyapp.com', '.studio.amplify.aws')],
       methods: ['GET', 'POST', 'OPTIONS'],
       allowedHeaders: 'Content-Type',
     };
