@@ -186,75 +186,75 @@ export const adminBackendMap: {
   };
 } = {
   'ap-northeast-1': {
-    amplifyAdminUrl: 'https://ap-northeast-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://ap-northeast-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ap-northeast-1.appstate.amplifyapp.com',
   },
   'ap-northeast-2': {
-    amplifyAdminUrl: 'https://ap-northeast-2.studio.amplify.aws',
+    amplifyAdminUrl: 'https://ap-northeast-2.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ap-northeast-2.appstate.amplifyapp.com',
   },
   'ap-south-1': {
-    amplifyAdminUrl: 'https://ap-south-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://ap-south-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ap-south-1.appstate.amplifyapp.com',
   },
   'ap-southeast-1': {
-    amplifyAdminUrl: 'https://ap-southeast-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://ap-southeast-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ap-southeast-1.appstate.amplifyapp.com',
   },
   'ap-southeast-2': {
-    amplifyAdminUrl: 'https://ap-southeast-2.studio.amplify.aws',
+    amplifyAdminUrl: 'https://ap-southeast-2.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ap-southeast-2.appstate.amplifyapp.com',
   },
   'ca-central-1': {
-    amplifyAdminUrl: 'https://ca-central-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://ca-central-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ca-central-1.appstate.amplifyapp.com',
   },
   'eu-central-1': {
-    amplifyAdminUrl: 'https://eu-central-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://eu-central-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.eu-central-1.appstate.amplifyapp.com',
   },
   'eu-north-1': {
-    amplifyAdminUrl: 'https://eu-north-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://eu-north-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.eu-north-1.appstate.amplifyapp.com',
   },
   'eu-south-1': {
-    amplifyAdminUrl: 'https://eu-south-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://eu-south-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.eu-south-1.appstate.amplifyapp.com',
   },
   'eu-west-1': {
-    amplifyAdminUrl: 'https://eu-west-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://eu-west-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.eu-west-1.appstate.amplifyapp.com',
   },
   'eu-west-2': {
-    amplifyAdminUrl: 'https://eu-west-2.studio.amplify.aws',
+    amplifyAdminUrl: 'https://eu-west-2.admin.amplifyapp.com',
     appStateUrl: 'https://prod.eu-west-2.appstate.amplifyapp.com',
   },
   'eu-west-3': {
-    amplifyAdminUrl: 'https://eu-west-3.studio.amplify.aws',
+    amplifyAdminUrl: 'https://eu-west-3.admin.amplifyapp.com',
     appStateUrl: 'https://prod.eu-west-3.appstate.amplifyapp.com',
   },
   'me-south-1': {
-    amplifyAdminUrl: 'https://me-south-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://me-south-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.me-south-1.appstate.amplifyapp.com',
   },
   'sa-east-1': {
-    amplifyAdminUrl: 'https://sa-east-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://sa-east-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.sa-east-1.appstate.amplifyapp.com',
   },
   'us-east-1': {
-    amplifyAdminUrl: 'https://us-east-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://us-east-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.us-east-1.appstate.amplifyapp.com',
   },
   'us-east-2': {
-    amplifyAdminUrl: 'https://us-east-2.studio.amplify.aws',
+    amplifyAdminUrl: 'https://us-east-2.admin.amplifyapp.com',
     appStateUrl: 'https://prod.us-east-2.appstate.amplifyapp.com',
   },
   'us-west-1': {
-    amplifyAdminUrl: 'https://us-west-1.studio.amplify.aws',
+    amplifyAdminUrl: 'https://us-west-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.us-west-1.appstate.amplifyapp.com',
   },
   'us-west-2': {
-    amplifyAdminUrl: 'https://us-west-2.studio.amplify.aws',
+    amplifyAdminUrl: 'https://us-west-2.admin.amplifyapp.com',
     appStateUrl: 'https://prod.us-west-2.appstate.amplifyapp.com',
   },
 };
