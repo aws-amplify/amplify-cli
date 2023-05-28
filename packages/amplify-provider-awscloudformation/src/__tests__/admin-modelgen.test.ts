@@ -79,7 +79,7 @@ it('invokes codegen functions and writes assets to S3', async () => {
 [
   [
     {
-      "Body": "mock body of mock/resource/dir/path/schema.graphql",
+      "Body": "mock body of mock/project/root/amplify-codegen-temp/schema.graphql",
       "Key": "models/testApiName/schema.graphql",
     },
     false,

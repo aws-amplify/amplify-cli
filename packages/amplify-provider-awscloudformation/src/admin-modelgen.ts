@@ -1,4 +1,5 @@
 import { $TSAny, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { readSchema } from 'graphql-transformer-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -65,7 +66,11 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/model-intropection.js#L8
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModelIntrospection', [context]);
 
-    const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
+    const schema = await readSchema(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName));
+    const schemaContent = schema?.schema || '';
+    const localSchemaPath = path.join(absoluteTempOutputDir, 'schema.graphql');
+    await fs.writeFile(localSchemaPath, schemaContent);
+
     const localSchemaJsPath = path.join(absoluteTempOutputDir, 'models', 'schema.js');
     const localModelIntrospectionPath = path.join(absoluteTempOutputDir, 'model-introspection.json');
 
