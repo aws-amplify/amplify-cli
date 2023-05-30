@@ -26,7 +26,7 @@ const defaultSettings = {
   disableCIDetection: false,
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
-  includeUsageDataPrompt: true,
+  includeUsageDataPrompt: false,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
@@ -129,19 +129,12 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          addCircleCITags(cwd);
+      .sendLine(s.profileName);
 
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    if (s.includeUsageDataPrompt) {
+      chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+    }
+    return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
   });
 }
 
@@ -183,19 +176,19 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          addCircleCITags(cwd);
+      .sendLine(s.profileName);
+    if (s.includeUsageDataPrompt) {
+      chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+    }
+    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      if (!err) {
+        addCircleCITags(cwd);
 
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -223,19 +216,11 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName);
-
     singleSelect(chain, s.region, amplifyRegions);
-    chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    if (s.includeUsageDataPrompt) {
+      chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+    }
+    wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
   });
 }
 
@@ -288,17 +273,11 @@ export function initProjectWithAccessKey(
       .wait('region');
 
     singleSelect(chain, s.region, amplifyRegions);
-    chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain;
+    if (s.includeUsageDataPrompt) {
+      chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+    }
+    wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
   });
 }
 
@@ -330,13 +309,10 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .wait('region');
 
     singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
-    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+    if (s.includeUsageDataPrompt) {
+      chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+    }
+    wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
   });
 }
 
