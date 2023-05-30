@@ -440,6 +440,8 @@
   "xray",
   "yaml",
   "yarnrc",
+  "ulid",
+  "urlencoded",
   "yesno",
   "yyyymmddhhmmss",
   "zoneinfo"
