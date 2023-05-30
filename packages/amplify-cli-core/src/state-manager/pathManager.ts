@@ -11,7 +11,7 @@ export const PathConstants = {
   AWSConfig: 'config',
   DeploymentSecretsFileName: 'deployment-secrets.json',
   AmplifyAdminDirName: 'admin',
-  UsageDataFileName: 'amplify-dev-configuration.json',
+  UsageDataFileName: 'amplify-configuration.json',
 
   // in project root
   AmplifyDirName: 'amplify',
