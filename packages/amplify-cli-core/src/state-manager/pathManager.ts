@@ -116,6 +116,15 @@ export class PathManager {
   getCurrentCfnTemplatePath = (projectPath: string | undefined, categoryName: string, resourceName: string): string =>
     path.join(this.getCurrentCloudBackendDirPath(projectPath), categoryName, resourceName, PathConstants.CfnFileName(resourceName));
 
+  getCurrentCfnTemplatePathFromBuild = (projectPath: string | undefined, categoryName: string, resourceName: string): string =>
+    path.join(
+      this.getCurrentCloudBackendDirPath(projectPath),
+      categoryName,
+      resourceName,
+      PathConstants.BuildDirName,
+      `${resourceName}-cloudformation-template.json`,
+    );
+
   getAmplifyRcFilePath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.AmplifyRcFileName]);
 
   getGitIgnoreFilePath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.GitIgnoreFileName]);
@@ -254,6 +263,17 @@ export class PathManager {
       PathConstants.CurrentCloudBackendDirName,
       PathConstants.ProviderName,
       PathConstants.BuildDirName,
+    ]);
+
+  getCurrentCloudRootStackCfnTemplatePath = (projectPath: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.BuildDirName,
+      PathConstants.ProviderName,
+      PathConstants.BuildDirName,
+      'root-cloudformation-stack.json',
     ]);
 
   getResourceOverrideFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>

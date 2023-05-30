@@ -81,6 +81,7 @@ import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 import { minifyJSONFile } from './utils/minify-json';
 import { handleCloudFormationError } from './cloud-formation-error-handler';
 import { handleCommonSdkError } from './handle-common-sdk-errors';
+import { exportHostedUIProvidersFromCurrCloudRootStack, migrateResourcesToCfn } from './utils/migrate-idp-resources';
 
 const logger = fileLogger('push-resources');
 
@@ -1202,9 +1203,17 @@ export const formNestedStack = async (
           }
         }
 
-        if (category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds !== '[]') {
+        const hasAuthCreds =
+          category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds !== '[]';
+        const migrateAuthIdpsToCfn = migrateResourcesToCfn(parameters.resourceName);
+
+        if (hasAuthCreds || migrateAuthIdpsToCfn) {
           const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta || '[]');
-          const hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
+          let hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
+
+          if (migrateAuthIdpsToCfn) {
+            hostedUIProviderCreds = exportHostedUIProvidersFromCurrCloudRootStack(parameters.resourceName, hostedUIProviderCreds);
+          }
 
           Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
         }

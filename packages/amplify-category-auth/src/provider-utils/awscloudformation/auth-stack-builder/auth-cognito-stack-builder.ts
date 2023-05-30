@@ -18,8 +18,9 @@ import {
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
 import { OAuthMetaData, ProviderCreds, ProviderMeta } from './types';
+import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '../utils/migrate-idp-resources';
 
-const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
+const { getCurrentCfnTemplatePathFromBuild, findProjectRoot } = pathManager;
 const { readJson } = JSONUtilities;
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -1186,8 +1187,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!props.hostedUIDomainName) {
       return;
     }
-
-    const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', props.resourceName);
+    const authCfnTemplatePath = getCurrentCfnTemplatePathFromBuild(findProjectRoot(), 'auth', props.resourceName);
     const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
     const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUICustomResource?.Type === 'AWS::Lambda::Function';
     const userPoolDomainCreatedInCloud = authCfnTemplate?.Resources?.HostedUIDomainResource?.Type === 'AWS::Cognito::UserPoolDomain';
@@ -1215,18 +1215,15 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       return;
     }
 
-    const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', props.resourceName);
-    const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
-    const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProvidersCustomResource?.Type === 'AWS::Lambda::Function';
-    const providerCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider';
+    const migrateResources = migrateResourcesToCfn(props);
+    let creds = JSON.parse(props.hostedUIProviderCreds || '[]');
 
-    if (lambdaCalloutCreatedInCloud && !providerCreatedInCloud) {
+    if (migrateResources) {
       this.deleteExistingHostedUIProviderCustomResource();
+      creds = exportHostedUIProvidersFromCurrCloudRootStack(props.resourceName, creds);
+      props.hostedUIProviderCreds = JSON.stringify(creds);
     }
-
     if (props.hostedUIProviderMeta && props.hostedUIProviderCreds) {
-      const creds = JSON.parse(props.hostedUIProviderCreds);
-
       JSON.parse(props.hostedUIProviderMeta).forEach((provider: ProviderMeta) => {
         const providerCreds: ProviderCreds = creds.find(({ ProviderName }: ProviderCreds) => ProviderName === provider.ProviderName);
         const hasProviderCreds = providerCreds.client_id && (providerCreds.client_secret || providerCreds.private_key);
@@ -1257,8 +1254,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     const provider = new cognito.CfnUserPoolIdentityProvider(this, `HostedUI${ProviderName}ProviderResource`, resourceParams);
     this.hostedUIProviderResources.push(provider);
 
-    if (this.hostedUIProvidersCustomResource) {
-      provider.addDependency(this.hostedUIProvidersCustomResource);
+    if (this.hostedUIProvidersCustomResourceInputs) {
+      provider.node.addDependency(this.hostedUIProvidersCustomResourceInputs);
     }
 
     if (this.userPoolClient) {
