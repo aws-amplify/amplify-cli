@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.6-replace-lambda-callouts-branch.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.4...@aws-amplify/amplify-cli-core@4.0.6-replace-lambda-callouts-branch.0) (2023-05-30)
+
+
+### Bug Fixes
+
+* catch undefined LogicalName when Lambda Layer versions are deleted from the console ([#12351](https://github.com/aws-amplify/amplify-cli/issues/12351)) ([2e4cfb9](https://github.com/aws-amplify/amplify-cli/commit/2e4cfb92b87499b1cdf2595e72b13b1857a60cb5))
+* double hooks invocation (fixes [#9996](https://github.com/aws-amplify/amplify-cli/issues/9996)) ([cb8d3f8](https://github.com/aws-amplify/amplify-cli/commit/cb8d3f8040bc58fa7f6478faaf291a4e4adaf7cd))
+* enable help for category statuses ([#12216](https://github.com/aws-amplify/amplify-cli/issues/12216)) ([e9d793e](https://github.com/aws-amplify/amplify-cli/commit/e9d793e9574db9fae4744a975e0ba995e3e2c64f))
+* ensure parameters are added when migrating dependencies to cfn ([e649731](https://github.com/aws-amplify/amplify-cli/commit/e649731ee6feee4aa4ca3cea5a1d0fbbdb8b3041))
+* null check for custom IAM policies Action array ([#12346](https://github.com/aws-amplify/amplify-cli/issues/12346)) ([88ef111](https://github.com/aws-amplify/amplify-cli/commit/88ef111d80f9fa97fa84798c636d2046623809bd))
+* removes userPool client lambda and update appclient secret ([#12376](https://github.com/aws-amplify/amplify-cli/issues/12376)) ([a391baf](https://github.com/aws-amplify/amplify-cli/commit/a391baf5cb0241052638e780a737691e08f4d9bf))
+* support flutter project for idp with social providers ([#12381](https://github.com/aws-amplify/amplify-cli/issues/12381)) ([cb3b0fc](https://github.com/aws-amplify/amplify-cli/commit/cb3b0fca6c575c9b9154627f08c03a092ef9ade0))
+
+
+### Reverts
+
+* [#12351](https://github.com/aws-amplify/amplify-cli/issues/12351) ([#12412](https://github.com/aws-amplify/amplify-cli/issues/12412)) ([329a606](https://github.com/aws-amplify/amplify-cli/commit/329a606deccb91f511372bdeabd2899318b6d40b))
+
+
+
+
+
 ## [4.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.4...@aws-amplify/amplify-cli-core@4.0.5) (2023-05-11)
 
 
