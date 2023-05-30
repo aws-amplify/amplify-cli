@@ -67,7 +67,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     .sendLine(s.envName)
     .wait('Choose your default editor:')
     .sendLine(s.editor)
-    .wait('Choose the type of app that you\'re building')
+    .wait("Choose the type of app that you're building")
     .sendCarriageReturn()
     .wait('What javascript framework are you using')
     .sendLine(s.framework)
@@ -90,13 +90,9 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   }
 
   if (s.includeUsageDataPrompt) {
-    chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes();
+    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
   }
-  return chain
-    .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-    .runAsync();
+  return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
 export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {

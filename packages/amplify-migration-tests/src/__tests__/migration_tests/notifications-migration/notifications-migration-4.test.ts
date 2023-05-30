@@ -5,7 +5,7 @@ import {
   deleteProject,
   deleteProjectDir,
   getAppId,
-  initJSProjectWithProfile
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck } from '../../../migration-helpers';
 import { addLegacySmsNotificationChannel, removeLegacyAllNotificationChannel } from '../../../migration-helpers/notifications-helpers';
@@ -33,7 +33,7 @@ describe('amplify add notifications', () => {
 
     await initJSProjectWithProfile(projectRoot, {
       disableAmplifyAppCreation: false,
-      includeUsageDataPrompt: false
+      includeUsageDataPrompt: false,
     });
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();

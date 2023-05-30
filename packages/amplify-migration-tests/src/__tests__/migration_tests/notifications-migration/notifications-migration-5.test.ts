@@ -6,7 +6,7 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  initJSProjectWithProfile
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck } from '../../../migration-helpers';
 import { addLegacySmsNotificationChannel } from '../../../migration-helpers/notifications-helpers';

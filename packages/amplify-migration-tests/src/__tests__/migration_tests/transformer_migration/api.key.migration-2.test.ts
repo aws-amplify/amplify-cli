@@ -8,12 +8,10 @@ import {
   updateApiSchema,
   getProjectConfig,
   initJSProjectWithProfile,
-  addApiWithBlankSchema, setTransformerVersionFlag,
+  addApiWithBlankSchema,
+  setTransformerVersionFlag,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  versionCheck,
-  allowedVersionsToMigrateFrom,
-} from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 describe('amplify key force push', () => {
   let projRoot: string;

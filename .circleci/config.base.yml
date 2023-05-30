@@ -148,7 +148,7 @@ jobs:
     steps:
       - when:
           condition:
-            equal: [ *windows-e2e-executor-xlarge, << parameters.os >> ]
+            equal: [*windows-e2e-executor-xlarge, << parameters.os >>]
           steps:
             - install_node_windows
             - checkout
@@ -500,7 +500,7 @@ jobs:
     steps:
       - when:
           condition:
-            equal: [ *windows-e2e-executor-medium, << parameters.os >> ]
+            equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
             - install_node_windows
             - attach_workspace:
@@ -511,8 +511,8 @@ jobs:
       - when:
           condition:
             or:
-              - equal: [ *linux-e2e-executor-large, << parameters.os >> ]
-              - equal: [ *linux-e2e-executor-medium, << parameters.os >> ]
+              - equal: [*linux-e2e-executor-large, << parameters.os >>]
+              - equal: [*linux-e2e-executor-medium, << parameters.os >>]
           steps:
             - restore_cache:
                 key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -1306,7 +1306,7 @@ commands:
     steps:
       - when:
           condition:
-            equal: [ *windows-e2e-executor-medium, << parameters.os >> ]
+            equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
             - run:
                 shell: powershell.exe
@@ -1328,8 +1328,8 @@ commands:
       - when:
           condition:
             or:
-              - equal: [ *linux-e2e-executor-large, << parameters.os >> ]
-              - equal: [ *linux-e2e-executor-medium, << parameters.os >> ]
+              - equal: [*linux-e2e-executor-large, << parameters.os >>]
+              - equal: [*linux-e2e-executor-medium, << parameters.os >>]
           steps:
             - run:
                 name: Symlink Amplify packaged CLI
@@ -1351,7 +1351,7 @@ commands:
     steps:
       - when:
           condition:
-            equal: [ *windows-e2e-executor-medium, << parameters.os >> ]
+            equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
             - run:
                 shell: powershell.exe
@@ -1365,7 +1365,7 @@ commands:
     steps:
       - when:
           condition:
-            equal: [ *windows-e2e-executor-medium, << parameters.os >> ]
+            equal: [*windows-e2e-executor-medium, << parameters.os >>]
           steps:
             - run:
                 name: Run E2e Tests
@@ -1380,8 +1380,8 @@ commands:
       - when:
           condition:
             or:
-              - equal: [ *linux-e2e-executor-large, << parameters.os >> ]
-              - equal: [ *linux-e2e-executor-medium, << parameters.os >> ]
+              - equal: [*linux-e2e-executor-large, << parameters.os >>]
+              - equal: [*linux-e2e-executor-medium, << parameters.os >>]
           steps:
             - run:
                 name: Run E2e Tests
