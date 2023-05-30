@@ -56,9 +56,11 @@ class Config {
 class UsageDataConfig {
   installationUuid: string;
   isUsageTrackingEnabled: boolean;
+  usageDataPromptSeen: boolean;
 
   constructor() {
     this.installationUuid = uuid();
     this.isUsageTrackingEnabled = true;
+    this.usageDataPromptSeen = false;
   }
 }

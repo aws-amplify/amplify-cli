@@ -1,15 +1,16 @@
 import * as fs from 'fs-extra';
+import chalk from 'chalk';
 import { join } from 'path';
 import sequential from 'promise-sequential';
 import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
-import { DebugConfig } from '../app-config/debug-config';
+import { EOL } from 'os';
 
 /**
  * Executes after headless init
@@ -64,9 +65,16 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);
-    const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
-    const actualResult = context.exeInfo.inputParams.yes ? undefined : result;
-    DebugConfig.Instance.setAndWriteShareProject(actualResult);
+    const usageTrackingConfig = stateManager.getUsageTrackingConfig();
+
+    if (!usageTrackingConfig.usageDataConfig.usageDataConsentSeen) {
+      printer.info(`Amplify CLI collects anonymized usage data, which is used to help understand`);
+      printer.info(`how to improve the product. If you don't wish to send anonymized Amplify CLI`);
+      printer.info(`usage data to AWS, run${EOL}`);
+      printer.info(`${chalk.blue.italic('amplify configure --usage-data-off')}`);
+      printer.info(`Learn more - https://docs.amplify.aws/cli/reference/usage-data${EOL}`);
+      stateManager.toggleUsageTrackingConsentSeen();
+    }
   }
 
   for (const provider of context.exeInfo.projectConfig.providers) {
