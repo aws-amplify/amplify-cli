@@ -6,8 +6,9 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfileV4_52_0, versionCheck } from '../../../migration-helpers';
+import { versionCheck } from '../../../migration-helpers';
 import { getShortId } from '../../../migration-helpers/utils';
 
 describe('amplify add notifications', () => {
@@ -29,7 +30,7 @@ describe('amplify add notifications', () => {
   it('should add in app notifications if analytics added with an older version', async () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
 
-    await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
+    await initJSProjectWithProfile(projectRoot, { includeUsageDataPrompt: false });
     await addPinpointAnalytics(projectRoot, false);
 
     const settings = { resourceName: `notification${getShortId()}` };
@@ -41,7 +42,7 @@ describe('amplify add notifications', () => {
   it('should add in app notifications if analytics added and pushed with an older version', async () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
 
-    await initJSProjectWithProfileV4_52_0(projectRoot, {}, false);
+    await initJSProjectWithProfile(projectRoot, { includeUsageDataPrompt: false });
     await addPinpointAnalytics(projectRoot, false);
     await amplifyPushAuthV5V6(projectRoot);
 
