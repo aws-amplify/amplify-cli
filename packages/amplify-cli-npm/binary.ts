@@ -8,6 +8,7 @@ import stream from 'stream';
 import os from 'os';
 import axios from 'axios';
 import rimraf from 'rimraf';
+import whichPmRuns from 'which-pm-runs';
 import { name, version } from './package.json';
 
 const BINARY_LOCATION = 'https://package.cli.amplify.aws';
@@ -147,8 +148,27 @@ export class Binary {
 
     const [, , ...args] = process.argv;
     const result = spawnSync(this.binaryPath, args, { cwd: process.cwd(), stdio: 'inherit' });
+
+    // if we're uninstalling, uninstall from package manager, too
     if (args[0] === 'uninstall') {
-      spawnSync('npm', ['uninstall', '-g', '@aws-amplify/cli'], { cwd: process.cwd(), stdio: 'inherit' });
+      let packageManagerUninstallCommand = 'npm uninstall --global @aws-amplify/cli';
+      const packageManager = whichPmRuns();
+      switch (packageManager?.name) {
+        case 'pnpm': {
+          packageManagerUninstallCommand = 'pnpm uninstall --global @aws-amplify/cli';
+          break;
+        }
+        case 'yarn': {
+          packageManagerUninstallCommand = 'yarn global remove @aws-amplify/cli';
+          break;
+        }
+        default: {
+          // fallback to npm
+          break;
+        }
+      }
+      const [command, ...args] = packageManagerUninstallCommand.split(' ');
+      spawnSync(command, args, { cwd: process.cwd(), stdio: 'inherit' });
     }
     process.exit(result.status as number);
   }

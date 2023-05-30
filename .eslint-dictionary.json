@@ -288,6 +288,7 @@
   "pipfile",
   "pkill",
   "pluggable",
+  "pnpm",
   "poller",
   "polly",
   "positionally",
