@@ -1,18 +1,24 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import {
-  initJSProjectWithProfile,
-  deleteProject,
   amplifyOverrideRoot,
   amplifyPushOverride,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  getAmplifyInitConfig,
   getProjectMeta,
+  gitCleanFdx,
+  gitCommitAll,
+  gitInit,
+  initJSProjectWithProfile,
+  listRolePolicies,
+  nonInteractiveInitWithForcePushAttach,
   replaceOverrideFileWithProjectInfo,
 } from '@aws-amplify/amplify-e2e-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 import { addEnvironment } from '../environment/env';
 
@@ -73,5 +79,20 @@ describe('amplify init e', () => {
     const srcInvalidOverrideJSRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-js-error.txt');
     fs.copyFileSync(srcInvalidOverrideJSRuntimeError, destOverrideJSFilePath);
     await expect(addEnvironment(projRoot, { envName: 'envc' })).rejects.toThrowError();
+
+    // checking if git project also overrides
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    await gitInit(projRoot);
+    await gitCommitAll(projRoot);
+    await gitCleanFdx(projRoot);
+    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, 'integtest'), undefined, true);
+    // check if overrides are applied
+    const gitClonedMeta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(await listRolePolicies(gitClonedMeta.AuthRoleName, gitClonedMeta.Region)).toMatchInlineSnapshot(`
+      Array [
+        "ApiGatewayPolicy",
+        "RekognitionPolicy",
+      ]
+    `);
   });
 });

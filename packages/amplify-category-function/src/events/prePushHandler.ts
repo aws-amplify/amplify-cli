@@ -1,5 +1,5 @@
 import { printer } from '@aws-amplify/amplify-prompts';
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { categoryName } from '../constants';
 import {
   FunctionSecretsStateManager,
@@ -35,7 +35,9 @@ export const prePushHandler = async (context: $TSContext): Promise<void> => {
 };
 
 const ensureFunctionSecrets = async (context: $TSContext): Promise<void> => {
-  const backendConfig = stateManager.getBackendConfig();
+  const backendConfig = stateManager.getBackendConfig(undefined, {
+    throwIfNotExist: false,
+  });
   const functionNames = Object.keys(backendConfig?.[categoryName] || {});
   for (const funcName of functionNames) {
     if (getLocalFunctionSecretNames(funcName).length > 0) {

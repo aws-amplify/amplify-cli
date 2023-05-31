@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { printer } from '@aws-amplify/amplify-prompts';
 import * as TransformPackage from 'graphql-transformer-core';
@@ -70,8 +70,29 @@ export const askExecRolePermissionsQuestions = async (
     if (selectedCategory === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
-        const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
-        const directivesMap: any = TransformPackage.collectDirectivesByTypeNames(project.schema);
+        let project;
+        let directivesMap: $TSAny;
+        try {
+          project = await TransformPackage.readProjectConfiguration(resourceDirPath);
+          directivesMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+        } catch (err) {
+          if (err.message?.includes('Syntax Error')) {
+            throw new AmplifyError(
+              'GraphQLError',
+              {
+                message: err?.message,
+              },
+              err,
+            );
+          }
+          throw new AmplifyFault(
+            'GraphQLTransformerV1Fault',
+            {
+              message: err?.message,
+            },
+            err,
+          );
+        }
         const modelNames = Object.keys(directivesMap.types)
           .filter((typeName) => directivesMap.types[typeName].includes('model'))
           .map((modelName) => `${modelName}:${appsyncTableSuffix}`);

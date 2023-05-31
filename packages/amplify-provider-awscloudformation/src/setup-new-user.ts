@@ -1,4 +1,4 @@
-import { AmplifyError, open } from 'amplify-cli-core';
+import { AmplifyError, open } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import constants from './constants.js';

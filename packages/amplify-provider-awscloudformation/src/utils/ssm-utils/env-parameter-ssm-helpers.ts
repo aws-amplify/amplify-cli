@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyFault, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../../aws-utils/aws-ssm';

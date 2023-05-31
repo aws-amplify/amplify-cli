@@ -10,7 +10,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { addEnvironment } from '../environment/env';
 
 describe('feature flags', () => {

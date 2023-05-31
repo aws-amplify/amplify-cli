@@ -15,7 +15,7 @@ import {
   constants,
   PluginManifest,
   PluginInfo,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import sequential from 'promise-sequential';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {

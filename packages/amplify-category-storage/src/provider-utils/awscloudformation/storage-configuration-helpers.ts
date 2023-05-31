@@ -6,7 +6,7 @@ import {
   ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { AddStorageRequest, ImportStorageRequest, RemoveStorageRequest, UpdateStorageRequest } from 'amplify-headless-interface';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { v4 as uuid } from 'uuid';

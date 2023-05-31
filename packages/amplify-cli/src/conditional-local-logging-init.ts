@@ -1,4 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { CLIInput } from './domain/command-input';
 import { getAmplifyLogger, Redactor } from '@aws-amplify/amplify-cli-logger';
 

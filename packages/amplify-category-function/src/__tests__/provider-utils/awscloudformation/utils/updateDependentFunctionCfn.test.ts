@@ -4,7 +4,7 @@ import {
   getResourcesForCfn,
   generateEnvVariablesForCfn,
 } from '../../../../provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { FunctionDependency } from '@aws-amplify/amplify-function-plugin-interface/src';
 import { updateCFNFileForResourcePermissions } from '../../../../provider-utils/awscloudformation/service-walkthroughs/lambda-walkthrough';
 jest.mock('fs-extra');
@@ -14,7 +14,7 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/loadFunctionParame
 jest.mock('path');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/lambda-walkthrough');
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),

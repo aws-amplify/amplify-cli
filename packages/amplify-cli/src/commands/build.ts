@@ -1,4 +1,4 @@
-import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 /**
@@ -44,9 +44,19 @@ export const run = async (context: $TSContext): Promise<void> => {
 /**
  * Returns resources in create or update state
  */
-export const getChangedResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
+export const getChangedResources = async (
+  context: $TSContext,
+  category?: string,
+  resourceName?: string,
+  filteredResources?: { category: string; resourceName: string }[],
+): Promise<IAmplifyResource[]> => {
   const resources: IAmplifyResource[] = [];
-  const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
+  const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus(
+    category,
+    resourceName,
+    'awscloudformation',
+    filteredResources,
+  );
   resourcesToBeCreated.forEach((resourceCreated: IAmplifyResource) => {
     resources.push({
       service: resourceCreated.service,

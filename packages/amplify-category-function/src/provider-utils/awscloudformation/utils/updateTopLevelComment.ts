@@ -3,7 +3,7 @@ import { EOL } from 'os';
 import path from 'path';
 import { categoryName, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
 import _ from 'lodash';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 /**
  * This is legacy code that has been copied here.
  * In the future we either need to get rid of the top level comment entirely, or create a template hook to modify it

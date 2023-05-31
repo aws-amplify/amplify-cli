@@ -10,6 +10,7 @@ import { getAddAuthHandler, getUpdateAuthHandler } from './handlers/resource-han
 import { getSupportedServices } from '../supported-services';
 import { importResource, importedAuthEnvInit } from './import';
 import { AuthContext } from '../../context';
+import { getOAuthObjectFromCognito } from './utils/get-oauth-secrets-from-cognito';
 
 export { importResource } from './import';
 
@@ -133,6 +134,14 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: any, 
 
   if (hostedUIProviderMeta) {
     currentEnvSpecificValues = getOAuthProviderKeys(currentEnvSpecificValues, resourceParams);
+    const authParamsFromCognito = await getOAuthObjectFromCognito(context, resourceParams.userPoolName);
+    // fill in the OAuthProvider Keys from userpool if missing from currentEnvValues
+    if (authParamsFromCognito) {
+      currentEnvSpecificValues = {
+        ...getOAuthProviderKeys({ hostedUIProviderCreds: JSON.stringify(authParamsFromCognito) }, resourceParams),
+        ...currentEnvSpecificValues,
+      };
+    }
   }
 
   // legacy headless mode (only supports init)
@@ -440,7 +449,7 @@ const openAdminUI = async (context: $TSContext, appId: string, region: string): 
 };
 
 const openUserPoolConsole = async (context: $TSContext, region: string, userPoolId: string): Promise<void> => {
-  const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
+  const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/v2/idp/user-pools/${userPoolId}/users?region=${region}`;
   await open(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);

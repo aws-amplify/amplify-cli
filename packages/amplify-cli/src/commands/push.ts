@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { updateCognitoTrackedFiles } from '../extensions/amplify-helpers/update-tracked-files';
 import { syncCurrentCloudBackend } from '../extensions/amplify-helpers/current-cloud-backend-utils';
 

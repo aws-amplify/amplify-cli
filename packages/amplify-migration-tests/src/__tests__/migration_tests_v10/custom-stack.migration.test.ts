@@ -1,4 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addCDKCustomResource,
   addCFNCustomResource,

@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.19...amplify-python-function-runtime-provider@2.4.21) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [2.4.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.18...amplify-python-function-runtime-provider@2.4.20) (2023-05-25)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.18...amplify-python-function-runtime-provider@2.4.19) (2023-05-25)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.17...amplify-python-function-runtime-provider@2.4.18) (2023-05-11)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.16...amplify-python-function-runtime-provider@2.4.17) (2023-04-24)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.14...amplify-python-function-runtime-provider@2.4.16) (2023-04-14)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [2.4.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.14-rc.e9e0d157d.0...amplify-python-function-runtime-provider@2.4.14) (2023-03-23)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

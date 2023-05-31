@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable jest/no-standalone-expect */
 
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithSignInSignOutUrl,
   createNewProjectDir,
@@ -13,7 +13,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { versionCheck, allowedVersionsToMigrateFrom, initAndroidProjectWithProfile } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom, initAndroidProjectWithProfileInquirer } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
@@ -46,7 +46,7 @@ describe('amplify auth migration d', () => {
       updatesigninUrl: 'http://localhost:3003/',
       updatesignoutUrl: 'http://localhost:3004/',
     };
-    await initAndroidProjectWithProfile(projRoot, defaultSettings);
+    await initAndroidProjectWithProfileInquirer(projRoot, defaultSettings);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
     const amplifyMeta = getBackendAmplifyMeta(projRoot);
     const authResourceName = Object.keys(amplifyMeta.auth).filter(

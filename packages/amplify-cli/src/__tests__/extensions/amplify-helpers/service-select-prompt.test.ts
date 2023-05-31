@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 let context = {};
 let errorMessages: string[] = [];
@@ -8,8 +8,8 @@ describe('serviceSelectPrompt', () => {
   const mockExit = jest.fn();
   const promptMock = jest.fn();
 
-  jest.mock('amplify-cli-core', () => ({
-    ...(jest.requireActual('amplify-cli-core') as {}),
+  jest.mock('@aws-amplify/amplify-cli-core', () => ({
+    ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
     exitOnNextTick: mockExit,
   }));
 

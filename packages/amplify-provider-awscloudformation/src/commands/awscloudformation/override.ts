@@ -2,7 +2,7 @@
   entry code for amplify override root
 */
 
-import { $TSContext, generateOverrideSkeleton, pathManager } from 'amplify-cli-core';
+import { $TSContext, generateOverrideSkeleton, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 

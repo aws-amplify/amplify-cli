@@ -8,7 +8,7 @@ import {
   stateManager,
   ManuallyTimedCodePath,
   LocalEnvInfo,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getChangedResources } from '../../commands/build';
@@ -73,7 +73,7 @@ export const pushResources = async (
 
   // building all CFN stacks here to get the resource Changes
   await generateDependentResourcesType();
-  const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
+  const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context, category, resourceName, filteredResources);
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
     resourcesToBuild,
     forceCompile: true,

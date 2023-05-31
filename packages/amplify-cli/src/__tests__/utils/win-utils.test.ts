@@ -9,7 +9,7 @@ jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
 fs_mock.existsSync.mockReturnValue(true);
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
   },

@@ -43,6 +43,10 @@
       "inputs": ["default", "^default"],
       "dependsOn": ["^package"]
     },
+    "smoketest": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build"]
+    },
     "test": {
       "inputs": ["default", "^production"],
       "dependsOn": ["build"]

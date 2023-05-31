@@ -4,7 +4,7 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';

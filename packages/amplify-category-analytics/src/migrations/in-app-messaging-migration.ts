@@ -72,7 +72,7 @@ export const inAppMessagingMigrationCheck = async (context: $TSContext): Promise
         templateFileName,
       );
       const { cfnTemplate } = readCFNTemplate(templateSourceFilePath);
-      cfnTemplate.Mappings = await getPinpointRegionMappings(context);
+      cfnTemplate.Mappings = await getPinpointRegionMappings();
       await writeCFNTemplate(cfnTemplate, templateFilePath);
     }
 

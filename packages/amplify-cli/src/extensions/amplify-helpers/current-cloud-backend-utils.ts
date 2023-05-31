@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyFault, spinner, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault, spinner, stateManager } from '@aws-amplify/amplify-cli-core';
 import sequential from 'promise-sequential';
 import { notifyFieldAuthSecurityChange, notifyListQuerySecurityChange, notifySecurityEnhancement } from './auth-notifications';
 import { getProviderPlugins } from './get-provider-plugins';

@@ -1,4 +1,4 @@
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getCfnFiles } from '../push-resources';
@@ -11,7 +11,7 @@ const dummyNestedCFNFiles: readonly string[] = ['nested_fileA', 'nested_fileB'];
 const testBackendDirPath = path.join('backendTest', 'path');
 
 // Mocks
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('fs-extra');
 jest.mock('../system-config-manager');
 jest.mock('glob');

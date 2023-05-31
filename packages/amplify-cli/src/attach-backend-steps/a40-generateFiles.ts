@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
-import { pathManager, stateManager, $TSContext, $TSAny } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';

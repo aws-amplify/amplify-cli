@@ -5,7 +5,7 @@ import {
   setPermissionsBoundaryArn,
   AmplifyError,
   AMPLIFY_DOCS_URL,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { prompt } from 'inquirer';
 import { IAMClient } from '../aws-utils/aws-iam';
 

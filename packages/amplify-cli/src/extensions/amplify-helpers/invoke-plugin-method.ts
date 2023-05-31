@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * invoke plugin method

@@ -1,8 +1,9 @@
 {
   "name": "@aws-amplify/amplify-prompts",
-  "version": "2.6.6",
+  "version": "2.7.0",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -30,7 +31,7 @@
   },
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "dependencies": {
-    "@aws-amplify/amplify-cli-shared-interfaces": "1.2.0",
+    "@aws-amplify/amplify-cli-shared-interfaces": "1.2.2",
     "chalk": "^4.1.1",
     "enquirer": "^2.3.6"
   },

@@ -1,11 +1,20 @@
-import { AmplifyCategories, AmplifySupportedService, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import {
+  AmplifyCategories,
+  AmplifySupportedService,
+  pathManager,
+  readCFNTemplate,
+  stateManager,
+  writeCFNTemplate,
+} from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 
 /**
  * updates function cfn stack with lambda execution role arn parameter
  */
 export const ensureLambdaExecutionRoleOutputs = async (): Promise<void> => {
-  const backendConfig = stateManager.getBackendConfig();
+  const backendConfig = stateManager.getBackendConfig(undefined, {
+    throwIfNotExist: false,
+  });
   const functionNames = Object.keys(backendConfig?.[AmplifyCategories.FUNCTION] ?? []);
   // filter lambda layer from lambdas in function
   const lambdaFunctionNames = functionNames.filter((functionName) => {

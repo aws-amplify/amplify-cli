@@ -1,7 +1,7 @@
 import { $TSContext, $TSObject, stateManager } from '@aws-amplify/amplify-cli-core';
 import { getPermissionPolicies } from '../index';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 describe('only grant permission policies as requested', () => {
   const provider = 'awscloudformation';

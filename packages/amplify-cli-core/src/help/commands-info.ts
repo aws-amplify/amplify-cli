@@ -893,6 +893,18 @@ export const commandsInfo: Array<CommandInfo> = [
         subCommandUsage: 'amplify api override',
         subCommandFlags: [],
       },
+      {
+        subCommand: 'status',
+        subCommandDescription: 'Displays the current status of your API',
+        subCommandUsage: 'amplify api status [-acm <table-name>]',
+        subCommandFlags: [
+          {
+            short: 'acm',
+            long: '',
+            flagDescription: 'Displays the access control matrix',
+          },
+        ],
+      },
     ],
   },
   {

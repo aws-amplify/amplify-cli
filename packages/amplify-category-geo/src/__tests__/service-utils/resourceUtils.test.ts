@@ -1,6 +1,6 @@
 import { stateManager, $TSContext, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { EsriMapStyleType, MapParameters, MapStyle } from '../../service-utils/mapParams';
-import { merge, updateDefaultResource, readResourceMetaParameters } from '../../service-utils/resourceUtils';
+import { merge, updateDefaultResource, readResourceMetaParameters, checkAuthConfig } from '../../service-utils/resourceUtils';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
 import { AccessType, DataProvider } from '../../service-utils/resourceParams';
@@ -198,5 +198,35 @@ describe('Test reading the resource meta information', () => {
     expect(
       async () => await readResourceMetaParameters(ServiceName.GeofenceCollection, nonExistingGeofenceCollection),
     ).rejects.toThrowError(errorMessage(nonExistingGeofenceCollection));
+  });
+});
+
+describe('checkAuthConfig', () => {
+  const invokePluginMethodMock = jest.fn();
+  const contextStub = {
+    amplify: {
+      invokePluginMethod: invokePluginMethodMock,
+    },
+  } as unknown as $TSContext;
+  it('throws AmplifyError if project does not have auth enabled', async () => {
+    invokePluginMethodMock.mockResolvedValue({
+      authEnabled: false,
+    });
+    await expect(
+      checkAuthConfig(contextStub, { name: 'test', accessType: AccessType.AuthorizedAndGuestUsers }, ServiceName.Map),
+    ).rejects.toMatchInlineSnapshot(
+      `[ConfigurationError: Adding Map to your project requires the Auth category for managing authentication rules]`,
+    );
+  });
+
+  it('throws AmplifyError if imported auth not configured correctly', async () => {
+    invokePluginMethodMock.mockResolvedValue({
+      authEnabled: true,
+      authImported: true,
+      errors: ['test error'],
+    });
+    await expect(
+      checkAuthConfig(contextStub, { name: 'test', accessType: AccessType.AuthorizedAndGuestUsers }, ServiceName.Map),
+    ).rejects.toMatchInlineSnapshot(`[ConfigurationError: The imported auth config is not compatible with the specified geo config]`);
   });
 });

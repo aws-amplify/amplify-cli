@@ -94,7 +94,7 @@ export class PlaceIndexStack extends BaseStack {
     const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
       code: lambda.Code.fromInline(customPlaceIndexLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_16_X,
+      runtime: Runtime.NODEJS_18_X,
       timeout: Duration.seconds(300),
     });
     customPlaceIndexLambda.addToRolePolicy(geoCreateIndexStatement);

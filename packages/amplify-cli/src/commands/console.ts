@@ -1,4 +1,4 @@
-import { stateManager, open, $TSContext } from 'amplify-cli-core';
+import { stateManager, open, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 
@@ -10,31 +10,25 @@ const providerName = 'awscloudformation';
 export const run = async (context: $TSContext): Promise<void> => {
   let consoleUrl = getDefaultURL();
 
-  try {
-    const localEnvInfo = stateManager.getLocalEnvInfo(undefined, {
-      throwIfNotExist: false,
-      default: {},
-    });
+  const localEnvInfo = stateManager.getLocalEnvInfo(undefined, {
+    throwIfNotExist: false,
+    default: {},
+  });
 
-    const { envName } = localEnvInfo;
-    const { Region, AmplifyAppId } = stateManager.getMeta()?.providers?.[providerName];
+  const { envName } = localEnvInfo;
+  const { Region, AmplifyAppId } = stateManager.getMeta()?.providers?.[providerName];
 
-    if (envName && AmplifyAppId) {
-      consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
-      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-      if (await providerPlugin.isAmplifyAdminApp(AmplifyAppId)) {
-        const choice = await prompter.pick('Which site do you want to open?', ['Amplify Studio', 'AWS console']);
-        if (choice === 'Amplify Studio') {
-          const baseUrl = providerPlugin.adminBackendMap[Region].amplifyAdminUrl;
-          consoleUrl = constructAdminURL(baseUrl, AmplifyAppId, envName);
-        }
+  if (envName && AmplifyAppId) {
+    consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
+    const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+    const { isAdminApp } = await providerPlugin.isAmplifyAdminApp(AmplifyAppId);
+    if (isAdminApp) {
+      const choice = await prompter.pick('Which site do you want to open?', ['Amplify Studio', 'AWS console']);
+      if (choice === 'Amplify Studio') {
+        const baseUrl = providerPlugin.adminBackendMap[Region].amplifyAdminUrl;
+        consoleUrl = constructAdminURL(baseUrl, AmplifyAppId, envName);
       }
     }
-  } catch (e) {
-    printer.error(e.message);
-    void context.usageData.emitError(e);
-    process.exitCode = 1;
-    return;
   }
 
   printer.info(chalk.green(consoleUrl));

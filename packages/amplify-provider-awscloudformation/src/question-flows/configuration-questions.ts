@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { ListQuestion, ConfirmQuestion, PasswordQuestion } from 'inquirer';
 import awsRegions from '../aws-regions';
 

@@ -5,6 +5,18 @@ import * as channelFCM from '../channel-fcm';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
 import { ChannelType } from '../notifications-backend-cfg-channel-api';
 
+jest.mock('@aws-amplify/amplify-cli-core', () => {
+  return {
+    ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
+    FeatureFlags: {
+      getBoolean: jest.fn(),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+  };
+});
+
 const apiKey = 'ApiKey-abc123';
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;

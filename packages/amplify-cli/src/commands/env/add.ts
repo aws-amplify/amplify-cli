@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, AmplifyError } from 'amplify-cli-core';
+import { $TSContext, pathManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import { run as init } from '../init';
 

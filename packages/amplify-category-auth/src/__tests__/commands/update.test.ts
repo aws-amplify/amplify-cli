@@ -12,8 +12,8 @@ jest.mock('fs-extra', () => ({
 
 jest.mock('@aws-amplify/amplify-prompts');
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
   FeatureFlags: {
     getBoolean: jest.fn().mockReturnValue(true),
   },

@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.1...amplify-dotnet-function-runtime-provider@2.0.3) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [2.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.0...amplify-dotnet-function-runtime-provider@2.0.2) (2023-05-25)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
+## [2.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.0...amplify-dotnet-function-runtime-provider@2.0.1) (2023-05-25)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
+# [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.7.7...amplify-dotnet-function-runtime-provider@2.0.0) (2023-05-11)
+
+
+* feat!: use NodeJS 18 runtime (#12043) ([4ae0cde](https://github.com/aws-amplify/amplify-cli/commit/4ae0cde8681810b49b88a4ce7c5ae90724706f5e)), closes [#12043](https://github.com/aws-amplify/amplify-cli/issues/12043)
+
+
+### BREAKING CHANGES
+
+* Updated NodeJS runtime to 18, removed support for .NET Core 3.1.
+
+
+
+
+
+## [1.7.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.7.6...amplify-dotnet-function-runtime-provider@1.7.7) (2023-04-24)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
+## [1.7.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.7.4...amplify-dotnet-function-runtime-provider@1.7.6) (2023-04-14)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
 ## [1.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.7.4-rc.e9e0d157d.0...amplify-dotnet-function-runtime-provider@1.7.4) (2023-03-23)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider

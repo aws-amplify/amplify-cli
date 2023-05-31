@@ -20,7 +20,7 @@ import {
 } from 'aws-sdk';
 import * as path from 'path';
 import _ from 'lodash';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { getProjectMeta } from './projectMeta';
 
 export const getDDBTable = async (tableName: string, region: string) => {

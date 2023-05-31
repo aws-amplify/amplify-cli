@@ -1,7 +1,7 @@
 import { run } from '../../commands/build';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-provider-awscloudformation');
 jest.mock('@aws-amplify/amplify-category-custom');
 

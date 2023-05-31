@@ -2,13 +2,13 @@ import { getChangedResources } from '../../commands/build';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager, IEnvironmentParameterManager } from '@aws-amplify/amplify-environment-parameters';
 import { verifyExpectedEnvParams } from '../../utils/verify-expected-env-params';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('../../commands/build');
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('@aws-amplify/amplify-environment-parameters');
 jest.mock('@aws-amplify/amplify-provider-awscloudformation');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const getResourcesMock = getChangedResources as jest.MockedFunction<typeof getChangedResources>;
 const ensureEnvParamManagerMock = ensureEnvParamManager as jest.MockedFunction<typeof ensureEnvParamManager>;

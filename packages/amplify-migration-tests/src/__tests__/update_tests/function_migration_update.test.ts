@@ -56,7 +56,7 @@ describe('amplify function migration', () => {
       'nodejs',
     );
 
-    const functionCode = loadFunctionTestFile('dynamodb-scan.js');
+    const functionCode = loadFunctionTestFile('dynamodb-scan-v2.js');
 
     overrideFunctionSrcNode(projRoot, fnName, functionCode);
 

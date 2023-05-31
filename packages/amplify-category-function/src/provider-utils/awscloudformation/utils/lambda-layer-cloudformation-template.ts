@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
 import _ from 'lodash';

@@ -12,7 +12,7 @@ import {
   stateManager,
   Tag,
   Template,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as vm from 'vm2';
@@ -35,6 +35,7 @@ import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cf
 import { fileLogger } from './utils/aws-logger';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
+import { handleCommonSdkError } from './handle-common-sdk-errors';
 
 const logger = fileLogger('initializer');
 
@@ -312,7 +313,11 @@ const uploadFile = async (s3, filePath: string, key): Promise<void> => {
       Key: key,
     };
     logger('uploadFile.s3.uploadFile', [{ Key: key }])();
-    await s3.uploadFile(s3Params);
+    try {
+      await s3.uploadFile(s3Params);
+    } catch (error) {
+      throw handleCommonSdkError(error);
+    }
   }
 };
 

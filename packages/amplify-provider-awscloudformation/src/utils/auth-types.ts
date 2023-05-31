@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 export type AuthFlow = 'admin' | 'profile' | 'accessKeys' | 'general';
 export interface AuthFlowConfig extends Partial<AwsSdkConfig> {

@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { AmplifyError, stateManager } from 'amplify-cli-core';
+import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as configurationManager from './configuration-manager';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';

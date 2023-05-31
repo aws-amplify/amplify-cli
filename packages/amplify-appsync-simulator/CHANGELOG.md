@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.12.1...@aws-amplify/amplify-appsync-simulator@2.12.3) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [2.12.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.12.0...@aws-amplify/amplify-appsync-simulator@2.12.2) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
+
+
+
+
+
+## [2.12.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.12.0...@aws-amplify/amplify-appsync-simulator@2.12.1) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
+
+
+
+
+
+# [2.12.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.11.0...@aws-amplify/amplify-appsync-simulator@2.12.0) (2023-05-11)
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([f158f10](https://github.com/aws-amplify/amplify-cli/commit/f158f102059ae90cced25560b04887b7df2eb246))
+
+
+
+
+
+# [2.11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.10.5...@aws-amplify/amplify-appsync-simulator@2.11.0) (2023-04-24)
+
+
+### Features
+
+* **amplify-util-uibuilder:** support StorageField ([#12386](https://github.com/aws-amplify/amplify-cli/issues/12386)) ([90fe1e4](https://github.com/aws-amplify/amplify-cli/commit/90fe1e4574c52eb4cacd110d50310f55bf913214))
+
+
+
+
+
+## [2.10.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.10.3...@aws-amplify/amplify-appsync-simulator@2.10.5) (2023-04-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
+
+
+
+
+
 ## [2.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.10.3-rc.e9e0d157d.0...@aws-amplify/amplify-appsync-simulator@2.10.3) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator

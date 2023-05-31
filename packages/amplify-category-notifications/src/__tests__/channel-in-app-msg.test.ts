@@ -20,12 +20,19 @@ import * as analyticsClient from '../plugin-client-api-analytics';
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
+  FeatureFlags: {
+    getBoolean: jest.fn(),
+    getNumber: jest.fn(),
+    getObject: jest.fn(),
+    getString: jest.fn(),
+  },
   stateManager: {
     getCurrentBackendConfig: jest.fn(),
     getCurrentEnvName: jest.fn(),
     getCurrentMeta: jest.fn(),
   },
 }));
+
 jest.mock('ora', () => {
   const mockSpinnerInstance = {
     fail: jest.fn(),

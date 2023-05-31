@@ -1,5 +1,5 @@
 import { printer } from '@aws-amplify/amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { FunctionSecretsStateManager } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 
 export const postEnvRemoveHandler = async (context: $TSContext, envName: string) => {

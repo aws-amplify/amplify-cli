@@ -21,7 +21,7 @@ jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input
   })),
 }));
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 stateManagerMock.getMeta.mockReturnValue({

@@ -1,5 +1,13 @@
 import * as path from 'path';
-import { ViewResourceTableParams, CLIParams, $TSAny, $TSContext, pathManager, stateManager, ApiCategoryFacade } from 'amplify-cli-core';
+import {
+  ViewResourceTableParams,
+  CLIParams,
+  $TSAny,
+  $TSContext,
+  pathManager,
+  stateManager,
+  ApiCategoryFacade,
+} from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { readProjectSchema } from 'graphql-transformer-core';
 
@@ -94,7 +102,7 @@ const showApiAuthAcm = async (context): Promise<void> => {
 
   const apiName = apiNames[0];
   const apiResourceDir = path.join(pathManager.getBackendDirPath(), 'api', apiName);
-  const schema = await readProjectSchema(apiResourceDir);
+  const schema = (await readProjectSchema(apiResourceDir)).schema;
   const cliOptions = context?.input?.options ?? {};
   const { showACM } = await import('../extensions/amplify-helpers/show-auth-acm');
 

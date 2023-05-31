@@ -1,6 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { PluginManifest, constants, JSONUtilities, $TSAny, PluginVerificationResult, PluginVerificationError } from 'amplify-cli-core';
+import {
+  PluginManifest,
+  constants,
+  JSONUtilities,
+  $TSAny,
+  PluginVerificationResult,
+  PluginVerificationError,
+} from '@aws-amplify/amplify-cli-core';
 
 type VerificationContext = {
   pluginDirPath: string;

@@ -1,16 +1,21 @@
 const response = require('cfn-response');
-const aws = require('aws-sdk');
+const {
+  LocationClient,
+  CreateGeofenceCollectionCommand,
+  DeleteGeofenceCollectionCommand,
+  UpdateGeofenceCollectionCommand,
+} = require('@aws-sdk/client-location');
 exports.handler = async function (event, context) {
   try {
     console.log('REQUEST RECEIVED:' + JSON.stringify(event));
     const pricingPlan = 'RequestBasedUsage';
-    if (event.RequestType == 'Create') {
+    if (event.RequestType === 'Create') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
         PricingPlan: pricingPlan,
       };
-      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-      const res = await locationClient.createGeofenceCollection(params).promise();
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new CreateGeofenceCollectionCommand(params));
       console.log('create resource response data' + JSON.stringify(res));
       if (res.CollectionName && res.CollectionArn) {
         await response.send(event, context, response.SUCCESS, res, params.CollectionName);
@@ -18,13 +23,13 @@ exports.handler = async function (event, context) {
         await response.send(event, context, response.FAILED, res, params.CollectionName);
       }
     }
-    if (event.RequestType == 'Update') {
+    if (event.RequestType === 'Update') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
         PricingPlan: pricingPlan,
       };
-      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-      const res = await locationClient.updateGeofenceCollection(params).promise();
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new UpdateGeofenceCollectionCommand(params));
       console.log('update resource response data' + JSON.stringify(res));
       if (res.CollectionName) {
         await response.send(event, context, response.SUCCESS, res, params.CollectionName);
@@ -32,12 +37,12 @@ exports.handler = async function (event, context) {
         await response.send(event, context, response.FAILED, res, params.CollectionName);
       }
     }
-    if (event.RequestType == 'Delete') {
+    if (event.RequestType === 'Delete') {
       const params = {
         CollectionName: event.ResourceProperties.collectionName,
       };
-      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-      const res = await locationClient.deleteGeofenceCollection(params).promise();
+      const locationClient = new LocationClient({ region: event.ResourceProperties.region });
+      const res = await locationClient.send(new DeleteGeofenceCollectionCommand(params));
       console.log('delete resource response data' + JSON.stringify(res));
       await response.send(event, context, response.SUCCESS, res, params.CollectionName);
     }

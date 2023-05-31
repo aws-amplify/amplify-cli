@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError, getPackageManager, LocalEnvInfo, pathManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyError, getPackageManager, LocalEnvInfo, pathManager } from '@aws-amplify/amplify-cli-core';
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
