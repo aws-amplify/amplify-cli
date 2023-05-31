@@ -45,6 +45,8 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
   if (pluginPlatformLocal.pluginDirectories.length > 0 && pluginPlatformLocal.pluginPrefixes.length > 0) {
     const scanDirTasks = pluginPlatformLocal.pluginDirectories.map((directory) => async () => {
       directory = normalizePluginDirectory(directory);
+
+      console.log('Scanning for plugins in directory: ', directory);
       const exists = await fs.pathExists(directory);
       if (exists) {
         //adding subDir based on amplify-
@@ -99,7 +101,7 @@ export function normalizePluginDirectory(directory: string): string {
     case constants.PACKAGED_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../../..'));
     case constants.DEV_NODE_MODULES:
-      return path.normalize(path.join(__dirname, '../../../node_modules'));
+      return path.normalize(path.join(__dirname, '../../../../node_modules'));
     case constants.LOCAL_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../node_modules'));
     case constants.PARENT_DIRECTORY:
