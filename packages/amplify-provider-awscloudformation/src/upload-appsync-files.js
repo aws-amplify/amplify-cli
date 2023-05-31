@@ -243,7 +243,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const currentBackEndDir = pathManager.getCurrentCloudBackendDirPath();
     const currentResourceDirectoryPath = path.join(currentBackEndDir, apiResource.category, apiResource.resourceName);
     // check api resource folder is present in #current-cloud-backend and is not empty
-    if (fs.existsSync(currentResourceDirectoryPath) && fs.readdirSync(path).length !== 0) {
+    if (fs.existsSync(currentResourceDirectoryPath) && fs.readdirSync(currentResourceDirectoryPath).length !== 0) {
       const deploymentRootKey = await getDeploymentRootKey(currentResourceDirectoryPath);
       writeUpdatedParametersJson(apiResource, deploymentRootKey);
     }
