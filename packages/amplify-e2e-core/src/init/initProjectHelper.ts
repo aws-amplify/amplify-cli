@@ -276,8 +276,12 @@ export function initProjectWithAccessKey(
   return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
-export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
+export function initNewEnvWithAccessKey(
+  cwd: string,
+  settings: { envName: string; accessKeyId: string; secretAccessKey: string },
+): Promise<void> {
   addCircleCITags(cwd);
+  const s = { ...defaultSettings, ...settings };
 
   const chain = spawn(getCLIPath(), ['init'], {
     cwd,
