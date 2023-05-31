@@ -1,7 +1,7 @@
 const fs = require('fs');
 const fsext = require('fs-extra');
 const path = require('path');
-const { AmplifyCategories, AmplifySupportedService } = require('@aws-amplify/amplify-cli-core');
+const { AmplifyCategories, AmplifySupportedService, pathManager } = require('@aws-amplify/amplify-cli-core');
 
 const TransformPackage = require('graphql-transformer-core');
 const { S3 } = require('./aws-utils/aws-s3');
@@ -240,11 +240,10 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
       return;
     }
     // get the deployment key from #current-cloud-backend
-    const currentBackEndDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+    const currentBackEndDir = pathManager.getCurrentCloudBackendDirPath();
     const currentResourceDirectoryPath = path.join(currentBackEndDir, apiResource.category, apiResource.resourceName);
-    // check api resource is present in #current-cloud-backend
-    if (fs.existsSync(currentResourceDirectoryPath)) {
-      console.log('reached here');
+    // check api resource folder is present in #current-cloud-backend and is not empty
+    if (fs.existsSync(currentResourceDirectoryPath) && fs.readdirSync(path).length !== 0) {
       const deploymentRootKey = await getDeploymentRootKey(currentResourceDirectoryPath);
       writeUpdatedParametersJson(apiResource, deploymentRootKey);
     }
