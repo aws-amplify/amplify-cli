@@ -17,7 +17,7 @@ import {
 } from '../constants';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
-import { OAuthMetaData, ProviderMeta } from './types';
+import { OAuthMetaData, ProviderCreds, ProviderMeta } from './types';
 
 const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
 const { readJson } = JSONUtilities;
@@ -1224,21 +1224,34 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       this.deleteExistingHostedUIProviderCustomResource();
     }
 
-    if (props.hostedUIProviderCreds) {
-      JSON.parse(props.hostedUIProviderMeta).forEach(this.createHostedUIProviderResource);
+    if (props.hostedUIProviderMeta && props.hostedUIProviderCreds) {
+      const creds = JSON.parse(props.hostedUIProviderCreds);
+
+      JSON.parse(props.hostedUIProviderMeta).forEach((provider: ProviderMeta) => {
+        const providerCreds: ProviderCreds = creds.find(({ ProviderName }: ProviderCreds) => ProviderName === provider.ProviderName);
+        const hasProviderCreds = providerCreds.client_id && (providerCreds.client_secret || providerCreds.private_key);
+
+        this.createHostedUIProviderResource(provider, !!hasProviderCreds);
+      });
     }
   };
 
-  createHostedUIProviderResource = ({ ProviderName, AttributeMapping }: ProviderMeta) => {
+  createHostedUIProviderResource = ({ ProviderName, AttributeMapping }: ProviderMeta, hasCreds: boolean) => {
     const providerDetails =
       ProviderName === SignInWithApple ? this.createHostedUIAppleProviderDetails() : this.createHostedUIProviderDetails(ProviderName);
 
+    const additionalParams: { [key: string]: unknown } = {};
+
+    if (hasCreds) {
+      additionalParams.providerDetails = providerDetails;
+    }
+
     const resourceParams: cognito.CfnUserPoolIdentityProviderProps = {
       attributeMapping: AttributeMapping,
-      providerDetails,
       providerName: ProviderName,
       providerType: ProviderName,
       userPoolId: cdk.Fn.ref('UserPool'),
+      ...additionalParams,
     };
 
     const provider = new cognito.CfnUserPoolIdentityProvider(this, `HostedUI${ProviderName}ProviderResource`, resourceParams);
