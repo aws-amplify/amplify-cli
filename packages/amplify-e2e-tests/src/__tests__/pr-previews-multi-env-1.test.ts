@@ -35,7 +35,7 @@ describe('environment commands with functions secrets handling', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('simulating PR previwes', async () => {
+  it('simulating PR previews with manual hosting', async () => {
     const { projectName } = getProjectConfig(projRoot);
     await gitInit(projRoot);
     await gitCommitAll(projRoot);
