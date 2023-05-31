@@ -46,7 +46,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     const scanDirTasks = pluginPlatformLocal.pluginDirectories.map((directory) => async () => {
       directory = normalizePluginDirectory(directory);
 
-      console.log('Scanning for plugins in directory: ', directory);
+      console.log(`Scanning for plugins in directory: ${directory}`);
       const exists = await fs.pathExists(directory);
       if (exists) {
         //adding subDir based on amplify-
