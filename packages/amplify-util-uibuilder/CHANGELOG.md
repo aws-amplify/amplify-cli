@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.1...@aws-amplify/amplify-util-uibuilder@1.8.3) (2023-05-25)
+
+
+### Bug Fixes
+
+* update codegen ui version and add processFile util function ([#12670](https://github.com/aws-amplify/amplify-cli/issues/12670)) ([5068623](https://github.com/aws-amplify/amplify-cli/commit/50686236160f516c893d4db323a9945c89a36108))
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+* version bump ([#12684](https://github.com/aws-amplify/amplify-cli/issues/12684)) ([63f02ce](https://github.com/aws-amplify/amplify-cli/commit/63f02ced2bc114c9db1b51f21f41f4c4b790a0a4))
+
+
+
+
+
+## [1.8.2](https://github.com/sdstolworthy/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.0...@aws-amplify/amplify-util-uibuilder@1.8.2) (2023-05-25)
+
+
+### Bug Fixes
+
+* update codegen ui version and add processFile util function ([#12670](https://github.com/sdstolworthy/amplify-cli/issues/12670)) ([5068623](https://github.com/sdstolworthy/amplify-cli/commit/50686236160f516c893d4db323a9945c89a36108))
+* version bump ([#12684](https://github.com/sdstolworthy/amplify-cli/issues/12684)) ([63f02ce](https://github.com/sdstolworthy/amplify-cli/commit/63f02ced2bc114c9db1b51f21f41f4c4b790a0a4))
+
+
+
+
+
+## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.0...@aws-amplify/amplify-util-uibuilder@1.8.1) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.7.0...@aws-amplify/amplify-util-uibuilder@1.8.0) (2023-05-11)
 
 

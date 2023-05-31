@@ -3,7 +3,7 @@ import { join } from 'path';
 import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from './artifact-storage-path-allow-list';
 import { CircleCIConfig } from './cci-types';
 import { loadConfig, REPO_ROOT, saveConfig } from './cci-utils';
-import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
+import { migrationFromV10Tests, migrationFromV8Tests } from './split-e2e-test-filters';
 import { splitTestsV2 } from './split-e2e-tests-v2';
 
 function verifyConfig() {
@@ -102,30 +102,19 @@ function main(): void {
     false,
     undefined,
   );
-  const splitV5MigrationTests = splitTestsV2(
+  const splitV8MigrationTests = splitTestsV2(
     splitPkgTests,
     counts,
-    'amplify_migration_tests_v5',
+    'amplify_migration_tests_v8',
     'build_test_deploy_v3',
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
     true,
     (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV5Tests.find((t) => t === testName));
-    },
-  );
-  const splitV6MigrationTests = splitTestsV2(
-    splitV5MigrationTests,
-    counts,
-    'amplify_migration_tests_v6',
-    'build_test_deploy_v3',
-    join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
-    true,
-    (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV6Tests.find((t) => t === testName));
+      return tests.filter((testName) => migrationFromV8Tests.find((t) => t === testName));
     },
   );
   const splitV10MigrationTests = splitTestsV2(
-    splitV6MigrationTests,
+    splitV8MigrationTests,
     counts,
     'amplify_migration_tests_v10',
     'build_test_deploy_v3',
