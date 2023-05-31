@@ -87,16 +87,9 @@ const showLearnMore = (showOptOut: boolean): void => {
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
   const choices = ['Generate report', 'Nothing'];
   if (!skipPrompts) {
-    if (DebugConfig.Instance.promptSendReport()) {
-      const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
-      DebugConfig.Instance.setAndWriteShareProject(result);
-      if (result === false) {
-        return;
-      }
-      const diagnoseAction = await prompter.pick('What would you like to do?', choices);
-      if (diagnoseAction !== choices[0]) {
-        return;
-      }
+    const diagnoseAction = await prompter.pick('What would you like to do?', choices);
+    if (diagnoseAction !== choices[0]) {
+      return;
     }
   }
   try {
