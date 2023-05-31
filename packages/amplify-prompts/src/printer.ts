@@ -33,12 +33,9 @@ export class AmplifyPrinter implements Printer {
   // disable-eslint-next-line @typescript-eslint/no-explicit-any
   error = (line: string, error?: any): void => {
     this.writeLine(`${isHeadless ? '' : '🛑 '}${chalk.red(line)}`);
-    if (error) {
-      if (error?.message) {
-        this.writeLine(`${chalk.red(error.message)}`);
-      } else {
-        this.writeLine(`${chalk.red(error)}`);
-      }
+    const errorMessage = error?.message ?? error;
+    if (errorMessage) {
+      this.writeLine(`${chalk.red(errorMessage)}`);
     }
   };
 
