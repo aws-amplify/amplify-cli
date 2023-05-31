@@ -4,15 +4,22 @@ import { Form } from 'aws-sdk/clients/amplifyuibuilder'; // eslint-disable-line 
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import * as utils from '../commands/utils';
 import { prePushHandler } from '../utils/prePushHandler';
+import { mocked } from 'ts-jest/utils';
+import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 
 jest.mock('../commands/utils');
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockImplementation(() => 2),
 }));
+jest.mock('@aws-amplify/amplify-category-api', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-category-api'),
+  isDataStoreEnabled: jest.fn(),
+}));
 
 const awsMock = aws as any;
 const utilsMock = utils as any;
+const isDataStoreEnabledMocked = mocked(isDataStoreEnabled);
 
 utilsMock.shouldRenderComponents = jest.fn().mockImplementation(() => true);
 
@@ -22,6 +29,7 @@ describe('handlePrePush', () => {
   let exportedForms: Form[];
 
   beforeEach(() => {
+    isDataStoreEnabledMocked.mockResolvedValue(true);
     context = {
       amplify: {
         invokePluginMethod: jest.fn().mockResolvedValue({ models: { Comment: {} } }),
