@@ -267,9 +267,7 @@ export function initProjectWithAccessKey(
     .sendLine(s.secretAccessKey)
     .resumeRecording()
     .wait('region');
-
   singleSelect(chain, s.region, amplifyRegions);
-  chain;
   if (s.includeUsageDataPrompt) {
     chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
   }
