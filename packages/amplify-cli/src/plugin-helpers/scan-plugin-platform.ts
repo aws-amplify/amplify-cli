@@ -99,7 +99,7 @@ export function normalizePluginDirectory(directory: string): string {
     case constants.PACKAGED_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../../..'));
     case constants.DEV_NODE_MODULES:
-      return path.normalize(path.join(__dirname, '../../../../node_modules'));
+      return path.normalize(path.join(__dirname, '../../../node_modules'));
     case constants.LOCAL_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../node_modules'));
     case constants.PARENT_DIRECTORY:
