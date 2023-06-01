@@ -69,7 +69,7 @@ function publish(context, service, args) {
           throw new AmplifyError('ProjectPublishError', {
             message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
             details:
-              'Run amplify remove hosting to remove the current hosting configuration, then run amplify add hosting and choose S3AndCloudFront when prompted to add a new hosting setup.',
+              'Run "amplify remove hosting" to remove the current hosting configuration, then run "amplify add hosting" and choose "S3AndCloudFront" when prompted to add a new hosting setup.',
           });
         }
       }
