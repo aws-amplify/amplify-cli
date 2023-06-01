@@ -68,8 +68,7 @@ function publish(context, service, args) {
         if (typeof cfnOutput === 'object' && cfnOutput.CloudFrontSecureURL === undefined) {
           throw new AmplifyError('ProjectPublishError', {
             message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
-            details: 'You will need to deploy your application to PROD or use this workaround for non-public dev apps only.',
-            link: 'https://github.com/aws-amplify/amplify-cli/issues/12503',
+            details: 'run amplify configure hosting and select CloudFront to add the distribution.',
           });
         }
       }
