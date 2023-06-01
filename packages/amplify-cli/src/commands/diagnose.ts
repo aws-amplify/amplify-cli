@@ -16,6 +16,7 @@ import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
 import { Context } from '../domain/context';
 import { reporterEndpoint } from './helpers/reporter-apis';
+import { isCI } from 'ci-info';
 
 /**
  * Prompts if there is a failure in the CLI
@@ -46,7 +47,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
   } else {
     sendReport = DebugConfig.Instance.getCanSendReport();
   }
-  if (sendReport) {
+  if (sendReport || isCI) {
     await zipSend(context, true, error);
   }
 };
