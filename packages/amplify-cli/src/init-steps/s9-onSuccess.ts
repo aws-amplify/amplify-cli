@@ -64,9 +64,6 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);
-    const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
-    const actualResult = context.exeInfo.inputParams.yes ? undefined : result;
-    DebugConfig.Instance.setAndWriteShareProject(actualResult);
   }
 
   for (const provider of context.exeInfo.projectConfig.providers) {
