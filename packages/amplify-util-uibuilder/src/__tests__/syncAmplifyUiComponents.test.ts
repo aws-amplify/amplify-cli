@@ -12,7 +12,6 @@ import {
 import { AmplifyStudioClient } from '../clients';
 import * as createUiBuilderComponentDependency from '../commands/utils/codegenResources';
 import { exampleSchema } from './utils';
-import { mocked } from 'ts-jest/utils';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
@@ -34,7 +33,7 @@ jest.mock('@aws-amplify/amplify-category-api', () => ({
 const awsMock = aws as any;
 const stateManagerMock = stateManager as any;
 const createUiBuilderComponentDependencyMock = createUiBuilderComponentDependency as any;
-const isDataStoreEnabledMocked = mocked(isDataStoreEnabled);
+const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 
 describe('should sync amplify ui builder components', () => {
   let context: any;

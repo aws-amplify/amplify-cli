@@ -1,7 +1,6 @@
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import * as utils from '../commands/utils';
 import { run } from '../commands/generateComponents';
-import { mocked } from 'ts-jest/utils';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
 
@@ -18,8 +17,8 @@ jest.mock('../commands/utils/featureFlags', () => ({
 const awsMock = aws as any;
 const utilsMock = utils as any;
 
-const isDataStoreEnabledMocked = mocked(isDataStoreEnabled);
-const getTransformerVersionMocked = mocked(getTransformerVersion);
+const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
+const getTransformerVersionMocked = jest.mocked(getTransformerVersion);
 utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
 utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
 utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue({});

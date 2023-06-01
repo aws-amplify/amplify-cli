@@ -4,7 +4,6 @@ import { Form } from 'aws-sdk/clients/amplifyuibuilder'; // eslint-disable-line 
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import * as utils from '../commands/utils';
 import { prePushHandler } from '../utils/prePushHandler';
-import { mocked } from 'ts-jest/utils';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 
 jest.mock('../commands/utils');
@@ -19,7 +18,7 @@ jest.mock('@aws-amplify/amplify-category-api', () => ({
 
 const awsMock = aws as any;
 const utilsMock = utils as any;
-const isDataStoreEnabledMocked = mocked(isDataStoreEnabled);
+const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 
 utilsMock.shouldRenderComponents = jest.fn().mockImplementation(() => true);
 

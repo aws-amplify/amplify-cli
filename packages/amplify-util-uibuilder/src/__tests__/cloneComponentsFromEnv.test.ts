@@ -2,7 +2,6 @@ import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependenc
 import * as extractArgsDependency from '../commands/utils/extractArgs';
 import { run } from '../commands/cloneComponentsFromEnv';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
-import { mocked } from 'ts-jest/utils';
 
 const extractArgsDependencyMock = extractArgsDependency as any;
 const awsMock = aws as any;
@@ -17,7 +16,7 @@ jest.mock('@aws-amplify/amplify-category-api', () => ({
 jest.mock('../commands/utils/extractArgs');
 jest.mock('@aws-amplify/amplify-cli-core');
 
-const isDataStoreEnabledMocked = mocked(isDataStoreEnabled);
+const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 
 const mockedComponentExport = jest.fn((envName: string) => {
   if (envName === 'newEnvName') {
