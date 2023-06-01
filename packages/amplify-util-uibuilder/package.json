@@ -27,21 +27,22 @@
   "devDependencies": {
     "@aws-amplify/appsync-modelgen-plugin": "^2.4.4",
     "@types/fs-extra": "^8.0.1",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^29.5.1",
     "@types/semver": "^7.1.0",
-    "@types/tiny-async-pool": "^2.0.0"
+    "@types/tiny-async-pool": "^2.0.0",
+    "ts-jest": "^29.1.0"
   },
   "jest": {
     "testRunner": "jest-circus/runner",
     "preset": "ts-jest",
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "globals": {
-      "window": {},
-      "ts-jest": {
-        "diagnostics": true
-      }
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "window": {},
+          "diagnostics": true
+        }
+      ]
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
@@ -55,8 +56,9 @@
       "default",
       "jest-junit"
     ],
-    "testEnvironment": "node",
-    "testURL": "http://localhost/",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((src/(__tests__|__e2e__|__e2e_v2__))/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
@@ -72,5 +74,10 @@
     "outputName": "js-test-results.xml",
     "usePathForSuiteName": "true",
     "addFileAttribute": "true"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

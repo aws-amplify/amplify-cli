@@ -33,5 +33,10 @@
     "@types/inquirer": "^6.5.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.6"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

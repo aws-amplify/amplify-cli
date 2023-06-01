@@ -1608,17 +1608,17 @@ describe('with identity claim feature flag disabled', () => {
       // the $ctx.args.parent is not resolving in mock vtl engine
       // not an issue in the service the index e2e tests this scenario
       expect(listAuthVTLRequest.stash.modelQueryExpression).toMatchInlineSnapshot(`
-        Object {
+        {
           "expression": "#parent = :parent AND #child = :child",
-          "expressionNames": Object {
+          "expressionNames": {
             "#child": "child",
             "#parent": "parent",
           },
-          "expressionValues": Object {
-            ":child": Object {
+          "expressionValues": {
+            ":child": {
               "S": "user1",
             },
-            ":parent": Object {
+            ":parent": {
               "S": "$ctx.args.parent",
             },
           },

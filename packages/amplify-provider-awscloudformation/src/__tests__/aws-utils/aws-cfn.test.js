@@ -32,15 +32,15 @@ describe('CloudFormation', () => {
     expect(columnify).toBeCalledTimes(1);
     const timestamps = columnify.mock.calls[0][0];
     expect(timestamps.map((obj) => Object.keys(obj))).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          "Timestamp",
-        ],
-        Array [
-          "Timestamp",
-        ],
-      ]
-    `);
+[
+  [
+    "Timestamp",
+  ],
+  [
+    "Timestamp",
+  ],
+]
+`);
     expect(columnify.mock.calls[0][1]).toEqual(columns);
   });
 

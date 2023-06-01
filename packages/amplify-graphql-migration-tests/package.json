@@ -29,7 +29,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
@@ -66,5 +68,10 @@
     "graphql-predictions-transformer": "^3.2.54",
     "graphql-transformer-core": "^8.1.1",
     "graphql-versioned-transformer": "^5.2.54"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

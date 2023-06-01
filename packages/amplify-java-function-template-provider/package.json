@@ -23,5 +23,10 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-function-plugin-interface": "1.10.2"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

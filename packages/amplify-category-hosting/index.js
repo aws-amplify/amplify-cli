@@ -65,11 +65,11 @@ function publish(context, service, args) {
       // the user is hosting from S3 without CloudFront distribution and should throw an error
       if (service === 'S3AndCloudFront') {
         const cfnOutput = context.exeInfo?.amplifyMeta?.hosting?.S3AndCloudFront?.output;
-        if (typeof cfnOutput === 'object' && cfnOutput.CloudFrontSecureURL === undefined) {
+        if (typeof cfnOutput === 'object' && (cfnOutput === undefined || cfnOutput.CloudFrontSecureURL === undefined)) {
           throw new AmplifyError('ProjectPublishError', {
             message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
-            details: 'You will need to deploy your application to PROD or use this workaround for non-public dev apps only.',
-            link: 'https://github.com/aws-amplify/amplify-cli/issues/12503',
+            details:
+              'Run "amplify remove hosting" to remove the current hosting configuration, then run "amplify add hosting" and choose "S3AndCloudFront" when prompted to add a new hosting setup.',
           });
         }
       }

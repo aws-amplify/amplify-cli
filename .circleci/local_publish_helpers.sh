@@ -56,7 +56,7 @@ function generatePkgCli {
 
   # install package depedencies
   cp ../yarn.lock ./
-  yarn --production
+  yarn workspaces focus --production
 
   # Optimize package size
   find . \
@@ -142,13 +142,13 @@ function verifyPkgCli {
 function unsetNpmRegistryUrl {
     # Restore the original NPM and Yarn registry URLs
     npm set registry "https://registry.npmjs.org/"
-    yarn config set registry "https://registry.npmjs.org/"
+    yarn config set npmRegistryServer "https://registry.npmjs.org/"
 }
 
 function unsetSudoNpmRegistryUrl {
     # Restore the original NPM and Yarn registry URLs
     sudo npm set registry "https://registry.npmjs.org/"
-    sudo yarn config set registry "https://registry.npmjs.org/"
+    sudo yarn config set npmRegistryServer "https://registry.npmjs.org/"
 }
 
 function changeNpmGlobalPath {
@@ -166,13 +166,13 @@ function changeSudoNpmGlobalPath {
 function setNpmRegistryUrlToLocal {
     # Set registry to local registry
     npm set registry "$custom_registry_url"
-    yarn config set registry "$custom_registry_url"
+    yarn config set npmRegistryServer "$custom_registry_url"
 }
 
 function setSudoNpmRegistryUrlToLocal {
     # Set registry to local registry
     sudo npm set registry "$custom_registry_url"
-    sudo yarn config set registry "$custom_registry_url"
+    sudo yarn config set npmRegistryServer "$custom_registry_url"
 }
 
 function useChildAccountCredentials {
@@ -273,9 +273,9 @@ function runE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
     fi
 }
 

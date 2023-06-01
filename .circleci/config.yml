@@ -67,7 +67,8 @@ jobs:
       - restore_cache:
           key: >-
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: yarn run production-build
+      - run: yarn --immutable
+      - run: yarn production-build
       - save_cache:
           key: >-
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -167,7 +168,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --no-cache --maxWorkers=4
+            retry yarn console-integration --no-cache --maxWorkers=4
           name: Run Amplify Console integration tests
           no_output_timeout: 90m
       - run:
