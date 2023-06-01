@@ -52,7 +52,7 @@ describe('dynamoDBResourceHandler', () => {
       resources: {},
       exports: {},
     };
-    const processedResource = dynamoDBResourceHandler(resource.Properties.TableName, resource, cfnContext);
+    const processedResource = dynamoDBResourceHandler(resource.Properties.TableName, resource);
     expect(processedResource.Properties.AttributeDefinitions).toEqual(resource.Properties.AttributeDefinitions);
     expect(processedResource.Properties.KeySchema).toEqual(resource.Properties.KeySchema);
     expect(processedResource.Properties.TableName).toEqual(resource.Properties.TableName);

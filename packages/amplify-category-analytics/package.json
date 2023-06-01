@@ -36,7 +36,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
@@ -45,6 +47,11 @@
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

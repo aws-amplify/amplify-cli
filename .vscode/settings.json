@@ -15,6 +15,11 @@
   },
   "prettier.requireConfig": true,
   "prettier.configPath": "./.prettierrc",
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.enablePromptUseWorkspaceTsdk": true,
   "prettier.prettierPath": "../node_modules/prettier",
   "jest.jestCommandLine": "./node_modules/.bin/jest"
 }

@@ -1,7 +1,15 @@
+.yarn/*
+.bin/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 **/.DS_Store
 .circleci/generated_config.yml
 scripts/cci-job.data.json
 scripts/cci-test.data.json
+scripts/.yarn/*
 artifacts/cci-workflow-results.json
 artifacts/cci-workflow-results.html
 build

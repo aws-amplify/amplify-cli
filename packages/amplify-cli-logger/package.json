@@ -50,5 +50,10 @@
   "dependencies": {
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

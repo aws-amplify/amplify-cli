@@ -119,7 +119,7 @@ is the global node_modules directory.`);
 
 async function addPluginDirectory(pluginPlatform: PluginPlatform) {
   const ADDCUSTOMDIRECTORY = 'Add custom directory >';
-  let options = [constants.PARENT_DIRECTORY, constants.LOCAL_NODE_MODULES, constants.GLOBAL_NODE_MODULES];
+  let options = [constants.PARENT_DIRECTORY, constants.LOCAL_NODE_MODULES, constants.GLOBAL_NODE_MODULES, constants.DEV_NODE_MODULES];
 
   options = options.filter((item) => !pluginPlatform.pluginDirectories.includes(item.toString()));
 

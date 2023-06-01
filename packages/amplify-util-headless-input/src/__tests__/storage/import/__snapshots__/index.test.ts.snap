@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`validates import storage headless request valid payload passes validation 1`] = `
-Object {
-  "serviceConfiguration": Object {
+{
+  "serviceConfiguration": {
     "bucketName": "import-this-bucket",
     "serviceName": "S3",
   },
