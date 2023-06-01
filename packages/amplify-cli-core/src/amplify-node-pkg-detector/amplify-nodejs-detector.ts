@@ -36,18 +36,22 @@ export class AmplifyNodePkgDetector {
   private readonly lockFileContents: string;
   private readonly lockFileParser: LockfileParser;
 
-  constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps) {
-    const packageManager = getPackageManager(amplifyDetectorProps.projectRoot);
+  public static getInstance = async (amplifyDetectorProps: AmplifyNodePkgDetectorProps): Promise<AmplifyNodePkgDetector> => {
+    const packageManager = await getPackageManager(amplifyDetectorProps.projectRoot);
     if (packageManager === null) {
       throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
         message: 'No package manager found.',
         resolution: 'Install npm or yarn to compile overrides for this project.',
       });
     }
+    return new AmplifyNodePkgDetector(amplifyDetectorProps, packageManager);
+  };
+
+  private constructor(amplifyDetectorProps: AmplifyNodePkgDetectorProps, packageManager: PackageManager) {
     this.packageManager = packageManager;
     this.pkgJsonObj = this.parsePkgJson(amplifyDetectorProps.projectRoot);
     this.lockFileContents = this.getLockFileContent(amplifyDetectorProps.projectRoot);
-    this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager.packageManager);
+    this.lockFileParser = LockFileParserFactory.getLockFileParser(this.packageManager);
   }
 
   /**

@@ -6,6 +6,7 @@ import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
+import { coerce } from 'semver';
 
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('child_process');
@@ -18,11 +19,16 @@ jest.mock('which');
 (existsSync as jest.Mock).mockReturnValue(true);
 (readdirSync as jest.Mock).mockReturnValue([]);
 (sync as jest.MockedFunction<typeof sync>).mockReturnValue('mock/path');
-(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
-  executable: 'yarn',
-  lockFile: 'mock.lock',
-  packageManager: 'yarn',
-});
+(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(
+  new Promise((resolve) =>
+    resolve({
+      executable: 'yarn',
+      lockFile: 'mock.lock',
+      packageManager: 'yarn',
+      version: coerce('1.22.0') ?? undefined,
+    }),
+  ),
+);
 
 describe('amplify init:', () => {
   const mockGetProjectConfigFilePath = jest.spyOn(pathManager, 'getProjectConfigFilePath');

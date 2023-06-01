@@ -221,7 +221,7 @@ export async function main() {
     git.merge(`${upstreamName}/${releaseBranch}`, { message: 'chore: merge release commit from main to dev' });
   } catch (e) {
     console.info(
-      'Resolve merge conflicts and then finish the merge using `git merge --continue`.\nThen run `yarn run finish-release --continue`',
+      'Resolve merge conflicts and then finish the merge using `git merge --continue`.\nThen run `yarn finish-release --continue`',
     );
     process.exit(0);
   }

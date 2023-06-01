@@ -110,14 +110,14 @@ describe('uninstall packaged CLI on windows', () => {
     await run(context_stub_typed);
 
     expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "${path.join('homedir', '.amplify', 'bin', 'amplify.exe')}",
-        "a/test/path/.amplify-pending-delete.exe",
-        Object {
-          "overwrite": true,
-        },
-      ]
-    `);
+[
+  "homedir/.amplify/bin/amplify.exe",
+  "a/test/path/.amplify-pending-delete.exe",
+  {
+    "overwrite": true,
+  },
+]
+`);
     expect(fs_mock.remove.mock.calls[0][0]).toMatchInlineSnapshot(`"homedir/.amplify"`);
   });
 

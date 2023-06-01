@@ -44,7 +44,7 @@ describe('input-redaction', () => {
 
     const redactedAuth = redactedInput.categories.auth.resourceName;
     expect(redactedAuth.hostedUIProviderCreds).toMatchInlineSnapshot(
-      `"\\"ProviderName\\":\\"[***]book\\",\\"client_id\\":\\"[***]ntIdTest\\",\\"client_secret\\":\\"[***]SecretTest\\""`,
+      `""ProviderName":"[***]book","client_id":"[***]ntIdTest","client_secret":"[***]SecretTest""`,
     );
   });
 });

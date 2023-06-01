@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-migration-tests",
-  "version": "2.4.5",
+  "version": "2.4.8",
   "description": "Tests migration from v1 to v2 of the Amplify GraphQL transformer",
   "main": "lib/index.js",
   "private": true,
@@ -29,7 +29,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
@@ -42,29 +44,34 @@
   },
   "devDependencies": {
     "@aws-amplify/amplify-prompts": "2.7.0",
-    "@aws-amplify/graphql-auth-transformer": "^2.1.3",
-    "@aws-amplify/graphql-default-value-transformer": "^1.1.3",
-    "@aws-amplify/graphql-function-transformer": "^1.2.1",
-    "@aws-amplify/graphql-http-transformer": "^1.2.1",
-    "@aws-amplify/graphql-index-transformer": "^1.1.3",
-    "@aws-amplify/graphql-model-transformer": "^1.2.1",
-    "@aws-amplify/graphql-predictions-transformer": "^1.2.1",
-    "@aws-amplify/graphql-relational-transformer": "^1.1.3",
-    "@aws-amplify/graphql-searchable-transformer": "^1.2.1",
-    "@aws-amplify/graphql-transformer-core": "^1.2.1",
-    "@aws-amplify/graphql-transformer-interfaces": "2.1.1",
-    "@aws-amplify/graphql-transformer-migrator": "^2.1.3",
+    "@aws-amplify/graphql-auth-transformer": "^2.1.5",
+    "@aws-amplify/graphql-default-value-transformer": "^1.1.5",
+    "@aws-amplify/graphql-function-transformer": "^1.2.3",
+    "@aws-amplify/graphql-http-transformer": "^1.2.3",
+    "@aws-amplify/graphql-index-transformer": "^1.2.1",
+    "@aws-amplify/graphql-model-transformer": "^1.3.1",
+    "@aws-amplify/graphql-predictions-transformer": "^1.2.3",
+    "@aws-amplify/graphql-relational-transformer": "^1.2.1",
+    "@aws-amplify/graphql-searchable-transformer": "^1.2.3",
+    "@aws-amplify/graphql-transformer-core": "^1.3.1",
+    "@aws-amplify/graphql-transformer-interfaces": "2.2.0",
+    "@aws-amplify/graphql-transformer-migrator": "^2.1.5",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "fs-extra": "^8.1.0",
-    "graphql-auth-transformer": "^7.2.53",
-    "graphql-connection-transformer": "^5.2.52",
-    "graphql-dynamodb-transformer": "^7.2.52",
-    "graphql-elasticsearch-transformer": "^5.2.53",
-    "graphql-function-transformer": "^3.3.43",
-    "graphql-http-transformer": "^5.2.52",
-    "graphql-key-transformer": "^3.2.52",
-    "graphql-predictions-transformer": "^3.2.52",
-    "graphql-transformer-core": "^8.0.3",
-    "graphql-versioned-transformer": "^5.2.52"
+    "graphql-auth-transformer": "^7.2.55",
+    "graphql-connection-transformer": "^5.2.54",
+    "graphql-dynamodb-transformer": "^7.2.54",
+    "graphql-elasticsearch-transformer": "^5.2.55",
+    "graphql-function-transformer": "^3.3.45",
+    "graphql-http-transformer": "^5.2.54",
+    "graphql-key-transformer": "^3.2.54",
+    "graphql-predictions-transformer": "^3.2.54",
+    "graphql-transformer-core": "^8.1.1",
+    "graphql-versioned-transformer": "^5.2.54"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

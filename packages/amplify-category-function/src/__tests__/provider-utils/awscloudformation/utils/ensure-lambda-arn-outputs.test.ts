@@ -117,42 +117,42 @@ describe('test ensureLambdaExecutionRoleOutputs function', () => {
     });
     await ensureLambdaExecutionRoleOutputs();
     expect(writeCFNTemplateMock.mock.calls[0][0]).toMatchInlineSnapshot(`
-      Object {
-        "Outputs": Object {
-          "Arn": Object {
-            "Value": Object {
-              "Fn::GetAtt": Array [
-                "LambdaFunction",
-                "Arn",
-              ],
-            },
-          },
-          "LambdaExecutionRole": Object {
-            "Value": Object {
-              "Ref": "LambdaExecutionRole",
-            },
-          },
-          "LambdaExecutionRoleArn": Object {
-            "Value": Object {
-              "Fn::GetAtt": Array [
-                "LambdaExecutionRole",
-                "Arn",
-              ],
-            },
-          },
-          "Name": Object {
-            "Value": Object {
-              "Ref": "LambdaFunction",
-            },
-          },
-          "Region": Object {
-            "Value": Object {
-              "Ref": "AWS::Region",
-            },
-          },
-        },
-      }
-    `);
+{
+  "Outputs": {
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LambdaFunction",
+          "Arn",
+        ],
+      },
+    },
+    "LambdaExecutionRole": {
+      "Value": {
+        "Ref": "LambdaExecutionRole",
+      },
+    },
+    "LambdaExecutionRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LambdaExecutionRole",
+          "Arn",
+        ],
+      },
+    },
+    "Name": {
+      "Value": {
+        "Ref": "LambdaFunction",
+      },
+    },
+    "Region": {
+      "Value": {
+        "Ref": "AWS::Region",
+      },
+    },
+  },
+}
+`);
   });
 
   it(' when functions have role arns in outputs', async () => {

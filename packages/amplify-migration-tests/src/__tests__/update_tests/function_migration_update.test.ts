@@ -19,9 +19,10 @@ import {
   validateLayerMetadata,
   addApiWithoutSchema,
   generateRandomShortId,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfileV4_52_0, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
@@ -35,7 +36,10 @@ describe('amplify function migration', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'functionmigration' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'functionmigration',
+      includeUsageDataPrompt: false,
+    });
   });
 
   afterEach(async () => {

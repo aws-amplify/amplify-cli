@@ -118,7 +118,7 @@ describe('attach amplify to git-cloned project', () => {
     // expect no file changes
     const changedFiles = await gitChangedFiles(projRoot);
     expect(changedFiles).toMatchInlineSnapshot(`
-      Array [
+      [
         ".gitignore",
         "amplify/README.md",
       ]

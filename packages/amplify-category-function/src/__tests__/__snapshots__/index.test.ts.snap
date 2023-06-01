@@ -1,22 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`mock function mock function with empty dependsOn 1`] = `
-Object {
+{
   "isMockable": true,
   "reason": "Lambda layers cannot be mocked locally",
 }
 `;
 
 exports[`mock function mock function with functions 1`] = `
-Object {
+{
   "isMockable": true,
   "reason": "Lambda layers cannot be mocked locally",
 }
 `;
 
 exports[`mock function mock function with layers 1`] = `
-Object {
+{
   "isMockable": false,
-  "reason": "Mocking a function with layers is not supported. To test in the cloud: run \\"amplify push\\" to deploy your function to the cloud and then run \\"amplify console function\\" to test your function in the Lambda console.",
+  "reason": "Mocking a function with layers is not supported. To test in the cloud: run "amplify push" to deploy your function to the cloud and then run "amplify console function" to test your function in the Lambda console.",
 }
 `;
