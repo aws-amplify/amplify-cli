@@ -100,17 +100,13 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
       .wait('region');
 
     singleSelect(chain, settings.region, amplifyRegions);
-    chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 

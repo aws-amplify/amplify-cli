@@ -88,10 +88,6 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName);
   }
-
-  if (s.includeUsageDataPrompt) {
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
-  }
   return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
