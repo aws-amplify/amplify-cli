@@ -67,7 +67,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     await FeatureFlags.ensureDefaultFeatureFlags(true);
     const usageTrackingConfig = stateManager.getUsageTrackingConfig();
 
-    if (usageTrackingConfig.usageDataConfig !== undefined && usageTrackingConfig.usageDataConfig.usageDataPromptSeen) {
+    if (usageTrackingConfig?.usageDataConfig !== undefined && usageTrackingConfig.usageDataConfig?.usageDataPromptSeen) {
       printer.info(`Amplify CLI collects anonymized usage data, which is used to help understand`);
       printer.info(`how to improve the product. If you don't wish to send anonymized Amplify CLI`);
       printer.info(`usage data to AWS, run${EOL}`);
