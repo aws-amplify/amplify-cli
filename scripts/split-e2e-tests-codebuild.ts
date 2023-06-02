@@ -334,7 +334,7 @@ function main(): void {
       variables: { WAIT_FOR_IDS_FILE_PATH: waitForIdsFilePath },
     },
     buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
-    'depend-on': ['upb', 'build_windows'],
+    'depend-on': ['upb'],
   };
   allBuilds.push(reportsAggregator);
   let currentBatch = [...baseBuildGraph, ...allBuilds];
