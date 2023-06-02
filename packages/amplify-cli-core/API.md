@@ -253,7 +253,8 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
 // @public (undocumented)
 export class AmplifyNodePkgDetector {
     // (undocumented)
-    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [
+    ];
     // (undocumented)
     static getInstance: (amplifyDetectorProps: AmplifyNodePkgDetectorProps) => Promise<AmplifyNodePkgDetector>;
 }
@@ -943,6 +944,9 @@ export type GetPackageAssetPaths = () => Promise<string[]>;
 export const getPackageManager: (rootPath?: string) => Promise<PackageManager | null>;
 
 // @public (undocumented)
+export const getPackageManagerByType: (packageManagerType: PackageManagerType) => PackageManager;
+
+// @public (undocumented)
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
 
 // @public (undocumented)
@@ -1483,10 +1487,14 @@ export type PackageManager = {
     lockFile: string;
     executable: string;
     version?: SemVer;
+    displayValue?: string;
 };
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm';
+export const packageManagers: Record<string, PackageManager>;
+
+// @public (undocumented)
+export type PackageManagerType = 'yarn' | 'npm' | 'pnpm';
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
@@ -2130,6 +2138,12 @@ export interface Template {
 
 // @public (undocumented)
 export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
+
+// @public (undocumented)
+export const toPackageManagerInstallCommand: (packageManager: PackageManager) => Promise<string>;
+
+// @public (undocumented)
+export const toPackageManagerScriptCommand: (packageManager: PackageManager, script: string) => Promise<string>;
 
 // @public (undocumented)
 export type TypeDef = {
