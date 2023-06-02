@@ -34,7 +34,13 @@ phases:
   post_build:
     commands:
       - source ./shared-scripts.sh && _scanArtifacts
-
+      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-migration-tests
+reports:
+  e2e-reports:
+    files:
+      - '*.xml'
+    file-format: 'JUNITXML'
+    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-migration-tests/reports/junit'
 artifacts:
   files:
     - $CODEBUILD_SRC_DIR/packages/amplify-migration-tests/amplify-migration-reports/*
