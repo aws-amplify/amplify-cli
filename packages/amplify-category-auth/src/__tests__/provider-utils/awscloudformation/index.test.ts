@@ -110,8 +110,8 @@ describe('update config when amplify pull headless command', () => {
     ]);
     const params = await updateConfigOnEnvInit(mockContext, 'auth', 'Cognito');
     expect(params).toMatchInlineSnapshot(`
-      Object {
-        "hostedUIProviderCreds": "[{\\"ProviderName\\":\\"Facebook\\"},{\\"ProviderName\\":\\"LoginWithAmazon\\"},{\\"ProviderName\\":\\"Google\\"},{\\"ProviderName\\":\\"SignInWithApple\\"}]",
+      {
+        "hostedUIProviderCreds": "[{"ProviderName":"Facebook"},{"ProviderName":"LoginWithAmazon"},{"ProviderName":"Google"},{"ProviderName":"SignInWithApple"}]",
       }
     `);
   });
@@ -125,8 +125,8 @@ describe('update config when amplify pull headless command', () => {
     });
     const params = await updateConfigOnEnvInit(mockContext, 'auth', 'Cognito');
     expect(params).toMatchInlineSnapshot(`
-      Object {
-        "hostedUIProviderCreds": "[{\\"ProviderName\\":\\"Facebook\\"},{\\"ProviderName\\":\\"LoginWithAmazon\\"},{\\"ProviderName\\":\\"Google\\"},{\\"ProviderName\\":\\"SignInWithApple\\"}]",
+      {
+        "hostedUIProviderCreds": "[{"ProviderName":"Facebook"},{"ProviderName":"LoginWithAmazon"},{"ProviderName":"Google"},{"ProviderName":"SignInWithApple"}]",
       }
     `);
   });
@@ -162,8 +162,8 @@ describe('update config when amplify pull headless command', () => {
     };
     const params = await updateConfigOnEnvInit(mockContext, 'auth', 'Cognito');
     expect(params).toMatchInlineSnapshot(`
-      Object {
-        "hostedUIProviderCreds": "[{\\"ProviderName\\":\\"Facebook\\",\\"client_id\\":\\"mockfacebookAppIdUserPool\\",\\"client_secret\\":\\"facebookAppSecretUserPool\\"},{\\"ProviderName\\":\\"LoginWithAmazon\\",\\"client_id\\":\\"loginwithamazonAppIdUserPool\\",\\"client_secret\\":\\"loginwithamazonAppSecretUserPool\\"},{\\"ProviderName\\":\\"Google\\",\\"client_id\\":\\"googleAppIdUserPool\\",\\"client_secret\\":\\"googleAppSecretUserPool\\"},{\\"ProviderName\\":\\"SignInWithApple\\",\\"client_id\\":\\"signinwithappleClientIdUserPool\\",\\"team_id\\":\\"signinwithappleTeamIdUserPool\\",\\"key_id\\":\\"signinwithappleKeyIdUserPool\\",\\"private_key\\":\\"signinwithapplePrivateKeyUserPool\\"}]",
+      {
+        "hostedUIProviderCreds": "[{"ProviderName":"Facebook","client_id":"mockfacebookAppIdUserPool","client_secret":"facebookAppSecretUserPool"},{"ProviderName":"LoginWithAmazon","client_id":"loginwithamazonAppIdUserPool","client_secret":"loginwithamazonAppSecretUserPool"},{"ProviderName":"Google","client_id":"googleAppIdUserPool","client_secret":"googleAppSecretUserPool"},{"ProviderName":"SignInWithApple","client_id":"signinwithappleClientIdUserPool","team_id":"signinwithappleTeamIdUserPool","key_id":"signinwithappleKeyIdUserPool","private_key":"signinwithapplePrivateKeyUserPool"}]",
       }
     `);
   });

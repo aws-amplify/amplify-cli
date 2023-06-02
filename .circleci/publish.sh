@@ -9,6 +9,12 @@ function lernaPublishExitOnFailure {
   # run lerna publish with the args that were passed to this function
   # duplicate stdout to a temp file
   # grep the temp file for the lerna err token and return exit 1 if found (-v option inverts grep exit code)
+
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
+    # registy URL update changes .yarnrc.yml file
+    git update-index --assume-unchanged .yarnrc.yml
+  fi
+
   npx lerna publish "$@" | tee /tmp/publish-results && grep -qvz "lerna ERR!" < /tmp/publish-results
 }
 

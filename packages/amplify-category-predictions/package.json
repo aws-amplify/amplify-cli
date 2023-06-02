@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-predictions",
-  "version": "5.2.0",
+  "version": "5.2.3",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.5",
+    "@aws-amplify/amplify-cli-core": "4.0.8",
     "@aws-amplify/amplify-prompts": "2.7.0",
     "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
@@ -34,5 +34,10 @@
   },
   "devDependencies": {
     "@aws-sdk/client-rekognition": "^3.303.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

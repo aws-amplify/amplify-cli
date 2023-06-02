@@ -7,13 +7,11 @@ import {
   deleteProjectDir,
   updateApiSchema,
   getProjectConfig,
+  initJSProjectWithProfile,
+  addApiWithBlankSchema,
+  setTransformerVersionFlag,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  initJSProjectWithProfileV4_52_0,
-  versionCheck,
-  addApiWithoutSchemaOldDx,
-  allowedVersionsToMigrateFrom,
-} from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 describe('amplify key force push', () => {
   let projRoot: string;
@@ -27,7 +25,10 @@ describe('amplify key force push', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
 
-    await initJSProjectWithProfileV4_52_0(projRoot, { name: 'gqlkeymigration' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'gqlkeymigration',
+      includeUsageDataPrompt: false,
+    });
   });
 
   afterEach(async () => {
@@ -39,8 +40,9 @@ describe('amplify key force push', () => {
     const initialSchema = 'migrations_key/simple_key.graphql';
     const { projectName } = getProjectConfig(projRoot);
     // add api and push with installed cli
-    await addApiWithoutSchemaOldDx(projRoot);
+    await addApiWithBlankSchema(projRoot, { testingWithLatestCodebase: false });
     updateApiSchema(projRoot, projectName, initialSchema);
+    setTransformerVersionFlag(projRoot, 1);
     await amplifyPushLegacy(projRoot);
     // gql-compile and force push with codebase cli
     await apiGqlCompile(projRoot, true);

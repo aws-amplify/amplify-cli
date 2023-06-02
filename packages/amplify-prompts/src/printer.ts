@@ -30,8 +30,13 @@ export class AmplifyPrinter implements Printer {
     this.writeLine(`${isHeadless ? '' : '⚠️ '}${chalk.yellow(line)}`);
   };
 
-  error = (line: string): void => {
+  // disable-eslint-next-line @typescript-eslint/no-explicit-any
+  error = (line: string, error?: any): void => {
     this.writeLine(`${isHeadless ? '' : '🛑 '}${chalk.red(line)}`);
+    const errorMessage = error?.message ?? error;
+    if (errorMessage) {
+      this.writeLine(`${chalk.red(errorMessage)}`);
+    }
   };
 
   private writeSilenceableLine = (line?: string): void => {
@@ -59,7 +64,7 @@ export type Printer = {
   blankLine: () => void;
   success: (line: string) => void;
   warn: (line: string) => void;
-  error: (line: string) => void;
+  error: (line: string, error?: any) => void;
 };
 
 type Color = 'green' | 'blue' | 'yellow' | 'red' | 'reset';

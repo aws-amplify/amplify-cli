@@ -33,7 +33,7 @@ export const printCdkMigrationWarning = async (context: $TSContext): Promise<voi
       });
     });
     // check for override.ts file enabled
-    const migrationString = getMigrationMessage(resourcesToBuild);
+    const migrationString = await getMigrationMessage(resourcesToBuild);
     if (!_.isEmpty(migrationString)) {
       printer.warn(migrationString);
     }
@@ -42,7 +42,10 @@ export const printCdkMigrationWarning = async (context: $TSContext): Promise<voi
   }
 };
 
-const getOverridesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToSearch: string): AmplifyWarning | undefined => {
+const getOverridesWarning = async (
+  resourcesToBuild: IAmplifyResource[],
+  dependencyToSearch: string,
+): Promise<AmplifyWarning | undefined> => {
   let overridesWarningObject;
   for (const resource of resourcesToBuild) {
     // since overrides project is backend
@@ -54,7 +57,9 @@ const getOverridesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToS
         projectRoot: pathManager.getBackendDirPath(),
       };
 
-      const explicitDependencies = new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies(dependencyToSearch);
+      const explicitDependencies = (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies(
+        dependencyToSearch,
+      );
       if (!_.isEmpty(explicitDependencies)) {
         overridesWarningObject = {
           impactedFiles: [path.join(pathManager.getBackendDirPath(), 'package.json')],
@@ -66,19 +71,24 @@ const getOverridesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToS
   return overridesWarningObject;
 };
 
-const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[], dependencyToSearch: string): AmplifyWarning | undefined => {
+const getCustomResourcesWarning = async (
+  resourcesToBuild: IAmplifyResource[],
+  dependencyToSearch: string,
+): Promise<AmplifyWarning | undefined> => {
   let customResourcesWarningObject;
   const customResourceImpactedFiles = [];
   const customCategoryResources = resourcesToBuild.filter(
     (resource) => resource.category === AmplifyCategories.CUSTOM && resource.service !== 'customCloudformation',
   );
-  customCategoryResources.forEach((resource) => {
+  for (const resource of customCategoryResources) {
     const targetDir = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot: targetDir,
     };
 
-    const explicitDependencies = new AmplifyNodePkgDetector(amplifyDetectorProps).detectAffectedDirectDependencies(dependencyToSearch);
+    const explicitDependencies = (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies(
+      dependencyToSearch,
+    );
     if (!_.isEmpty(explicitDependencies)) {
       customResourceImpactedFiles.push(path.join(targetDir, 'package.json'));
       customResourcesWarningObject = {
@@ -86,18 +96,18 @@ const getCustomResourcesWarning = (resourcesToBuild: IAmplifyResource[], depende
         resolutionMessage: `Follow this guide: https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html`,
       };
     }
-  });
+  }
   return customResourcesWarningObject;
 };
 
 /**
  * returns migration message otherwise undefined
  */
-export const getMigrationMessage = (resourcesToBuild: IAmplifyResource[]): string => {
+export const getMigrationMessage = async (resourcesToBuild: IAmplifyResource[]): Promise<string> => {
   const migrationBanner = `We detected that you are using CDK v1 with custom stacks and overrides.AWS CDK v1 has entered maintenance mode on June 1, 2022`;
   const dependencyToSearch = '@aws-cdk/core';
-  const overridesWarningObject = getOverridesWarning(resourcesToBuild, dependencyToSearch);
-  const customResourceWarningObject = getCustomResourcesWarning(resourcesToBuild, dependencyToSearch);
+  const overridesWarningObject = await getOverridesWarning(resourcesToBuild, dependencyToSearch);
+  const customResourceWarningObject = await getCustomResourcesWarning(resourcesToBuild, dependencyToSearch);
   let migrationString;
   if (!_.isEmpty(overridesWarningObject) || !_.isEmpty(customResourceWarningObject)) {
     migrationString = '\n';

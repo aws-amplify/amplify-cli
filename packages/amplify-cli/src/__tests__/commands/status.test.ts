@@ -1,14 +1,12 @@
 import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
-import { readProjectSchema } from 'graphql-transformer-core';
+import { showApiAuthAcm } from '@aws-amplify/amplify-category-api';
 
 jest.mock('@aws-amplify/amplify-category-hosting');
 jest.mock('@aws-amplify/amplify-cli-core');
-jest.mock('graphql-transformer-core', () => ({
-  readProjectSchema: jest.fn(async (__: string) => ''),
+jest.mock('@aws-amplify/amplify-category-api', () => ({
+  showApiAuthAcm: jest.fn(async (_: any, __: string) => ''),
 }));
-jest.mock('../../extensions/amplify-helpers/show-auth-acm', () => ({
-  showACM: jest.fn(),
-}));
+
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
 pathManagerMock.getBackendDirPath.mockReturnValue('testBackendDirPath');
 
@@ -29,7 +27,7 @@ const mockGraphQLAPIMeta = {
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 stateManagerMock.getMeta = jest.fn().mockImplementation(() => mockGraphQLAPIMeta);
 
-const readProjectSchemaMock = readProjectSchema as jest.MockedFunction<typeof readProjectSchema>;
+const showApiAuthAcmMock = showApiAuthAcm as jest.MockedFunction<typeof showApiAuthAcm>;
 
 describe('amplify status:', () => {
   // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
@@ -130,7 +128,7 @@ describe('amplify status:', () => {
     expect(mockContextWithHelpSubcommandAndCLArgs.amplify.showStatusTable.mock.calls.length).toBe(0);
   });
 
-  it('status api -acm Table run method should call readProjectSchema', async () => {
+  it('status api -acm Table run method should call showApiAuthAcm', async () => {
     const mockContextWithVerboseOptionAndCLArgs = {
       amplify: {
         getProviderPlugins: jest.fn().mockReturnValue({ awscloudformation: '../../__mocks__/faked-plugin' }),
@@ -155,6 +153,6 @@ describe('amplify status:', () => {
     }));
 
     await runStatusCmd(mockContextWithVerboseOptionAndCLArgs);
-    expect(readProjectSchemaMock.mock.calls.length).toBeGreaterThan(0);
+    expect(showApiAuthAcmMock.mock.calls.length).toBeGreaterThan(0);
   });
 });

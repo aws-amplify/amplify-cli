@@ -22,21 +22,21 @@ describe('test auth trigger stack Parameters', () => {
     };
     const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
-      Object {
-        "userpoolArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolArn",
-          ],
-        },
-        "userpoolId": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolId",
-          ],
-        },
-      }
-    `);
+{
+  "userpoolArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolArn",
+    ],
+  },
+  "userpoolId": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolId",
+    ],
+  },
+}
+`);
   });
   it('creates sns Role Arn parameter when useEnabledMfa is false', async () => {
     const mockResourceName = 'mockResource';
@@ -64,27 +64,27 @@ describe('test auth trigger stack Parameters', () => {
     };
     const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
-      Object {
-        "snsRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.CreatedSNSRole",
-          ],
-        },
-        "userpoolArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolArn",
-          ],
-        },
-        "userpoolId": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolId",
-          ],
-        },
-      }
-    `);
+{
+  "snsRoleArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.CreatedSNSRole",
+    ],
+  },
+  "userpoolArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolArn",
+    ],
+  },
+  "userpoolId": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolId",
+    ],
+  },
+}
+`);
   });
 
   it('creates sns Role Arn parameter when required attributes has phone_number enabled', async () => {
@@ -113,27 +113,27 @@ describe('test auth trigger stack Parameters', () => {
     };
     const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
-      Object {
-        "snsRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.CreatedSNSRole",
-          ],
-        },
-        "userpoolArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolArn",
-          ],
-        },
-        "userpoolId": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolId",
-          ],
-        },
-      }
-    `);
+{
+  "snsRoleArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.CreatedSNSRole",
+    ],
+  },
+  "userpoolArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolArn",
+    ],
+  },
+  "userpoolId": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolId",
+    ],
+  },
+}
+`);
   });
 
   it('creates sns Role Arn parameter when username attributes has phone_number enabled', async () => {
@@ -162,27 +162,27 @@ describe('test auth trigger stack Parameters', () => {
     };
     const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
-      Object {
-        "snsRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.CreatedSNSRole",
-          ],
-        },
-        "userpoolArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolArn",
-          ],
-        },
-        "userpoolId": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolId",
-          ],
-        },
-      }
-    `);
+{
+  "snsRoleArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.CreatedSNSRole",
+    ],
+  },
+  "userpoolArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolArn",
+    ],
+  },
+  "userpoolId": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolId",
+    ],
+  },
+}
+`);
   });
 
   it('creates sns Role Arn parameter when autoVerifiedAttributes attributes has phone_number enabled', async () => {
@@ -211,27 +211,27 @@ describe('test auth trigger stack Parameters', () => {
     };
     const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
-      Object {
-        "snsRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.CreatedSNSRole",
-          ],
-        },
-        "userpoolArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolArn",
-          ],
-        },
-        "userpoolId": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolId",
-          ],
-        },
-      }
-    `);
+{
+  "snsRoleArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.CreatedSNSRole",
+    ],
+  },
+  "userpoolArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolArn",
+    ],
+  },
+  "userpoolId": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolId",
+    ],
+  },
+}
+`);
   });
 
   it('creates sns Role Arn parameter when mfa configuration attributes has sms enabled', async () => {
@@ -261,27 +261,27 @@ describe('test auth trigger stack Parameters', () => {
     };
     const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
-      Object {
-        "snsRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.CreatedSNSRole",
-          ],
-        },
-        "userpoolArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolArn",
-          ],
-        },
-        "userpoolId": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolId",
-          ],
-        },
-      }
-    `);
+{
+  "snsRoleArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.CreatedSNSRole",
+    ],
+  },
+  "userpoolArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolArn",
+    ],
+  },
+  "userpoolId": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolId",
+    ],
+  },
+}
+`);
   });
 
   it('does not create sns Role Arn parameter when mfa enabled and configure sms option is false', async () => {
@@ -310,20 +310,20 @@ describe('test auth trigger stack Parameters', () => {
     };
     const answers = await getAuthTriggerStackCfnParameters(mockContext as unknown as $TSContext, mockResourceName);
     expect(answers).toMatchInlineSnapshot(`
-      Object {
-        "userpoolArn": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolArn",
-          ],
-        },
-        "userpoolId": Object {
-          "Fn::GetAtt": Array [
-            "authmockResource",
-            "Outputs.UserPoolId",
-          ],
-        },
-      }
-    `);
+{
+  "userpoolArn": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolArn",
+    ],
+  },
+  "userpoolId": {
+    "Fn::GetAtt": [
+      "authmockResource",
+      "Outputs.UserPoolId",
+    ],
+  },
+}
+`);
   });
 });
