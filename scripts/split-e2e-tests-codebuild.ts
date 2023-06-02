@@ -323,7 +323,7 @@ function main(): void {
     },
   );
   let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
-  const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier);
+  const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
   const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
   const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
   fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
