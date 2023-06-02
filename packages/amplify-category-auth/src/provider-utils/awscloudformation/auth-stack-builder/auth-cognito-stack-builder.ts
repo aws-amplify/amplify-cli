@@ -1225,7 +1225,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (props.hostedUIProviderMeta && props.hostedUIProviderCreds) {
       JSON.parse(props.hostedUIProviderMeta).forEach((provider: ProviderMeta) => {
         const providerCreds: ProviderCreds = creds.find(({ ProviderName }: ProviderCreds) => ProviderName === provider.ProviderName);
-        const hasProviderCreds = providerCreds.client_id && (providerCreds.client_secret || providerCreds.private_key);
+        const hasProviderCreds = providerCreds?.client_id && (providerCreds.client_secret || providerCreds.private_key);
 
         this.createHostedUIProviderResource(provider, !!hasProviderCreds);
       });
