@@ -20,7 +20,6 @@ import { configureSmsOption } from '../utils/configure-sms';
 import { OAuthMetaData, ProviderCreds, ProviderMeta } from './types';
 import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '../utils/migrate-idp-resources';
 
-const { getCurrentCfnTemplatePathFromBuild, findProjectRoot } = pathManager;
 const { readJson } = JSONUtilities;
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -1187,7 +1186,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (!props.hostedUIDomainName) {
       return;
     }
-    const authCfnTemplatePath = getCurrentCfnTemplatePathFromBuild(findProjectRoot(), 'auth', props.resourceName);
+    const authCfnTemplatePath = pathManager.getCurrentCfnTemplatePathFromBuild('auth', props.resourceName);
     const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
     const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUICustomResource?.Type === 'AWS::Lambda::Function';
     const userPoolDomainCreatedInCloud = authCfnTemplate?.Resources?.HostedUIDomainResource?.Type === 'AWS::Cognito::UserPoolDomain';

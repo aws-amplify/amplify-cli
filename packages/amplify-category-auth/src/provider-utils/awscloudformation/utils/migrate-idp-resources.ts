@@ -3,10 +3,10 @@ import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-i
 import { ProviderCreds } from '../auth-stack-builder/types';
 
 const { readJson } = JSONUtilities;
-const { getCurrentCfnTemplatePathFromBuild, getCurrentCloudRootStackCfnTemplatePath, findProjectRoot } = pathManager;
+const { getCurrentCfnTemplatePathFromBuild, getCurrentCloudRootStackCfnTemplatePath } = pathManager;
 
 export const migrateResourcesToCfn = (props: CognitoStackOptions): boolean => {
-  const authCfnTemplatePath = getCurrentCfnTemplatePathFromBuild(findProjectRoot() || '', 'auth', props.resourceName);
+  const authCfnTemplatePath = getCurrentCfnTemplatePathFromBuild('auth', props.resourceName);
   const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
   const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProvidersCustomResource?.Type === 'AWS::Lambda::Function';
   const providerCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider';
@@ -18,7 +18,7 @@ export const exportHostedUIProvidersFromCurrCloudRootStack = (
   resourceName: string,
   updatedUIProviderCreds: ProviderCreds[],
 ): ProviderCreds[] => {
-  const rootCfnTemplatePath = getCurrentCloudRootStackCfnTemplatePath(findProjectRoot() || '');
+  const rootCfnTemplatePath = getCurrentCloudRootStackCfnTemplatePath();
   const rootCfnTemplate: Template | undefined = readJson(rootCfnTemplatePath, { throwIfNotExist: false });
   const resource = (rootCfnTemplate?.Resources || {})[`auth${resourceName}`];
   const currProviderCreds = JSON.parse(resource?.Properties?.Parameters?.hostedUIProviderCreds || '[]');

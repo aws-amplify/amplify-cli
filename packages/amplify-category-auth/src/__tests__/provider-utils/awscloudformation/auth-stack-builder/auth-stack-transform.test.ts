@@ -27,9 +27,11 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
       );
     }),
     findProjectRoot: jest.fn().mockReturnValue(''),
-    getCurrentCfnTemplatePathFromBuild: jest.fn().mockImplementation((projectRoot, categoryName, resourceName) => {
-      path.join(
-        projectRoot,
+    getCurrentCfnTemplatePathFromBuild: jest.fn().mockImplementation((categoryName, resourceName) => {
+      return path.join(
+        __dirname,
+        'amplify',
+        '#current-cloud-backend',
         categoryName,
         resourceName,
         `${resourceName}-cloudformation-template.json`,

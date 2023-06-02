@@ -5,6 +5,7 @@ import {
   AttributeType,
   CognitoStackOptions,
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
+import path from 'path';
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
@@ -17,6 +18,16 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
     getResourceCfnTemplatePath: jest.fn().mockReturnValue('cfn-template-path.json'),
+    getCurrentCfnTemplatePathFromBuild: jest.fn().mockImplementation((categoryName, resourceName) => {
+      return path.join(
+        __dirname,
+        'amplify',
+        '#current-cloud-backend',
+        categoryName,
+        resourceName,
+        `${resourceName}-cloudformation-template.json`,
+      );
+    }),
   },
 }));
 

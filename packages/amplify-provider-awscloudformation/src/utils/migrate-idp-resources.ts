@@ -1,10 +1,10 @@
 import { $TSObject, JSONUtilities, pathManager, Template } from '@aws-amplify/amplify-cli-core';
 
 const { readJson } = JSONUtilities;
-const { getCurrentCfnTemplatePathFromBuild, getCurrentCloudRootStackCfnTemplatePath, findProjectRoot } = pathManager;
+const { getCurrentCfnTemplatePathFromBuild, getCurrentCloudRootStackCfnTemplatePath } = pathManager;
 
 export const migrateResourcesToCfn = (resourceName: string): boolean => {
-  const authCfnTemplatePath = getCurrentCfnTemplatePathFromBuild(findProjectRoot() || '', 'auth', resourceName);
+  const authCfnTemplatePath = getCurrentCfnTemplatePathFromBuild('auth', resourceName);
   const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
   const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProvidersCustomResource?.Type === 'AWS::Lambda::Function';
   const providerCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider';
@@ -13,7 +13,7 @@ export const migrateResourcesToCfn = (resourceName: string): boolean => {
 };
 
 export const exportHostedUIProvidersFromCurrCloudRootStack = (resourceName: string, updatedUIProviderCreds: $TSObject[]): $TSObject[] => {
-  const rootCfnTemplatePath = getCurrentCloudRootStackCfnTemplatePath(findProjectRoot() || '');
+  const rootCfnTemplatePath = getCurrentCloudRootStackCfnTemplatePath();
   const rootCfnTemplate: Template | undefined = readJson(rootCfnTemplatePath, { throwIfNotExist: false });
   const resource = (rootCfnTemplate?.Resources || {})[`auth${resourceName}`];
   const currProviderCreds = JSON.parse(resource?.Properties?.Parameters?.hostedUIProviderCreds || '[]');
