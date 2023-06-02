@@ -1214,7 +1214,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       return;
     }
 
-    const migrateResources = migrateResourcesToCfn(props);
+    const migrateResources = migrateResourcesToCfn(props.resourceName);
     let creds = JSON.parse(props.hostedUIProviderCreds || '[]');
 
     if (migrateResources) {
