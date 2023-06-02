@@ -22,15 +22,15 @@ describe('applyS3SSEModification', () => {
     const result = await applyS3SSEModification(bucket);
 
     expect(result.Properties.BucketEncryption).toMatchInlineSnapshot(`
-      BucketEncryption {
-        "ServerSideEncryptionConfiguration": Array [
-          ServerSideEncryptionRule {
-            "ServerSideEncryptionByDefault": ServerSideEncryptionByDefault {
-              "SSEAlgorithm": "AES256",
-            },
-          },
-        ],
-      }
-    `);
+BucketEncryption {
+  "ServerSideEncryptionConfiguration": [
+    ServerSideEncryptionRule {
+      "ServerSideEncryptionByDefault": ServerSideEncryptionByDefault {
+        "SSEAlgorithm": "AES256",
+      },
+    },
+  ],
+}
+`);
   });
 });

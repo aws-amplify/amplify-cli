@@ -1,6 +1,7 @@
 import { CheckDependenciesResult } from '@aws-amplify/amplify-function-plugin-interface';
-import { execAsStringPromise, getPythonBinaryName } from './pyUtils';
+import { getPythonBinaryName } from './pyUtils';
 import { coerce, lt } from 'semver';
+import { execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
 
 export const minPyVersion = coerce('3.8')!;
 const pythonErrMsg =
@@ -22,7 +23,7 @@ export async function checkDeps(): Promise<CheckDependenciesResult> {
     errMsg = `Could not find "python3" or "python" executable in the PATH.`;
   } else {
     try {
-      const pyVersionStr = await execAsStringPromise(`${pyBinary} --version`);
+      const pyVersionStr = await execWithOutputAsString(`${pyBinary} --version`);
       const pyVersion = coerce(pyVersionStr);
       if (!pyVersion || lt(pyVersion, minPyVersion)) {
         hasDeps = false;
@@ -36,7 +37,7 @@ export async function checkDeps(): Promise<CheckDependenciesResult> {
 
   // check pipenv
   try {
-    await execAsStringPromise('pipenv --version');
+    await execWithOutputAsString('pipenv --version');
   } catch (err) {
     hasDeps = false;
     errMsg = errMsg.concat(errMsg ? '\n' : '', pipenvErrMsg);
@@ -44,7 +45,7 @@ export async function checkDeps(): Promise<CheckDependenciesResult> {
 
   // check venv
   try {
-    await execAsStringPromise('virtualenv --version');
+    await execWithOutputAsString('virtualenv --version');
   } catch (err) {
     hasDeps = false;
     errMsg = errMsg.concat(errMsg ? '\n' : '', venvErrMsg);

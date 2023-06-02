@@ -1,33 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`validate update storage request returns valid payload 1`] = `
-Object {
-  "serviceModification": Object {
+{
+  "serviceModification": {
     "bucketName": "something",
-    "lambdaTrigger": Object {
+    "lambdaTrigger": {
       "mode": "existing",
       "name": "triggerName",
     },
-    "permissions": Object {
-      "auth": Array [
+    "permissions": {
+      "auth": [
         "READ",
         "CREATE_AND_UPDATE",
       ],
-      "groups": Object {
-        "myUserGroup1": Array [
+      "groups": {
+        "myUserGroup1": [
           "CREATE_AND_UPDATE",
           "READ",
           "DELETE",
         ],
-        "myUserGroup2": Array [
+        "myUserGroup2": [
           "CREATE_AND_UPDATE",
           "READ",
         ],
-        "myUserGroup3": Array [
+        "myUserGroup3": [
           "CREATE_AND_UPDATE",
         ],
       },
-      "guest": Array [
+      "guest": [
         "READ",
       ],
     },

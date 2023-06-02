@@ -291,12 +291,12 @@ describe('Check Auth Template', () => {
     const authTransform = new AmplifyAuthTransform(resourceName);
     const mock_template = await authTransform.transform(context_stub_typed);
     expect(mock_template.Resources?.UserPoolClient.Properties.AllowedOAuthFlows).toMatchInlineSnapshot(`
-      Array [
+      [
         "code",
       ]
     `);
     expect(mock_template.Resources?.UserPoolClient.Properties.AllowedOAuthScopes).toMatchInlineSnapshot(`
-      Array [
+      [
         "phone",
         "email",
         "openid",
@@ -305,19 +305,19 @@ describe('Check Auth Template', () => {
       ]
     `);
     expect(mock_template.Resources?.UserPoolClient.Properties.CallbackURLs).toMatchInlineSnapshot(`
-      Array [
+      [
         "https://localhost:3000/",
       ]
     `);
     expect(mock_template.Resources?.UserPoolClient.Properties.LogoutURLs).toMatchInlineSnapshot(`undefined`);
 
     expect(mock_template.Resources?.UserPoolClientWeb.Properties.AllowedOAuthFlows).toMatchInlineSnapshot(`
-      Array [
+      [
         "code",
       ]
     `);
     expect(mock_template.Resources?.UserPoolClientWeb.Properties.AllowedOAuthScopes).toMatchInlineSnapshot(`
-      Array [
+      [
         "phone",
         "email",
         "openid",
@@ -326,7 +326,7 @@ describe('Check Auth Template', () => {
       ]
     `);
     expect(mock_template.Resources?.UserPoolClientWeb.Properties.CallbackURLs).toMatchInlineSnapshot(`
-      Array [
+      [
         "https://localhost:3000/",
       ]
     `);
@@ -353,7 +353,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -365,7 +365,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -378,7 +378,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -390,7 +390,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -403,7 +403,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -415,7 +415,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -428,7 +428,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -440,7 +440,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -452,7 +452,7 @@ describe('Check Auth Template', () => {
         NoEcho: true,
       },
       `
-      Object {
+      {
         "NoEcho": true,
         "Type": "String",
       }
@@ -477,7 +477,7 @@ describe('Check Auth Template', () => {
     expect(mock_template.Resources!.HostedUIFacebookProviderResource.Properties.AttributeMapping).toMatchInlineSnapshot(
       { email: 'email', username: 'id' },
       `
-      Object {
+      {
         "email": "email",
         "username": "id",
       }
@@ -490,14 +490,14 @@ describe('Check Auth Template', () => {
         client_secret: { Ref: 'facebookAppSecretUserPool' },
       },
       `
-      Object {
-        "authorize_scopes": Object {
+      {
+        "authorize_scopes": {
           "Ref": "facebookAuthorizeScopes",
         },
-        "client_id": Object {
+        "client_id": {
           "Ref": "facebookAppIdUserPool",
         },
-        "client_secret": Object {
+        "client_secret": {
           "Ref": "facebookAppSecretUserPool",
         },
       }
@@ -507,7 +507,7 @@ describe('Check Auth Template', () => {
     expect(mock_template.Resources!.HostedUIGoogleProviderResource.Properties.AttributeMapping).toMatchInlineSnapshot(
       { email: 'email', username: 'sub' },
       `
-      Object {
+      {
         "email": "email",
         "username": "sub",
       }
@@ -520,14 +520,14 @@ describe('Check Auth Template', () => {
         client_secret: { Ref: 'googleAppSecretUserPool' },
       },
       `
-      Object {
-        "authorize_scopes": Object {
+      {
+        "authorize_scopes": {
           "Ref": "googleAuthorizeScopes",
         },
-        "client_id": Object {
+        "client_id": {
           "Ref": "googleAppIdUserPool",
         },
-        "client_secret": Object {
+        "client_secret": {
           "Ref": "googleAppSecretUserPool",
         },
       }
@@ -537,7 +537,7 @@ describe('Check Auth Template', () => {
     expect(mock_template.Resources!.HostedUILoginWithAmazonProviderResource.Properties.AttributeMapping).toMatchInlineSnapshot(
       { email: 'email', username: 'user_id' },
       `
-      Object {
+      {
         "email": "email",
         "username": "user_id",
       }
@@ -550,14 +550,14 @@ describe('Check Auth Template', () => {
         client_secret: { Ref: 'loginwithamazonAppSecretUserPool' },
       },
       `
-      Object {
-        "authorize_scopes": Object {
+      {
+        "authorize_scopes": {
           "Ref": "loginwithamazonAuthorizeScopes",
         },
-        "client_id": Object {
+        "client_id": {
           "Ref": "loginwithamazonAppIdUserPool",
         },
-        "client_secret": Object {
+        "client_secret": {
           "Ref": "loginwithamazonAppSecretUserPool",
         },
       }
@@ -567,7 +567,7 @@ describe('Check Auth Template', () => {
     expect(mock_template.Resources!.HostedUISignInWithAppleProviderResource.Properties.AttributeMapping).toMatchInlineSnapshot(
       { email: 'email' },
       `
-      Object {
+      {
         "email": "email",
       }
     `,
@@ -581,20 +581,20 @@ describe('Check Auth Template', () => {
         team_id: { Ref: 'signinwithappleTeamIdUserPool' },
       },
       `
-      Object {
-        "authorize_scopes": Object {
+      {
+        "authorize_scopes": {
           "Ref": "signinwithappleAuthorizeScopes",
         },
-        "client_id": Object {
+        "client_id": {
           "Ref": "signinwithappleClientIdUserPool",
         },
-        "key_id": Object {
+        "key_id": {
           "Ref": "signinwithappleKeyIdUserPool",
         },
-        "private_key": Object {
+        "private_key": {
           "Ref": "signinwithapplePrivateKeyUserPool",
         },
-        "team_id": Object {
+        "team_id": {
           "Ref": "signinwithappleTeamIdUserPool",
         },
       }

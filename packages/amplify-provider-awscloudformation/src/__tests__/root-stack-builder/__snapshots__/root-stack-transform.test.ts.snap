@@ -1,107 +1,107 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Root stack template tests Generated root stack template during init 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Root Stack for AWS Amplify CLI",
-  "Outputs": Object {
-    "AuthRoleArn": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+  "Outputs": {
+    "AuthRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
           "AuthRole",
           "Arn",
         ],
       },
     },
-    "AuthRoleName": Object {
-      "Value": Object {
+    "AuthRoleName": {
+      "Value": {
         "Ref": "AuthRole",
       },
     },
-    "DeploymentBucketName": Object {
+    "DeploymentBucketName": {
       "Description": "CloudFormation provider root stack deployment bucket name",
-      "Export": Object {
-        "Name": Object {
+      "Export": {
+        "Name": {
           "Fn::Sub": "\${AWS::StackName}-DeploymentBucketName",
         },
       },
-      "Value": Object {
+      "Value": {
         "Ref": "DeploymentBucketName",
       },
     },
-    "Region": Object {
+    "Region": {
       "Description": "CloudFormation provider root stack Region",
-      "Export": Object {
-        "Name": Object {
+      "Export": {
+        "Name": {
           "Fn::Sub": "\${AWS::StackName}-Region",
         },
       },
-      "Value": Object {
+      "Value": {
         "Ref": "AWS::Region",
       },
     },
-    "StackId": Object {
+    "StackId": {
       "Description": "CloudFormation provider root stack name",
-      "Export": Object {
-        "Name": Object {
+      "Export": {
+        "Name": {
           "Fn::Sub": "\${AWS::StackName}-StackId",
         },
       },
-      "Value": Object {
+      "Value": {
         "Ref": "AWS::StackId",
       },
     },
-    "StackName": Object {
+    "StackName": {
       "Description": "CloudFormation provider root stack ID",
-      "Export": Object {
-        "Name": Object {
+      "Export": {
+        "Name": {
           "Fn::Sub": "\${AWS::StackName}-StackName",
         },
       },
-      "Value": Object {
+      "Value": {
         "Ref": "AWS::StackName",
       },
     },
-    "UnauthRoleArn": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+    "UnauthRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
           "UnauthRole",
           "Arn",
         ],
       },
     },
-    "UnauthRoleName": Object {
-      "Value": Object {
+    "UnauthRoleName": {
+      "Value": {
         "Ref": "UnauthRole",
       },
     },
   },
-  "Parameters": Object {
-    "AuthRoleName": Object {
+  "Parameters": {
+    "AuthRoleName": {
       "Default": "AuthRoleName",
       "Description": "Name of the common deployment bucket provided by the parent stack",
       "Type": "String",
     },
-    "DeploymentBucketName": Object {
+    "DeploymentBucketName": {
       "Default": "DeploymentBucket",
       "Description": "Name of the common deployment bucket provided by the parent stack",
       "Type": "String",
     },
-    "UnauthRoleName": Object {
+    "UnauthRoleName": {
       "Default": "UnAuthRoleName",
       "Description": "Name of the common deployment bucket provided by the parent stack",
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "AuthRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+  "Resources": {
+    "AuthRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Effect": "Deny",
-              "Principal": Object {
+              "Principal": {
                 "Federated": "cognito-identity.amazonaws.com",
               },
               "Sid": "",
@@ -109,30 +109,30 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "RoleName": Object {
+        "RoleName": {
           "Ref": "AuthRoleName",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeploymentBucket": Object {
+    "DeploymentBucket": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "BucketName": Object {
+      "Properties": {
+        "BucketName": {
           "Ref": "DeploymentBucketName",
         },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "UnauthRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "UnauthRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Effect": "Deny",
-              "Principal": Object {
+              "Principal": {
                 "Federated": "cognito-identity.amazonaws.com",
               },
               "Sid": "",
@@ -140,7 +140,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "RoleName": Object {
+        "RoleName": {
           "Ref": "UnauthRoleName",
         },
       },

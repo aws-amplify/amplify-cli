@@ -1,33 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`update dependent functions 1`] = `
-Object {
-  "categoryPolicies": Array [
+{
+  "categoryPolicies": [
     "randomPermissionsforapiandstorage",
     "randomPermissionsforapiandstorage",
   ],
-  "dependsOn": Array [
-    Object {
-      "attributes": Array [
+  "dependsOn": [
+    {
+      "attributes": [
         "GraphQLAPIIdOutput",
       ],
       "category": "api",
       "resourceName": "mock_api",
     },
   ],
-  "environmentMap": Object {
-    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": Object {
+  "environmentMap": {
+    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": {
       "Ref": "apimock_apiGraphQLAPIIdOutput",
     },
   },
   "lambdaLayers": undefined,
-  "mutableParametersState": Object {
-    "permissions": Object {
-      "storage": Object {
-        "model1": Array [
+  "mutableParametersState": {
+    "permissions": {
+      "storage": {
+        "model1": [
           "create",
         ],
-        "model2": Array [
+        "model2": [
           "create",
         ],
       },
@@ -38,35 +38,35 @@ Object {
 `;
 
 exports[`update dependent functions 2`] = `
-Object {
-  "categoryPolicies": Array [
+{
+  "categoryPolicies": [
     "randomPermissionsforapiandstorage",
   ],
-  "dependsOn": Array [
-    Object {
-      "attributes": Array [
+  "dependsOn": [
+    {
+      "attributes": [
         "GraphQLAPIIdOutput",
       ],
       "category": "api",
       "resourceName": "mock_api",
     },
   ],
-  "environmentMap": Object {
-    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": Object {
+  "environmentMap": {
+    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": {
       "Ref": "apimock_apiGraphQLAPIIdOutput",
     },
   },
-  "lambdaLayers": Array [
-    Object {
+  "lambdaLayers": [
+    {
       "resourceName": "mocklayer",
       "type": "ProjectLayer",
       "version": 1,
     },
   ],
-  "mutableParametersState": Object {
-    "permissions": Object {
-      "storage": Object {
-        "model3": Array [
+  "mutableParametersState": {
+    "permissions": {
+      "storage": {
+        "model3": [
           "create",
         ],
       },

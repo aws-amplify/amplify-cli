@@ -31,9 +31,11 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     ANALYTICS: 'analytics',
     CUSTOM: 'custom',
   },
-  AmplifyNodePkgDetector: jest.fn().mockImplementation(() => ({
-    detectAffectedDirectDependencies: detectAffectedDirectDependenciesMock,
-  })),
+  AmplifyNodePkgDetector: {
+    getInstance: jest.fn().mockImplementation(() => ({
+      detectAffectedDirectDependencies: detectAffectedDirectDependenciesMock,
+    })),
+  },
 }));
 
 const inputPayload = {

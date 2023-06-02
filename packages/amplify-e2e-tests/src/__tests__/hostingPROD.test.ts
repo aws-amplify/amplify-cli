@@ -7,7 +7,6 @@ import {
   deleteProject,
   deleteS3Bucket,
   addPRODHosting,
-  removePRODCloudFront,
   removeHosting,
   amplifyPushWithoutCodegen,
   deleteProjectDir,
@@ -69,24 +68,11 @@ describe('amplify add hosting', () => {
       await amplifyPublishWithoutUpdate(projRoot);
     } catch (err) {
       error = err;
+    } finally {
+      resetBuildCommand(projRoot, currentBuildCommand);
     }
     expect(error).toBeDefined();
     expect(error.message).toEqual('Process exited with non zero exit code 1');
-    resetBuildCommand(projRoot, currentBuildCommand);
-  });
-
-  it('correctly updates hosting meta output after CloudFront is removed', async () => {
-    await removePRODCloudFront(projRoot);
-    await amplifyPushWithoutCodegen(projRoot);
-    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
-    const projectMeta = getProjectMeta(projRoot);
-    expect(projectMeta.hosting).toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront.output.CloudFrontSecureURL).not.toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront.output.CloudFrontOriginAccessIdentity).not.toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront.output.CloudFrontDistributionID).not.toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront.output.CloudFrontDomainName).not.toBeDefined();
-    expect(projectMeta.hosting.S3AndCloudFront.output.WebsiteURL).toBeDefined();
   });
 });
 

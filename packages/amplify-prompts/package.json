@@ -40,7 +40,9 @@
   },
   "jest": {
     "collectCoverage": true,
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "roots": [
       "<rootDir>/src"
     ],
@@ -55,6 +57,11 @@
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }
