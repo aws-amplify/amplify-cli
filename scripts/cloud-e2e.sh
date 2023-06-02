@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# this file is used to automate the process of triggering an e2e build for each environment type
+
 # set exit on error to true
 set -e
 # load .env
