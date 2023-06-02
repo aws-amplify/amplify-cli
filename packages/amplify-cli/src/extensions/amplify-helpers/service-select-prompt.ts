@@ -1,4 +1,11 @@
-import { $TSAny, $TSContext, exitOnNextTick, ResourceDoesNotExistError, ServiceSelection } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  AmplifyError,
+  exitOnNextTick,
+  ResourceDoesNotExistError,
+  ServiceSelection,
+} from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 
 import { getProjectConfig } from './get-project-config';
@@ -58,10 +65,9 @@ async function serviceQuestionWalkthrough(
   }
 
   if (options.length === 0) {
-    const errMessage = `No services defined by configured providers for category: ${category}`;
-    printer.error(errMessage);
-    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    exitOnNextTick(1);
+    throw new AmplifyError('ResourceDoesNotExistError', {
+      message: `No services defined by configured providers for category: ${category}`,
+    });
   }
 
   if (options.length === 1) {
