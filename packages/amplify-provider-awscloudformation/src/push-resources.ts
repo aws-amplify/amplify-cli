@@ -1211,15 +1211,15 @@ export const formNestedStack = async (
 
         if (parameters.resourceName) {
           const migrateAuthIdpsToCfn = migrateResourcesToCfn(parameters.resourceName);
-  
+
           if (hasAuthCreds || migrateAuthIdpsToCfn) {
             const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta || '[]');
             let hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
-  
+
             if (migrateAuthIdpsToCfn) {
               hostedUIProviderCreds = exportHostedUIProvidersFromCurrCloudRootStack(parameters.resourceName, hostedUIProviderCreds);
             }
-  
+
             Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
           }
         }

@@ -36,7 +36,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
         resourceName,
         `${resourceName}-cloudformation-template.json`,
       );
-    })
+    }),
   },
   JSONUtilities: {
     writeJson: jest.fn(),

@@ -267,7 +267,6 @@ export class PathManager {
 
   getCurrentCloudRootStackCfnTemplatePath = (): string => {
     const projectPath = this.findProjectRoot();
-    debugger;
     return this.constructPath(projectPath, [
       PathConstants.AmplifyDirName,
       PathConstants.CurrentCloudBackendDirName,
@@ -277,7 +276,7 @@ export class PathManager {
       PathConstants.BuildDirName,
       'root-cloudformation-stack.json',
     ]);
-  }
+  };
 
   getResourceOverrideFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
     this.constructPath(projectPath, [
