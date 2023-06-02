@@ -40,7 +40,7 @@ function cloudE2E {
     echo Running Prod E2E Test Suite
     export CLOUD_E2E_PROFILE=AmplifyCLIE2E
     export CLOUD_E2E_ACCOUNT=$E2E_ACCOUNT_PROD
-    export TARGET_BRANCH=run-e2e/$USER/$CURR_BRANCH
+    export TARGET_BRANCH=run-cb-e2e/$USER/$CURR_BRANCH
     git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$TARGET_BRANCH --no-verify --force-with-lease
     authenticate
     triggerBuild
