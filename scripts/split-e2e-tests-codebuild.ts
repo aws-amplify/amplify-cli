@@ -150,7 +150,6 @@ const splitTestsV3 = (
   testDirectory: string,
   isMigration: boolean,
   pickTests: ((testSuites: string[]) => string[]) | undefined,
-  withAggregateReports = false,
 ) => {
   const output: any[] = [];
   let testSuites = getTestFiles(testDirectory);
@@ -259,23 +258,6 @@ const splitTestsV3 = (
       result.push(tmp);
     }
   });
-
-  if (withAggregateReports) {
-    const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
-    const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
-    fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
-    const reportsAggregator = {
-      identifier: 'aggregate_e2e_reports',
-      env: {
-        'compute-type': 'BUILD_GENERAL1_MEDIUM',
-        variables: { WAIT_FOR_IDS_FILE_PATH: waitForIdsFilePath },
-      },
-      buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
-      'depend-on': ['upb'],
-    };
-    result.push(reportsAggregator);
-  }
-
   return result;
 };
 function main(): void {
@@ -297,7 +279,6 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
     undefined,
-    true,
   );
   const splitMigrationV5Tests = splitTestsV3(
     {
@@ -342,6 +323,20 @@ function main(): void {
     },
   );
   let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier);
+  const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
+  const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
+  fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
+  const reportsAggregator = {
+    identifier: 'aggregate_e2e_reports',
+    env: {
+      'compute-type': 'BUILD_GENERAL1_MEDIUM',
+      variables: { WAIT_FOR_IDS_FILE_PATH: waitForIdsFilePath },
+    },
+    buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
+    'depend-on': ['upb', 'build_windows'],
+  };
+  allBuilds.push(reportsAggregator);
   let currentBatch = [...baseBuildGraph, ...allBuilds];
   configBase.batch['build-graph'] = currentBatch;
   saveConfig(configBase);
