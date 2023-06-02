@@ -1,4 +1,3 @@
-import inquirer from 'inquirer';
 import {
   FunctionParameters,
   FunctionTemplateCondition,
@@ -12,8 +11,17 @@ import {
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
-import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  getPackageManagerByType,
+  packageManagers,
+  PackageManagerType,
+  toPackageManagerInstallCommand,
+} from '@aws-amplify/amplify-cli-core';
 import { categoryName } from '../../../constants';
+import { byValue, minLength, printer, prompter } from '@aws-amplify/amplify-prompts';
+
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
@@ -83,17 +91,41 @@ export async function runtimeWalkthrough(
   const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugins = [];
   for (const selection of selections) {
+    if (selectionOptions.service === ServiceName.LambdaFunction) {
+      await packageManagerWalkthrough(selection);
+    }
+
     const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
     const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
     if (!depCheck.hasRequiredDependencies) {
-      context.print.warning(
-        depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed',
-      );
+      printer.warn(depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed');
     }
     plugins.push(plugin);
   }
   return _functionRuntimeWalkthroughHelper(params, plugins, selections);
 }
+
+const packageManagerWalkthrough = async (selection: PluginSelection): Promise<void> => {
+  if (selection.value === 'nodejs') {
+    const packageManagerOptions = Object.values(packageManagers).map((pm) => ({
+      name: pm.displayValue,
+      value: pm.packageManager as string,
+    }));
+
+    packageManagerOptions.push({
+      name: 'Custom Build Command or Script Path',
+      value: 'custom',
+    });
+
+    const packageManager = (await prompter.pick('Choose the package manager that you want to use:', packageManagerOptions)) as
+      | PackageManagerType
+      | 'custom';
+
+    selection.scripts = {
+      build: await getBuildCommand(packageManager),
+    };
+  }
+};
 
 async function _functionRuntimeWalkthroughHelper(
   params: Partial<FunctionParameters> | Partial<LayerParameters>,
@@ -113,6 +145,7 @@ async function _functionRuntimeWalkthroughHelper(
     runtimes.push({
       ...contribution,
       runtimePluginId: selections[i].pluginId,
+      scripts: selections[i].scripts,
     });
   }
   return runtimes;
@@ -129,8 +162,8 @@ async function getSelectionsFromContributors<T>(
   // get providers from context
   const templateProviders = context.pluginPlatform.plugins[selectionOptions.pluginType];
   if (!templateProviders) {
-    context.print.error(selectionOptions.notFoundMessage);
-    context.print.error(notFoundSuffix);
+    printer.error(selectionOptions.notFoundMessage);
+    printer.error(notFoundSuffix);
     throw new Error('No plugins found for function configuration');
   }
 
@@ -154,8 +187,8 @@ async function getSelectionsFromContributors<T>(
   // sanity checks
   let selection;
   if (selections.length === 0) {
-    context.print.error(selectionOptions.notFoundMessage);
-    context.print.error(notFoundSuffix);
+    printer.error(selectionOptions.notFoundMessage);
+    printer.error(notFoundSuffix);
     throw new Error('Plugins found but no selections supplied for function configuration');
   } else if (selections.length === 1) {
     // quick hack to print custom messages for single selection options
@@ -165,29 +198,22 @@ async function getSelectionsFromContributors<T>(
     } else if (selectionOptions.listOptionsField === 'runtimes') {
       singleOptionMsg = `Only one runtime detected: ${selections[0].name}. Learn more about additional runtimes at https://docs.amplify.aws/cli/function`;
     }
-    context.print.info(singleOptionMsg);
+    printer.info(singleOptionMsg);
     selection = selections[0].value;
   } else if (isDefaultDefined(selectionOptions)) {
     selection = selectionOptions.defaultSelection;
   } else {
     // ask which template to use
-    const answer = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'selection',
-        message: selectionOptions.selectionPrompt,
-        choices: selections,
-        default: defaultSelection(selectionOptions, selections),
-      },
-    ]);
-    selection = answer.selection;
+    selection = await prompter.pick(selectionOptions.selectionPrompt, selections, {
+      initial: byValue(defaultSelection(selectionOptions, selections)),
+    });
   }
 
   if (!Array.isArray(selection)) {
     selection = [selection];
   }
 
-  return selection.map((s) => {
+  return selection.map((s: string) => {
     return {
       value: s,
       pluginPath: selectionMap.get(s).path,
@@ -244,6 +270,9 @@ interface PluginSelection {
   pluginPath: string;
   value: string;
   pluginId: string;
+  scripts?: {
+    build: string;
+  };
 }
 
 interface ListOption {
@@ -272,3 +301,13 @@ function defaultSelection(selectionOptions: PluginSelectionOptions<FunctionRunti
     }
   }
 }
+
+const getBuildCommand = async (packageManager: PackageManagerType | 'custom'): Promise<string> => {
+  if (packageManager === 'custom') {
+    return await prompter.input('Enter command or script path to build your function:', {
+      validate: minLength(1),
+    });
+  } else {
+    return toPackageManagerInstallCommand(getPackageManagerByType(packageManager));
+  }
+};

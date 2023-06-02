@@ -1,4 +1,13 @@
-import { $TSObject, getPackageManager, JSONUtilities, AmplifyError, PackageManager } from '@aws-amplify/amplify-cli-core';
+import { execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
+import {
+  toPackageManagerInstallCommand,
+  toPackageManagerScriptCommand,
+  $TSObject,
+  getPackageManager,
+  JSONUtilities,
+  AmplifyError,
+  PackageManager,
+} from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -12,19 +21,24 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
   const resourceDir = request.service ? request.srcRoot : path.join(request.srcRoot, 'src');
 
   if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp, request.buildType, request.lastBuildType)) {
-    await installDependencies(resourceDir, request.buildType);
+    if (request.scripts?.build) {
+      await execWithOutputAsString(request.scripts.build, { cwd: resourceDir });
+    } else {
+      await installDependencies(resourceDir);
+    }
+
     if (request.legacyBuildHookParams) {
       await runBuildScriptHook(request.legacyBuildHookParams.resourceName, request.legacyBuildHookParams.projectRoot);
     }
-    return Promise.resolve({ rebuilt: true });
+    return { rebuilt: true };
   }
-  return Promise.resolve({ rebuilt: false });
+  return { rebuilt: false };
 };
 
 const runBuildScriptHook = async (resourceName: string, projectRoot: string): Promise<void> => {
   const scriptName = `amplify:${resourceName}`;
   if (scriptExists(projectRoot, scriptName)) {
-    await runPackageManager(projectRoot, undefined, scriptName);
+    await runPackageManagerScript(projectRoot, scriptName);
   }
 };
 
@@ -35,22 +49,37 @@ const scriptExists = (projectRoot: string, scriptName: string): boolean => {
   return !!rootPackageJsonContents?.scripts?.[scriptName];
 };
 
-const installDependencies = async (resourceDir: string, buildType: BuildType): Promise<void> => {
-  await runPackageManager(resourceDir, buildType);
+const installDependencies = async (resourceDir: string): Promise<void> => {
+  await runPackageManagerInstall(resourceDir);
 };
 
-const runPackageManager = async (resourceDir: string, buildType?: BuildType, scriptName?: string): Promise<void> => {
+const runPackageManagerInstall = async (resourceDir: string): Promise<void> => {
   const packageManager = await getPackageManager(resourceDir);
-
   if (packageManager === null) {
     // If no package manager was detected, it means that this functions or layer has no package.json, so no package operations
     // should be done.
     return;
   }
 
-  const args = await toPackageManagerArgs(packageManager, buildType, scriptName);
+  const command = await toPackageManagerInstallCommand(packageManager);
+  await runPackageManager(packageManager, command, resourceDir);
+};
+
+const runPackageManagerScript = async (resourceDir: string, scriptName: string): Promise<void> => {
+  const packageManager = await getPackageManager(resourceDir);
+  if (packageManager === null) {
+    // If no package manager was detected, it means that this functions or layer has no package.json, so no package operations
+    // should be done.
+    return;
+  }
+
+  const command = await toPackageManagerScriptCommand(packageManager, scriptName);
+  await runPackageManager(packageManager, command, resourceDir);
+};
+
+const runPackageManager = async (packageManager: PackageManager, command: string, resourceDir: string): Promise<void> => {
   try {
-    execa.sync(packageManager.executable, args, {
+    await execa.command(command, {
       cwd: resourceDir,
       stdio: 'pipe',
       encoding: 'utf-8',
@@ -72,43 +101,6 @@ const runPackageManager = async (resourceDir: string, buildType?: BuildType, scr
         },
         error,
       );
-    }
-  }
-};
-
-const toPackageManagerArgs = async (packageManager: PackageManager, buildType?: BuildType, scriptName?: string): Promise<string[]> => {
-  switch (packageManager.packageManager) {
-    case 'yarn': {
-      const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
-      if (scriptName) {
-        return [scriptName];
-      }
-
-      const args = useYarnModern ? [] : ['--no-bin-links'];
-
-      if (buildType === BuildType.PROD) {
-        args.push(useYarnModern ? 'build' : '--production');
-      }
-
-      return args;
-    }
-    case 'npm': {
-      if (scriptName) {
-        return ['run-script', scriptName];
-      }
-
-      const args = ['install', '--no-bin-links'];
-
-      if (buildType === BuildType.PROD) {
-        args.push('--production');
-      }
-
-      return args;
-    }
-    default: {
-      throw new AmplifyError('PackagingLambdaFunctionError', {
-        message: `Packaging lambda function failed. Unsupported package manager ${packageManager.packageManager}`,
-      });
     }
   }
 };

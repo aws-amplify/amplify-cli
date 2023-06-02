@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, exitOnNextTick, ResourceDoesNotExistError, ServiceSelection } from '@aws-amplify/amplify-cli-core';
-import * as inquirer from 'inquirer';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 
 import { getProjectConfig } from './get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
@@ -59,31 +59,20 @@ async function serviceQuestionWalkthrough(
 
   if (options.length === 0) {
     const errMessage = `No services defined by configured providers for category: ${category}`;
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(1);
   }
 
   if (options.length === 1) {
     // No need to ask questions
-    context.print.info(`Using service: ${options[0].value.service}, provided by: ${options[0].value.providerName}`);
+    printer.info(`Using service: ${options[0].value.service}, provided by: ${options[0].value.providerName}`);
     return new Promise((resolve) => {
       resolve(options[0].value);
     });
   }
 
-  const question = [
-    {
-      name: 'service',
-      message: customQuestion || 'Select from one of the below mentioned services:',
-      type: 'list',
-      choices: options,
-    },
-  ];
-
-  const answer = await inquirer.prompt<{ service: ServiceSelection }>(question);
-
-  return answer.service;
+  return await prompter.pick<'one', ServiceSelection>(customQuestion || 'Select from one of the below mentioned services:', options);
 }
 
 export function serviceSelectionPrompt(
