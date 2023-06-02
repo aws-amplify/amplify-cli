@@ -17,7 +17,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "rimraf": "^3.0.2",
-    "ts-node": "^8.10.2",
+    "ts-node": "^10.4.0",
     "typescript-json-schema": "~0.52.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

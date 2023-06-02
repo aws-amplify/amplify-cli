@@ -40,7 +40,7 @@ describe('test auth trigger stack Parameters', () => {
     });
     getAppClientSecretMock.mockResolvedValue(undefined);
     await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext);
-    expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`Array []`);
+    expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`[]`);
   });
 
   it('test case 2 - appClientSecret updates successfully ', async () => {
@@ -64,12 +64,12 @@ describe('test auth trigger stack Parameters', () => {
     getAppClientSecretMock.mockResolvedValue('mockAppClientSecret');
     await updateAppClientWithGeneratedSecret(contextStub as unknown as $TSContext);
     expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           "auth",
           "mockResource",
           "output",
-          Object {
+          {
             "AmazonWebClient": "mockAmazonWebClient",
             "AppClientID": "mockClientId",
             "AppClientSecret": "mockAppClientSecret",
@@ -103,7 +103,7 @@ describe('test auth trigger stack Parameters', () => {
     } catch (err) {
       console.log(err);
       expect(err).toMatchInlineSnapshot(`"error fetching app client secret"`);
-      expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`Array []`);
+      expect(contextStub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls).toMatchInlineSnapshot(`[]`);
     }
   });
 });

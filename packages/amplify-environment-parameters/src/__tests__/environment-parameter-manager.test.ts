@@ -88,19 +88,19 @@ describe('save', () => {
     resourceParamManager.setParam('testParam', 'testValue');
     await envParamManager.save();
     expect(stateManagerMock.setBackendConfig.mock.calls[0][1]).toMatchInlineSnapshot(`
-      Object {
-        "parameters": Object {
-          "AMPLIFY_function_funcName_testParam": Object {
-            "usedBy": Array [
-              Object {
-                "category": "function",
-                "resourceName": "funcName",
-              },
-            ],
-          },
+{
+  "parameters": {
+    "AMPLIFY_function_funcName_testParam": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "funcName",
         },
-      }
-    `);
+      ],
+    },
+  },
+}
+`);
   });
 });
 

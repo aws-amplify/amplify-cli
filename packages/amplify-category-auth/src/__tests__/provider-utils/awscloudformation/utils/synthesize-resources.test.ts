@@ -60,24 +60,24 @@ describe('correctly updates userPool group list', () => {
     JSONUtilitiesMock.readJson = jest.fn().mockReturnValue([]);
     await updateUserPoolGroups(mockContext as unknown as $TSContext, resourceName, updatedUserPoolList);
     expect(JSONUtilitiesMock.writeJson.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "backend/auth/userPoolGroups/user-pool-group-precedence.json",
-        Array [
-          Object {
-            "groupName": "admin",
-            "precedence": 1,
-          },
-          Object {
-            "groupName": "developers",
-            "precedence": 2,
-          },
-          Object {
-            "groupName": "ops",
-            "precedence": 3,
-          },
-        ],
-      ]
-    `);
+[
+  "backend/auth/userPoolGroups/user-pool-group-precedence.json",
+  [
+    {
+      "groupName": "admin",
+      "precedence": 1,
+    },
+    {
+      "groupName": "developers",
+      "precedence": 2,
+    },
+    {
+      "groupName": "ops",
+      "precedence": 3,
+    },
+  ],
+]
+`);
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(3);
     expectAmplifyMetaFileUpdate();
   });
@@ -97,24 +97,24 @@ describe('correctly updates userPool group list', () => {
     JSONUtilitiesMock.readJson = jest.fn().mockReturnValue(prevUserPoolGroupList);
     await updateUserPoolGroups(mockContext as unknown as $TSContext, resourceName, updatedUserPoolList);
     expect(JSONUtilitiesMock.writeJson.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "backend/auth/userPoolGroups/user-pool-group-precedence.json",
-        Array [
-          Object {
-            "groupName": "admin",
-            "precedence": 1,
-          },
-          Object {
-            "groupName": "users",
-            "precedence": 2,
-          },
-          Object {
-            "groupName": "ops",
-            "precedence": 3,
-          },
-        ],
-      ]
-    `);
+[
+  "backend/auth/userPoolGroups/user-pool-group-precedence.json",
+  [
+    {
+      "groupName": "admin",
+      "precedence": 1,
+    },
+    {
+      "groupName": "users",
+      "precedence": 2,
+    },
+    {
+      "groupName": "ops",
+      "precedence": 3,
+    },
+  ],
+]
+`);
     expectAmplifyMetaFileUpdate();
   });
 
@@ -134,25 +134,25 @@ describe('correctly updates userPool group list', () => {
     JSONUtilitiesMock.readJson = jest.fn().mockReturnValue(prevUserPoolGroupList);
     await updateUserPoolGroups(mockContext as unknown as $TSContext, resourceName, updatedUserPoolList);
     expect(JSONUtilitiesMock.writeJson.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "backend/auth/userPoolGroups/user-pool-group-precedence.json",
-        Array [
-          Object {
-            "groupName": "admin",
-            "precedence": 1,
-          },
-          Object {
-            "customPolicies": "mockPolicies",
-            "groupName": "users",
-            "precedence": 2,
-          },
-          Object {
-            "groupName": "ops",
-            "precedence": 3,
-          },
-        ],
-      ]
-    `);
+[
+  "backend/auth/userPoolGroups/user-pool-group-precedence.json",
+  [
+    {
+      "groupName": "admin",
+      "precedence": 1,
+    },
+    {
+      "customPolicies": "mockPolicies",
+      "groupName": "users",
+      "precedence": 2,
+    },
+    {
+      "groupName": "ops",
+      "precedence": 3,
+    },
+  ],
+]
+`);
     expectAmplifyMetaFileUpdate();
   });
 });

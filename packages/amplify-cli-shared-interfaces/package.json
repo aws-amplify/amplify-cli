@@ -30,5 +30,10 @@
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "devDependencies": {
     "rimraf": "^3.0.2"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

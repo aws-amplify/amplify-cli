@@ -4,18 +4,13 @@ import { AmplifyFault } from '../errors/amplify-fault';
 import { LockfileType } from './lock-file-types';
 
 /**
- * yarn lock file types
- */
-export type YarnLockFileTypes = LockfileType.YARN | LockfileType.YARN2;
-
-/**
  * yarn lock interface
  */
 export interface YarnLock {
   type: string;
   object: YarnLockDependency;
   dependencies?: YarnLockDependency;
-  lockfileType: LockfileType.YARN | LockfileType.YARN2;
+  lockfileType: LockfileType.YARN;
   lockfileVersion: 1 | 2;
 }
 
@@ -40,7 +35,7 @@ export interface YarnLockDependencyType {
  *  YarnLockParser
  */
 export class YarnLockParser {
-  type: YarnLockFileTypes;
+  type: LockfileType.YARN;
   dependenciesMap: Record<string, Record<string, YarnLockDependencyType>>;
 
   constructor() {

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.12.0",
+  "version": "2.12.3",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.5",
+    "@aws-amplify/amplify-cli-core": "4.0.8",
     "@aws-amplify/amplify-prompts": "2.7.0",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
@@ -66,6 +66,13 @@
     "@types/ws": "^8.2.2",
     "jsonwebtoken": "^9.0.0"
   },
+  "packageExtensions": {
+    "graphql-iso-date": {
+      "peerDependencies": {
+        "graphql": "^15.8.0"
+      }
+    }
+  },
   "jest": {
     "testRunner": "jest-circus/runner",
     "transform": {
@@ -76,7 +83,9 @@
       "src/**/*.ts",
       "!**/*.d.ts"
     ],
-    "testURL": "http://localhost/",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
@@ -85,6 +94,11 @@
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

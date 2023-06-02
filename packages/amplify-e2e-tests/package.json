@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.2.0",
+  "version": "4.2.3",
   "description": "",
   "repository": {
     "type": "git",
@@ -17,23 +17,23 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "npm run setup-profile && jest --verbose",
-    "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose",
+    "e2e": "yarn setup-profile && jest --verbose --config=jest.config.js",
+    "general-config-e2e": "jest src/__tests__/general-config/general-config-headless-init.test.ts --verbose --config=jest.config.js",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
-    "smoketest": "jest --runInBand --testPathPattern='smoketest'"
+    "smoketest": "jest --runInBand --testPathPattern='smoketest' --config=jest.config.js"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "3.2.0",
-    "@aws-amplify/amplify-cli-core": "4.0.5",
-    "@aws-amplify/amplify-e2e-core": "5.0.0",
-    "@aws-amplify/amplify-opensearch-simulator": "1.4.0",
-    "@aws-amplify/graphql-transformer-core": "^1.2.1",
+    "@aws-amplify/amplify-category-auth": "3.2.3",
+    "@aws-amplify/amplify-cli-core": "4.0.8",
+    "@aws-amplify/amplify-e2e-core": "5.0.3",
+    "@aws-amplify/amplify-opensearch-simulator": "1.4.3",
+    "@aws-amplify/graphql-transformer-core": "^1.3.1",
     "@aws-sdk/client-appsync": "^3.303.0",
     "@aws-sdk/client-dynamodb": "^3.303.0",
     "@aws-sdk/client-ssm": "^3.303.0",
-    "amplify-dynamodb-simulator": "2.7.0",
+    "amplify-dynamodb-simulator": "2.7.3",
     "amplify-headless-interface": "1.17.3",
     "amplify-storage-simulator": "1.9.0",
     "aws-amplify": "^4.2.8",
@@ -50,7 +50,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^8.0.3",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "^8.0.3",
+    "graphql-transformer-core": "^8.1.1",
     "isomorphic-fetch": "^3.0.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
@@ -65,69 +65,21 @@
     "@types/body-parser": "^1.19.2",
     "@types/express": "^4.17.3",
     "@types/lodash": "^4.14.149",
+    "@types/node": "^18.16.1",
     "@types/ws": "^7.4.4",
-    "ts-node": "^8.10.2"
-  },
-  "jest": {
-    "verbose": false,
-    "preset": "ts-jest",
-    "testRunner": "@aws-amplify/amplify-e2e-core/runner",
-    "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "lib"
-    ],
-    "collectCoverage": false,
-    "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!**/*.d.ts"
-    ],
-    "reporters": [
-      "default",
-      "jest-junit",
-      [
-        "@aws-amplify/amplify-e2e-core/reporter",
-        {
-          "publicPath": "./amplify-e2e-reports",
-          "filename": "index.html",
-          "expand": true
-        }
-      ],
-      [
-        "@aws-amplify/amplify-e2e-core/failed-test-reporter",
-        {
-          "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
-        }
-      ]
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setup-tests.ts"
-    ],
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false
-      }
-    }
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.4.0"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
     "outputName": "js-test-results.xml",
     "usePathForSuiteName": "true",
     "addFileAttribute": "true"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

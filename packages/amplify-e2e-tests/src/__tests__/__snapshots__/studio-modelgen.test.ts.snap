@@ -2,336 +2,336 @@
 
 exports[`upload Studio CMS assets on push uploads expected CMS assets to shared location in S3 bucket false false 2`] = `
 "export const schema = {
-    \\"models\\": {
-        \\"Todo\\": {
-            \\"name\\": \\"Todo\\",
-            \\"fields\\": {
-                \\"id\\": {
-                    \\"name\\": \\"id\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"ID\\",
-                    \\"isRequired\\": true,
-                    \\"attributes\\": []
+    "models": {
+        "Todo": {
+            "name": "Todo",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
                 },
-                \\"content\\": {
-                    \\"name\\": \\"content\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"String\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": []
+                "content": {
+                    "name": "content",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
                 },
-                \\"createdAt\\": {
-                    \\"name\\": \\"createdAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 },
-                \\"updatedAt\\": {
-                    \\"name\\": \\"updatedAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 }
             },
-            \\"syncable\\": true,
-            \\"pluralName\\": \\"Todos\\",
-            \\"attributes\\": [
+            "syncable": true,
+            "pluralName": "Todos",
+            "attributes": [
                 {
-                    \\"type\\": \\"model\\",
-                    \\"properties\\": {}
+                    "type": "model",
+                    "properties": {}
                 }
             ]
         }
     },
-    \\"enums\\": {},
-    \\"nonModels\\": {},
-    \\"codegenVersion\\": \\"3.4.4\\",
-    \\"version\\": \\"6f85ca0ee370ac8e0674a44cc5a4f6a6\\"
+    "enums": {},
+    "nonModels": {},
+    "codegenVersion": "3.4.4",
+    "version": "6f85ca0ee370ac8e0674a44cc5a4f6a6"
 };"
 `;
 
 exports[`upload Studio CMS assets on push uploads expected CMS assets to shared location in S3 bucket false false 3`] = `
 "{
-    \\"version\\": 1,
-    \\"models\\": {
-        \\"Todo\\": {
-            \\"name\\": \\"Todo\\",
-            \\"fields\\": {
-                \\"id\\": {
-                    \\"name\\": \\"id\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"ID\\",
-                    \\"isRequired\\": true,
-                    \\"attributes\\": []
+    "version": 1,
+    "models": {
+        "Todo": {
+            "name": "Todo",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
                 },
-                \\"content\\": {
-                    \\"name\\": \\"content\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"String\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": []
+                "content": {
+                    "name": "content",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
                 },
-                \\"createdAt\\": {
-                    \\"name\\": \\"createdAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 },
-                \\"updatedAt\\": {
-                    \\"name\\": \\"updatedAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 }
             },
-            \\"syncable\\": true,
-            \\"pluralName\\": \\"Todos\\",
-            \\"attributes\\": [
+            "syncable": true,
+            "pluralName": "Todos",
+            "attributes": [
                 {
-                    \\"type\\": \\"model\\",
-                    \\"properties\\": {}
+                    "type": "model",
+                    "properties": {}
                 }
             ],
-            \\"primaryKeyInfo\\": {
-                \\"isCustomPrimaryKey\\": false,
-                \\"primaryKeyFieldName\\": \\"id\\",
-                \\"sortKeyFieldNames\\": []
+            "primaryKeyInfo": {
+                "isCustomPrimaryKey": false,
+                "primaryKeyFieldName": "id",
+                "sortKeyFieldNames": []
             }
         }
     },
-    \\"enums\\": {},
-    \\"nonModels\\": {}
+    "enums": {},
+    "nonModels": {}
 }"
 `;
 
 exports[`upload Studio CMS assets on push uploads expected CMS assets to shared location in S3 bucket false true 2`] = `
 "export const schema = {
-    \\"models\\": {
-        \\"Todo\\": {
-            \\"name\\": \\"Todo\\",
-            \\"fields\\": {
-                \\"id\\": {
-                    \\"name\\": \\"id\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"ID\\",
-                    \\"isRequired\\": true,
-                    \\"attributes\\": []
+    "models": {
+        "Todo": {
+            "name": "Todo",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
                 },
-                \\"content\\": {
-                    \\"name\\": \\"content\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"String\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": []
+                "content": {
+                    "name": "content",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
                 },
-                \\"createdAt\\": {
-                    \\"name\\": \\"createdAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 },
-                \\"updatedAt\\": {
-                    \\"name\\": \\"updatedAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 }
             },
-            \\"syncable\\": true,
-            \\"pluralName\\": \\"Todos\\",
-            \\"attributes\\": [
+            "syncable": true,
+            "pluralName": "Todos",
+            "attributes": [
                 {
-                    \\"type\\": \\"model\\",
-                    \\"properties\\": {}
+                    "type": "model",
+                    "properties": {}
                 }
             ]
         }
     },
-    \\"enums\\": {},
-    \\"nonModels\\": {},
-    \\"codegenVersion\\": \\"3.4.4\\",
-    \\"version\\": \\"6f85ca0ee370ac8e0674a44cc5a4f6a6\\"
+    "enums": {},
+    "nonModels": {},
+    "codegenVersion": "3.4.4",
+    "version": "6f85ca0ee370ac8e0674a44cc5a4f6a6"
 };"
 `;
 
 exports[`upload Studio CMS assets on push uploads expected CMS assets to shared location in S3 bucket false true 3`] = `
 "{
-    \\"version\\": 1,
-    \\"models\\": {
-        \\"Todo\\": {
-            \\"name\\": \\"Todo\\",
-            \\"fields\\": {
-                \\"id\\": {
-                    \\"name\\": \\"id\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"ID\\",
-                    \\"isRequired\\": true,
-                    \\"attributes\\": []
+    "version": 1,
+    "models": {
+        "Todo": {
+            "name": "Todo",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
                 },
-                \\"content\\": {
-                    \\"name\\": \\"content\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"String\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": []
+                "content": {
+                    "name": "content",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
                 },
-                \\"createdAt\\": {
-                    \\"name\\": \\"createdAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 },
-                \\"updatedAt\\": {
-                    \\"name\\": \\"updatedAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 }
             },
-            \\"syncable\\": true,
-            \\"pluralName\\": \\"Todos\\",
-            \\"attributes\\": [
+            "syncable": true,
+            "pluralName": "Todos",
+            "attributes": [
                 {
-                    \\"type\\": \\"model\\",
-                    \\"properties\\": {}
+                    "type": "model",
+                    "properties": {}
                 }
             ],
-            \\"primaryKeyInfo\\": {
-                \\"isCustomPrimaryKey\\": false,
-                \\"primaryKeyFieldName\\": \\"id\\",
-                \\"sortKeyFieldNames\\": []
+            "primaryKeyInfo": {
+                "isCustomPrimaryKey": false,
+                "primaryKeyFieldName": "id",
+                "sortKeyFieldNames": []
             }
         }
     },
-    \\"enums\\": {},
-    \\"nonModels\\": {}
+    "enums": {},
+    "nonModels": {}
 }"
 `;
 
 exports[`upload Studio CMS assets on push uploads expected CMS assets to shared location in S3 bucket true true 2`] = `
 "export const schema = {
-    \\"models\\": {
-        \\"Todo\\": {
-            \\"name\\": \\"Todo\\",
-            \\"fields\\": {
-                \\"id\\": {
-                    \\"name\\": \\"id\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"ID\\",
-                    \\"isRequired\\": true,
-                    \\"attributes\\": []
+    "models": {
+        "Todo": {
+            "name": "Todo",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
                 },
-                \\"content\\": {
-                    \\"name\\": \\"content\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"String\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": []
+                "content": {
+                    "name": "content",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
                 },
-                \\"createdAt\\": {
-                    \\"name\\": \\"createdAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 },
-                \\"updatedAt\\": {
-                    \\"name\\": \\"updatedAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 }
             },
-            \\"syncable\\": true,
-            \\"pluralName\\": \\"Todos\\",
-            \\"attributes\\": [
+            "syncable": true,
+            "pluralName": "Todos",
+            "attributes": [
                 {
-                    \\"type\\": \\"model\\",
-                    \\"properties\\": {}
+                    "type": "model",
+                    "properties": {}
                 }
             ]
         }
     },
-    \\"enums\\": {},
-    \\"nonModels\\": {},
-    \\"codegenVersion\\": \\"3.4.4\\",
-    \\"version\\": \\"6f85ca0ee370ac8e0674a44cc5a4f6a6\\"
+    "enums": {},
+    "nonModels": {},
+    "codegenVersion": "3.4.4",
+    "version": "6f85ca0ee370ac8e0674a44cc5a4f6a6"
 };"
 `;
 
 exports[`upload Studio CMS assets on push uploads expected CMS assets to shared location in S3 bucket true true 3`] = `
 "{
-    \\"version\\": 1,
-    \\"models\\": {
-        \\"Todo\\": {
-            \\"name\\": \\"Todo\\",
-            \\"fields\\": {
-                \\"id\\": {
-                    \\"name\\": \\"id\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"ID\\",
-                    \\"isRequired\\": true,
-                    \\"attributes\\": []
+    "version": 1,
+    "models": {
+        "Todo": {
+            "name": "Todo",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
                 },
-                \\"content\\": {
-                    \\"name\\": \\"content\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"String\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": []
+                "content": {
+                    "name": "content",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
                 },
-                \\"createdAt\\": {
-                    \\"name\\": \\"createdAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 },
-                \\"updatedAt\\": {
-                    \\"name\\": \\"updatedAt\\",
-                    \\"isArray\\": false,
-                    \\"type\\": \\"AWSDateTime\\",
-                    \\"isRequired\\": false,
-                    \\"attributes\\": [],
-                    \\"isReadOnly\\": true
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
                 }
             },
-            \\"syncable\\": true,
-            \\"pluralName\\": \\"Todos\\",
-            \\"attributes\\": [
+            "syncable": true,
+            "pluralName": "Todos",
+            "attributes": [
                 {
-                    \\"type\\": \\"model\\",
-                    \\"properties\\": {}
+                    "type": "model",
+                    "properties": {}
                 }
             ],
-            \\"primaryKeyInfo\\": {
-                \\"isCustomPrimaryKey\\": false,
-                \\"primaryKeyFieldName\\": \\"id\\",
-                \\"sortKeyFieldNames\\": []
+            "primaryKeyInfo": {
+                "isCustomPrimaryKey": false,
+                "primaryKeyFieldName": "id",
+                "sortKeyFieldNames": []
             }
         }
     },
-    \\"enums\\": {},
-    \\"nonModels\\": {}
+    "enums": {},
+    "nonModels": {}
 }"
 `;
