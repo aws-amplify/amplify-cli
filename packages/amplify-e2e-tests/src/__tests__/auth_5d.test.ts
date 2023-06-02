@@ -69,8 +69,8 @@ describe('headless auth d', () => {
     expect(mfaConfig.SmsMfaConfiguration.SmsConfiguration).toBeDefined();
     expect(userPool.UserPool).toBeDefined();
     expect(userPool.UserPool.UserAttributeUpdateSettings).toMatchInlineSnapshot(`
-      Object {
-        "AttributesRequireVerificationBeforeUpdate": Array [
+      {
+        "AttributesRequireVerificationBeforeUpdate": [
           "phone_number",
         ],
       }

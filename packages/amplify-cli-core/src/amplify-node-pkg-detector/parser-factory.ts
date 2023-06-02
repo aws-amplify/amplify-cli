@@ -1,4 +1,5 @@
 import { AmplifyError } from '../errors/amplify-error';
+import { PackageManager } from '../utils';
 import { LockfileParser } from './lock-file-interface';
 import { LockfileType } from './lock-file-types';
 import { PackageLockParser } from './package-lock-parser';
@@ -12,17 +13,20 @@ export class LockFileParserFactory {
   /**
    * get lock file Parser
    */
-  public static getLockFileParser(lockfileType: string): LockfileParser {
-    switch (lockfileType) {
+  public static getLockFileParser(packageManager: PackageManager): LockfileParser {
+    switch (packageManager.packageManager) {
       case LockfileType.NPM:
         return new PackageLockParser();
-      case LockfileType.YARN:
-        return new YarnLockParser();
-      case LockfileType.YARN2:
-        return new Yarn2LockParser();
+      case LockfileType.YARN: {
+        if (packageManager?.version?.major && packageManager?.version?.major >= 2) {
+          return new Yarn2LockParser();
+        } else {
+          return new YarnLockParser();
+        }
+      }
       default:
         throw new AmplifyError('UnsupportedLockFileTypeError', {
-          message: 'Unsupported lockfile type ' + `${lockfileType} provided. Only 'npm' or 'yarn' is currently ` + 'supported.',
+          message: 'Unsupported lockfile type ' + `${packageManager.lockFile} provided. Only 'npm' or 'yarn' is currently ` + 'supported.',
           resolution: 'Install npm6 or yarn1 to compile overrides for this project.',
         });
     }

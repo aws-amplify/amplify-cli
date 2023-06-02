@@ -43,7 +43,7 @@ export const postInitSetup = async (context: $TSContext): Promise<void> => {
  * @param packageManager either npm or yarn
  */
 const runPackage = async (): Promise<void> => {
-  const packageManager = getPackageManager();
+  const packageManager = await getPackageManager();
 
   if (packageManager !== null) {
     const packageScript = getPackageScript();

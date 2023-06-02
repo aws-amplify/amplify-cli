@@ -198,7 +198,7 @@ describe('intrinsic-functions', () => {
       const parseThis = { parse: 'this' };
       const node: any = [2, parseThis];
       expect(() => cfnSelect(node, cfnContext, parseValue)).toThrowErrorMatchingInlineSnapshot(
-        `"FN::Select expects list item to be an array instead got \\"this is not an array\\""`,
+        `"FN::Select expects list item to be an array instead got "this is not an array""`,
       );
       expect(parseValue).toHaveBeenCalled();
       expect(parseValue.mock.calls[0][0]).toEqual(parseThis);

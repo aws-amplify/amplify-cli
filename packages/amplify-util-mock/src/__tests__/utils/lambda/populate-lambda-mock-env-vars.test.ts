@@ -25,7 +25,7 @@ pathManager_mock.getBackendDirPath.mockReturnValue('backend/path');
 
 const dotenv_mock = dotenv as jest.Mocked<typeof dotenv>;
 
-describe('populate labmda mock env vars', () => {
+describe('populate lambda mock env vars', () => {
   beforeEach(() => jest.clearAllMocks());
   it('populates AWS credential variables', async () => {
     const processedLambda: ProcessedLambdaFunction = {
@@ -50,8 +50,8 @@ describe('populate labmda mock env vars', () => {
       handler: 'test.handler',
       environment: {},
     };
-    stateManager_mock.getTeamProviderInfo.mockReturnValueOnce({
-      test: {
+    stateManager_mock.getMeta.mockReturnValue({
+      providers: {
         awscloudformation: {
           Region: 'test-region',
         },

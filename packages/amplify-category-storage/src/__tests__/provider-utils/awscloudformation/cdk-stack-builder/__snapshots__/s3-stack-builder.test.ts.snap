@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Test S3 transform generates correct CFN template Generated s3 template with all CLI configurations set with no overrides 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": Object {
-    "AuthReadAndList": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+  "Conditions": {
+    "AuthReadAndList": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "AuthenticatedAllowList",
             },
             "DISALLOW",
@@ -16,11 +16,11 @@ Object {
         },
       ],
     },
-    "CreateAuthPrivate": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+    "CreateAuthPrivate": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "s3PermissionsAuthenticatedPrivate",
             },
             "DISALLOW",
@@ -28,11 +28,11 @@ Object {
         },
       ],
     },
-    "CreateAuthProtected": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+    "CreateAuthProtected": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "s3PermissionsAuthenticatedProtected",
             },
             "DISALLOW",
@@ -40,11 +40,11 @@ Object {
         },
       ],
     },
-    "CreateAuthPublic": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+    "CreateAuthPublic": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "s3PermissionsAuthenticatedPublic",
             },
             "DISALLOW",
@@ -52,11 +52,11 @@ Object {
         },
       ],
     },
-    "CreateAuthUploads": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+    "CreateAuthUploads": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "s3PermissionsAuthenticatedUploads",
             },
             "DISALLOW",
@@ -64,11 +64,11 @@ Object {
         },
       ],
     },
-    "CreateGuestPublic": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+    "CreateGuestPublic": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "s3PermissionsGuestPublic",
             },
             "DISALLOW",
@@ -76,11 +76,11 @@ Object {
         },
       ],
     },
-    "CreateGuestUploads": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+    "CreateGuestUploads": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "s3PermissionsGuestUploads",
             },
             "DISALLOW",
@@ -88,11 +88,11 @@ Object {
         },
       ],
     },
-    "GuestReadAndList": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+    "GuestReadAndList": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "GuestAllowList",
             },
             "DISALLOW",
@@ -100,9 +100,9 @@ Object {
         },
       ],
     },
-    "ShouldNotCreateEnvResources": Object {
-      "Fn::Equals": Array [
-        Object {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
           "Ref": "env",
         },
         "NONE",
@@ -110,140 +110,140 @@ Object {
     },
   },
   "Description": "S3 Resource for AWS Amplify CLI",
-  "Outputs": Object {
-    "BucketName": Object {
+  "Outputs": {
+    "BucketName": {
       "Description": "Bucket name for the S3 bucket",
-      "Value": Object {
+      "Value": {
         "Ref": "S3Bucket",
       },
     },
-    "Region": Object {
-      "Value": Object {
+    "Region": {
+      "Value": {
         "Ref": "AWS::Region",
       },
     },
   },
-  "Parameters": Object {
-    "AuthenticatedAllowList": Object {
+  "Parameters": {
+    "AuthenticatedAllowList": {
       "Default": "DISALLOW",
       "Type": "String",
     },
-    "GuestAllowList": Object {
+    "GuestAllowList": {
       "Default": "DISALLOW",
       "Type": "String",
     },
-    "authPolicyName": Object {
+    "authPolicyName": {
       "Type": "String",
     },
-    "authRoleName": Object {
+    "authRoleName": {
       "Type": "String",
     },
-    "bucketName": Object {
+    "bucketName": {
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
-    "functionS3TriggerMockTriggerCafe2021Arn": Object {
+    "functionS3TriggerMockTriggerCafe2021Arn": {
       "Default": "functionS3TriggerMockTriggerCafe2021Arn",
       "Type": "String",
     },
-    "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole": Object {
+    "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole": {
       "Default": "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole",
       "Type": "String",
     },
-    "functionS3TriggerMockTriggerCafe2021Name": Object {
+    "functionS3TriggerMockTriggerCafe2021Name": {
       "Default": "functionS3TriggerMockTriggerCafe2021Name",
       "Type": "String",
     },
-    "s3PermissionsAuthenticatedPrivate": Object {
+    "s3PermissionsAuthenticatedPrivate": {
       "Default": "DISALLOW",
       "Type": "String",
     },
-    "s3PermissionsAuthenticatedProtected": Object {
+    "s3PermissionsAuthenticatedProtected": {
       "Default": "DISALLOW",
       "Type": "String",
     },
-    "s3PermissionsAuthenticatedPublic": Object {
+    "s3PermissionsAuthenticatedPublic": {
       "Default": "DISALLOW",
       "Type": "String",
     },
-    "s3PermissionsAuthenticatedUploads": Object {
+    "s3PermissionsAuthenticatedUploads": {
       "Default": "DISALLOW",
       "Type": "String",
     },
-    "s3PermissionsGuestPublic": Object {
+    "s3PermissionsGuestPublic": {
       "Default": "DISALLOW",
       "Type": "String",
     },
-    "s3PermissionsGuestUploads": Object {
+    "s3PermissionsGuestUploads": {
       "Default": "DISALLOW",
       "Type": "String",
     },
-    "s3PrivatePolicy": Object {
+    "s3PrivatePolicy": {
       "Default": "NONE",
       "Type": "String",
     },
-    "s3ProtectedPolicy": Object {
+    "s3ProtectedPolicy": {
       "Default": "NONE",
       "Type": "String",
     },
-    "s3PublicPolicy": Object {
+    "s3PublicPolicy": {
       "Default": "NONE",
       "Type": "String",
     },
-    "s3ReadPolicy": Object {
+    "s3ReadPolicy": {
       "Default": "NONE",
       "Type": "String",
     },
-    "s3UploadsPolicy": Object {
+    "s3UploadsPolicy": {
       "Default": "NONE",
       "Type": "String",
     },
-    "selectedAuthenticatedPermissions": Object {
+    "selectedAuthenticatedPermissions": {
       "Default": "NONE",
       "Type": "CommaDelimitedList",
     },
-    "selectedGuestPermissions": Object {
+    "selectedGuestPermissions": {
       "Default": "NONE",
       "Type": "CommaDelimitedList",
     },
-    "triggerFunction": Object {
+    "triggerFunction": {
       "Type": "String",
     },
-    "unauthPolicyName": Object {
+    "unauthPolicyName": {
       "Type": "String",
     },
-    "unauthRoleName": Object {
+    "unauthRoleName": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "S3AuthPrivatePolicy": Object {
+  "Resources": {
+    "S3AuthPrivatePolicy": {
       "Condition": "CreateAuthPrivate",
-      "DependsOn": Array [
+      "DependsOn": [
         "S3Bucket",
       ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Object {
-                "Fn::Split": Array [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
                   ",",
-                  Object {
+                  {
                     "Ref": "s3PermissionsAuthenticatedPrivate",
                   },
                 ],
               },
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:aws:s3:::",
-                      Object {
+                      {
                         "Ref": "S3Bucket",
                       },
                       "/private/\${cognito-identity.amazonaws.com:sub}/*",
@@ -255,42 +255,42 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
+        "PolicyName": {
           "Ref": "s3PrivatePolicy",
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "S3AuthProtectedPolicy": Object {
+    "S3AuthProtectedPolicy": {
       "Condition": "CreateAuthProtected",
-      "DependsOn": Array [
+      "DependsOn": [
         "S3Bucket",
       ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Object {
-                "Fn::Split": Array [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
                   ",",
-                  Object {
+                  {
                     "Ref": "s3PermissionsAuthenticatedProtected",
                   },
                 ],
               },
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:aws:s3:::",
-                      Object {
+                      {
                         "Ref": "S3Bucket",
                       },
                       "/protected/\${cognito-identity.amazonaws.com:sub}/*",
@@ -302,42 +302,42 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
+        "PolicyName": {
           "Ref": "s3ProtectedPolicy",
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "S3AuthPublicPolicy": Object {
+    "S3AuthPublicPolicy": {
       "Condition": "CreateAuthPublic",
-      "DependsOn": Array [
+      "DependsOn": [
         "S3Bucket",
       ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Object {
-                "Fn::Split": Array [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
                   ",",
-                  Object {
+                  {
                     "Ref": "s3PermissionsAuthenticatedPublic",
                   },
                 ],
               },
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:aws:s3:::",
-                      Object {
+                      {
                         "Ref": "S3Bucket",
                       },
                       "/public/*",
@@ -349,34 +349,34 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
+        "PolicyName": {
           "Ref": "s3PublicPolicy",
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "S3AuthReadPolicy": Object {
+    "S3AuthReadPolicy": {
       "Condition": "AuthReadAndList",
-      "DependsOn": Array [
+      "DependsOn": [
         "S3Bucket",
       ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "s3:GetObject",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:s3:::",
-                    Object {
+                    {
                       "Ref": "S3Bucket",
                     },
                     "/protected/*",
@@ -384,11 +384,11 @@ Object {
                 ],
               },
             },
-            Object {
+            {
               "Action": "s3:ListBucket",
-              "Condition": Object {
-                "StringLike": Object {
-                  "s3:prefix": Array [
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
                     "public/",
                     "public/*",
                     "protected/",
@@ -399,12 +399,12 @@ Object {
                 },
               },
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:s3:::",
-                    Object {
+                    {
                       "Ref": "S3Bucket",
                     },
                   ],
@@ -414,42 +414,42 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
+        "PolicyName": {
           "Ref": "s3ReadPolicy",
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "S3AuthUploadPolicy": Object {
+    "S3AuthUploadPolicy": {
       "Condition": "CreateAuthUploads",
-      "DependsOn": Array [
+      "DependsOn": [
         "S3Bucket",
       ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Object {
-                "Fn::Split": Array [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
                   ",",
-                  Object {
+                  {
                     "Ref": "s3PermissionsAuthenticatedUploads",
                   },
                 ],
               },
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:aws:s3:::",
-                      Object {
+                      {
                         "Ref": "S3Bucket",
                       },
                       "/uploads/*",
@@ -461,43 +461,43 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
+        "PolicyName": {
           "Ref": "s3UploadsPolicy",
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "S3Bucket": Object {
+    "S3Bucket": {
       "DeletionPolicy": "Retain",
-      "DependsOn": Array [
+      "DependsOn": [
         "TriggerPermissions",
       ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Fn::If": Array [
+      "Properties": {
+        "BucketName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
-            Object {
+            {
               "Ref": "bucketName",
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
-                  Object {
+                [
+                  {
                     "Ref": "bucketName",
                   },
-                  Object {
-                    "Fn::Select": Array [
+                  {
+                    "Fn::Select": [
                       3,
-                      Object {
-                        "Fn::Split": Array [
+                      {
+                        "Fn::Split": [
                           "-",
-                          Object {
+                          {
                             "Ref": "AWS::StackName",
                           },
                         ],
@@ -505,7 +505,7 @@ Object {
                     ],
                   },
                   "-",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -513,23 +513,23 @@ Object {
             },
           ],
         },
-        "CorsConfiguration": Object {
-          "CorsRules": Array [
-            Object {
-              "AllowedHeaders": Array [
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
                 "*",
               ],
-              "AllowedMethods": Array [
+              "AllowedMethods": [
                 "GET",
                 "HEAD",
                 "PUT",
                 "POST",
                 "DELETE",
               ],
-              "AllowedOrigins": Array [
+              "AllowedOrigins": [
                 "*",
               ],
-              "ExposedHeaders": Array [
+              "ExposedHeaders": [
                 "x-amz-server-side-encryption",
                 "x-amz-request-id",
                 "x-amz-id-2",
@@ -540,17 +540,17 @@ Object {
             },
           ],
         },
-        "NotificationConfiguration": Object {
-          "LambdaConfigurations": Array [
-            Object {
+        "NotificationConfiguration": {
+          "LambdaConfigurations": [
+            {
               "Event": "s3:ObjectCreated:*",
-              "Function": Object {
+              "Function": {
                 "Ref": "functionS3TriggerMockTriggerCafe2021Arn",
               },
             },
-            Object {
+            {
               "Event": "s3:ObjectRemoved:*",
-              "Function": Object {
+              "Function": {
                 "Ref": "functionS3TriggerMockTriggerCafe2021Arn",
               },
             },
@@ -560,31 +560,31 @@ Object {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "S3GuestPublicPolicy": Object {
+    "S3GuestPublicPolicy": {
       "Condition": "CreateGuestPublic",
-      "DependsOn": Array [
+      "DependsOn": [
         "S3Bucket",
       ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Object {
-                "Fn::Split": Array [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": {
+                "Fn::Split": [
                   ",",
-                  Object {
+                  {
                     "Ref": "s3PermissionsGuestPublic",
                   },
                 ],
               },
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:aws:s3:::",
-                      Object {
+                      {
                         "Ref": "S3Bucket",
                       },
                       "/public/*",
@@ -596,34 +596,34 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
+        "PolicyName": {
           "Ref": "s3PublicPolicy",
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "unauthRoleName",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "S3GuestReadPolicy": Object {
+    "S3GuestReadPolicy": {
       "Condition": "GuestReadAndList",
-      "DependsOn": Array [
+      "DependsOn": [
         "S3Bucket",
       ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "s3:GetObject",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:s3:::",
-                    Object {
+                    {
                       "Ref": "S3Bucket",
                     },
                     "/protected/*",
@@ -631,11 +631,11 @@ Object {
                 ],
               },
             },
-            Object {
+            {
               "Action": "s3:ListBucket",
-              "Condition": Object {
-                "StringLike": Object {
-                  "s3:prefix": Array [
+              "Condition": {
+                "StringLike": {
+                  "s3:prefix": [
                     "public/",
                     "public/*",
                     "protected/",
@@ -644,12 +644,12 @@ Object {
                 },
               },
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
+              "Resource": {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:s3:::",
-                    Object {
+                    {
                       "Ref": "S3Bucket",
                     },
                   ],
@@ -659,36 +659,36 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
+        "PolicyName": {
           "Ref": "s3ReadPolicy",
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "unauthRoleName",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "S3TriggerBucketPolicy": Object {
-      "DependsOn": Array [
+    "S3TriggerBucketPolicy": {
+      "DependsOn": [
         "S3Bucket",
       ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "s3:ListBucket",
               ],
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:aws:s3:::",
-                      Object {
+                      {
                         "Ref": "S3Bucket",
                       },
                     ],
@@ -696,21 +696,21 @@ Object {
                 },
               ],
             },
-            Object {
-              "Action": Array [
+            {
+              "Action": [
                 "s3:PutObject",
                 "s3:GetObject",
                 "s3:ListBucket",
                 "s3:DeleteObject",
               ],
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
+              "Resource": [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
+                    [
                       "arn:aws:s3:::",
-                      Object {
+                      {
                         "Ref": "S3Bucket",
                       },
                       "/*",
@@ -723,49 +723,49 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "amplify-lambda-execution-policy-storage",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "functionS3TriggerMockTriggerCafe2021LambdaExecutionRole",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "TriggerPermissions": Object {
-      "Properties": Object {
+    "TriggerPermissions": {
+      "Properties": {
         "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
+        "FunctionName": {
           "Ref": "functionS3TriggerMockTriggerCafe2021Name",
         },
         "Principal": "s3.amazonaws.com",
-        "SourceAccount": Object {
+        "SourceAccount": {
           "Ref": "AWS::AccountId",
         },
-        "SourceArn": Object {
-          "Fn::Join": Array [
+        "SourceArn": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "arn:aws:s3:::",
-              Object {
-                "Fn::If": Array [
+              {
+                "Fn::If": [
                   "ShouldNotCreateEnvResources",
-                  Object {
+                  {
                     "Ref": "bucketName",
                   },
-                  Object {
-                    "Fn::Join": Array [
+                  {
+                    "Fn::Join": [
                       "",
-                      Array [
-                        Object {
+                      [
+                        {
                           "Ref": "bucketName",
                         },
-                        Object {
-                          "Fn::Select": Array [
+                        {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -773,7 +773,7 @@ Object {
                           ],
                         },
                         "-",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],

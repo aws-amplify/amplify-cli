@@ -4,7 +4,7 @@ exports[`api REST migration tests ...adds rest APIs & DDB with v10 and pulls wit
 
 exports[`api REST migration tests ...adds rest APIs & DDB with v10 and pulls without drift in latest version 2`] = `
 "Outputs
-[+] Output LambdaExecutionRoleArn: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"LambdaExecutionRole\\",\\"Arn\\"]}}
+[+] Output LambdaExecutionRoleArn: {\"Value\":{\"Fn::GetAtt\":[\"LambdaExecutionRole\",\"Arn\"]}}
 
 "
 `;

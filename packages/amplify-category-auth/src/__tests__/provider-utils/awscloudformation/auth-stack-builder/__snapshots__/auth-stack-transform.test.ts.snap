@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Check Auth Template Generated authstack template in default flow 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": Object {
-    "ShouldNotCreateEnvResources": Object {
-      "Fn::Equals": Array [
-        Object {
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
           "Ref": "env",
         },
         "NONE",
@@ -14,198 +14,198 @@ Object {
     },
   },
   "Description": "Amplify Cognito Stack for AWS Amplify CLI",
-  "Outputs": Object {
-    "AppClientID": Object {
+  "Outputs": {
+    "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": Object {
+      "Value": {
         "Ref": "UserPoolClient",
       },
     },
-    "AppClientIDWeb": Object {
+    "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": Object {
+      "Value": {
         "Ref": "UserPoolClientWeb",
       },
     },
-    "IdentityPoolId": Object {
+    "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": Object {
+      "Value": {
         "Ref": "IdentityPool",
       },
     },
-    "IdentityPoolName": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+    "IdentityPoolName": {
+      "Value": {
+        "Fn::GetAtt": [
           "IdentityPool",
           "Name",
         ],
       },
     },
-    "UserPoolArn": Object {
+    "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": Object {
-        "Fn::GetAtt": Array [
+      "Value": {
+        "Fn::GetAtt": [
           "UserPool",
           "Arn",
         ],
       },
     },
-    "UserPoolId": Object {
+    "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": Object {
+      "Value": {
         "Ref": "UserPool",
       },
     },
-    "UserPoolName": Object {
-      "Value": Object {
+    "UserPoolName": {
+      "Value": {
         "Ref": "userPoolName",
       },
     },
   },
-  "Parameters": Object {
-    "aliasAttributes": Object {
+  "Parameters": {
+    "aliasAttributes": {
       "Type": "CommaDelimitedList",
     },
-    "allowUnauthenticatedIdentities": Object {
+    "allowUnauthenticatedIdentities": {
       "Type": "String",
     },
-    "authRoleArn": Object {
+    "authRoleArn": {
       "Type": "String",
     },
-    "authSelections": Object {
+    "authSelections": {
       "Type": "String",
     },
-    "autoVerifiedAttributes": Object {
+    "autoVerifiedAttributes": {
       "Type": "CommaDelimitedList",
     },
-    "breakCircularDependency": Object {
+    "breakCircularDependency": {
       "Type": "String",
     },
-    "defaultPasswordPolicy": Object {
+    "defaultPasswordPolicy": {
       "Type": "String",
     },
-    "dependsOn": Object {
+    "dependsOn": {
       "Type": "CommaDelimitedList",
     },
-    "emailVerificationMessage": Object {
+    "emailVerificationMessage": {
       "Type": "String",
     },
-    "emailVerificationSubject": Object {
+    "emailVerificationSubject": {
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
-    "identityPoolName": Object {
+    "identityPoolName": {
       "Type": "String",
     },
-    "mfaConfiguration": Object {
+    "mfaConfiguration": {
       "Type": "String",
     },
-    "mfaTypes": Object {
+    "mfaTypes": {
       "Type": "CommaDelimitedList",
     },
-    "passwordPolicyCharacters": Object {
+    "passwordPolicyCharacters": {
       "Type": "CommaDelimitedList",
     },
-    "passwordPolicyMinLength": Object {
+    "passwordPolicyMinLength": {
       "Type": "String",
     },
-    "requiredAttributes": Object {
+    "requiredAttributes": {
       "Type": "CommaDelimitedList",
     },
-    "resourceName": Object {
+    "resourceName": {
       "Type": "String",
     },
-    "resourceNameTruncated": Object {
+    "resourceNameTruncated": {
       "Type": "String",
     },
-    "serviceName": Object {
+    "serviceName": {
       "Type": "String",
     },
-    "sharedId": Object {
+    "sharedId": {
       "Type": "String",
     },
-    "smsAuthenticationMessage": Object {
+    "smsAuthenticationMessage": {
       "Type": "String",
     },
-    "smsVerificationMessage": Object {
+    "smsVerificationMessage": {
       "Type": "String",
     },
-    "unauthRoleArn": Object {
+    "unauthRoleArn": {
       "Type": "String",
     },
-    "useDefault": Object {
+    "useDefault": {
       "Type": "String",
     },
-    "useEnabledMfas": Object {
+    "useEnabledMfas": {
       "Type": "String",
     },
-    "userPoolGroupList": Object {
+    "userPoolGroupList": {
       "Type": "CommaDelimitedList",
     },
-    "userPoolName": Object {
+    "userPoolName": {
       "Type": "String",
     },
-    "usernameCaseSensitive": Object {
+    "usernameCaseSensitive": {
       "Type": "String",
     },
-    "userpoolClientGenerateSecret": Object {
+    "userpoolClientGenerateSecret": {
       "Type": "String",
     },
-    "userpoolClientLambdaRole": Object {
+    "userpoolClientLambdaRole": {
       "Type": "String",
     },
-    "userpoolClientReadAttributes": Object {
+    "userpoolClientReadAttributes": {
       "Type": "CommaDelimitedList",
     },
-    "userpoolClientRefreshTokenValidity": Object {
+    "userpoolClientRefreshTokenValidity": {
       "Type": "String",
     },
-    "userpoolClientSetAttributes": Object {
+    "userpoolClientSetAttributes": {
       "Type": "String",
     },
-    "userpoolClientWriteAttributes": Object {
+    "userpoolClientWriteAttributes": {
       "Type": "CommaDelimitedList",
     },
   },
-  "Resources": Object {
-    "IdentityPool": Object {
-      "Properties": Object {
-        "AllowUnauthenticatedIdentities": Object {
+  "Resources": {
+    "IdentityPool": {
+      "Properties": {
+        "AllowUnauthenticatedIdentities": {
           "Ref": "allowUnauthenticatedIdentities",
         },
-        "CognitoIdentityProviders": Array [
-          Object {
-            "ClientId": Object {
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": {
               "Ref": "UserPoolClient",
             },
-            "ProviderName": Object {
-              "Fn::Sub": Array [
+            "ProviderName": {
+              "Fn::Sub": [
                 "cognito-idp.\${region}.amazonaws.com/\${client}",
-                Object {
-                  "client": Object {
+                {
+                  "client": {
                     "Ref": "UserPool",
                   },
-                  "region": Object {
+                  "region": {
                     "Ref": "AWS::Region",
                   },
                 },
               ],
             },
           },
-          Object {
-            "ClientId": Object {
+          {
+            "ClientId": {
               "Ref": "UserPoolClientWeb",
             },
-            "ProviderName": Object {
-              "Fn::Sub": Array [
+            "ProviderName": {
+              "Fn::Sub": [
                 "cognito-idp.\${region}.amazonaws.com/\${client}",
-                Object {
-                  "client": Object {
+                {
+                  "client": {
                     "Ref": "UserPool",
                   },
-                  "region": Object {
+                  "region": {
                     "Ref": "AWS::Region",
                   },
                 },
@@ -213,16 +213,16 @@ Object {
             },
           },
         ],
-        "IdentityPoolName": Object {
-          "Fn::If": Array [
+        "IdentityPoolName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
             "authdefaultsettings2c33facd_identitypool_2c33facd",
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "authdefaultsettings2c33facd_identitypool_2c33facd__",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -233,45 +233,45 @@ Object {
       },
       "Type": "AWS::Cognito::IdentityPool",
     },
-    "IdentityPoolRoleMap": Object {
-      "DependsOn": Array [
+    "IdentityPoolRoleMap": {
+      "DependsOn": [
         "IdentityPool",
       ],
-      "Properties": Object {
-        "IdentityPoolId": Object {
+      "Properties": {
+        "IdentityPoolId": {
           "Ref": "IdentityPool",
         },
-        "Roles": Object {
-          "authenticated": Object {
+        "Roles": {
+          "authenticated": {
             "Ref": "authRoleArn",
           },
-          "unauthenticated": Object {
+          "unauthenticated": {
             "Ref": "unauthRoleArn",
           },
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
-    "UserPool": Object {
-      "Properties": Object {
-        "AliasAttributes": Object {
+    "UserPool": {
+      "Properties": {
+        "AliasAttributes": {
           "Ref": "aliasAttributes",
         },
-        "AutoVerifiedAttributes": Array [
+        "AutoVerifiedAttributes": [
           "email",
         ],
-        "EmailVerificationMessage": Object {
+        "EmailVerificationMessage": {
           "Ref": "emailVerificationMessage",
         },
-        "EmailVerificationSubject": Object {
+        "EmailVerificationSubject": {
           "Ref": "emailVerificationSubject",
         },
-        "MfaConfiguration": Object {
+        "MfaConfiguration": {
           "Ref": "mfaConfiguration",
         },
-        "Policies": Object {
-          "PasswordPolicy": Object {
-            "MinimumLength": Object {
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": {
               "Ref": "passwordPolicyMinLength",
             },
             "RequireLowercase": false,
@@ -280,33 +280,33 @@ Object {
             "RequireUppercase": false,
           },
         },
-        "Schema": Array [
-          Object {
+        "Schema": [
+          {
             "Mutable": true,
             "Name": "email",
             "Required": true,
           },
         ],
-        "UserAttributeUpdateSettings": Object {
-          "AttributesRequireVerificationBeforeUpdate": Array [
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
             "email",
           ],
         },
-        "UserPoolName": Object {
-          "Fn::If": Array [
+        "UserPoolName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
-            Object {
+            {
               "Ref": "userPoolName",
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
-                  Object {
+                [
+                  {
                     "Ref": "userPoolName",
                   },
                   "-",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -314,65 +314,65 @@ Object {
             },
           ],
         },
-        "UsernameConfiguration": Object {
+        "UsernameConfiguration": {
           "CaseSensitive": false,
         },
       },
       "Type": "AWS::Cognito::UserPool",
     },
-    "UserPoolClient": Object {
-      "DependsOn": Array [
+    "UserPoolClient": {
+      "DependsOn": [
         "UserPool",
       ],
-      "Properties": Object {
+      "Properties": {
         "ClientName": "authde2c33facd_app_client",
-        "GenerateSecret": Object {
+        "GenerateSecret": {
           "Ref": "userpoolClientGenerateSecret",
         },
-        "RefreshTokenValidity": Object {
+        "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
-        "TokenValidityUnits": Object {
+        "TokenValidityUnits": {
           "RefreshToken": "days",
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "UserPoolClientRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "UserPoolClientRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "RoleName": Object {
-          "Fn::If": Array [
+        "RoleName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
-            Object {
+            {
               "Ref": "userpoolClientLambdaRole",
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "upClientLambdaRole2c33facd",
-                  Object {
-                    "Fn::Select": Array [
+                  {
+                    "Fn::Select": [
                       3,
-                      Object {
-                        "Fn::Split": Array [
+                      {
+                        "Fn::Split": [
                           "-",
-                          Object {
+                          {
                             "Ref": "AWS::StackName",
                           },
                         ],
@@ -380,7 +380,7 @@ Object {
                     ],
                   },
                   "-",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -391,19 +391,19 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "UserPoolClientWeb": Object {
-      "DependsOn": Array [
+    "UserPoolClientWeb": {
+      "DependsOn": [
         "UserPool",
       ],
-      "Properties": Object {
+      "Properties": {
         "ClientName": "authde2c33facd_app_clientWeb",
-        "RefreshTokenValidity": Object {
+        "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
-        "TokenValidityUnits": Object {
+        "TokenValidityUnits": {
           "RefreshToken": "days",
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
       },
@@ -414,12 +414,12 @@ Object {
 `;
 
 exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": Object {
-    "ShouldNotCreateEnvResources": Object {
-      "Fn::Equals": Array [
-        Object {
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
           "Ref": "env",
         },
         "NONE",
@@ -427,63 +427,63 @@ Object {
     },
   },
   "Description": "Amplify Cognito Stack for AWS Amplify CLI",
-  "Outputs": Object {
-    "AmazonWebClient": Object {
-      "Value": Object {
+  "Outputs": {
+    "AmazonWebClient": {
+      "Value": {
         "Ref": "amazonAppId",
       },
     },
-    "AppClientID": Object {
+    "AppClientID": {
       "Description": "The user pool app client id",
-      "Value": Object {
+      "Value": {
         "Ref": "UserPoolClient",
       },
     },
-    "AppClientIDWeb": Object {
+    "AppClientIDWeb": {
       "Description": "The user pool app client id for web",
-      "Value": Object {
+      "Value": {
         "Ref": "UserPoolClientWeb",
       },
     },
-    "AppleWebClient": Object {
-      "Value": Object {
+    "AppleWebClient": {
+      "Value": {
         "Ref": "appleAppId",
       },
     },
-    "CreatedSNSRole": Object {
+    "CreatedSNSRole": {
       "Description": "role arn",
-      "Value": Object {
-        "Fn::GetAtt": Array [
+      "Value": {
+        "Fn::GetAtt": [
           "SNSRole",
           "Arn",
         ],
       },
     },
-    "FacebookWebClient": Object {
-      "Value": Object {
+    "FacebookWebClient": {
+      "Value": {
         "Ref": "facebookAppId",
       },
     },
-    "GoogleWebClient": Object {
-      "Value": Object {
+    "GoogleWebClient": {
+      "Value": {
         "Ref": "googleClientId",
       },
     },
-    "HostedUIDomain": Object {
-      "Value": Object {
-        "Fn::If": Array [
+    "HostedUIDomain": {
+      "Value": {
+        "Fn::If": [
           "ShouldNotCreateEnvResources",
-          Object {
+          {
             "Ref": "hostedUIDomainName",
           },
-          Object {
-            "Fn::Join": Array [
+          {
+            "Fn::Join": [
               "-",
-              Array [
-                Object {
+              [
+                {
                   "Ref": "hostedUIDomainName",
                 },
-                Object {
+                {
                   "Ref": "env",
                 },
               ],
@@ -492,289 +492,289 @@ Object {
         ],
       },
     },
-    "IdentityPoolId": Object {
+    "IdentityPoolId": {
       "Description": "Id for the identity pool",
-      "Value": Object {
+      "Value": {
         "Ref": "IdentityPool",
       },
     },
-    "IdentityPoolName": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+    "IdentityPoolName": {
+      "Value": {
+        "Fn::GetAtt": [
           "IdentityPool",
           "Name",
         ],
       },
     },
-    "OAuthMetadata": Object {
-      "Value": Object {
+    "OAuthMetadata": {
+      "Value": {
         "Ref": "oAuthMetadata",
       },
     },
-    "UserPoolArn": Object {
+    "UserPoolArn": {
       "Description": "Arn for the user pool",
-      "Value": Object {
-        "Fn::GetAtt": Array [
+      "Value": {
+        "Fn::GetAtt": [
           "UserPool",
           "Arn",
         ],
       },
     },
-    "UserPoolId": Object {
+    "UserPoolId": {
       "Description": "Id for the user pool",
-      "Value": Object {
+      "Value": {
         "Ref": "UserPool",
       },
     },
-    "UserPoolName": Object {
-      "Value": Object {
+    "UserPoolName": {
+      "Value": {
         "Ref": "userPoolName",
       },
     },
   },
-  "Parameters": Object {
-    "AllowedOAuthFlows": Object {
+  "Parameters": {
+    "AllowedOAuthFlows": {
       "Type": "String",
     },
-    "AllowedOAuthScopes": Object {
+    "AllowedOAuthScopes": {
       "Type": "CommaDelimitedList",
     },
-    "adminQueries": Object {
+    "adminQueries": {
       "Type": "String",
     },
-    "allowUnauthenticatedIdentities": Object {
+    "allowUnauthenticatedIdentities": {
       "Type": "String",
     },
-    "amazonAppId": Object {
+    "amazonAppId": {
       "Type": "String",
     },
-    "appleAppId": Object {
+    "appleAppId": {
       "Type": "String",
     },
-    "authProviders": Object {
+    "authProviders": {
       "Type": "CommaDelimitedList",
     },
-    "authProvidersUserPool": Object {
+    "authProvidersUserPool": {
       "Type": "CommaDelimitedList",
     },
-    "authRoleArn": Object {
+    "authRoleArn": {
       "Type": "String",
     },
-    "authSelections": Object {
+    "authSelections": {
       "Type": "String",
     },
-    "authTriggerConnections": Object {
+    "authTriggerConnections": {
       "Type": "CommaDelimitedList",
     },
-    "autoVerifiedAttributes": Object {
+    "autoVerifiedAttributes": {
       "Type": "CommaDelimitedList",
     },
-    "breakCircularDependency": Object {
+    "breakCircularDependency": {
       "Type": "String",
     },
-    "defaultPasswordPolicy": Object {
+    "defaultPasswordPolicy": {
       "Type": "String",
     },
-    "emailVerificationMessage": Object {
+    "emailVerificationMessage": {
       "Type": "String",
     },
-    "emailVerificationSubject": Object {
+    "emailVerificationSubject": {
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
-    "facebookAppId": Object {
+    "facebookAppId": {
       "Type": "String",
     },
-    "facebookAppIdUserPool": Object {
+    "facebookAppIdUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "facebookAppSecretUserPool": Object {
+    "facebookAppSecretUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "facebookAuthorizeScopes": Object {
+    "facebookAuthorizeScopes": {
       "NoEcho": true,
       "Type": "String",
     },
-    "googleAppIdUserPool": Object {
+    "googleAppIdUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "googleAppSecretUserPool": Object {
+    "googleAppSecretUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "googleAuthorizeScopes": Object {
+    "googleAuthorizeScopes": {
       "NoEcho": true,
       "Type": "String",
     },
-    "googleClientId": Object {
+    "googleClientId": {
       "Type": "String",
     },
-    "hostedUI": Object {
+    "hostedUI": {
       "Type": "String",
     },
-    "hostedUIDomainName": Object {
+    "hostedUIDomainName": {
       "Type": "String",
     },
-    "hostedUIProviderCreds": Object {
+    "hostedUIProviderCreds": {
       "NoEcho": true,
       "Type": "String",
     },
-    "hostedUIProviderMeta": Object {
+    "hostedUIProviderMeta": {
       "Type": "String",
     },
-    "identityPoolName": Object {
+    "identityPoolName": {
       "Type": "String",
     },
-    "loginwithamazonAppIdUserPool": Object {
+    "loginwithamazonAppIdUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "loginwithamazonAppSecretUserPool": Object {
+    "loginwithamazonAppSecretUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "loginwithamazonAuthorizeScopes": Object {
+    "loginwithamazonAuthorizeScopes": {
       "NoEcho": true,
       "Type": "String",
     },
-    "mfaConfiguration": Object {
+    "mfaConfiguration": {
       "Type": "String",
     },
-    "mfaTypes": Object {
+    "mfaTypes": {
       "Type": "CommaDelimitedList",
     },
-    "newCallbackURLs": Object {
+    "newCallbackURLs": {
       "Type": "CommaDelimitedList",
     },
-    "newLogoutURLs": Object {
+    "newLogoutURLs": {
       "Type": "CommaDelimitedList",
     },
-    "oAuthMetadata": Object {
+    "oAuthMetadata": {
       "Type": "String",
     },
-    "passwordPolicyCharacters": Object {
+    "passwordPolicyCharacters": {
       "Type": "CommaDelimitedList",
     },
-    "passwordPolicyMinLength": Object {
+    "passwordPolicyMinLength": {
       "Type": "String",
     },
-    "permissions": Object {
+    "permissions": {
       "Type": "CommaDelimitedList",
     },
-    "requiredAttributes": Object {
+    "requiredAttributes": {
       "Type": "CommaDelimitedList",
     },
-    "resourceName": Object {
+    "resourceName": {
       "Type": "String",
     },
-    "resourceNameTruncated": Object {
+    "resourceNameTruncated": {
       "Type": "String",
     },
-    "selectedParties": Object {
+    "selectedParties": {
       "Type": "String",
     },
-    "serviceName": Object {
+    "serviceName": {
       "Type": "String",
     },
-    "sharedId": Object {
+    "sharedId": {
       "Type": "String",
     },
-    "signinwithappleAuthorizeScopes": Object {
+    "signinwithappleAuthorizeScopes": {
       "NoEcho": true,
       "Type": "String",
     },
-    "signinwithappleClientIdUserPool": Object {
+    "signinwithappleClientIdUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "signinwithappleKeyIdUserPool": Object {
+    "signinwithappleKeyIdUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "signinwithapplePrivateKeyUserPool": Object {
+    "signinwithapplePrivateKeyUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "signinwithappleTeamIdUserPool": Object {
+    "signinwithappleTeamIdUserPool": {
       "NoEcho": true,
       "Type": "String",
     },
-    "smsAuthenticationMessage": Object {
+    "smsAuthenticationMessage": {
       "Type": "String",
     },
-    "smsVerificationMessage": Object {
+    "smsVerificationMessage": {
       "Type": "String",
     },
-    "thirdPartyAuth": Object {
+    "thirdPartyAuth": {
       "Type": "String",
     },
-    "triggers": Object {
+    "triggers": {
       "Type": "String",
     },
-    "unauthRoleArn": Object {
+    "unauthRoleArn": {
       "Type": "String",
     },
-    "useDefault": Object {
+    "useDefault": {
       "Type": "String",
     },
-    "useEnabledMfas": Object {
+    "useEnabledMfas": {
       "Type": "String",
     },
-    "userPoolGroups": Object {
+    "userPoolGroups": {
       "Type": "String",
     },
-    "userPoolName": Object {
+    "userPoolName": {
       "Type": "String",
     },
-    "usernameCaseSensitive": Object {
+    "usernameCaseSensitive": {
       "Type": "String",
     },
-    "userpoolClientGenerateSecret": Object {
+    "userpoolClientGenerateSecret": {
       "Type": "String",
     },
-    "userpoolClientLambdaRole": Object {
+    "userpoolClientLambdaRole": {
       "Type": "String",
     },
-    "userpoolClientReadAttributes": Object {
+    "userpoolClientReadAttributes": {
       "Type": "CommaDelimitedList",
     },
-    "userpoolClientRefreshTokenValidity": Object {
+    "userpoolClientRefreshTokenValidity": {
       "Type": "String",
     },
-    "userpoolClientSetAttributes": Object {
+    "userpoolClientSetAttributes": {
       "Type": "String",
     },
-    "userpoolClientWriteAttributes": Object {
+    "userpoolClientWriteAttributes": {
       "Type": "CommaDelimitedList",
     },
-    "verificationBucketName": Object {
+    "verificationBucketName": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "CustomMessageConfirmationBucket": Object {
+  "Resources": {
+    "CustomMessageConfirmationBucket": {
       "DeletionPolicy": "Retain",
-      "Properties": Object {
+      "Properties": {
         "AccessControl": "Private",
-        "BucketName": Object {
-          "Fn::If": Array [
+        "BucketName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
-            Object {
+            {
               "Ref": "verificationBucketName",
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "-",
-                Array [
-                  Object {
+                [
+                  {
                     "Ref": "verificationBucketName",
                   },
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -782,17 +782,17 @@ Object {
             },
           ],
         },
-        "CorsConfiguration": Object {
-          "CorsRules": Array [
-            Object {
-              "AllowedHeaders": Array [
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedHeaders": [
                 "Authorization",
                 "Content-length",
               ],
-              "AllowedMethods": Array [
+              "AllowedMethods": [
                 "GET",
               ],
-              "AllowedOrigins": Array [
+              "AllowedOrigins": [
                 "*",
               ],
               "MaxAge": 3000,
@@ -803,22 +803,22 @@ Object {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "HostedUIDomainResource": Object {
-      "Properties": Object {
-        "Domain": Object {
-          "Fn::If": Array [
+    "HostedUIDomainResource": {
+      "Properties": {
+        "Domain": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
-            Object {
+            {
               "Ref": "hostedUIDomainName",
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "-",
-                Array [
-                  Object {
+                [
+                  {
                     "Ref": "hostedUIDomainName",
                   },
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -826,153 +826,153 @@ Object {
             },
           ],
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
       },
       "Type": "AWS::Cognito::UserPoolDomain",
     },
-    "HostedUIFacebookProviderResource": Object {
-      "Properties": Object {
-        "AttributeMapping": Object {
+    "HostedUIFacebookProviderResource": {
+      "Properties": {
+        "AttributeMapping": {
           "email": "email",
           "username": "id",
         },
-        "ProviderDetails": Object {
-          "authorize_scopes": Object {
+        "ProviderDetails": {
+          "authorize_scopes": {
             "Ref": "facebookAuthorizeScopes",
           },
-          "client_id": Object {
+          "client_id": {
             "Ref": "facebookAppIdUserPool",
           },
-          "client_secret": Object {
+          "client_secret": {
             "Ref": "facebookAppSecretUserPool",
           },
         },
         "ProviderName": "Facebook",
         "ProviderType": "Facebook",
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
       },
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
-    "HostedUIGoogleProviderResource": Object {
-      "Properties": Object {
-        "AttributeMapping": Object {
+    "HostedUIGoogleProviderResource": {
+      "Properties": {
+        "AttributeMapping": {
           "email": "email",
           "username": "sub",
         },
-        "ProviderDetails": Object {
-          "authorize_scopes": Object {
+        "ProviderDetails": {
+          "authorize_scopes": {
             "Ref": "googleAuthorizeScopes",
           },
-          "client_id": Object {
+          "client_id": {
             "Ref": "googleAppIdUserPool",
           },
-          "client_secret": Object {
+          "client_secret": {
             "Ref": "googleAppSecretUserPool",
           },
         },
         "ProviderName": "Google",
         "ProviderType": "Google",
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
       },
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
-    "HostedUILoginWithAmazonProviderResource": Object {
-      "Properties": Object {
-        "AttributeMapping": Object {
+    "HostedUILoginWithAmazonProviderResource": {
+      "Properties": {
+        "AttributeMapping": {
           "email": "email",
           "username": "user_id",
         },
-        "ProviderDetails": Object {
-          "authorize_scopes": Object {
+        "ProviderDetails": {
+          "authorize_scopes": {
             "Ref": "loginwithamazonAuthorizeScopes",
           },
-          "client_id": Object {
+          "client_id": {
             "Ref": "loginwithamazonAppIdUserPool",
           },
-          "client_secret": Object {
+          "client_secret": {
             "Ref": "loginwithamazonAppSecretUserPool",
           },
         },
         "ProviderName": "LoginWithAmazon",
         "ProviderType": "LoginWithAmazon",
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
       },
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
-    "HostedUISignInWithAppleProviderResource": Object {
-      "Properties": Object {
-        "AttributeMapping": Object {
+    "HostedUISignInWithAppleProviderResource": {
+      "Properties": {
+        "AttributeMapping": {
           "email": "email",
         },
-        "ProviderDetails": Object {
-          "authorize_scopes": Object {
+        "ProviderDetails": {
+          "authorize_scopes": {
             "Ref": "signinwithappleAuthorizeScopes",
           },
-          "client_id": Object {
+          "client_id": {
             "Ref": "signinwithappleClientIdUserPool",
           },
-          "key_id": Object {
+          "key_id": {
             "Ref": "signinwithappleKeyIdUserPool",
           },
-          "private_key": Object {
+          "private_key": {
             "Ref": "signinwithapplePrivateKeyUserPool",
           },
-          "team_id": Object {
+          "team_id": {
             "Ref": "signinwithappleTeamIdUserPool",
           },
         },
         "ProviderName": "SignInWithApple",
         "ProviderType": "SignInWithApple",
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
       },
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
-    "IdentityPool": Object {
-      "Properties": Object {
-        "AllowUnauthenticatedIdentities": Object {
+    "IdentityPool": {
+      "Properties": {
+        "AllowUnauthenticatedIdentities": {
           "Ref": "allowUnauthenticatedIdentities",
         },
-        "CognitoIdentityProviders": Array [
-          Object {
-            "ClientId": Object {
+        "CognitoIdentityProviders": [
+          {
+            "ClientId": {
               "Ref": "UserPoolClient",
             },
-            "ProviderName": Object {
-              "Fn::Sub": Array [
+            "ProviderName": {
+              "Fn::Sub": [
                 "cognito-idp.\${region}.amazonaws.com/\${client}",
-                Object {
-                  "client": Object {
+                {
+                  "client": {
                     "Ref": "UserPool",
                   },
-                  "region": Object {
+                  "region": {
                     "Ref": "AWS::Region",
                   },
                 },
               ],
             },
           },
-          Object {
-            "ClientId": Object {
+          {
+            "ClientId": {
               "Ref": "UserPoolClientWeb",
             },
-            "ProviderName": Object {
-              "Fn::Sub": Array [
+            "ProviderName": {
+              "Fn::Sub": [
                 "cognito-idp.\${region}.amazonaws.com/\${client}",
-                Object {
-                  "client": Object {
+                {
+                  "client": {
                     "Ref": "UserPool",
                   },
-                  "region": Object {
+                  "region": {
                     "Ref": "AWS::Region",
                   },
                 },
@@ -980,16 +980,16 @@ Object {
             },
           },
         ],
-        "IdentityPoolName": Object {
-          "Fn::If": Array [
+        "IdentityPoolName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
             "extauth387063394_identitypool_87063394",
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "extauth387063394_identitypool_87063394__",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -997,47 +997,47 @@ Object {
             },
           ],
         },
-        "SupportedLoginProviders": Object {
-          "accounts.google.com": Object {
+        "SupportedLoginProviders": {
+          "accounts.google.com": {
             "Ref": "googleClientId",
           },
-          "appleid.apple.com": Object {
+          "appleid.apple.com": {
             "Ref": "appleAppId",
           },
-          "graph.facebook.com": Object {
+          "graph.facebook.com": {
             "Ref": "facebookAppId",
           },
-          "www.amazon.com": Object {
+          "www.amazon.com": {
             "Ref": "amazonAppId",
           },
         },
       },
       "Type": "AWS::Cognito::IdentityPool",
     },
-    "IdentityPoolRoleMap": Object {
-      "DependsOn": Array [
+    "IdentityPoolRoleMap": {
+      "DependsOn": [
         "IdentityPool",
         "UserPoolClient",
         "UserPoolClientWeb",
       ],
-      "Properties": Object {
-        "IdentityPoolId": Object {
+      "Properties": {
+        "IdentityPoolId": {
           "Ref": "IdentityPool",
         },
-        "RoleMappings": Object {
-          "UserPoolClientRoleMapping": Object {
+        "RoleMappings": {
+          "UserPoolClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
-            "IdentityProvider": Object {
-              "Fn::Sub": Array [
+            "IdentityProvider": {
+              "Fn::Sub": [
                 "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${client}",
-                Object {
-                  "client": Object {
+                {
+                  "client": {
                     "Ref": "UserPoolClient",
                   },
-                  "region": Object {
+                  "region": {
                     "Ref": "AWS::Region",
                   },
-                  "userPool": Object {
+                  "userPool": {
                     "Ref": "UserPool",
                   },
                 },
@@ -1045,19 +1045,19 @@ Object {
             },
             "Type": "Token",
           },
-          "UserPoolWebClientRoleMapping": Object {
+          "UserPoolWebClientRoleMapping": {
             "AmbiguousRoleResolution": "AuthenticatedRole",
-            "IdentityProvider": Object {
-              "Fn::Sub": Array [
+            "IdentityProvider": {
+              "Fn::Sub": [
                 "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${webClient}",
-                Object {
-                  "region": Object {
+                {
+                  "region": {
                     "Ref": "AWS::Region",
                   },
-                  "userPool": Object {
+                  "userPool": {
                     "Ref": "UserPool",
                   },
-                  "webClient": Object {
+                  "webClient": {
                     "Ref": "UserPoolClientWeb",
                   },
                 },
@@ -1066,32 +1066,32 @@ Object {
             "Type": "Token",
           },
         },
-        "Roles": Object {
-          "authenticated": Object {
+        "Roles": {
+          "authenticated": {
             "Ref": "authRoleArn",
           },
-          "unauthenticated": Object {
+          "unauthenticated": {
             "Ref": "unauthRoleArn",
           },
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
-    "SNSRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "SNSRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "sts:AssumeRole",
               ],
-              "Condition": Object {
-                "StringEquals": Object {
+              "Condition": {
+                "StringEquals": {
                   "sts:ExternalId": "extaut87063394_role_external_id",
                 },
               },
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "cognito-idp.amazonaws.com",
               },
               "Sid": "",
@@ -1099,12 +1099,12 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "sns:Publish",
                   ],
                   "Effect": "Allow",
@@ -1116,22 +1116,22 @@ Object {
             "PolicyName": "extaut87063394-sns-policy",
           },
         ],
-        "RoleName": Object {
-          "Fn::If": Array [
+        "RoleName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
             "extaut87063394_sns-role",
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "sns87063394",
-                  Object {
-                    "Fn::Select": Array [
+                  {
+                    "Fn::Select": [
                       3,
-                      Object {
-                        "Fn::Split": Array [
+                      {
+                        "Fn::Split": [
                           "-",
-                          Object {
+                          {
                             "Ref": "AWS::StackName",
                           },
                         ],
@@ -1139,7 +1139,7 @@ Object {
                     ],
                   },
                   "-",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -1150,30 +1150,30 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "UserPool": Object {
-      "DependsOn": Array [
+    "UserPool": {
+      "DependsOn": [
         "SNSRole",
       ],
-      "Properties": Object {
-        "AutoVerifiedAttributes": Array [
+      "Properties": {
+        "AutoVerifiedAttributes": [
           "email",
         ],
-        "EmailVerificationMessage": Object {
+        "EmailVerificationMessage": {
           "Ref": "emailVerificationMessage",
         },
-        "EmailVerificationSubject": Object {
+        "EmailVerificationSubject": {
           "Ref": "emailVerificationSubject",
         },
-        "EnabledMfas": Array [
+        "EnabledMfas": [
           "SMS_MFA",
           "SOFTWARE_TOKEN_MFA",
         ],
-        "MfaConfiguration": Object {
+        "MfaConfiguration": {
           "Ref": "mfaConfiguration",
         },
-        "Policies": Object {
-          "PasswordPolicy": Object {
-            "MinimumLength": Object {
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": {
               "Ref": "passwordPolicyMinLength",
             },
             "RequireLowercase": true,
@@ -1182,128 +1182,128 @@ Object {
             "RequireUppercase": true,
           },
         },
-        "Schema": Array [
-          Object {
+        "Schema": [
+          {
             "Mutable": true,
             "Name": "address",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "birthdate",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "email",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "family_name",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "middle_name",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "gender",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "locale",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "given_name",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "name",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "nickname",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "phone_number",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "preferred_username",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "picture",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "profile",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "updated_at",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "website",
             "Required": true,
           },
-          Object {
+          {
             "Mutable": true,
             "Name": "zoneinfo",
             "Required": true,
           },
         ],
-        "SmsAuthenticationMessage": Object {
+        "SmsAuthenticationMessage": {
           "Ref": "smsAuthenticationMessage",
         },
-        "SmsConfiguration": Object {
+        "SmsConfiguration": {
           "ExternalId": "extaut87063394_role_external_id",
-          "SnsCallerArn": Object {
-            "Fn::GetAtt": Array [
+          "SnsCallerArn": {
+            "Fn::GetAtt": [
               "SNSRole",
               "Arn",
             ],
           },
         },
-        "SmsVerificationMessage": Object {
+        "SmsVerificationMessage": {
           "Ref": "smsVerificationMessage",
         },
-        "UserAttributeUpdateSettings": Object {
-          "AttributesRequireVerificationBeforeUpdate": Array [
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
             "email",
           ],
         },
-        "UserPoolName": Object {
-          "Fn::If": Array [
+        "UserPoolName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
-            Object {
+            {
               "Ref": "userPoolName",
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
-                  Object {
+                [
+                  {
                     "Ref": "userPoolName",
                   },
                   "-",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -1311,99 +1311,99 @@ Object {
             },
           ],
         },
-        "UsernameConfiguration": Object {
+        "UsernameConfiguration": {
           "CaseSensitive": false,
         },
       },
       "Type": "AWS::Cognito::UserPool",
     },
-    "UserPoolClient": Object {
-      "DependsOn": Array [
+    "UserPoolClient": {
+      "DependsOn": [
         "HostedUIFacebookProviderResource",
         "HostedUIGoogleProviderResource",
         "HostedUILoginWithAmazonProviderResource",
         "HostedUISignInWithAppleProviderResource",
         "UserPool",
       ],
-      "Properties": Object {
-        "AllowedOAuthFlows": Array [
+      "Properties": {
+        "AllowedOAuthFlows": [
           "code",
         ],
         "AllowedOAuthFlowsUserPoolClient": true,
-        "AllowedOAuthScopes": Array [
+        "AllowedOAuthScopes": [
           "phone",
           "email",
           "openid",
           "profile",
           "aws.cognito.signin.user.admin",
         ],
-        "CallbackURLs": Array [
+        "CallbackURLs": [
           "https://localhost:3000/",
         ],
         "ClientName": "extaut87063394_app_client",
-        "GenerateSecret": Object {
+        "GenerateSecret": {
           "Ref": "userpoolClientGenerateSecret",
         },
-        "LogoutURLs": Array [
+        "LogoutURLs": [
           "https://localhost:3000/",
         ],
-        "ReadAttributes": Object {
+        "ReadAttributes": {
           "Ref": "userpoolClientReadAttributes",
         },
-        "RefreshTokenValidity": Object {
+        "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
-        "SupportedIdentityProviders": Array [
+        "SupportedIdentityProviders": [
           "Facebook",
           "Google",
           "LoginWithAmazon",
           "SignInWithApple",
           "COGNITO",
         ],
-        "TokenValidityUnits": Object {
+        "TokenValidityUnits": {
           "RefreshToken": "days",
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
-        "WriteAttributes": Object {
+        "WriteAttributes": {
           "Ref": "userpoolClientWriteAttributes",
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "UserPoolClientRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "UserPoolClientRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "RoleName": Object {
-          "Fn::If": Array [
+        "RoleName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
-            Object {
+            {
               "Ref": "userpoolClientLambdaRole",
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "upClientLambdaRole87063394",
-                  Object {
-                    "Fn::Select": Array [
+                  {
+                    "Fn::Select": [
                       3,
-                      Object {
-                        "Fn::Split": Array [
+                      {
+                        "Fn::Split": [
                           "-",
-                          Object {
+                          {
                             "Ref": "AWS::StackName",
                           },
                         ],
@@ -1411,7 +1411,7 @@ Object {
                     ],
                   },
                   "-",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -1422,53 +1422,53 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "UserPoolClientWeb": Object {
-      "DependsOn": Array [
+    "UserPoolClientWeb": {
+      "DependsOn": [
         "HostedUIFacebookProviderResource",
         "HostedUIGoogleProviderResource",
         "HostedUILoginWithAmazonProviderResource",
         "HostedUISignInWithAppleProviderResource",
         "UserPool",
       ],
-      "Properties": Object {
-        "AllowedOAuthFlows": Array [
+      "Properties": {
+        "AllowedOAuthFlows": [
           "code",
         ],
         "AllowedOAuthFlowsUserPoolClient": true,
-        "AllowedOAuthScopes": Array [
+        "AllowedOAuthScopes": [
           "phone",
           "email",
           "openid",
           "profile",
           "aws.cognito.signin.user.admin",
         ],
-        "CallbackURLs": Array [
+        "CallbackURLs": [
           "https://localhost:3000/",
         ],
         "ClientName": "extaut87063394_app_clientWeb",
-        "LogoutURLs": Array [
+        "LogoutURLs": [
           "https://localhost:3000/",
         ],
-        "ReadAttributes": Object {
+        "ReadAttributes": {
           "Ref": "userpoolClientReadAttributes",
         },
-        "RefreshTokenValidity": Object {
+        "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
-        "SupportedIdentityProviders": Array [
+        "SupportedIdentityProviders": [
           "Facebook",
           "Google",
           "LoginWithAmazon",
           "SignInWithApple",
           "COGNITO",
         ],
-        "TokenValidityUnits": Object {
+        "TokenValidityUnits": {
           "RefreshToken": "days",
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "UserPool",
         },
-        "WriteAttributes": Object {
+        "WriteAttributes": {
           "Ref": "userpoolClientWriteAttributes",
         },
       },

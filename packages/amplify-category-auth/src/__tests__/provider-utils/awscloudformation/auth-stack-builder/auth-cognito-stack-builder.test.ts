@@ -129,12 +129,12 @@ describe('generateCognitoStackResources', () => {
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
-      Object {
-        "attributesRequireVerificationBeforeUpdate": Array [
-          "email",
-        ],
-      }
-    `);
+{
+  "attributesRequireVerificationBeforeUpdate": [
+    "email",
+  ],
+}
+`);
   });
 
   it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', () => {
@@ -149,12 +149,12 @@ describe('generateCognitoStackResources', () => {
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
-      Object {
-        "attributesRequireVerificationBeforeUpdate": Array [
-          "email",
-        ],
-      }
-    `);
+{
+  "attributesRequireVerificationBeforeUpdate": [
+    "email",
+  ],
+}
+`);
     expect(cognitoStack.userPool!.lambdaConfig).toHaveProperty('preSignUp');
     expect(cognitoStack.userPoolClientWeb!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.userPoolClient!.tokenValidityUnits).toHaveProperty('refreshToken');
