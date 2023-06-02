@@ -42,6 +42,12 @@ $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
 
+**_Note_**: If you are macOS user, you can try the following command:
+
+```bash
+$ brew install aws-amplify
+```
+
 **_Note_**: If you're having permission issues on your system installing the CLI, please try the following command:
 
 ```bash
