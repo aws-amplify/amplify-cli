@@ -736,7 +736,31 @@ export const commandsInfo: Array<CommandInfo> = [
         flagDescription: 'Specify the output path, where this is typically the path to your CDK project',
       },
     ],
-    subCommands: [],
+    subCommands: [
+      {
+        subCommand: 'pull',
+        subCommandDescription: "Export information for the project's frontend application",
+        // eslint-disable-next-line spellcheck/spell-checker
+        subCommandUsage: 'amplify export pull --rootStackName amplify-myapp-stack-123 --out ~/myCDKApp/src/config/ --frontend javascript',
+        subCommandFlags: [
+          {
+            short: '',
+            long: 'rootStackName <cdk stack name>',
+            flagDescription: 'Amplify CDK deployed Root Stack name',
+          },
+          {
+            short: '',
+            long: 'frontend <frontend type>',
+            flagDescription: 'Front end type ex: android, flutter, ios, javascript',
+          },
+          {
+            short: '',
+            long: 'out <path>',
+            flagDescription: 'Directory to write the front-end config files',
+          },
+        ],
+      },
+    ],
   },
   {
     command: 'uninstall',

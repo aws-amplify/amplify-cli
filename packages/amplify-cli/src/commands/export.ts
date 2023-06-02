@@ -6,8 +6,6 @@ import {
   validateExportDirectoryPath,
   PathConstants,
 } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
-import chalk from 'chalk';
 import { getResourceOutputs } from '../extensions/amplify-helpers/get-resource-outputs';
 import Ora from 'ora';
 import { getChangedResources } from './build';
@@ -15,47 +13,7 @@ import * as _ from 'lodash';
 
 export const run = async (context: $TSContext) => {
   const subCommands = context.input.subCommands;
-  const showHelp = getSafeInputOptionsFlag(context, 'help') || false;
   const isPull = !!(subCommands && subCommands.includes('pull'));
-  const frontend = getSafeInputOptionsFlag(context, 'frontend');
-  const rootStackName = getSafeInputOptionsFlag(context, 'rootStackName');
-  const showPullHelp = (showHelp || !frontend || !rootStackName) && isPull;
-
-  if (showHelp && !showPullHelp) {
-    printer.blankLine();
-    printer.info("'amplify export', exports your Amplify backend into CDK app");
-    printer.blankLine();
-    printer.info(`${chalk.yellow('--cdk')}         Exports all Amplify-generated resources as CDK`);
-    printer.info(`${chalk.yellow('--out')}         Folder to export stack to`);
-    printer.blankLine();
-    printer.info(`Example: ${chalk.green('amplify export --cdk --out ~/myCDKApp')}`);
-    printer.blankLine();
-    printer.info("'amplify export pull' To export front-end config files'");
-    printer.info("'amplify export pull --help'  to learn");
-    printer.blankLine();
-    return;
-  }
-
-  if (showPullHelp) {
-    const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    const frontends = Object.keys(frontendPlugins);
-    printer.blankLine();
-    printer.info("'amplify export pull', Allows you to generate frontend config files at a desired location");
-    printer.blankLine();
-    printer.info(`${chalk.yellow('--rootStackName')}         Amplify CLI deployed Root Stack name`);
-    printer.info(`${chalk.yellow('--frontend')}             Front end type ex: ${frontends.join(', ')}`);
-    printer.info(`${chalk.yellow('--out')}                  Directory to write the front-end config files`);
-    printer.blankLine();
-    printer.info(
-      `Example: ${chalk.green(
-        // eslint-disable-next-line spellcheck/spell-checker
-        'amplify export pull --rootStackName amplify-myapp-stack-123 --out ~/myCDKApp/src/config/ --frontend javascript',
-      )}`,
-    );
-    printer.blankLine();
-    printer.blankLine();
-    return;
-  }
   const exportPath = _.get(context, ['input', 'options', 'out']);
   if (isPull) {
     await createFrontEndConfigFile(context, exportPath);
@@ -118,5 +76,3 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
     spinner.stop();
   }
 }
-
-const getSafeInputOptionsFlag = (context: $TSContext, flag: string) => _.get(context, ['input', 'options', flag]);
