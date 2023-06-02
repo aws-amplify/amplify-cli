@@ -19,7 +19,7 @@ export class AmplifyPrinter implements Printer {
     // (undocumented)
     debug: (line: string) => void;
     // (undocumented)
-    error: (line: string) => void;
+    error: (line: string, error?: any) => void;
     // Warning: (ae-forgotten-export) The symbol "Color" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -180,7 +180,7 @@ export type Printer = {
     blankLine: () => void;
     success: (line: string) => void;
     warn: (line: string) => void;
-    error: (line: string) => void;
+    error: (line: string, error?: any) => void;
 };
 
 // @public (undocumented)
