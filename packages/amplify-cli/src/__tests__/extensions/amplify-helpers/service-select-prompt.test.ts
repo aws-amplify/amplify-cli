@@ -80,6 +80,7 @@ describe('serviceSelectPrompt', () => {
       },
     };
 
+    jest.clearAllMocks();
     jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue(mockProjectConfig);
   });
 
