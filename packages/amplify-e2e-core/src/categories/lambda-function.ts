@@ -177,6 +177,10 @@ const coreFunction = (
         .sendLine(settings.name || '');
 
       selectRuntime(chain, runtime);
+
+      if (runtime === 'nodejs') {
+        chain.wait('Choose the package manager that you want to use:').sendCarriageReturn(); // npm
+      }
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
         selectTemplate(chain, settings.functionTemplate, runtime);
