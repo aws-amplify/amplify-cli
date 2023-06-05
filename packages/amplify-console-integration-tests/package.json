@@ -31,59 +31,6 @@
     "moment": "^2.24.0",
     "promise-sequential": "^1.1.1"
   },
-  "jest": {
-    "verbose": false,
-    "preset": "ts-jest",
-    "testRunner": "@aws-amplify/amplify-e2e-core/runner",
-    "testEnvironment": "@aws-amplify/amplify-e2e-core/environment",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    },
-    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "lib"
-    ],
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!**/*.d.ts"
-    ],
-    "reporters": [
-      "default",
-      "jest-junit",
-      [
-        "@aws-amplify/amplify-e2e-core/reporter",
-        {
-          "publicPath": "./console-integration-reports",
-          "filename": "index.html",
-          "expand": true
-        }
-      ]
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setup-tests.ts"
-    ],
-    "globals": {
-      "window": {},
-      "ts-jest": {
-        "tsconfig": "<rootDir>/tsconfig.tests.json"
-      }
-    }
-  },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
     "outputName": "js-test-results.xml",
