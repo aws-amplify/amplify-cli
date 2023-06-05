@@ -1237,6 +1237,9 @@ workflows:
             branches:
               only:
                 - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
       - github_prerelease:
