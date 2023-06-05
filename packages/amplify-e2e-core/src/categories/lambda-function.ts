@@ -177,13 +177,12 @@ const coreFunction = (
         .sendLine(settings.name || '');
 
       selectRuntime(chain, runtime);
-
       if (runtime === 'nodejs') {
         chain.wait('Choose the package manager that you want to use:').sendCarriageReturn(); // npm
       }
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
-        selectTemplate(chain, settings.functionTemplate, runtime);
+        selectTemplate(chain, settings.functionTemplate);
       }
     } else {
       if (settings.layerOptions && settings.layerOptions.layerAndFunctionExist) {
@@ -340,21 +339,12 @@ export const functionBuild = async (cwd: string): Promise<void> => {
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
   chain.wait('Choose the runtime that you want to use:');
-
-  // reset cursor to top of list because node is default but it throws off offset calculations
-  moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));
-
-  singleSelect(chain, runtimeName, runtimeChoices);
+  chain.sendLine(runtimeName);
 };
 
-export const selectTemplate = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes) => {
-  const templateChoices = getTemplateChoices(runtime);
+export const selectTemplate = (chain: ExecutionContext, functionTemplate: string) => {
   chain.wait('Choose the function template that you want to use');
-
-  // reset cursor to top of list because Hello World is default but it throws off offset calculations
-  moveUp(chain, templateChoices.indexOf('Hello World'));
-
-  singleSelect(chain, functionTemplate, templateChoices);
+  chain.sendLine(functionTemplate);
 };
 
 export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext): void => {
