@@ -4,7 +4,6 @@
 export enum LockfileType {
   NPM = 'npm',
   YARN = 'yarn',
-  YARN2 = 'yarn2',
 }
 
 /**

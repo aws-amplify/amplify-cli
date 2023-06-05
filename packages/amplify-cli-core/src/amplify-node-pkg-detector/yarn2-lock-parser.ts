@@ -2,18 +2,18 @@ import _ from 'lodash';
 import * as yaml from 'yaml';
 import { AmplifyFault } from '../errors/amplify-fault';
 import { LockfileType } from './lock-file-types';
-import { YarnLockDependency, YarnLockDependencyType, YarnLock, YarnLockParser, YarnLockFileTypes } from './yarn-lock-parser';
+import { YarnLockDependency, YarnLockDependencyType, YarnLock, YarnLockParser } from './yarn-lock-parser';
 
 /**
  *  Yarn2LockParser
  */
 export class Yarn2LockParser extends YarnLockParser {
-  type: YarnLockFileTypes;
+  type: LockfileType.YARN;
   dependenciesMap: Record<string, Record<string, YarnLockDependencyType>>;
 
   constructor() {
     super();
-    this.type = LockfileType.YARN2;
+    this.type = LockfileType.YARN;
     this.dependenciesMap = {};
   }
 
@@ -35,7 +35,7 @@ export class Yarn2LockParser extends YarnLockParser {
         object,
         type: this.type,
         lockfileVersion: 2,
-        lockfileType: LockfileType.YARN2,
+        lockfileType: LockfileType.YARN,
       };
       yarnLock.dependencies = yarnLock.object;
       return yarnLock;

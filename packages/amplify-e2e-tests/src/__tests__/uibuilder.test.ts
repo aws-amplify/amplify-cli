@@ -17,6 +17,7 @@ import { spawnSync, spawn } from 'child_process';
 import { AmplifyUIBuilder } from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
+import * as execa from 'execa';
 
 describe('amplify pull with uibuilder', () => {
   let projRoot: string;
@@ -81,7 +82,7 @@ describe('amplify pull with uibuilder', () => {
   });
 
   it('appropriate uibuilder files are generated', async () => {
-    spawnSync(getNpxPath(), ['create-react-app', projectName], { cwd: projectDir, encoding: 'utf-8' });
+    execa.sync(getNpxPath(), ['create-react-app', projectName, '--use-npm'], { cwd: projectDir, encoding: 'utf-8' });
     await amplifyStudioHeadlessPull(reactDir, { appId, envName });
     const fileList = fs.readdirSync(`${reactDir}/src/ui-components/`);
     expect(fileList).toContain('FormCheckout.jsx');
@@ -112,13 +113,13 @@ describe('amplify pull with uibuilder', () => {
     const npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
     // Give react server time to start
     await new Promise((resolve) => setTimeout(resolve, 60000));
-    const res = spawnSync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
+    const res = execa.sync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
     // kill the react server process
     spawnSync('kill', [`${npmStartProcess.pid}`], { encoding: 'utf8' });
     await new Promise((resolve) => setTimeout(resolve, 1000));
     // Seriously, kill the react server process
     // react-scripts somehow resurrects the process automatically after the first kill.
     spawnSync('pkill', ['-f', 'react'], { encoding: 'utf8' });
-    expect(res.status).toBe(0);
+    expect(res.exitCode).toBe(0);
   });
 });

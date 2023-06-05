@@ -8,11 +8,11 @@ exports[`amplify migration test auth ...should add auth with max options and wor
      └─ [+] nodejs16.x
 
 Parameters
-[-] Parameter facebookAppId: {\\"Type\\":\\"String\\"}
-[-] Parameter googleClientId: {\\"Type\\":\\"String\\"}
-[-] Parameter amazonAppId: {\\"Type\\":\\"String\\"}
-[-] Parameter appleAppId: {\\"Type\\":\\"String\\"}
-[~] Parameter hostedUIProviderCreds: {\\"Type\\":\\"String\\"} to {\\"Type\\":\\"String\\",\\"NoEcho\\":true}
+[-] Parameter facebookAppId: {\"Type\":\"String\"}
+[-] Parameter googleClientId: {\"Type\":\"String\"}
+[-] Parameter amazonAppId: {\"Type\":\"String\"}
+[-] Parameter appleAppId: {\"Type\":\"String\"}
+[~] Parameter hostedUIProviderCreds: {\"Type\":\"String\"} to {\"Type\":\"String\",\"NoEcho\":true}
 
 Resources
 [~] AWS::Lambda::Function UserPoolClientLambda 
@@ -555,10 +555,10 @@ exports.handler = (event, context, callback) => {
      └─ [+] nodejs16.x
 
 Outputs
-[-] Output GoogleWebClient: {\\"Value\\":{\\"Ref\\":\\"googleClientId\\"}}
-[-] Output FacebookWebClient: {\\"Value\\":{\\"Ref\\":\\"facebookAppId\\"}}
-[-] Output AmazonWebClient: {\\"Value\\":{\\"Ref\\":\\"amazonAppId\\"}}
-[-] Output AppleWebClient: {\\"Value\\":{\\"Ref\\":\\"appleAppId\\"}}
+[-] Output GoogleWebClient: {\"Value\":{\"Ref\":\"googleClientId\"}}
+[-] Output FacebookWebClient: {\"Value\":{\"Ref\":\"facebookAppId\"}}
+[-] Output AmazonWebClient: {\"Value\":{\"Ref\":\"amazonAppId\"}}
+[-] Output AppleWebClient: {\"Value\":{\"Ref\":\"appleAppId\"}}
 
 "
 `;

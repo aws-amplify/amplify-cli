@@ -107,9 +107,8 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
-      - run: yarn config set registry https://registry.npmjs.org
-      - run: yarn config set script-shell $(which bash)
-      - run: yarn run production-build
+      - run: yarn --immutable
+      - run: yarn production-build
       - run:
           name: Build tests
           command: yarn build-tests
@@ -133,9 +132,7 @@ jobs:
     executor: l_xlarge
     steps:
       - checkout
-      - run: yarn config set registry https://registry.npmjs.org
-      - run: yarn config set script-shell $(which bash)
-      - run: yarn install --network-concurrency 1
+      - run: yarn install --immutable
       - run:
           name: Build tests
           command: yarn build-tests
@@ -152,8 +149,9 @@ jobs:
           steps:
             - install_node_windows
             - checkout
-            - run: yarn config set script-shell $(which bash)
-            - run: yarn run production-build
+            - run: cd scripts && yarn && yarn ts-node remove-pkg-fetch-checksum.ts && cd -
+            - run: yarn --immutable
+            - run: yarn production-build
             - run:
                 name: Build tests
                 command: yarn build-tests
@@ -243,7 +241,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             checkPackageVersionsInLocalNpmRegistry
 
   mock_e2e_tests:
@@ -342,7 +339,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli linux
             unsetNpmRegistryUrl
       - save_cache:
@@ -367,7 +363,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli macos
             unsetNpmRegistryUrl
       - save_cache:
@@ -392,7 +387,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
             generatePkgCli win
             unsetNpmRegistryUrl
       - save_cache:
@@ -537,14 +531,14 @@ jobs:
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
-  amplify_migration_tests_v5:
+  amplify_migration_tests_v8:
     parameters:
       os:
         type: executor
         default: l_large
     executor: << parameters.os >>
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+      AMPLIFY_PATH: /home/circleci/.npm-global/bin/amplify
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -553,42 +547,14 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Run tests migrating from CLI v5.2.0
+          name: Run tests migrating from CLI v8.2.0
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
-          no_output_timeout: 65m
-      - run: *scan_e2e_test_artifacts
-      - store_test_results:
-          path: ~/repo/packages/amplify-migration-tests/
-      - store_artifacts:
-          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
-    working_directory: ~/repo
-
-  amplify_migration_tests_v6:
-    parameters:
-      os:
-        type: executor
-        default: l_large
-    executor: << parameters.os >>
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
-    steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Run tests migrating from CLI v6.1.0
-          command: |
-            source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
-            cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            unset IS_AMPLIFY_CI
+            echo $IS_AMPLIFY_CI
+            retry yarn migration_v8.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -620,7 +586,7 @@ jobs:
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -650,7 +616,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -680,7 +646,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -696,7 +662,7 @@ jobs:
         default: l_large
     executor: << parameters.os >>
     environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux-x64
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
@@ -708,9 +674,8 @@ jobs:
           name: Run tests using general profile
           command: |
             source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
             cd packages/amplify-e2e-tests
-            retry yarn run general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+            retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -738,7 +703,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            retry yarn run console-integration --no-cache --maxWorkers=4
+            retry yarn console-integration --no-cache --maxWorkers=4
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
@@ -778,7 +743,8 @@ jobs:
           name: Configure Amplify CLI
           command: |
             yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
-            echo 'export PATH="$(yarn global bin):$PATH"' >> $BASH_ENV
+            echo 'export PATH="$(pwd)/.bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
             amplify-dev
       - run:
           name: Clone auth test package
@@ -786,7 +752,7 @@ jobs:
             cd ..
             git clone $AUTH_CLONE_URL
             cd aws-amplify-cypress-auth
-            yarn --cache-folder ~/.cache/yarn
+            yarn
             yarn add cypress@6.8.0 --save
       - run: cd .circleci/ && chmod +x auth.sh
       - run: cd .circleci/ && chmod +x amplify_init.sh
@@ -794,7 +760,7 @@ jobs:
       - run: expect .circleci/amplify_init.exp ../aws-amplify-cypress-auth
       - run: expect .circleci/enable_auth.exp
       - run: cd ../aws-amplify-cypress-auth
-      - run: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+      - run: yarn --immutable
       - run: cd ../aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*')
       - run:
           name: Start Auth test server in background
@@ -820,12 +786,12 @@ jobs:
             cd ..
             git clone $API_CLONE_URL
             cd aws-amplify-cypress-api
-            yarn --cache-folder ~/.cache/yarn
+            yarn
       - run: cd .circleci/ && chmod +x api.sh
       - run: expect .circleci/amplify_init.exp ../aws-amplify-cypress-api
       - run: expect .circleci/enable_api.exp
       - run: cd ../aws-amplify-cypress-api
-      - run: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+      - run: yarn --immutable
       - run: cd ../aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')
       - run:
           name: Start API test server in background
@@ -1175,21 +1141,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
-      - amplify_migration_tests_v6:
-          context:
-            - e2e-auth-credentials
-            - cleanup-resources
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - dev
-                - /run-e2e-with-rc\/.*/
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - upload_pkg_binaries
-      - amplify_migration_tests_v5:
+      - amplify_migration_tests_v8:
           context:
             - e2e-auth-credentials
             - cleanup-resources
@@ -1315,8 +1267,7 @@ workflows:
             - amplify_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_v10
-            - amplify_migration_tests_v6
-            - amplify_migration_tests_v5
+            - amplify_migration_tests_v8
             - amplify_migration_tests_non_multi_env_layers
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
@@ -1379,7 +1330,7 @@ commands:
                 command: |
                   cd out
                   ln -sf amplify-pkg-linux-x64 amplify
-                  echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
+                  echo "export PATH=$AMPLIFY_DIR:$PATH:/home/circleci/repo/node_modules/.bin/" >> $BASH_ENV
                   source $BASH_ENV
             - run:
                 name: Confirm Amplify CLI is installed and available in PATH
@@ -1430,10 +1381,10 @@ commands:
                 name: Run E2e Tests
                 command: |
                   source .circleci/local_publish_helpers.sh
-                  source $BASH_ENV
                   startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
                   setNpmRegistryUrlToLocal
                   changeNpmGlobalPath
+                  source $BASH_ENV
                   amplify version
                   cd packages/amplify-e2e-tests
                   retry runE2eTest

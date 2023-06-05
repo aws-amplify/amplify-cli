@@ -58,7 +58,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
     const overrideSampleTsconfigJsonPath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.json');
     fs.writeFileSync(overrideBackendTsConfigJson, fs.readFileSync(overrideSampleTsconfigJsonPath));
   }
-  const packageManager = getPackageManager(cwd);
+  const packageManager = await getPackageManager(cwd);
 
   if (packageManager === null) {
     throw new AmplifyError('MissingOverridesInstallationRequirementsError', {

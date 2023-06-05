@@ -105,6 +105,6 @@ const isDDBStreamAttached = (tableName: string, cfnResources: $TSObject): boolea
 const getLambdaFunctionNames = () => {
   const metaInfo = stateManager.getMeta();
   return _.entries<{ service: string }>(_.get(metaInfo, ['function']))
-    .filter(([_, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
+    .filter(([, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
     .map(([key]) => key);
 };

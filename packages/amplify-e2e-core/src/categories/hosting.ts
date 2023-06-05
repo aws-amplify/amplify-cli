@@ -2,8 +2,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile, getNpxPath } from '..';
 import _ from 'lodash';
-import { spawnSync } from 'child_process';
 import { getBackendAmplifyMeta } from '../utils';
+import * as execa from 'execa';
 
 export function enableContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -121,7 +121,7 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync(getNpxPath(), ['create-react-app', '--scripts-version', '5.0.1', projectName], { cwd: projectDir });
+  execa.sync(getNpxPath(), ['create-react-app', projectName, '--scripts-version', '5.0.1', '--use-npm'], { cwd: projectDir });
 
   return projRoot;
 }

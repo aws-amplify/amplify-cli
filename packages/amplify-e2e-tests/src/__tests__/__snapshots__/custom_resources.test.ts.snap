@@ -1,54 +1,54 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`adding custom resources test add/update CDK and CFN custom resources 1`] = `
-Object {
-  "env": Object {
+{
+  "env": {
     "Description": "Current Amplify CLI env name",
     "Type": "String",
   },
-  "storageddbArn": Object {
+  "storageddbArn": {
     "Type": "String",
   },
-  "storageddbName": Object {
+  "storageddbName": {
     "Type": "String",
   },
-  "storageddbPartitionKeyName": Object {
+  "storageddbPartitionKeyName": {
     "Type": "String",
   },
-  "storageddbPartitionKeyType": Object {
+  "storageddbPartitionKeyType": {
     "Type": "String",
   },
-  "storageddbRegion": Object {
+  "storageddbRegion": {
     "Type": "String",
   },
-  "storageddbStreamArn": Object {
+  "storageddbStreamArn": {
     "Type": "String",
   },
 }
 `;
 
 exports[`adding custom resources test add/update CDK and CFN custom resources 2`] = `
-Object {
-  "env": Object {
+{
+  "env": {
     "Description": "Current Amplify CLI env name",
     "Type": "String",
   },
-  "storageddbArn": Object {
+  "storageddbArn": {
     "Type": "String",
   },
-  "storageddbName": Object {
+  "storageddbName": {
     "Type": "String",
   },
-  "storageddbPartitionKeyName": Object {
+  "storageddbPartitionKeyName": {
     "Type": "String",
   },
-  "storageddbPartitionKeyType": Object {
+  "storageddbPartitionKeyType": {
     "Type": "String",
   },
-  "storageddbRegion": Object {
+  "storageddbRegion": {
     "Type": "String",
   },
-  "storageddbStreamArn": Object {
+  "storageddbStreamArn": {
     "Type": "String",
   },
 }

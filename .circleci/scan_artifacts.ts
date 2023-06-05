@@ -17,10 +17,10 @@ export const hasMatchingContentInFolder = (patterns: string[], folder: string, e
     return true;
   } catch (e) {
     // When there is no match exit code is set to 1
-    if (e.exitCode === 1) {
+    if ((e as { exitCode: number })?.exitCode === 1) {
       return false;
     }
-    if (e.message.includes('No such file or directory')) {
+    if ((e as { message: string })?.message?.includes('No such file or directory')) {
       console.log('No artifacts found at:', folder);
       return false;
     }
@@ -30,7 +30,7 @@ export const hasMatchingContentInFolder = (patterns: string[], folder: string, e
 
 const main = () => {
   const envVarNameWithCredentialValues = (process.env.ENV_VAR_WITH_SECRETS || '').split(',').map((v) => v.trim());
-  const values = envVarNameWithCredentialValues.map((v) => process.env[v]).filter(Boolean);
+  const values = envVarNameWithCredentialValues.map((v) => process.env[v]).filter((item): item is string => !!item);
   if (values.length) {
     for (let folder of ARTIFACT_STORAGE_PATH_ALLOW_LIST) {
       if (folder.startsWith('~/')) {

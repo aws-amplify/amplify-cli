@@ -1,5 +1,4 @@
 import { $TSContext, stateManager, pathManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { mocked } from 'ts-jest/utils';
 import * as path from 'path';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { FunctionSecretsStateManager } from '../../../../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
@@ -14,11 +13,11 @@ jest.mock('../../../../provider-utils/awscloudformation/secrets/secretName');
 jest.mock('../../../../provider-utils/awscloudformation/utils/updateTopLevelComment');
 jest.mock('../../../../provider-utils/awscloudformation/utils/cloudformationHelpers');
 
-const stateManagerMock = mocked(stateManager);
-const pathManagerMock = mocked(pathManager);
-const getAppIdMock = mocked(getAppId);
-const SSMClientWrapperMock = mocked(SSMClientWrapper);
-const getFunctionSecretPrefixMock = mocked(getFunctionSecretPrefix);
+const stateManagerMock = jest.mocked(stateManager);
+const pathManagerMock = jest.mocked(pathManager);
+const getAppIdMock = jest.mocked(getAppId);
+const SSMClientWrapperMock = jest.mocked(SSMClientWrapper);
+const getFunctionSecretPrefixMock = jest.mocked(getFunctionSecretPrefix);
 const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
 
 const amplifyErrorMockImpl = { name: 'TestError' } as unknown as AmplifyError;

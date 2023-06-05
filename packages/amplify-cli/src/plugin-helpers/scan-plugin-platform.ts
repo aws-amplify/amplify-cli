@@ -42,6 +42,10 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     pluginPlatformLocal.pluginDirectories.push(constants.PACKAGED_NODE_MODULES);
   }
 
+  if (!pluginPlatformLocal.pluginDirectories.includes(constants.DEV_NODE_MODULES)) {
+    pluginPlatformLocal.pluginDirectories.push(constants.DEV_NODE_MODULES);
+  }
+
   if (pluginPlatformLocal.pluginDirectories.length > 0 && pluginPlatformLocal.pluginPrefixes.length > 0) {
     const scanDirTasks = pluginPlatformLocal.pluginDirectories.map((directory) => async () => {
       directory = normalizePluginDirectory(directory);
@@ -98,6 +102,8 @@ export function normalizePluginDirectory(directory: string): string {
   switch (directory) {
     case constants.PACKAGED_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../../..'));
+    case constants.DEV_NODE_MODULES:
+      return path.normalize(path.join(__dirname, '../../../../node_modules'));
     case constants.LOCAL_NODE_MODULES:
       return path.normalize(path.join(__dirname, '../../node_modules'));
     case constants.PARENT_DIRECTORY:
