@@ -1,10 +1,10 @@
 import { ExecutionContext } from '..';
 
 export const moveDown = (chain: ExecutionContext, nMoves: number) =>
-  Array.from(Array(nMoves).keys()).reduce((chain) => chain.send('j'), chain);
+  Array.from(Array(nMoves).keys()).reduce((chain) => chain.send('j').delay(500), chain);
 
 export const moveUp = (chain: ExecutionContext, nMoves: number) =>
-  Array.from(Array(nMoves).keys()).reduce((chain) => chain.send('k'), chain);
+  Array.from(Array(nMoves).keys()).reduce((chain) => chain.send('k').delay(500), chain);
 
 export const singleSelect = <T>(chain: ExecutionContext, item: T, allChoices: T[]) => multiSelect(chain, [item], allChoices);
 
