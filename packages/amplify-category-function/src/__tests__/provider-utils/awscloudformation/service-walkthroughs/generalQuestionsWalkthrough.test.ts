@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 import { generalQuestionsWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/generalQuestionsWalkthrough';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('inquirer', () => ({
   prompt: jest.fn(),
@@ -30,7 +31,7 @@ describe('generalQuestionsWalkthrough', () => {
       return { functionName: validationResult };
     });
 
-    const result = await generalQuestionsWalkthrough(mockContext);
+    const result = await generalQuestionsWalkthrough(mockContext as unknown as $TSContext);
 
     expect(result.functionName).toBe('A function with this name already exists.');
   });
