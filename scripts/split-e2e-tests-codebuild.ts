@@ -273,7 +273,10 @@ function main(): void {
     {
       identifier: 'run_e2e_tests_windows',
       buildspec: 'codebuild_specs/run_e2e_tests_windows.yml',
-      env: {},
+      env: {
+        type: 'WINDOWS_SERVER_2019_CONTAINER',
+        image: '$WINDOWS_IMAGE_2019',
+      },
       'depend-on': ['build_windows', 'upb'],
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
