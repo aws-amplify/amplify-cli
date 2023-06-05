@@ -31,6 +31,11 @@
     "moment": "^2.24.0",
     "promise-sequential": "^1.1.1"
   },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.4.0"
+  },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
     "outputName": "js-test-results.xml",
