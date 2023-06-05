@@ -1,10 +1,11 @@
 const inquirer = require('inquirer');
 import { generalQuestionsWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/generalQuestionsWalkthrough';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 
-jest.mock('inquirer', () => ({
-  prompt: jest.fn(),
-}));
+jest.mock('@aws-amplify/amplify-prompts');
+const prompterMock = prompter as jest.Mocked<typeof prompter>;
+
 jest.mock('uuid', () => ({
   v4: () => 'mock-uuid',
 }));
@@ -25,10 +26,8 @@ describe('generalQuestionsWalkthrough', () => {
       },
     };
 
-    inquirer.prompt.mockImplementation(async (questions) => {
-      const { validate } = questions[0];
-      const validationResult = await validate('existingFunction');
-      return { functionName: validationResult };
+    prompterMock.input.mockImplementation(async (message, options) => {
+      return await options.validate('existingFunction');
     });
 
     const result = await generalQuestionsWalkthrough(mockContext as unknown as $TSContext);
