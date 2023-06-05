@@ -922,6 +922,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
+    "@aws-amplify/amplify-category-api": ^5.4.0
     "@aws-amplify/amplify-cli-core": 4.0.8
     "@aws-amplify/amplify-prompts": 2.7.0
     "@aws-amplify/appsync-modelgen-plugin": ^2.4.4

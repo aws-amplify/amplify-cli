@@ -2,7 +2,7 @@ import inquirer from 'inquirer';
 import { v4 as uuid } from 'uuid';
 import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { advancedSettingsList } from '../utils/constants';
-import { alphanumeric, prompter } from '@aws-amplify/amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 /**
@@ -19,7 +19,22 @@ export async function generalQuestionsWalkthrough(context: $TSContext): Promise<
 
   return {
     functionName: await prompter.input('Provide an AWS Lambda function name:', {
-      validate: alphanumeric(),
+      validate: async (input: string) => {
+        const lambdaFunctions = await context.amplify.getResourceStatus('function');
+        const functionExists = lambdaFunctions.allResources.some((resource) => resource.resourceName === input);
+        if (functionExists) {
+          return 'A function with this name already exists.';
+        }
+
+        const validationResult = context.amplify.inputValidation({
+          operator: 'regex',
+          value: '^[a-zA-Z0-9]+$',
+          onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
+          required: true,
+        })(input);
+
+        return validationResult === false ? 'You can use the following characters: a-z A-Z 0-9' : validationResult;
+      },
       initial: functionName,
     }),
   };
