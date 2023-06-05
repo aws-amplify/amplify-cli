@@ -33,7 +33,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
   const isHeadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
 
   // if it's headless or already has been prompted earlier don't prompt just check the config
-  if (!isHeadless && DebugConfig.Instance.promptSendReport()) {
+  if ((!isHeadless && DebugConfig.Instance.promptSendReport()) || !isCI) {
     sendReport = await prompter.yesOrNo(
       'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ',
       false,
