@@ -67,13 +67,13 @@ describe('readCFNTemplate', () => {
     const result = readCFNTemplate(testPath);
 
     expect(result.cfnTemplate).toMatchInlineSnapshot(`
-      Object {
-        "Fn::GetAtt": Array [
-          "myResource",
-          "output.someProp",
-        ],
-      }
-    `);
+{
+  "Fn::GetAtt": [
+    "myResource",
+    "output.someProp",
+  ],
+}
+`);
   });
 
   it('casts yaml boolean values to corresponding JavaScript boolean', async () => {

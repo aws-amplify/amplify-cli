@@ -81,3 +81,9 @@ it('prints error line when silent flag is set', () => {
   printer.error(testInput);
   expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"🛑 [31mthis is a test line[39m"`);
 });
+
+it('prints error message when the error is an object', () => {
+  printer.error('', new Error(testInput));
+
+  expect(writeStream_stub.write.mock.calls[1][0].trim()).toMatchInlineSnapshot(`"[31mthis is a test line[39m"`);
+});

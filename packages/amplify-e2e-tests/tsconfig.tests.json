@@ -1,16 +1,10 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "skipLibCheck": true,
-    "target": "es5",
-    "module": "commonjs",
-    "sourceMap": true,
-    "esModuleInterop": true,
-    "rootDir": "./src",
-    "types": ["jest", "node"],
     "outDir": "lib",
-    "lib": ["es2015", "es2016.array.include", "esnext.asynciterable", "dom"],
-    "declaration": true,
-    "typeRoots": ["../../node_modules/@types", "node_modules/@types", "./typings"]
+    "rootDir": "./src",
+    "strict": false,
+    "lib": ["ESNext", "dom"]
   },
   "references": [{ "path": "../amplify-e2e-core" }],
   "exclude": ["node_modules", "lib", "__tests__", "custom-resources", "overrides"]

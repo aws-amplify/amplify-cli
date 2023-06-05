@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`amplify add api (GraphQL) updates AppSync API in headless mode 1`] = `
-Object {
+{
   "ElasticsearchWarning": true,
-  "ResolverConfig": Object {
-    "project": Object {
+  "ResolverConfig": {
+    "project": {
       "ConflictDetection": "VERSION",
       "ConflictHandler": "OPTIMISTIC_CONCURRENCY",
     },
@@ -14,14 +14,14 @@ Object {
 `;
 
 exports[`amplify add api (GraphQL) updates AppSync API in headless mode 2`] = `
-Object {
-  "additionalAuthenticationProviders": Array [
-    Object {
-      "apiKeyConfig": Object {},
+{
+  "additionalAuthenticationProviders": [
+    {
+      "apiKeyConfig": {},
       "authenticationType": "API_KEY",
     },
   ],
-  "defaultAuthentication": Object {
+  "defaultAuthentication": {
     "authenticationType": "AWS_IAM",
   },
 }
@@ -31,10 +31,10 @@ exports[`amplify add api (GraphQL) updates AppSync API in headless mode 3`] = `
 "type Post @model {
   id: ID!
   title: String
-  comments: [Comment!]! @connection(keyName: \\"byPost\\", fields: [\\"id\\"])
+  comments: [Comment!]! @connection(keyName: \"byPost\", fields: [\"id\"])
 }
 
-type Comment @model @key(name: \\"byPost\\", fields: [\\"postID\\"]) {
+type Comment @model @key(name: \"byPost\", fields: [\"postID\"]) {
   id: ID!
   content: String
   postID: ID!

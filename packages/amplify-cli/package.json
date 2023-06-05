@@ -122,14 +122,13 @@
     "@types/update-notifier": "^5.1.0",
     "cloudform-types": "^4.2.0",
     "nock": "^12.0.3",
-    "typescript": "^4.5.5"
+    "typescript": "^4.9.5"
   },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx,js,jsx}",
       "!src/__tests__/"
     ],
-    "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -260,5 +259,10 @@
         "packageName": "@aws-amplify/amplify-util-mock"
       }
     }
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }
