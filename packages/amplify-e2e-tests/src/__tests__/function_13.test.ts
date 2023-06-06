@@ -14,7 +14,7 @@ describe('amplify push function cases:', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('function-pm');
-    const projName = `func-pm-${generateRandomShortId()}`;
+    const projName = `funcpm${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: projName });
   });
 
@@ -24,7 +24,7 @@ describe('amplify push function cases:', () => {
   });
 
   it('should select the NPM package manager and build', async () => {
-    const funcName = `npm-${generateRandomShortId()}`;
+    const funcName = `npm${generateRandomShortId()}`;
 
     await addFunction(projRoot, { name: funcName, packageManager: { name: 'NPM' }, functionTemplate: 'Hello World' }, 'nodejs');
     await functionBuild(projRoot);
@@ -36,7 +36,7 @@ describe('amplify push function cases:', () => {
   });
 
   it('should select the YARN package manager and build', async () => {
-    const funcName = `yarn-${generateRandomShortId()}`;
+    const funcName = `yarn${generateRandomShortId()}`;
 
     await addFunction(projRoot, { name: funcName, packageManager: { name: 'Yarn' }, functionTemplate: 'Hello World' }, 'nodejs');
     await functionBuild(projRoot);
@@ -48,7 +48,7 @@ describe('amplify push function cases:', () => {
   });
 
   it('should select the CUSTOM package manager and build', async () => {
-    const funcName = `custom-${generateRandomShortId()}`;
+    const funcName = `custom${generateRandomShortId()}`;
 
     await addFunction(
       projRoot,
