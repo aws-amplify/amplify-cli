@@ -921,8 +921,8 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.0.8
     "@aws-amplify/amplify-prompts": 2.7.0
     "@aws-amplify/appsync-modelgen-plugin": ^2.4.4
-    "@aws-amplify/codegen-ui": 2.14.1
-    "@aws-amplify/codegen-ui-react": 2.14.1
+    "@aws-amplify/codegen-ui": 2.14.2
+    "@aws-amplify/codegen-ui-react": 2.14.2
     "@types/fs-extra": ^8.0.1
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
@@ -1150,11 +1150,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/codegen-ui-react@npm:2.14.1":
-  version: 2.14.1
-  resolution: "@aws-amplify/codegen-ui-react@npm:2.14.1"
+"@aws-amplify/codegen-ui-react@npm:2.14.2":
+  version: 2.14.2
+  resolution: "@aws-amplify/codegen-ui-react@npm:2.14.2"
   dependencies:
-    "@aws-amplify/codegen-ui": 2.14.1
+    "@aws-amplify/codegen-ui": 2.14.2
     "@typescript/vfs": ~1.3.5
     prettier: 2.3.2
     typescript: <=4.5.0
@@ -1164,17 +1164,17 @@ __metadata:
   dependenciesMeta:
     prettier:
       optional: true
-  checksum: a487af26515640f0ac72372c0343374d77066f5fd473d556ebd2e38187cbdb9e5831356906d4b1bc4a9f50325019193d58a7912c2218ba26215c55b31007e8bf
+  checksum: 91052ff146601bedc2e08f6b878ddc89e8633529e203f1a4a4c68ff441cc27d141c0dc748893e572b2f91501d81405f819d76aacde6345b212ef271d1b223b4d
   languageName: node
   linkType: hard
 
-"@aws-amplify/codegen-ui@npm:2.14.1":
-  version: 2.14.1
-  resolution: "@aws-amplify/codegen-ui@npm:2.14.1"
+"@aws-amplify/codegen-ui@npm:2.14.2":
+  version: 2.14.2
+  resolution: "@aws-amplify/codegen-ui@npm:2.14.2"
   dependencies:
     change-case: ^4.1.2
     yup: ^0.32.11
-  checksum: a63de8264b583b71c24de0b954e662c857303ad5cedf4513c1ebb0bd5195acc7705050ce207aeef90228f684353717e5b9732102154354e085547cb032a715cd
+  checksum: 1ef00989aa89584e10e9d5216c78265ba3ce06f6770b414237db1e09fa49fa07a5d7faa24cd121df67af1bffcf9d8c4c518fb0a30df2e9b95cc3b637a523c704
   languageName: node
   linkType: hard
 
