@@ -347,7 +347,7 @@ const selectPackageManager = (chain: ExecutionContext, runtime: FunctionRuntimes
       chain.sendCarriageReturn(); // npm
     }
 
-    if (packageManager.name === 'CUSTOM') {
+    if (packageManager?.name === 'CUSTOM') {
       chain.wait('Enter command or script path to build your function:');
       chain.sendLine(packageManager.command);
     }

@@ -127,7 +127,7 @@ describe('serviceSelectPrompt', () => {
       service: undefined,
     };
 
-    prompterMock.pick.mockReturnValueOnce(Promise.resolve(promptResponse));
+    prompterMock.pick.mockReturnValue(Promise.resolve(promptResponse));
     await expect(serviceSelectionPrompt(context, '', undefined)).rejects.toThrowError(
       'No services defined by configured providers for category',
     );
@@ -141,7 +141,7 @@ describe('serviceSelectPrompt', () => {
       service: undefined,
     };
 
-    prompterMock.pick.mockReturnValueOnce(Promise.resolve(promptResponse));
+    prompterMock.pick.mockReturnValue(Promise.resolve(promptResponse));
     await expect(serviceSelectionPrompt(context, '', undefined)).rejects.toThrowError(
       'No services defined by configured providers for category',
     );
@@ -186,7 +186,7 @@ describe('serviceSelectPrompt', () => {
       service: 'awscloudformation',
     };
 
-    prompterMock.pick.mockReturnValueOnce(Promise.resolve(expectedResult));
+    prompterMock.pick.mockReturnValue(Promise.resolve(expectedResult));
     const selectedProvider = await serviceSelectionPrompt(context, 'Test', supportedServices);
     expect(selectedProvider).toEqual(expectedResult);
   });
