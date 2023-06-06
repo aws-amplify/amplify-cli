@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-storage",
-  "version": "5.2.0",
+  "version": "5.2.3",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -27,11 +27,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.5",
-    "@aws-amplify/amplify-environment-parameters": "1.6.0",
+    "@aws-amplify/amplify-cli-core": "4.0.8",
+    "@aws-amplify/amplify-environment-parameters": "1.6.3",
     "@aws-amplify/amplify-prompts": "2.7.0",
     "@aws-amplify/amplify-util-import": "2.6.0",
-    "@aws-amplify/cli-extensibility-helper": "3.0.5",
+    "@aws-amplify/cli-extensibility-helper": "3.0.8",
     "amplify-headless-interface": "1.17.3",
     "amplify-util-headless-input": "1.9.12",
     "aws-cdk-lib": "~2.68.0",
@@ -50,7 +50,9 @@
     "rimraf": "^3.0.2"
   },
   "jest": {
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -71,6 +73,11 @@
     "coverageReporters": [
       "json",
       "html"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

@@ -29,11 +29,11 @@ describe('truncateResourceNames', () => {
 
   it('truncates resource names above limit', () => {
     expect(truncateResourceNames({ functionName: longName, roleName: longName })).toMatchInlineSnapshot(`
-      Object {
-        "functionName": "thisIsASuperLongNameWreYouStillReadingThis2670c1f20258",
-        "roleName": "thisIsASuperLongNameWreYouStillReadingThis2670c1f20258",
-      }
-    `);
+{
+  "functionName": "thisIsASuperLongNameWreYouStillReadingThis2670c1f20258",
+  "roleName": "thisIsASuperLongNameWreYouStillReadingThis2670c1f20258",
+}
+`);
   });
 
   it('shortens names deterministically', () => {

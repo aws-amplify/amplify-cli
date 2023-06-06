@@ -320,7 +320,7 @@ const getLayerGlobs = async (
 
     //TODO let function runtimes export globs later instead of hardcoding in here
     if (runtimeId === 'nodejs') {
-      const packageManager = getPackageManager(layerCodePath);
+      const packageManager = await getPackageManager(layerCodePath);
 
       // If no packagemanager was detected it means no package.json present at the resource path,
       // so no files to hash related to packages.

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-frontend-ios",
-  "version": "3.6.7",
+  "version": "3.6.10",
   "description": "amplify-cli front-end plugin for xcode projects",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.5",
+    "@aws-amplify/amplify-cli-core": "4.0.8",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
@@ -36,13 +36,20 @@
       "lib/**/*.{ts,tsx,js,jsx}",
       "!lib/__tests__/"
     ],
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "js",
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

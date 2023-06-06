@@ -76,7 +76,7 @@ describe('can create a ui builder component', () => {
   it('calls the renderManager for utils file w/ validation, formatter, and fetchByPath helpers if there is a form', () => {
     generateAmplifyUiBuilderUtilFile(context, { hasForms: true, hasViews: false });
     expect(new codegenMock.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalledWith(
-      expect.arrayContaining(['validation', 'formatter', 'fetchByPath']),
+      expect.arrayContaining(['validation', 'formatter', 'fetchByPath', 'processFile']),
     );
   });
   it('calls the renderManager for utils file w/ formatter helper if there is a view', () => {

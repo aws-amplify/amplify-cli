@@ -85,14 +85,10 @@ function _loadTestAccountCredentials {
 
 
 
-function _setShell {
-    echo Setting Shell
-    yarn config set script-shell $(which bash)
-}
 function _buildLinux {
-    _setShell
     echo Linux Build
-    yarn run production-build
+    yarn --immutable
+    yarn production-build
     yarn build-tests
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
@@ -301,23 +297,16 @@ function _unassumeTestAccountCredentials {
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
 }
-function _runMigrationV5Test {
+function _runMigrationV8Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
     source .circleci/local_publish_helpers.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
+    unset IS_AMPLIFY_CI
+    echo $IS_AMPLIFY_CI
     _loadTestAccountCredentials
-    retry yarn run migration_v5.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
-}
-function _runMigrationV6Test {
-    echo RUN E2E Tests Linux
-    _loadE2ECache
-    source .circleci/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    _loadTestAccountCredentials
-    retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+    retry yarn run migration_v8.2.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
 }
 function _runMigrationV10Test {
     echo RUN E2E Tests Linux
@@ -421,7 +410,7 @@ function _integrationTest {
 
     echo "Configuring Amplify CLI"
     yarn rm-dev-link && yarn link-dev && yarn rm-aa-dev-link && yarn link-aa-dev
-    export PATH=$(yarn global bin):$PATH
+    export PATH=$(pwd)/.bin:$PATH
     amplify-dev
 
     echo "Cloning auth test package"

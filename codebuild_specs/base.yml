@@ -30,6 +30,13 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+    - identifier: integration_test
+      buildspec: codebuild_specs/integration_test.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
+      depend-on:
+        - build_linux
     - identifier: mock_e2e_tests
       buildspec: codebuild_specs/mock_e2e_tests.yml
       env:

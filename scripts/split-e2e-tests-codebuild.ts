@@ -5,7 +5,7 @@ import * as yaml from 'js-yaml';
 import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
 import { REPO_ROOT } from './cci-utils';
 import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
-import { migrationFromV10Tests, migrationFromV5Tests, migrationFromV6Tests } from './split-e2e-test-filters';
+import { migrationFromV10Tests, migrationFromV8Tests } from './split-e2e-test-filters';
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated');
 const RUN_SOLO = [
@@ -283,10 +283,10 @@ function main(): void {
     false,
     undefined,
   );
-  const splitMigrationV5Tests = splitTestsV3(
+  const splitMigrationV8Tests = splitTestsV3(
     {
-      identifier: 'migration_tests_v5',
-      buildspec: 'codebuild_specs/migration_tests_v5.yml',
+      identifier: 'migration_tests_v8',
+      buildspec: 'codebuild_specs/migration_tests_v8.yml',
       env: {},
       'depend-on': ['upb'],
     },
@@ -294,21 +294,7 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
     true,
     (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV5Tests.find((t) => t === testName));
-    },
-  );
-  const splitMigrationV6Tests = splitTestsV3(
-    {
-      identifier: 'migration_tests_v6',
-      buildspec: 'codebuild_specs/migration_tests_v6.yml',
-      env: {},
-      'depend-on': ['upb'],
-    },
-    undefined,
-    join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
-    true,
-    (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV6Tests.find((t) => t === testName));
+      return tests.filter((testName) => migrationFromV8Tests.find((t: string) => t === testName));
     },
   );
   const splitMigrationV10Tests = splitTestsV3(
@@ -325,7 +311,7 @@ function main(): void {
       return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
-  let allBuilds = [...splitE2ETests, ...splitMigrationV5Tests, ...splitMigrationV6Tests, ...splitMigrationV10Tests];
+  let allBuilds = [...splitE2ETests, ...splitMigrationV8Tests, ...splitMigrationV10Tests];
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
   const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
   const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';

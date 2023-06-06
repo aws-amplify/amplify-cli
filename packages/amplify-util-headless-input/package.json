@@ -34,5 +34,10 @@
     "transform": {
       "^.+\\.(ts|tsx)$": "ts-jest"
     }
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

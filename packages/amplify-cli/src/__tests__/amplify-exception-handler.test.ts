@@ -13,7 +13,7 @@ jest.mock('../commands/diagnose', () => ({
   }),
 }));
 
-const processExit = jest.spyOn(process, 'exit').mockImplementation((__code?: number) => undefined as never);
+let processExit;
 
 jest.mock('@aws-amplify/amplify-prompts');
 
@@ -30,6 +30,7 @@ describe('test exception handler', () => {
   } as unknown as Context;
   beforeEach(() => {
     jest.resetAllMocks();
+    processExit = jest.spyOn(process, 'exit').mockImplementation((__code?: number) => undefined as never);
     init(contextMock);
   });
   it('error handler should call usageData emitError', async () => {

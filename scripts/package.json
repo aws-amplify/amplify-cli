@@ -18,12 +18,19 @@
     "@types/glob": "^7.2.0",
     "@types/js-yaml": "^4.0.4",
     "@types/node": "^16.11.5",
+    "@yarnpkg/parsers": "^3.0.0-rc.44",
     "axios": "^0.26.0",
     "execa": "^5.1.1",
     "fs-extra": "^10.0.0",
     "glob": "^7.2.0",
     "js-yaml": "^4.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.4.4"
-  }
+    "typescript": "^4.9.5"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
+  },
+  "packageManager": "yarn@3.5.0"
 }
