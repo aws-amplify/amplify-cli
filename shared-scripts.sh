@@ -221,7 +221,7 @@ function _buildBinaries {
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
-    changeNpmGlobalPath
+    # changeNpmGlobalPath
     generatePkgCli $binaryType
     unsetNpmRegistryUrl
 
