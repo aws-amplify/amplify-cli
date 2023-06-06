@@ -23,7 +23,7 @@ describe('amplify push function cases:', () => {
     deleteProjectDir(projRoot);
   });
 
-  it.only('should select the NPM package manager and build', async () => {
+  it('should select the NPM package manager and build', async () => {
     const funcName = `npm-${generateRandomShortId()}`;
 
     await addFunction(projRoot, { name: funcName, packageManager: { name: 'NPM' }, functionTemplate: 'Hello World' }, 'nodejs');
