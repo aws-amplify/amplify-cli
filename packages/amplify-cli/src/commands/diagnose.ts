@@ -87,7 +87,7 @@ const showLearnMore = (showOptOut: boolean): void => {
 
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
   const choices = ['Generate report', 'Nothing'];
-  if (!skipPrompts) {
+  if (!skipPrompts || !isCI) {
     if (DebugConfig.Instance.promptSendReport()) {
       const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
       DebugConfig.Instance.setAndWriteShareProject(result);
@@ -111,7 +111,7 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     if (!skipPrompts) {
       canSendReport = await prompter.yesOrNo('Send Report', false);
     }
-    if (canSendReport) {
+    if (canSendReport || isCI) {
       spinner.start('Sending zip');
       const projectId = await sendReport(context, fileDestination);
       spinner.succeed('Done');
