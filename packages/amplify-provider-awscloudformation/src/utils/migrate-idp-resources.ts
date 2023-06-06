@@ -31,7 +31,7 @@ export const exportHostedUIProvidersFromCurrCloudRootStack = (resourceName: stri
     const hasNotBeenUpdated = Object.keys(provider).length === 1 && 'ProviderName' in provider;
 
     if (hasNotBeenUpdated) {
-      return currProviderCreds.find(({ ProviderName }: $TSObject) => ProviderName === provider.ProviderName);
+      return currProviderCreds.find(({ ProviderName }: $TSObject) => ProviderName === provider.ProviderName) || provider;
     }
 
     return provider;

@@ -25,6 +25,7 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
+import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from './utils/migrate-idp-resources';
 import { loadConfigurationForEnv, loadConfiguration, resolveRegion } from './configuration-manager';
 export { loadConfigurationForEnv, loadConfiguration, resolveRegion } from './configuration-manager';
 import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
@@ -38,6 +39,7 @@ import * as exportUpdateMeta from './export-update-amplify-meta';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
+export { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from './utils/migrate-idp-resources';
 export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { updateEnv } from './update-env';
 
@@ -207,4 +209,6 @@ module.exports = {
   formUserAgentParam,
   loadConfiguration,
   resolveRegion,
+  migrateResourcesToCfn,
+  exportHostedUIProvidersFromCurrCloudRootStack,
 };

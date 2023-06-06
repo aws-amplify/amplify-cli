@@ -219,6 +219,7 @@ __metadata:
     "@aws-amplify/amplify-environment-parameters": 1.6.3
     "@aws-amplify/amplify-function-plugin-interface": 1.10.2
     "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-provider-awscloudformation": 8.2.3
     "@aws-amplify/amplify-util-import": 2.6.0
     "@aws-amplify/cli-extensibility-helper": 3.0.8
     "@aws-sdk/client-cognito-identity-provider": ^3.303.0
