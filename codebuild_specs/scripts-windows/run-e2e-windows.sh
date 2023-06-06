@@ -20,4 +20,4 @@ cd packages/amplify-e2e-tests
 
 _loadTestAccountCredentials
 
-retry runE2eTest
+retry runE2eTestCb
