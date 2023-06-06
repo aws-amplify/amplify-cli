@@ -4,7 +4,10 @@ env:
 phases:
   build:
     commands:
-      - cd scripts && yarn && yarn ts-node remove-pkg-fetch-checksum.ts && cd $CODEBUILD_SRC_DIR
+      - cd scripts
+      - yarn
+      - yarn ts-node remove-pkg-fetch-checksum.ts
+      - cd $CODEBUILD_SRC_DIR
       - yarn --immutable
       - yarn production-build
       - yarn build-tests
