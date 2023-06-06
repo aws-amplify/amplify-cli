@@ -17,7 +17,7 @@
   "private": true,
   "scripts": {
     "build-tests": "tsc --build tsconfig.tests.json",
-    "console-integration": "npm run setup-profile && jest",
+    "console-integration": "npm run setup-profile && jest --logHeapUsage --forceExit",
     "setup-profile": "ts-node ./src/setup-profile.ts"
   },
   "dependencies": {
