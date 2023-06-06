@@ -289,7 +289,7 @@ function _runE2ETestsLinux {
     amplify version
     cd packages/amplify-e2e-tests
     _loadTestAccountCredentials
-    retry runE2eTest
+    retry runE2eTestCb
 }
 function _unassumeTestAccountCredentials {
     echo "Unassume Role"

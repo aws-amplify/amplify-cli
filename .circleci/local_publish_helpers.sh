@@ -267,8 +267,19 @@ function setAwsAccountCredentials {
         useChildAccountCredentials
     fi
 }
-
 function runE2eTest {
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+    else
+        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+function runE2eTestCb {
     _setupCoverage
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
