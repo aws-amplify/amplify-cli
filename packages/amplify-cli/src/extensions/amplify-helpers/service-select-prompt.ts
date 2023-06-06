@@ -1,5 +1,6 @@
 import { $TSAny, $TSContext, AmplifyError, ServiceSelection } from '@aws-amplify/amplify-cli-core';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
+import * as inquirer from 'inquirer';
 
 import { getProjectConfig } from './get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
@@ -71,7 +72,18 @@ async function serviceQuestionWalkthrough(
     });
   }
 
-  return await prompter.pick<'one', ServiceSelection>(customQuestion || 'Select from one of the below mentioned services:', options);
+  const question = [
+    {
+      name: 'service',
+      message: customQuestion || 'Select from one of the below mentioned services:',
+      type: 'list',
+      choices: options,
+    },
+  ];
+
+  const answer = await inquirer.prompt<{ service: ServiceSelection }>(question);
+
+  return answer.service;
 }
 
 export function serviceSelectionPrompt(

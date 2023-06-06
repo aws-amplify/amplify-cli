@@ -1,9 +1,4 @@
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { prompter, printer } from '@aws-amplify/amplify-prompts';
-
-jest.mock('@aws-amplify/amplify-prompts');
-const prompterMock = prompter as jest.Mocked<typeof prompter>;
-const printerMock = printer as jest.Mocked<typeof printer>;
 
 let context = {};
 let errorMessages: string[] = [];
@@ -80,7 +75,6 @@ describe('serviceSelectPrompt', () => {
       },
     };
 
-    jest.clearAllMocks();
     jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue(mockProjectConfig);
   });
 
@@ -127,10 +121,12 @@ describe('serviceSelectPrompt', () => {
       service: undefined,
     };
 
-    prompterMock.pick.mockReturnValue(Promise.resolve(promptResponse));
-    await expect(serviceSelectionPrompt(context, '', undefined)).rejects.toThrowError(
-      'No services defined by configured providers for category',
-    );
+    promptMock.mockImplementation(() => Promise.resolve(promptResponse));
+
+    await serviceSelectionPrompt(context, '', undefined);
+
+    expect(errorMessages.length).toEqual(1);
+    expect(mockExit).toBeCalledWith(1);
   });
 
   it('should gracefully handle null providers', async () => {
@@ -141,10 +137,12 @@ describe('serviceSelectPrompt', () => {
       service: undefined,
     };
 
-    prompterMock.pick.mockReturnValue(Promise.resolve(promptResponse));
-    await expect(serviceSelectionPrompt(context, '', undefined)).rejects.toThrowError(
-      'No services defined by configured providers for category',
-    );
+    promptMock.mockImplementation(() => Promise.resolve(promptResponse));
+
+    await serviceSelectionPrompt(context, '', undefined);
+
+    expect(errorMessages.length).toEqual(1);
+    expect(mockExit).toBeCalledWith(1);
   });
 
   it('should return a service immediately if only one exists', async () => {
@@ -163,7 +161,7 @@ describe('serviceSelectPrompt', () => {
       service: 'awscloudformation',
     };
     expect(selectedProvider).toEqual(expectedResult);
-    expect(printerMock.info).toHaveBeenCalledWith('Using service: awscloudformation, provided by: awscloudformation');
+    expect(infoMessages.length).toEqual(1);
   });
 
   it('should prompt if more than one provider is available', async () => {
@@ -186,8 +184,15 @@ describe('serviceSelectPrompt', () => {
       service: 'awscloudformation',
     };
 
-    prompterMock.pick.mockReturnValue(Promise.resolve(expectedResult));
+    const promptResponse = {
+      name: 'awscloudformation',
+      service: expectedResult,
+    };
+
+    promptMock.mockImplementation(() => Promise.resolve(promptResponse));
+
     const selectedProvider = await serviceSelectionPrompt(context, 'Test', supportedServices);
+
     expect(selectedProvider).toEqual(expectedResult);
   });
 });

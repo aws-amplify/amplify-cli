@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 
-export type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
+type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
 
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
@@ -357,12 +357,21 @@ const selectPackageManager = (chain: ExecutionContext, runtime: FunctionRuntimes
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
   chain.wait('Choose the runtime that you want to use:');
-  chain.sendLine(runtimeName);
+
+  // reset cursor to top of list because node is default but it throws off offset calculations
+  moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));
+
+  singleSelect(chain, runtimeName, runtimeChoices);
 };
 
-export const selectTemplate = (chain: ExecutionContext, functionTemplate: string) => {
+export const selectTemplate = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes) => {
+  const templateChoices = getTemplateChoices(runtime);
   chain.wait('Choose the function template that you want to use');
-  chain.sendLine(functionTemplate);
+
+  // reset cursor to top of list because Hello World is default but it throws off offset calculations
+  moveUp(chain, templateChoices.indexOf('Hello World'));
+
+  singleSelect(chain, functionTemplate, templateChoices);
 };
 
 export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext): void => {
@@ -626,7 +635,7 @@ export const functionCloudInvoke = async (
   return result.$response.data as Lambda.InvocationResponse;
 };
 
-export const getTemplateChoices = (runtime: FunctionRuntimes) => {
+const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
     case 'dotnet6':
       return dotNetTemplateChoices;
@@ -643,7 +652,7 @@ export const getTemplateChoices = (runtime: FunctionRuntimes) => {
   }
 };
 
-export const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
+const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
     case 'dotnet6':
       return '.NET 6';
