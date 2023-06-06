@@ -1,17 +1,10 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "skipLibCheck": true,
+    "strict": false,
     "allowJs": true,
-    "target": "es6",
-    "module": "commonjs",
-    "sourceMap": true,
-    "esModuleInterop": true,
     "rootDir": "./src",
-    "types": ["jest", "node"],
-    "outDir": "lib",
-    "lib": ["es2015", "es2016.array.include", "esnext.asynciterable", "dom"],
-    "typeRoots": ["../../node_modules/@types", "node_modules/@types"]
+    "outDir": "./lib"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "lib"],

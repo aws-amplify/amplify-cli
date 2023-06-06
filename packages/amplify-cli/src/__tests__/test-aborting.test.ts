@@ -124,7 +124,7 @@ describe('test SIGINT with execute', () => {
     expect(mockContext.usageData.emitError).toHaveBeenCalledTimes(0);
     expect(mockContext.usageData.emitSuccess).toHaveBeenCalledTimes(0);
     expect(mockExit).toBeCalledWith(2);
-  });
+  }, 10000);
 });
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));

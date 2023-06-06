@@ -51,7 +51,13 @@ async function resolvePluginPackagePath(context: Context, inputPath: string): Pr
   let result;
 
   const { pluginPlatform } = context;
-  let searchDirPaths = [constants.PARENT_DIRECTORY, constants.LOCAL_NODE_MODULES, constants.GLOBAL_NODE_MODULES, process.cwd()];
+  let searchDirPaths = [
+    constants.PARENT_DIRECTORY,
+    constants.LOCAL_NODE_MODULES,
+    constants.GLOBAL_NODE_MODULES,
+    constants.DEV_NODE_MODULES,
+    process.cwd(),
+  ];
   searchDirPaths = searchDirPaths.filter((dirPath) => !pluginPlatform.pluginDirectories.includes(dirPath.toString()));
   searchDirPaths = searchDirPaths.concat(pluginPlatform.pluginDirectories);
 

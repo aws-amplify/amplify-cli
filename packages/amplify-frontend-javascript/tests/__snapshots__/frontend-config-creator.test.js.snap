@@ -1,32 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`generate maps and search configuration generates correct configuration for maps and search geo resources with Region as CFN output 1`] = `
-Object {
+{
   "aws_project_region": "eu-west-2",
-  "geo": Object {
-    "amazon_location_service": Object {
-      "geofenceCollections": Object {
+  "geo": {
+    "amazon_location_service": {
+      "geofenceCollections": {
         "default": "defaultCollection12345",
-        "items": Array [
+        "items": [
           "collection12345",
           "defaultCollection12345",
         ],
       },
-      "maps": Object {
+      "maps": {
         "default": "defaultMap12345",
-        "items": Object {
-          "defaultMap12345": Object {
+        "items": {
+          "defaultMap12345": {
             "style": "VectorEsriStreets",
           },
-          "map12345": Object {
+          "map12345": {
             "style": "VectorEsriStreets",
           },
         },
       },
       "region": "eu-west-1",
-      "search_indices": Object {
+      "search_indices": {
         "default": "defaultIndex12345",
-        "items": Array [
+        "items": [
           "index12345",
           "defaultIndex12345",
         ],
@@ -37,32 +37,32 @@ Object {
 `;
 
 exports[`generate maps and search configuration generates correct configuration for maps and search geo resources without Region CFN output 1`] = `
-Object {
+{
   "aws_project_region": "us-west-2",
-  "geo": Object {
-    "amazon_location_service": Object {
-      "geofenceCollections": Object {
+  "geo": {
+    "amazon_location_service": {
+      "geofenceCollections": {
         "default": "defaultCollection12345",
-        "items": Array [
+        "items": [
           "collection12345",
           "defaultCollection12345",
         ],
       },
-      "maps": Object {
+      "maps": {
         "default": "defaultMap12345",
-        "items": Object {
-          "defaultMap12345": Object {
+        "items": {
+          "defaultMap12345": {
             "style": "VectorEsriStreets",
           },
-          "map12345": Object {
+          "map12345": {
             "style": "VectorEsriStreets",
           },
         },
       },
       "region": "us-west-2",
-      "search_indices": Object {
+      "search_indices": {
         "default": "defaultIndex12345",
-        "items": Array [
+        "items": [
           "index12345",
           "defaultIndex12345",
         ],

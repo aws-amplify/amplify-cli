@@ -43,14 +43,16 @@
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2",
-    "vm2": "^3.9.16"
+    "vm2": "^3.9.19"
   },
   "devDependencies": {
     "cloudform-types": "^4.2.0",
     "rimraf": "^3.0.2"
   },
   "jest": {
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -71,6 +73,11 @@
     "coverageReporters": [
       "json",
       "html"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

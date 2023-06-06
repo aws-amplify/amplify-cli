@@ -1,30 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`askExecRolePermissionsQuestions returns permissions for exists function 1`] = `
-Object {
-  "categoryPolicies": Array [
-    Object {
-      "Action": Array [
+{
+  "categoryPolicies": [
+    {
+      "Action": [
         "lambda:Get*",
         "lambda:List*",
         "lambda:Invoke*",
       ],
       "Effect": "Allow",
-      "Resource": Array [
-        Object {
-          "Fn::Join": Array [
+      "Resource": [
+        {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "arn:aws:lambda:",
-              Object {
+              {
                 "Ref": "AWS::Region",
               },
               ":",
-              Object {
+              {
                 "Ref": "AWS::AccountId",
               },
               ":function:",
-              Object {
+              {
                 "Ref": "functionlambda2Name",
               },
             ],
@@ -33,24 +33,24 @@ Object {
       ],
     },
   ],
-  "dependsOn": Array [
-    Object {
-      "attributes": Array [
+  "dependsOn": [
+    {
+      "attributes": [
         "Name",
       ],
       "category": "function",
       "resourceName": "lambda2",
     },
   ],
-  "environmentMap": Object {
-    "FUNCTION_LAMBDA2_NAME": Object {
+  "environmentMap": {
+    "FUNCTION_LAMBDA2_NAME": {
       "Ref": "functionlambda2Name",
     },
   },
-  "mutableParametersState": Object {
-    "permissions": Object {
-      "function": Object {
-        "lambda2": Array [
+  "mutableParametersState": {
+    "permissions": {
+      "function": {
+        "lambda2": [
           "read",
         ],
       },
@@ -63,30 +63,30 @@ Amplify Params - DO NOT EDIT */",
 `;
 
 exports[`askExecRolePermissionsQuestions returns permissions for function that be about to add right 1`] = `
-Object {
-  "categoryPolicies": Array [
-    Object {
-      "Action": Array [
+{
+  "categoryPolicies": [
+    {
+      "Action": [
         "lambda:Get*",
         "lambda:List*",
         "lambda:Invoke*",
       ],
       "Effect": "Allow",
-      "Resource": Array [
-        Object {
-          "Fn::Join": Array [
+      "Resource": [
+        {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "arn:aws:lambda:",
-              Object {
+              {
                 "Ref": "AWS::Region",
               },
               ":",
-              Object {
+              {
                 "Ref": "AWS::AccountId",
               },
               ":function:",
-              Object {
+              {
                 "Ref": "functionlambda2Name",
               },
             ],
@@ -95,24 +95,24 @@ Object {
       ],
     },
   ],
-  "dependsOn": Array [
-    Object {
-      "attributes": Array [
+  "dependsOn": [
+    {
+      "attributes": [
         "Name",
       ],
       "category": "function",
       "resourceName": "lambda2",
     },
   ],
-  "environmentMap": Object {
-    "FUNCTION_LAMBDA2_NAME": Object {
+  "environmentMap": {
+    "FUNCTION_LAMBDA2_NAME": {
       "Ref": "functionlambda2Name",
     },
   },
-  "mutableParametersState": Object {
-    "permissions": Object {
-      "function": Object {
-        "lambda2": Array [
+  "mutableParametersState": {
+    "permissions": {
+      "function": {
+        "lambda2": [
           "read",
         ],
       },
@@ -125,8 +125,8 @@ Amplify Params - DO NOT EDIT */",
 `;
 
 exports[`check CFN resources 1`] = `
-Object {
-  "cfnResources": Array [
+{
+  "cfnResources": [
     "apiattr1",
     "apiattr2",
   ],
@@ -135,62 +135,62 @@ Object {
 `;
 
 exports[`check CFN resources for storage 1`] = `
-Object {
-  "cfnResources": Array [
-    Object {
-      "_cfJoinComponentTableArn": Array [
+{
+  "cfnResources": [
+    {
+      "_cfJoinComponentTableArn": [
         "arn:aws:dynamodb:",
-        Object {
+        {
           "Ref": "aws_region",
         },
         ":",
-        Object {
+        {
           "Ref": "aws_accountId",
         },
         ":table/",
-        Object {
-          "Fn::ImportValue": Object {
+        {
+          "Fn::ImportValue": {
             "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
           },
         },
       ],
-      "_cfJoinComponentTableName": Object {
-        "Fn::ImportValue": Object {
+      "_cfJoinComponentTableName": {
+        "Fn::ImportValue": {
           "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
         },
       },
       "_modelName": "storageattr1@model(appsync)",
-      "attributes": Array [
+      "attributes": [
         "GraphQLAPIIdOutput",
       ],
       "category": "api",
       "needsAdditionalDynamoDBResourceProps": true,
       "resourceName": "mock_api",
     },
-    Object {
-      "_cfJoinComponentTableArn": Array [
+    {
+      "_cfJoinComponentTableArn": [
         "arn:aws:dynamodb:",
-        Object {
+        {
           "Ref": "aws_region",
         },
         ":",
-        Object {
+        {
           "Ref": "aws_accountId",
         },
         ":table/",
-        Object {
-          "Fn::ImportValue": Object {
+        {
+          "Fn::ImportValue": {
             "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
           },
         },
       ],
-      "_cfJoinComponentTableName": Object {
-        "Fn::ImportValue": Object {
+      "_cfJoinComponentTableName": {
+        "Fn::ImportValue": {
           "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
         },
       },
       "_modelName": "storageattr2@model(appsync)",
-      "attributes": Array [
+      "attributes": [
         "GraphQLAPIIdOutput",
       ],
       "category": "api",
@@ -203,10 +203,10 @@ Object {
 `;
 
 exports[`env resources for CFN for DDB table and api 1`] = `
-Object {
-  "dependsOn": Array [
-    Object {
-      "attributes": Array [
+{
+  "dependsOn": [
+    {
+      "attributes": [
         "GraphQLAPIIdOutput",
       ],
       "category": "api",
@@ -214,8 +214,8 @@ Object {
     },
   ],
   "envVarStringList": "API_MOCK_API_GRAPHQLAPIIDOUTPUT",
-  "environmentMap": Object {
-    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": Object {
+  "environmentMap": {
+    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": {
       "Ref": "apimock_apiGraphQLAPIIdOutput",
     },
   },
@@ -223,17 +223,17 @@ Object {
 `;
 
 exports[`env resources for CFN for auth and storage for api 1`] = `
-Object {
-  "dependsOn": Array [
-    Object {
-      "attributes": Array [
+{
+  "dependsOn": [
+    {
+      "attributes": [
         "randombucket",
       ],
       "category": "storage",
       "resourceName": "mock_api",
     },
-    Object {
-      "attributes": Array [
+    {
+      "attributes": [
         "userPoolId",
       ],
       "category": "auth",
@@ -242,11 +242,11 @@ Object {
   ],
   "envVarStringList": "AUTH_MOCK_API_USERPOOLID
 	STORAGE_MOCK_API_RANDOMBUCKET",
-  "environmentMap": Object {
-    "AUTH_MOCK_API_USERPOOLID": Object {
+  "environmentMap": {
+    "AUTH_MOCK_API_USERPOOLID": {
       "Ref": "authmock_apiuserPoolId",
     },
-    "STORAGE_MOCK_API_RANDOMBUCKET": Object {
+    "STORAGE_MOCK_API_RANDOMBUCKET": {
       "Ref": "storagemock_apirandombucket",
     },
   },

@@ -41,14 +41,14 @@ describe('zero config auth', () => {
     const authMeta: $TSAny = Object.values(meta.auth)[1];
 
     expect(authMeta.frontendAuthConfig).toMatchInlineSnapshot(`
-      Object {
+      {
         "mfaConfiguration": "ON",
-        "mfaTypes": Array [
+        "mfaTypes": [
           "SMS",
           "TOTP",
         ],
-        "passwordProtectionSettings": Object {
-          "passwordPolicyCharacters": Array [
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [
             "REQUIRES_LOWERCASE",
             "REQUIRES_UPPERCASE",
             "REQUIRES_NUMBERS",
@@ -56,17 +56,17 @@ describe('zero config auth', () => {
           ],
           "passwordPolicyMinLength": 8,
         },
-        "signupAttributes": Array [
+        "signupAttributes": [
           "EMAIL",
         ],
-        "socialProviders": Array [
+        "socialProviders": [
           "FACEBOOK",
           "GOOGLE",
           "AMAZON",
           "APPLE",
         ],
-        "usernameAttributes": Array [],
-        "verificationMechanisms": Array [
+        "usernameAttributes": [],
+        "verificationMechanisms": [
           "EMAIL",
         ],
       }

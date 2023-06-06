@@ -6,7 +6,11 @@ export const moveDown = (chain: ExecutionContext, nMoves: number) =>
 export const moveUp = (chain: ExecutionContext, nMoves: number) =>
   Array.from(Array(nMoves).keys()).reduce((chain) => chain.send('k'), chain);
 
-export const singleSelect = <T>(chain: ExecutionContext, item: T, allChoices: T[]) => multiSelect(chain, [item], allChoices);
+export const singleSelect = <T>(chain: ExecutionContext, item: T, allChoices: T[]) => {
+  moveDown(chain, allChoices.indexOf(item));
+  chain.sendCarriageReturn();
+  return chain;
+};
 
 export const multiSelect = <T>(chain: ExecutionContext, items: T[] = [], allChoices: T[]) => {
   items

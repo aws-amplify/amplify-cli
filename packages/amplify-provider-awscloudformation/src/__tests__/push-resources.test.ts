@@ -2,7 +2,6 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getCfnFiles } from '../push-resources';
-import { mocked } from 'ts-jest/utils';
 import glob from 'glob';
 
 // Mock data
@@ -16,7 +15,7 @@ jest.mock('fs-extra');
 jest.mock('../system-config-manager');
 jest.mock('glob');
 
-const pathManager_mock = mocked(pathManager);
+const pathManager_mock = jest.mocked(pathManager);
 pathManager_mock.getBackendDirPath.mockReturnValue(testBackendDirPath);
 
 const glob_mock = glob as jest.Mocked<typeof glob>;
@@ -30,7 +29,7 @@ glob_mock.sync.mockImplementation((pattern) => {
   return [];
 });
 
-const fs_mock = mocked(fs);
+const fs_mock = jest.mocked(fs);
 fs_mock.lstatSync.mockImplementation((_path, _options) => {
   return {
     isDirectory: jest.fn().mockReturnValue(true),

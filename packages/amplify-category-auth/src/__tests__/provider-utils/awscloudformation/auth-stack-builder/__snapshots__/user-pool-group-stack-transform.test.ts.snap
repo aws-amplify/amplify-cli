@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Check UserPool Group Template Generated userpool group stack template during Push one group 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": Object {
-    "ShouldNotCreateEnvResources": Object {
-      "Fn::Equals": Array [
-        Object {
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
           "Ref": "env",
         },
         "NONE",
@@ -14,60 +14,60 @@ Object {
     },
   },
   "Description": "Root Stack for AWS Amplify CLI",
-  "Outputs": Object {
-    "adminGroupRole": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+  "Outputs": {
+    "adminGroupRole": {
+      "Value": {
+        "Fn::GetAtt": [
           "adminGroupRole",
           "Arn",
         ],
       },
     },
   },
-  "Parameters": Object {
-    "AuthRoleArn": Object {
+  "Parameters": {
+    "AuthRoleArn": {
       "Type": "String",
     },
-    "UnauthRoleArn": Object {
+    "UnauthRoleArn": {
       "Type": "String",
     },
-    "authmockResourceAppClientID": Object {
+    "authmockResourceAppClientID": {
       "Default": "authmockResourceAppClientID",
       "Type": "String",
     },
-    "authmockResourceAppClientIDWeb": Object {
+    "authmockResourceAppClientIDWeb": {
       "Default": "authmockResourceAppClientIDWeb",
       "Type": "String",
     },
-    "authmockResourceIdentityPoolId": Object {
+    "authmockResourceIdentityPoolId": {
       "Default": "authmockResourceIdentityPoolId",
       "Type": "String",
     },
-    "authmockResourceUserPoolId": Object {
+    "authmockResourceUserPoolId": {
       "Default": "authmockResourceUserPoolId",
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "LambdaCloudWatchPolicy": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+  "Resources": {
+    "LambdaCloudWatchPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
+              "Resource": {
+                "Fn::Sub": [
                   "arn:aws:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${lambdaName}:log-stream:*",
-                  Object {
-                    "lambdaName": Object {
+                  {
+                    "lambdaName": {
                       "Ref": "RoleMapFunction",
                     },
                   },
@@ -78,25 +78,25 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "UserGroupLogPolicy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "LambdaExecutionRole",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "LambdaExecutionRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "LambdaExecutionRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "sts:AssumeRole",
               ],
               "Effect": "Allow",
-              "Principal": Object {
-                "Service": Array [
+              "Principal": {
+                "Service": [
                   "lambda.amazonaws.com",
                 ],
               },
@@ -104,12 +104,12 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "cognito-identity:SetIdentityPoolRoles",
                     "cognito-identity:ListIdentityPools",
                     "cognito-identity:describeIdentityPool",
@@ -122,19 +122,19 @@ Object {
             },
             "PolicyName": "UserGroupExecutionPolicy",
           },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "iam:PassRole",
                   ],
                   "Effect": "Allow",
-                  "Resource": Array [
-                    Object {
+                  "Resource": [
+                    {
                       "Ref": "AuthRoleArn",
                     },
-                    Object {
+                    {
                       "Ref": "UnauthRoleArn",
                     },
                   ],
@@ -145,16 +145,16 @@ Object {
             "PolicyName": "UserGroupPassRolePolicy",
           },
         ],
-        "RoleName": Object {
-          "Fn::If": Array [
+        "RoleName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
             "mockResource",
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "mockResource-ExecutionRole-",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -165,9 +165,9 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "RoleMapFunction": Object {
-      "Properties": Object {
-        "Code": Object {
+    "RoleMapFunction": {
+      "Properties": {
+        "Code": {
           "ZipFile": "const response = require('cfn-response');
 const AWS = require('aws-sdk');
 exports.handler = (event, context) => {
@@ -208,8 +208,8 @@ exports.handler = (event, context) => {
 ",
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "LambdaExecutionRole",
             "Arn",
           ],
@@ -219,81 +219,81 @@ exports.handler = (event, context) => {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "RoleMapFunctionInput": Object {
+    "RoleMapFunctionInput": {
       "DeletionPolicy": "Delete",
-      "DependsOn": Array [
+      "DependsOn": [
         "RoleMapFunction",
       ],
-      "Properties": Object {
-        "AuthRoleArn": Object {
+      "Properties": {
+        "AuthRoleArn": {
           "Ref": "AuthRoleArn",
         },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "RoleMapFunction",
             "Arn",
           ],
         },
-        "UnauthRoleArn": Object {
+        "UnauthRoleArn": {
           "Ref": "UnauthRoleArn",
         },
-        "appClientID": Object {
+        "appClientID": {
           "Ref": "authmockResourceAppClientID",
         },
-        "appClientIDWeb": Object {
+        "appClientIDWeb": {
           "Ref": "authmockResourceAppClientIDWeb",
         },
-        "env": Object {
+        "env": {
           "Ref": "env",
         },
-        "identityPoolId": Object {
+        "identityPoolId": {
           "Ref": "authmockResourceIdentityPoolId",
         },
-        "region": Object {
+        "region": {
           "Ref": "AWS::Region",
         },
-        "userPoolId": Object {
+        "userPoolId": {
           "Ref": "authmockResourceUserPoolId",
         },
       },
       "Type": "Custom::LambdaCallout",
       "UpdateReplacePolicy": "Delete",
     },
-    "adminGroup": Object {
-      "Properties": Object {
+    "adminGroup": {
+      "Properties": {
         "Description": "override success",
         "GroupName": "admin",
         "Precedence": 1,
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
+        "RoleArn": {
+          "Fn::GetAtt": [
             "adminGroupRole",
             "Arn",
           ],
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "authmockResourceUserPoolId",
         },
       },
       "Type": "AWS::Cognito::UserPoolGroup",
     },
-    "adminGroupRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "adminGroupRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
+              "Condition": {
+                "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated",
                 },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
                     "Ref": "authmockResourceIdentityPoolId",
                   },
                 },
               },
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Federated": "cognito-identity.amazonaws.com",
               },
               "Sid": "",
@@ -301,11 +301,11 @@ exports.handler = (event, context) => {
           ],
           "Version": "2012-10-17",
         },
-        "RoleName": Object {
-          "Fn::Join": Array [
+        "RoleName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "authmockResourceUserPoolId",
               },
               "-adminGroupRole",
@@ -320,12 +320,12 @@ exports.handler = (event, context) => {
 `;
 
 exports[`Check UserPool Group Template Generated userpool group stack template during Push with two groups 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": Object {
-    "ShouldNotCreateEnvResources": Object {
-      "Fn::Equals": Array [
-        Object {
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
           "Ref": "env",
         },
         "NONE",
@@ -333,60 +333,60 @@ Object {
     },
   },
   "Description": "Root Stack for AWS Amplify CLI",
-  "Outputs": Object {
-    "adminMockGroupRole": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+  "Outputs": {
+    "adminMockGroupRole": {
+      "Value": {
+        "Fn::GetAtt": [
           "adminMockGroupRole",
           "Arn",
         ],
       },
     },
   },
-  "Parameters": Object {
-    "AuthRoleArn": Object {
+  "Parameters": {
+    "AuthRoleArn": {
       "Type": "String",
     },
-    "UnauthRoleArn": Object {
+    "UnauthRoleArn": {
       "Type": "String",
     },
-    "authmockResourceAppClientID": Object {
+    "authmockResourceAppClientID": {
       "Default": "authmockResourceAppClientID",
       "Type": "String",
     },
-    "authmockResourceAppClientIDWeb": Object {
+    "authmockResourceAppClientIDWeb": {
       "Default": "authmockResourceAppClientIDWeb",
       "Type": "String",
     },
-    "authmockResourceIdentityPoolId": Object {
+    "authmockResourceIdentityPoolId": {
       "Default": "authmockResourceIdentityPoolId",
       "Type": "String",
     },
-    "authmockResourceUserPoolId": Object {
+    "authmockResourceUserPoolId": {
       "Default": "authmockResourceUserPoolId",
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "LambdaCloudWatchPolicy": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+  "Resources": {
+    "LambdaCloudWatchPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
+              "Resource": {
+                "Fn::Sub": [
                   "arn:aws:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${lambdaName}:log-stream:*",
-                  Object {
-                    "lambdaName": Object {
+                  {
+                    "lambdaName": {
                       "Ref": "RoleMapFunction",
                     },
                   },
@@ -397,25 +397,25 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "UserGroupLogPolicy",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "LambdaExecutionRole",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "LambdaExecutionRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "LambdaExecutionRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "sts:AssumeRole",
               ],
               "Effect": "Allow",
-              "Principal": Object {
-                "Service": Array [
+              "Principal": {
+                "Service": [
                   "lambda.amazonaws.com",
                 ],
               },
@@ -423,12 +423,12 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "cognito-identity:SetIdentityPoolRoles",
                     "cognito-identity:ListIdentityPools",
                     "cognito-identity:describeIdentityPool",
@@ -441,19 +441,19 @@ Object {
             },
             "PolicyName": "UserGroupExecutionPolicy",
           },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "iam:PassRole",
                   ],
                   "Effect": "Allow",
-                  "Resource": Array [
-                    Object {
+                  "Resource": [
+                    {
                       "Ref": "AuthRoleArn",
                     },
-                    Object {
+                    {
                       "Ref": "UnauthRoleArn",
                     },
                   ],
@@ -464,16 +464,16 @@ Object {
             "PolicyName": "UserGroupPassRolePolicy",
           },
         ],
-        "RoleName": Object {
-          "Fn::If": Array [
+        "RoleName": {
+          "Fn::If": [
             "ShouldNotCreateEnvResources",
             "mockResource",
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "",
-                Array [
+                [
                   "mockResource-ExecutionRole-",
-                  Object {
+                  {
                     "Ref": "env",
                   },
                 ],
@@ -484,9 +484,9 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "RoleMapFunction": Object {
-      "Properties": Object {
-        "Code": Object {
+    "RoleMapFunction": {
+      "Properties": {
+        "Code": {
           "ZipFile": "const response = require('cfn-response');
 const AWS = require('aws-sdk');
 exports.handler = (event, context) => {
@@ -527,8 +527,8 @@ exports.handler = (event, context) => {
 ",
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "LambdaExecutionRole",
             "Arn",
           ],
@@ -538,81 +538,81 @@ exports.handler = (event, context) => {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "RoleMapFunctionInput": Object {
+    "RoleMapFunctionInput": {
       "DeletionPolicy": "Delete",
-      "DependsOn": Array [
+      "DependsOn": [
         "RoleMapFunction",
       ],
-      "Properties": Object {
-        "AuthRoleArn": Object {
+      "Properties": {
+        "AuthRoleArn": {
           "Ref": "AuthRoleArn",
         },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "RoleMapFunction",
             "Arn",
           ],
         },
-        "UnauthRoleArn": Object {
+        "UnauthRoleArn": {
           "Ref": "UnauthRoleArn",
         },
-        "appClientID": Object {
+        "appClientID": {
           "Ref": "authmockResourceAppClientID",
         },
-        "appClientIDWeb": Object {
+        "appClientIDWeb": {
           "Ref": "authmockResourceAppClientIDWeb",
         },
-        "env": Object {
+        "env": {
           "Ref": "env",
         },
-        "identityPoolId": Object {
+        "identityPoolId": {
           "Ref": "authmockResourceIdentityPoolId",
         },
-        "region": Object {
+        "region": {
           "Ref": "AWS::Region",
         },
-        "userPoolId": Object {
+        "userPoolId": {
           "Ref": "authmockResourceUserPoolId",
         },
       },
       "Type": "Custom::LambdaCallout",
       "UpdateReplacePolicy": "Delete",
     },
-    "adminMockGroup": Object {
-      "Properties": Object {
+    "adminMockGroup": {
+      "Properties": {
         "Description": "override success",
         "GroupName": "adminMock",
         "Precedence": 2,
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
+        "RoleArn": {
+          "Fn::GetAtt": [
             "adminMockGroupRole",
             "Arn",
           ],
         },
-        "UserPoolId": Object {
+        "UserPoolId": {
           "Ref": "authmockResourceUserPoolId",
         },
       },
       "Type": "AWS::Cognito::UserPoolGroup",
     },
-    "adminMockGroupRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "adminMockGroupRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
+              "Condition": {
+                "ForAnyValue:StringLike": {
                   "cognito-identity.amazonaws.com:amr": "authenticated",
                 },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": {
                     "Ref": "authmockResourceIdentityPoolId",
                   },
                 },
               },
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Federated": "cognito-identity.amazonaws.com",
               },
               "Sid": "",
@@ -620,16 +620,16 @@ exports.handler = (event, context) => {
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
                     "mockActions",
                   ],
                   "Effect": "Allow",
-                  "Resource": Array [
+                  "Resource": [
                     "mockArn",
                   ],
                 },
@@ -639,11 +639,11 @@ exports.handler = (event, context) => {
             "PolicyName": "analytics-pinpoint-policy",
           },
         ],
-        "RoleName": Object {
-          "Fn::Join": Array [
+        "RoleName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "authmockResourceUserPoolId",
               },
               "-adminMockGroupRole",

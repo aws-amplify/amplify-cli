@@ -26,5 +26,10 @@
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
     "inquirer": "^7.3.3"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

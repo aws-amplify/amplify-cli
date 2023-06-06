@@ -27,11 +27,16 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.0.8",
     "@aws-amplify/amplify-function-plugin-interface": "1.10.2",
-    "graphql-transformer-core": "^8.1.1"
+    "graphql-transformer-core": "^8.1.2"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.6"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }
