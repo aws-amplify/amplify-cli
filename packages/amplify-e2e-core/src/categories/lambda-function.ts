@@ -27,12 +27,12 @@ const goTemplateChoices = ['Hello World'];
 const javaTemplateChoices = ['Hello World'];
 
 const nodeJSTemplateChoices = [
+  'AppSync - GraphQL API request (with IAM)',
   'CRUD function for DynamoDB (Integration with API Gateway)',
   'GraphQL Lambda Authorizer',
   'Hello World',
   'Lambda trigger',
   'Serverless ExpressJS function (Integration with API Gateway)',
-  'AppSync - GraphQL API request (with IAM)',
 ];
 
 const pythonTemplateChoices = ['Hello World'];

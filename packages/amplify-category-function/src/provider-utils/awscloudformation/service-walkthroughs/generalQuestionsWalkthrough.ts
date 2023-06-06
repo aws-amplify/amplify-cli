@@ -10,6 +10,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
  * @param context The Amplify Context object
  */
 export async function generalQuestionsWalkthrough(context: $TSContext): Promise<Partial<FunctionParameters>> {
+  const existingLambdaFunctions = await context.amplify.getResourceStatus('function');
   const appName = context.amplify
     .getProjectDetails()
     .projectConfig.projectName.toLowerCase()
@@ -20,8 +21,7 @@ export async function generalQuestionsWalkthrough(context: $TSContext): Promise<
   return {
     functionName: await prompter.input('Provide an AWS Lambda function name:', {
       validate: async (input: string) => {
-        const lambdaFunctions = await context.amplify.getResourceStatus('function');
-        const functionExists = lambdaFunctions.allResources.some((resource) => resource.resourceName === input);
+        const functionExists = existingLambdaFunctions.allResources.some((resource) => resource.resourceName === input);
         if (functionExists) {
           return 'A function with this name already exists.';
         }
