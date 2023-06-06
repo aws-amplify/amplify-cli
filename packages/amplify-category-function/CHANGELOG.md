@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.4-rc.2def814808.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.3.0...@aws-amplify/amplify-category-function@5.3.4-rc.2def814808.0) (2023-06-06)
+
+
+### Bug Fixes
+
+* functions e2e tests on windows ([#12745](https://github.com/aws-amplify/amplify-cli/issues/12745)) ([0de4529](https://github.com/aws-amplify/amplify-cli/commit/0de45299fbaafb090893f96c1884cdcff321f511))
+* throw message when adding lambda function with same name ([#12623](https://github.com/aws-amplify/amplify-cli/issues/12623)) ([0819db4](https://github.com/aws-amplify/amplify-cli/commit/0819db49c0f3b1057c0e5ca94d674f2dc1cc3d77))
+
+
+
+
+
 ## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.3.1...@aws-amplify/amplify-category-function@5.3.3) (2023-05-25)
 
 

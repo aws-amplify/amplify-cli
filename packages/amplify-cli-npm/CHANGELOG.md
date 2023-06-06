@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.1.0-rc.2def814808.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.0.0...@aws-amplify/cli@12.1.0-rc.2def814808.0) (2023-06-06)
+
+
+### Bug Fixes
+
+* don't buffer when extracting binary ([#12621](https://github.com/aws-amplify/amplify-cli/issues/12621)) ([0ee53e6](https://github.com/aws-amplify/amplify-cli/commit/0ee53e612981d5441fb00690f05d25a941e96dd0))
+
+
+### Features
+
+* bump version ([#12752](https://github.com/aws-amplify/amplify-cli/issues/12752)) ([2def814](https://github.com/aws-amplify/amplify-cli/commit/2def814808a18440a7be71baccda902f07fedc49))
+
+
+
+
+
 ## [12.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.0.1...@aws-amplify/cli@12.0.3) (2023-05-25)
 
 
