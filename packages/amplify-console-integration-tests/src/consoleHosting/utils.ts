@@ -82,7 +82,13 @@ export async function createTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync('npx', ['create-react-app', '--scripts-version', '5.0.1', '--use-npm', projectName], { cwd: projectDir });
+  const createReactAppResult = spawnSync('npx', ['create-react-app', '--scripts-version', '5.0.1', projectName, '--use-npm'], {
+    cwd: projectDir,
+  });
+
+  if (createReactAppResult.status !== 0) {
+    throw new Error(`Could not create react app\n${createReactAppResult.stdout.toString()}\n${createReactAppResult.stderr.toString()}`);
+  }
 
   return projRoot;
 }
