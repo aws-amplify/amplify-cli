@@ -147,7 +147,7 @@ export function addRestApiOldDx(cwd: string, settings: any) {
     const templateName = settings.isCrud
       ? 'CRUD function for DynamoDB (Integration with API Gateway)'
       : 'Serverless ExpressJS function (Integration with API Gateway)';
-    selectTemplate(chain, templateName, 'nodejs');
+    selectTemplate(chain, templateName);
 
     if (settings.isCrud) {
       chain
