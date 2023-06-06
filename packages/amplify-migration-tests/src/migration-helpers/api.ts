@@ -1,5 +1,6 @@
 import { AddApiOptions, defaultOptions, getCLIPath, getSchemaPath, KEY_DOWN_ARROW, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { assign } from 'lodash';
+import { selectRuntimeLegacyPreV12, selectTemplateLegacyPreV12 } from './lambda-helpers';
 
 /**
  * Old Dx prior to this api workflow change https://github.com/aws-amplify/amplify-cli/pull/8153
@@ -138,7 +139,7 @@ export function addRestApiOldDx(cwd: string, settings: any) {
     const templateName = settings.isCrud
       ? 'CRUD function for DynamoDB (Integration with API Gateway)'
       : 'Serverless ExpressJS function (Integration with API Gateway)';
-    selectTemplateLegacyPreV12(chain, templateName);
+    selectTemplateLegacyPreV12(chain, templateName, 'nodejs');
 
     if (settings.isCrud) {
       chain
