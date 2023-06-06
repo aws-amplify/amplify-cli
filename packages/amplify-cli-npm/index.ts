@@ -17,4 +17,3 @@ export const install = async (): Promise<void> => {
 };
 
 // force version bump to 12.0.2
-// force version bump to 12.1.0

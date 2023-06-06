@@ -1,11 +1,4 @@
-import {
-  $TSAny,
-  $TSContext,
-  AmplifyError,
-  exitOnNextTick,
-  ResourceDoesNotExistError,
-  ServiceSelection,
-} from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyError, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 
 import { getProjectConfig } from './get-project-config';
