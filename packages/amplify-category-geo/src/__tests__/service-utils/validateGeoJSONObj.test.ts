@@ -14,23 +14,23 @@ describe('Geo JSON file validation test', () => {
   });
   it('should throw error for a invalid Geo JSON file with first and last position not identical', () => {
     expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.notSameFirstAndLast.json'))).toThrowErrorMatchingInlineSnapshot(
-      `"Linear ring of feature \\"notSameFirstAndLast\\" should have identical values for the first and last position."`,
+      `"Linear ring of feature "notSameFirstAndLast" should have identical values for the first and last position."`,
     );
   });
   it('should throw error for a invalid Geo JSON file with less than 4 points in a linear ring', () => {
     expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.lessThanFourPoints.json'))).toThrowErrorMatchingInlineSnapshot(`
-      "The input GeoJSON file failed JSON schema validation. Underlying errors were [
-        {
-          \\"keyword\\": \\"minItems\\",
-          \\"dataPath\\": \\".features[0].geometry.coordinates[0]\\",
-          \\"schemaPath\\": \\"#/minItems\\",
-          \\"params\\": {
-            \\"limit\\": 4
-          },
-          \\"message\\": \\"should NOT have fewer than 4 items\\"
-        }
-      ]"
-    `);
+"The input GeoJSON file failed JSON schema validation. Underlying errors were [
+  {
+    "keyword": "minItems",
+    "dataPath": ".features[0].geometry.coordinates[0]",
+    "schemaPath": "#/minItems",
+    "params": {
+      "limit": 4
+    },
+    "message": "should NOT have fewer than 4 items"
+  }
+]"
+`);
   });
   it('should throw error for a invalid Geo JSON file with clockwise exterior ring', () => {
     expect(() => validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.clockwiseExteriorRing.json'))).toThrowErrorMatchingInlineSnapshot(
@@ -46,7 +46,7 @@ describe('Geo JSON file validation test', () => {
     expect(() =>
       validateGeoJSONObj(loadGeoJSONObj('invalidGeofence.sameIdentifier.json'), 'name', IdentifierOption.CustomProperty),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Identifier field \\"name\\" is not unique in GeoJSON. The following duplicate values are founded: [\\"myGeofence\\", \\"myGeofence2\\"]"`,
+      `"Identifier field "name" is not unique in GeoJSON. The following duplicate values are founded: ["myGeofence", "myGeofence2"]"`,
     );
   });
   it('should throw error for a invalid Geo JSON file with counter-clockwise interior ring', () => {

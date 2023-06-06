@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`only grant permission policies as requested verify CRUD policies being granted 1`] = `
-Array [
-  Object {
-    "Action": Array [
+[
+  {
+    "Action": [
       "geo:CreateMap",
       "geo:DescribeMap",
       "geo:GetMapGlyphs",
@@ -13,21 +13,21 @@ Array [
       "geo:DeleteMap",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":map/",
-            Object {
+            {
               "Ref": "geomap12345Name",
             },
           ],
@@ -35,8 +35,8 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [
+  {
+    "Action": [
       "geo:CreatePlaceIndex",
       "geo:DescribePlaceIndex",
       "geo:SearchPlaceIndexForPosition",
@@ -46,21 +46,21 @@ Array [
       "geo:DeletePlaceIndex",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":place-index/",
-            Object {
+            {
               "Ref": "geoindex12345Name",
             },
           ],
@@ -68,28 +68,28 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [
+  {
+    "Action": [
       "geo:CreateGeofenceCollection",
       "geo:DescribeGeofenceCollection",
       "geo:DeleteGeofenceCollection",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":geofence-collection/",
-            Object {
+            {
               "Ref": "geocollection12345Name",
             },
           ],
@@ -101,23 +101,23 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify CRUD policies being granted 2`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "map12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "index12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
@@ -127,27 +127,27 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify create policies being granted 1`] = `
-Array [
-  Object {
-    "Action": Array [
+[
+  {
+    "Action": [
       "geo:CreateMap",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":map/",
-            Object {
+            {
               "Ref": "geomap12345Name",
             },
           ],
@@ -155,26 +155,26 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [
+  {
+    "Action": [
       "geo:CreatePlaceIndex",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":place-index/",
-            Object {
+            {
               "Ref": "geoindex12345Name",
             },
           ],
@@ -182,26 +182,26 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [
+  {
+    "Action": [
       "geo:CreateGeofenceCollection",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":geofence-collection/",
-            Object {
+            {
               "Ref": "geocollection12345Name",
             },
           ],
@@ -213,23 +213,23 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify create policies being granted 2`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "map12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "index12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
@@ -239,27 +239,27 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify delete policies being granted 1`] = `
-Array [
-  Object {
-    "Action": Array [
+[
+  {
+    "Action": [
       "geo:DeleteMap",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":map/",
-            Object {
+            {
               "Ref": "geomap12345Name",
             },
           ],
@@ -267,26 +267,26 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [
+  {
+    "Action": [
       "geo:DeletePlaceIndex",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":place-index/",
-            Object {
+            {
               "Ref": "geoindex12345Name",
             },
           ],
@@ -294,26 +294,26 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [
+  {
+    "Action": [
       "geo:DeleteGeofenceCollection",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":geofence-collection/",
-            Object {
+            {
               "Ref": "geocollection12345Name",
             },
           ],
@@ -325,23 +325,23 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify delete policies being granted 2`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "map12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "index12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
@@ -351,9 +351,9 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify read policies being granted 1`] = `
-Array [
-  Object {
-    "Action": Array [
+[
+  {
+    "Action": [
       "geo:DescribeMap",
       "geo:GetMapGlyphs",
       "geo:GetMapSprites",
@@ -361,21 +361,21 @@ Array [
       "geo:GetMapTile",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":map/",
-            Object {
+            {
               "Ref": "geomap12345Name",
             },
           ],
@@ -383,8 +383,8 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [
+  {
+    "Action": [
       "geo:DescribePlaceIndex",
       "geo:SearchPlaceIndexForPosition",
       "geo:SearchPlaceIndexForText",
@@ -392,21 +392,21 @@ Array [
       "geo:GetPlace",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":place-index/",
-            Object {
+            {
               "Ref": "geoindex12345Name",
             },
           ],
@@ -414,26 +414,26 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [
+  {
+    "Action": [
       "geo:DescribeGeofenceCollection",
     ],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":geofence-collection/",
-            Object {
+            {
               "Ref": "geocollection12345Name",
             },
           ],
@@ -445,23 +445,23 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify read policies being granted 2`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "map12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "index12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
@@ -471,25 +471,25 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify update policies being granted 1`] = `
-Array [
-  Object {
-    "Action": Array [],
+[
+  {
+    "Action": [],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":map/",
-            Object {
+            {
               "Ref": "geomap12345Name",
             },
           ],
@@ -497,24 +497,24 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [],
+  {
+    "Action": [],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":place-index/",
-            Object {
+            {
               "Ref": "geoindex12345Name",
             },
           ],
@@ -522,24 +522,24 @@ Array [
       },
     ],
   },
-  Object {
-    "Action": Array [],
+  {
+    "Action": [],
     "Effect": "Allow",
-    "Resource": Array [
-      Object {
-        "Fn::Join": Array [
+    "Resource": [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "arn:aws:geo:",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             ":",
-            Object {
+            {
               "Ref": "AWS::AccountId",
             },
             ":geofence-collection/",
-            Object {
+            {
               "Ref": "geocollection12345Name",
             },
           ],
@@ -551,23 +551,23 @@ Array [
 `;
 
 exports[`only grant permission policies as requested verify update policies being granted 2`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "map12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",
     "resourceName": "index12345",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Name",
     ],
     "category": "geo",

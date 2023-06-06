@@ -6,7 +6,12 @@ const SECONDSINADAY = 86400;
 
 export class PluginPlatform implements IPluginPlatform {
   constructor() {
-    this.pluginDirectories = [constants.LOCAL_NODE_MODULES, constants.PARENT_DIRECTORY, constants.GLOBAL_NODE_MODULES];
+    this.pluginDirectories = [
+      constants.LOCAL_NODE_MODULES,
+      constants.PARENT_DIRECTORY,
+      constants.GLOBAL_NODE_MODULES,
+      constants.DEV_NODE_MODULES,
+    ];
     this.pluginPrefixes = [constants.AMPLIFY_PREFIX];
     this.userAddedLocations = [];
     this.lastScanTime = new Date();

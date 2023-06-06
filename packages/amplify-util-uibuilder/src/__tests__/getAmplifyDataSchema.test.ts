@@ -1,10 +1,9 @@
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
-import { mocked } from 'ts-jest/utils';
 import { getAmplifyDataSchema } from '../commands/utils';
 
 jest.mock('@aws-amplify/amplify-prompts');
 
-const printerMock = mocked(printer);
+const printerMock = jest.mocked(printer);
 
 const sampleIntrospectionSchema = {
   version: 1,

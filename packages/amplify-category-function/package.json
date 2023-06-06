@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-function",
-  "version": "5.3.0",
+  "version": "5.3.3",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -26,8 +26,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.5",
-    "@aws-amplify/amplify-environment-parameters": "1.6.0",
+    "@aws-amplify/amplify-cli-core": "4.0.8",
+    "@aws-amplify/amplify-environment-parameters": "1.6.3",
     "@aws-amplify/amplify-function-plugin-interface": "1.10.2",
     "@aws-amplify/amplify-prompts": "2.7.0",
     "archiver": "^5.3.0",
@@ -38,7 +38,7 @@
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
-    "graphql-transformer-core": "^8.0.3",
+    "graphql-transformer-core": "^8.1.1",
     "inquirer": "^7.3.3",
     "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",
@@ -58,7 +58,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
@@ -67,6 +69,11 @@
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

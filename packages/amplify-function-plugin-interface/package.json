@@ -19,5 +19,10 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo",
     "watch": "tsc -w",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

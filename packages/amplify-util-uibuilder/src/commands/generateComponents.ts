@@ -37,7 +37,8 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       studioClient.isGraphQLSupported ? getAmplifyDataSchema(context) : Promise.resolve(undefined),
     ]);
 
-    const nothingWouldAutogenerate = !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported;
+    const nothingWouldAutogenerate =
+      !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported || !studioClient.isDataStoreEnabled;
 
     if (nothingWouldAutogenerate && [componentSchemas, themeSchemas, formSchemas].every((group) => !group.entities.length)) {
       printer.debug('Skipping UI component generation since none are found.');
@@ -52,7 +53,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
         context,
         formSchemas.entities,
         dataSchema,
-        studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported,
+        studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && studioClient.isDataStoreEnabled,
         studioClient.metadata.formFeatureFlags,
       ),
     };

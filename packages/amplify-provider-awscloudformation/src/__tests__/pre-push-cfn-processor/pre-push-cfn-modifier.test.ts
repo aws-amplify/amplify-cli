@@ -26,19 +26,19 @@ describe('prePushCfnTemplateModifier', () => {
     };
     await prePushCfnTemplateModifier(template);
     expect(template).toMatchInlineSnapshot(`
-      Object {
-        "Resources": Object {
-          "TestResource1": Object {
-            "Type": "AWS::IAM::Role",
-          },
-          "TestResource2": Object {
-            "Properties": Object {
-              "something": "test",
-            },
-            "Type": "AWS::S3::Bucket",
-          },
-        },
-      }
-    `);
+{
+  "Resources": {
+    "TestResource1": {
+      "Type": "AWS::IAM::Role",
+    },
+    "TestResource2": {
+      "Properties": {
+        "something": "test",
+      },
+      "Type": "AWS::S3::Bucket",
+    },
+  },
+}
+`);
   });
 });

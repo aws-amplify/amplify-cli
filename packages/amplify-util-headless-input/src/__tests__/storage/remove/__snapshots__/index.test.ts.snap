@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`validate remove storage request returns valid payload 1`] = `
-Object {
-  "serviceConfiguration": Object {
+{
+  "serviceConfiguration": {
     "resourceName": "something",
     "serviceName": "S3",
   },
