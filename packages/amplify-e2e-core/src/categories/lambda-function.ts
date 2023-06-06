@@ -145,6 +145,10 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
 export type CoreFunctionSettings = {
   testingWithLatestCodebase?: boolean;
   name?: string;
+  packageManager?: {
+    name: string;
+    command?: string;
+  };
   functionTemplate?: string;
   expectFailure?: boolean;
   additionalPermissions?: any;
@@ -177,9 +181,7 @@ const coreFunction = (
         .sendLine(settings.name || '');
 
       selectRuntime(chain, runtime);
-      if (runtime === 'nodejs') {
-        chain.wait('Choose the package manager that you want to use:').sendCarriageReturn(); // npm
-      }
+      selectPackageManager(chain, runtime, settings.packageManager);
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
         selectTemplate(chain, settings.functionTemplate);
@@ -334,6 +336,22 @@ export const functionBuild = async (cwd: string): Promise<void> => {
     .sendYes()
     .sendEof()
     .runAsync();
+};
+
+const selectPackageManager = (chain: ExecutionContext, runtime: FunctionRuntimes, packageManager: { name: string; command?: string }) => {
+  if (runtime === 'nodejs') {
+    chain.wait('Choose the package manager that you want to use:');
+    if (packageManager?.name) {
+      chain.sendLine(packageManager.name);
+    } else {
+      chain.sendCarriageReturn(); // npm
+    }
+
+    if (packageManager.name === 'CUSTOM') {
+      chain.wait('Enter command or script path to build your function:');
+      chain.sendLine(packageManager.command);
+    }
+  }
 };
 
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
