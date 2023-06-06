@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 
-type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
+export type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
 
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
@@ -626,7 +626,7 @@ export const functionCloudInvoke = async (
   return result.$response.data as Lambda.InvocationResponse;
 };
 
-const getTemplateChoices = (runtime: FunctionRuntimes) => {
+export const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
     case 'dotnet6':
       return dotNetTemplateChoices;
@@ -643,7 +643,7 @@ const getTemplateChoices = (runtime: FunctionRuntimes) => {
   }
 };
 
-const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
+export const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
     case 'dotnet6':
       return '.NET 6';

@@ -1,13 +1,4 @@
-import {
-  AddApiOptions,
-  defaultOptions,
-  getCLIPath,
-  getSchemaPath,
-  KEY_DOWN_ARROW,
-  nspawn as spawn,
-  selectRuntime,
-  selectTemplate,
-} from '@aws-amplify/amplify-e2e-core';
+import { AddApiOptions, defaultOptions, getCLIPath, getSchemaPath, KEY_DOWN_ARROW, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { assign } from 'lodash';
 
 /**
@@ -142,12 +133,12 @@ export function addRestApiOldDx(cwd: string, settings: any) {
       .wait('Provide an AWS Lambda function name')
       .sendCarriageReturn();
 
-    selectRuntime(chain, 'nodejs');
+    selectRuntimeLegacyPreV12(chain, 'nodejs');
 
     const templateName = settings.isCrud
       ? 'CRUD function for DynamoDB (Integration with API Gateway)'
       : 'Serverless ExpressJS function (Integration with API Gateway)';
-    selectTemplate(chain, templateName);
+    selectTemplateLegacyPreV12(chain, templateName);
 
     if (settings.isCrud) {
       chain
