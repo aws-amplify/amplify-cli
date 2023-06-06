@@ -17,7 +17,7 @@ import {
   getPackageManagerByType,
   packageManagers,
   PackageManagerType,
-  toPackageManagerInstallCommand,
+  toPackageManagerInstallArgs,
 } from '@aws-amplify/amplify-cli-core';
 import { categoryName } from '../../../constants';
 import { byValue, minLength, printer, prompter } from '@aws-amplify/amplify-prompts';
@@ -308,6 +308,7 @@ const getBuildCommand = async (packageManager: PackageManagerType | 'custom'): P
       validate: minLength(1),
     });
   } else {
-    return toPackageManagerInstallCommand(getPackageManagerByType(packageManager));
+    const packageManagerInstance = getPackageManagerByType(packageManager);
+    return [packageManagerInstance.executable, ...(await toPackageManagerInstallArgs(packageManagerInstance))].join(' ');
   }
 };

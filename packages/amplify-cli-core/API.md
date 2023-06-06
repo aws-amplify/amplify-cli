@@ -253,7 +253,8 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
 // @public (undocumented)
 export class AmplifyNodePkgDetector {
     // (undocumented)
-    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [
+    ];
     // (undocumented)
     static getInstance: (amplifyDetectorProps: AmplifyNodePkgDetectorProps) => Promise<AmplifyNodePkgDetector>;
 }
@@ -2139,10 +2140,10 @@ export interface Template {
 export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
 
 // @public (undocumented)
-export const toPackageManagerInstallCommand: (packageManager: PackageManager) => Promise<string>;
+export const toPackageManagerInstallArgs: (packageManager: PackageManager) => Promise<string[]>;
 
 // @public (undocumented)
-export const toPackageManagerScriptCommand: (packageManager: PackageManager, script: string) => Promise<string>;
+export const toPackageManagerRunScriptArgs: (packageManager: PackageManager, scriptName: string) => Promise<string[]>;
 
 // @public (undocumented)
 export type TypeDef = {

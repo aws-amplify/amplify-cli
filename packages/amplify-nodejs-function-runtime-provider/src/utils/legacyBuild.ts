@@ -1,7 +1,7 @@
 import { execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
 import {
-  toPackageManagerInstallCommand,
-  toPackageManagerScriptCommand,
+  toPackageManagerInstallArgs,
+  toPackageManagerRunScriptArgs,
   $TSObject,
   getPackageManager,
   JSONUtilities,
@@ -61,8 +61,8 @@ const runPackageManagerInstall = async (resourceDir: string): Promise<void> => {
     return;
   }
 
-  const command = await toPackageManagerInstallCommand(packageManager);
-  await runPackageManager(packageManager, command, resourceDir);
+  const args = await toPackageManagerInstallArgs(packageManager);
+  await runPackageManager(packageManager, args, resourceDir);
 };
 
 const runPackageManagerScript = async (resourceDir: string, scriptName: string): Promise<void> => {
@@ -73,13 +73,13 @@ const runPackageManagerScript = async (resourceDir: string, scriptName: string):
     return;
   }
 
-  const command = await toPackageManagerScriptCommand(packageManager, scriptName);
-  await runPackageManager(packageManager, command, resourceDir);
+  const args = await toPackageManagerRunScriptArgs(packageManager, scriptName);
+  await runPackageManager(packageManager, args, resourceDir);
 };
 
-const runPackageManager = async (packageManager: PackageManager, command: string, resourceDir: string): Promise<void> => {
+const runPackageManager = async (packageManager: PackageManager, args: string[], resourceDir: string): Promise<void> => {
   try {
-    await execa.command(command, {
+    execa.sync(packageManager.executable, args, {
       cwd: resourceDir,
       stdio: 'pipe',
       encoding: 'utf-8',

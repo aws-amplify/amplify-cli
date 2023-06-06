@@ -99,15 +99,7 @@ export const getPackageManager = async (rootPath?: string): Promise<PackageManag
   return packageManagers.npm;
 };
 
-export const toPackageManagerScriptCommand = async (packageManager: PackageManager, script: string): Promise<string> => {
-  return [packageManager.executable, ...(await toPackageManagerRunScriptArgs(packageManager, script))].join(' ');
-};
-
-export const toPackageManagerInstallCommand = async (packageManager: PackageManager): Promise<string> => {
-  return [packageManager.executable, ...(await toPackageManagerInstallArgs(packageManager))].join(' ');
-};
-
-const toPackageManagerRunScriptArgs = async (packageManager: PackageManager, scriptName: string): Promise<string[]> => {
+export const toPackageManagerRunScriptArgs = async (packageManager: PackageManager, scriptName: string): Promise<string[]> => {
   switch (packageManager.packageManager) {
     case 'yarn':
     case 'pnpm':
@@ -122,7 +114,7 @@ const toPackageManagerRunScriptArgs = async (packageManager: PackageManager, scr
   }
 };
 
-const toPackageManagerInstallArgs = async (packageManager: PackageManager): Promise<string[]> => {
+export const toPackageManagerInstallArgs = async (packageManager: PackageManager): Promise<string[]> => {
   switch (packageManager.packageManager) {
     case 'yarn': {
       const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
