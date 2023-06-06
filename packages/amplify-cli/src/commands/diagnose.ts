@@ -16,6 +16,7 @@ import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
 import { Context } from '../domain/context';
 import { reporterEndpoint } from './helpers/reporter-apis';
+import { isCI } from 'ci-info';
 
 /**
  * Prompts if there is a failure in the CLI
@@ -32,7 +33,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
   const isHeadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
 
   // if it's headless or already has been prompted earlier don't prompt just check the config
-  if (!isHeadless && DebugConfig.Instance.promptSendReport()) {
+  if ((!isHeadless && DebugConfig.Instance.promptSendReport()) || !isCI) {
     sendReport = await prompter.yesOrNo(
       'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ',
       false,
@@ -46,7 +47,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
   } else {
     sendReport = DebugConfig.Instance.getCanSendReport();
   }
-  if (sendReport) {
+  if (sendReport || isCI) {
     await zipSend(context, true, error);
   }
 };
@@ -86,10 +87,17 @@ const showLearnMore = (showOptOut: boolean): void => {
 
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
   const choices = ['Generate report', 'Nothing'];
-  if (!skipPrompts) {
-    const diagnoseAction = await prompter.pick('What would you like to do?', choices);
-    if (diagnoseAction !== choices[0]) {
-      return;
+  if (!skipPrompts || !isCI) {
+    if (DebugConfig.Instance.promptSendReport()) {
+      const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
+      DebugConfig.Instance.setAndWriteShareProject(result);
+      if (result === false) {
+        return;
+      }
+      const diagnoseAction = await prompter.pick('What would you like to do?', choices);
+      if (diagnoseAction !== choices[0]) {
+        return;
+      }
     }
   }
   try {
@@ -103,7 +111,7 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     if (!skipPrompts) {
       canSendReport = await prompter.yesOrNo('Send Report', false);
     }
-    if (canSendReport) {
+    if (canSendReport || isCI) {
       spinner.start('Sending zip');
       const projectId = await sendReport(context, fileDestination);
       spinner.succeed('Done');
