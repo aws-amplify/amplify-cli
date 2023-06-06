@@ -34,15 +34,18 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
       }
 
       if (path === 'root-stack.json') {
-        const hostedUIProviderCreds = JSON.stringify([{
-          ProviderName: 'Facebook',
-          client_id: 'fb_client',
-          client_secret: 'fb_secret',
-        }, {
-          ProviderName: 'Google',
-          client_id: 'gg_client',
-          client_secret: 'gg_secret',
-        }]);
+        const hostedUIProviderCreds = JSON.stringify([
+          {
+            ProviderName: 'Facebook',
+            client_id: 'fb_client',
+            client_secret: 'fb_secret',
+          },
+          {
+            ProviderName: 'Google',
+            client_id: 'gg_client',
+            client_secret: 'gg_secret',
+          },
+        ]);
 
         return {
           Resources: {
@@ -50,11 +53,11 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
               Properties: {
                 Parameters: {
                   hostedUIProviderCreds,
-                }
-              }
+                },
+              },
             },
-          }
-        }
+          },
+        };
       }
     }),
   },
@@ -93,11 +96,14 @@ describe('migrateResourcesToCfn', () => {
 describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
   describe('when credentials exist and have not been updated', () => {
     it('exports existing credentials from root stack', () => {
-      const providerCreds = [{
-        ProviderName: 'Facebook',
-      }, {
-        ProviderName: 'Google',
-      }];
+      const providerCreds = [
+        {
+          ProviderName: 'Facebook',
+        },
+        {
+          ProviderName: 'Google',
+        },
+      ];
 
       const results = exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerCreds);
 
@@ -117,15 +123,18 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
 
   describe('when credentials exist and have been updated', () => {
     it('maintains updated credentials', () => {
-      const providerCreds = [{
-        ProviderName: 'Facebook',
-        client_id: 'updated_fb_client',
-        client_secret: 'updated_fb_secret',
-      }, {
-        ProviderName: 'Google',
-        client_id: 'updated_gg_client',
-        client_secret: 'updated_gg_secret',
-      }];
+      const providerCreds = [
+        {
+          ProviderName: 'Facebook',
+          client_id: 'updated_fb_client',
+          client_secret: 'updated_fb_secret',
+        },
+        {
+          ProviderName: 'Google',
+          client_id: 'updated_gg_client',
+          client_secret: 'updated_gg_secret',
+        },
+      ];
 
       const results = exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerCreds);
 
@@ -145,13 +154,16 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
 
   describe('when some credentials have been updated', () => {
     it('updates some credentials', () => {
-      const providerCreds = [{
-        ProviderName: 'Facebook',
-      }, {
-        ProviderName: 'Google',
-        client_id: 'updated_gg_client',
-        client_secret: 'updated_gg_secret',
-      }];
+      const providerCreds = [
+        {
+          ProviderName: 'Facebook',
+        },
+        {
+          ProviderName: 'Google',
+          client_id: 'updated_gg_client',
+          client_secret: 'updated_gg_secret',
+        },
+      ];
 
       const results = exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerCreds);
 
