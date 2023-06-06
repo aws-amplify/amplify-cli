@@ -1,8 +1,8 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { spawnSync } from 'child_process';
 import * as util from '../util';
 import { readJsonFile } from '@aws-amplify/amplify-e2e-core';
+import execa from 'execa';
 
 import { HOSTING, RESOURCE, TYPE, TYPE_UNKNOWN, CATEGORIES, APPID, PROVIDER } from './constants';
 
@@ -82,7 +82,13 @@ export async function createTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync('npx', ['create-react-app', '--scripts-version', '5.0.1', projectName], { cwd: projectDir });
+  const execResult = execa.sync('npx', ['create-react-app', '--scripts-version', '5.0.1', projectName, '--use-npm'], {
+    cwd: projectDir,
+  });
+
+  if (execResult.exitCode !== 0) {
+    throw new Error(`Could not create react app\n${execResult.stdout}\n${execResult.stderr}`);
+  }
 
   return projRoot;
 }

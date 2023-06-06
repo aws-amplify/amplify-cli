@@ -5,6 +5,7 @@ import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getAppId, getEnvName } from '../commands/utils/environmentHelpers';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
+import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 
 /**
  * studio client metadata
@@ -60,6 +61,7 @@ export default class AmplifyStudioClient {
   #envName: string;
   metadata: StudioMetadata;
   isGraphQLSupported = false;
+  isDataStoreEnabled = false;
 
   /**
    * static function meant to check if given appId is studio enabled
@@ -82,11 +84,14 @@ export default class AmplifyStudioClient {
   static async setClientInfo(context: $TSContext, envName?: string, appId?: string): Promise<AmplifyStudioClient> {
     const resolvedEnvName = getEnvName(context, envName);
     const resolvedAppId = getAppId(context, appId);
-    const awsConfigInfo = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
-      context,
-      resolvedEnvName,
-      resolvedAppId,
-    ])) as ServiceConfigurationOptions;
+    const [awsConfigInfo, dataStoreStatus] = await Promise.all([
+      context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
+        context,
+        resolvedEnvName,
+        resolvedAppId,
+      ]) as ServiceConfigurationOptions,
+      isDataStoreEnabled(context),
+    ]);
 
     const client = new AmplifyStudioClient(awsConfigInfo, resolvedAppId, resolvedEnvName);
 
@@ -96,6 +101,8 @@ export default class AmplifyStudioClient {
     } else {
       client.isGraphQLSupported = false;
     }
+
+    client.isDataStoreEnabled = dataStoreStatus;
 
     return client;
   }
