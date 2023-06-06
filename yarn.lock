@@ -242,7 +242,7 @@ __metadata:
     promise-sequential: ^1.1.1
     rimraf: ^3.0.2
     uuid: ^8.3.2
-    vm2: ^3.9.16
+    vm2: ^3.9.19
   languageName: unknown
   linkType: soft
 
@@ -391,7 +391,7 @@ __metadata:
     promise-sequential: ^1.1.1
     rimraf: ^3.0.2
     uuid: ^8.3.2
-    vm2: ^3.9.16
+    vm2: ^3.9.19
   languageName: unknown
   linkType: soft
 
@@ -831,7 +831,7 @@ __metadata:
     promise-sequential: ^1.1.1
     proxy-agent: ^5.0.0
     rimraf: ^3.0.0
-    vm2: ^3.9.16
+    vm2: ^3.9.19
     xstate: ^4.14.0
   languageName: unknown
   linkType: soft
@@ -33188,15 +33188,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.9.16, vm2@npm:^3.9.3, vm2@npm:^3.9.8":
-  version: 3.9.17
-  resolution: "vm2@npm:3.9.17"
+"vm2@npm:^3.9.19, vm2@npm:^3.9.3, vm2@npm:^3.9.8":
+  version: 3.9.19
+  resolution: "vm2@npm:3.9.19"
   dependencies:
     acorn: ^8.7.0
     acorn-walk: ^8.2.0
   bin:
     vm2: bin/vm2
-  checksum: 4a7ef6300e3d76cf834d50bab535cf22d2eaa0efa0acbc0a34e199d8ef7f473fc56116f7012186c44ceca879956e207baf9ee76762593d3a5c8499042dbc2d6a
+  checksum: 16e8e6bb389ae88b8ffbc439e8d7c09db3b98f7f738440af5b78080d6cb35db66b41b0ad055cc59bcc45cb8e270ed850667207348e90760b430403741f72337a
   languageName: node
   linkType: hard
 
