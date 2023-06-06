@@ -8,7 +8,7 @@ import {
   singleSelect,
 } from '@aws-amplify/amplify-e2e-core';
 
-export const selectRuntimePreV12 = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
+export const selectRuntimeLegacyPreV12 = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
   chain.wait('Choose the runtime that you want to use:');
 
@@ -18,7 +18,7 @@ export const selectRuntimePreV12 = (chain: ExecutionContext, runtime: FunctionRu
   singleSelect(chain, runtimeName, runtimeChoices);
 };
 
-export const selectTemplatePreV12 = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes) => {
+export const selectTemplateLegacyPreV12 = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes) => {
   const templateChoices = getTemplateChoices(runtime);
   chain.wait('Choose the function template that you want to use');
 
