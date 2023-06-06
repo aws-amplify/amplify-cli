@@ -1,6 +1,5 @@
 import {
   addFunction,
-  addRestApi,
   amplifyPull,
   amplifyPushAuth,
   amplifyPushUpdateLegacy,
@@ -14,6 +13,7 @@ import {
   updateAuthAddAdminQueries,
   validateRestApiMeta,
 } from '@aws-amplify/amplify-e2e-core';
+import { addRestApiOldDx } from '../../migration-helpers';
 import { cfnDiffExclusions } from '../../migration-helpers-v10/cfn-diff-exclusions';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';
@@ -33,18 +33,18 @@ describe('api lambda migration tests', () => {
 
     await initJSProjectWithProfileV10(projRoot, { name: 'restApiTest', disableAmplifyAppCreation: false });
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
-    await addRestApi(projRoot, {
+    await addRestApiOldDx(projRoot, {
       existingLambda: true,
       restrictAccess: true,
       allowGuestUsers: true,
     });
-    await addRestApi(projRoot, {
+    await addRestApiOldDx(projRoot, {
       isFirstRestApi: false,
       existingLambda: true,
       restrictAccess: true,
       allowGuestUsers: true,
     });
-    await addRestApi(projRoot, {
+    await addRestApiOldDx(projRoot, {
       isFirstRestApi: false,
       existingLambda: true,
       restrictAccess: true,
@@ -53,7 +53,7 @@ describe('api lambda migration tests', () => {
 
     // add more paths to and test policy slicing
     for (let i = 0; i < 15; i++) {
-      await addRestApi(projRoot, {
+      await addRestApiOldDx(projRoot, {
         path: `/items${i}`,
         isFirstRestApi: false,
         existingLambda: true,
@@ -61,7 +61,7 @@ describe('api lambda migration tests', () => {
         allowGuestUsers: true,
       });
     }
-    await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true });
+    await addRestApiOldDx(projRoot, { isFirstRestApi: false, existingLambda: true });
     await updateAuthAddAdminQueries(projRoot, undefined, {});
     await amplifyPushUpdateLegacy(projRoot);
 
