@@ -8,18 +8,18 @@ import { advancedSettingsList } from '../utils/constants';
  * @param context The Amplify Context object
  */
 export async function generalQuestionsWalkthrough(context: any): Promise<Partial<FunctionParameters>> {
-  return await inquirer.prompt(generalQuestions(context));
+  return await inquirer.prompt(await generalQuestions(context));
 }
 
-function generalQuestions(context: any): object[] {
+async function generalQuestions(context: any): Promise<object[]> {
+  const existingLambdaFunctions = await context.amplify.getResourceStatus('function');
   return [
     {
       type: 'input',
       name: 'functionName',
       message: 'Provide an AWS Lambda function name:',
-      validate: async (input: string) => {
-        const lambdaFunctions = await context.amplify.getResourceStatus('function');
-        const functionExists = lambdaFunctions.allResources.some((resource) => resource.resourceName === input);
+      validate: (input: string) => {
+        const functionExists = existingLambdaFunctions.allResources.some((resource) => resource.resourceName === input);
         if (functionExists) {
           return 'A function with this name already exists.';
         }
