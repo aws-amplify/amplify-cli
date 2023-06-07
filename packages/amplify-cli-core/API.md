@@ -8,6 +8,7 @@
 
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
@@ -253,7 +254,8 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
 // @public (undocumented)
 export class AmplifyNodePkgDetector {
     // (undocumented)
-    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [
+    ];
     // (undocumented)
     static getInstance: (amplifyDetectorProps: AmplifyNodePkgDetectorProps) => Promise<AmplifyNodePkgDetector>;
 }
@@ -2139,7 +2141,7 @@ export interface Template {
 export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
 
 // @public (undocumented)
-export const toPackageManagerInstallArgs: (packageManager: PackageManager) => Promise<string[]>;
+export const toPackageManagerInstallArgs: (packageManager: PackageManager, buildType?: BuildType) => Promise<string[]>;
 
 // @public (undocumented)
 export const toPackageManagerRunScriptArgs: (packageManager: PackageManager, scriptName: string) => Promise<string[]>;
