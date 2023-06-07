@@ -7,6 +7,7 @@ import {
   nspawn as spawn,
   loadFeatureFlags,
   moveUp,
+  moveDown,
 } from '@aws-amplify/amplify-e2e-core';
 import _ from 'lodash';
 
