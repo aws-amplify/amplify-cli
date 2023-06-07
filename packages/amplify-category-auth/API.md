@@ -6,6 +6,7 @@
 
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import { AmplifyCategoryTransform } from '@aws-amplify/amplify-cli-core';
 import { Template } from '@aws-amplify/amplify-cli-core';
 
@@ -81,6 +82,9 @@ export function executeAmplifyCommand(context: any): Promise<void>;
 export function executeAmplifyHeadlessCommand(context: any, headlessPayload: string): Promise<void>;
 
 // @public (undocumented)
+export const exportHostedUIProvidersFromCurrCloudRootStack: (resourceName: string, updatedUIProviderCreds: $TSObject[]) => $TSObject[];
+
+// @public (undocumented)
 export function externalAuthEnable(context: any, externalCategory: any, resourceName: any, requirements: any): Promise<any>;
 
 // @public (undocumented)
@@ -119,6 +123,9 @@ export const migrate: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
 export function migrateAuthResource(context: any, resourceName: any): Promise<boolean>;
+
+// @public (undocumented)
+export const migrateResourcesToCfn: (resourceName: string) => boolean;
 
 // @public (undocumented)
 export function prePushAuthHook(context: any): Promise<void>;
