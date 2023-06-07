@@ -102,12 +102,7 @@ function _lsOut {
     ls $HOME/..
     ls $HOME/../..
 }
-function _setShell {
-    echo Setting Shell
-    yarn config set script-shell $(which bash)
-}
 function _build {
-    _setShell
     echo Windows Build
     yarn run production-build
     yarn build-tests
