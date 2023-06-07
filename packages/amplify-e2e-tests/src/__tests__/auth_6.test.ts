@@ -16,11 +16,21 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { Context } from '../../../amplify-cli/src/domain/context';
+import { reportError } from '../../../amplify-cli/src/commands/diagnose';
 
 const PROJECT_NAME = 'authTest';
 const defaultSettings = {
   name: PROJECT_NAME,
 };
+
+const reportErrorMock = reportError as jest.MockedFunction<typeof reportError>;
+jest.mock('../../../amplify-cli/src/commands/diagnose', () => ({
+  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => {
+    /* no-op */
+  }),
+}));
+
 describe('zero config auth', () => {
   let projRoot: string;
   beforeEach(async () => {

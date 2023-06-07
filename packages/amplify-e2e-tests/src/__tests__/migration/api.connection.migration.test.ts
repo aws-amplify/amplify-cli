@@ -9,6 +9,15 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
+import { reportError } from '../../../../amplify-cli/src/commands/diagnose';
+import { Context } from '../../../../amplify-cli/src/domain/context';
+
+const reportErrorMock = reportError as jest.MockedFunction<typeof reportError>;
+jest.mock('../../../../amplify-cli/src/commands/diagnose', () => ({
+  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => {
+    /* no-op */
+  }),
+}));
 
 describe('amplify add api', () => {
   let projRoot: string;
@@ -44,7 +53,7 @@ describe('amplify add api', () => {
   it('init project, run invalid migration trying to change add and remove connection at same time, and check for error', async () => {
     const projectName = 'iremoveaddconnection';
     const initialSchema = 'migrations_connection/initial_schema.graphql';
-    const nextSchema1 = 'migrations_connection/cant_add_and_remove_at_same_time.graphql';
+    const nextSchema1 = 'migrations_connection/cant_add_and_remove_at_same_time.graFphql';
 
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);

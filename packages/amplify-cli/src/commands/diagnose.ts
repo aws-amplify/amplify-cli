@@ -33,7 +33,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
   const isHeadless = isHeadlessCommand(context) || _.get(context, ['input', 'options', 'yes'], false);
 
   // if it's headless or already has been prompted earlier don't prompt just check the config
-  if ((!isHeadless && DebugConfig.Instance.promptSendReport()) || !isCI) {
+  if (!isHeadless && DebugConfig.Instance.promptSendReport()) {
     sendReport = await prompter.yesOrNo(
       'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ',
       false,
@@ -47,7 +47,7 @@ export const reportError = async (context: Context, error: Error | undefined): P
   } else {
     sendReport = DebugConfig.Instance.getCanSendReport();
   }
-  if (sendReport || isCI) {
+  if (sendReport) {
     await zipSend(context, true, error);
   }
 };
@@ -87,7 +87,7 @@ const showLearnMore = (showOptOut: boolean): void => {
 
 const zipSend = async (context: Context, skipPrompts: boolean, error: Error | undefined): Promise<void> => {
   const choices = ['Generate report', 'Nothing'];
-  if (!skipPrompts || !isCI) {
+  if (!skipPrompts) {
     if (DebugConfig.Instance.promptSendReport()) {
       const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
       DebugConfig.Instance.setAndWriteShareProject(result);
