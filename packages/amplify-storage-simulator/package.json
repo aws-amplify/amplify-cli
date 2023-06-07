@@ -1,6 +1,6 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "1.9.0",
+  "version": "1.9.1-rc.9006f4f8b7.0",
   "description": "An S3 simulator to test S3 APIs",
   "repository": {
     "type": "git",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.5-rc.9006f4f8b7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-android@3.5.4...@aws-amplify/amplify-frontend-android@3.5.5-rc.9006f4f8b7.0) (2023-06-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-android
+
+
+
+
+
 ## [3.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-android@3.5.3...@aws-amplify/amplify-frontend-android@3.5.4) (2023-05-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-android
