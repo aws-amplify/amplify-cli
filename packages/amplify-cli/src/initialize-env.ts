@@ -1,19 +1,22 @@
-import sequential from 'promise-sequential';
 import {
-  ManuallyTimedCodePath,
-  stateManager,
   $TSAny,
-  $TSMeta,
   $TSContext,
+  $TSMeta,
   AmplifyFault,
+  LocalEnvInfo,
+  ManuallyTimedCodePath,
   constants,
   spinner,
-  LocalEnvInfo,
+  stateManager,
 } from '@aws-amplify/amplify-cli-core';
+import { IEnvironmentParameterManager, ServiceDownloadHandler, ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from '@aws-amplify/amplify-prompts';
-import { ensureEnvParamManager, IEnvironmentParameterManager, ServiceDownloadHandler } from '@aws-amplify/amplify-environment-parameters';
+import sequential from 'promise-sequential';
 
+import { Context } from './domain/context';
+import { raisePrePushEvent } from './execution-manager';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
+import { verifyExpectedEnvParams } from './utils/verify-expected-env-params';
 
 /**
  * Entry point for initializing an environment. Delegates out to plugins initEnv function
@@ -157,6 +160,9 @@ export const initializeEnv = async (
     }
 
     if (context.exeInfo.forcePush) {
+      await verifyExpectedEnvParams(context);
+      // raising PrePush event here because init with --forcePush will do a push after initializing
+      await raisePrePushEvent(context as unknown as Context);
       for (const provider of context.exeInfo.projectConfig.providers) {
         const providerModule = await import(providerPlugins[provider]);
 
