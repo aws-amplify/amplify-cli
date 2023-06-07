@@ -8,6 +8,7 @@ import {
   generateRandomShortId,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
+import path from 'path';
 
 describe('amplify push function cases:', () => {
   let projRoot: string;

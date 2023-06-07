@@ -253,7 +253,7 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
       // Lambda
       .wait(/.*Choose a Lambda authorization function*/)
       .sendCarriageReturn()
-      .wait('/.*Choose the package manager that you want to use*/')
+      .wait('Choose the package manager that you want to use')
       .sendCarriageReturn()
       .wait(/.*Do you want to edit the local lambda function now*/)
       .sendConfirmNo()
