@@ -51,7 +51,7 @@ const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: a
   if (settings.resourceChoices === undefined) {
     settings.resourceChoices = settings.resources;
   }
-  // when single resource, it gets autoselected
+  // when single resource, it gets auto selected
   if (settings.resourceChoices.length > 1) {
     chain.wait('Select the one you would like your Lambda to access');
     if (settings.keepExistingResourceSelection) {
@@ -422,9 +422,9 @@ export interface LayerOptions {
   select?: string[]; // list options to select
   layerAndFunctionExist?: boolean; // whether this test involves both a function and a layer
   expectedListOptions?: string[]; // the expected list of all layers
-  versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
+  versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the version and expected version for each layer
   customArns?: string[]; // external ARNs to enter
-  skipLayerAssignment?: boolean; // true if the layer assigment must be left unchanged for the function, otherwise true
+  skipLayerAssignment?: boolean; // true if the layer assignment must be left unchanged for the function, otherwise true
   layerWalkthrough?: (chain: ExecutionContext) => void; // If this function is provided the addLayerWalkthrough will invoke it instead of the standard one, suitable for full customization
 }
 

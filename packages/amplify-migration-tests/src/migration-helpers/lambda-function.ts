@@ -1,3 +1,4 @@
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import {
   ExecutionContext,
   getBackendAmplifyMeta,
@@ -13,7 +14,7 @@ import _ from 'lodash';
 
 type FunctionActions = 'create' | 'update';
 type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
-type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
+type FunctionCallback = (chain: $TSAny, cwd: string, settings: $TSAny) => $TSAny;
 
 // runtimeChoices are shared between tests
 export const runtimeChoices = ['.NET 6', 'Go', 'Java', 'NodeJS', 'Python'];
@@ -45,7 +46,7 @@ const crudOptions = ['create', 'read', 'update', 'delete'];
 
 const appSyncOptions = ['Query', 'Mutation', 'Subscription'];
 
-const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: any) => {
+const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: $TSAny) => {
   multiSelect(chain.wait('Select the categories you want this function to have access to'), settings.permissions, settings.choices);
 
   if (!settings.resources) {
@@ -55,7 +56,7 @@ const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: a
   if (settings.resourceChoices === undefined) {
     settings.resourceChoices = settings.resources;
   }
-  // when single resource, it gets autoselected
+  // when single resource, it gets auto selected
   if (settings.resourceChoices.length > 1) {
     chain.wait('Select the one you would like your Lambda to access');
     if (settings.keepExistingResourceSelection) {
@@ -68,9 +69,9 @@ const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: a
   // n-resources repeated questions
   settings.resources.forEach((elem: string) => {
     const service = _.get(getBackendAmplifyMeta(cwd), ['api', elem, 'service']);
-    const gqlpermff = !!_.get(loadFeatureFlags(cwd), ['features', 'appsync', 'generategraphqlpermissions']);
+    const graphQlPermFF = !!_.get(loadFeatureFlags(cwd), ['features', 'appsync', 'generateGraphQlPermissions']);
     const isAppSyncApi = service === 'AppSync';
-    const allChoices = isAppSyncApi && gqlpermff ? appSyncOptions : crudOptions;
+    const allChoices = isAppSyncApi && graphQlPermFF ? appSyncOptions : crudOptions;
     multiSelect(chain.wait(`Select the operations you want to permit on ${elem}`), settings.operations, allChoices);
   });
 };
@@ -155,10 +156,10 @@ export type CoreFunctionSettings = {
   };
   functionTemplate?: string;
   expectFailure?: boolean;
-  additionalPermissions?: any;
-  schedulePermissions?: any;
+  additionalPermissions?: $TSAny;
+  schedulePermissions?: $TSAny;
   layerOptions?: LayerOptions;
-  environmentVariables?: any;
+  environmentVariables?: $TSAny;
   secretsConfig?: AddSecretInput | UpdateSecretInput | DeleteSecretInput;
   triggerType?: string;
   eventSource?: string;
@@ -325,9 +326,9 @@ export interface LayerOptions {
   select?: string[]; // list options to select
   layerAndFunctionExist?: boolean; // whether this test involves both a function and a layer
   expectedListOptions?: string[]; // the expected list of all layers
-  versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
+  versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the version and expected version for each layer
   customArns?: string[]; // external ARNs to enter
-  skipLayerAssignment?: boolean; // true if the layer assigment must be left unchanged for the function, otherwise true
+  skipLayerAssignment?: boolean; // true if the layer assignment must be left unchanged for the function, otherwise true
   layerWalkthrough?: (chain: ExecutionContext) => void; // If this function is provided the addLayerWalkthrough will invoke it instead of the standard one, suitable for full customization
 }
 
@@ -419,7 +420,7 @@ const addSecretWalkthrough = (chain: ExecutionContext, input: AddSecretInput) =>
   chain.wait("I'm done").sendCarriageReturn();
 };
 
-const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string) => {
+const cronWalkthrough = (chain: ExecutionContext, settings: $TSAny, action: string) => {
   if (action === 'create') {
     addCron(chain, settings);
   } else {
@@ -442,12 +443,12 @@ const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string)
   return chain;
 };
 
-const addminutes = (chain: ExecutionContext) => {
+const addMinutes = (chain: ExecutionContext) => {
   chain.wait('Enter rate for minutes(1-59)?').sendLine('5').sendCarriageReturn();
   return chain;
 };
 
-const addhourly = (chain: ExecutionContext) => {
+const addHourly = (chain: ExecutionContext) => {
   chain.wait('Enter rate for hours(1-23)?').sendLine('5').sendCarriageReturn();
   return chain;
 };
@@ -471,15 +472,15 @@ const addYearly = (chain: ExecutionContext) => {
   return chain;
 };
 
-const addCron = (chain: ExecutionContext, settings: any) => {
+const addCron = (chain: ExecutionContext, settings: $TSAny) => {
   chain.wait('At which interval should the function be invoked:');
 
   switch (settings.schedulePermissions.interval) {
     case 'Minutes':
-      addminutes(chain);
+      addMinutes(chain);
       break;
     case 'Hourly':
-      addhourly(moveDown(chain, 1).sendCarriageReturn());
+      addHourly(moveDown(chain, 1).sendCarriageReturn());
       break;
     case 'Daily':
       moveDown(chain, 2).sendCarriageReturn().wait('Select the start time in UTC (use arrow keys):').sendCarriageReturn();
