@@ -4,8 +4,13 @@ env:
 phases:
   build:
     commands:
-      - yarn run production-build
-      - yarn run build-tests
+      - cd scripts
+      - yarn
+      - yarn ts-node remove-pkg-fetch-checksum.ts
+      - cd ..
+      - yarn --immutable
+      - yarn production-build
+      - yarn build-tests
       - bash ./codebuild_specs/scripts-windows/save-build-windows.sh
 
 artifacts:
