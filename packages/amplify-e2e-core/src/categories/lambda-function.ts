@@ -184,7 +184,7 @@ const coreFunction = (
       selectPackageManager(chain, runtime, settings.packageManager);
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
-        selectTemplate(chain, settings.functionTemplate);
+        selectTemplate(chain, settings.functionTemplate, runtime);
       }
     } else {
       if (settings.layerOptions && settings.layerOptions.layerAndFunctionExist) {
