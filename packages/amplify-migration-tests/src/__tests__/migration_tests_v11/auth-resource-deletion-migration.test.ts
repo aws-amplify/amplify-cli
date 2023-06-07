@@ -38,7 +38,7 @@ describe('amplify migration test auth', () => {
     deleteProjectDir(projRoot1);
   });
 
-  it('...should add auth with max options and work on the latest version', async () => {
+  it('should pass if the resources created by the Lambda callouts are deleted and trying to recreate resources with CFN code', async () => {
     await initJSProjectWithProfileV11(projRoot1, { name: 'authTest', disableAmplifyAppCreation: false });
 
     await addAuthWithMaxOptions(projRoot1, {});
