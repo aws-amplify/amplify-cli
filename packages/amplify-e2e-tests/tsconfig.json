@@ -12,5 +12,6 @@
     "declaration": true
   },
   "references": [{ "path": "../amplify-e2e-core" }],
+  "include": ["packages/amplify-cli/src/commands/diagnose.ts", "packages/amplify-cli/src/domains/context.ts"],
   "exclude": ["node_modules", "lib", "__tests__", "custom-resources", "overrides"]
 }
