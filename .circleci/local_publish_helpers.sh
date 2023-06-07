@@ -10,7 +10,7 @@ function startLocalRegistry {
     (cd && nohup npx ${VERDACCIO_PACKAGE:-$default_verdaccio_package} -c $1 &>$tmp_registry_log &)
     # Wait for Verdaccio to boot
     attempts=0
-    until grep -q 'htt address' $tmp_registry_log
+    until grep -q 'http address' $tmp_registry_log
     do
       attempts=$((attempts+1))
       echo "Waiting for Verdaccio, attempt $attempts"
