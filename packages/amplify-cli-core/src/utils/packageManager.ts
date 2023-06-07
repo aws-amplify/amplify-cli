@@ -4,6 +4,7 @@ import * as which from 'which';
 import { coerce, SemVer } from 'semver';
 import { execWithOutputAsString } from './shell-utils';
 import { AmplifyError } from '../errors/amplify-error';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 
 /**
  * package managers type
@@ -114,14 +115,14 @@ export const toPackageManagerRunScriptArgs = async (packageManager: PackageManag
   }
 };
 
-export const toPackageManagerInstallArgs = async (packageManager: PackageManager): Promise<string[]> => {
+export const toPackageManagerInstallArgs = async (packageManager: PackageManager, buildType = BuildType.PROD): Promise<string[]> => {
   switch (packageManager.packageManager) {
     case 'yarn': {
       const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
-      return useYarnModern ? ['install'] : ['--no-bin-links', '--production'];
+      return useYarnModern ? ['install'] : ['--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
     }
     case 'npm': {
-      return ['install', '--no-bin-links', '--production'];
+      return ['install', '--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
     }
     case 'pnpm': {
       return ['install'];

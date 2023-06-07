@@ -24,7 +24,7 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
     if (request.scripts?.build) {
       await execWithOutputAsString(request.scripts.build, { cwd: resourceDir });
     } else {
-      await installDependencies(resourceDir);
+      await installDependencies(resourceDir, request.buildType);
     }
 
     if (request.legacyBuildHookParams) {
@@ -49,11 +49,11 @@ const scriptExists = (projectRoot: string, scriptName: string): boolean => {
   return !!rootPackageJsonContents?.scripts?.[scriptName];
 };
 
-const installDependencies = async (resourceDir: string): Promise<void> => {
-  await runPackageManagerInstall(resourceDir);
+const installDependencies = async (resourceDir: string, buildType: BuildType): Promise<void> => {
+  await runPackageManagerInstall(resourceDir, buildType);
 };
 
-const runPackageManagerInstall = async (resourceDir: string): Promise<void> => {
+const runPackageManagerInstall = async (resourceDir: string, buildType: BuildType): Promise<void> => {
   const packageManager = await getPackageManager(resourceDir);
   if (packageManager === null) {
     // If no package manager was detected, it means that this functions or layer has no package.json, so no package operations
@@ -61,7 +61,7 @@ const runPackageManagerInstall = async (resourceDir: string): Promise<void> => {
     return;
   }
 
-  const args = await toPackageManagerInstallArgs(packageManager);
+  const args = await toPackageManagerInstallArgs(packageManager, buildType);
   await runPackageManager(packageManager, args, resourceDir);
 };
 
