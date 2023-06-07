@@ -19,7 +19,7 @@ import {
   updateSchema,
 } from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
-import { selectRuntime, selectTemplate } from './lambda-function';
+import { selectPackageManager, selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
@@ -252,6 +252,8 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
       .sendLine('2000')
       // Lambda
       .wait(/.*Choose a Lambda authorization function*/)
+      .sendCarriageReturn()
+      .wait('/.*Choose the package manager that you want to use*/')
       .sendCarriageReturn()
       .wait(/.*Do you want to edit the local lambda function now*/)
       .sendConfirmNo()
@@ -552,6 +554,7 @@ function chooseLambdaFunctionForRestApi(chain: ExecutionContext, settings: { pro
   chain.wait('Provide an AWS Lambda function name').sendCarriageReturn();
 
   selectRuntime(chain, 'nodejs');
+  selectPackageManager(chain, 'nodejs', { name: 'NPM' });
 
   const templateName = settings.isCrud
     ? 'CRUD function for DynamoDB (Integration with API Gateway)'

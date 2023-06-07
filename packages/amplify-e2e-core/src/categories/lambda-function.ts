@@ -338,7 +338,11 @@ export const functionBuild = async (cwd: string): Promise<void> => {
     .runAsync();
 };
 
-const selectPackageManager = (chain: ExecutionContext, runtime: FunctionRuntimes, packageManager: { name: string; command?: string }) => {
+export const selectPackageManager = (
+  chain: ExecutionContext,
+  runtime: FunctionRuntimes,
+  packageManager: { name: string; command?: string },
+) => {
   if (runtime === 'nodejs') {
     chain.wait('Choose the package manager that you want to use:');
     if (packageManager?.name) {
