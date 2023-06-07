@@ -1,4 +1,7 @@
-import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '../../utils/migrate-idp-resources';
+import {
+  migrateResourcesToCfn,
+  exportHostedUIProvidersFromCurrCloudRootStack,
+} from '../../../../provider-utils/awscloudformation/utils/migrate-idp-resources';
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),

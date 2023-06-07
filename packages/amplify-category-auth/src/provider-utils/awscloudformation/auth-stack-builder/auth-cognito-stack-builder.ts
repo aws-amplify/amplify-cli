@@ -18,7 +18,7 @@ import {
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
 import { OAuthMetaData, ProviderCreds, ProviderMeta } from './types';
-import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '@aws-amplify/amplify-provider-awscloudformation';
+import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '../utils/migrate-idp-resources';
 
 const { readJson } = JSONUtilities;
 

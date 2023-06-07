@@ -31,7 +31,7 @@ import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from './stack-synthesizer';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import { ProviderCreds, ProviderMeta } from './types';
-import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '@aws-amplify/amplify-provider-awscloudformation';
+import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '../utils/migrate-idp-resources';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
