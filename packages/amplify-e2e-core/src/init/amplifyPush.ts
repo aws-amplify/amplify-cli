@@ -181,7 +181,7 @@ export function amplifyPushUpdate(
         .wait('Are you sure you want to continue?')
         .sendYes()
         .wait(
-          'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm (y/N)',
+          'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ',
         )
         .sendYes()
         .wait(waitForText || /.*/)
