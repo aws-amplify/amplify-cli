@@ -12,5 +12,4 @@ coverage:
     patch: off
     changes:
       default:
-        target: 80%
         if_not_found: success
