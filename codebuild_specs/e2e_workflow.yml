@@ -149,3 +149,10 @@ batch:
       debug-session: true
       depend-on:
         - upload_pkg_binaries
+    - identifier: cleanup_resources
+      buildspec: codebuild_specs/cleanup_resources.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          WAIT_FOR_IDS_FILE_PATH: ./codebuild_specs/wait_for_ids_local.json
+
