@@ -1,12 +1,9 @@
 import {
   addNotificationChannel,
-  amplifyPull,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getAppId,
   initJSProjectWithProfile,
-  removeAllNotificationChannel,
   updateNotificationChannel,
 } from '@aws-amplify/amplify-e2e-core';
 import { getShortId } from '../import-helpers';
