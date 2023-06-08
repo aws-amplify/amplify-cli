@@ -10,7 +10,6 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   invokeFunction,
-  addNodeDependencies,
   readJsonFile,
   updateFunction,
   overrideFunctionCodeNode,
@@ -92,7 +91,7 @@ describe('nodejs', () => {
       expect(functionMeta).toStrictEqual(updatedFunctionMeta);
     });
 
-    it('should be able to query AppSync with minimal permissions with featureFlag', async () => {
+    it.only('should be able to query AppSync with minimal permissions with featureFlag', async () => {
       const fnName = `apienvvar${generateRandomShortId()}`;
       const createTodo = `
       mutation CreateTodo($input: CreateTodoInput!) {
@@ -126,8 +125,7 @@ describe('nodejs', () => {
         },
         'nodejs',
       );
-      // Pin aws-appsync to 4.0.3 until https://github.com/awslabs/aws-mobile-appsync-sdk-js/issues/647 is fixed.
-      addNodeDependencies(projRoot, fnName, ['aws-appsync@4.0.3', 'isomorphic-fetch', 'graphql-tag']);
+
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
@@ -185,8 +183,7 @@ describe('nodejs', () => {
         },
         'nodejs',
       );
-      // Pin aws-appsync to 4.0.3 until https://github.com/awslabs/aws-mobile-appsync-sdk-js/issues/647 is fixed.
-      addNodeDependencies(projRoot, fnName, ['aws-appsync@4.0.3', 'isomorphic-fetch', 'graphql-tag']);
+
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);

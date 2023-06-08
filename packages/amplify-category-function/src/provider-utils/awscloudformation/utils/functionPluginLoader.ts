@@ -22,6 +22,7 @@ import {
 import { categoryName } from '../../../constants';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
+import { minLength } from '@aws-amplify/amplify-prompts';
 
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
@@ -312,10 +313,8 @@ function defaultSelection(selectionOptions: PluginSelectionOptions<FunctionRunti
 
 const getBuildCommand = async (packageManager: PackageManagerType | 'custom'): Promise<string> => {
   if (packageManager === 'custom') {
-    return await inquirer.prompt({
-      type: 'input',
-      name: 'packageManager',
-      message: 'Enter command or script path to build your function:',
+    return await prompter.input('Enter command or script path to build your function:', {
+      validate: minLength(1),
     });
   } else {
     const packageManagerInstance = getPackageManagerByType(packageManager);

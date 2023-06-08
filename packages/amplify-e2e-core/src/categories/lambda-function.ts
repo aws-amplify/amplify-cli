@@ -351,7 +351,7 @@ export const selectPackageManager = (
       chain.sendCarriageReturn(); // npm
     }
 
-    if (packageManager?.name === 'CUSTOM') {
+    if (packageManager?.name.toLowerCase().includes('custom')) {
       chain.wait('Enter command or script path to build your function:');
       chain.sendLine(packageManager.command);
     }

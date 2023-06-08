@@ -53,14 +53,13 @@ describe('amplify push function cases:', () => {
 
     await addFunction(
       projRoot,
-      { name: funcName, packageManager: { name: 'CUSTOM', command: 'yarn' }, functionTemplate: 'Hello World' },
+      { name: funcName, packageManager: { name: 'Custom Build Command or Script Path', command: 'yarn' }, functionTemplate: 'Hello World' },
       'nodejs',
     );
-    await functionBuild(projRoot);
-
     const functionPath = pathManager.getResourceDirectoryPath(projRoot, AmplifyCategories.FUNCTION, funcName);
     const amplifyState = JSONUtilities.readJson<any>(path.join(functionPath, 'amplify.state'));
-
     expect(amplifyState.scripts.build).toEqual('yarn');
+
+    await functionBuild(projRoot);
   });
 });
