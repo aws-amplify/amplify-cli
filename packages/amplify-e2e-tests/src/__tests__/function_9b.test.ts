@@ -10,6 +10,7 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   invokeFunction,
+  addNodeDependencies,
   readJsonFile,
   updateFunction,
   overrideFunctionCodeNode,
@@ -91,7 +92,7 @@ describe('nodejs', () => {
       expect(functionMeta).toStrictEqual(updatedFunctionMeta);
     });
 
-    it.only('should be able to query AppSync with minimal permissions with featureFlag', async () => {
+    it('should be able to query AppSync with minimal permissions with featureFlag', async () => {
       const fnName = `apienvvar${generateRandomShortId()}`;
       const createTodo = `
       mutation CreateTodo($input: CreateTodoInput!) {
@@ -115,6 +116,7 @@ describe('nodejs', () => {
         projRoot,
         {
           name: fnName,
+          packageManager: { name: 'Yarn' },
           functionTemplate: 'Hello World',
           additionalPermissions: {
             permissions: ['api'],
@@ -125,7 +127,8 @@ describe('nodejs', () => {
         },
         'nodejs',
       );
-
+      // Pin aws-appsync to 4.0.3 until https://github.com/awslabs/aws-mobile-appsync-sdk-js/issues/647 is fixed.
+      addNodeDependencies(projRoot, fnName, ['aws-appsync@4.0.3', 'isomorphic-fetch', 'graphql-tag']);
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
@@ -174,6 +177,7 @@ describe('nodejs', () => {
         {
           name: fnName,
           functionTemplate: 'Hello World',
+          packageManager: { name: 'Yarn' },
           additionalPermissions: {
             permissions: ['api'],
             choices: ['api'],
@@ -183,7 +187,8 @@ describe('nodejs', () => {
         },
         'nodejs',
       );
-
+      // Pin aws-appsync to 4.0.3 until https://github.com/awslabs/aws-mobile-appsync-sdk-js/issues/647 is fixed.
+      addNodeDependencies(projRoot, fnName, ['aws-appsync@4.0.3', 'isomorphic-fetch', 'graphql-tag']);
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);

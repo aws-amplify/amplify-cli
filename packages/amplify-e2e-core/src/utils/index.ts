@@ -67,6 +67,14 @@ export const loadFunctionTestFile = (fileName: string): string => {
 };
 
 /**
+ * install and save node dependencies
+ */
+export const addNodeDependencies = (root: string, functionName: string, dependencies: string[]): void => {
+  const indexPath = path.join(getPathToFunction(root, functionName), 'src');
+  execa.commandSync(`yarn add ${dependencies.join(' ')}`, { cwd: indexPath });
+};
+
+/**
  * copy node function code from source to target
  */
 export const overrideFunctionCodeNode = (root: string, functionName: string, sourceFileName: string, targetFileName = 'index.js'): void => {
