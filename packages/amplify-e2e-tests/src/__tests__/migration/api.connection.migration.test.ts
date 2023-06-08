@@ -49,7 +49,7 @@ describe('amplify add api', () => {
   it('init project, run invalid migration trying to change add and remove connection at same time, and check for error', async () => {
     const projectName = 'iremoveaddconnection';
     const initialSchema = 'migrations_connection/initial_schema.graphql';
-    const nextSchema1 = 'migrations_connection/cant_add_and_remove_at_same_time.graFphql';
+    const nextSchema1 = 'migrations_connection/cant_add_and_remove_at_same_time.graphql';
 
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
