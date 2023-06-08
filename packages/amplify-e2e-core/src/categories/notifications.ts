@@ -94,7 +94,7 @@ export const updateNotificationChannel = async (
 ): Promise<void> => {
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'notification'], { cwd, stripColors: true });
   chain.wait('Choose the notification channel to configure').sendLine(channel);
-  chain.wait(`Do you want to ${enable ? 'enable' : 'disable'} the ${channel} channel?`).sendYes();
+  chain.wait(`Do you want to ${enable ? 'enable' : 'disable'} the ${channel} channel`).sendYes();
 
   return chain
     .wait(`The ${channel} channel has been successfully ${enable ? 'enabled' : 'disabled'}`)
