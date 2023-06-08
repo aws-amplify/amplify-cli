@@ -863,12 +863,6 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Upload Pkg Binary
-          command: |
-            source .circleci/local_publish_helpers.sh
-            uploadPkgCli
-            ./out/amplify-pkg-linux-x64 --version
-      - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
