@@ -15,15 +15,6 @@ import {
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { reportError } from '../../../amplify-cli/src/commands/diagnose';
-import { Context } from '../../../amplify-cli/src/domain/context';
-
-const reportErrorMock = reportError as jest.MockedFunction<typeof reportError>;
-jest.mock('../../../amplify-cli/src/commands/diagnose', () => ({
-  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => {
-    /* no-op */
-  }),
-}));
 
 describe('amplify add hosting', () => {
   let projRoot: string;

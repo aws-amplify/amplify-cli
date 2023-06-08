@@ -16,7 +16,6 @@ import { DebugConfig } from '../app-config/debug-config';
 import { isHeadlessCommand } from '../utils/headless-input-utils';
 import { Context } from '../domain/context';
 import { reporterEndpoint } from './helpers/reporter-apis';
-import { isCI } from 'ci-info';
 
 /**
  * Prompts if there is a failure in the CLI
@@ -111,7 +110,7 @@ const zipSend = async (context: Context, skipPrompts: boolean, error: Error | un
     if (!skipPrompts) {
       canSendReport = await prompter.yesOrNo('Send Report', false);
     }
-    if (canSendReport || isCI) {
+    if (canSendReport) {
       spinner.start('Sending zip');
       const projectId = await sendReport(context, fileDestination);
       spinner.succeed('Done');

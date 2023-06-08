@@ -9,15 +9,6 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import { reportError } from '../../../../amplify-cli/src/commands/diagnose';
-import { Context } from '../../../../amplify-cli/src/domain/context';
-
-const reportErrorMock = reportError as jest.MockedFunction<typeof reportError>;
-jest.mock('../../../../amplify-cli/src/commands/diagnose', () => ({
-  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => {
-    console.log('test');
-  }),
-}));
 
 describe('amplify add api', () => {
   let projRoot: string;
@@ -51,11 +42,10 @@ describe('amplify add api', () => {
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
-  it.only('init project, run invalid migration trying to add and delete gsi, and check for error', async () => {
+  it('init project, run invalid migration trying to add and delete gsi, and check for error', async () => {
     const projectName = 'migratingkey2';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_update_delete_gsi.graphql';
-    const debugConfigMock = jest.mock;
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 

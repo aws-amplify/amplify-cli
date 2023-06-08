@@ -15,7 +15,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 
-import { getCLIPath, nspawn as spawn } from '..';
+import { errorReportingTestHandler, getCLIPath, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
@@ -169,15 +169,15 @@ export function amplifyPushUpdate(
   if (minify) {
     args.push('--minify');
   }
-  return spawn(getCLIPath(testingWithLatestCodebase), args, {
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), args, {
     cwd,
     stripColors: true,
     noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS,
-  })
-    .wait('Are you sure you want to continue?')
-    .sendYes()
-    .wait(waitForText || /.*/)
-    .runAsync();
+  });
+
+  chain.wait('Are you sure you want to continue?').sendYes();
+  errorReportingTestHandler(chain);
+  return chain.wait(waitForText || /.*/).runAsync();
 }
 
 /**

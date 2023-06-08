@@ -11,16 +11,6 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import * as AWS from 'aws-sdk';
 
-import { reportError } from '../../../amplify-cli/src/commands/diagnose';
-import { Context } from '../../../amplify-cli/src/domain/context';
-
-const reportErrorMock = reportError as jest.MockedFunction<typeof reportError>;
-jest.mock('../../../amplify-cli/src/commands/diagnose', () => ({
-  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => {
-    /* no-op */
-  }),
-}));
-
 describe('amplify push ', () => {
   let pushProjRoot: string;
   beforeEach(async () => {

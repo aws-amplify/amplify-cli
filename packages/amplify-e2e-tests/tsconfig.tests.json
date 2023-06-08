@@ -7,6 +7,5 @@
     "lib": ["ESNext", "dom"]
   },
   "references": [{ "path": "../amplify-e2e-core" }],
-  "include": ["../amplify-cli/src/commands/diagnose.ts", "../amplify-cli/src/domain/context.ts"],
   "exclude": ["node_modules", "lib", "__tests__", "custom-resources", "overrides"]
 }
