@@ -15,7 +15,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 
-import { errorReportingTestHandler, getCLIPath, nspawn as spawn } from '..';
+import { getCLIPath, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
@@ -161,6 +161,7 @@ export function amplifyPushUpdate(
   allowDestructiveUpdates = false,
   overridePushTimeoutMS = 0,
   minify?,
+  failureExpected = false,
 ): Promise<void> {
   const args = ['push'];
   if (allowDestructiveUpdates) {
@@ -175,9 +176,21 @@ export function amplifyPushUpdate(
     noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS,
   });
 
-  chain.wait('Are you sure you want to continue?').sendYes();
-  errorReportingTestHandler(chain);
-  return chain.wait(waitForText || /.*/).runAsync();
+  return failureExpected
+    ? chain
+        .wait('Are you sure you want to continue?')
+        .sendYes()
+        .wait(
+          'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm (y/N)',
+        )
+        .sendYes()
+        .wait(waitForText || /.*/)
+        .runAsync()
+    : chain
+        .wait('Are you sure you want to continue?')
+        .sendYes()
+        .wait(waitForText || /.*/)
+        .runAsync();
 }
 
 /**

@@ -29,6 +29,8 @@ describe('amplify init f', () => {
 
     const nestedRoot = path.join(projRoot, 'foo');
     await fs.ensureDir(nestedRoot);
-    await expect(initJSProjectWithProfile(nestedRoot, {})).rejects.toThrowError('Process exited with non zero exit code 1');
+    await expect(initJSProjectWithProfile(nestedRoot, { failureExpected: true })).rejects.toThrowError(
+      'Process exited with non zero exit code 1',
+    );
   });
 });

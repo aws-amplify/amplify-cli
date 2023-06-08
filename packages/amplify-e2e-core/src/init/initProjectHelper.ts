@@ -4,7 +4,7 @@
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
-import { KEY_DOWN_ARROW } from '../utils';
+import { KEY_DOWN_ARROW, errorReportingTestHandler } from '../utils';
 import { amplifyRegions } from '../configure';
 
 const defaultSettings = {
@@ -27,6 +27,7 @@ const defaultSettings = {
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
   includeUsageDataPrompt: true,
+  failureExpected: false,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
@@ -88,6 +89,11 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName);
   }
+
+  if (s.failureExpected) {
+    errorReportingTestHandler(chain);
+  }
+
   return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
