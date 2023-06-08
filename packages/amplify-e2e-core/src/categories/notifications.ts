@@ -97,7 +97,7 @@ export const updateNotificationChannel = async (
   chain.wait(`Do you want to ${enable ? 'enable' : 'disable'} the ${channel} channel`).sendYes();
 
   return chain
-    .wait(`The ${channel} channel has been successfully ${enable ? 'enabled' : 'disabled'}`)
+    .wait(`The ${channel} channel has been ${enable ? 'enabled' : 'disabled'}`)
     .sendEof()
     .runAsync();
 };
