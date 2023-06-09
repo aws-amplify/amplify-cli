@@ -40,6 +40,7 @@ describe('amplify add api', () => {
       amplifyPushUpdate(
         projRoot,
         /Attempting to add a local secondary index to the TodoTable table in the Todo stack. Local secondary indexes must be created when the table is created.*/,
+        { failureExpected: true },
       ),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
@@ -58,7 +59,9 @@ describe('amplify add api', () => {
 
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
-      amplifyPushUpdate(projRoot, /Attempting to edit the global secondary index SomeGSI on the TodoTable table in the Todo stack.*/),
+      amplifyPushUpdate(projRoot, /Attempting to edit the global secondary index SomeGSI on the TodoTable table in the Todo stack.*/, {
+        failureExpected: true,
+      }),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
@@ -76,7 +79,9 @@ describe('amplify add api', () => {
 
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
-      amplifyPushUpdate(projRoot, /Attempting to edit the key schema of the TodoTable table in the Todo stack.*/),
+      amplifyPushUpdate(projRoot, /Attempting to edit the key schema of the TodoTable table in the Todo stack.*/, {
+        failureExpected: true,
+      }),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
@@ -94,7 +99,9 @@ describe('amplify add api', () => {
 
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
-      amplifyPushUpdate(projRoot, /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/),
+      amplifyPushUpdate(projRoot, /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/, {
+        failureExpected: true,
+      }),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 });

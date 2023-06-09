@@ -60,12 +60,12 @@ describe('s3 override tests', () => {
     // test override file in compilation error state
     const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
     fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
-    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot, { failureExpected: true })).rejects.toThrowError();
 
     // test override file in runtime error state
     const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
     fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
-    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot, { failureExpected: true })).rejects.toThrowError();
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-s3.ts');
@@ -187,13 +187,13 @@ describe('ddb override tests', () => {
     const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
     fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideFilePath);
     await expect(buildOverrideStorage(projRoot)).rejects.toThrowError();
-    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot, { failureExpected: true })).rejects.toThrowError();
 
     // build overrides should throw an error if there are runtime errors in override file
     const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
     fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
     await expect(buildOverrideStorage(projRoot)).rejects.toThrowError();
-    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot, { failureExpected: true })).rejects.toThrowError();
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-ddb.ts');

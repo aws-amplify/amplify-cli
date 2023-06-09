@@ -1,5 +1,5 @@
 import { singleSelect } from '../utils/selectors';
-import { getCLIPath, nspawn as spawn, RETURN } from '..';
+import { getCLIPath, nspawn as spawn, RETURN, errorReportingTestHandler } from '..';
 
 export type AddStorageSettings = {
   resourceName?: string;
@@ -278,19 +278,14 @@ export function overrideDDB(cwd: string) {
   });
 }
 
-export function buildOverrideStorage(cwd: string) {
-  return new Promise((resolve, reject) => {
-    // Add 'storage' as a category param once implemented
-    const args = ['build'];
-    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve({});
-      } else {
-        reject(err);
-      }
-    });
-  });
+export function buildOverrideStorage(cwd: string, defaultSettings: { failureExpected: boolean } = { failureExpected: false }) {
+  // Add 'storage' as a category param once implemented
+  const args = ['build'];
+  const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
+  if (defaultSettings.failureExpected) {
+    errorReportingTestHandler(chain);
+  }
+  return chain.runAsync();
 }
 
 export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings): Promise<void> {

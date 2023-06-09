@@ -37,6 +37,7 @@ describe('amplify add api', () => {
       amplifyPushUpdate(
         projRoot,
         /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/,
+        { failureExpected: true },
       ),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });

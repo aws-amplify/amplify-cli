@@ -23,7 +23,7 @@ describe('amplify init f', () => {
   });
 
   it('should fail if init is not executed in project root', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { failureExpected: true });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
 
