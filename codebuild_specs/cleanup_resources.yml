@@ -9,5 +9,5 @@ phases:
       - npm install -g ts-node
       - npm install aws-sdk
       - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH AmplifyCLI-E2E-Testing
-      - ts-node ./cleanup-e2e-cb-resources.ts
+      - ts-node ./cleanup-e2e-codebuild-resources.ts
 
