@@ -794,8 +794,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           {
             Effect: 'Allow',
             Action: [
-              'cognito-idp:CreateIdentityProvider',
-              'cognito-idp:UpdateIdentityProvider',
               'cognito-idp:ListIdentityProviders',
               'cognito-idp:DeleteIdentityProvider',
             ],

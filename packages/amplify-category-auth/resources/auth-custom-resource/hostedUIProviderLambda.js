@@ -13,22 +13,19 @@ exports.handler = (event, context) => {
       return identity.deleteIdentityProvider(params).promise();
     };
 
-    const deleteSuccessOrNotFound = (promiseResult) => {
-      return promiseResult.status === 'fulfilled' || promiseResult.reason.toString().match(/NotFoundException/);
-    };
-
-    const providerPromises = [];
-
-    hostedUIProviderMeta.forEach(({ ProviderName }) => providerPromises.push(deleteIdentityProvider(ProviderName)));
-
-    Promise.allSettled(providerPromises).then((results) => {
-      if (results.every(deleteSuccessOrNotFound)) {
-        response.send(event, context, response.SUCCESS);
-      } else {
-        const firstFailure = results.find((result) => result.status === 'rejected');
-        response.send(event, context, response.FAILED, firstFailure);
-      }
+    // Only 1 update can be sent at a time, so the SDK calls need to be run synchronously
+    hostedUIProviderMeta.forEach(async ({ ProviderName }) => {
+      await deleteIdentityProvider(ProviderName).catch((error) => {
+        if (!error?.code?.toString()?.match(/NotFoundException/)) {
+          response.send(event, context, response.FAILED, error);
+          return error;
+        } else {
+          console.log('Not Found', ProviderName);
+        }
+      });
     });
+
+    response.send(event, context, response.SUCCESS);
   } catch (err) {
     console.log(err.stack);
     response.send(event, context, response.FAILED, { err });
