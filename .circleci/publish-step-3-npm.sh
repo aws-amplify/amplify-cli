@@ -9,12 +9,6 @@ function lernaPublishExitOnFailure {
   # run lerna publish with the args that were passed to this function
   # duplicate stdout to a temp file
   # grep the temp file for the lerna err token and return exit 1 if found (-v option inverts grep exit code)
-
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-    # registy URL update changes .yarnrc.yml file
-    git update-index --assume-unchanged .yarnrc.yml
-  fi
-
   npx lerna publish "$@" | tee /tmp/publish-results && grep -qvz "lerna ERR!" < /tmp/publish-results
 }
 
@@ -35,27 +29,8 @@ function verifyPkgIsAvailable {
   curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-win-x64.tgz
 }
 
-if [ -z "$GITHUB_EMAIL" ]; then
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-    git config --global user.email not@used.com
-  else
-    echo "GITHUB_EMAIL email is missing"
-    exit 1
-  fi
-else
-  git config --global user.email $GITHUB_EMAIL
-fi
-
-if [ -z "$GITHUB_USER" ]; then
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-    git config --global user.name "Doesnt Matter"
-  else
-    echo "GITHUB_USER email is missing"
-    exit 1
-  fi
-else
-  git config --global user.name $GITHUB_USER
-fi
+git config --global user.name aws-amplify-bot
+git config --global user.email aws@amazon.com
 
 if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
@@ -70,34 +45,24 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
     exit 1
   fi
 
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-    echo "Publishing to local registry under latest tag"
-    lernaPublishExitOnFailure from-git --yes --no-push
-  else
-    echo "Publishing to NPM under $NPM_TAG tag"
-    lernaPublishExitOnFailure from-git --yes --no-push -dist-tag=$NPM_TAG
-    # push release commit
-    git push origin "$CIRCLE_BRANCH"
+  # verify that binary has been uploaded
+  verifyPkgIsAvailable
 
-    # push release tags
-    git tag --points-at HEAD | xargs git push origin
-  fi
+  echo "Publishing to NPM under $NPM_TAG tag"
+  lernaPublishExitOnFailure from-git --yes --no-push -dist-tag=$NPM_TAG
+  # push release commit
+  git push origin "$CIRCLE_BRANCH"
+
+  # push release tags
+  git tag --points-at HEAD | xargs git push origin
 
 # @latest release
 elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" != "true" ]]; then
-    # verify that binary has been uploaded
-    verifyPkgIsAvailable
-  fi
+  # verify that binary has been uploaded
+  verifyPkgIsAvailable
 
   # publish versions that were just computed
   lernaPublishExitOnFailure from-git --yes --no-push
-
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-    echo "Published packages to verdaccio"
-    echo "Exiting without pushing release commit or release tags"
-    exit 0
-  fi
 
   # push release commit
   git push origin "$CIRCLE_BRANCH"
@@ -118,16 +83,7 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   git push origin hotfix
 
 # release candidate or local publish for testing / building binary
-elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-
-  # if publishing locally to verdaccio
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-    # publish to verdaccio with no dist tag (default to latest)
-    lernaPublishExitOnFailure from-git --yes --no-push
-    echo "Published packages to verdaccio"
-    echo "Exiting without pushing release commit or release tags"
-    exit 0
-  fi
+elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]]; then
 
   # verify that binary has been uploaded
   verifyPkgIsAvailable
@@ -141,5 +97,6 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
   # push release tags
   git tag --points-at HEAD | xargs git push origin
 else
-  echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules. Skipping publish"
+  echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules."
+  exit 1
 fi
