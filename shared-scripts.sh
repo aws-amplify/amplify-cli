@@ -524,8 +524,12 @@ function _downloadReportsFromS3 {
 }
 
 function _cleanUpResources {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    cd scripts
+    yarn install
     _loadTestAccountCredentials
     echo "Executing resource cleanup"
-    yarn ts-node ./scripts/cleanup-e2e-codebuild-resources.ts
+    yarn ts-node scripts/cleanup-e2e-codebuild-resources.ts
     _unassumeTestAccountCredentials
 }
