@@ -302,14 +302,14 @@ const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | undefined =
   }
   const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
   const deleteReq = chunkedResult
-    .map((r) => ({
+    .map((r: S3.ObjectIdentifier[]) => ({
       Bucket: bucket,
       Delete: {
         Objects: r,
         Quiet: true,
       },
     }))
-    .map((delParams) => s3.deleteObjects(delParams).promise());
+    .map((delParams: S3.DeleteObjectsRequest) => s3.deleteObjects(delParams).promise());
   await Promise.all(deleteReq);
   await s3
     .deleteBucket({
@@ -579,7 +579,7 @@ const mergeResourcesByCIJob = (
       return ORPHAN;
     }
 
-    const buildIds = _.groupBy(appInfo.backends, (backendInfo) => _.get(backendInfo, ['cbInfo', 'id'], UNKNOWN));
+    const buildIds = _.groupBy(appInfo.backends, (backendInfo: StackInfo) => _.get(backendInfo, ['cbInfo', 'id'], UNKNOWN));
     if (Object.keys(buildIds).length === 1) {
       return Object.keys(buildIds)[0];
     }
@@ -589,8 +589,8 @@ const mergeResourcesByCIJob = (
 
   _.mergeWith(
     result,
-    _.pickBy(amplifyAppByJobId, (__, key) => key !== MULTI_JOB_APP),
-    (val, src, key) => ({
+    _.pickBy(amplifyAppByJobId, (__: unknown, key: string) => key !== MULTI_JOB_APP),
+    (val, src: AmplifyAppInfo, key: string) => ({
       ...val,
       ...extractCIJobInfo(src),
       jobId: key,
@@ -602,7 +602,7 @@ const mergeResourcesByCIJob = (
     result,
     stacksByJobId,
     (__: unknown, key: string) => key !== ORPHAN,
-    (val, src, key) => ({
+    (val: any, src: StackInfo, key: string) => ({
       ...val,
       ...extractCIJobInfo(src),
       jobId: key,
@@ -610,7 +610,7 @@ const mergeResourcesByCIJob = (
     }),
   );
 
-  _.mergeWith(result, bucketByJobId, (val, src, key) => ({
+  _.mergeWith(result, bucketByJobId, (val: any, src: S3BucketInfo, key: string) => ({
     ...val,
     ...extractCIJobInfo(src),
     jobId: key,
@@ -621,7 +621,7 @@ const mergeResourcesByCIJob = (
     [ORPHAN]: orphanS3Buckets,
   };
 
-  _.mergeWith(result, orphanBuckets, (val, src, key) => ({
+  _.mergeWith(result, orphanBuckets, (val: any, src: S3BucketInfo, key: string) => ({
     ...val,
     jobId: key,
     buckets: src,
@@ -631,7 +631,7 @@ const mergeResourcesByCIJob = (
     [ORPHAN]: orphanIamRoles,
   };
 
-  _.mergeWith(result, orphanIamRolesGroup, (val, src, key) => ({
+  _.mergeWith(result, orphanIamRolesGroup, (val: any, src: IamRoleInfo, key: string) => ({
     ...val,
     jobId: key,
     roles: src,
@@ -641,7 +641,7 @@ const mergeResourcesByCIJob = (
     [ORPHAN]: orphanPinpointApplications,
   };
 
-  _.mergeWith(result, orphanPinpointApps, (val, src, key) => ({
+  _.mergeWith(result, orphanPinpointApps, (val: any, src: PinpointAppInfo, key: string) => ({
     ...val,
     jobId: key,
     pinpointApps: src,
@@ -652,7 +652,7 @@ const mergeResourcesByCIJob = (
     {
       [ORPHAN]: orphanAppSyncApis,
     },
-    (val, src, key) => ({
+    (val: any, src: AppSyncApiInfo, key: string) => ({
       ...val,
       jobId: key,
       appSyncApis: src,
@@ -664,7 +664,7 @@ const mergeResourcesByCIJob = (
     {
       [ORPHAN]: orphanUserPools,
     },
-    (val, src, key) => ({
+    (val: any, src: UserPoolInfo, key: string) => ({
       ...val,
       jobId: key,
       userPools: src,
@@ -929,13 +929,10 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
     return filterAllStaleResources();
   }
   if (args._[0] === 'workflow') {
-    return filterByWorkflowId(args.workflowId as string);
+    return filterByWorkflowId(args.workflowId);
   }
   if (args._[0] === 'job') {
-    if (Number.isNaN(args.jobId)) {
-      throw new Error('job-id should be integer');
-    }
-    return filterByJobId((args.jobId as number).toString());
+    return filterByJobId(args.jobId);
   }
   throw Error('Invalid args config');
 };
@@ -1082,14 +1079,14 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
 const cleanup = async (): Promise<void> => {
   const args = yargs
     .command('*', 'clean up all the stale resources')
-    .command('workflow <workflow-id>', 'clean all the resources created by workflow', (_yargs) => {
+    .command('workflow <workflow-id>', 'clean all the resources created by workflow', (_yargs: yargs.Argv<{}>) => {
       _yargs.positional('workflowId', {
         describe: 'Workflow Id of the workflow',
         type: 'string',
         demandOption: '',
       });
     })
-    .command('job <jobId>', 'clean all the resource created by a job', (_yargs) => {
+    .command('job <jobId>', 'clean all the resource created by a job', (_yargs: yargs.Argv<{}>) => {
       _yargs.positional('jobId', {
         describe: 'job id of the job',
         type: 'number',
