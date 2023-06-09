@@ -10,7 +10,6 @@ import {
   S3,
   STS,
 } from 'aws-sdk';
-import { config } from 'dotenv';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
@@ -1097,7 +1096,6 @@ const cleanup = async (): Promise<void> => {
       });
     })
     .help().argv;
-  config();
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();

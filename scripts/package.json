@@ -24,13 +24,19 @@
     "fs-extra": "^10.0.0",
     "glob": "^7.2.0",
     "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "yargs": "^17.7.2"
   },
   "berry": {
     "plugins": [
       "@yarn/plugin-typescript"
     ]
   },
-  "packageManager": "yarn@3.5.0"
+  "packageManager": "yarn@3.5.0",
+  "devDependencies": {
+    "@types/lodash": "^4",
+    "@types/yargs": "^17"
+  }
 }
