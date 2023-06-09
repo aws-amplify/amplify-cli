@@ -4,7 +4,7 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -23,7 +23,7 @@ import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
-  if (process.env.CODEBUILD_SRC_DIR) {
+  if (process.env.CODEBUILD_SRC_DIR && isWindowsPlatform()) {
     return path.join(process.env.CODEBUILD_SRC_DIR, 'packages', 'amplify-e2e-tests', 'schemas', schemaName);
   }
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);

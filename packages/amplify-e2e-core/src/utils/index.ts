@@ -6,6 +6,7 @@ import { config } from 'dotenv';
 import execa from 'execa';
 import { v4 as uuid } from 'uuid';
 import { getLayerDirectoryName, LayerDirectoryType } from '..';
+import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 
 export * from './add-circleci-tags';
 export * from './api';
@@ -176,8 +177,8 @@ export const getFunctionSrcNode = (root: string, functionName: string, fileName 
 };
 
 const getTestFileNamePath = (fileName: string): string =>
-  process.env.CODEBUILD_SRC_DIR
-    ? path.join(process.env.CODEBUILD_SRC_DIR, 'packages', 'amplify-e2e-tests', 'functions', fileName)
+  process.env.CODEBUILD_SRC_DIR && isWindowsPlatform()
+    ? path.join(process.env.CODEBUILD_SRC_DIR, 'packages', 'amplify-e2e-tests', 'functions', fileName) // This condition is to account for a difference in the use of __dirname and paths in CodeBuild Windows jobs
     : path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
 const getPathToFunction = (root: string, funcName: string): string => path.join(root, 'amplify', 'backend', 'function', funcName);
 const getPathToLayer = (root: string, layerProjectName: LayerDirectoryType): string =>
