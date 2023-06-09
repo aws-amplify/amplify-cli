@@ -22,11 +22,11 @@ import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
 
-// const isWindowsPlatform = (): boolean => !!process?.platform?.startsWith('win');
+const isWindowsPlatform = (): boolean => !!process?.platform?.startsWith('win');
 
 export function getSchemaPath(schemaName: string): string {
   // This condition is to account for a difference in the use of __dirname and paths in CodeBuild Windows jobs
-  if (process.env.CODEBUILD_SRC_DIR /*&& isWindowsPlatform()*/) {
+  if (process.env.CODEBUILD_SRC_DIR && isWindowsPlatform()) {
     return path.join(process.env.CODEBUILD_SRC_DIR, 'packages', 'amplify-e2e-tests', 'schemas', schemaName);
   }
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
