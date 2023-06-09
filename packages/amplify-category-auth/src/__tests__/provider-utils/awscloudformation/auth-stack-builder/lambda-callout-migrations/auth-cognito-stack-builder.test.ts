@@ -143,9 +143,7 @@ describe('migrate step for removing lambda callouts', () => {
         const { hostedUIProvidersCustomResource, hostedUIProviderResources } = cognitoStack;
 
         expect(hostedUIProvidersCustomResource?.cfnResourceType).toBe('AWS::Lambda::Function');
-        expect((hostedUIProvidersCustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatch(
-          'hostedUIProviderMeta.forEach(({ ProviderName }) => providerPromises.push(deleteIdentityProvider(ProviderName)));',
-        );
+        expect((hostedUIProvidersCustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatchSnapshot();
 
         expect(hostedUIProviderResources.length).toEqual(4);
       });
