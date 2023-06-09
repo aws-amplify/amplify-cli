@@ -140,7 +140,7 @@ function _verifyVersionsMatch {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    
+
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
@@ -174,10 +174,10 @@ function _publishToLocalRegistry {
     # git reset --soft HEAD~1
     yarn ts-node scripts/unified-changelog.ts
     cat UNIFIED_CHANGELOG.md
-    
+
     echo Save new amplify Github tag
     node scripts/echo-current-cli-version.js > .amplify-pkg-version
-    
+
     echo LS HOME
     ls $CODEBUILD_SRC_DIR/..
 
@@ -237,7 +237,7 @@ function _install_packaged_cli_linux {
 }
 function _convertCoverage {
     echo Convert Coverage
-    
+
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
@@ -263,7 +263,7 @@ function _uploadCoverageLinux {
         shasum -a 256 -c codecov.SHA256SUM
 
         chmod +x codecov
-        ./codecov -t ${CODECOV_TOKEN} 
+        ./codecov -t ${CODECOV_TOKEN}
     fi
 }
 # END COVERAGE FUNCTIONS
@@ -329,7 +329,7 @@ function _scanArtifacts {
 
 function _putCredsInProfile {
     mkdir -p ~/.aws
-    touch ~/.aws/config ~/.aws/credentials 
+    touch ~/.aws/config ~/.aws/credentials
     python3 codebuild_specs/sh-files/aws-configure-credentials.py
 }
 
@@ -346,7 +346,7 @@ function _integTestAmplifyInit {
     export REACTCONFIG="{\"SourceDir\":\"src\",\"DistributionDir\":\"build\",\"BuildCommand\":\"npm run-script build\",\"StartCommand\":\"npm run-script start\"}"
     export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
     export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
-    export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"    
+    export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"
     amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
 }
 
@@ -422,7 +422,7 @@ function _integrationTest {
     echo "Initializing new amplify project for auth"
     pwd
     _integTestAmplifyInit
-    
+
     echo "Adding auth and pushing"
     _addAndPushAuth
     echo "end push"
@@ -521,4 +521,11 @@ function _downloadReportsFromS3 {
     aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done #This line moves all files into the top level directory so that the reports can be consumed by CB
+}
+
+function _cleanUpResources {
+    _loadTestAccountCredentials
+    echo "Executing resource cleanup"
+    yarn ts-node ./scripts/cleanup-e2e-codebuild-resources.ts
+    _unassumeTestAccountCredentials
 }
