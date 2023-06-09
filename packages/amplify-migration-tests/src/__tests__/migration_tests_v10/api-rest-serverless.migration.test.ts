@@ -42,7 +42,7 @@ describe('api serverless migration tests', () => {
       await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
-      await amplifyPushAuth(projRoot2, true);
+      await amplifyPushAuth(projRoot2, { testingWithLatestCodebase: true });
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2, cfnDiffExclusions)).toMatchSnapshot();
 

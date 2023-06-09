@@ -50,7 +50,10 @@ describe('amplify key force push', () => {
     updateApiSchema(projRoot, projectName, initialSchema, true);
     // gql-compile and force push with codebase cli
     await expect(
-      amplifyPushUpdate(projRoot, /Attempting to remove a local secondary index on the TodoTable table in the Todo stack.*/, true),
+      amplifyPushUpdate(projRoot, /Attempting to remove a local secondary index on the TodoTable table in the Todo stack.*/, {
+        testingWithLatestCodebase: true,
+        failureExpected: true,
+      }),
     ).rejects.toThrowError(/Attempting to remove a local secondary index on the TodoTable table in the Todo stack.*/);
   });
 });

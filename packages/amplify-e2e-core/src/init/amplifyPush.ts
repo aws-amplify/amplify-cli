@@ -209,7 +209,7 @@ export function amplifyPushUpdateLegacy(
  */
 export const amplifyPushAuth = (
   cwd: string,
-  defaultSettings: { testingWithLatestCodebase?: boolean; failureExpected: boolean } = {
+  defaultSettings: { testingWithLatestCodebase?: boolean; failureExpected?: boolean } = {
     testingWithLatestCodebase: false,
     failureExpected: false,
   },

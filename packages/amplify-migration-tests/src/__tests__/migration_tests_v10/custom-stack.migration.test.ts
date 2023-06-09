@@ -87,7 +87,7 @@ describe('adding custom resources migration test', () => {
       await amplifyPull(projRoot2, { emptyDir: true, appId }, usingLatestCode);
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
-      await amplifyPushAuth(projRoot2, usingLatestCode);
+      await amplifyPushAuth(projRoot2, { testingWithLatestCodebase: usingLatestCode });
       assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
       expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
 
@@ -116,8 +116,7 @@ describe('adding custom resources migration test', () => {
 
       // this should pass now
       await buildCustomResources(projRoot2, usingLatestCode);
-      await amplifyPushAuth(projRoot2, usingLatestCode);
-
+      await amplifyPushAuth(projRoot2, { testingWithLatestCodebase: usingLatestCode });
       // // Using latest code, add custom CFN and add dependency of custom CDK resource on the custom CFN
       await addCFNCustomResource(projRoot2, { name: cfnResourceName, promptForCustomResourcesSelection: true }, usingLatestCode);
       const customCFNFilePath = path.join(
