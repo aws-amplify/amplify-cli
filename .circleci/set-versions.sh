@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+git config --global user.name aws-amplify-bot
+git config --global user.email aws@amazon.com
+
 if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
     # Remove tagged-release-without-e2e-tests/
