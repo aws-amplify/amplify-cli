@@ -793,10 +793,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: [
-              'cognito-idp:ListIdentityProviders',
-              'cognito-idp:DeleteIdentityProvider',
-            ],
+            Action: ['cognito-idp:ListIdentityProviders', 'cognito-idp:DeleteIdentityProvider'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
           {
