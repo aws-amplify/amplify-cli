@@ -72,17 +72,19 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
 
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
     echo "Publishing to local registry under latest tag"
-    lernaPublishExitOnFailure --exact --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-push --yes --include-merged-tags
+    lernaPublishExitOnFailure from-git --yes --no-push
   else
     echo "Publishing to NPM under $NPM_TAG tag"
-    lernaPublishExitOnFailure --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --yes --include-merged-tags
+    lernaPublishExitOnFailure from-git --yes --no-push -dist-tag=$NPM_TAG
+    # push release commit
+    git push origin "$CIRCLE_BRANCH"
+
+    # push release tags
+    git tag --points-at HEAD | xargs git push origin
   fi
 
 # @latest release
 elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
-  # create release commit and release tags
-  npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
-
   if [[ "$LOCAL_PUBLISH_TO_LATEST" != "true" ]]; then
     # verify that binary has been uploaded
     verifyPkgIsAvailable
@@ -117,13 +119,6 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
 
 # release candidate or local publish for testing / building binary
 elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-
-  # force @aws-amplify/cli-internal to be versioned in case this pipeline run does not have any commits that modify the CLI packages
-  if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
-    force_publish_local_args="--force-publish '@aws-amplify/cli-internal'"
-  fi
-  # create release commit and release tags
-  npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" $(echo $force_publish_local_args) --no-commit-hooks
 
   # if publishing locally to verdaccio
   if [[ "$LOCAL_PUBLISH_TO_LATEST" == "true" ]]; then
