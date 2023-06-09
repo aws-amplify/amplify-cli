@@ -134,7 +134,7 @@ describe('amplify add api (GraphQL)', () => {
 
     await amplifyPush(projRoot);
     await updateHeadlessApi(projRoot, updateApiRequest, true);
-    await amplifyPushUpdate(projRoot, undefined, undefined, true);
+    await amplifyPushUpdate(projRoot, undefined, { allowDestructiveUpdates: true });
 
     // verify
     const meta = getProjectMeta(projRoot);

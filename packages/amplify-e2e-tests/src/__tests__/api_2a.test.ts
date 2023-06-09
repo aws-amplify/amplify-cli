@@ -158,7 +158,7 @@ describe('amplify add api (GraphQL)', () => {
 
     // remove DataStore feature
     await apiDisableDataStore(projRoot, {});
-    await amplifyPushUpdate(projRoot, undefined, false, false, 1000 * 60 * 45 /* 45 minutes */);
+    await amplifyPushUpdate(projRoot, undefined, { overridePushTimeoutMS: 1000 * 60 * 45 /* 45 minutes */ });
     const disableDSConfig = getTransformConfig(projRoot, name);
     expect(disableDSConfig).toBeDefined();
     expect(_.isEmpty(disableDSConfig.ResolverConfig)).toBe(true);
