@@ -23,6 +23,7 @@ import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
+  // This condition is to account for a difference in the use of __dirname and paths in CodeBuild Windows jobs
   if (process.env.CODEBUILD_SRC_DIR && isWindowsPlatform()) {
     return path.join(process.env.CODEBUILD_SRC_DIR, 'packages', 'amplify-e2e-tests', 'schemas', schemaName);
   }
