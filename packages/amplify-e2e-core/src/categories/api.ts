@@ -4,7 +4,7 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { $TSAny, isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -21,6 +21,8 @@ import {
 import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
+
+const isWindowsPlatform = (): boolean => !!process?.platform?.startsWith('win');
 
 export function getSchemaPath(schemaName: string): string {
   // This condition is to account for a difference in the use of __dirname and paths in CodeBuild Windows jobs

@@ -6,7 +6,6 @@ import { config } from 'dotenv';
 import execa from 'execa';
 import { v4 as uuid } from 'uuid';
 import { getLayerDirectoryName, LayerDirectoryType } from '..';
-import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 
 export * from './add-circleci-tags';
 export * from './api';
@@ -175,6 +174,8 @@ export const getFunctionSrcNode = (root: string, functionName: string, fileName 
 
   return fs.readFileSync(indexPath).toString();
 };
+
+const isWindowsPlatform = (): boolean => !!process?.platform?.startsWith('win');
 
 const getTestFileNamePath = (fileName: string): string =>
   process.env.CODEBUILD_SRC_DIR && isWindowsPlatform()
