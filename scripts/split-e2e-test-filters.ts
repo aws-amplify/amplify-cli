@@ -25,4 +25,5 @@ export const migrationFromV10Tests = [
 export const migrationFromV11Tests = [
   'src/__tests__/migration_tests_v11/auth-app-client-secret-migration.test.ts',
   'src/__tests__/migration_tests_v11/auth-oauth-lambda-migration.test.ts',
+  'src/__tests__/migration_tests_v11/auth-resource-deletion-migration.test.ts',
 ];
