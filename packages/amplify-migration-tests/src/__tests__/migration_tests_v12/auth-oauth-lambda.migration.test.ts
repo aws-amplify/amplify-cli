@@ -1,7 +1,7 @@
 import { createNewProjectDir, deleteProject, deleteProjectDir } from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
-import { setupOgProjectWithAuth } from '../../migration-helpers-v11/auth-helpers/utilities';
-import { initJSProjectWithProfileV11 } from '../../migration-helpers-v11/init';
+import { setupOgProjectWithAuth } from '../../migration-helpers-v12/auth-helpers/utilities';
+import { initJSProjectWithProfileV12 } from '../../migration-helpers-v12/init';
 import { pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
 const defaultsSettings = {
@@ -9,7 +9,7 @@ const defaultsSettings = {
   disableAmplifyAppCreation: false,
 };
 
-describe('amplify add auth...', () => {
+describe('v12: amplify add auth...', () => {
   let projRoot: string;
   const projectName: string = 'oauthlambdaRemove';
 
@@ -24,7 +24,7 @@ describe('amplify add auth...', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projectName);
-    await initJSProjectWithProfileV11(projRoot, defaultsSettings);
+    await initJSProjectWithProfileV12(projRoot, defaultsSettings);
     // creates a userPool only with OauthSetting and pushes Auth
     await setupOgProjectWithAuth(projRoot, { name: 'ogauimphea' });
   });

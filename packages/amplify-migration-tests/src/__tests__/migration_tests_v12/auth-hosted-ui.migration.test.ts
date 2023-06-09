@@ -24,11 +24,11 @@ const oauthSettings = {
 const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
 const { readJson } = JSONUtilities;
 
-describe('v11: hosted UI migration', () => {
+describe('v12: hosted UI migration', () => {
   let projRoot1: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: '11.0.0' };
+    const migrateFromVersion = { v: '12.0.0' };
     const migrateToVersion = { v: 'unintialized' };
 
     await versionCheck(process.cwd(), false, migrateFromVersion);

@@ -13,11 +13,11 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
-describe('v11: amplify migration test auth', () => {
+describe('v12: amplify migration test auth', () => {
   let projRoot1: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: '11.0.0' };
+    const migrateFromVersion = { v: '12.0.0' };
     const migrateToVersion = { v: 'unintialized' };
 
     await versionCheck(process.cwd(), false, migrateFromVersion);
