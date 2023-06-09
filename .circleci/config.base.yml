@@ -563,36 +563,6 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
 
-  amplify_migration_tests_v6:
-    parameters:
-      os:
-        type: executor
-        default: l_large
-    executor: << parameters.os >>
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
-    steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Run tests migrating from CLI v6.1.0
-          command: |
-            source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
-            cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
-          no_output_timeout: 65m
-      - run: *scan_e2e_test_artifacts
-      - store_test_results:
-          path: ~/repo/packages/amplify-migration-tests/
-      - store_artifacts:
-          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
-    working_directory: ~/repo
-
   amplify_migration_tests_v10:
     parameters:
       os:
@@ -860,12 +830,6 @@ jobs:
             - amplify-cli-ssh-deps-{{ .Branch }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Upload Pkg Binary
-          command: |
-            source .circleci/local_publish_helpers.sh
-            uploadPkgCli
-            ./out/amplify-pkg-linux-x64 --version
       - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
