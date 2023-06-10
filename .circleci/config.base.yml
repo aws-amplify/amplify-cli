@@ -914,6 +914,19 @@ jobs:
             commit=$(git rev-parse HEAD)
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version $commit
+  npm_rollback_access:
+    <<: *linux-e2e-executor-large
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          keys:
+            - amplify-cli-ssh-deps-{{ .Branch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Authenticate with npm
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
   cleanup_resources:
     <<: *linux-e2e-executor-large
     steps:
@@ -1291,6 +1304,16 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - npm_rollback_access:
+          context:
+            - npm-publish
+          requires:
+            - upload_pkg_binaries
+            - verify-versions-match
+          filters:
+            branches:
+              only:
+                - release
       - post_publish_push_to_git:
           requires:
             - publish_to_npm
