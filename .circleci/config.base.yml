@@ -851,10 +851,7 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Authenticate with npm
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-      - run:
-          name: Publish Amplify CLI
+          name: Push release commit and tags
           command: |
             bash ./.circleci/publish-step-4-push-to-git.sh
   github_prerelease:

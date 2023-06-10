@@ -46,7 +46,7 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   verifyPkgIsAvailable
 
   echo "Publishing to NPM under $NPM_TAG tag"
-  lernaPublishExitOnFailure from-git --yes --no-push -dist-tag=$NPM_TAG
+  lernaPublishExitOnFailure from-git --yes --no-push --dist-tag=$NPM_TAG
 
 # @latest release
 elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
