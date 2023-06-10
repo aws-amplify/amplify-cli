@@ -113,6 +113,7 @@ jobs:
           name: Build tests
           command: yarn build-tests
       - run:
+          # setting versions in build step so that commit and git tags are cached and available for all steps in pipeline
           name: Set versions
           command: ./.circleci/publish-step-1-set-versions.sh
       - save_cache:
