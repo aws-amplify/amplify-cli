@@ -530,6 +530,6 @@ function _cleanUpResources {
     yarn install
     _loadTestAccountCredentials
     echo "Executing resource cleanup"
-    yarn ts-node scripts/cleanup-e2e-codebuild-resources.ts
+    yarn ts-node cleanup-e2e-codebuild-resources.ts
     _unassumeTestAccountCredentials
 }
