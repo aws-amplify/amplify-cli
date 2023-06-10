@@ -822,7 +822,7 @@ jobs:
       - store_artifacts:
           path: ~/aws-amplify-cypress-api/cypress/screenshots
 
-  deploy:
+  publish_to_npm:
     <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
@@ -839,7 +839,23 @@ jobs:
           name: Publish Amplify CLI
           command: |
             bash ./.circleci/publish-step-3-npm.sh
-      - run: *scan_e2e_test_artifacts
+  post_publish_push_to_git:
+    <<: *linux-e2e-executor-large
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          keys:
+            - amplify-cli-ssh-deps-{{ .Branch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Authenticate with npm
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - run:
+          name: Publish Amplify CLI
+          command: |
+            bash ./.circleci/publish-step-4-push-to-git.sh
   github_prerelease:
     <<: *linux-e2e-executor-large
     steps:
@@ -1251,11 +1267,8 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
-      - deploy:
+      - publish_to_npm:
           context:
-            - e2e-auth-credentials
-            - e2e-test-context
-            - amplify-s3-upload
             - npm-publish
           requires:
             - test
@@ -1280,10 +1293,21 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - post_publish_push_to_git:
+          requires:
+            - publish_to_npm
+          filters:
+            branches:
+              only:
+                - release
+                - /release_rc\/.*/
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
       - github_release:
           context: github-publish
           requires:
-            - deploy
+            - post_publish_push_to_git
           filters:
             branches:
               only:

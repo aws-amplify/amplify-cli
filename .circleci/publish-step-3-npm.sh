@@ -29,9 +29,6 @@ function verifyPkgIsAvailable {
   curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-win-x64.tgz
 }
 
-git config --global user.name aws-amplify-bot
-git config --global user.email aws@amazon.com
-
 if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
     # Remove tagged-release-without-e2e-tests/
@@ -50,11 +47,6 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
 
   echo "Publishing to NPM under $NPM_TAG tag"
   lernaPublishExitOnFailure from-git --yes --no-push -dist-tag=$NPM_TAG
-  # push release commit
-  git push origin "$CIRCLE_BRANCH"
-
-  # push release tags
-  git tag --points-at HEAD | xargs git push origin
 
 # @latest release
 elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
@@ -64,24 +56,6 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   # publish versions that were just computed
   lernaPublishExitOnFailure from-git --yes --no-push
 
-  # push release commit
-  git push origin "$CIRCLE_BRANCH"
-
-  # push release tags
-  git tag --points-at HEAD | xargs git push origin
-
-  # fast forward main to release
-  git fetch origin main
-  git checkout main
-  git merge release --ff-only
-  git push origin main
-
-  # fast forward hotfix to release
-  git fetch origin hotfix
-  git checkout hotfix
-  git merge release --ff-only
-  git push origin hotfix
-
 # release candidate or local publish for testing / building binary
 elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]]; then
 
@@ -90,12 +64,6 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
 
   # publish versions that were just computed
   lernaPublishExitOnFailure from-git --yes --no-push --dist-tag rc
-
-  # push release commit
-  git push origin "$CIRCLE_BRANCH"
-
-  # push release tags
-  git tag --points-at HEAD | xargs git push origin
 else
   echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules."
   exit 1
