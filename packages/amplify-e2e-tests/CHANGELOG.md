@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.4-split-deploy-step.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.0...amplify-e2e-tests@4.2.4-split-deploy-step.0) (2023-06-10)
+
+
+### Bug Fixes
+
+* added Prepush after init and before deploy ([#12674](https://github.com/aws-amplify/amplify-cli/issues/12674)) ([a54f837](https://github.com/aws-amplify/amplify-cli/commit/a54f83743b5995317170c9b4f5a140e5a1aa57f3))
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+* fetch deployment key from current-cloud-backend ([#12687](https://github.com/aws-amplify/amplify-cli/issues/12687)) ([af0bf82](https://github.com/aws-amplify/amplify-cli/commit/af0bf82d18b3a30d4cdac2cdd14b8534e0ffff1d))
+* remove parameters when resource is deleted or unlinked ([#12544](https://github.com/aws-amplify/amplify-cli/issues/12544)) ([f78fb68](https://github.com/aws-amplify/amplify-cli/commit/f78fb686f4719ef8a487251ded8bf01b9df29dbd))
+* smoke test flakynes ([#12760](https://github.com/aws-amplify/amplify-cli/issues/12760)) ([5654640](https://github.com/aws-amplify/amplify-cli/commit/56546401274820207bc2e64fb682bbe2ed1981f2))
+
+
+
+
+
 ## [4.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.1...amplify-e2e-tests@4.2.3) (2023-05-25)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0-split-deploy-step.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.5...@aws-amplify/amplify-cli-core@4.1.0-split-deploy-step.0) (2023-06-10)
+
+
+### Features
+
+* add status acm subcommand ([#12190](https://github.com/aws-amplify/amplify-cli/issues/12190)) ([a25ec17](https://github.com/aws-amplify/amplify-cli/commit/a25ec17bf1c5917d99b7eb8ec6e5a45b7def8a01))
+
+
+
+
+
 ## [4.0.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.6...@aws-amplify/amplify-cli-core@4.0.8) (2023-05-25)
 
 
