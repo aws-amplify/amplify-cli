@@ -268,7 +268,6 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
   maxRetries: 10,
 });
 
-
 /**
  * delete an S3 bucket, copied from amplify-e2e-core
  */
@@ -420,9 +419,8 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
   if (stackStatus === 'DELETE_FAILED') {
     // Todo: We need to investigate if we should go ahead and remove the resources to prevent account getting cluttered
     const resources = await cfnClient.listStackResources({ StackName: stackName }).promise();
-    resourcesFailedToDelete = resources?.StackResourceSummaries?.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map(
-      (r) => r.LogicalResourceId,
-    ) ?? [];
+    resourcesFailedToDelete =
+      resources?.StackResourceSummaries?.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map((r) => r.LogicalResourceId) ?? [];
   }
   const jobId = getJobId(tags);
   return {
@@ -431,7 +429,7 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
     resourcesFailedToDelete,
     region,
     tags: tags.reduce((acc, tag) => ({ ...acc, [tag.Key]: tag.Value }), {}),
-    cbInfo: jobId ? (await getCIJobDetails(jobId, cbClient)) : undefined,
+    cbInfo: jobId ? await getCIJobDetails(jobId, cbClient) : undefined,
   };
 };
 
@@ -820,7 +818,9 @@ const deleteUserPools = async (account: AWSAccountInfo, accountIndex: number, us
 
 const deleteUserPool = async (account: AWSAccountInfo, accountIndex: number, userPool: UserPoolInfo): Promise<void> => {
   const { name, region, userPoolId } = userPool;
-  if (!userPoolId) { return; }
+  if (!userPoolId) {
+    return;
+  }
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting UserPool ${name}`);
     const cognitoClient = new CognitoIdentityServiceProvider(getAWSConfig(account, region));
@@ -1003,11 +1003,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const getEnvVarCredentials = (): AWSAccountInfo => {
-  if (
-    !process.env.AWS_ACCESS_KEY_ID
-    || !process.env.AWS_SECRET_ACCESS_KEY
-    || !process.env.AWS_SESSION_TOKEN
-  ) {
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_SESSION_TOKEN) {
     throw Error('Credentials are missing in environment variables');
   }
 
