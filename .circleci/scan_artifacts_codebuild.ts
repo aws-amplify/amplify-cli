@@ -13,7 +13,7 @@ export const hasMatchingContentInFolder = (patterns: string[], folder: string, e
   try {
     execa.sync('grep', ['-r', `--exclude-dir=${excludeFolder}`, ...patternParam, folder]);
     return true;
-  } catch (e) {
+  } catch (e: any) {
     // When there is no match exit code is set to 1
     if (e.exitCode === 1) {
       return false;

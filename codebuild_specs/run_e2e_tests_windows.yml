@@ -29,3 +29,8 @@ phases:
       - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
       - bash ./codebuild_specs/scripts-windows/rename-packaged-cli.sh
       - bash ./codebuild_specs/scripts-windows/run-e2e-windows.sh
+artifacts:
+  files:
+    - '$E2E_TEST_COVERAGE_DIR/*'
+    - amplify-e2e-reports/*
+  base-directory: packages/amplify-e2e-tests/
