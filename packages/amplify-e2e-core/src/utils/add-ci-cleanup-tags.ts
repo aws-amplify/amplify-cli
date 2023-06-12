@@ -6,7 +6,7 @@ declare global {
     interface Global {
       getTestName?: () => string;
       getHookName?: () => string;
-      getDescibeBlocks?: () => string[];
+      getDescribeBlocks?: () => string[];
     }
   }
   /* eslint-enable */
@@ -24,7 +24,7 @@ export const addCICleanupTags = (projectPath: string): void => {
   if (process?.env?.[CIRCLECI]) {
     CI = CIRCLECI;
     SHA1 = 'CIRCLE_SHA1';
-    BUILD_ID = `CIRCLE_BUILD_NUM`;
+    BUILD_ID = 'CIRCLE_BUILD_NUM';
     WORKFLOW_ID = 'CIRCLE_WORKFLOW_ID';
     JOB = 'CIRCLE_JOB';
   } else if (process?.env?.[`${CODEBUILD}_BUILD_ID`]) {
@@ -67,8 +67,8 @@ export const addCICleanupTags = (projectPath: string): void => {
   if (global.getHookName) {
     addTagIfNotExist('jest:hook_name', sanitizeTagValue(global.getHookName().substr(0, 255)));
   }
-  if (global.getDescibeBlocks) {
-    global.getDescibeBlocks().forEach((blockName, i) => {
+  if (global.getDescribeBlocks) {
+    global.getDescribeBlocks().forEach((blockName, i) => {
       addTagIfNotExist(`jest:describe_${i + 1}`, sanitizeTagValue(blockName.substr(0, 255)));
     });
   }
