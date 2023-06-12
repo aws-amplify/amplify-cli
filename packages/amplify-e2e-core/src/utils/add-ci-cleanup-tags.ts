@@ -17,7 +17,6 @@ export const addCICleanupTags = (projectPath: string): void => {
   const CODEBUILD = 'CODEBUILD';
   let CI: string;
   let SHA1: string;
-  let BUILD_NUMBER: string;
   let BUILD_ID: string;
   let BUILD_URL: string;
   let JOB: string;
@@ -25,7 +24,7 @@ export const addCICleanupTags = (projectPath: string): void => {
   if (process?.env?.[CIRCLECI]) {
     CI = CIRCLECI;
     SHA1 = 'CIRCLE_SHA1';
-    BUILD_NUMBER = `CIRCLE_BUILD_NUM`;
+    BUILD_ID = `CIRCLE_BUILD_NUM`;
     WORKFLOW_ID = 'CIRCLE_WORKFLOW_ID';
     JOB = 'CIRCLE_JOB';
   } else if (process?.env?.[`${CODEBUILD}_BUILD_ID`]) {
