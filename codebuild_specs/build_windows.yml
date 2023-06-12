@@ -1,0 +1,18 @@
+version: 0.2
+env:
+  shell: powershell.exe
+phases:
+  build:
+    commands:
+      - cd scripts
+      - yarn
+      - yarn ts-node remove-pkg-fetch-checksum.ts
+      - cd ..
+      - yarn --immutable
+      - yarn production-build
+      - yarn build-tests
+      - bash ./codebuild_specs/scripts-windows/save-build-windows.sh
+
+artifacts:
+  files:
+    - 'shared-scripts.sh'

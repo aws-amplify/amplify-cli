@@ -1,41 +1,41 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`generateIterativeFuncDeploymentSteps generates steps with correct pointers 1`] = `
-Object {
-  "deploymentSteps": Array [
-    Object {
-      "deployment": Object {
-        "capabilities": Array [],
-        "parameters": Object {
+{
+  "deploymentSteps": [
+    {
+      "deployment": {
+        "capabilities": [],
+        "parameters": {
           "param1": "value1",
         },
         "previousMetaKey": undefined,
         "stackName": "testStackId",
         "stackTemplatePathOrUrl": "amplify-cfn-templates/function/temp/temp-func1-cloudformation-template.json",
-        "tableNames": Array [],
+        "tableNames": [],
       },
       "rollback": undefined,
     },
-    Object {
-      "deployment": Object {
-        "capabilities": Array [],
-        "parameters": Object {
+    {
+      "deployment": {
+        "capabilities": [],
+        "parameters": {
           "param2": "value2",
         },
         "previousMetaKey": "amplify-cfn-templates/function/temp/temp-func1-deployment-meta.json",
         "stackName": "testStackId",
         "stackTemplatePathOrUrl": "amplify-cfn-templates/function/temp/temp-func2-cloudformation-template.json",
-        "tableNames": Array [],
+        "tableNames": [],
       },
-      "rollback": Object {
-        "capabilities": Array [],
-        "parameters": Object {
+      "rollback": {
+        "capabilities": [],
+        "parameters": {
           "param1": "value1",
         },
         "previousMetaKey": undefined,
         "stackName": "testStackId",
         "stackTemplatePathOrUrl": "amplify-cfn-templates/function/temp/temp-func1-cloudformation-template.json",
-        "tableNames": Array [],
+        "tableNames": [],
       },
     },
   ],
@@ -44,18 +44,18 @@ Object {
 `;
 
 exports[`generateTempFuncCFNTemplates replaces Fn::ImportValue references with placeholder values in template 1`] = `
-Object {
-  "a": Object {
-    "b": Object {
-      "c": Array [
-        Object {
+{
+  "a": {
+    "b": {
+      "c": [
+        {
           "Fn::ImportValue": undefined,
           "Fn::Sub": "TemporaryPlaceholderValue",
         },
-        Object {
-          "Fn::Join": Array [
+        {
+          "Fn::Join": [
             ":",
-            Object {
+            {
               "Fn::ImportValue": undefined,
               "Fn::Sub": "TemporaryPlaceholderValue",
             },
@@ -63,7 +63,7 @@ Object {
         },
       ],
     },
-    "d": Object {
+    "d": {
       "Fn::ImportValue": undefined,
       "Fn::Sub": "TemporaryPlaceholderValue",
     },
@@ -72,40 +72,40 @@ Object {
 `;
 
 exports[`prependDeploymentSteps concatenates arrays and moves pointers appropriately 1`] = `
-Array [
-  Object {
-    "deployment": Object {
+[
+  {
+    "deployment": {
       "previousMetaKey": undefined,
       "stackTemplatePathOrUrl": "deploymentStep1",
     },
     "rollback": undefined,
   },
-  Object {
-    "deployment": Object {
+  {
+    "deployment": {
       "previousMetaKey": "deploymentStep1MetaKey",
       "stackTemplatePathOrUrl": "deploymentStep2",
     },
-    "rollback": Object {
+    "rollback": {
       "previousMetaKey": undefined,
       "stackTemplatePathOrUrl": "deploymentStep1",
     },
   },
-  Object {
-    "deployment": Object {
+  {
+    "deployment": {
       "previousMetaKey": "deploymentStep2MetaKey",
       "stackTemplatePathOrUrl": "deploymentStep3",
     },
-    "rollback": Object {
+    "rollback": {
       "previousMetaKey": "deploymentStep1MetaKey",
       "stackTemplatePathOrUrl": "deploymentStep2",
     },
   },
-  Object {
-    "deployment": Object {
+  {
+    "deployment": {
       "previousMetaKey": "deploymentStep3MetaKey",
       "stackTemplatePathOrUrl": "deploymentStep4",
     },
-    "rollback": Object {
+    "rollback": {
       "previousMetaKey": "deploymentStep2MetaKey",
       "stackTemplatePathOrUrl": "deploymentStep3",
     },

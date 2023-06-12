@@ -1,36 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cdk stack creation for place index service creates place index policy for Authorized and Guest users access type 1`] = `
-Object {
-  "Mappings": Object {
-    "RegionMapping": Object {
-      "eu-west-2": Object {
+{
+  "Mappings": {
+    "RegionMapping": {
+      "eu-west-2": {
         "locationServiceRegion": "eu-central-1",
       },
     },
   },
-  "Outputs": Object {
-    "Arn": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+  "Outputs": {
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
           "CustomPlaceIndex",
           "IndexArn",
         ],
       },
     },
-    "Name": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
           "CustomPlaceIndex",
           "IndexName",
         ],
       },
     },
-    "Region": Object {
-      "Value": Object {
-        "Fn::FindInMap": Array [
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
           "RegionMapping",
-          Object {
+          {
             "Ref": "AWS::Region",
           },
           "locationServiceRegion",
@@ -38,71 +38,71 @@ Object {
       },
     },
   },
-  "Parameters": Object {
-    "authRoleName": Object {
+  "Parameters": {
+    "authRoleName": {
       "Type": "String",
     },
-    "authmockAuthUserPoolId": Object {
+    "authmockAuthUserPoolId": {
       "Type": "String",
     },
-    "authuserPoolGroupsadminGroupGroupRole": Object {
+    "authuserPoolGroupsadminGroupGroupRole": {
       "Type": "String",
     },
-    "dataProvider": Object {
+    "dataProvider": {
       "Type": "String",
     },
-    "dataSourceIntendedUse": Object {
+    "dataSourceIntendedUse": {
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
-    "indexName": Object {
+    "indexName": {
       "Type": "String",
     },
-    "isDefault": Object {
+    "isDefault": {
       "Type": "String",
     },
-    "unauthRoleName": Object {
+    "unauthRoleName": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "CustomPlaceIndex": Object {
+  "Resources": {
+    "CustomPlaceIndex": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomPlaceIndexLambda79813BB9",
             "Arn",
           ],
         },
-        "dataSource": Object {
+        "dataSource": {
           "Ref": "dataProvider",
         },
-        "dataSourceIntendedUse": Object {
+        "dataSourceIntendedUse": {
           "Ref": "dataSourceIntendedUse",
         },
-        "env": Object {
+        "env": {
           "Ref": "env",
         },
-        "indexName": Object {
-          "Fn::Join": Array [
+        "indexName": {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "indexName",
               },
-              Object {
+              {
                 "Ref": "env",
               },
             ],
           ],
         },
-        "region": Object {
-          "Fn::FindInMap": Array [
+        "region": {
+          "Fn::FindInMap": [
             "RegionMapping",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             "locationServiceRegion",
@@ -112,13 +112,13 @@ Object {
       "Type": "Custom::LambdaCallout",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomPlaceIndexLambda79813BB9": Object {
-      "DependsOn": Array [
+    "CustomPlaceIndexLambda79813BB9": {
+      "DependsOn": [
         "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
         "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
       ],
-      "Properties": Object {
-        "Code": Object {
+      "Properties": {
+        "Code": {
           "ZipFile": "const response = require('cfn-response');
 const { LocationClient, CreatePlaceIndexCommand, DeletePlaceIndexCommand, UpdatePlaceIndexCommand } = require('@aws-sdk/client-location');
 exports.handler = async function (event, context) {
@@ -182,8 +182,8 @@ exports.handler = async function (event, context) {
 ",
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
             "Arn",
           ],
@@ -193,45 +193,45 @@ exports.handler = async function (event, context) {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "geo:CreatePlaceIndex",
               "Effect": "Allow",
               "Resource": "*",
             },
-            Object {
-              "Action": Array [
+            {
+              "Action": [
                 "geo:UpdatePlaceIndex",
                 "geo:DeletePlaceIndex",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
+              "Resource": {
+                "Fn::Sub": [
                   "arn:aws:geo:\${region}:\${account}:place-index/\${indexName}",
-                  Object {
-                    "account": Object {
+                  {
+                    "account": {
                       "Ref": "AWS::AccountId",
                     },
-                    "indexName": Object {
-                      "Fn::Join": Array [
+                    "indexName": {
+                      "Fn::Join": [
                         "-",
-                        Array [
-                          Object {
+                        [
+                          {
                             "Ref": "indexName",
                           },
-                          Object {
+                          {
                             "Ref": "env",
                           },
                         ],
                       ],
                     },
-                    "region": Object {
-                      "Fn::FindInMap": Array [
+                    "region": {
+                      "Fn::FindInMap": [
                         "RegionMapping",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         "locationServiceRegion",
@@ -245,35 +245,35 @@ exports.handler = async function (event, context) {
           "Version": "2012-10-17",
         },
         "PolicyName": "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "CustomPlaceIndexLambdaServiceRoleFD2F3C9D": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CustomPlaceIndexLambdaServiceRoleFD2F3C9D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
@@ -284,20 +284,20 @@ exports.handler = async function (event, context) {
       },
       "Type": "AWS::IAM::Role",
     },
-    "PlaceIndexPolicy": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "PlaceIndexPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "geo:SearchPlaceIndexForPosition",
                 "geo:SearchPlaceIndexForText",
                 "geo:SearchPlaceIndexForSuggestions",
                 "geo:GetPlace",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
+              "Resource": {
+                "Fn::GetAtt": [
                   "CustomPlaceIndex",
                   "IndexArn",
                 ],
@@ -306,18 +306,18 @@ exports.handler = async function (event, context) {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
-          "Fn::Join": Array [
+        "PolicyName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
-                "Fn::Join": Array [
+            [
+              {
+                "Fn::Join": [
                   "-",
-                  Array [
-                    Object {
+                  [
+                    {
                       "Ref": "indexName",
                     },
-                    Object {
+                    {
                       "Ref": "env",
                     },
                   ],
@@ -327,18 +327,18 @@ exports.handler = async function (event, context) {
             ],
           ],
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
-          Object {
+          {
             "Ref": "unauthRoleName",
           },
-          Object {
-            "Fn::Join": Array [
+          {
+            "Fn::Join": [
               "-",
-              Array [
-                Object {
+              [
+                {
                   "Ref": "authmockAuthUserPoolId",
                 },
                 "adminGroupGroupRole",
@@ -354,36 +354,36 @@ exports.handler = async function (event, context) {
 `;
 
 exports[`cdk stack creation for place index service creates place index policy for Authorized users only access type 1`] = `
-Object {
-  "Mappings": Object {
-    "RegionMapping": Object {
-      "eu-west-2": Object {
+{
+  "Mappings": {
+    "RegionMapping": {
+      "eu-west-2": {
         "locationServiceRegion": "eu-central-1",
       },
     },
   },
-  "Outputs": Object {
-    "Arn": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+  "Outputs": {
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
           "CustomPlaceIndex",
           "IndexArn",
         ],
       },
     },
-    "Name": Object {
-      "Value": Object {
-        "Fn::GetAtt": Array [
+    "Name": {
+      "Value": {
+        "Fn::GetAtt": [
           "CustomPlaceIndex",
           "IndexName",
         ],
       },
     },
-    "Region": Object {
-      "Value": Object {
-        "Fn::FindInMap": Array [
+    "Region": {
+      "Value": {
+        "Fn::FindInMap": [
           "RegionMapping",
-          Object {
+          {
             "Ref": "AWS::Region",
           },
           "locationServiceRegion",
@@ -391,71 +391,71 @@ Object {
       },
     },
   },
-  "Parameters": Object {
-    "authRoleName": Object {
+  "Parameters": {
+    "authRoleName": {
       "Type": "String",
     },
-    "authmockAuthUserPoolId": Object {
+    "authmockAuthUserPoolId": {
       "Type": "String",
     },
-    "authuserPoolGroupsadminGroupGroupRole": Object {
+    "authuserPoolGroupsadminGroupGroupRole": {
       "Type": "String",
     },
-    "dataProvider": Object {
+    "dataProvider": {
       "Type": "String",
     },
-    "dataSourceIntendedUse": Object {
+    "dataSourceIntendedUse": {
       "Type": "String",
     },
-    "env": Object {
+    "env": {
       "Type": "String",
     },
-    "indexName": Object {
+    "indexName": {
       "Type": "String",
     },
-    "isDefault": Object {
+    "isDefault": {
       "Type": "String",
     },
-    "unauthRoleName": Object {
+    "unauthRoleName": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "CustomPlaceIndex": Object {
+  "Resources": {
+    "CustomPlaceIndex": {
       "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
             "CustomPlaceIndexLambda79813BB9",
             "Arn",
           ],
         },
-        "dataSource": Object {
+        "dataSource": {
           "Ref": "dataProvider",
         },
-        "dataSourceIntendedUse": Object {
+        "dataSourceIntendedUse": {
           "Ref": "dataSourceIntendedUse",
         },
-        "env": Object {
+        "env": {
           "Ref": "env",
         },
-        "indexName": Object {
-          "Fn::Join": Array [
+        "indexName": {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "indexName",
               },
-              Object {
+              {
                 "Ref": "env",
               },
             ],
           ],
         },
-        "region": Object {
-          "Fn::FindInMap": Array [
+        "region": {
+          "Fn::FindInMap": [
             "RegionMapping",
-            Object {
+            {
               "Ref": "AWS::Region",
             },
             "locationServiceRegion",
@@ -465,13 +465,13 @@ Object {
       "Type": "Custom::LambdaCallout",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomPlaceIndexLambda79813BB9": Object {
-      "DependsOn": Array [
+    "CustomPlaceIndexLambda79813BB9": {
+      "DependsOn": [
         "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
         "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
       ],
-      "Properties": Object {
-        "Code": Object {
+      "Properties": {
+        "Code": {
           "ZipFile": "const response = require('cfn-response');
 const { LocationClient, CreatePlaceIndexCommand, DeletePlaceIndexCommand, UpdatePlaceIndexCommand } = require('@aws-sdk/client-location');
 exports.handler = async function (event, context) {
@@ -535,8 +535,8 @@ exports.handler = async function (event, context) {
 ",
         },
         "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
             "Arn",
           ],
@@ -546,45 +546,45 @@ exports.handler = async function (event, context) {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "geo:CreatePlaceIndex",
               "Effect": "Allow",
               "Resource": "*",
             },
-            Object {
-              "Action": Array [
+            {
+              "Action": [
                 "geo:UpdatePlaceIndex",
                 "geo:DeletePlaceIndex",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
+              "Resource": {
+                "Fn::Sub": [
                   "arn:aws:geo:\${region}:\${account}:place-index/\${indexName}",
-                  Object {
-                    "account": Object {
+                  {
+                    "account": {
                       "Ref": "AWS::AccountId",
                     },
-                    "indexName": Object {
-                      "Fn::Join": Array [
+                    "indexName": {
+                      "Fn::Join": [
                         "-",
-                        Array [
-                          Object {
+                        [
+                          {
                             "Ref": "indexName",
                           },
-                          Object {
+                          {
                             "Ref": "env",
                           },
                         ],
                       ],
                     },
-                    "region": Object {
-                      "Fn::FindInMap": Array [
+                    "region": {
+                      "Fn::FindInMap": [
                         "RegionMapping",
-                        Object {
+                        {
                           "Ref": "AWS::Region",
                         },
                         "locationServiceRegion",
@@ -598,35 +598,35 @@ exports.handler = async function (event, context) {
           "Version": "2012-10-17",
         },
         "PolicyName": "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "CustomPlaceIndexLambdaServiceRoleFD2F3C9D": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "CustomPlaceIndexLambdaServiceRoleFD2F3C9D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
               "",
-              Array [
+              [
                 "arn:",
-                Object {
+                {
                   "Ref": "AWS::Partition",
                 },
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
@@ -637,20 +637,20 @@ exports.handler = async function (event, context) {
       },
       "Type": "AWS::IAM::Role",
     },
-    "PlaceIndexPolicy": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
+    "PlaceIndexPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
                 "geo:SearchPlaceIndexForPosition",
                 "geo:SearchPlaceIndexForText",
                 "geo:SearchPlaceIndexForSuggestions",
                 "geo:GetPlace",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
+              "Resource": {
+                "Fn::GetAtt": [
                   "CustomPlaceIndex",
                   "IndexArn",
                 ],
@@ -659,18 +659,18 @@ exports.handler = async function (event, context) {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": Object {
-          "Fn::Join": Array [
+        "PolicyName": {
+          "Fn::Join": [
             "",
-            Array [
-              Object {
-                "Fn::Join": Array [
+            [
+              {
+                "Fn::Join": [
                   "-",
-                  Array [
-                    Object {
+                  [
+                    {
                       "Ref": "indexName",
                     },
-                    Object {
+                    {
                       "Ref": "env",
                     },
                   ],
@@ -680,15 +680,15 @@ exports.handler = async function (event, context) {
             ],
           ],
         },
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "authRoleName",
           },
-          Object {
-            "Fn::Join": Array [
+          {
+            "Fn::Join": [
               "-",
-              Array [
-                Object {
+              [
+                {
                   "Ref": "authmockAuthUserPoolId",
                 },
                 "adminGroupGroupRole",

@@ -73,7 +73,7 @@ const buildResource = async (resource: ResourceMeta): Promise<void> => {
   // generate dynamic types for Amplify resources
   await generateDependentResourcesType();
 
-  const packageManager = getPackageManager(targetDir);
+  const packageManager = await getPackageManager(targetDir);
 
   if (packageManager === null) {
     throw new Error('No package manager found. Please install npm or yarn to compile overrides for this project.');

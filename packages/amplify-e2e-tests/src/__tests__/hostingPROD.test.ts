@@ -68,10 +68,11 @@ describe('amplify add hosting', () => {
       await amplifyPublishWithoutUpdate(projRoot);
     } catch (err) {
       error = err;
+    } finally {
+      resetBuildCommand(projRoot, currentBuildCommand);
     }
     expect(error).toBeDefined();
     expect(error.message).toEqual('Process exited with non zero exit code 1');
-    resetBuildCommand(projRoot, currentBuildCommand);
   });
 });
 

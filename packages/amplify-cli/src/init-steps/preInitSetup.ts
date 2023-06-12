@@ -78,8 +78,8 @@ const cloneRepo = async (repoUrl: string): Promise<void> => {
 /**
  * Install package using the correct package manager if package handling file exists
  */
-const installPackage = (): void => {
-  const packageManager = getPackageManager();
+const installPackage = async (): Promise<void> => {
+  const packageManager = await getPackageManager();
 
   if (packageManager !== null) {
     execSync(`${packageManager.executable} install`, { stdio: 'inherit' });

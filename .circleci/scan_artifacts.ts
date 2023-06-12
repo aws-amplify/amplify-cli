@@ -8,11 +8,7 @@ import { ARTIFACT_STORAGE_PATH_ALLOW_LIST } from '../scripts/artifact-storage-pa
 // This is because of the location of this file in ~/repo/.circleci/scan_artifacts
 const ROOT_FOLDER_ABSOLUTE_PATH = path.normalize(path.join(__dirname, '..', '..'));
 
-export const hasMatchingContentInFolder = (
-  patterns: string[],
-  folder: string,
-  excludeFolder = '{node_modules,.cache,.git,.cache,.git}',
-): boolean => {
+export const hasMatchingContentInFolder = (patterns: string[], folder: string, excludeFolder = '{node_modules,.cache,.git}'): boolean => {
   console.log('Scanning folder:', folder);
   const patternParam = patterns.reduce<string[]>((acc, v) => [...acc, '-e', v], []);
 
@@ -21,10 +17,10 @@ export const hasMatchingContentInFolder = (
     return true;
   } catch (e) {
     // When there is no match exit code is set to 1
-    if (e.exitCode === 1) {
+    if ((e as { exitCode: number })?.exitCode === 1) {
       return false;
     }
-    if (e.message.includes('No such file or directory')) {
+    if ((e as { message: string })?.message?.includes('No such file or directory')) {
       console.log('No artifacts found at:', folder);
       return false;
     }
@@ -34,7 +30,7 @@ export const hasMatchingContentInFolder = (
 
 const main = () => {
   const envVarNameWithCredentialValues = (process.env.ENV_VAR_WITH_SECRETS || '').split(',').map((v) => v.trim());
-  const values = envVarNameWithCredentialValues.map((v) => process.env[v]).filter(Boolean);
+  const values = envVarNameWithCredentialValues.map((v) => process.env[v]).filter((item): item is string => !!item);
   if (values.length) {
     for (let folder of ARTIFACT_STORAGE_PATH_ALLOW_LIST) {
       if (folder.startsWith('~/')) {

@@ -1,13 +1,5 @@
 import { getCLIPath, nspawn as spawn } from '..';
 
-export function generateModels(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['codegen', 'models'], { cwd, stripColors: true }).run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
-  });
-}
+export const generateModels = async (cwd: string): Promise<void> => {
+  await spawn(getCLIPath(), ['codegen', 'models'], { cwd, stripColors: true }).runAsync();
+};
