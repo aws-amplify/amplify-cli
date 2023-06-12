@@ -34,7 +34,7 @@ reports:
     files:
       - '*.xml'
     file-format: 'JUNITXML'
-    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit'
+    base-directory: 'packages/amplify-e2e-tests/reports/junit'
 artifacts:
   files:
     - '$E2E_TEST_COVERAGE_DIR/*'
