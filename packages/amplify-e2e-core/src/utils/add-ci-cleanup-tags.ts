@@ -38,7 +38,7 @@ export const addCICleanupTags = (projectPath: string): void => {
     return;
   }
 
-  let branch = CI === CIRCLECI ? process.env['CIRCLE_BRANCH'] : process.env[`${CODEBUILD}_WEBHOOK_HEAD_REF`];
+  const branch = CI === CIRCLECI ? process.env['CIRCLE_BRANCH'] : process.env[`${CODEBUILD}_WEBHOOK_HEAD_REF`];
 
   const tags = stateManager.getProjectTags(projectPath);
 
@@ -76,6 +76,6 @@ export const addCICleanupTags = (projectPath: string): void => {
   stateManager.setProjectFileTags(projectPath, tags);
 };
 
-export function sanitizeTagValue(value: string = 'N/A'): string {
+export function sanitizeTagValue(value = 'N/A'): string {
   return value.replace(/[^ a-z0-9_.:/=+\-@]/gi, '');
 }
