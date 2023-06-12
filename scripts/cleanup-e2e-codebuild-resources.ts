@@ -1017,7 +1017,7 @@ const getEnvVarCredentials = (): AWSAccountInfo => {
     sessionToken: process.env.AWS_SESSION_TOKEN,
     parent: true,
   };
-}
+};
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
   const cbClient = new CodeBuild(getAWSConfig(account));
