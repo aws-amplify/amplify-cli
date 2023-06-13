@@ -2,11 +2,11 @@ import { ProviderMeta, ProviderCreds, ProviderParameters } from './auth-types';
 
 export const generateAuthNestedStackParameters = (
   hostedUIProviderMeta: ProviderMeta[],
-  hostedUIProviderCreds: ProviderCreds[],
+  hostedUIProviderCreds2: ProviderCreds[],
 ): ProviderParameters => {
   const parameters: ProviderParameters = {};
 
-  hostedUIProviderCreds.forEach((provider: ProviderCreds) => {
+  hostedUIProviderCreds2.forEach((provider: ProviderCreds) => {
     const { ProviderName } = provider;
     const authorizeScopes = hostedUIProviderMeta.find((p) => p.ProviderName === ProviderName)?.authorize_scopes;
 

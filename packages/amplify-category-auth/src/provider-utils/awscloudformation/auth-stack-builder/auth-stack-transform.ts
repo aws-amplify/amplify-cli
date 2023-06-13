@@ -94,16 +94,16 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    */
   private async generateStackResources(props: CognitoStackOptions): Promise<void> {
     // add CFN parameter
-    this.addCfnParameters(props);
+    await this.addCfnParameters(props);
 
     // add CFN condition
-    this.addCfnConditions();
+    await this.addCfnConditions();
     // generate Resources
 
     await this._authTemplateObj.generateCognitoStackResources(props);
 
     // generate Output
-    this.generateCfnOutputs(props);
+    await this.generateCfnOutputs(props);
   }
 
   public applyOverride = async (): Promise<void> => {
@@ -319,7 +319,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    * generate cfn outputs
    */
-  private generateCfnOutputs = (props: CognitoStackOptions): void => {
+  private generateCfnOutputs = async (props: CognitoStackOptions): Promise<void> => {
     const configureSMS = configureSmsOption(props);
 
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') {
@@ -470,7 +470,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    *  adds cfn parameters
    */
-  private addCfnParameters = (props: CognitoStackOptions): void => {
+  private addCfnParameters = async (props: CognitoStackOptions): Promise<void> => {
     this._authTemplateObj.addCfnParameter(
       {
         type: 'String',
@@ -563,7 +563,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     let hostedUIProviderCreds = JSON.parse(props.hostedUIProviderCreds || '[]');
 
     if (migrateResourcesToCfn(props.resourceName)) {
-      hostedUIProviderCreds = exportHostedUIProvidersFromCurrCloudRootStack(props.resourceName, hostedUIProviderCreds);
+      hostedUIProviderCreds = await exportHostedUIProvidersFromCurrCloudRootStack(props.resourceName, hostedUIProviderMeta, hostedUIProviderCreds);
       props.hostedUIProviderCreds = JSON.stringify(hostedUIProviderCreds);
     }
 
@@ -616,7 +616,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    *  adds cfn conditions
    */
-  private addCfnConditions = (): void => {
+  private addCfnConditions = async (): Promise<void> => {
     this._authTemplateObj.addCfnCondition(
       {
         expression: cdk.Fn.conditionEquals(cdk.Fn.ref('env'), 'NONE'),

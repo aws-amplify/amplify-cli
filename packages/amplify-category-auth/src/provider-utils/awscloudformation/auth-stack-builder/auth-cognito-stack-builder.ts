@@ -489,7 +489,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (props.hostedUIProviderMeta) {
-        this.createHostedUIProvidersResources(props);
+        await this.createHostedUIProvidersResources(props);
       }
 
       if (!props.useEnabledMfas && props.mfaConfiguration !== 'OFF') {
@@ -1209,19 +1209,21 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
   };
 
-  createHostedUIProvidersResources = (props: CognitoStackOptions) => {
+  createHostedUIProvidersResources = async (props: CognitoStackOptions) => {
     if (!props.hostedUIProviderMeta) {
       return;
     }
 
     const migrateResources = migrateResourcesToCfn(props.resourceName);
+    const meta = JSON.parse(props.hostedUIProviderMeta || '[]');
     let creds = JSON.parse(props.hostedUIProviderCreds || '[]');
 
     if (migrateResources) {
       this.deleteExistingHostedUIProviderCustomResource();
-      creds = exportHostedUIProvidersFromCurrCloudRootStack(props.resourceName, creds);
+      creds = await exportHostedUIProvidersFromCurrCloudRootStack(props.resourceName, meta, creds);
       props.hostedUIProviderCreds = JSON.stringify(creds);
     }
+
     if (props.hostedUIProviderMeta && props.hostedUIProviderCreds) {
       JSON.parse(props.hostedUIProviderMeta).forEach((provider: ProviderMeta) => {
         const providerCreds: ProviderCreds = creds.find(({ ProviderName }: ProviderCreds) => ProviderName === provider.ProviderName);

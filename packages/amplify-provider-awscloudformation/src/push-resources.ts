@@ -1087,9 +1087,13 @@ export const formNestedStack = async (
   let categories = Object.keys(amplifyMeta);
 
   categories = categories.filter((category) => category !== 'providers');
-  categories.forEach((category) => {
+
+  for (const catIdx in categories) {
+    const category = categories[catIdx];
     const resources = Object.keys(amplifyMeta[category]);
-    resources.forEach((resource) => {
+
+    for (const resourceIdx in resources) {
+      const resource = resources[resourceIdx];
       const resourceDetails = amplifyMeta[category][resource];
 
       if (category === 'auth' && resource !== 'userPoolGroups') {
@@ -1217,7 +1221,7 @@ export const formNestedStack = async (
             let hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
 
             if (migrateAuthIdpsToCfn) {
-              hostedUIProviderCreds = exportHostedUIProvidersFromCurrCloudRootStack(parameters.resourceName, hostedUIProviderCreds);
+              hostedUIProviderCreds = await exportHostedUIProvidersFromCurrCloudRootStack(parameters.resourceName, hostedUIProviderMeta, hostedUIProviderCreds);
             }
 
             Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
@@ -1236,8 +1240,8 @@ export const formNestedStack = async (
           };
         }
       }
-    });
-  });
+    }
+  }
 
   if (authResourceName) {
     const importedAuth = _.get(amplifyMeta, [AmplifyCategories.AUTH, authResourceName], undefined);
