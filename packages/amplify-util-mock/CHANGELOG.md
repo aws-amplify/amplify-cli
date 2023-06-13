@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.2.3...@aws-amplify/amplify-util-mock@5.3.0) (2023-06-13)
+
+
+### Bug Fixes
+
+* lint warnings ([#12738](https://github.com/aws-amplify/amplify-cli/issues/12738)) ([99026e1](https://github.com/aws-amplify/amplify-cli/commit/99026e1a0282bd621eb579fdca8ec3653e8daff2))
+
+
+### Features
+
+* display error message instead of object ([#12636](https://github.com/aws-amplify/amplify-cli/issues/12636)) ([811e8fc](https://github.com/aws-amplify/amplify-cli/commit/811e8fcd48f15b37401643b9b13f628acb4708bd))
+
+
+
+
+
 ## [5.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.2.1...@aws-amplify/amplify-util-mock@5.2.3) (2023-05-25)
 
 
