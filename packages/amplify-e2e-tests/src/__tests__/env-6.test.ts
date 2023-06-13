@@ -34,7 +34,6 @@ const validateSecretWithLambda = async (projRoot: string, funcName: string, envN
 describe('environment commands with functions secrets handling', () => {
   let projRoot: string;
   const enva = 'dev';
-  const envb = 'test';
   const funcName = `secretsTest${generateRandomShortId()}`;
   const funcName1 = `secretsTest${generateRandomShortId()}`;
   beforeAll(async () => {
