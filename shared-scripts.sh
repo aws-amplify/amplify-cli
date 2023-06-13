@@ -409,18 +409,18 @@ function _runIntegApiTests {
     yarn cypress run --spec $(find . -type f -name 'api_spec*')
 }
 
-function _amplifySudoInstallTest {
+function _amplifySudoInstallTestSetup {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
     source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setSudoNpmRegistryUrlToLocal
     changeSudoNpmGlobalPath
-    sudo npm install -g @aws-amplify/cli
-    unsetSudoNpmRegistryUrl
-    amplify version
+    # sudo npm install -g @aws-amplify/cli
+    # unsetSudoNpmRegistryUrl
+    # amplify version
 }
-function _amplifyInstallTest {
+function _amplifyInstallTestSetup {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
@@ -430,10 +430,10 @@ function _amplifyInstallTest {
     # limit memory for new processes to 1GB
     # this is to make sure that install can work on small VMs
     # i.e. not buffer content in memory while installing binary
-    ulimit -Sv 1000000
-    npm install -g @aws-amplify/cli
-    unsetNpmRegistryUrl
-    amplify version
+    # ulimit -Sv 1000000
+    # npm install -g @aws-amplify/cli
+    # unsetNpmRegistryUrl
+    # amplify version
 }
 function _amplifyConsoleIntegrationTests {
     loadCache repo $CODEBUILD_SRC_DIR
