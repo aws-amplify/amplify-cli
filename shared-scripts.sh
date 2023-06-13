@@ -505,10 +505,15 @@ function _integrationTest {
 
 function _uploadReportsToS3 {
     source_version=$1
+    echo "source_version $source_version"
     build_identifier=$2
+    echo "build_identifier $build_identifier"
     test_package=$3
+    echo "test_package $test_package"
     reports_dir=packages/$test_package/reports/junit
+    echo "reports_dir $reports_dir"
     cd $reports_dir
+    echo "here 516"
     for filename in $(ls); do aws s3 cp "$filename" "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$build_identifier-$filename"; done
 }
 
