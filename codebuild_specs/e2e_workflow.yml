@@ -140,6 +140,12 @@ batch:
       debug-session: true
       depend-on:
         - build_linux
+    - identifier: amplify_sudo_install_test
+      buildspec: codebuild_specs/amplify_sudo_install_test.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - upb
     - identifier: aggregate_e2e_reports
       buildspec: codebuild_specs/aggregate_e2e_reports.yml
       env:

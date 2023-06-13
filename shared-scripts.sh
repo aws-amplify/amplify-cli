@@ -266,6 +266,7 @@ function _uploadCoverageLinux {
         ./codecov -t ${CODECOV_TOKEN} 
     fi
 }
+
 # END COVERAGE FUNCTIONS
 function _loadE2ECache {
     loadCache repo $CODEBUILD_SRC_DIR
@@ -390,6 +391,17 @@ function _runIntegApiTests {
     yarn cypress run --spec $(find . -type f -name 'api_spec*')
 }
 
+function _amplifySudoInstallTest {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setSudoNpmRegistryUrlToLocal
+    changeSudoNpmGlobalPath
+    sudo npm install -g @aws-amplify/cli
+    unsetSudoNpmRegistryUrl
+    amplify version
+}
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
