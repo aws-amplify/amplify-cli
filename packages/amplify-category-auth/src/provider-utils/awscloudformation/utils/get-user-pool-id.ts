@@ -5,4 +5,4 @@ export const getUserPoolId = (resourceName: string): string | undefined => {
   const resource = (amplifyMeta?.auth || {})[resourceName];
 
   return resource?.output?.UserPoolId;
-}
+};

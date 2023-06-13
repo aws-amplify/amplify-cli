@@ -563,7 +563,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     let hostedUIProviderCreds = JSON.parse(props.hostedUIProviderCreds || '[]');
 
     if (migrateResourcesToCfn(props.resourceName)) {
-      hostedUIProviderCreds = await exportHostedUIProvidersFromCurrCloudRootStack(props.resourceName, hostedUIProviderMeta, hostedUIProviderCreds);
+      hostedUIProviderCreds = await exportHostedUIProvidersFromCurrCloudRootStack(
+        props.resourceName,
+        hostedUIProviderMeta,
+        hostedUIProviderCreds,
+      );
       props.hostedUIProviderCreds = JSON.stringify(hostedUIProviderCreds);
     }
 

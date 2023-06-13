@@ -1221,7 +1221,11 @@ export const formNestedStack = async (
             let hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
 
             if (migrateAuthIdpsToCfn) {
-              hostedUIProviderCreds = await exportHostedUIProvidersFromCurrCloudRootStack(parameters.resourceName, hostedUIProviderMeta, hostedUIProviderCreds);
+              hostedUIProviderCreds = await exportHostedUIProvidersFromCurrCloudRootStack(
+                parameters.resourceName,
+                hostedUIProviderMeta,
+                hostedUIProviderCreds,
+              );
             }
 
             Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
