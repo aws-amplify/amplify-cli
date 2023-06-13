@@ -297,6 +297,24 @@ function _unassumeTestAccountCredentials {
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
 }
+function _runMigrationMultiEnvLayersTest {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationNonMultiEnvLayersTest {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
 function _runMigrationV8Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
