@@ -42,6 +42,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-connection-1.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
 ];
+const DISABLE_COVERAGE = ['src/__tests__/datastore-modelgen.test.ts', 'src/__tests__/amplify-app.test.ts'];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
@@ -133,6 +134,7 @@ type CandidateJob = {
   executor: string;
   tests: string[];
   useParentAccount: boolean;
+  disableCoverage: boolean;
 };
 const createRandomJob = (os: OS_TYPE): CandidateJob => {
   const region = regions[Math.floor(Math.random() * regions.length)];
@@ -142,6 +144,7 @@ const createRandomJob = (os: OS_TYPE): CandidateJob => {
     executor: os === 'l' ? 'l_large' : 'w_medium',
     tests: [],
     useParentAccount: false,
+    disableCoverage: false,
   };
 };
 const splitTestsV3 = (
@@ -182,8 +185,9 @@ const splitTestsV3 = (
       }
       const FORCE_REGION = FORCE_REGION_MAP.get(test);
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
+      const NO_COVERAGE = DISABLE_COVERAGE.find((nocov) => test === nocov);
 
-      if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
+      if (isMigration || RUN_SOLO.find((solo) => test === solo) || NO_COVERAGE) {
         const newSoloJob = createRandomJob(os);
         newSoloJob.tests.push(test);
         if (FORCE_REGION) {
@@ -191,6 +195,9 @@ const splitTestsV3 = (
         }
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
+        }
+        if (NO_COVERAGE) {
+          newSoloJob.disableCoverage = true;
         }
         soloJobs.push(newSoloJob);
         continue;
@@ -239,6 +246,9 @@ const splitTestsV3 = (
       if (j.useParentAccount) {
         tmp.env.variables.USE_PARENT_ACCOUNT = 1;
       }
+      if (j.disableCoverage) {
+        tmp.env.variables.DISABLE_COVERAGE = 1;
+      }
       result.push(tmp);
     }
   });
@@ -256,6 +266,9 @@ const splitTestsV3 = (
       tmp.env.variables.CLI_REGION = j.region;
       tmp.env.variables.USE_PARENT_ACCOUNT = j.useParentAccount;
       result.push(tmp);
+      if (j.disableCoverage) {
+        tmp.env.variables.DISABLE_COVERAGE = 1;
+      }
     }
   });
   return result;

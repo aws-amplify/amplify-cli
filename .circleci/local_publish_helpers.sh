@@ -296,9 +296,17 @@ function runE2eTestCb {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        if [[ ! -z "$DISABLE_COVERAGE" ]]; then
+            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        else
+            NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        fi
     else
-        NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        if [[ ! -z "$DISABLE_COVERAGE" ]]; then
+            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        else
+            NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        fi
     fi
 }
 
