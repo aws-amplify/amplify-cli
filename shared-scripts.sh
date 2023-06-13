@@ -402,6 +402,36 @@ function _amplifySudoInstallTest {
     unsetSudoNpmRegistryUrl
     amplify version
 }
+function _amplifyInstallTest {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    # limit memory for new processes to 1GB
+    # this is to make sure that install can work on small VMs
+    # i.e. not buffer content in memory while installing binary
+    ulimit -Sv 1000000
+    npm install -g @aws-amplify/cli
+    unsetNpmRegistryUrl
+    amplify version
+}
+function _amplifyConsoleIntegrationTests {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    npm install -g @aws-amplify/cli
+    npm install -g amplify-app
+    unsetNpmRegistryUrl
+    export PATH=$CODEBUILD_SRC_DIR/../.npm-global/bin:$PATH
+    amplify -v
+    cd packages/amplify-console-integration-tests
+    _loadTestAccountCredentials
+    retry yarn console-integration --no-cache --maxWorkers=4 --forceExit
+}
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
