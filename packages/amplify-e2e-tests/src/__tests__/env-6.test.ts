@@ -1,8 +1,6 @@
 import {
-  addAuthWithDefaultSocial,
   addFunction,
   amplifyPushAuth,
-  checkIfBucketExists,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -13,13 +11,12 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   invokeFunction,
-  nonInteractiveInitAttach,
   nonInteractiveInitWithForcePushAttach,
   overrideFunctionCodeNode,
   putSSMParameter,
   updateFunction,
 } from '@aws-amplify/amplify-e2e-core';
-import { addEnvironmentYes, listEnvironment, checkoutEnvironment } from '../environment/env';
+import { addEnvironmentYes, checkoutEnvironment, listEnvironment } from '../environment/env';
 
 const validateSecretWithLambda = async (projRoot: string, funcName: string, envName: string): Promise<void> => {
   const lambdaEvent = {
