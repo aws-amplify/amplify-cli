@@ -18,7 +18,7 @@ exports.handler = (event, context) => {
     .catch((err) => {
       console.log(err);
 
-      if (err.name === 'NotFoundException' || err.message === 'No such domain or user pool exists.') {
+      if (err.name === 'NotFoundException' || err.name === 'InvalidParameterException') {
         return response.send(event, context, response.SUCCESS);
       }
 

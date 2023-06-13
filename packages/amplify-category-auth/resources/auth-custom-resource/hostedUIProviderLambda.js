@@ -18,7 +18,7 @@ exports.handler = (event, context) => {
       await deleteIdentityProvider(ProviderName).catch((error) => {
         if (!error?.code?.toString()?.match(/NotFoundException/)) {
           response.send(event, context, response.FAILED, error);
-          return error;
+          throw error;
         } else {
           console.log('Not Found', ProviderName);
         }
