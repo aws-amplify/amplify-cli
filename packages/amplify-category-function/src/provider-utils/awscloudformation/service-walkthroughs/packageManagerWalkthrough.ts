@@ -31,6 +31,6 @@ const getBuildCommand = async (packageManager: PackageManagerType | 'custom'): P
     });
   } else {
     const packageManagerInstance = getPackageManagerByType(packageManager);
-    return [packageManagerInstance.executable, packageManagerInstance.getInstallArgs(BuildType.PROD)].join(' ');
+    return [packageManagerInstance.executable].concat(packageManagerInstance.getInstallArgs(BuildType.PROD)).join(' ');
   }
 };
