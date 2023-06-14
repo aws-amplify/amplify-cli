@@ -14,5 +14,6 @@ phases:
       - bash ./codebuild_specs/scripts-windows/save-build-windows.sh
 
 artifacts:
+  enable-symlinks: yes
   files:
     - 'shared-scripts.sh'

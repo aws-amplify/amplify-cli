@@ -7,5 +7,6 @@ phases:
       - source ./shared-scripts.sh && _buildLinux
 
 artifacts:
+  enable-symlinks: yes
   files:
     - 'shared-scripts.sh'
