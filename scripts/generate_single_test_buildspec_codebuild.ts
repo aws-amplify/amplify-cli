@@ -1,6 +1,5 @@
 import { loadConfigBase, saveConfig } from './split-e2e-tests-codebuild';
 import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
-import { existsSync, copyFileSync, unlinkSync } from 'fs';
 
 // usage:
 // yarn split-e2e-tests-codebuild-single PATH_TO_TEST OS[l or w] REGION
@@ -10,17 +9,6 @@ import { existsSync, copyFileSync, unlinkSync } from 'fs';
 // to restore the original buildspec, run the command again
 
 const main = () => {
-  const generatedFilename = 'codebuild_specs/e2e_workflow_generated.yml';
-  if (existsSync(`${generatedFilename}.temp`)) {
-    unlinkSync(generatedFilename);
-    copyFileSync(`${generatedFilename}.temp`, generatedFilename);
-    unlinkSync(`${generatedFilename}.temp`);
-    console.log('Original buildspec restored.');
-    return 0;
-  } else {
-    copyFileSync(generatedFilename, `${generatedFilename}.temp`);
-  }
-
   let filePath: string = process.argv[2];
   const potentialPathPrefix = 'packages/amplify-e2e-tests/';
   if (filePath.startsWith(potentialPathPrefix)) {
