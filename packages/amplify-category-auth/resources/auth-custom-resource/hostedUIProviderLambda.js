@@ -6,7 +6,7 @@ const identity = new aws.CognitoIdentityServiceProvider();
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
   const ignoredPromise = handleEvent(event, context);
-}
+};
 
 async function handleEvent(event, context) {
   try {
