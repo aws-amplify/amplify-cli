@@ -1,28 +1,20 @@
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import {
   FunctionParameters,
-  FunctionTemplateCondition,
   FunctionRuntimeCondition,
-  FunctionRuntimeParameters,
-  FunctionTemplateParameters,
   FunctionRuntimeLifecycleManager,
+  FunctionRuntimeParameters,
+  FunctionTemplateCondition,
+  FunctionTemplateParameters,
   RuntimeContributionRequest,
   TemplateContributionRequest,
 } from '@aws-amplify/amplify-function-plugin-interface';
-import { ServiceName } from './constants';
-import _ from 'lodash';
-import { LayerParameters } from './layerParams';
-import {
-  $TSAny,
-  $TSContext,
-  getPackageManagerByType,
-  packageManagers,
-  PackageManagerType,
-  toPackageManagerInstallArgs,
-} from '@aws-amplify/amplify-cli-core';
-import { categoryName } from '../../../constants';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
-import { minLength } from '@aws-amplify/amplify-prompts';
+import _ from 'lodash';
+import { categoryName } from '../../../constants';
+import { ServiceName } from './constants';
+import { LayerParameters } from './layerParams';
 
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
@@ -93,10 +85,6 @@ export async function runtimeWalkthrough(
   const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
   const plugins = [];
   for (const selection of selections) {
-    if (selectionOptions.service === ServiceName.LambdaFunction) {
-      await packageManagerWalkthrough(selection);
-    }
-
     const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
     const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
     if (!depCheck.hasRequiredDependencies) {
@@ -106,28 +94,6 @@ export async function runtimeWalkthrough(
   }
   return _functionRuntimeWalkthroughHelper(params, plugins, selections);
 }
-
-const packageManagerWalkthrough = async (selection: PluginSelection): Promise<void> => {
-  if (selection.value === 'nodejs') {
-    const packageManagerOptions = Object.values(packageManagers).map((pm) => ({
-      name: pm.displayValue,
-      value: pm.packageManager as string,
-    }));
-
-    packageManagerOptions.push({
-      name: 'Custom Build Command or Script Path',
-      value: 'custom',
-    });
-
-    const packageManager = (await prompter.pick('Choose the package manager that you want to use:', packageManagerOptions)) as
-      | PackageManagerType
-      | 'custom';
-
-    selection.scripts = {
-      build: await getBuildCommand(packageManager),
-    };
-  }
-};
 
 async function _functionRuntimeWalkthroughHelper(
   params: Partial<FunctionParameters> | Partial<LayerParameters>,
@@ -310,14 +276,3 @@ function defaultSelection(selectionOptions: PluginSelectionOptions<FunctionRunti
     }
   }
 }
-
-const getBuildCommand = async (packageManager: PackageManagerType | 'custom'): Promise<string> => {
-  if (packageManager === 'custom') {
-    return await prompter.input('Enter command or script path to build your function:', {
-      validate: minLength(1),
-    });
-  } else {
-    const packageManagerInstance = getPackageManagerByType(packageManager);
-    return [packageManagerInstance.executable, ...(await toPackageManagerInstallArgs(packageManagerInstance))].join(' ');
-  }
-};

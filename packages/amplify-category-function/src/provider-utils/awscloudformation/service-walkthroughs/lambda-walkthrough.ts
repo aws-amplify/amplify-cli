@@ -39,6 +39,7 @@ import { askExecRolePermissionsQuestions } from './execPermissionsWalkthrough';
 import { generalQuestionsWalkthrough, settingsUpdateSelection } from './generalQuestionsWalkthrough';
 import { scheduleWalkthrough } from './scheduleWalkthrough';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { packageManagerWalkthrough } from './packageManagerWalkthrough';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -111,6 +112,9 @@ export const createWalkthrough = async (
         Object.keys(getStoredEnvironmentVariables(templateParameters.functionName)),
       ),
     );
+
+    // ask scheduling Lambda questions and merge in results
+    templateParameters = merge(templateParameters, await packageManagerWalkthrough(templateParameters.runtime.value));
   }
 
   return templateParameters;

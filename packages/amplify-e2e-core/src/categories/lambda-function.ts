@@ -117,7 +117,7 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
   }
   if (settings.secretsConfig) {
     if (settings.secretsConfig.operation === 'add') {
-      throw new Error('Secres update walkthrough only supports update and delete');
+      throw new Error('Secrets update walkthrough only supports update and delete');
     }
     // this walkthrough assumes 1 existing secret is configured for the function
     const actions = ['Add a secret', 'Update a secret', 'Remove secrets', "I'm done"];
@@ -181,7 +181,6 @@ const coreFunction = (
         .sendLine(settings.name || '');
 
       selectRuntime(chain, runtime);
-      selectPackageManager(chain, runtime, settings.packageManager);
       const templateChoices = getTemplateChoices(runtime);
       if (templateChoices.length > 1) {
         selectTemplate(chain, settings.functionTemplate, runtime);
@@ -211,7 +210,8 @@ const coreFunction = (
         settings.schedulePermissions ||
         settings.layerOptions ||
         settings.environmentVariables ||
-        settings.secretsConfig
+        settings.secretsConfig ||
+        settings.packageManager
       ) {
         chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
@@ -260,6 +260,20 @@ const coreFunction = (
           }
           chain.sendConfirmYes();
           addSecretWalkthrough(chain, settings.secretsConfig);
+        }
+
+        if (runtime === 'nodejs') {
+          chain.wait('Choose the package manager that you want to use:');
+          if (settings.packageManager?.name) {
+            chain.sendLine(settings.packageManager.name);
+          } else {
+            chain.sendCarriageReturn(); // npm
+          }
+
+          if (settings.packageManager?.name.toLowerCase().includes('custom')) {
+            chain.wait('Enter command or script path to build your function:');
+            chain.sendLine(settings.packageManager.command);
+          }
         }
       } else {
         chain.sendConfirmNo();
@@ -336,26 +350,6 @@ export const functionBuild = async (cwd: string): Promise<void> => {
     .sendYes()
     .sendEof()
     .runAsync();
-};
-
-export const selectPackageManager = (
-  chain: ExecutionContext,
-  runtime: FunctionRuntimes,
-  packageManager: { name: string; command?: string },
-) => {
-  if (runtime === 'nodejs') {
-    chain.wait('Choose the package manager that you want to use:');
-    if (packageManager?.name) {
-      chain.sendLine(packageManager.name);
-    } else {
-      chain.sendCarriageReturn(); // npm
-    }
-
-    if (packageManager?.name.toLowerCase().includes('custom')) {
-      chain.wait('Enter command or script path to build your function:');
-      chain.sendLine(packageManager.command);
-    }
-  }
 };
 
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {

@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as which from 'which';
+import which from 'which';
 import { coerce, SemVer } from 'semver';
 import { execWithOutputAsString } from './shell-utils';
 import { AmplifyError } from '../errors/amplify-error';
@@ -9,41 +9,77 @@ import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 /**
  * package managers type
  */
-export type PackageManagerType = 'yarn' | 'npm' | 'pnpm';
+export type PackageManagerType = 'yarn' | 'npm' | 'pnpm' | 'custom';
 const packageJson = 'package.json';
 
 /**
  * package Manager type
  */
-export type PackageManager = {
+export interface PackageManager {
   packageManager: PackageManagerType;
   lockFile: string;
   executable: string;
+  displayValue: string;
   version?: SemVer;
-  displayValue?: string;
-};
+  getRunScriptArgs: (scriptName: string) => string[];
+  getInstallArgs: (buildType: BuildType) => string[];
+}
 
 const isWindows = process.platform === 'win32';
 
+class NpmPackageManager implements PackageManager {
+  packageManager: PackageManagerType = 'npm';
+  lockFile = 'package-lock.json';
+  executable = isWindows ? 'npm.cmd' : 'npm';
+  displayValue = 'NPM';
+  getRunScriptArgs = (scriptName: string) => ['run-script', scriptName];
+  getInstallArgs = (buildType = BuildType.PROD) => ['install', '--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
+}
+
+class YarnPackageManager implements PackageManager {
+  packageManager: PackageManagerType = 'yarn';
+  lockFile = 'yarn.lock';
+  executable = isWindows ? 'yarn.cmd' : 'yarn';
+  displayValue = 'Yarn';
+  version?: SemVer;
+  getRunScriptArgs = (scriptName: string) => [scriptName];
+  getInstallArgs = (buildType = BuildType.PROD) => {
+    const useYarnModern = this.version?.major && this.version?.major > 1;
+    return useYarnModern ? ['install'] : ['--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
+  };
+}
+
+class PnpmPackageManager implements PackageManager {
+  packageManager: PackageManagerType = 'pnpm';
+  lockFile = 'pnpm-lock.yaml';
+  executable = isWindows ? 'pnpm.cmd' : 'pnpm';
+  displayValue = 'PNPM';
+  getRunScriptArgs = (scriptName: string) => [scriptName];
+  getInstallArgs = () => ['install'];
+}
+
+class CustomPackageManager implements PackageManager {
+  packageManager: PackageManagerType = 'custom';
+  displayValue = 'Custom Build Command or Script Path';
+  lockFile = '';
+  executable = '';
+  getRunScriptArgs = () => {
+    throw new AmplifyError('PackagingLambdaFunctionError', {
+      message: `Packaging lambda function failed. Unsupported package manager`,
+    });
+  };
+  getInstallArgs = () => {
+    throw new AmplifyError('PackagingLambdaFunctionError', {
+      message: `Packaging lambda function failed. Unsupported package manager`,
+    });
+  };
+}
+
 export const packageManagers: Record<string, PackageManager> = {
-  npm: {
-    packageManager: 'npm',
-    lockFile: 'package-lock.json',
-    executable: isWindows ? 'npm.cmd' : 'npm',
-    displayValue: 'NPM',
-  },
-  yarn: {
-    packageManager: 'yarn',
-    lockFile: 'yarn.lock',
-    executable: isWindows ? 'yarn.cmd' : 'yarn',
-    displayValue: 'Yarn',
-  },
-  pnpm: {
-    packageManager: 'pnpm',
-    lockFile: 'pnpm-lock.yaml',
-    executable: isWindows ? 'pnpm.cmd' : 'pnpm',
-    displayValue: 'PNPM',
-  },
+  npm: new NpmPackageManager(),
+  yarn: new YarnPackageManager(),
+  pnpm: new PnpmPackageManager(),
+  custom: new CustomPackageManager(),
 };
 
 export const getPackageManagerByType = (packageManagerType: PackageManagerType): PackageManager => {
@@ -100,44 +136,8 @@ export const getPackageManager = async (rootPath?: string): Promise<PackageManag
   return packageManagers.npm;
 };
 
-export const toPackageManagerRunScriptArgs = async (packageManager: PackageManager, scriptName: string): Promise<string[]> => {
-  switch (packageManager.packageManager) {
-    case 'yarn':
-    case 'pnpm':
-      return [scriptName];
-    case 'npm':
-      return ['run-script', scriptName];
-    default: {
-      throw new AmplifyError('PackagingLambdaFunctionError', {
-        message: `Packaging lambda function failed. Unsupported package manager ${packageManager.packageManager}`,
-      });
-    }
-  }
-};
-
-export const toPackageManagerInstallArgs = async (packageManager: PackageManager, buildType = BuildType.PROD): Promise<string[]> => {
-  switch (packageManager.packageManager) {
-    case 'yarn': {
-      const useYarnModern = packageManager.version?.major && packageManager.version?.major > 1;
-      return useYarnModern ? ['install'] : ['--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
-    }
-    case 'npm': {
-      return ['install', '--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
-    }
-    case 'pnpm': {
-      return ['install'];
-    }
-    default: {
-      throw new AmplifyError('PackagingLambdaFunctionError', {
-        message: `Packaging lambda function failed. Unsupported package manager ${packageManager.packageManager}`,
-      });
-    }
-  }
-};
-
 const getYarnPackageManager = async (rootPath: string | undefined): Promise<PackageManager | null> => {
-  return {
-    ...packageManagers.yarn,
-    version: coerce(await execWithOutputAsString(`${packageManagers.yarn.executable} --version`, { cwd: rootPath })) ?? undefined,
-  };
+  packageManagers.yarn.version =
+    coerce(await execWithOutputAsString(`${packageManagers.yarn.executable} --version`, { cwd: rootPath })) ?? undefined;
+  return packageManagers.yarn;
 };

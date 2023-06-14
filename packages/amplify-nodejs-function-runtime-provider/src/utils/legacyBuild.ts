@@ -1,13 +1,5 @@
 import { execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
-import {
-  toPackageManagerInstallArgs,
-  toPackageManagerRunScriptArgs,
-  $TSObject,
-  getPackageManager,
-  JSONUtilities,
-  AmplifyError,
-  PackageManager,
-} from '@aws-amplify/amplify-cli-core';
+import { $TSObject, getPackageManager, JSONUtilities, AmplifyError, PackageManager } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -61,7 +53,7 @@ const runPackageManagerInstall = async (resourceDir: string, buildType: BuildTyp
     return;
   }
 
-  const args = await toPackageManagerInstallArgs(packageManager, buildType);
+  const args = await packageManager.getInstallArgs(buildType);
   await runPackageManager(packageManager, args, resourceDir);
 };
 
@@ -73,7 +65,7 @@ const runPackageManagerScript = async (resourceDir: string, scriptName: string):
     return;
   }
 
-  const args = await toPackageManagerRunScriptArgs(packageManager, scriptName);
+  const args = await packageManager.getRunScriptArgs(scriptName);
   await runPackageManager(packageManager, args, resourceDir);
 };
 

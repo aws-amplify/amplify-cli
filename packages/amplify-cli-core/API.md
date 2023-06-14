@@ -254,7 +254,8 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
 // @public (undocumented)
 export class AmplifyNodePkgDetector {
     // (undocumented)
-    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [
+    ];
     // (undocumented)
     static getInstance: (amplifyDetectorProps: AmplifyNodePkgDetectorProps) => Promise<AmplifyNodePkgDetector>;
 }
@@ -1482,19 +1483,28 @@ export { open_2 as open }
 export const overriddenCategories: string[];
 
 // @public (undocumented)
-export type PackageManager = {
-    packageManager: PackageManagerType;
-    lockFile: string;
+export interface PackageManager {
+    // (undocumented)
+    displayValue: string;
+    // (undocumented)
     executable: string;
+    // (undocumented)
+    getInstallArgs: (buildType: BuildType) => string[];
+    // (undocumented)
+    getRunScriptArgs: (scriptName: string) => string[];
+    // (undocumented)
+    lockFile: string;
+    // (undocumented)
+    packageManager: PackageManagerType;
+    // (undocumented)
     version?: SemVer;
-    displayValue?: string;
-};
+}
 
 // @public (undocumented)
 export const packageManagers: Record<string, PackageManager>;
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm' | 'pnpm';
+export type PackageManagerType = 'yarn' | 'npm' | 'pnpm' | 'custom';
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
@@ -2138,12 +2148,6 @@ export interface Template {
 
 // @public (undocumented)
 export type TimedCodePath = ManuallyTimedCodePath | UntilExitTimedCodePath | FromStartupTimedCodePaths;
-
-// @public (undocumented)
-export const toPackageManagerInstallArgs: (packageManager: PackageManager, buildType?: BuildType) => Promise<string[]>;
-
-// @public (undocumented)
-export const toPackageManagerRunScriptArgs: (packageManager: PackageManager, scriptName: string) => Promise<string[]>;
 
 // @public (undocumented)
 export type TypeDef = {

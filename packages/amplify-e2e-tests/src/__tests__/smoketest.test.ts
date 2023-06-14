@@ -162,8 +162,6 @@ export class Amplify {
       .sendCarriageReturn()
       .wait('Choose the runtime that you want to use:')
       .sendCarriageReturn()
-      .wait('Choose the package manager that you want to use:')
-      .sendCarriageReturn()
       .wait('Choose the function template that you want to use:')
       .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')

@@ -122,7 +122,7 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
   }
   if (settings.secretsConfig) {
     if (settings.secretsConfig.operation === 'add') {
-      throw new Error('Secres update walkthrough only supports update and delete');
+      throw new Error('Secrets update walkthrough only supports update and delete');
     }
     // this walkthrough assumes 1 existing secret is configured for the function
     const actions = ['Add a secret', 'Update a secret', 'Remove secrets', "I'm done"];
