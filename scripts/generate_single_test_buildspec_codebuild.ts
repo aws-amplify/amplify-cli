@@ -1,5 +1,6 @@
 import { loadConfigBase, saveConfig } from './split-e2e-tests-codebuild';
 import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
+import { existsSync, copyFileSync, unlinkSync } from 'fs';
 
 // usage:
 // yarn split-e2e-tests-codebuild-single PATH_TO_TEST OS[l or w] REGION
@@ -7,6 +8,16 @@ import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
 // yarn split-e2e-tests-codebuild-single src/__tests__/auth_2d.ts w us-east-2
 
 const main = () => {
+  const generatedFilename = 'codebuild_specs/e2e_workflow_generated.yml';
+  if (existsSync(`${generatedFilename}.temp`)) {
+    unlinkSync(generatedFilename);
+    copyFileSync(`${generatedFilename}.temp`, generatedFilename);
+    unlinkSync(`${generatedFilename}.temp`);
+    return 0;
+  } else {
+    copyFileSync(generatedFilename, `${generatedFilename}.temp`);
+  }
+
   let filePath: string = process.argv[2];
   const potentialPathPrefix = 'packages/amplify-e2e-tests/';
   if (filePath.startsWith(potentialPathPrefix)) {
