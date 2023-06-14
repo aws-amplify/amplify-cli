@@ -117,6 +117,7 @@ describe('amplify pull with uibuilder', () => {
       // Give react server time to start
       await new Promise((resolve) => setTimeout(resolve, 60000));
       res = execa.sync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
+      expect(res.exitCode).toBe(0);
     } finally {
       // kill the react server process
       spawnSync('kill', [`${npmStartProcess.pid}`], { encoding: 'utf8' });
@@ -124,7 +125,6 @@ describe('amplify pull with uibuilder', () => {
       // Seriously, kill the react server process
       // react-scripts somehow resurrects the process automatically after the first kill.
       spawnSync('pkill', ['-f', 'react'], { encoding: 'utf8' });
-      expect(res.exitCode).toBe(0);
     }
   });
 });
