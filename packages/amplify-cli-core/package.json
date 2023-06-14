@@ -35,7 +35,7 @@
     "ajv": "^6.12.6",
     "aws-cdk-lib": "~2.68.0",
     "chalk": "^4.1.1",
-    "ci-info": "^2.0.0",
+    "ci-info": "^3.8.0",
     "cli-table3": "^0.6.0",
     "cloudform-types": "^4.2.0",
     "colors": "1.4.0",
