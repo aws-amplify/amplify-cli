@@ -26,7 +26,6 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
     getResourceCfnTemplatePath: jest.fn().mockReturnValue('cfn-template-path.json'),
-    findProjectRoot: jest.fn().mockReturnValue(''),
     getCurrentCfnTemplatePathFromBuild: jest.fn().mockImplementation((categoryName, resourceName) => {
       return path.join(
         __dirname,
@@ -37,8 +36,11 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
         `${resourceName}-cloudformation-template.json`,
       );
     }),
-    getCurrentCloudRootStackCfnTemplatePath: jest.fn().mockReturnValue('root-stack-template.json'),
   },
+}));
+
+jest.mock('../../../../../provider-utils/awscloudformation/utils/get-user-pool-id', () => ({
+  getUserPoolId: jest.fn().mockReturnValue('fakeid'),
 }));
 
 describe('migrate step for removing lambda callouts', () => {
@@ -127,7 +129,7 @@ describe('migrate step for removing lambda callouts', () => {
         const { hostedUICustomResource, hostedUIDomainResource } = cognitoStack;
 
         expect(hostedUICustomResource?.cfnResourceType).toBe('AWS::Lambda::Function');
-        expect((hostedUICustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatch('deleteUserPoolDomain(inputDomainName)');
+        expect((hostedUICustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatchSnapshot();
 
         expect(hostedUIDomainResource).toBeDefined();
       });
@@ -147,18 +149,16 @@ describe('migrate step for removing lambda callouts', () => {
     });
 
     describe('when create/update lambda callouts exist', () => {
-      it('creates delete lambda callout and cfn-code-created providers', () => {
+      it('creates delete lambda callout and cfn-code-created providers', async () => {
         const testApp = new cdk.App();
         const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
 
-        cognitoStack.createHostedUIProvidersResources(props);
+        await cognitoStack.createHostedUIProvidersResources(props);
 
         const { hostedUIProvidersCustomResource, hostedUIProviderResources } = cognitoStack;
 
         expect(hostedUIProvidersCustomResource?.cfnResourceType).toBe('AWS::Lambda::Function');
-        expect((hostedUIProvidersCustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatch(
-          'hostedUIProviderMeta.forEach(({ ProviderName }) => providerPromises.push(deleteIdentityProvider(ProviderName)));',
-        );
+        expect((hostedUIProvidersCustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatchSnapshot();
 
         expect(hostedUIProviderResources.length).toEqual(4);
       });

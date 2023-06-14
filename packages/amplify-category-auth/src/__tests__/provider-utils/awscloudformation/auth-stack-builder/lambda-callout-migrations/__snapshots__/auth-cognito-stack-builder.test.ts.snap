@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`migrate step for removing lambda callouts createHostedUIDomainResource when create/update lambda callouts exist creates delete lambda callout and cfn-code-created providers 1`] = `
+"const response = require('cfn-response');
+const aws = require('aws-sdk');
+const identity = new aws.CognitoIdentityServiceProvider();
+
+exports.handler = (event, context) => {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const inputDomainName = event.ResourceProperties.hostedUIDomainName;
+
+  let deleteUserPoolDomain = (domainName) => {
+    let params = { Domain: domainName, UserPoolId: userPoolId };
+    return identity.deleteUserPoolDomain(params).promise();
+  };
+
+  deleteUserPoolDomain(inputDomainName)
+    .then(() => {
+      response.send(event, context, response.SUCCESS);
+    })
+    .catch((err) => {
+      console.log(err);
+
+      if (err.name === 'NotFoundException') {
+        return response.send(event, context, response.SUCCESS);
+      }
+
+      response.send(event, context, response.FAILED, { err });
+    });
+};
+"
+`;
+
+exports[`migrate step for removing lambda callouts createHostedUIProvidersResources when create/update lambda callouts exist creates delete lambda callout and cfn-code-created providers 1`] = `
+"const response = require('cfn-response');
+const aws = require('aws-sdk');
+
+const identity = new aws.CognitoIdentityServiceProvider();
+
+exports.handler = (event, context) => {
+  try {
+    const userPoolId = event.ResourceProperties.userPoolId;
+    const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
+
+    const deleteIdentityProvider = (providerName) => {
+      const params = { ProviderName: providerName, UserPoolId: userPoolId };
+      return identity.deleteIdentityProvider(params).promise();
+    };
+
+    const deleteSuccessOrNotFound = (promiseResult) => {
+      return promiseResult.status === 'fulfilled' || promiseResult.reason.toString().match(/NotFoundException/);
+    };
+
+    const providerPromises = [];
+
+    hostedUIProviderMeta.forEach(({ ProviderName }) => providerPromises.push(deleteIdentityProvider(ProviderName)));
+
+    Promise.allSettled(providerPromises).then((results) => {
+      if (results.every(deleteSuccessOrNotFound)) {
+        response.send(event, context, response.SUCCESS);
+      } else {
+        const firstFailure = results.find((result) => result.status === 'rejected');
+        response.send(event, context, response.FAILED, firstFailure);
+      }
+    });
+  } catch (err) {
+    console.log(err.stack);
+    response.send(event, context, response.FAILED, { err });
+  }
+};
+"
+`;

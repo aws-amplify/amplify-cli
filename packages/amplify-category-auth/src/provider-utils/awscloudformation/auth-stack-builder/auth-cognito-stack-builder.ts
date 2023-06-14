@@ -18,7 +18,7 @@ import {
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { configureSmsOption } from '../utils/configure-sms';
 import { OAuthMetaData, ProviderCreds, ProviderMeta } from './types';
-import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '../utils/migrate-idp-resources';
+import { migrateResourcesToCfn, getHostedUIProviderCredsFromCloud } from '../utils/migrate-idp-resources';
 
 const { readJson } = JSONUtilities;
 
@@ -1220,7 +1220,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
     if (migrateResources) {
       this.deleteExistingHostedUIProviderCustomResource();
-      creds = await exportHostedUIProvidersFromCurrCloudRootStack(props.resourceName, meta, creds);
+      creds = await getHostedUIProviderCredsFromCloud(props.resourceName, meta, creds);
       props.hostedUIProviderCreds = JSON.stringify(creds);
     }
 

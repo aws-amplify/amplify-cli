@@ -31,7 +31,7 @@ import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from './stack-synthesizer';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import { ProviderCreds, ProviderMeta } from './types';
-import { migrateResourcesToCfn, exportHostedUIProvidersFromCurrCloudRootStack } from '../utils/migrate-idp-resources';
+import { migrateResourcesToCfn, getHostedUIProviderCredsFromCloud } from '../utils/migrate-idp-resources';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
@@ -563,11 +563,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     let hostedUIProviderCreds = JSON.parse(props.hostedUIProviderCreds || '[]');
 
     if (migrateResourcesToCfn(props.resourceName)) {
-      hostedUIProviderCreds = await exportHostedUIProvidersFromCurrCloudRootStack(
-        props.resourceName,
-        hostedUIProviderMeta,
-        hostedUIProviderCreds,
-      );
+      hostedUIProviderCreds = await getHostedUIProviderCredsFromCloud(props.resourceName, hostedUIProviderMeta, hostedUIProviderCreds);
       props.hostedUIProviderCreds = JSON.stringify(hostedUIProviderCreds);
     }
 

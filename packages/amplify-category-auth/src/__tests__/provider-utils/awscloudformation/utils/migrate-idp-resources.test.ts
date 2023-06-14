@@ -1,10 +1,7 @@
 import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as migrateIdpResources from '../../../../provider-utils/awscloudformation/utils/migrate-idp-resources';
 
-const {
-  migrateResourcesToCfn,
-  exportHostedUIProvidersFromCurrCloudRootStack,
-} = migrateIdpResources;
+const { migrateResourcesToCfn, getHostedUIProviderCredsFromCloud } = migrateIdpResources;
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
@@ -75,15 +72,18 @@ describe('migrateResourcesToCfn', () => {
   });
 });
 
-describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
+describe('getHostedUIProviderCredsFromCloud', () => {
   let providerMeta: $TSObject[];
 
   beforeAll(() => {
-    providerMeta = [{
-      ProviderName: 'Facebook',
-    }, {
-      ProviderName: 'Google',
-    }];
+    providerMeta = [
+      {
+        ProviderName: 'Facebook',
+      },
+      {
+        ProviderName: 'Google',
+      },
+    ];
 
     jest.spyOn(migrateIdpResources, 'getProviderCreds').mockImplementation(async (_, providerName) => {
       if (providerName === 'Facebook') {
@@ -115,7 +115,7 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
         },
       ];
 
-      const results = await exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerMeta, providerCreds);
+      const results = await getHostedUIProviderCredsFromCloud('authtest', providerMeta, providerCreds);
 
       expect(results[0]).toEqual({
         ProviderName: 'Facebook',
@@ -146,7 +146,7 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
         },
       ];
 
-      const results = await exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerMeta, providerCreds);
+      const results = await getHostedUIProviderCredsFromCloud('authtest', providerMeta, providerCreds);
 
       expect(results[0]).toEqual({
         ProviderName: 'Facebook',
@@ -175,7 +175,7 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
         },
       ];
 
-      const results = await exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerMeta, providerCreds);
+      const results = await getHostedUIProviderCredsFromCloud('authtest', providerMeta, providerCreds);
 
       expect(results[0]).toEqual({
         ProviderName: 'Facebook',

@@ -82,9 +82,6 @@ export function executeAmplifyCommand(context: any): Promise<void>;
 export function executeAmplifyHeadlessCommand(context: any, headlessPayload: string): Promise<void>;
 
 // @public (undocumented)
-export const exportHostedUIProvidersFromCurrCloudRootStack: (resourceName: string, providerMeta: $TSObject[], updatedUIProviderCreds: $TSObject[]) => Promise<$TSObject[]>;
-
-// @public (undocumented)
 export function externalAuthEnable(context: any, externalCategory: any, resourceName: any, requirements: any): Promise<any>;
 
 // @public (undocumented)
@@ -99,6 +96,9 @@ export const getAuthTriggerStackCfnParameters: (context: $TSContext, authResourc
 //
 // @public (undocumented)
 export const getFrontendConfig: (authParameters: AuthParameters) => FrontEndConfig;
+
+// @public (undocumented)
+export const getHostedUIProviderCredsFromCloud: (resourceName: string, providerMeta: $TSObject[], updatedUIProviderCreds: $TSObject[]) => Promise<$TSObject[]>;
 
 // @public (undocumented)
 export function getPermissionPolicies(context: any, resourceOpsMapping: any): Promise<{

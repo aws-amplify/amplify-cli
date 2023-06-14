@@ -81,7 +81,7 @@ import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 import { minifyJSONFile } from './utils/minify-json';
 import { handleCloudFormationError } from './cloud-formation-error-handler';
 import { handleCommonSdkError } from './handle-common-sdk-errors';
-import { exportHostedUIProvidersFromCurrCloudRootStack, migrateResourcesToCfn } from '@aws-amplify/amplify-category-auth';
+import { getHostedUIProviderCredsFromCloud, migrateResourcesToCfn } from '@aws-amplify/amplify-category-auth';
 
 const logger = fileLogger('push-resources');
 
@@ -1221,7 +1221,7 @@ export const formNestedStack = async (
             let hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
 
             if (migrateAuthIdpsToCfn) {
-              hostedUIProviderCreds = await exportHostedUIProvidersFromCurrCloudRootStack(
+              hostedUIProviderCreds = await getHostedUIProviderCredsFromCloud(
                 parameters.resourceName,
                 hostedUIProviderMeta,
                 hostedUIProviderCreds,

@@ -23,7 +23,7 @@ const hasHostedProviderResources = (authCfnTemplate: Template | undefined): bool
   );
 };
 
-export const exportHostedUIProvidersFromCurrCloudRootStack = async (
+export const getHostedUIProviderCredsFromCloud = async (
   resourceName: string,
   providerMeta: $TSObject[],
   updatedUIProviderCreds: $TSObject[],

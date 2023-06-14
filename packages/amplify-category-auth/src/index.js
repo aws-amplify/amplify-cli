@@ -43,7 +43,7 @@ const { getAuthTriggerStackCfnParameters } = require('./provider-utils/awscloudf
 const { updateAppClientWithGeneratedSecret } = require('./provider-utils/awscloudformation/utils/generate-cognito-app-client-secret');
 const {
   migrateResourcesToCfn,
-  exportHostedUIProvidersFromCurrCloudRootStack,
+  getHostedUIProviderCredsFromCloud,
 } = require('./provider-utils/awscloudformation/utils/migrate-idp-resources');
 const { prePushHandler } = require('./events/prePushHandler');
 
@@ -582,7 +582,7 @@ module.exports = {
   getAuthTriggerStackCfnParameters,
   updateAppClientWithGeneratedSecret,
   migrateResourcesToCfn,
-  exportHostedUIProvidersFromCurrCloudRootStack,
+  getHostedUIProviderCredsFromCloud,
 };
 
 // force major version bump for cdk v2
