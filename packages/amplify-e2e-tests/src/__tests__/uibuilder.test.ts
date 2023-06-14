@@ -113,7 +113,6 @@ describe('amplify pull with uibuilder', () => {
     let npmStartProcess: ChildProcessWithoutNullStreams;
     let res: execa.ExecaSyncReturnValue<string>;
     describe('cypress tests', () => {
-
       beforeAll(async () => {
         npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
         // Give react server time to start
