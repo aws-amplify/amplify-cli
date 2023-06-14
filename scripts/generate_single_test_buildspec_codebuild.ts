@@ -1,14 +1,24 @@
 import { loadConfigBase, saveConfig } from './split-e2e-tests-codebuild';
+import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
+
+// usage:
+// yarn split-e2e-tests-codebuild-single PATH_TO_TEST OS[l or w] REGION
+// example:
+// yarn split-e2e-tests-codebuild-single src/__tests__/auth_2d.ts w us-east-2
 
 const main = () => {
-  const os = process.argv[3];
-  if (!(os === 'l' || os === 'w')) {
-    throw new Error('Invalid job type.');
-  }
   let filePath: string = process.argv[2];
   const potentialPathPrefix = 'packages/amplify-e2e-tests/';
   if (filePath.startsWith(potentialPathPrefix)) {
     filePath = filePath.replace(potentialPathPrefix, '');
+  }
+  const os = process.argv[3];
+  if (!(os === 'l' || os === 'w')) {
+    throw new Error('Invalid job type.');
+  }
+  const region = process.argv[4];
+  if (!regions.includes(region)) {
+    throw new Error(`Invalid region. Region must be one of: ${regions}`);
   }
 
   type jobBuildSpecType = {
@@ -32,7 +42,7 @@ const main = () => {
     env: {
       variables: {
         TEST_SUITE: filePath,
-        CLI_REGION: 'us-west-2',
+        CLI_REGION: region,
       },
     },
     'depend-on': ['upb'],
@@ -56,7 +66,7 @@ const main = () => {
     'upb',
   ];
   baseBuildGraph = baseBuildGraph.filter((i: any) => necessaryIds.includes(i.identifier));
-  let currentBatch = [...baseBuildGraph, jobBuildSpec];
+  const currentBatch = [...baseBuildGraph, jobBuildSpec];
   configBase.batch['build-graph'] = currentBatch;
   saveConfig(configBase);
 };

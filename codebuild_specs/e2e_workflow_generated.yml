@@ -68,7 +68,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_2d.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: us-east-2
           USE_PARENT_ACCOUNT: 'false'
         type: WINDOWS_SERVER_2019_CONTAINER
         image: $WINDOWS_IMAGE_2019
