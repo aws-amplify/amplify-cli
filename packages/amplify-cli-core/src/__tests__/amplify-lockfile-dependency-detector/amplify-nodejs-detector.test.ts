@@ -443,9 +443,8 @@ describe('parsing package lock files', () => {
   it('should handle cycle in graph with npm', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(
       new Promise((resolve) => {
-        const packageManager = new YarnPackageManager();
-        packageManager.lockFile = 'yarn-2-test.lock';
-        packageManager.version = coerce('2.0.0') ?? undefined;
+        const packageManager = new NpmPackageManager();
+        packageManager.lockFile = 'package-lock-test-with-cycle.json';
         resolve(packageManager);
       }),
     );
@@ -463,7 +462,7 @@ describe('parsing yarn2 lock files', () => {
       new Promise((resolve) => {
         const packageManager = new YarnPackageManager();
         packageManager.lockFile = 'yarn-2-test.lock';
-        packageManager.version = coerce('2.0.0') ?? undefined;
+        packageManager.version = coerce('1.22.0') ?? undefined;
         resolve(packageManager);
       }),
     );
