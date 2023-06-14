@@ -99,7 +99,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
 export function loadConfigBase() {
   return yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8'));
 }
-export function saveConfig(config: any): void {
+export function saveConfig(config: any, filepath?: string): void {
   const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true, lineWidth: -1 })];
   fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}.yml`, output.join('\n'));
 }
