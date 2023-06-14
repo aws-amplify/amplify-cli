@@ -66,14 +66,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-app@5.0.8, @aws-amplify/amplify-app@workspace:packages/amplify-app":
+"@aws-amplify/amplify-app@5.0.9, @aws-amplify/amplify-app@workspace:packages/amplify-app":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-app@workspace:packages/amplify-app"
   dependencies:
-    "@aws-amplify/amplify-frontend-android": 3.5.4
-    "@aws-amplify/amplify-frontend-flutter": 1.4.2
-    "@aws-amplify/amplify-frontend-ios": 3.6.10
-    "@aws-amplify/amplify-frontend-javascript": 3.9.8
+    "@aws-amplify/amplify-frontend-android": 3.5.5
+    "@aws-amplify/amplify-frontend-flutter": 1.4.3
+    "@aws-amplify/amplify-frontend-ios": 3.6.11
+    "@aws-amplify/amplify-frontend-javascript": 3.9.9
     "@types/glob": ^7.1.1
     chalk: ^4.1.1
     execa: ^5.1.1
@@ -91,20 +91,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-appsync-simulator@2.12.3, @aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator":
+"@aws-amplify/amplify-appsync-simulator@2.12.4, @aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-graphiql-explorer": 2.5.7
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-graphiql-explorer": 2.5.8
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@graphql-tools/schema": ^8.3.1
     "@graphql-tools/utils": ^8.5.1
     "@types/cors": ^2.8.6
     "@types/express": ^4.17.3
     "@types/node": ^12.12.6
     "@types/ws": ^8.2.2
-    amplify-velocity-template: 1.4.11
+    amplify-velocity-template: 1.4.12
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
     cors: ^2.8.5
@@ -131,13 +131,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-analytics@5.0.10, @aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics":
+"@aws-amplify/amplify-category-analytics@5.0.11, @aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-prompts": 2.8.0
     fs-extra: ^8.1.0
     uuid: ^8.3.2
   languageName: unknown
@@ -202,20 +202,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-category-auth@3.2.3, @aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth":
+"@aws-amplify/amplify-category-auth@3.3.0, @aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
-    "@aws-amplify/amplify-prompts": 2.7.0
-    "@aws-amplify/amplify-util-import": 2.6.0
-    "@aws-amplify/cli-extensibility-helper": 3.0.8
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-prompts": 2.8.0
+    "@aws-amplify/amplify-util-import": 2.6.1
+    "@aws-amplify/cli-extensibility-helper": 3.0.9
     "@aws-sdk/client-cognito-identity-provider": ^3.303.0
     "@types/mime-types": ^2.1.1
-    amplify-headless-interface: 1.17.3
-    amplify-util-headless-input: 1.9.12
+    amplify-headless-interface: 1.17.4
+    amplify-util-headless-input: 1.9.13
     aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1354.0
     axios: ^0.26.0
@@ -237,12 +237,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-custom@3.0.8, @aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom":
+"@aws-amplify/amplify-category-custom@3.0.9, @aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@types/lodash": ^4.14.149
     aws-cdk-lib: ~2.68.0
     execa: ^5.1.1
@@ -254,14 +254,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-function@5.3.3, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
+"@aws-amplify/amplify-category-function@5.3.4, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-function@workspace:packages/amplify-category-function"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@types/folder-hash": ^4.0.1
     archiver: ^5.3.0
     aws-sdk: ^2.1354.0
@@ -281,16 +281,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-geo@3.2.3, @aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo":
+"@aws-amplify/amplify-category-geo@3.2.4, @aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-sdk/client-location": ^3.303.0
     ajv: ^6.12.6
-    amplify-headless-interface: 1.17.3
-    amplify-util-headless-input: 1.9.12
+    amplify-headless-interface: 1.17.4
+    amplify-util-headless-input: 1.9.13
     aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1354.0
     constructs: ^10.0.5
@@ -300,12 +300,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-hosting@3.5.11, @aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting":
+"@aws-amplify/amplify-category-hosting@3.5.12, @aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-prompts": 2.8.0
     chalk: ^4.1.1
     fs-extra: ^8.1.0
     mime-types: ^2.1.26
@@ -316,26 +316,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-interactions@5.1.3, @aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions":
+"@aws-amplify/amplify-category-interactions@5.1.4, @aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-prompts": 2.8.0
     fs-extra: ^8.1.0
     fuzzy: ^0.1.3
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.24.10, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@2.24.11, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
-    "@aws-amplify/amplify-prompts": 2.7.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.3
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-prompts": 2.8.0
+    "@aws-amplify/amplify-provider-awscloudformation": 8.2.4
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
     fs-extra: ^8.1.0
@@ -346,12 +346,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-predictions@5.2.3, @aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions":
+"@aws-amplify/amplify-category-predictions@5.2.4, @aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-sdk/client-rekognition": ^3.303.0
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
@@ -360,17 +360,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-storage@5.2.3, @aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage":
+"@aws-amplify/amplify-category-storage@5.2.4, @aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
-    "@aws-amplify/amplify-prompts": 2.7.0
-    "@aws-amplify/amplify-util-import": 2.6.0
-    "@aws-amplify/cli-extensibility-helper": 3.0.8
-    amplify-headless-interface: 1.17.3
-    amplify-util-headless-input: 1.9.12
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-prompts": 2.8.0
+    "@aws-amplify/amplify-util-import": 2.6.1
+    "@aws-amplify/cli-extensibility-helper": 3.0.9
+    amplify-headless-interface: 1.17.4
+    amplify-util-headless-input: 1.9.13
     aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
@@ -386,13 +386,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-cli-core@4.0.8, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
+"@aws-amplify/amplify-cli-core@4.1.0, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core"
   dependencies:
-    "@aws-amplify/amplify-cli-logger": 1.3.2
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-logger": 1.3.3
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-amplify/graphql-transformer-interfaces": ^2.2.1
     "@types/ejs": ^3.1.1
     "@types/fs-extra": ^8.0.1
@@ -436,7 +436,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-cli-logger@1.3.2, @aws-amplify/amplify-cli-logger@workspace:packages/amplify-cli-logger":
+"@aws-amplify/amplify-cli-logger@1.3.3, @aws-amplify/amplify-cli-logger@workspace:packages/amplify-cli-logger":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-cli-logger@workspace:packages/amplify-cli-logger"
   dependencies:
@@ -445,7 +445,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-cli-shared-interfaces@1.2.2, @aws-amplify/amplify-cli-shared-interfaces@workspace:packages/amplify-cli-shared-interfaces":
+"@aws-amplify/amplify-cli-shared-interfaces@1.2.3, @aws-amplify/amplify-cli-shared-interfaces@workspace:packages/amplify-cli-shared-interfaces":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-cli-shared-interfaces@workspace:packages/amplify-cli-shared-interfaces"
   dependencies:
@@ -453,12 +453,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-console-hosting@2.5.8, @aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting":
+"@aws-amplify/amplify-console-hosting@2.5.9, @aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
     archiver: ^5.3.0
     chalk: ^4.1.1
     cli-table3: ^0.6.0
@@ -475,8 +475,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-console-integration-tests@workspace:packages/amplify-console-integration-tests"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-e2e-core": 5.0.3
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-e2e-core": 5.0.4
     "@types/ini": ^1.3.30
     aws-sdk: ^2.1354.0
     dotenv: ^8.2.0
@@ -491,13 +491,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-container-hosting@2.6.8, @aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting":
+"@aws-amplify/amplify-container-hosting@2.6.9, @aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
     "@aws-amplify/amplify-category-api": ^5.4.1
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
     fs-extra: ^8.1.0
     inquirer: ^7.3.3
     mime-types: ^2.1.26
@@ -505,12 +505,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-dotnet-function-template-provider@2.5.8, @aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider":
+"@aws-amplify/amplify-dotnet-function-template-provider@2.5.9, @aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@types/inquirer": ^6.5.0
     "@types/lodash": ^4.14.149
     "@types/node": ^12.12.6
@@ -518,15 +518,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-e2e-core@5.0.3, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
+"@aws-amplify/amplify-e2e-core@5.0.4, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
+    "@aws-amplify/amplify-cli-core": 4.1.0
     "@types/glob": ^7.1.1
-    amplify-headless-interface: 1.17.3
-    aws-amplify: ^4.2.8
-    aws-appsync: ^4.1.1
+    amplify-headless-interface: 1.17.4
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
     dotenv: ^8.2.0
@@ -548,11 +546,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-environment-parameters@1.6.3, @aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters":
+"@aws-amplify/amplify-environment-parameters@1.6.4, @aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
+    "@aws-amplify/amplify-cli-core": 4.1.0
     ajv: ^6.12.6
     aws-sdk: ^2.1354.0
     lodash: ^4.17.21
@@ -561,7 +559,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-android@3.5.4, @aws-amplify/amplify-frontend-android@workspace:packages/amplify-frontend-android":
+"@aws-amplify/amplify-frontend-android@3.5.5, @aws-amplify/amplify-frontend-android@workspace:packages/amplify-frontend-android":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-android@workspace:packages/amplify-frontend-android"
   dependencies:
@@ -571,7 +569,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-flutter@1.4.2, @aws-amplify/amplify-frontend-flutter@workspace:packages/amplify-frontend-flutter":
+"@aws-amplify/amplify-frontend-flutter@1.4.3, @aws-amplify/amplify-frontend-flutter@workspace:packages/amplify-frontend-flutter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-flutter@workspace:packages/amplify-frontend-flutter"
   dependencies:
@@ -581,11 +579,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-ios@3.6.10, @aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios":
+"@aws-amplify/amplify-frontend-ios@3.6.11, @aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
+    "@aws-amplify/amplify-cli-core": 4.1.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
     graphql-config: ^2.2.1
@@ -593,11 +591,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-javascript@3.9.8, @aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript":
+"@aws-amplify/amplify-frontend-javascript@3.9.9, @aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
+    "@aws-amplify/amplify-cli-core": 4.1.0
     "@babel/core": ^7.10.5
     "@babel/plugin-transform-modules-commonjs": 7.10.4
     chalk: ^4.1.1
@@ -609,24 +607,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-function-plugin-interface@1.10.2, @aws-amplify/amplify-function-plugin-interface@workspace:packages/amplify-function-plugin-interface":
+"@aws-amplify/amplify-function-plugin-interface@1.10.3, @aws-amplify/amplify-function-plugin-interface@workspace:packages/amplify-function-plugin-interface":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-function-plugin-interface@workspace:packages/amplify-function-plugin-interface"
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-go-function-template-provider@1.4.3, @aws-amplify/amplify-go-function-template-provider@workspace:packages/amplify-go-function-template-provider":
+"@aws-amplify/amplify-go-function-template-provider@1.4.4, @aws-amplify/amplify-go-function-template-provider@workspace:packages/amplify-go-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-go-function-template-provider@workspace:packages/amplify-go-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@types/fs-extra": ^8.0.1
     "@types/lodash": ^4.14.149
     "@types/node": ^12.12.6
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-graphiql-explorer@2.5.7, @aws-amplify/amplify-graphiql-explorer@workspace:packages/amplify-graphiql-explorer":
+"@aws-amplify/amplify-graphiql-explorer@2.5.8, @aws-amplify/amplify-graphiql-explorer@workspace:packages/amplify-graphiql-explorer":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-graphiql-explorer@workspace:packages/amplify-graphiql-explorer"
   dependencies:
@@ -708,8 +706,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-migration-tests@workspace:packages/amplify-migration-tests"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-e2e-core": 5.0.3
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-e2e-core": 5.0.4
     "@aws-cdk/cloudformation-diff": ~2.68.0
     aws-cdk-lib: ~2.68.0
     constructs: ^10.0.5
@@ -724,13 +722,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-nodejs-function-template-provider@2.8.3, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
+"@aws-amplify/amplify-nodejs-function-template-provider@2.8.4, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@types/fs-extra": ^8.0.1
     "@types/inquirer": ^6.5.0
     "@types/node": ^12.12.6
@@ -739,12 +737,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-opensearch-simulator@1.4.3, @aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator":
+"@aws-amplify/amplify-opensearch-simulator@1.4.4, @aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@types/node": ^12.12.6
     "@types/openpgp": ^4.4.18
     aws-sdk: ^2.1354.0
@@ -762,28 +760,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-prompts@2.7.0, @aws-amplify/amplify-prompts@workspace:packages/amplify-prompts":
+"@aws-amplify/amplify-prompts@2.8.0, @aws-amplify/amplify-prompts@workspace:packages/amplify-prompts":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-prompts@workspace:packages/amplify-prompts"
   dependencies:
-    "@aws-amplify/amplify-cli-shared-interfaces": 1.2.2
+    "@aws-amplify/amplify-cli-shared-interfaces": 1.2.3
     chalk: ^4.1.1
     enquirer: ^2.3.6
     rimraf: ^3.0.2
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-provider-awscloudformation@8.2.3, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
+"@aws-amplify/amplify-provider-awscloudformation@8.2.4, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation"
   dependencies:
-    "@aws-amplify/amplify-category-custom": 3.0.8
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-cli-logger": 1.3.2
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
-    "@aws-amplify/amplify-prompts": 2.7.0
-    "@aws-amplify/amplify-util-import": 2.6.0
-    "@aws-amplify/cli-extensibility-helper": 3.0.8
+    "@aws-amplify/amplify-category-custom": 3.0.9
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-logger": 1.3.3
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-prompts": 2.8.0
+    "@aws-amplify/amplify-util-import": 2.6.1
+    "@aws-amplify/cli-extensibility-helper": 3.0.9
     "@aws-amplify/graphql-transformer-core": ^1.3.2
     "@aws-amplify/graphql-transformer-interfaces": ^2.2.1
     "@types/columnify": ^1.5.0
@@ -829,17 +827,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-python-function-template-provider@1.4.3, @aws-amplify/amplify-python-function-template-provider@workspace:packages/amplify-python-function-template-provider":
+"@aws-amplify/amplify-python-function-template-provider@1.4.4, @aws-amplify/amplify-python-function-template-provider@workspace:packages/amplify-python-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-python-function-template-provider@workspace:packages/amplify-python-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@types/fs-extra": ^8.0.1
     "@types/node": ^12.12.6
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-import@2.6.0, @aws-amplify/amplify-util-import@workspace:packages/amplify-util-import":
+"@aws-amplify/amplify-util-import@2.6.1, @aws-amplify/amplify-util-import@workspace:packages/amplify-util-import":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-import@workspace:packages/amplify-util-import"
   dependencies:
@@ -848,18 +846,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-mock@5.2.3, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
+"@aws-amplify/amplify-util-mock@5.3.0, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock"
   dependencies:
-    "@aws-amplify/amplify-appsync-simulator": 2.12.3
-    "@aws-amplify/amplify-category-function": 5.3.3
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
-    "@aws-amplify/amplify-opensearch-simulator": 1.4.3
-    "@aws-amplify/amplify-prompts": 2.7.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.3
+    "@aws-amplify/amplify-appsync-simulator": 2.12.4
+    "@aws-amplify/amplify-category-function": 5.3.4
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-opensearch-simulator": 1.4.4
+    "@aws-amplify/amplify-prompts": 2.8.0
+    "@aws-amplify/amplify-provider-awscloudformation": 8.2.4
     "@aws-amplify/graphql-auth-transformer": ^2.1.6
     "@aws-amplify/graphql-default-value-transformer": ^1.1.6
     "@aws-amplify/graphql-function-transformer": ^1.2.4
@@ -881,9 +879,9 @@ __metadata:
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
     amplify-codegen: ^4.1.1
-    amplify-dynamodb-simulator: 2.7.3
-    amplify-nodejs-function-runtime-provider: 2.4.3
-    amplify-storage-simulator: 1.9.0
+    amplify-dynamodb-simulator: 2.7.4
+    amplify-nodejs-function-runtime-provider: 2.4.4
+    amplify-storage-simulator: 1.9.1
     aws-appsync: ^4.1.4
     aws-sdk: ^2.1354.0
     aws-sdk-mock: ^5.8.0
@@ -915,13 +913,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-uibuilder@1.8.3, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
+"@aws-amplify/amplify-util-uibuilder@1.8.4, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
     "@aws-amplify/amplify-category-api": ^5.4.1
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-amplify/appsync-modelgen-plugin": ^2.4.4
     "@aws-amplify/codegen-ui": 2.14.2
     "@aws-amplify/codegen-ui-react": 2.14.2
@@ -1033,52 +1031,52 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/cli-extensibility-helper@3.0.8, @aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper":
+"@aws-amplify/cli-extensibility-helper@3.0.9, @aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper"
   dependencies:
-    "@aws-amplify/amplify-category-custom": 3.0.8
-    "@aws-amplify/amplify-cli-core": 4.0.8
+    "@aws-amplify/amplify-category-custom": 3.0.9
+    "@aws-amplify/amplify-cli-core": 4.1.0
     aws-cdk-lib: ~2.68.0
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.0.3, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.1.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
-    "@aws-amplify/amplify-app": 5.0.8
-    "@aws-amplify/amplify-category-analytics": 5.0.10
+    "@aws-amplify/amplify-app": 5.0.9
+    "@aws-amplify/amplify-category-analytics": 5.0.11
     "@aws-amplify/amplify-category-api": ^5.4.1
-    "@aws-amplify/amplify-category-auth": 3.2.3
-    "@aws-amplify/amplify-category-custom": 3.0.8
-    "@aws-amplify/amplify-category-function": 5.3.3
-    "@aws-amplify/amplify-category-geo": 3.2.3
-    "@aws-amplify/amplify-category-hosting": 3.5.11
-    "@aws-amplify/amplify-category-interactions": 5.1.3
-    "@aws-amplify/amplify-category-notifications": 2.24.10
-    "@aws-amplify/amplify-category-predictions": 5.2.3
-    "@aws-amplify/amplify-category-storage": 5.2.3
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-cli-logger": 1.3.2
-    "@aws-amplify/amplify-cli-shared-interfaces": 1.2.2
-    "@aws-amplify/amplify-console-hosting": 2.5.8
-    "@aws-amplify/amplify-container-hosting": 2.6.8
-    "@aws-amplify/amplify-dotnet-function-template-provider": 2.5.8
-    "@aws-amplify/amplify-environment-parameters": 1.6.3
-    "@aws-amplify/amplify-frontend-android": 3.5.4
-    "@aws-amplify/amplify-frontend-flutter": 1.4.2
-    "@aws-amplify/amplify-frontend-ios": 3.6.10
-    "@aws-amplify/amplify-frontend-javascript": 3.9.8
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
-    "@aws-amplify/amplify-go-function-template-provider": 1.4.3
-    "@aws-amplify/amplify-nodejs-function-template-provider": 2.8.3
-    "@aws-amplify/amplify-prompts": 2.7.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.3
-    "@aws-amplify/amplify-python-function-template-provider": 1.4.3
-    "@aws-amplify/amplify-util-import": 2.6.0
-    "@aws-amplify/amplify-util-mock": 5.2.3
-    "@aws-amplify/amplify-util-uibuilder": 1.8.3
+    "@aws-amplify/amplify-category-auth": 3.3.0
+    "@aws-amplify/amplify-category-custom": 3.0.9
+    "@aws-amplify/amplify-category-function": 5.3.4
+    "@aws-amplify/amplify-category-geo": 3.2.4
+    "@aws-amplify/amplify-category-hosting": 3.5.12
+    "@aws-amplify/amplify-category-interactions": 5.1.4
+    "@aws-amplify/amplify-category-notifications": 2.24.11
+    "@aws-amplify/amplify-category-predictions": 5.2.4
+    "@aws-amplify/amplify-category-storage": 5.2.4
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-logger": 1.3.3
+    "@aws-amplify/amplify-cli-shared-interfaces": 1.2.3
+    "@aws-amplify/amplify-console-hosting": 2.5.9
+    "@aws-amplify/amplify-container-hosting": 2.6.9
+    "@aws-amplify/amplify-dotnet-function-template-provider": 2.5.9
+    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-frontend-android": 3.5.5
+    "@aws-amplify/amplify-frontend-flutter": 1.4.3
+    "@aws-amplify/amplify-frontend-ios": 3.6.11
+    "@aws-amplify/amplify-frontend-javascript": 3.9.9
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-go-function-template-provider": 1.4.4
+    "@aws-amplify/amplify-nodejs-function-template-provider": 2.8.4
+    "@aws-amplify/amplify-prompts": 2.8.0
+    "@aws-amplify/amplify-provider-awscloudformation": 8.2.4
+    "@aws-amplify/amplify-python-function-template-provider": 1.4.4
+    "@aws-amplify/amplify-util-import": 2.6.1
+    "@aws-amplify/amplify-util-mock": 5.3.0
+    "@aws-amplify/amplify-util-uibuilder": 1.8.4
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@types/archiver": ^5.3.1
     "@types/ci-info": ^2.0.0
@@ -1095,12 +1093,12 @@ __metadata:
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
     amplify-codegen: ^4.1.1
-    amplify-dotnet-function-runtime-provider: 2.0.3
-    amplify-go-function-runtime-provider: 2.3.21
-    amplify-java-function-runtime-provider: 2.3.21
-    amplify-java-function-template-provider: 1.5.20
-    amplify-nodejs-function-runtime-provider: 2.4.3
-    amplify-python-function-runtime-provider: 2.4.21
+    amplify-dotnet-function-runtime-provider: 2.0.4
+    amplify-go-function-runtime-provider: 2.3.22
+    amplify-java-function-runtime-provider: 2.3.22
+    amplify-java-function-template-provider: 1.5.21
+    amplify-nodejs-function-runtime-provider: 2.4.4
+    amplify-python-function-runtime-provider: 2.4.22
     aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
@@ -1142,7 +1140,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.0.3
+    "@aws-amplify/cli-internal": 12.1.0
     "@types/tar": ^6.1.1
     axios: ^0.26.0
     rimraf: ^3.0.2
@@ -11305,13 +11303,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amplify-dotnet-function-runtime-provider@2.0.3, amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider":
+"amplify-dotnet-function-runtime-provider@2.0.4, amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@types/node": ^12.12.6
     "@types/which": ^1.3.2
     execa: ^5.1.1
@@ -11321,11 +11319,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-dynamodb-simulator@2.7.3, amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator":
+"amplify-dynamodb-simulator@2.7.4, amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator":
   version: 0.0.0-use.local
   resolution: "amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
+    "@aws-amplify/amplify-cli-core": 4.1.0
     aws-sdk: ^2.1354.0
     detect-port: ^1.3.0
     execa: ^5.1.1
@@ -11346,10 +11344,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "amplify-e2e-tests@workspace:packages/amplify-e2e-tests"
   dependencies:
-    "@aws-amplify/amplify-category-auth": 3.2.3
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-e2e-core": 5.0.3
-    "@aws-amplify/amplify-opensearch-simulator": 1.4.3
+    "@aws-amplify/amplify-category-auth": 3.3.0
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-e2e-core": 5.0.4
+    "@aws-amplify/amplify-opensearch-simulator": 1.4.4
     "@aws-amplify/graphql-transformer-core": ^1.3.2
     "@aws-sdk/client-appsync": ^3.303.0
     "@aws-sdk/client-dynamodb": ^3.303.0
@@ -11359,9 +11357,9 @@ __metadata:
     "@types/lodash": ^4.14.149
     "@types/node": ^18.16.1
     "@types/ws": ^7.4.4
-    amplify-dynamodb-simulator: 2.7.3
-    amplify-headless-interface: 1.17.3
-    amplify-storage-simulator: 1.9.0
+    amplify-dynamodb-simulator: 2.7.4
+    amplify-headless-interface: 1.17.4
+    amplify-storage-simulator: 1.9.1
     aws-amplify: ^4.2.8
     aws-appsync: ^4.1.1
     aws-cdk-lib: ~2.68.0
@@ -11392,12 +11390,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-go-function-runtime-provider@2.3.21, amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider":
+"amplify-go-function-runtime-provider@2.3.22, amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@types/archiver": ^5.1.1
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
@@ -11416,7 +11414,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "amplify-graphql-migration-tests@workspace:packages/amplify-graphql-migration-tests"
   dependencies:
-    "@aws-amplify/amplify-prompts": 2.7.0
+    "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-amplify/graphql-auth-transformer": ^2.1.6
     "@aws-amplify/graphql-default-value-transformer": ^1.1.6
     "@aws-amplify/graphql-function-transformer": ^1.2.4
@@ -11444,7 +11442,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-headless-interface@1.17.3, amplify-headless-interface@workspace:packages/amplify-headless-interface":
+"amplify-headless-interface@1.17.4, amplify-headless-interface@workspace:packages/amplify-headless-interface":
   version: 0.0.0-use.local
   resolution: "amplify-headless-interface@workspace:packages/amplify-headless-interface"
   dependencies:
@@ -11454,12 +11452,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-java-function-runtime-provider@2.3.21, amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider":
+"amplify-java-function-runtime-provider@2.3.22, amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
@@ -11471,20 +11469,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-java-function-template-provider@1.5.20, amplify-java-function-template-provider@workspace:packages/amplify-java-function-template-provider":
+"amplify-java-function-template-provider@1.5.21, amplify-java-function-template-provider@workspace:packages/amplify-java-function-template-provider":
   version: 0.0.0-use.local
   resolution: "amplify-java-function-template-provider@workspace:packages/amplify-java-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
   languageName: unknown
   linkType: soft
 
-"amplify-nodejs-function-runtime-provider@2.4.3, amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider":
+"amplify-nodejs-function-runtime-provider@2.4.4, amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@types/exit": ^0.1.31
     "@types/node": ^12.12.6
     "@types/semver": ^7
@@ -11496,12 +11494,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-python-function-runtime-provider@2.4.21, amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider":
+"amplify-python-function-runtime-provider@2.4.22, amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.0.8
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.2
+    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@types/fs-extra": ^8.0.1
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
@@ -11513,7 +11511,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-storage-simulator@1.9.0, amplify-storage-simulator@workspace:packages/amplify-storage-simulator":
+"amplify-storage-simulator@1.9.1, amplify-storage-simulator@workspace:packages/amplify-storage-simulator":
   version: 0.0.0-use.local
   resolution: "amplify-storage-simulator@workspace:packages/amplify-storage-simulator"
   dependencies:
@@ -11540,18 +11538,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-util-headless-input@1.9.12, amplify-util-headless-input@workspace:packages/amplify-util-headless-input":
+"amplify-util-headless-input@1.9.13, amplify-util-headless-input@workspace:packages/amplify-util-headless-input":
   version: 0.0.0-use.local
   resolution: "amplify-util-headless-input@workspace:packages/amplify-util-headless-input"
   dependencies:
     "@types/json-schema": ^7.0.5
     ajv: ^6.12.6
-    amplify-headless-interface: 1.17.3
+    amplify-headless-interface: 1.17.4
     fs-extra: ^8.1.0
   languageName: unknown
   linkType: soft
 
-"amplify-velocity-template@1.4.11, amplify-velocity-template@workspace:packages/amplify-velocity-template":
+"amplify-velocity-template@1.4.12, amplify-velocity-template@workspace:packages/amplify-velocity-template":
   version: 0.0.0-use.local
   resolution: "amplify-velocity-template@workspace:packages/amplify-velocity-template"
   dependencies:
