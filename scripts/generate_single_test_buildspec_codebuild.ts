@@ -1,5 +1,4 @@
 import { loadConfigBase, saveConfig } from './split-e2e-tests-codebuild';
-import { join } from 'path';
 
 const main = () => {
   const os = process.argv[3];
