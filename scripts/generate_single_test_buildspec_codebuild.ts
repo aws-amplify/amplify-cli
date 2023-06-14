@@ -19,7 +19,7 @@ const main = () => {
   }
   const os = process.argv[3];
   if (!(os === 'l' || os === 'w')) {
-    throw new Error('Invalid job type.');
+    throw new Error('Invalid job type. Expected "l" for linux or "w" for windows.');
   }
   const region = process.argv[4];
   if (!regions.includes(region)) {
