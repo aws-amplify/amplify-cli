@@ -47,7 +47,7 @@ export const exportHostedUIProvidersFromCurrCloudRootStack = async (
   return await Promise.all(providerMeta.map(mapExistingProviderCreds));
 };
 
-const getProviderCreds = async (
+export const getProviderCreds = async (
   userPoolId: string,
   providerName: string,
 ): Promise<CognitoIdentityServiceProvider.ProviderDetailsType | undefined> => {

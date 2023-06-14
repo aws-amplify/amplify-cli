@@ -1,7 +1,10 @@
-import {
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
+import * as migrateIdpResources from '../../../../provider-utils/awscloudformation/utils/migrate-idp-resources';
+
+const {
   migrateResourcesToCfn,
   exportHostedUIProvidersFromCurrCloudRootStack,
-} from '../../../../provider-utils/awscloudformation/utils/migrate-idp-resources';
+} = migrateIdpResources;
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
@@ -35,33 +38,6 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
           Resources: {},
         };
       }
-
-      if (path === 'root-stack.json') {
-        const hostedUIProviderCreds = JSON.stringify([
-          {
-            ProviderName: 'Facebook',
-            client_id: 'fb_client',
-            client_secret: 'fb_secret',
-          },
-          {
-            ProviderName: 'Google',
-            client_id: 'gg_client',
-            client_secret: 'gg_secret',
-          },
-        ]);
-
-        return {
-          Resources: {
-            authauthtest: {
-              Properties: {
-                Parameters: {
-                  hostedUIProviderCreds,
-                },
-              },
-            },
-          },
-        };
-      }
     }),
   },
   pathManager: {
@@ -72,8 +48,11 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 
       if (name === 'newapp') return 'new-app.json';
     }),
-    getCurrentCloudRootStackCfnTemplatePath: jest.fn().mockReturnValue('root-stack.json'),
   },
+}));
+
+jest.mock('../../../../provider-utils/awscloudformation/utils/get-user-pool-id', () => ({
+  getUserPoolId: jest.fn().mockReturnValue('fakeid'),
 }));
 
 describe('migrateResourcesToCfn', () => {
@@ -97,8 +76,36 @@ describe('migrateResourcesToCfn', () => {
 });
 
 describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
+  let providerMeta: $TSObject[];
+
+  beforeAll(() => {
+    providerMeta = [{
+      ProviderName: 'Facebook',
+    }, {
+      ProviderName: 'Google',
+    }];
+
+    jest.spyOn(migrateIdpResources, 'getProviderCreds').mockImplementation(async (_, providerName) => {
+      if (providerName === 'Facebook') {
+        return {
+          ProviderName: 'Facebook',
+          client_id: 'fb_client',
+          client_secret: 'fb_secret',
+        };
+      }
+
+      if (providerName === 'Google') {
+        return {
+          ProviderName: 'Google',
+          client_id: 'gg_client',
+          client_secret: 'gg_secret',
+        };
+      }
+    });
+  });
+
   describe('when credentials exist and have not been updated', () => {
-    it('exports existing credentials from root stack', () => {
+    it('exports existing credentials from root stack', async () => {
       const providerCreds = [
         {
           ProviderName: 'Facebook',
@@ -108,7 +115,7 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
         },
       ];
 
-      const results = exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerCreds);
+      const results = await exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerMeta, providerCreds);
 
       expect(results[0]).toEqual({
         ProviderName: 'Facebook',
@@ -125,7 +132,7 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
   });
 
   describe('when credentials exist and have been updated', () => {
-    it('maintains updated credentials', () => {
+    it('maintains updated credentials', async () => {
       const providerCreds = [
         {
           ProviderName: 'Facebook',
@@ -139,7 +146,7 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
         },
       ];
 
-      const results = exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerCreds);
+      const results = await exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerMeta, providerCreds);
 
       expect(results[0]).toEqual({
         ProviderName: 'Facebook',
@@ -156,7 +163,7 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
   });
 
   describe('when some credentials have been updated', () => {
-    it('updates some credentials', () => {
+    it('updates some credentials', async () => {
       const providerCreds = [
         {
           ProviderName: 'Facebook',
@@ -168,7 +175,7 @@ describe('exportHostedUIProvidersFromCurrCloudRootStack', () => {
         },
       ];
 
-      const results = exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerCreds);
+      const results = await exportHostedUIProvidersFromCurrCloudRootStack('authtest', providerMeta, providerCreds);
 
       expect(results[0]).toEqual({
         ProviderName: 'Facebook',
