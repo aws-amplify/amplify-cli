@@ -1,5 +1,6 @@
-import { loadConfigBase, saveConfig } from './split-e2e-tests-codebuild';
-import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
+import { loadConfigBase, saveConfig, getTestFiles } from './split-e2e-tests-codebuild';
+import { AWS_REGIONS_TO_RUN_TESTS as regions, REPO_ROOT } from './cci-utils';
+import { join } from 'path';
 
 // usage:
 // yarn split-e2e-tests-codebuild-single PATH_TO_TEST OS[l or w] REGION
@@ -13,6 +14,10 @@ const main = () => {
   const potentialPathPrefix = 'packages/amplify-e2e-tests/';
   if (filePath.startsWith(potentialPathPrefix)) {
     filePath = filePath.replace(potentialPathPrefix, '');
+  }
+  const potentialFilePaths = getTestFiles(join(REPO_ROOT, 'packages', 'amplify-e2e-tests'));
+  if (!potentialFilePaths.includes(filePath)) {
+    throw new Error('Invalid path to test file.');
   }
   const os = process.argv[3];
   if (!(os === 'l' || os === 'w')) {

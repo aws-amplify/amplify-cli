@@ -103,7 +103,7 @@ export function saveConfig(config: any, filepath?: string): void {
   const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true, lineWidth: -1 })];
   fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}.yml`, output.join('\n'));
 }
-function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
+export function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   return glob.sync(pattern, { cwd: dir });
 }
 type COMPUTE_TYPE = 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE';
