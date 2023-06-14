@@ -7,8 +7,6 @@ import { join } from 'path';
 // example:
 // yarn split-e2e-tests-codebuild-single src/__tests__/auth_2d.ts w us-east-2
 
-// to restore the original buildspec, run the command again
-
 const main = () => {
   let filePath: string = process.argv[2];
   const potentialPathPrefix = 'packages/amplify-e2e-tests/';
