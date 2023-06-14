@@ -112,19 +112,27 @@ describe('amplify pull with uibuilder', () => {
 
     let npmStartProcess: ChildProcessWithoutNullStreams;
     let res: execa.ExecaSyncReturnValue<string>;
-    try {
-      npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
-      // Give react server time to start
-      await new Promise((resolve) => setTimeout(resolve, 60000));
-      res = execa.sync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
-      expect(res.exitCode).toBe(0);
-    } finally {
-      // kill the react server process
-      spawnSync('kill', [`${npmStartProcess.pid}`], { encoding: 'utf8' });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // Seriously, kill the react server process
-      // react-scripts somehow resurrects the process automatically after the first kill.
-      spawnSync('pkill', ['-f', 'react'], { encoding: 'utf8' });
-    }
+    describe('cypress tests', () => {
+
+      beforeAll(async () => {
+        npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
+        // Give react server time to start
+        await new Promise((resolve) => setTimeout(resolve, 60000));
+      });
+
+      afterAll(async () => {
+        // kill the react server process
+        spawnSync('kill', [`${npmStartProcess.pid}`], { encoding: 'utf8' });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Seriously, kill the react server process
+        // react-scripts somehow resurrects the process automatically after the first kill.
+        spawnSync('pkill', ['-f', 'react'], { encoding: 'utf8' });
+      });
+
+      it('...return exit code 0', () => {
+        res = execa.sync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
+        expect(res.exitCode).toBe(0);
+      });
+    });
   });
 });
