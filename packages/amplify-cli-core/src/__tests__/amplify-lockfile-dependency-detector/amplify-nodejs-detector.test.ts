@@ -3,7 +3,10 @@ import { AmplifyNodePkgDetectorProps, AmplifyNodePkgDetector } from '../../ampli
 import { getPackageManager, NpmPackageManager, YarnPackageManager } from '../../utils/packageManager';
 import { coerce } from 'semver';
 
-jest.mock('../../utils/packageManager');
+jest.mock('../../utils/packageManager', () => ({
+  ...(jest.requireActual('../../utils/packageManager') as {}),
+  getPackageManager: jest.fn(),
+}));
 
 describe('no package Manager cases', () => {
   it('error thrown when no package manager found', async () => {
@@ -50,9 +53,7 @@ describe('parsing yarn lock files', () => {
     };
     expect(async () =>
       (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies('@aws-cdk/core'),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Unsupported lockfile type yarn-test-error.lock provided. Only 'npm', 'yarn', 'pnpm' is currently supported."`,
-    );
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"yarn.lock parsing failed with an error: Invalid value type 1:16 in lockfile"`);
   });
 
   it('correctly detect dependencies for @aws-cdk/core', async () => {

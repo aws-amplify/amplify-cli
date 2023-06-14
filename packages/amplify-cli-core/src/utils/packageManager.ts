@@ -28,20 +28,33 @@ export interface PackageManager {
 const isWindows = process.platform === 'win32';
 
 export class NpmPackageManager implements PackageManager {
-  packageManager: PackageManagerType = 'npm';
-  lockFile = 'package-lock.json';
-  executable = isWindows ? 'npm.cmd' : 'npm';
-  displayValue = 'NPM';
+  readonly packageManager: PackageManagerType = 'npm';
+  readonly displayValue = 'NPM';
+  lockFile;
+  executable;
+  version?: SemVer;
+
+  constructor() {
+    this.lockFile = 'package-lock.json';
+    this.executable = isWindows ? 'npm.cmd' : 'npm';
+  }
+
   getRunScriptArgs = (scriptName: string) => ['run-script', scriptName];
   getInstallArgs = (buildType = BuildType.PROD) => ['install', '--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
 }
 
 export class YarnPackageManager implements PackageManager {
-  packageManager: PackageManagerType = 'yarn';
-  lockFile = 'yarn.lock';
-  executable = isWindows ? 'yarn.cmd' : 'yarn';
-  displayValue = 'Yarn';
+  readonly packageManager: PackageManagerType = 'yarn';
+  readonly displayValue = 'Yarn';
+  lockFile;
+  executable;
   version?: SemVer;
+
+  constructor() {
+    this.lockFile = 'yarn.lock';
+    this.executable = isWindows ? 'yarn.cmd' : 'yarn';
+  }
+
   getRunScriptArgs = (scriptName: string) => [scriptName];
   getInstallArgs = (buildType = BuildType.PROD) => {
     const useYarnModern = this.version?.major && this.version?.major > 1;
@@ -50,19 +63,32 @@ export class YarnPackageManager implements PackageManager {
 }
 
 export class PnpmPackageManager implements PackageManager {
-  packageManager: PackageManagerType = 'pnpm';
-  lockFile = 'pnpm-lock.yaml';
-  executable = isWindows ? 'pnpm.cmd' : 'pnpm';
-  displayValue = 'PNPM';
+  readonly packageManager: PackageManagerType = 'pnpm';
+  readonly displayValue = 'PNPM';
+  lockFile;
+  executable;
+  version?: SemVer;
+
+  constructor() {
+    this.lockFile = 'pnpm-lock.yaml';
+    this.executable = isWindows ? 'pnpm.cmd' : 'pnpm';
+  }
+
   getRunScriptArgs = (scriptName: string) => [scriptName];
   getInstallArgs = () => ['install'];
 }
 
 export class CustomPackageManager implements PackageManager {
-  packageManager: PackageManagerType = 'custom';
-  displayValue = 'Custom Build Command or Script Path';
-  lockFile = '';
-  executable = '';
+  readonly packageManager: PackageManagerType = 'custom';
+  readonly displayValue = 'Custom Build Command or Script Path';
+  lockFile;
+  executable;
+  version?: SemVer;
+
+  constructor() {
+    this.lockFile = '';
+    this.executable = '';
+  }
   getRunScriptArgs = () => {
     throw new AmplifyError('PackagingLambdaFunctionError', {
       message: `Packaging lambda function failed. Unsupported package manager`,
