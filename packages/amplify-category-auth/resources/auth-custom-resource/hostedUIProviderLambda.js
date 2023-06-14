@@ -4,33 +4,32 @@ const aws = require('aws-sdk');
 const identity = new aws.CognitoIdentityServiceProvider();
 
 exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  const ignoredPromise = handleEvent(event, context);
+}
+
+async function handleEvent(event, context) {
   try {
     const userPoolId = event.ResourceProperties.userPoolId;
     const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
 
-    const deleteIdentityProvider = (providerName) => {
-      const params = { ProviderName: providerName, UserPoolId: userPoolId };
-      return identity.deleteIdentityProvider(params).promise();
-    };
-
-    const deleteSuccessOrNotFound = (promiseResult) => {
-      return promiseResult.status === 'fulfilled' || promiseResult.reason.toString().match(/NotFoundException/);
-    };
-
-    const providerPromises = [];
-
-    hostedUIProviderMeta.forEach(({ ProviderName }) => providerPromises.push(deleteIdentityProvider(ProviderName)));
-
-    Promise.allSettled(providerPromises).then((results) => {
-      if (results.every(deleteSuccessOrNotFound)) {
-        response.send(event, context, response.SUCCESS);
-      } else {
-        const firstFailure = results.find((result) => result.status === 'rejected');
-        response.send(event, context, response.FAILED, firstFailure);
+    for (const { ProviderName } of hostedUIProviderMeta) {
+      try {
+        const params = { ProviderName, UserPoolId: userPoolId };
+        await identity.deleteIdentityProvider(params).promise();
+      } catch (e) {
+        if (!e?.code?.toString()?.match(/NotFoundException/)) {
+          response.send(event, context, response.FAILED, e);
+          throw e;
+        } else {
+          console.log('Not Found', ProviderName);
+        }
       }
-    });
+    }
+
+    response.send(event, context, response.SUCCESS);
   } catch (err) {
     console.log(err.stack);
     response.send(event, context, response.FAILED, { err });
   }
-};
+}
