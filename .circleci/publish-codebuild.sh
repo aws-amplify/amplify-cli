@@ -17,11 +17,28 @@ function lernaPublishExitOnFailure {
     # registy URL update changes .yarnrc.yml file
     git update-index --assume-unchanged .yarnrc.yml
   fi
-  
+
   # run lerna publish with the args that were passed to this function
   # duplicate stdout to a temp file
   # grep the temp file for the lerna err token and return exit 1 if found (-v option inverts grep exit code)
   npx lerna publish "$@" | tee /tmp/publish-results && grep -qvz "lerna ERR!" < /tmp/publish-results
+}
+
+# verifies that binaries are uploaded and available before publishing to NPM
+function verifyPkgIsAvailable {
+  # exit on failure
+  set -e
+
+  # read version of @aws-amplify/cli
+  desiredPkgVersion=$(npx lerna list --scope @aws-amplify/cli --json | jq -r '.[0].version')
+
+  # check binaries
+  # send HEAD requests to check for binary presence
+  # curl --fail exits with non-zero code and makes this script fail
+  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-linux-x64.tgz
+  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-linux-arm64.tgz
+  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-macos-x64.tgz
+  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-win-x64.tgz
 }
 
 if [ -z "$GITHUB_EMAIL" ]; then
@@ -72,6 +89,11 @@ elif [[ "$BRANCH_NAME" == "release" ]]; then
   # create release commit and release tags
   npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]"
 
+  if [[ "$LOCAL_PUBLISH_TO_LATEST" != "true" ]]; then
+    # verify that binary has been uploaded
+    verifyPkgIsAvailable
+  fi
+
   # publish versions that were just computed
   lernaPublishExitOnFailure from-git --yes --no-push
 
@@ -118,6 +140,9 @@ elif [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^relea
     echo "Exiting without pushing release commit or release tags"
     exit 0
   fi
+
+  # verify that binary has been uploaded
+  verifyPkgIsAvailable
 
   # publish versions that were just computed
   lernaPublishExitOnFailure from-git --yes --no-push --dist-tag rc
