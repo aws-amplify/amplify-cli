@@ -14,8 +14,15 @@ RUN set -ex \
     && apt-get install -y \
       xdg-utils \
       libatk-bridge2.0-0 \
+      libgtk2.0-0 \
       libgtk-3.0 \
+      libgbm-dev \
+      libnotify-dev \
+      libgconf-2-4 \
+      libnss3 \
+      libxss1 \
       libasound2 \
+      libxtst6 \
       lsof \
       sudo \
       tcl \
@@ -26,6 +33,7 @@ RUN set -ex \
       less \
       tree \
       nano \
+      xauth \
     && apt-get install git=1:2.* -y -qq --no-install-recommends \
     && git version \
     && apt-get install -y -qq --no-install-recommends openssh-client \
@@ -35,7 +43,7 @@ RUN set -ex \
     && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
-    
+
     && apt-get install -y -qq --no-install-recommends \
           apt-utils asciidoc autoconf automake build-essential bzip2 \
           bzr curl dirmngr docbook-xml docbook-xsl dpkg-dev \
@@ -121,7 +129,7 @@ RUN set -ex  \
 ARG SRC_DIR="/usr/src"
 ARG N_SRC_DIR="$SRC_DIR/n"
 RUN git clone https://github.com/tj/n $N_SRC_DIR \
-     && cd $N_SRC_DIR && make install 
+     && cd $N_SRC_DIR && make install
 
 #python
 RUN curl https://pyenv.run | bash
