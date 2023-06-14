@@ -7,12 +7,15 @@ import { existsSync, copyFileSync, unlinkSync } from 'fs';
 // example:
 // yarn split-e2e-tests-codebuild-single src/__tests__/auth_2d.ts w us-east-2
 
+// to restore the original buildspec, run the command again
+
 const main = () => {
   const generatedFilename = 'codebuild_specs/e2e_workflow_generated.yml';
   if (existsSync(`${generatedFilename}.temp`)) {
     unlinkSync(generatedFilename);
     copyFileSync(`${generatedFilename}.temp`, generatedFilename);
     unlinkSync(`${generatedFilename}.temp`);
+    console.log('Original buildspec restored.');
     return 0;
   } else {
     copyFileSync(generatedFilename, `${generatedFilename}.temp`);
