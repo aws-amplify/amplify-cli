@@ -36,8 +36,17 @@ export type SmoketestArgs = {
   destructive: boolean;
 };
 
+function defaultProjectDirectoryName(): string {
+  let projectDir;
+  do {
+    projectDir = path.join(os.tmpdir(), `smoketest_${Math.floor(Math.random() * 1000000)}`);
+  } while (fs.existsSync(projectDir));
+  fs.ensureDirSync(projectDir);
+  return projectDir;
+}
+
 function getArgs(): SmoketestArgs {
-  const { DESTRUCTIVE = 'false', CLI_VERSION = 'latest', PROJECT_DIRECTORY = path.join(os.tmpdir(), 'smoketest') } = process.env;
+  const { DESTRUCTIVE = 'false', CLI_VERSION = 'latest', PROJECT_DIRECTORY = defaultProjectDirectoryName() } = process.env;
   return {
     projectDirectory: PROJECT_DIRECTORY,
     cliVersion: CLI_VERSION,
@@ -138,7 +147,7 @@ export class Amplify {
       .runAsync();
   };
   addRestApi = () => {
-    return spawn(getCLIPath(), ['add', 'api'], { ...this.executionArgs, noOutputTimeout: 3000 })
+    return spawn(getCLIPath(), ['add', 'api'], { ...this.executionArgs, noOutputTimeout: 10000 })
       .wait('Select from one of the below mentioned services')
       .sendKeyDown()
       .sendCarriageReturn()
