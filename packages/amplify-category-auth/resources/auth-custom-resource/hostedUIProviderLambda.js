@@ -19,7 +19,7 @@ async function handleEvent(event, context) {
         await identity.deleteIdentityProvider(params).promise();
       } catch (e) {
         if (!e?.code?.toString()?.match(/NotFoundException/)) {
-          response.send(event, context, response.FAILED, e);
+          // bubble up to outer catch.
           throw e;
         } else {
           console.log('Not Found', ProviderName);
