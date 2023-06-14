@@ -18,12 +18,6 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: build_windows
-      buildspec: codebuild_specs/build_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
       env:
@@ -63,15 +57,11 @@ batch:
         - build_pkg_binaries_linux
         - build_pkg_binaries_macos
         - build_pkg_binaries_win
-    - identifier: w_auth_2d
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+    - identifier: l_auth_2d
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_2d.ts
           CLI_REGION: us-east-2
-          USE_PARENT_ACCOUNT: 'false'
-        type: WINDOWS_SERVER_2019_CONTAINER
-        image: $WINDOWS_IMAGE_2019
       depend-on:
         - upb
-        - build_windows

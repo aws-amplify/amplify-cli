@@ -36,6 +36,16 @@ const main = () => {
     'depend-on': string[];
   };
 
+  const necessaryIds = [
+    'build_linux',
+    'publish_to_local_registry',
+    'build_pkg_binaries_arm',
+    'build_pkg_binaries_linux',
+    'build_pkg_binaries_macos',
+    'build_pkg_binaries_win',
+    'upb',
+  ];
+
   const jobBuildSpec: jobBuildSpecType = {
     identifier: `${os}_${filePath.replace('src/__tests__/', '').replace('.test', '').replace('.ts', '')}`,
     buildspec: os === 'l' ? 'codebuild_specs/run_e2e_tests_linux.yml' : 'codebuild_specs/run_e2e_tests_windows.yml',
@@ -52,19 +62,10 @@ const main = () => {
     jobBuildSpec.env.image = '$WINDOWS_IMAGE_2019';
     jobBuildSpec.env.variables.USE_PARENT_ACCOUNT = 'false';
     jobBuildSpec['depend-on'].push('build_windows');
+    necessaryIds.push('build_windows');
   }
   const configBase: any = loadConfigBase();
   let baseBuildGraph = configBase.batch['build-graph'];
-  const necessaryIds = [
-    'build_linux',
-    'build_windows',
-    'publish_to_local_registry',
-    'build_pkg_binaries_arm',
-    'build_pkg_binaries_linux',
-    'build_pkg_binaries_macos',
-    'build_pkg_binaries_win',
-    'upb',
-  ];
   baseBuildGraph = baseBuildGraph.filter((i: any) => necessaryIds.includes(i.identifier));
   const currentBatch = [...baseBuildGraph, jobBuildSpec];
   configBase.batch['build-graph'] = currentBatch;
