@@ -27,7 +27,7 @@ export interface PackageManager {
 
 const isWindows = process.platform === 'win32';
 
-class NpmPackageManager implements PackageManager {
+export class NpmPackageManager implements PackageManager {
   packageManager: PackageManagerType = 'npm';
   lockFile = 'package-lock.json';
   executable = isWindows ? 'npm.cmd' : 'npm';
@@ -36,7 +36,7 @@ class NpmPackageManager implements PackageManager {
   getInstallArgs = (buildType = BuildType.PROD) => ['install', '--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
 }
 
-class YarnPackageManager implements PackageManager {
+export class YarnPackageManager implements PackageManager {
   packageManager: PackageManagerType = 'yarn';
   lockFile = 'yarn.lock';
   executable = isWindows ? 'yarn.cmd' : 'yarn';
@@ -49,7 +49,7 @@ class YarnPackageManager implements PackageManager {
   };
 }
 
-class PnpmPackageManager implements PackageManager {
+export class PnpmPackageManager implements PackageManager {
   packageManager: PackageManagerType = 'pnpm';
   lockFile = 'pnpm-lock.yaml';
   executable = isWindows ? 'pnpm.cmd' : 'pnpm';
@@ -58,7 +58,7 @@ class PnpmPackageManager implements PackageManager {
   getInstallArgs = () => ['install'];
 }
 
-class CustomPackageManager implements PackageManager {
+export class CustomPackageManager implements PackageManager {
   packageManager: PackageManagerType = 'custom';
   displayValue = 'Custom Build Command or Script Path';
   lockFile = '';
