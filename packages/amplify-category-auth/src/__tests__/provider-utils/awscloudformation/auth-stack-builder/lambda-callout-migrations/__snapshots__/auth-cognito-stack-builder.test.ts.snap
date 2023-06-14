@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`migrate step for removing lambda callouts createHostedUIDomainResource when create/update lambda callouts exist creates delete lambda callout and cfn-code-created providers 1`] = `
+"const response = require('cfn-response');
+const aws = require('aws-sdk');
+
+const { deleteUserPoolDomain } = new aws.CognitoIdentityServiceProvider();
+
+exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  const ignoredPromise = handleEvent(event, context);
+};
+
+async function handleEvent(event, context) {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const inputDomainName = event.ResourceProperties.hostedUIDomainName;
+
+  try {
+    const params = { Domain: inputDomainName, UserPoolId: userPoolId };
+    await deleteUserPoolDomain(params).promise();
+    response.send(event, context, response.SUCCESS);
+  } catch (err) {
+    if (err.name !== 'NotFoundException' && err.name !== 'InvalidParameterException') {
+      response.send(event, context, response.FAILED, { err });
+    } else {
+      response.send(event, context, response.SUCCESS);
+    }
+  }
+}
+"
+`;
+
+exports[`migrate step for removing lambda callouts createHostedUIProvidersResources when create/update lambda callouts exist creates delete lambda callout and cfn-code-created providers 1`] = `
+"const response = require('cfn-response');
+const aws = require('aws-sdk');
+
+const identity = new aws.CognitoIdentityServiceProvider();
+
+exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  const ignoredPromise = handleEvent(event, context);
+};
+
+async function handleEvent(event, context) {
+  try {
+    const userPoolId = event.ResourceProperties.userPoolId;
+    const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
+
+    for (const { ProviderName } of hostedUIProviderMeta) {
+      try {
+        const params = { ProviderName, UserPoolId: userPoolId };
+        await identity.deleteIdentityProvider(params).promise();
+      } catch (e) {
+        if (!e?.code?.toString()?.match(/NotFoundException/)) {
+          // bubble up to outer catch.
+          throw e;
+        } else {
+          console.log('Not Found', ProviderName);
+        }
+      }
+    }
+
+    response.send(event, context, response.SUCCESS);
+  } catch (err) {
+    console.log(err.stack);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+"
+`;
