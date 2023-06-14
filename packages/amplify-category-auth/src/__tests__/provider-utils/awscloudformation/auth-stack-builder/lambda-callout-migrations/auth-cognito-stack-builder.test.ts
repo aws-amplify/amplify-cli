@@ -114,7 +114,7 @@ describe('migrate step for removing lambda callouts', () => {
         const { hostedUICustomResource, hostedUIDomainResource } = cognitoStack;
 
         expect(hostedUICustomResource?.cfnResourceType).toBe('AWS::Lambda::Function');
-        expect((hostedUICustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatch('deleteUserPoolDomain(inputDomainName)');
+        expect((hostedUICustomResource?.code as CfnFunction.CodeProperty).zipFile).toMatchSnapshot();
 
         expect(hostedUIDomainResource).toBeDefined();
       });
