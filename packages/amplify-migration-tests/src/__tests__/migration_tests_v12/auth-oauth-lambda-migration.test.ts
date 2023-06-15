@@ -1,7 +1,7 @@
 import { createNewProjectDir, deleteProject, deleteProjectDir } from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
-import { setupOgProjectWithAuth } from '../../migration-helpers-v11/auth-helpers/utilities';
-import { initJSProjectWithProfileV11 } from '../../migration-helpers-v11/init';
+import { setupOgProjectWithAuth } from '../../migration-helpers-v12/auth-helpers/utilities';
+import { initJSProjectWithProfileV11 } from '../../migration-helpers-v12/init';
 import { pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
 const defaultsSettings = {

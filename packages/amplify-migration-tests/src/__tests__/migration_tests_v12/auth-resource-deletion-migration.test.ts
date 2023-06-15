@@ -14,7 +14,7 @@ import {
   listSocialIdpProviders,
 } from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
-import { initJSProjectWithProfileV11 } from '../../migration-helpers-v11/init';
+import { initJSProjectWithProfileV11 } from '../../migration-helpers-v12/init';
 
 describe('amplify migration test auth', () => {
   let projRoot1: string;

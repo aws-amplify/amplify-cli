@@ -12,7 +12,7 @@ import {
   setCLIInputs,
 } from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
-import { initIosProjectWithProfile11 } from '../../migration-helpers-v11/init';
+import { initIosProjectWithProfile11 } from '../../migration-helpers-v12/init';
 import { assertAppClientSecretInFiles, pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
 const defaultsSettings = {
