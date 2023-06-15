@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { getCLIPath, listUserPools, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 
 export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {
@@ -40,16 +40,25 @@ export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clie
   });
 };
 
-export const importSingleIdentityPoolAndUserPool = (
+export const importSingleIdentityPoolAndUserPool = async (
   cwd: string,
   autoCompletePrefix: string,
+  region: string,
   clientNames?: { web?: string; native?: string },
 ) => {
   const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
     .wait('What type of auth resource do you want to import')
-    .sendCarriageReturn()
-    .wait('Only one Cognito User Pool')
-    .delay(500); // Some delay required for autocomplete and terminal to catch up
+    .sendCarriageReturn();
+
+  const userpools = await listUserPools(region);
+
+  if (userpools.length > 1) {
+    chain.wait('Select the User Pool you want to import:').sendLine(autoCompletePrefix);
+  } else {
+    chain.wait('Only one Cognito User Pool');
+  }
+
+  chain.delay(500); // Some delay required for autocomplete and terminal to catch up
 
   if (clientNames?.web) {
     chain
