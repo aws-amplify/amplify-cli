@@ -1,10 +1,18 @@
 import { amplifyConfigure as configure, injectSessionToken, isCI } from '@aws-amplify/amplify-e2e-core';
 
-async function setupAmplify() {
+export type AmplifySetupOptions = {
+  AWS_ACCESS_KEY_ID?: string;
+  AWS_SECRET_ACCESS_KEY?: string;
+  REGION?: string;
+  AWS_SESSION_TOKEN?: string;
+};
+export async function setupAmplify({
+  AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY,
+  REGION = process.env.CLI_REGION,
+  AWS_SESSION_TOKEN = process.env.AWS_SESSION_TOKEN,
+}: AmplifySetupOptions = {}) {
   if (isCI()) {
-    const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
-    const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
-    const REGION = process.env.CLI_REGION;
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !REGION) {
       throw new Error('Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and CLI_REGION in .env');
     }
@@ -14,7 +22,7 @@ async function setupAmplify() {
       profileName: 'amplify-integ-test-user',
       region: REGION,
     });
-    if (process.env.AWS_SESSION_TOKEN) {
+    if (AWS_SESSION_TOKEN) {
       injectSessionToken('amplify-integ-test-user');
     }
   } else {
