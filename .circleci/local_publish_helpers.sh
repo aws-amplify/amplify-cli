@@ -5,11 +5,22 @@ default_verdaccio_package=verdaccio@5.1.2
 
 function startLocalRegistry {
     # Start local registry
-    tmp_registry_log=$(mktemp)
+    tmp_registry_log="$(mktemp)"
     echo "Registry output file: $tmp_registry_log"
     (cd && nohup npx ${VERDACCIO_PACKAGE:-$default_verdaccio_package} -c $1 &>$tmp_registry_log &)
     # Wait for Verdaccio to boot
-    grep -q 'http address' <(tail -f $tmp_registry_log)
+    attempts=0
+    until grep -q 'http address' $tmp_registry_log
+    do
+      attempts=$((attempts+1))
+      echo "Waiting for Verdaccio, attempt $attempts"
+      sleep 1
+
+      if (( attempts > 60 )); then
+        echo "Verdaccio didn't start";
+        exit 1
+      fi
+    done
 }
 
 function uploadPkgCli {
@@ -152,7 +163,7 @@ function unsetSudoNpmRegistryUrl {
 }
 
 function changeNpmGlobalPath {
-    mkdir -p ~/.npm-global
+    mkdir -p ~/.npm-global/{bin,lib}
     npm config set prefix '~/.npm-global'
     export PATH=~/.npm-global/bin:$PATH
 }
@@ -266,7 +277,6 @@ function setAwsAccountCredentials {
         useChildAccountCredentials
     fi
 }
-
 function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
@@ -276,6 +286,36 @@ function runE2eTest {
         yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
     else
         yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+function runE2eTestCb {
+    _setupCoverage
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+    else
+        NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+function _setupCoverage {
+    _teardownCoverage
+    echo "Setup Coverage ($E2E_TEST_COVERAGE_DIR)"
+    if [ ! -d $E2E_TEST_COVERAGE_DIR ]
+    then
+        mkdir -p $E2E_TEST_COVERAGE_DIR
+    fi
+}
+
+function _teardownCoverage {
+    if [ -d $E2E_TEST_COVERAGE_DIR ]
+    then
+        echo "Teardown Coverage ($E2E_TEST_COVERAGE_DIR)"
+        rm -r $E2E_TEST_COVERAGE_DIR
     fi
 }
 

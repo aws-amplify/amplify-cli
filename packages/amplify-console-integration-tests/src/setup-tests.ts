@@ -1,7 +1,7 @@
 const removeYarnPaths = () => {
   // Remove yarn's temporary PATH modifications as they affect the yarn version used by jest tests when building the lambda functions
   process.env.PATH = process.env.PATH.split(':')
-    .filter((p) => !p.includes('/tmp/xfs-') && !p.includes('\\Temp\\xfs-'))
+    .filter((p) => !p.includes('/xfs-') && !p.includes('\\Temp\\xfs-'))
     .join(':');
 };
 
