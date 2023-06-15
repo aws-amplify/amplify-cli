@@ -22,6 +22,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     getBoolean: jest.fn(),
     getNumber: jest.fn(),
     isInitialized: jest.fn().mockReturnValue(true),
+    ensureDefaultFeatureFlags: jest.fn(),
   },
   getPackageManager: jest.fn(),
 }));
