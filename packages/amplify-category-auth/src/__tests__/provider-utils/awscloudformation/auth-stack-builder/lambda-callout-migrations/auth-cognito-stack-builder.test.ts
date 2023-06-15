@@ -3,6 +3,7 @@ import { AmplifyAuthCognitoStack } from '../../../../../provider-utils/awscloudf
 import { AuthStackSynthesizer } from '../../../../../provider-utils/awscloudformation/auth-stack-builder/stack-synthesizer';
 import { CognitoStackOptions } from '../../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import path from 'path';
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
@@ -25,7 +26,21 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockDirPath'),
     getResourceCfnTemplatePath: jest.fn().mockReturnValue('cfn-template-path.json'),
+    getCurrentCfnTemplatePathFromBuild: jest.fn().mockImplementation((categoryName, resourceName) => {
+      return path.join(
+        __dirname,
+        'amplify',
+        '#current-cloud-backend',
+        categoryName,
+        resourceName,
+        `${resourceName}-cloudformation-template.json`,
+      );
+    }),
   },
+}));
+
+jest.mock('../../../../../provider-utils/awscloudformation/utils/get-from-amplify-meta', () => ({
+  getUserPoolIdFromMeta: jest.fn().mockReturnValue('fakeid'),
 }));
 
 describe('migrate step for removing lambda callouts', () => {
@@ -134,11 +149,11 @@ describe('migrate step for removing lambda callouts', () => {
     });
 
     describe('when create/update lambda callouts exist', () => {
-      it('creates delete lambda callout and cfn-code-created providers', () => {
+      it('creates delete lambda callout and cfn-code-created providers', async () => {
         const testApp = new cdk.App();
         const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
 
-        cognitoStack.createHostedUIProvidersResources(props);
+        await cognitoStack.createHostedUIProvidersResources(props);
 
         const { hostedUIProvidersCustomResource, hostedUIProviderResources } = cognitoStack;
 

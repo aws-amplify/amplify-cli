@@ -81,6 +81,7 @@ import { printCdkMigrationWarning } from './print-cdk-migration-warning';
 import { minifyJSONFile } from './utils/minify-json';
 import { handleCloudFormationError } from './cloud-formation-error-handler';
 import { handleCommonSdkError } from './handle-common-sdk-errors';
+import { getHostedUIProviderCredsFromCloud, migrateResourcesToCfn } from '@aws-amplify/amplify-category-auth';
 
 const logger = fileLogger('push-resources');
 
@@ -1086,9 +1087,11 @@ export const formNestedStack = async (
   let categories = Object.keys(amplifyMeta);
 
   categories = categories.filter((category) => category !== 'providers');
-  categories.forEach((category) => {
+
+  for (const category of categories) {
     const resources = Object.keys(amplifyMeta[category]);
-    resources.forEach((resource) => {
+
+    for (const resource of resources) {
       const resourceDetails = amplifyMeta[category][resource];
 
       if (category === 'auth' && resource !== 'userPoolGroups') {
@@ -1205,11 +1208,27 @@ export const formNestedStack = async (
           }
         }
 
-        if (category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds !== '[]') {
-          const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta || '[]');
-          const hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
+        const hasAuthCreds =
+          category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds !== '[]';
 
-          Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
+        if (parameters.resourceName) {
+          const migrateAuthIdpsToCfn = migrateResourcesToCfn(parameters.resourceName);
+
+          if (hasAuthCreds || migrateAuthIdpsToCfn) {
+            const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta || '[]');
+            let hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
+
+            if (migrateAuthIdpsToCfn) {
+              hostedUIProviderCreds = await getHostedUIProviderCredsFromCloud(
+                parameters.resourceName,
+                hostedUIProviderMeta,
+                hostedUIProviderCreds,
+                context,
+              );
+            }
+
+            Object.assign(parameters, generateAuthNestedStackParameters(hostedUIProviderMeta, hostedUIProviderCreds));
+          }
         }
 
         if (resourceDetails.providerMetadata) {
@@ -1224,8 +1243,8 @@ export const formNestedStack = async (
           };
         }
       }
-    });
-  });
+    }
+  }
 
   if (authResourceName) {
     const importedAuth = _.get(amplifyMeta, [AmplifyCategories.AUTH, authResourceName], undefined);

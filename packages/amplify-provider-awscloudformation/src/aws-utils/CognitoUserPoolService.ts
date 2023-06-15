@@ -1,5 +1,6 @@
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import {
+  DescribeIdentityProviderResponse,
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,
   ListIdentityProvidersResponse,
@@ -168,6 +169,23 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
     }
 
     return identityPoolDetails;
+  }
+
+  public async getUserPoolIdentityProviderDetails(userPoolId: string, providerName: string): Promise<DescribeIdentityProviderResponse> {
+    logger('getUserPoolIdentityProviderDetails.cognito.describeIdentityProvider', [
+      {
+        UserPoolId: userPoolId,
+        ProviderName: providerName,
+      },
+    ])();
+    const result = await this.cognito
+      .describeIdentityProvider({
+        UserPoolId: userPoolId,
+        ProviderName: providerName,
+      })
+      .promise();
+
+    return result;
   }
 
   public async getUserPoolMfaConfig(userPoolId: string): Promise<GetUserPoolMfaConfigResponse> {

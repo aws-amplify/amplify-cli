@@ -6,6 +6,7 @@
 
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import { AmplifyCategoryTransform } from '@aws-amplify/amplify-cli-core';
 import { Template } from '@aws-amplify/amplify-cli-core';
 
@@ -97,6 +98,9 @@ export const getAuthTriggerStackCfnParameters: (context: $TSContext, authResourc
 export const getFrontendConfig: (authParameters: AuthParameters) => FrontEndConfig;
 
 // @public (undocumented)
+export const getHostedUIProviderCredsFromCloud: (resourceName: string, providerMeta: $TSObject[], updatedUIProviderCreds: $TSObject[], context?: $TSContext) => Promise<$TSObject[]>;
+
+// @public (undocumented)
 export function getPermissionPolicies(context: any, resourceOpsMapping: any): Promise<{
     permissionPolicies: any[];
     resourceAttributes: any[];
@@ -119,6 +123,9 @@ export const migrate: (context: $TSContext) => Promise<void>;
 
 // @public (undocumented)
 export function migrateAuthResource(context: any, resourceName: any): Promise<boolean>;
+
+// @public (undocumented)
+export const migrateResourcesToCfn: (resourceName: string) => boolean;
 
 // @public (undocumented)
 export function prePushAuthHook(context: any): Promise<void>;

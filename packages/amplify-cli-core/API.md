@@ -1582,6 +1582,8 @@ export class PathManager {
     // (undocumented)
     getCurrentCfnTemplatePath: (projectPath: string | undefined, categoryName: string, resourceName: string) => string;
     // (undocumented)
+    getCurrentCfnTemplatePathFromBuild: (categoryName: string, resourceName: string) => string;
+    // (undocumented)
     getCurrentCloudBackendDirPath: (projectPath?: string) => string;
     // (undocumented)
     getCurrentCloudRootStackDirPath: (projectPath: string) => string;
