@@ -24,9 +24,9 @@ export const packageManagerWalkthrough = async (runtime: string): Promise<Partia
   return {};
 };
 
-const getBuildCommand = async (packageManager: PackageManagerType | 'custom'): Promise<string> => {
+const getBuildCommand = async (packageManager: PackageManagerType): Promise<string> => {
   if (packageManager === 'custom') {
-    return await prompter.input('Enter command or script path to build your function:', {
+    return prompter.input('Enter command or script path to build your function:', {
       validate: minLength(1),
     });
   } else {
