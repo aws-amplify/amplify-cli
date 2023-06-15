@@ -1,4 +1,5 @@
 import { toBeIAMRoleWithArn, toHaveValidPolicyConditionMatchingIdpId, toBeAS3Bucket } from './aws-matchers';
+import { refreshCredentials } from './refresh_credentials';
 
 const removeYarnPaths = () => {
   // Remove yarn's temporary PATH modifications as they affect the yarn version used by jest tests when building the lambda functions
@@ -19,10 +20,7 @@ if (process.env.CIRCLECI) {
   jest.retryTimes(1);
 }
 
-const refreshCredentials = () => {
-  console.log("hello, world! I'm refreshing credentials!");
-};
-
 afterEach(() => {
+  console.log('<---- Refreshing Credentials ---->');
   refreshCredentials();
 });
