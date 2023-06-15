@@ -24,7 +24,7 @@ describe('amplify push function cases:', () => {
   });
 
   it('should be able to push multiple functions at the same time', async () => {
-    const projName = `multi-lambda-${generateRandomShortId()}`;
+    const projName = `multilambda${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, { name: projName });
 
     const [shortId] = uuid().split('-');
