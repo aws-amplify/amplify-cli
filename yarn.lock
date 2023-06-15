@@ -848,6 +848,7 @@ __metadata:
   dependencies:
     "@types/node": ^12.12.6
     aws-sdk: ^2.1354.0
+    typescript: ^4.9.5
   languageName: unknown
   linkType: soft
 

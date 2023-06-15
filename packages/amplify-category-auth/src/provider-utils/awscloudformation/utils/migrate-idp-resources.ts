@@ -1,6 +1,7 @@
-import { $TSObject, JSONUtilities, pathManager, Template } from '@aws-amplify/amplify-cli-core';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, Template } from '@aws-amplify/amplify-cli-core';
+import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
 import { getUserPoolId } from './get-user-pool-id';
+import { generateUserPoolClient } from './generate-user-pool-client';
 
 const { readJson } = JSONUtilities;
 const { getCurrentCfnTemplatePathFromBuild } = pathManager;
@@ -23,39 +24,37 @@ const hasHostedProviderResources = (authCfnTemplate: Template | undefined): bool
   );
 };
 
+/*
+ * This function iterates over the user-inputted hostedUICreds and makes SDK calls
+ * to populate non-user-updated creds in the array.
+ */
+
 export const getHostedUIProviderCredsFromCloud = async (
   resourceName: string,
   providerMeta: $TSObject[],
   updatedUIProviderCreds: $TSObject[],
+  context?: $TSContext,
 ): Promise<$TSObject[]> => {
   const userPoolId = getUserPoolId(resourceName);
+  const providerCredsArr = [];
 
-  const mapExistingProviderCreds = async (provider: $TSObject) => {
-    const providerCreds = updatedUIProviderCreds?.find(({ ProviderName }) => ProviderName === provider.ProviderName) || {};
+  for (const provider of providerMeta) {
+    let providerCreds = updatedUIProviderCreds?.find(({ ProviderName }) => ProviderName === provider.ProviderName) || {};
     const hasEmptyCreds = Object.keys(providerCreds).length === 0;
     const hasNotBeenUpdated = providerCreds && Object.keys(providerCreds).length === 1 && 'ProviderName' in providerCreds;
 
-    if ((hasNotBeenUpdated || hasEmptyCreds) && userPoolId) {
-      const thisCreds = (await getProviderCreds(userPoolId, provider.ProviderName)) || providerCreds;
-      thisCreds.ProviderName = provider.ProviderName;
-      return thisCreds;
+    if ((hasNotBeenUpdated || hasEmptyCreds) && userPoolId && context) {
+      const client = await generateUserPoolClient(context);
+      providerCreds = (await getProviderCreds(userPoolId, provider.ProviderName, client)) || providerCreds;
+      providerCreds.ProviderName = provider.ProviderName;
     }
 
-    return providerCreds;
-  };
+    providerCredsArr.push(providerCreds);
+  }
 
-  return await Promise.all(providerMeta.map(mapExistingProviderCreds));
+  return providerCredsArr;
 };
 
-export const getProviderCreds = async (
-  userPoolId: string,
-  providerName: string,
-): Promise<CognitoIdentityServiceProvider.ProviderDetailsType | undefined> => {
-  const cognito = new CognitoIdentityServiceProvider();
-
-  const provider: CognitoIdentityServiceProvider.DescribeIdentityProviderResponse = await cognito
-    .describeIdentityProvider({ UserPoolId: userPoolId, ProviderName: providerName })
-    .promise();
-
-  return provider?.IdentityProvider?.ProviderDetails;
+export const getProviderCreds = async (userPoolId: string, providerName: string, client: ICognitoUserPoolService): Promise<$TSAny> => {
+  return (await client.getUserPoolIdentityProviderDetails(userPoolId, providerName))?.IdentityProvider?.ProviderDetails;
 };

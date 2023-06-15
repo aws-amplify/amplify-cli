@@ -1,4 +1,4 @@
-import { $TSObject } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as migrateIdpResources from '../../../../provider-utils/awscloudformation/utils/migrate-idp-resources';
 
 const { migrateResourcesToCfn, getHostedUIProviderCredsFromCloud } = migrateIdpResources;
@@ -50,6 +50,10 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/get-user-pool-id', () => ({
   getUserPoolId: jest.fn().mockReturnValue('fakeid'),
+}));
+
+jest.mock('../../../../provider-utils/awscloudformation/utils/generate-user-pool-client', () => ({
+  generateUserPoolClient: jest.fn(),
 }));
 
 describe('migrateResourcesToCfn', () => {
@@ -105,7 +109,7 @@ describe('getHostedUIProviderCredsFromCloud', () => {
   });
 
   describe('when credentials exist and have not been updated', () => {
-    it('exports existing credentials from root stack', async () => {
+    it('gets existing credentials from cloud', async () => {
       const providerCreds = [
         {
           ProviderName: 'Facebook',
@@ -115,7 +119,7 @@ describe('getHostedUIProviderCredsFromCloud', () => {
         },
       ];
 
-      const results = await getHostedUIProviderCredsFromCloud('authtest', providerMeta, providerCreds);
+      const results = await getHostedUIProviderCredsFromCloud('authtest', providerMeta, providerCreds, {} as $TSContext);
 
       expect(results[0]).toEqual({
         ProviderName: 'Facebook',
@@ -175,7 +179,7 @@ describe('getHostedUIProviderCredsFromCloud', () => {
         },
       ];
 
-      const results = await getHostedUIProviderCredsFromCloud('authtest', providerMeta, providerCreds);
+      const results = await getHostedUIProviderCredsFromCloud('authtest', providerMeta, providerCreds, {} as $TSContext);
 
       expect(results[0]).toEqual({
         ProviderName: 'Facebook',

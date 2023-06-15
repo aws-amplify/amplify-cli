@@ -1088,12 +1088,10 @@ export const formNestedStack = async (
 
   categories = categories.filter((category) => category !== 'providers');
 
-  for (const catIdx in categories) {
-    const category = categories[catIdx];
+  for (const category of categories) {
     const resources = Object.keys(amplifyMeta[category]);
 
-    for (const resourceIdx in resources) {
-      const resource = resources[resourceIdx];
+    for (const resource of resources) {
       const resourceDetails = amplifyMeta[category][resource];
 
       if (category === 'auth' && resource !== 'userPoolGroups') {
@@ -1225,6 +1223,7 @@ export const formNestedStack = async (
                 parameters.resourceName,
                 hostedUIProviderMeta,
                 hostedUIProviderCreds,
+                context,
               );
             }
 

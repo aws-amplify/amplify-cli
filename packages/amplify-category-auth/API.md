@@ -98,7 +98,7 @@ export const getAuthTriggerStackCfnParameters: (context: $TSContext, authResourc
 export const getFrontendConfig: (authParameters: AuthParameters) => FrontEndConfig;
 
 // @public (undocumented)
-export const getHostedUIProviderCredsFromCloud: (resourceName: string, providerMeta: $TSObject[], updatedUIProviderCreds: $TSObject[]) => Promise<$TSObject[]>;
+export const getHostedUIProviderCredsFromCloud: (resourceName: string, providerMeta: $TSObject[], updatedUIProviderCreds: $TSObject[], context?: $TSContext) => Promise<$TSObject[]>;
 
 // @public (undocumented)
 export function getPermissionPolicies(context: any, resourceOpsMapping: any): Promise<{

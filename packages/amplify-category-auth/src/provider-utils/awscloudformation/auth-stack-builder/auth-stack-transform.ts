@@ -76,7 +76,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       await generateNestedAuthTriggerTemplate(this._category, this.resourceName, this._cognitoStackProps);
     }
     // this will also include lambda triggers and adminQueries once api and function transform are done
-    await this.generateStackResources(this._cognitoStackProps);
+    await this.generateStackResources(this._cognitoStackProps, context);
 
     // apply override on Amplify Object having CDK Constructs for Auth Stack
     await this.applyOverride();
@@ -92,15 +92,15 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    * Generates CFN Resources for Auth
    */
-  private async generateStackResources(props: CognitoStackOptions): Promise<void> {
+  private async generateStackResources(props: CognitoStackOptions, context?: $TSContext): Promise<void> {
     // add CFN parameter
-    await this.addCfnParameters(props);
+    await this.addCfnParameters(props, context);
 
     // add CFN condition
     await this.addCfnConditions();
     // generate Resources
 
-    await this._authTemplateObj.generateCognitoStackResources(props);
+    await this._authTemplateObj.generateCognitoStackResources(props, context);
 
     // generate Output
     await this.generateCfnOutputs(props);
@@ -470,7 +470,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    *  adds cfn parameters
    */
-  private addCfnParameters = async (props: CognitoStackOptions): Promise<void> => {
+  private addCfnParameters = async (props: CognitoStackOptions, context?: $TSContext): Promise<void> => {
     this._authTemplateObj.addCfnParameter(
       {
         type: 'String',
@@ -563,7 +563,12 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     let hostedUIProviderCreds = JSON.parse(props.hostedUIProviderCreds || '[]');
 
     if (migrateResourcesToCfn(props.resourceName)) {
-      hostedUIProviderCreds = await getHostedUIProviderCredsFromCloud(props.resourceName, hostedUIProviderMeta, hostedUIProviderCreds);
+      hostedUIProviderCreds = await getHostedUIProviderCredsFromCloud(
+        props.resourceName,
+        hostedUIProviderMeta,
+        hostedUIProviderCreds,
+        context,
+      );
       props.hostedUIProviderCreds = JSON.stringify(hostedUIProviderCreds);
     }
 

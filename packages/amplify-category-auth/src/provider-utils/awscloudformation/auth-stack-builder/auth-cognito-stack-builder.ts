@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities, pathManager, Template } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, pathManager, Template } from '@aws-amplify/amplify-cli-core';
 import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
@@ -204,7 +204,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     throw new Error(`Cfn Condition with LogicalId ${logicalId} doesn't exist`);
   }
 
-  generateCognitoStackResources = async (props: CognitoStackOptions): Promise<void> => {
+  generateCognitoStackResources = async (props: CognitoStackOptions, context?: $TSContext): Promise<void> => {
     const autoVerifiedAttributes = props.autoVerifiedAttributes
       ? props.autoVerifiedAttributes
           .concat(props.aliasAttributes ? props.aliasAttributes : [])
@@ -489,7 +489,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       }
 
       if (props.hostedUIProviderMeta) {
-        await this.createHostedUIProvidersResources(props);
+        await this.createHostedUIProvidersResources(props, context);
       }
 
       if (!props.useEnabledMfas && props.mfaConfiguration !== 'OFF') {
@@ -1209,7 +1209,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
   };
 
-  createHostedUIProvidersResources = async (props: CognitoStackOptions) => {
+  createHostedUIProvidersResources = async (props: CognitoStackOptions, context?: $TSContext) => {
     if (!props.hostedUIProviderMeta) {
       return;
     }
@@ -1220,7 +1220,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
     if (migrateResources) {
       this.deleteExistingHostedUIProviderCustomResource();
-      creds = await getHostedUIProviderCredsFromCloud(props.resourceName, meta, creds);
+      creds = await getHostedUIProviderCredsFromCloud(props.resourceName, meta, creds, context);
       props.hostedUIProviderCreds = JSON.stringify(creds);
     }
 
