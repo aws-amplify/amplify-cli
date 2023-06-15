@@ -18,3 +18,11 @@ jest.setTimeout(JEST_TIMEOUT);
 if (process.env.CIRCLECI) {
   jest.retryTimes(1);
 }
+
+const refreshCredentials = () => {
+  console.log("hello, world! I'm refreshing credentials!");
+};
+
+afterEach(() => {
+  refreshCredentials();
+});
