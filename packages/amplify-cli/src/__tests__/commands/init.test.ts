@@ -1,4 +1,12 @@
-import { $TSContext, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext,
+  getPackageManager,
+  JSONUtilities,
+  LocalEnvInfo,
+  pathManager,
+  stateManager,
+  YarnPackageManager,
+} from '@aws-amplify/amplify-cli-core';
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
@@ -8,7 +16,14 @@ import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
 import { coerce } from 'semver';
 
-jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
+  FeatureFlags: {
+    getBoolean: jest.fn(),
+    getNumber: jest.fn(),
+  },
+  getPackageManager: jest.fn(),
+}));
 jest.mock('child_process');
 jest.mock('fs-extra');
 jest.mock('which');
@@ -20,14 +35,12 @@ jest.mock('which');
 (readdirSync as jest.Mock).mockReturnValue([]);
 (sync as jest.MockedFunction<typeof sync>).mockReturnValue('mock/path');
 (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(
-  new Promise((resolve) =>
-    resolve({
-      executable: 'yarn',
-      lockFile: 'mock.lock',
-      packageManager: 'yarn',
-      version: coerce('1.22.0') ?? undefined,
-    }),
-  ),
+  new Promise((resolve) => {
+    const packageManager = new YarnPackageManager();
+    packageManager.lockFile = 'mock.lock';
+    packageManager.version = coerce('1.22.0') ?? undefined;
+    resolve(packageManager);
+  }),
 );
 
 describe('amplify init:', () => {
