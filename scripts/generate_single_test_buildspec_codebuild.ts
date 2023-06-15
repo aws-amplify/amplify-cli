@@ -52,7 +52,13 @@ const main = () => {
   ];
 
   const jobBuildSpec: jobBuildSpecType = {
-    identifier: `${os}_${filePath.replace('src/__tests__/', '').replace('.test', '').replace('.ts', '')}`,
+    identifier: `${os}_${filePath
+      .replace(/src\/__tests__\//g, '')
+      .replace(/\.test/g, '')
+      .replace(/\.ts/g, '')
+      .replace(/\./g, '_')
+      .replace(/-/g, '_')
+      .replace(/\//g, '_')}`,
     buildspec: os === 'l' ? 'codebuild_specs/run_e2e_tests_linux.yml' : 'codebuild_specs/run_e2e_tests_windows.yml',
     env: {
       variables: {
