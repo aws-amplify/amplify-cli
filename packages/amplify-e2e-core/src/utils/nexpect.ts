@@ -439,7 +439,10 @@ function chain(context: Context): ExecutionContext {
           //
           return onError(new Error(`Command not found: ${context.command}`), false);
         }
-        return onError(new Error(`Process exited with non zero exit code ${code}`), false);
+        console.error(signal?.message ?? signal);
+        const err = new Error(`Process exited with non zero exit code ${code}`);
+        err.stack = signal?.stack ?? err?.stack;
+        return onError(err, false);
       }
       if (context.queue.length && !flushQueue()) {
         // if flushQueue returned false, onError was called
