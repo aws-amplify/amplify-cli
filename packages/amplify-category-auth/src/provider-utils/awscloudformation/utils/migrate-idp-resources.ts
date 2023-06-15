@@ -1,7 +1,7 @@
 import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, Template } from '@aws-amplify/amplify-cli-core';
 import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
-import { getUserPoolId } from './get-user-pool-id';
 import { generateUserPoolClient } from './generate-user-pool-client';
+import { getUserPoolIdFromMeta } from './get-from-amplify-meta';
 
 const { readJson } = JSONUtilities;
 const { getCurrentCfnTemplatePathFromBuild } = pathManager;
@@ -35,7 +35,7 @@ export const getHostedUIProviderCredsFromCloud = async (
   updatedUIProviderCreds: $TSObject[],
   context?: $TSContext,
 ): Promise<$TSObject[]> => {
-  const userPoolId = getUserPoolId(resourceName);
+  const userPoolId = getUserPoolIdFromMeta(resourceName);
   const providerCredsArr = [];
 
   for (const provider of providerMeta) {

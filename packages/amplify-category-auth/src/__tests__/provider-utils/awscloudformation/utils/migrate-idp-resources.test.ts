@@ -48,8 +48,8 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
 }));
 
-jest.mock('../../../../provider-utils/awscloudformation/utils/get-user-pool-id', () => ({
-  getUserPoolId: jest.fn().mockReturnValue('fakeid'),
+jest.mock('../../../../provider-utils/awscloudformation/utils/get-from-amplify-meta', () => ({
+  getUserPoolIdFromMeta: jest.fn().mockReturnValue('fakeid'),
 }));
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/generate-user-pool-client', () => ({
