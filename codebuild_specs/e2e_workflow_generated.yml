@@ -57,7 +57,7 @@ batch:
         - build_pkg_binaries_linux
         - build_pkg_binaries_macos
         - build_pkg_binaries_win
-    - identifier: l_custom-resource-with-storage
+    - identifier: l_custom_resource_with_storage
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
