@@ -32,7 +32,7 @@ describe('adding custom resources test', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('verify export custom storage types', async () => {
+  it.only('verify export custom storage types', async () => {
     await addAuthWithDefault(projRoot);
     await addS3WithGuestAccess(projRoot);
     const appId = getAppId(projRoot);
