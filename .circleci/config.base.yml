@@ -899,21 +899,22 @@ jobs:
           name: Sanity check install
           command: |
             amplify version
-  github_release:
+  deployment_verification:
     <<: *linux-e2e-executor-large
     steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+      #      - restore_cache:
+      #          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      #      - restore_cache:
+      #          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      #      - restore_cache:
+      #          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Publish Amplify CLI GitHub release
           command: |
             commit=$(git rev-parse HEAD)
             version=$(cat .amplify-pkg-version)
-            yarn ts-node scripts/github-release.ts $version $commit
+            version=12.1.0
+            yarn ts-node scripts/verify-deployment.ts $version
   npm_rollback_access:
     <<: *linux-e2e-executor-large
     steps:
@@ -1325,6 +1326,20 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - deployment_verification:
+          # requires:
+          #            - publish_to_npm
+          #            - github_release
+          #            - upload_pkg_binaries
+          filters:
+            branches:
+              only:
+                - post-deployment-check
+                - release
+                - /release_rc\/.*/
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
       - github_release:
           context: github-publish
           requires:
@@ -1467,3 +1482,16 @@ commands:
             npm --version
             npm install -g yarn
             yarn --version
+  github_release:
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Publish Amplify CLI GitHub release
+          command: |
+            version=$(cat .amplify-pkg-version)
+            yarn ts-node scripts/verify-deployment.ts $version $commit
