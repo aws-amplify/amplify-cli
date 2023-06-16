@@ -1,6 +1,6 @@
 import {
   addFunction,
-  amplifyPush,
+  amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -31,12 +31,12 @@ describe('amplify push function cases:', () => {
     const functionName = `nodetestfunction${shortId}`;
 
     await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
-    await amplifyPush(projRoot);
+    await amplifyPushAuth(projRoot);
 
     const functionCode = loadFunctionTestFile('case-function.js').replace('{{testString}}', 'Hello from Lambda!');
     overrideFunctionSrcNode(projRoot, functionName, functionCode);
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'python');
 
-    await amplifyPush(projRoot);
+    await amplifyPushAuth(projRoot);
   });
 });
