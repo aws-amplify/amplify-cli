@@ -1354,7 +1354,7 @@ workflows:
             branches:
               only:
                 - release
-      - deployment_verification_prerelease:
+      - deployment_verification_pre_release:
           requires:
             - publish_to_npm
             - github_release
