@@ -8,9 +8,10 @@ type ProcessArgs = {
 const githubBinaries = ['amplify-pkg-linux-arm64.tgz', 'amplify-pkg-linux.tgz', 'amplify-pkg-macos.tgz', 'amplify-pkg-win.exe.tgz'];
 const parseArgs = async (): Promise<ProcessArgs> => {
   const args = yargs(process.argv.slice(2))
+    .version(false)
     .options({
-      v: { type: 'string', demandOption: true },
-      p: { type: 'boolean', default: false },
+      v: { alias: 'version', type: 'string', demandOption: true },
+      p: { alias: 'prerelease', type: 'boolean', default: false },
     })
     .parseSync();
 

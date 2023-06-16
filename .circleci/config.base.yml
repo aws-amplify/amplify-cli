@@ -899,7 +899,7 @@ jobs:
           name: Sanity check install
           command: |
             amplify version
-  deployment_verification_release:
+  deployment_verification_post_release:
     <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
@@ -909,7 +909,7 @@ jobs:
           command: |
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/verify-deployment.ts -v $version
-  deployment_verification_prerelease:
+  deployment_verification_pre_release:
     <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
@@ -918,7 +918,7 @@ jobs:
           name: Verify Prerelease Deployment
           command: |
             version=$(cat .amplify-pkg-version)
-            yarn ts-node scripts/verify-deployment.ts -v $version -p true
+            yarn ts-node scripts/verify-deployment.ts --version $version --prerelease true
   github_release:
     <<: *linux-e2e-executor-large
     steps:
