@@ -1357,7 +1357,7 @@ workflows:
       - deployment_verification_pre_release:
           requires:
             - publish_to_npm
-            - github_release
+            - github_prerelease
             - upload_pkg_binaries
           filters:
             branches:
