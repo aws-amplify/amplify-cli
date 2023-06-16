@@ -83,23 +83,23 @@ describe('project with single schema file that exists', () => {
     expect(invokePluginMock.mock.calls[0][3]).toBe('generateModels');
     expect(invokePluginMock.mock.calls[1][3]).toBe('generateModelIntrospection');
     expect(s3Mock.uploadFile.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          Object {
+      [
+        [
+          {
             "Body": "mock body of mock/resource/dir/path/schema.graphql",
             "Key": "models/testApiName/schema.graphql",
           },
           false,
         ],
-        Array [
-          Object {
+        [
+          {
             "Body": "mock body of mock/project/root/amplify-codegen-temp/models/schema.js",
             "Key": "models/testApiName/schema.js",
           },
           false,
         ],
-        Array [
-          Object {
+        [
+          {
             "Body": "mock body of mock/project/root/amplify-codegen-temp/model-introspection.json",
             "Key": "models/testApiName/modelIntrospection.json",
           },
