@@ -7,14 +7,14 @@ exports[`amplify migration test auth ...should add auth with overrides and work 
 ├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
 │ - │ \${UserPool.Arn}                                                                                                                                                                             │ Allow  │ cognito-idp:DescribeUserPoolClient │ AWS:\${UserPoolClientRole} │           │
 ├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
-│ - │ {\\"Fn::Sub\\":[\\"arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*\\",{\\"region\\":\\"\${AWS::Region}\\",\\"account\\":\\"\${AWS::AccountId}\\",\\"lambda\\":\\"\${UserPoolClientLambda}\\"}]} │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
+│ - │ {"Fn::Sub":["arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",{"region":"\${AWS::Region}","account":"\${AWS::AccountId}","lambda":"\${UserPoolClientLambda}"}]} │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
 │   │                                                                                                                                                                                             │        │ logs:CreateLogStream               │                           │           │
 │   │                                                                                                                                                                                             │        │ logs:PutLogEvents                  │                           │           │
 └───┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴────────┴────────────────────────────────────┴───────────────────────────┴───────────┘
 (NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)
 
 Conditions
-[-] Condition ShouldOutputAppClientSecrets: {\\"Fn::Equals\\":[{\\"Ref\\":\\"userpoolClientGenerateSecret\\"},true]}
+[-] Condition ShouldOutputAppClientSecrets: {"Fn::Equals":[{"Ref":"userpoolClientGenerateSecret"},true]}
 
 Resources
 [-] AWS::Lambda::Function UserPoolClientLambda destroy
@@ -23,13 +23,13 @@ Resources
 [-] Custom::LambdaCallout UserPoolClientInputs destroy
 [~] AWS::IAM::Role UserPoolClientRole 
  └─ [-] DependsOn
-     └─ [\\"UserPoolClient\\"]
+     └─ ["UserPoolClient"]
 [~] AWS::Cognito::IdentityPool IdentityPool 
  └─ [-] DependsOn
-     └─ [\\"UserPoolClientInputs\\"]
+     └─ ["UserPoolClientInputs"]
 
 Outputs
-[-] Output AppClientSecret: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"UserPoolClientInputs\\",\\"appSecret\\"]},\\"Condition\\":\\"ShouldOutputAppClientSecrets\\"}
+[-] Output AppClientSecret: {"Value":{"Fn::GetAtt":["UserPoolClientInputs","appSecret"]},"Condition":"ShouldOutputAppClientSecrets"}
 
 "
 `;
@@ -41,14 +41,14 @@ exports[`amplify migration test auth ...should add auth with overrides and work 
 ├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
 │ - │ \${UserPool.Arn}                                                                                                                                                                             │ Allow  │ cognito-idp:DescribeUserPoolClient │ AWS:\${UserPoolClientRole} │           │
 ├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
-│ - │ {\\"Fn::Sub\\":[\\"arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*\\",{\\"region\\":\\"\${AWS::Region}\\",\\"account\\":\\"\${AWS::AccountId}\\",\\"lambda\\":\\"\${UserPoolClientLambda}\\"}]} │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
+│ - │ {"Fn::Sub":["arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",{"region":"\${AWS::Region}","account":"\${AWS::AccountId}","lambda":"\${UserPoolClientLambda}"}]} │ Allow  │ logs:CreateLogGroup                │ AWS:\${UserPoolClientRole} │           │
 │   │                                                                                                                                                                                             │        │ logs:CreateLogStream               │                           │           │
 │   │                                                                                                                                                                                             │        │ logs:PutLogEvents                  │                           │           │
 └───┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴────────┴────────────────────────────────────┴───────────────────────────┴───────────┘
 (NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)
 
 Conditions
-[-] Condition ShouldOutputAppClientSecrets: {\\"Fn::Equals\\":[{\\"Ref\\":\\"userpoolClientGenerateSecret\\"},true]}
+[-] Condition ShouldOutputAppClientSecrets: {"Fn::Equals":[{"Ref":"userpoolClientGenerateSecret"},true]}
 
 Resources
 [-] AWS::Lambda::Function UserPoolClientLambda destroy
@@ -57,13 +57,13 @@ Resources
 [-] Custom::LambdaCallout UserPoolClientInputs destroy
 [~] AWS::IAM::Role UserPoolClientRole 
  └─ [-] DependsOn
-     └─ [\\"UserPoolClient\\"]
+     └─ ["UserPoolClient"]
 [~] AWS::Cognito::IdentityPool IdentityPool 
  └─ [-] DependsOn
-     └─ [\\"UserPoolClientInputs\\"]
+     └─ ["UserPoolClientInputs"]
 
 Outputs
-[-] Output AppClientSecret: {\\"Value\\":{\\"Fn::GetAtt\\":[\\"UserPoolClientInputs\\",\\"appSecret\\"]},\\"Condition\\":\\"ShouldOutputAppClientSecrets\\"}
+[-] Output AppClientSecret: {"Value":{"Fn::GetAtt":["UserPoolClientInputs","appSecret"]},"Condition":"ShouldOutputAppClientSecrets"}
 
 "
 `;
