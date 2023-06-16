@@ -911,7 +911,7 @@ jobs:
       - run:
           name: Verify Deployment
           command: |
-            version=$(cat .amplify-pkg-version)
+            # version=$(cat .amplify-pkg-version)
             version=12.1.0
             yarn ts-node scripts/verify-deployment.ts $version
   github_release:
