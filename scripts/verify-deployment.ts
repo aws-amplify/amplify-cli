@@ -1,17 +1,20 @@
 import { execSync } from 'child_process';
+import yargs from 'yargs';
 
 type ProcessArgs = {
   version: string;
+  isPrerelease: boolean;
 };
 const githubBinaries = ['amplify-pkg-linux-arm64.tgz', 'amplify-pkg-linux.tgz', 'amplify-pkg-macos.tgz', 'amplify-pkg-win.exe.tgz'];
-const parseArgs = (): ProcessArgs => {
-  const version = process.argv.slice(2)?.at(0);
-  if (!version) {
-    throw new TypeError('version is not defined');
-  }
-  return {
-    version,
-  };
+const parseArgs = async (): Promise<ProcessArgs> => {
+  const args = yargs(process.argv.slice(2))
+    .options({
+      v: { type: 'string', demandOption: true },
+      p: { type: 'boolean', default: false },
+    })
+    .parseSync();
+
+  return { version: args.v, isPrerelease: args.p };
 };
 
 const existsInNpm = (version: string): boolean => {
@@ -40,12 +43,22 @@ const existsInS3 = async (version: string): Promise<boolean> => {
 };
 
 const main = async () => {
-  const { version } = parseArgs();
+  const { version, isPrerelease } = await parseArgs();
   console.log(`#### Verifying version ${version} deployed correctly ####`);
-  if ((await existsInS3(version)) && existsInNpm(version) && (await existsInGitHub(version))) {
-    process.exit(0);
+  const isGitHubSatisfied = isPrerelease || (await existsInGitHub(version));
+  if (!isGitHubSatisfied) {
+    console.error('Release not found in GitHub');
+    process.exit(1);
   }
-  process.exit(1);
+  if (!existsInNpm(version)) {
+    console.error('Release not found in NPM');
+    process.exit(1);
+  }
+  if (!(await existsInS3(version))) {
+    console.error('Release not found in S3');
+    process.exit(1);
+  }
+  process.exit(0);
 };
 
 main();

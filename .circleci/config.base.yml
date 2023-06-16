@@ -899,21 +899,26 @@ jobs:
           name: Sanity check install
           command: |
             amplify version
-  deployment_verification:
+  deployment_verification_release:
     <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      #      - restore_cache:
-      #          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      #      - restore_cache:
-      #          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Verify Deployment
+          name: Verify Release Deployment
           command: |
-            # version=$(cat .amplify-pkg-version)
-            version=12.3.0
-            yarn ts-node scripts/verify-deployment.ts $version
+            version=$(cat .amplify-pkg-version)
+            yarn ts-node scripts/verify-deployment.ts -v $version
+  deployment_verification_prerelease:
+    <<: *linux-e2e-executor-large
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Verify Prerelease Deployment
+          command: |
+            version=$(cat .amplify-pkg-version)
+            yarn ts-node scripts/verify-deployment.ts -v $version -p true
   github_release:
     <<: *linux-e2e-executor-large
     steps:
@@ -1340,13 +1345,27 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-      - deployment_verification:
+      - deployment_verification_release:
           requires:
-            - build
+            - publish_to_npm
+            - github_release
+            - upload_pkg_binaries
           filters:
             branches:
               only:
-                - post-deployment-check
+                - release
+      - deployment_verification_prerelease:
+          requires:
+            - publish_to_npm
+            - github_release
+            - upload_pkg_binaries
+          filters:
+            branches:
+              only:
+                - /release_rc\/.*/
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
       - github_release:
           context: github-publish
           requires:
