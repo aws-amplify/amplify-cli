@@ -329,14 +329,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.24.11, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@2.24.12, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.1.0
     "@aws-amplify/amplify-environment-parameters": 1.6.4
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.4
+    "@aws-amplify/amplify-provider-awscloudformation": 8.2.5
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
     fs-extra: ^8.1.0
@@ -408,7 +408,7 @@ __metadata:
     ajv: ^6.12.6
     aws-cdk-lib: ~2.68.0
     chalk: ^4.1.1
-    ci-info: ^2.0.0
+    ci-info: ^3.8.0
     cli-table3: ^0.6.0
     cloudform-types: ^4.2.0
     colors: 1.4.0
@@ -772,7 +772,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-provider-awscloudformation@8.2.4, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
+"@aws-amplify/amplify-provider-awscloudformation@8.2.5, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation"
   dependencies:
@@ -848,7 +848,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-mock@5.3.0, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
+"@aws-amplify/amplify-util-mock@5.3.1, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock"
   dependencies:
@@ -859,7 +859,7 @@ __metadata:
     "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@aws-amplify/amplify-opensearch-simulator": 1.4.4
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.4
+    "@aws-amplify/amplify-provider-awscloudformation": 8.2.5
     "@aws-amplify/graphql-auth-transformer": ^2.1.6
     "@aws-amplify/graphql-default-value-transformer": ^1.1.6
     "@aws-amplify/graphql-function-transformer": ^1.2.4
@@ -1043,7 +1043,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.1.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.1.1, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1056,7 +1056,7 @@ __metadata:
     "@aws-amplify/amplify-category-geo": 3.2.4
     "@aws-amplify/amplify-category-hosting": 3.5.12
     "@aws-amplify/amplify-category-interactions": 5.1.4
-    "@aws-amplify/amplify-category-notifications": 2.24.11
+    "@aws-amplify/amplify-category-notifications": 2.24.12
     "@aws-amplify/amplify-category-predictions": 5.2.4
     "@aws-amplify/amplify-category-storage": 5.2.4
     "@aws-amplify/amplify-cli-core": 4.1.0
@@ -1074,14 +1074,13 @@ __metadata:
     "@aws-amplify/amplify-go-function-template-provider": 1.4.4
     "@aws-amplify/amplify-nodejs-function-template-provider": 2.8.4
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.4
+    "@aws-amplify/amplify-provider-awscloudformation": 8.2.5
     "@aws-amplify/amplify-python-function-template-provider": 1.4.4
     "@aws-amplify/amplify-util-import": 2.6.1
-    "@aws-amplify/amplify-util-mock": 5.3.0
+    "@aws-amplify/amplify-util-mock": 5.3.1
     "@aws-amplify/amplify-util-uibuilder": 1.8.4
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@types/archiver": ^5.3.1
-    "@types/ci-info": ^2.0.0
     "@types/columnify": ^1.5.1
     "@types/folder-hash": ^4.0.1
     "@types/fs-extra": ^8.0.1
@@ -1104,7 +1103,7 @@ __metadata:
     aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
-    ci-info: ^2.0.0
+    ci-info: ^3.8.0
     cli-table3: ^0.6.0
     cloudform-types: ^4.2.0
     colors: 1.4.0
@@ -1143,7 +1142,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.1.0
+    "@aws-amplify/cli-internal": 12.1.1
     "@types/tar": ^6.1.1
     axios: ^0.26.0
     rimraf: ^3.0.2
@@ -9756,13 +9755,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ci-info@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@types/ci-info@npm:2.0.0"
-  checksum: 5c717136b706de46527bffb73ca897b1c32de519b4ccc32ff9000cbb2993ea2cfe2f79d0bdf840a80deefef21169981d42af5c08446f749775f00c4bf49fbcd2
-  languageName: node
-  linkType: hard
-
 "@types/columnify@npm:^1.5.0, @types/columnify@npm:^1.5.1":
   version: 1.5.1
   resolution: "@types/columnify@npm:1.5.1"
@@ -13638,10 +13630,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ci-info@npm:^3.2.0":
-  version: 3.3.0
-  resolution: "ci-info@npm:3.3.0"
-  checksum: f23ec1b3c4717abb5fb9934fe0ab6db621cf767abd3832f07af2803e4809d21908d8b87321de4b79861dfe8105c08dba1803a9fb6346d5586b0c57db2bfbce3b
+"ci-info@npm:^3.2.0, ci-info@npm:^3.8.0":
+  version: 3.8.0
+  resolution: "ci-info@npm:3.8.0"
+  checksum: 0d3052193b58356372b34ab40d2668c3e62f1006d5ca33726d1d3c423853b19a85508eadde7f5908496fb41448f465263bf61c1ee58b7832cb6a924537e3863a
   languageName: node
   linkType: hard
 
