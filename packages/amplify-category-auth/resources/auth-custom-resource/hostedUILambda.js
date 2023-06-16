@@ -1,27 +1,26 @@
 const response = require('cfn-response');
 const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
+
+const { deleteUserPoolDomain } = new aws.CognitoIdentityServiceProvider();
 
 exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  const ignoredPromise = handleEvent(event, context);
+};
+
+async function handleEvent(event, context) {
   const userPoolId = event.ResourceProperties.userPoolId;
   const inputDomainName = event.ResourceProperties.hostedUIDomainName;
 
-  let deleteUserPoolDomain = (domainName) => {
-    let params = { Domain: domainName, UserPoolId: userPoolId };
-    return identity.deleteUserPoolDomain(params).promise();
-  };
-
-  deleteUserPoolDomain(inputDomainName)
-    .then(() => {
-      response.send(event, context, response.SUCCESS);
-    })
-    .catch((err) => {
-      console.log(err);
-
-      if (err.name === 'NotFoundException') {
-        return response.send(event, context, response.SUCCESS);
-      }
-
+  try {
+    const params = { Domain: inputDomainName, UserPoolId: userPoolId };
+    await deleteUserPoolDomain(params).promise();
+    response.send(event, context, response.SUCCESS);
+  } catch (err) {
+    if (err.name !== 'NotFoundException' && err.name !== 'InvalidParameterException') {
       response.send(event, context, response.FAILED, { err });
-    });
-};
+    } else {
+      response.send(event, context, response.SUCCESS);
+    }
+  }
+}

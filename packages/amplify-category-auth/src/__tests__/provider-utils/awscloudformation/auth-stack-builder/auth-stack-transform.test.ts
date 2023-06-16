@@ -26,6 +26,17 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
         'extauth387063394_userpool_87063394-cloudformation-template.json',
       );
     }),
+    findProjectRoot: jest.fn().mockReturnValue(''),
+    getCurrentCfnTemplatePathFromBuild: jest.fn().mockImplementation((categoryName, resourceName) => {
+      return path.join(
+        __dirname,
+        'amplify',
+        '#current-cloud-backend',
+        categoryName,
+        resourceName,
+        `${resourceName}-cloudformation-template.json`,
+      );
+    }),
   },
   JSONUtilities: {
     writeJson: jest.fn(),

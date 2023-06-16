@@ -186,8 +186,9 @@ export const getIdentityPoolRoles = async (identityPoolId: string, region: strin
   } catch (e) {
     console.log(e);
   }
-
   return res;
+};
+
 export const listUserPools = async (region, maxResults = 5) => {
   config.update({ region });
   let res;
