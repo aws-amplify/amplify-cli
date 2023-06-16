@@ -912,7 +912,7 @@ jobs:
           name: Verify Deployment
           command: |
             # version=$(cat .amplify-pkg-version)
-            version=12.1.0
+            version=12.3.0
             yarn ts-node scripts/verify-deployment.ts $version
   github_release:
     <<: *linux-e2e-executor-large
