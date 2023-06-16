@@ -909,13 +909,13 @@ jobs:
           command: |
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/verify-deployment.ts -v $version
-  deployment_verification_pre_release:
+  deployment_verification_rc_and_tagged:
     <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Verify Prerelease Deployment
+          name: Verify Tagged and RC Deployment
           command: |
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/verify-deployment.ts --version $version --prerelease true
@@ -1354,7 +1354,7 @@ workflows:
             branches:
               only:
                 - release
-      - deployment_verification_pre_release:
+      - deployment_verification_rc_and_tagged:
           requires:
             - publish_to_npm
             - github_prerelease
