@@ -26,14 +26,14 @@ export const alias = 'update';
  */
 export const run = async (context: $TSContext): Promise<$TSContext> => {
   const availableChannelViewNames = getAvailableChannelViewNames();
-  const channelName = context.parameters.first;
-  let channelViewName = channelName ? getChannelViewName(channelName) : undefined;
+  let channelViewName = context.parameters.first ? getChannelViewName(context.parameters.first) : undefined;
 
   if (!channelViewName || !availableChannelViewNames.includes(channelViewName)) {
     channelViewName = await prompter.pick('Choose the notification channel to configure', availableChannelViewNames);
   }
-  if (channelViewName && typeof channelName === 'string') {
-    const selectedChannel = getChannelNameFromView(channelViewName);
+
+  if (channelViewName) {
+    const channelName = getChannelNameFromView(channelViewName);
     let pinpointAppStatus = await pinpointHelper.ensurePinpointApp(context, undefined);
     // In-line deployment now requires an amplify-push to create the Pinpoint resource
     if (pinpointHelper.isPinpointDeploymentRequired(channelName, pinpointAppStatus)) {
@@ -55,8 +55,8 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
         );
       }
     }
-    if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(selectedChannel)) {
-      const channelAPIResponse: IChannelAPIResponse | undefined = await notificationManager.configureChannel(context, selectedChannel);
+    if (isPinpointAppDeployed(pinpointAppStatus.status) || isChannelDeploymentDeferred(channelName)) {
+      const channelAPIResponse: IChannelAPIResponse | undefined = await notificationManager.configureChannel(context, channelName);
       await writeData(context, channelAPIResponse);
     }
   } else {
