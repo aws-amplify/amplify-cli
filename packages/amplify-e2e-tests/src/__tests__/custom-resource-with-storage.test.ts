@@ -12,6 +12,7 @@ import {
   getAppId,
   addAuthWithDefault,
   addS3WithGuestAccess,
+  getProjectMeta,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -40,6 +41,8 @@ describe('adding custom resources test', () => {
     console.log('here 3');
     const appId = getAppId(projRoot);
     console.log('here 4');
+    console.log('appid', appId);
+    console.log('projectmeta', getProjectMeta(projRoot));
     const cdkResourceName = `c${uuid().split('-')[0]}`;
     console.log('here 5');
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
