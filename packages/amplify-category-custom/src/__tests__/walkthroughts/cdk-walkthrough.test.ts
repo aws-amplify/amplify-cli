@@ -46,6 +46,6 @@ describe('addCDKWalkthrough scenarios', () => {
     expect(buildCustomResources_mock).toHaveBeenCalledWith(mockContext, 'customresoourcename');
     expect(mockContext.amplify.openEditor).toHaveBeenCalledTimes(1);
     expect(mockContext.amplify.updateamplifyMetaAfterResourceAdd).toHaveBeenCalledTimes(1);
-    expect(fs.writeFileSync).toHaveBeenCalledTimes(1);
+    expect(fs.writeFileSync).toHaveBeenCalledTimes(2);
   });
 });
