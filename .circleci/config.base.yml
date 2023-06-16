@@ -1345,7 +1345,7 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-      - deployment_verification_release:
+      - deployment_verification_post_release:
           requires:
             - publish_to_npm
             - github_release
