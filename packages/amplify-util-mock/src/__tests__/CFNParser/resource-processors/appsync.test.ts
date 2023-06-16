@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { appSyncFunctionHandler, dynamoDBResourceHandler } from '../../../CFNParser/resource-processors/appsync';
 import { CloudFormationResource } from '../../../CFNParser/stack/types';
 import { CloudFormationParseContext } from '../../../CFNParser/types';
@@ -34,16 +34,16 @@ describe('dynamoDBResourceHandler', () => {
         TableName: 'dummyFunction',
         KeySchema: [
           {
-              "AttributeName": "id",
-              "KeyType": "HASH"
-          }
+            AttributeName: 'id',
+            KeyType: 'HASH',
+          },
         ],
         AttributeDefinitions: [
           {
-              "AttributeName": "id",
-              "AttributeType": "S"
-          }
-        ]
+            AttributeName: 'id',
+            AttributeType: 'S',
+          },
+        ],
       },
     };
     const cfnContext: CloudFormationParseContext = {
@@ -52,14 +52,14 @@ describe('dynamoDBResourceHandler', () => {
       resources: {},
       exports: {},
     };
-    const processedResource = dynamoDBResourceHandler(resource.Properties.TableName, resource, cfnContext);
+    const processedResource = dynamoDBResourceHandler(resource.Properties.TableName, resource);
     expect(processedResource.Properties.AttributeDefinitions).toEqual(resource.Properties.AttributeDefinitions);
     expect(processedResource.Properties.KeySchema).toEqual(resource.Properties.KeySchema);
     expect(processedResource.Properties.TableName).toEqual(resource.Properties.TableName);
     // sets defaults for stream specification
     expect(processedResource.Properties.StreamSpecification).toEqual({
       StreamEnabled: true,
-      StreamViewType: 'NEW_AND_OLD_IMAGES'
+      StreamViewType: 'NEW_AND_OLD_IMAGES',
     });
   });
 });
@@ -72,16 +72,16 @@ describe('process searchable resources', () => {
       TableName: mockTableName + 'Table',
       KeySchema: [
         {
-            "AttributeName": "id",
-            "KeyType": "HASH"
-        }
+          AttributeName: 'id',
+          KeyType: 'HASH',
+        },
       ],
       AttributeDefinitions: [
         {
-            "AttributeName": "id",
-            "AttributeType": "S"
-        }
-      ]
+          AttributeName: 'id',
+          AttributeType: 'S',
+        },
+      ],
     },
   };
 
@@ -89,8 +89,8 @@ describe('process searchable resources', () => {
     const searchableLambdaMapping = {};
     searchableLambdaMapping[`Searchable${mockTableName}LambdaMappingPlusRandomString123`] = {};
 
-    const mockSearchableStack: $TSAny = { 
-      Resources: { ...searchableLambdaMapping }
+    const mockSearchableStack: $TSAny = {
+      Resources: { ...searchableLambdaMapping },
     };
 
     const mockTransformResult = { stacks: { SearchableStack: mockSearchableStack } };
@@ -104,8 +104,8 @@ describe('process searchable resources', () => {
     const searchableLambdaMapping = {};
     searchableLambdaMapping[`Searchable${mockTableName}PlusRandomString123`] = {};
 
-    const mockSearchableStack: $TSAny = { 
-      Resources: { ...searchableLambdaMapping }
+    const mockSearchableStack: $TSAny = {
+      Resources: { ...searchableLambdaMapping },
     };
 
     const mockTransformResult = { stacks: { SearchableStack: mockSearchableStack } };

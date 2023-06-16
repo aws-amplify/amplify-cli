@@ -1,20 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`get add auth request adaptor translates request with aliasAttributes 1`] = `
-Object {
+{
   "adminQueries": false,
   "adminQueryGroup": undefined,
-  "aliasAttributes": Array [
+  "aliasAttributes": [
     "email",
     "phone_number",
     "preferred_username",
   ],
-  "authProviders": Array [],
+  "authProviders": [],
   "authSelections": "userPoolOnly",
-  "autoVerifiedAttributes": Array [],
+  "autoVerifiedAttributes": [],
   "identityPoolName": undefined,
   "mfaConfiguration": "OFF",
-  "requiredAttributes": Array [
+  "requiredAttributes": [
     "email",
   ],
   "resourceName": "myTestAuth",
@@ -22,26 +22,26 @@ Object {
   "thirdPartyAuth": false,
   "updateFlow": "manual",
   "useDefault": "manual",
-  "userPoolGroupList": Array [],
+  "userPoolGroupList": [],
   "userPoolGroups": false,
   "userPoolName": undefined,
-  "usernameAttributes": Array [
+  "usernameAttributes": [
     "email",
   ],
-  "userpoolClientReadAttributes": Array [],
+  "userpoolClientReadAttributes": [],
   "userpoolClientRefreshTokenValidity": undefined,
-  "userpoolClientWriteAttributes": Array [],
+  "userpoolClientWriteAttributes": [],
 }
 `;
 
 exports[`get add auth request adaptor translates request with autoVerifiedAttributes 1`] = `
-Object {
+{
   "adminQueries": false,
   "adminQueryGroup": undefined,
-  "aliasAttributes": Array [],
-  "authProviders": Array [],
+  "aliasAttributes": [],
+  "authProviders": [],
   "authSelections": "userPoolOnly",
-  "autoVerifiedAttributes": Array [
+  "autoVerifiedAttributes": [
     "email",
     "phone_number",
   ],
@@ -49,7 +49,7 @@ Object {
   "emailVerificationSubject": "test email verification subject",
   "identityPoolName": undefined,
   "mfaConfiguration": "OFF",
-  "requiredAttributes": Array [
+  "requiredAttributes": [
     "email",
   ],
   "resourceName": "myTestAuth",
@@ -58,33 +58,33 @@ Object {
   "thirdPartyAuth": false,
   "updateFlow": "manual",
   "useDefault": "manual",
-  "userPoolGroupList": Array [],
+  "userPoolGroupList": [],
   "userPoolGroups": false,
   "userPoolName": undefined,
-  "usernameAttributes": Array [
+  "usernameAttributes": [
     "email",
   ],
-  "userpoolClientReadAttributes": Array [],
+  "userpoolClientReadAttributes": [],
   "userpoolClientRefreshTokenValidity": undefined,
-  "userpoolClientWriteAttributes": Array [],
+  "userpoolClientWriteAttributes": [],
 }
 `;
 
 exports[`get add auth request adaptor translates request without aliasAttributes 1`] = `
-Object {
+{
   "adminQueries": false,
   "adminQueryGroup": undefined,
-  "aliasAttributes": Array [
+  "aliasAttributes": [
     "email",
     "phone_number",
     "preferred_username",
   ],
-  "authProviders": Array [],
+  "authProviders": [],
   "authSelections": "userPoolOnly",
-  "autoVerifiedAttributes": Array [],
+  "autoVerifiedAttributes": [],
   "identityPoolName": undefined,
   "mfaConfiguration": "OFF",
-  "requiredAttributes": Array [
+  "requiredAttributes": [
     "email",
   ],
   "resourceName": "myTestAuth",
@@ -92,29 +92,29 @@ Object {
   "thirdPartyAuth": false,
   "updateFlow": "manual",
   "useDefault": "manual",
-  "userPoolGroupList": Array [],
+  "userPoolGroupList": [],
   "userPoolGroups": false,
   "userPoolName": undefined,
-  "usernameAttributes": Array [
+  "usernameAttributes": [
     "email",
   ],
-  "userpoolClientReadAttributes": Array [],
+  "userpoolClientReadAttributes": [],
   "userpoolClientRefreshTokenValidity": undefined,
-  "userpoolClientWriteAttributes": Array [],
+  "userpoolClientWriteAttributes": [],
 }
 `;
 
 exports[`get add auth request adaptor valid translations translates request with minimal user pool config only 1`] = `
-Object {
+{
   "adminQueries": false,
   "adminQueryGroup": undefined,
-  "aliasAttributes": Array [],
-  "authProviders": Array [],
+  "aliasAttributes": [],
+  "authProviders": [],
   "authSelections": "userPoolOnly",
-  "autoVerifiedAttributes": Array [],
+  "autoVerifiedAttributes": [],
   "identityPoolName": undefined,
   "mfaConfiguration": "OFF",
-  "requiredAttributes": Array [
+  "requiredAttributes": [
     "email",
   ],
   "resourceName": "myTestAuth",
@@ -122,38 +122,38 @@ Object {
   "thirdPartyAuth": false,
   "updateFlow": "manual",
   "useDefault": "manual",
-  "userPoolGroupList": Array [],
+  "userPoolGroupList": [],
   "userPoolGroups": false,
   "userPoolName": undefined,
-  "usernameAttributes": Array [
+  "usernameAttributes": [
     "email",
   ],
-  "userpoolClientReadAttributes": Array [],
+  "userpoolClientReadAttributes": [],
   "userpoolClientRefreshTokenValidity": undefined,
-  "userpoolClientWriteAttributes": Array [],
+  "userpoolClientWriteAttributes": [],
 }
 `;
 
 exports[`get update auth request adaptor valid translations translates empty oAuth config into hostedUI: false 1`] = `
-Object {
+{
   "adminQueries": false,
   "adminQueryGroup": undefined,
-  "authProviders": Array [],
+  "authProviders": [],
   "authSelections": "userPoolOnly",
-  "autoVerifiedAttributes": Array [],
+  "autoVerifiedAttributes": [],
   "hostedUI": false,
   "mfaConfiguration": "OFF",
-  "requiredAttributes": Array [
+  "requiredAttributes": [
     "required_attribute",
   ],
   "serviceName": "Cognito",
   "thirdPartyAuth": false,
   "updateFlow": "manual",
   "useDefault": "manual",
-  "userPoolGroupList": Array [],
+  "userPoolGroupList": [],
   "userPoolGroups": false,
-  "userpoolClientReadAttributes": Array [],
+  "userpoolClientReadAttributes": [],
   "userpoolClientRefreshTokenValidity": undefined,
-  "userpoolClientWriteAttributes": Array [],
+  "userpoolClientWriteAttributes": [],
 }
 `;

@@ -1,6 +1,6 @@
 import { StackEvent } from 'aws-sdk/clients/cloudformation';
 import * as aws from 'aws-sdk';
-import { AmplifyFault } from 'amplify-cli-core';
+import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { fileLogger, Logger } from '../utils/aws-logger';
 
 export interface StackEventMonitorOptions {
@@ -65,7 +65,7 @@ export class StackEventMonitor {
       return;
     }
 
-    this.tickTimer = setTimeout(() => this.tick(), this.options.pollDelay) as any;
+    this.tickTimer = setTimeout(() => void this.tick(), this.options.pollDelay) as any;
   }
 
   private async tick() {
@@ -147,9 +147,13 @@ export class StackEventMonitor {
         return;
       }
       if (e.code !== 'Throttling') {
-        throw new AmplifyFault('NotImplementedFault', {
-          message: e.message,
-        }, e);
+        throw new AmplifyFault(
+          'NotImplementedFault',
+          {
+            message: e.message,
+          },
+          e,
+        );
       }
     }
 

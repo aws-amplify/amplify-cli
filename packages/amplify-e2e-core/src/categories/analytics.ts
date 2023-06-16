@@ -7,7 +7,7 @@ export function addPinpoint(cwd: string, settings: any): Promise<void> {
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
       .sendLine(settings.wrongName)
-      .wait('Resource name should be alphanumeric')
+      .wait('Resource name must be alphanumeric')
       .send('\b')
       .delay(1000) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
@@ -33,7 +33,7 @@ export function addKinesis(cwd: string, settings: any): Promise<void> {
       .sendCarriageReturn()
       .wait('Enter a Stream name')
       .sendLine(settings.wrongName)
-      .wait('Name is invalid.')
+      .wait('Name is invalid. Has to be non-empty and alphanumeric')
       .send('\b')
       .delay(1000) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
@@ -53,12 +53,11 @@ export function addKinesis(cwd: string, settings: any): Promise<void> {
   });
 }
 
-export function removeAnalytics(cwd: string, settings: any): Promise<void> {
+export function removeAnalytics(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
-      .send('j')
-      .sendCarriageReturn()
+      .wait('Only one option for')
       .wait('Are you sure you want to delete the resource?')
       .send('y')
       .sendCarriageReturn()

@@ -1,6 +1,6 @@
 {
-  "name": "amplify-nodejs-function-template-provider",
-  "version": "2.5.4",
+  "name": "@aws-amplify/amplify-nodejs-function-template-provider",
+  "version": "2.8.4",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -16,18 +16,29 @@
     "lambda",
     "nodejs"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "3.3.0",
-    "amplify-function-plugin-interface": "1.9.5",
-    "graphql-transformer-core": "^7.6.6",
+    "@aws-amplify/amplify-cli-core": "4.1.0",
+    "@aws-amplify/amplify-function-plugin-interface": "1.10.3",
+    "@aws-amplify/amplify-prompts": "2.8.0",
+    "graphql-transformer-core": "^8.1.2",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
     "@types/inquirer": "^6.5.0",
     "@types/node": "^12.12.6"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

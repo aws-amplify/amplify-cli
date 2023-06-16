@@ -1,6 +1,6 @@
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
-import { PluginCollection } from '../../domain/plugin-collection';
+import { PluginCollection } from '@aws-amplify/amplify-cli-core';
 import { displayGeneralInfo, displayPluginCollection, displayPluginInfoArray } from '../../plugin-helpers/display-plugin-platform';
 
 export const run = async (context: Context) => {
@@ -21,16 +21,16 @@ export const run = async (context: Context) => {
 
   switch (answer.selection) {
     case plugins:
-      listPluginCollection(context, pluginPlatform.plugins);
+      await listPluginCollection(context, pluginPlatform.plugins);
       break;
     case excluded:
-      listPluginCollection(context, pluginPlatform.excluded);
+      await listPluginCollection(context, pluginPlatform.excluded);
       break;
     case generalInfo:
       displayGeneralInfo(context, pluginPlatform);
       break;
     default:
-      listPluginCollection(context, pluginPlatform.plugins);
+      await listPluginCollection(context, pluginPlatform.plugins);
       break;
   }
 };

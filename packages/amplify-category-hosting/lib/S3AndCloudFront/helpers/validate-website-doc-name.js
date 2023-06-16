@@ -1,4 +1,4 @@
-module.exports = value => {
+module.exports = (value) => {
   value = value.trim();
 
   let isValid = value.length > 0;
@@ -8,7 +8,7 @@ module.exports = value => {
 
   isValid = !/\//.test(value);
   if (!isValid) {
-    return 'The slash charactor is not allowed.';
+    return 'The slash character is not allowed.';
   }
   return true;
 };

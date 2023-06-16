@@ -51,9 +51,7 @@
           "Label": {
             "default": "Creating pinpoint app"
           },
-          "Parameters": [
-            "appName"
-          ]
+          "Parameters": ["appName"]
         }
       ]
     }
@@ -121,13 +119,9 @@
             {
               "Effect": "Allow",
               "Principal": {
-                "Service": [
-                  "lambda.amazonaws.com"
-                ]
+                "Service": ["lambda.amazonaws.com"]
               },
-              "Action": [
-                "sts:AssumeRole"
-              ]
+              "Action": ["sts:AssumeRole"]
             }
           ]
         },
@@ -141,10 +135,7 @@
               "Statement": [
                 {
                   "Effect": "Allow",
-                  "Action": [
-                    "mobileanalytics:*",
-                    "mobiletargeting:*"
-                  ],
+                  "Action": ["mobileanalytics:*", "mobiletargeting:*"],
                   "Resource": "*"
                 }
               ]
@@ -159,9 +150,7 @@
               "Statement": [
                 {
                   "Effect": "Allow",
-                  "Action": [
-                    "cloudformation:*"
-                  ],
+                  "Action": ["cloudformation:*"],
                   "Resource": "*"
                 }
               ]
@@ -186,11 +175,7 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
               "Resource": {
                 "Fn::Sub": [
                   "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaName}:log-stream:*",
@@ -216,64 +201,58 @@
               "\n",
               [
                 "const response = require('cfn-response');",
-                "const aws = require('aws-sdk');",
+                "const { CloudFormationClient, DescribeStacksCommand } = require('@aws-sdk/client-cloudformation');",
+                "const { PinpointClient, CreateAppCommand, DeleteAppCommand } = require('@aws-sdk/client-pinpoint');",
                 "exports.handler = function(event, context) {",
-                "    if (event.RequestType == 'Delete') {",
-                "      const stackID = event.StackId;",
-                "      const cloudFormationClient = new aws.CloudFormation({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
-                "      cloudFormationClient.describeStacks({ StackName: stackID }).promise()",
-                "        .then(describeStacksOutput => {",
-                "          let appId;",
-                "          if (describeStacksOutput.Stacks && describeStacksOutput.Stacks.length > 0) {",
-                "            const { Outputs } = describeStacksOutput.Stacks[0];",
-                "            const appIdOutput = Outputs.find((output)=>{ return output.OutputKey === 'Id'});",
-                "            appId = appIdOutput ? appIdOutput.OutputValue : undefined;  ",
-                "          }",
-                "          return appId;",
-                "        })",
-                "        .then(appId => {",
-                "          if (appId) {",
-                "            const pinpointClient = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.pingPointRegion });",
-                "            const params = {",
-                "              ApplicationId: appId,",
-                "            };",
-                "            pinpointClient.deleteApp(params).promise();",
-                "          }",
-                "        })",
-                "        .then(()=>{",
-                "          response.send(event, context, response.SUCCESS, {'message': `Successfully deleted pinpoint project`});",
-                "        })",
-                "        .catch(e=>{",
-                "          if (e.code !== 'ParameterNotFound') {",
-                "            response.send(event, context, response.FAILED, {'message': `Failed to deleted Pinpoint project`, 'exception': e});",
-                "          } else {",
+                "    // Don't return promise, response.send() marks context as done internally",
+                "    const ignoredPromise = handleEvent(event, context)",
+                "};",
+                "async function handleEvent(event, context) {",
+                "    if (event.RequestType === 'Delete') {",
+                "        try {",
+                "            const stackID = event.StackId;",
+                "            const cloudFormationClient = new CloudFormationClient({region: event.ResourceProperties.region});",
+                "            const describeStacksOutput = await cloudFormationClient.send(new DescribeStacksCommand({StackName: stackID}));",
+                "            let appId;",
+                "            if (describeStacksOutput.Stacks && describeStacksOutput.Stacks.length > 0) {",
+                "                const {Outputs} = describeStacksOutput.Stacks[0];",
+                "                const appIdOutput = Outputs.find((output) => {",
+                "                    return output.OutputKey === 'Id'",
+                "                });",
+                "                appId = appIdOutput ? appIdOutput.OutputValue : undefined;",
+                "            }",
+                "            if (appId) {",
+                "                const pinpointClient = new PinpointClient({region: event.ResourceProperties.pingPointRegion});",
+                "                const params = {",
+                "                    ApplicationId: appId,",
+                "                };",
+                "                await pinpointClient.send(new DeleteAppCommand(params));",
+                "            }",
                 "            response.send(event, context, response.SUCCESS, {'message': `Successfully deleted pinpoint project`});",
-                "          }",
-                "        }); ",
-                "    }",
-                "    if (event.RequestType == 'Update') {",
+                "        } catch (e) {",
+                "            if (e.name !== 'NotFoundException') {",
+                "                response.send(event, context, response.FAILED, {'message': `Failed to deleted Pinpoint project`, 'exception': e});",
+                "            } else {",
+                "                response.send(event, context, response.SUCCESS, {'message': `Successfully deleted pinpoint project`});",
+                "            }",
+                "        }",
+                "    } else if (event.RequestType === 'Create') {",
+                "        try {",
+                "            const appName = event.ResourceProperties.appName;",
+                "            const params = {",
+                "                CreateApplicationRequest: {",
+                "                    Name: appName",
+                "                }",
+                "            };",
+                "            const pinpoint = new PinpointClient({region: event.ResourceProperties.pingPointRegion});",
+                "            const res = await pinpoint.send(new CreateAppCommand(params));",
+                "            response.send(event, context, response.SUCCESS, res.ApplicationResponse);",
+                "        } catch (err) {",
+                "            console.log(err.stack);",
+                "            response.send(event, context, response.FAILED, {Error: err});",
+                "        }",
+                "    } else {",
                 "        response.send(event, context, response.SUCCESS);",
-                "        return;",
-                "    }",
-                "    if (event.RequestType == 'Create') {",
-                "       const appName = event.ResourceProperties.appName;",
-                "       let responseData = {};",
-                "       const params = {",
-                "           CreateApplicationRequest: {",
-                "               Name: appName",
-                "           }",
-                "       };",
-                "       const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.pingPointRegion });",
-                "       pinpoint.createApp(params).promise()",
-                "           .then((res) => {",
-                "               responseData = res.ApplicationResponse;",
-                "               response.send(event, context, response.SUCCESS, responseData);",
-                "           }).catch((err) => {",
-                "               console.log(err.stack);",
-                "               responseData = {Error: err};",
-                "               response.send(event, context, response.FAILED, responseData);",
-                "               throw err;",
-                "           });",
                 "    }",
                 "};"
               ]
@@ -281,13 +260,10 @@
           }
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 300,
         "Role": {
-          "Fn::GetAtt": [
-            "LambdaExecutionRole",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
         }
       }
     },
@@ -296,10 +272,7 @@
       "Condition": "ShouldCreatePinpointApp",
       "Properties": {
         "ServiceToken": {
-          "Fn::GetAtt": [
-            "PinpointFunction",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["PinpointFunction", "Arn"]
         },
         "region": {
           "Ref": "AWS::Region"
@@ -355,10 +328,7 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": [
-                "mobiletargeting:PutEvents",
-                "mobiletargeting:UpdateEndpoint"
-              ],
+              "Action": ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint"],
               "Resource": [
                 {
                   "Fn::If": [
@@ -383,10 +353,7 @@
                           },
                           ":apps/",
                           {
-                            "Fn::GetAtt": [
-                              "PinpointFunctionOutputs",
-                              "Id"
-                            ]
+                            "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"]
                           },
                           "*"
                         ]
@@ -443,10 +410,7 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": [
-                "mobiletargeting:PutEvents",
-                "mobiletargeting:UpdateEndpoint"
-              ],
+              "Action": ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint"],
               "Resource": [
                 {
                   "Fn::If": [
@@ -471,10 +435,7 @@
                           },
                           ":apps/",
                           {
-                            "Fn::GetAtt": [
-                              "PinpointFunctionOutputs",
-                              "Id"
-                            ]
+                            "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"]
                           },
                           "*"
                         ]
@@ -534,9 +495,7 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": [
-                "mobiletargeting:GetInAppMessages"
-              ],
+              "Action": ["mobiletargeting:GetInAppMessages"],
               "Resource": [
                 {
                   "Fn::Join": [
@@ -558,10 +517,7 @@
                       },
                       ":apps/",
                       {
-                        "Fn::GetAtt": [
-                          "PinpointFunctionOutputs",
-                          "Id"
-                        ]
+                        "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"]
                       },
                       "*"
                     ]
@@ -591,10 +547,7 @@
         "Fn::If": [
           "ShouldCreatePinpointApp",
           {
-            "Fn::GetAtt": [
-              "PinpointFunctionOutputs",
-              "Id"
-            ]
+            "Fn::GetAtt": ["PinpointFunctionOutputs", "Id"]
           },
           {
             "Ref": "appId"
@@ -607,10 +560,7 @@
         "Fn::If": [
           "ShouldCreatePinpointApp",
           {
-            "Fn::GetAtt": [
-              "PinpointFunctionOutputs",
-              "Name"
-            ]
+            "Fn::GetAtt": ["PinpointFunctionOutputs", "Name"]
           },
           {
             "Ref": "appName"

@@ -1,8 +1,6 @@
-import {
-  stateManager, $TSContext, pathManager, JSONUtilities,
-} from 'amplify-cli-core';
+import { stateManager, $TSContext, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { EsriMapStyleType, MapParameters, MapStyle } from '../../service-utils/mapParams';
-import { merge, updateDefaultResource, readResourceMetaParameters } from '../../service-utils/resourceUtils';
+import { merge, updateDefaultResource, readResourceMetaParameters, checkAuthConfig } from '../../service-utils/resourceUtils';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
 import { AccessType, DataProvider } from '../../service-utils/resourceParams';
@@ -83,12 +81,12 @@ const geofenceCollection2Params = {
   accessType: AccessType.CognitoGroups,
 };
 
-const mockContext = ({
+const mockContext = {
   amplify: {
     updateamplifyMetaAfterResourceUpdate: jest.fn(),
     updateBackendConfigAfterResourceUpdate: jest.fn(),
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
 describe('Test updating the default resource', () => {
   beforeEach(() => {
@@ -112,12 +110,8 @@ describe('Test updating the default resource', () => {
     mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
     await updateDefaultResource(mockContext, ServiceName.Map, 'map1');
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'map1', 'isDefault', true,
-    );
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'map2', 'isDefault', false,
-    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'map1', 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'map2', 'isDefault', false);
     expect(JSONUtilities.writeJson).toBeCalledTimes(2);
     expect(JSONUtilities.writeJson).toBeCalledWith('geo/map1/parameters.json', { isDefault: true });
     expect(JSONUtilities.writeJson).toBeCalledWith('geo/map2/parameters.json', { isDefault: false });
@@ -128,12 +122,8 @@ describe('Test updating the default resource', () => {
     mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
     await updateDefaultResource(mockContext, ServiceName.Map);
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'map1', 'isDefault', false,
-    );
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'map2', 'isDefault', false,
-    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'map1', 'isDefault', false);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'map2', 'isDefault', false);
     expect(mockContext.amplify.updateBackendConfigAfterResourceUpdate).toBeCalledTimes(2);
   });
 
@@ -141,12 +131,8 @@ describe('Test updating the default resource', () => {
     mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
     await updateDefaultResource(mockContext, ServiceName.PlaceIndex, 'placeIndex1');
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'placeIndex1', 'isDefault', true,
-    );
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'placeIndex2', 'isDefault', false,
-    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'placeIndex1', 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'placeIndex2', 'isDefault', false);
     expect(JSONUtilities.writeJson).toBeCalledTimes(2);
     expect(JSONUtilities.writeJson).toBeCalledWith('geo/placeIndex1/parameters.json', { isDefault: true });
     expect(JSONUtilities.writeJson).toBeCalledWith('geo/placeIndex2/parameters.json', { isDefault: false });
@@ -157,24 +143,16 @@ describe('Test updating the default resource', () => {
     mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
     await updateDefaultResource(mockContext, ServiceName.PlaceIndex);
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'placeIndex1', 'isDefault', false,
-    );
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'placeIndex2', 'isDefault', false,
-    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'placeIndex1', 'isDefault', false);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'placeIndex2', 'isDefault', false);
   });
 
   it('updates given geofence collection as default in amplify meta', async () => {
     mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
     await updateDefaultResource(mockContext, ServiceName.GeofenceCollection, 'geofenceCollection1');
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'geofenceCollection1', 'isDefault', true,
-    );
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'geofenceCollection2', 'isDefault', false,
-    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'geofenceCollection1', 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'geofenceCollection2', 'isDefault', false);
     expect(JSONUtilities.writeJson).toBeCalledTimes(2);
     expect(JSONUtilities.writeJson).toBeCalledWith('geo/geofenceCollection1/parameters.json', { isDefault: true });
     expect(JSONUtilities.writeJson).toBeCalledWith('geo/geofenceCollection2/parameters.json', { isDefault: false });
@@ -184,12 +162,8 @@ describe('Test updating the default resource', () => {
     mockContext.amplify.updateamplifyMetaAfterResourceUpdate = jest.fn();
     await updateDefaultResource(mockContext, ServiceName.GeofenceCollection);
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'geofenceCollection1', 'isDefault', false,
-    );
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
-      category, 'geofenceCollection2', 'isDefault', false,
-    );
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'geofenceCollection1', 'isDefault', false);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, 'geofenceCollection2', 'isDefault', false);
   });
 });
 
@@ -211,12 +185,48 @@ describe('Test reading the resource meta information', () => {
   it('fails reading the meta information for non-existing resource', async () => {
     const nonExistingMap = 'map12345';
     const errorMessage = (resourceName: string): string => `Error reading Meta Parameters for ${resourceName}`;
-    expect(async () => await readResourceMetaParameters(ServiceName.Map, nonExistingMap)).rejects.toThrowError(errorMessage(nonExistingMap));
+    expect(async () => await readResourceMetaParameters(ServiceName.Map, nonExistingMap)).rejects.toThrowError(
+      errorMessage(nonExistingMap),
+    );
 
     const nonExistingPlaceIndex = 'placeIndex12345';
-    expect(async () => await readResourceMetaParameters(ServiceName.PlaceIndex, nonExistingPlaceIndex)).rejects.toThrowError(errorMessage(nonExistingPlaceIndex));
+    expect(async () => await readResourceMetaParameters(ServiceName.PlaceIndex, nonExistingPlaceIndex)).rejects.toThrowError(
+      errorMessage(nonExistingPlaceIndex),
+    );
 
     const nonExistingGeofenceCollection = 'geofenceCollection12345';
-    expect(async () => await readResourceMetaParameters(ServiceName.GeofenceCollection, nonExistingGeofenceCollection)).rejects.toThrowError(errorMessage(nonExistingGeofenceCollection));
+    expect(
+      async () => await readResourceMetaParameters(ServiceName.GeofenceCollection, nonExistingGeofenceCollection),
+    ).rejects.toThrowError(errorMessage(nonExistingGeofenceCollection));
+  });
+});
+
+describe('checkAuthConfig', () => {
+  const invokePluginMethodMock = jest.fn();
+  const contextStub = {
+    amplify: {
+      invokePluginMethod: invokePluginMethodMock,
+    },
+  } as unknown as $TSContext;
+  it('throws AmplifyError if project does not have auth enabled', async () => {
+    invokePluginMethodMock.mockResolvedValue({
+      authEnabled: false,
+    });
+    await expect(
+      checkAuthConfig(contextStub, { name: 'test', accessType: AccessType.AuthorizedAndGuestUsers }, ServiceName.Map),
+    ).rejects.toMatchInlineSnapshot(
+      `[ConfigurationError: Adding Map to your project requires the Auth category for managing authentication rules]`,
+    );
+  });
+
+  it('throws AmplifyError if imported auth not configured correctly', async () => {
+    invokePluginMethodMock.mockResolvedValue({
+      authEnabled: true,
+      authImported: true,
+      errors: ['test error'],
+    });
+    await expect(
+      checkAuthConfig(contextStub, { name: 'test', accessType: AccessType.AuthorizedAndGuestUsers }, ServiceName.Map),
+    ).rejects.toMatchInlineSnapshot(`[ConfigurationError: The imported auth config is not compatible with the specified geo config]`);
   });
 });

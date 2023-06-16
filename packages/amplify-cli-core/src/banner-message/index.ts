@@ -14,10 +14,10 @@ export type Message = {
   };
 };
 
-export const AWS_AMPLIFY_DEFAULT_BANNER_URL: string = 'https://aws-amplify.github.io/amplify-cli/banner-message.json';
+export const AWS_AMPLIFY_DEFAULT_BANNER_URL = 'https://aws-amplify.github.io/amplify-cli/banner-message.json';
 const MAX_SUPPORTED_MESSAGE_CONFIG_VERSION = '1.0.0';
 
-const logger = getLogger('amplify-cli-core', 'banner-message/index.ts');
+const logger = getLogger('@aws-amplify/amplify-cli-core', 'banner-message/index.ts');
 
 export class BannerMessage {
   private static instance?: BannerMessage;
@@ -67,13 +67,13 @@ export class BannerMessage {
     }
 
     const matchingMessageItems = this.messages.filter(
-      m =>
+      (m) =>
         m.id === messageId &&
         m.conditions?.enabled !== false &&
         (m.conditions?.cliVersions ? semver.satisfies(this.cliVersion, m.conditions.cliVersions) : true),
     );
 
-    const messageItem = matchingMessageItems.find(m => {
+    const messageItem = matchingMessageItems.find((m) => {
       if (m.conditions) {
         const currentTime = Date.now();
         const startTime = m.conditions?.startTime ? Date.parse(m.conditions?.startTime) : currentTime;

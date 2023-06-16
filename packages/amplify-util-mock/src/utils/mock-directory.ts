@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 
 export function getMockDataDirectory(context: $TSContext) {
@@ -11,7 +11,7 @@ export function getMockSearchableTriggerDirectory(context: $TSContext) {
   return path.join(mockSearchableResourceDirectory, 'searchable-lambda-trigger');
 }
 
-export function getMockOpenseachDataDirectory(context: $TSContext) {
+export function getMockOpensearchDataDirectory(context: $TSContext) {
   const mockSearchableResourceDirectory = getMockSearchableResourceDirectory(context);
   return path.join(mockSearchableResourceDirectory, 'searchable-data');
 }

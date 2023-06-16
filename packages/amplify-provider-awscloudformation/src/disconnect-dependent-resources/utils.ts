@@ -1,6 +1,12 @@
 import {
-  $TSAny, JSONUtilities, pathManager, readCFNTemplate, stateManager, writeCFNTemplate,
-} from 'amplify-cli-core';
+  AmplifyFault,
+  $TSAny,
+  JSONUtilities,
+  pathManager,
+  readCFNTemplate,
+  stateManager,
+  writeCFNTemplate,
+} from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { CloudFormation } from 'aws-sdk';
@@ -25,7 +31,7 @@ export const getDependentFunctions = async (
   for (const funcName of functionNames) {
     const funcParams = await functionParamsSupplier(funcName);
     const dependentModels = funcParamsToDependentAppSyncModels(funcParams);
-    const hasDep = dependentModels.map(model => modelNames.includes(model)).reduce((acc, it) => acc || it, false);
+    const hasDep = dependentModels.map((model) => modelNames.includes(model)).reduce((acc, it) => acc || it, false);
     if (hasDep) {
       dependentFunctions.push(funcName);
     }
@@ -100,7 +106,9 @@ export const generateIterativeFuncDeploymentSteps = async (
  * Moves rollback and previousMetaKey pointers to maintain the integrity of the deployment steps.
  */
 export const prependDeploymentSteps = (
-  beforeSteps: DeploymentStep[], afterSteps: DeploymentStep[], beforeStepsLastMetaKey: string,
+  beforeSteps: DeploymentStep[],
+  afterSteps: DeploymentStep[],
+  beforeStepsLastMetaKey: string,
 ): DeploymentStep[] => {
   if (beforeSteps.length === 0) {
     return afterSteps;
@@ -122,11 +130,20 @@ export const prependDeploymentSteps = (
  * Also writes the deployment operation to the temp meta path
  */
 const generateIterativeFuncDeploymentOp = async (
-  cfnClient: CloudFormation, rootStackId: string, functionName: string,
+  cfnClient: CloudFormation,
+  rootStackId: string,
+  functionName: string,
 ): Promise<DeploymentOp> => {
   const funcStack = await cfnClient
     .describeStackResources({ StackName: rootStackId, LogicalResourceId: `function${functionName}` })
     .promise();
+
+  if (!funcStack.StackResources || funcStack.StackResources.length === 0) {
+    throw new AmplifyFault('ResourceNotFoundFault', {
+      message: `Could not find function ${functionName} in root stack ${rootStackId}`,
+    });
+  }
+
   const funcStackId = funcStack.StackResources[0].PhysicalResourceId;
   const { parameters, capabilities } = await getPreviousDeploymentRecord(cfnClient, funcStackId);
   const funcCfnParams = stateManager.getResourceParametersJson(undefined, 'function', functionName, {
@@ -161,7 +178,8 @@ export const s3Prefix = 'amplify-cfn-templates/function/temp';
 /**
  * Path prefix for function temp files
  */
-export const localPrefix = (funcName: string): string => path.join(pathManager.getResourceDirectoryPath(undefined, 'function', funcName), 'temp');
+export const localPrefix = (funcName: string): string =>
+  path.join(pathManager.getResourceDirectoryPath(undefined, 'function', funcName), 'temp');
 
 /**
  * Recursively searches for 'Fn::ImportValue' nodes in a CFN template object and replaces them with a placeholder value
@@ -171,7 +189,7 @@ const replaceFnImport = (node: $TSAny): void => {
     return;
   }
   if (Array.isArray(node)) {
-    node.forEach(el => replaceFnImport(el));
+    node.forEach((el) => replaceFnImport(el));
   }
   const nodeKeys = Object.keys(node);
   if (nodeKeys.length === 1 && nodeKeys[0] === 'Fn::ImportValue') {
@@ -181,12 +199,13 @@ const replaceFnImport = (node: $TSAny): void => {
     /* eslint-enable no-param-reassign */
     return;
   }
-  Object.values(node).forEach(value => replaceFnImport(value));
+  Object.values(node).forEach((value) => replaceFnImport(value));
 };
 
 /**
  * Given the contents of the function-parameters.json file for a function, returns the list of AppSync models this function depends on.
  */
-const funcParamsToDependentAppSyncModels = (funcParams: $TSAny): string[] => Object.keys(funcParams?.permissions?.storage || {})
-  .filter(key => key.endsWith(':@model(appsync)'))
-  .map(key => key.slice(0, key.lastIndexOf(':')));
+const funcParamsToDependentAppSyncModels = (funcParams: $TSAny): string[] =>
+  Object.keys(funcParams?.permissions?.storage || {})
+    .filter((key) => key.endsWith(':@model(appsync)'))
+    .map((key) => key.slice(0, key.lastIndexOf(':')));

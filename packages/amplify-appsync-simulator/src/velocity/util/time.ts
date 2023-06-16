@@ -1,6 +1,7 @@
 import moment from 'moment';
 import 'moment-timezone';
 import 'moment-jdateformatparser';
+import { toJSON } from '../value-mapper/to-json';
 
 declare module 'moment' {
   export interface Moment {
@@ -23,7 +24,7 @@ const parseTimestamp = (dateTime: string, format?: string, timezone?: string): m
 };
 
 export const time = () => ({
-  nowISO8601(t): string {
+  nowISO8601(): string {
     return moment().toISOString();
   },
   nowEpochSeconds(): number {
@@ -33,45 +34,55 @@ export const time = () => ({
     return moment().valueOf();
   },
   nowFormatted(format: string, timezone: string = null): string | null {
+    const jsonFormat = toJSON(format);
+    const jsonTimezone = toJSON(timezone);
+
     try {
-      if (timezone) {
-        return moment()
-          .tz(timezone)
-          .formatWithJDF(format);
+      if (jsonTimezone) {
+        return moment().tz(jsonTimezone).formatWithJDF(jsonFormat);
       }
 
-      return moment().formatWithJDF(format);
+      return moment().formatWithJDF(jsonFormat);
     } catch (e) {
       return null;
     }
   },
   parseFormattedToEpochMilliSeconds(dateTime: string, format: string, timezone?: string): number | null {
-    const timestamp = parseTimestamp(dateTime, format, timezone);
+    const jsonDateTime = toJSON(dateTime);
+    const jsonFormat = toJSON(format);
+    const jsonTimezone = toJSON(timezone);
+
+    const timestamp = parseTimestamp(jsonDateTime, jsonFormat, jsonTimezone);
     return timestamp ? timestamp.valueOf() : null;
   },
   parseISO8601ToEpochMilliSeconds(dateTime): number | null {
-    const timestamp = parseTimestamp(dateTime, 'YYYY-MM-DDTHH:mm:ss.SZ');
+    const jsonDateTime = toJSON(dateTime);
+    const timestamp = parseTimestamp(jsonDateTime, 'YYYY-MM-DDTHH:mm:ss.SZ');
     return timestamp ? timestamp.valueOf() : null;
   },
   epochMilliSecondsToSeconds(milliseconds: number): number | null {
+    const jsonMilliseconds = toJSON(milliseconds);
     try {
-      return Math.floor(milliseconds / 1000);
+      return Math.floor(jsonMilliseconds / 1000);
     } catch (e) {
       return null;
     }
   },
   epochMilliSecondsToISO8601(dateTime: number): string | null {
+    const jsonDateTime = toJSON(dateTime);
     try {
-      return moment(dateTime).toISOString();
+      return moment(jsonDateTime).toISOString();
     } catch (e) {
       return null;
     }
   },
-  epochMilliSecondsToFormatted(timestamp: number, format: string, timezone: string = 'UTC'): string | null {
+  epochMilliSecondsToFormatted(timestamp: number, format: string, timezone = 'UTC'): string | null {
+    const jsonTimestamp = toJSON(timestamp);
+    const jsonFormat = toJSON(format);
+    const jsonTimezone = toJSON(timezone);
+
     try {
-      return moment(timestamp)
-        .tz(timezone)
-        .formatWithJDF(format);
+      return moment(jsonTimestamp).tz(jsonTimezone).formatWithJDF(jsonFormat);
     } catch (e) {
       return null;
     }

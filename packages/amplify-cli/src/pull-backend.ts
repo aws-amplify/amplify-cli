@@ -1,14 +1,12 @@
-import {
-  exitOnNextTick, stateManager, $TSAny, $TSContext,
-} from 'amplify-cli-core';
+import { exitOnNextTick, stateManager, $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { initializeEnv } from './initialize-env';
 import { postPullCodegen } from './amplify-service-helper';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * pull backend from the cloud
  */
- export const pullBackend = async (context: $TSContext, inputParams: $TSAny): Promise<void> => {
+export const pullBackend = async (context: $TSContext, inputParams: $TSAny): Promise<void> => {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = inputParams;
   printer.info('');
@@ -30,7 +28,7 @@ import { printer } from 'amplify-prompts';
         printer.info(
           `To merge local and upstream changes, commit all backend code changes to Git, perform a merge, resolve conflicts, and then run 'amplify push'.`,
         );
-        context.usageData.emitSuccess();
+        void context.usageData.emitSuccess();
         exitOnNextTick(0);
       }
     }

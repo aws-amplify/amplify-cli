@@ -1,11 +1,9 @@
-import {
-  DeploymentStatus, DeploymentStepStatus, IDeploymentStateManager,
-} from 'amplify-cli-core';
+import { DeploymentStatus, DeploymentStepStatus, IDeploymentStateManager } from '@aws-amplify/amplify-cli-core';
 import { DeploymentStateManager } from '../../iterative-deployment/deployment-state-manager';
 import { S3 } from '../../aws-utils/aws-s3';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
   stateManager: {
     getMeta: jest.fn().mockReturnValue({
       providers: {
@@ -44,18 +42,20 @@ describe('deployment state manager', () => {
 
     getInstanceSpy.mockReturnValue(
       new Promise((resolve, __) => {
-        resolve(({
+        resolve({
           // eslint-disable-next-line
-          uploadFile: async (s3Params: any, showSpinner: boolean): Promise<string> => new Promise((resolve, _) => {
-            s3Files[s3Params.Key] = s3Params.Body;
+          uploadFile: async (s3Params: any, showSpinner: boolean): Promise<string> =>
+            new Promise((resolve, _) => {
+              s3Files[s3Params.Key] = s3Params.Body;
 
-            resolve('');
-          }),
+              resolve('');
+            }),
           // eslint-disable-next-line
-          getStringObjectFromBucket: async (bucketName: string, objectKey: string): Promise<string> => new Promise((resolve, _) => {
-            resolve(s3Files[objectKey]);
-          }),
-        } as unknown) as S3);
+          getStringObjectFromBucket: async (bucketName: string, objectKey: string): Promise<string> =>
+            new Promise((resolve, _) => {
+              resolve(s3Files[objectKey]);
+            }),
+        } as unknown as S3);
       }),
     );
 
@@ -207,7 +207,7 @@ describe('deployment state manager', () => {
     const currentCloudState = await DeploymentStateManager.getStatusFromCloud(mockContext);
 
     expect(currentCloudState.status).toBe(DeploymentStatus.DEPLOYED);
-    expect(currentCloudState.steps.filter(s => s.status === DeploymentStepStatus.DEPLOYED).length).toBe(3);
+    expect(currentCloudState.steps.filter((s) => s.status === DeploymentStepStatus.DEPLOYED).length).toBe(3);
 
     const currentStatus = deploymentStateManager.getStatus();
     const cloudStatus = await DeploymentStateManager.getStatusFromCloud(mockContext);
@@ -245,8 +245,8 @@ describe('deployment state manager', () => {
     const currentCloudState = await DeploymentStateManager.getStatusFromCloud(mockContext);
 
     expect(currentCloudState.status).toBe(DeploymentStatus.ROLLED_BACK);
-    expect(currentCloudState.steps.filter(s => s.status === DeploymentStepStatus.WAITING_FOR_DEPLOYMENT).length).toBe(1);
-    expect(currentCloudState.steps.filter(s => s.status === DeploymentStepStatus.ROLLED_BACK).length).toBe(2);
+    expect(currentCloudState.steps.filter((s) => s.status === DeploymentStepStatus.WAITING_FOR_DEPLOYMENT).length).toBe(1);
+    expect(currentCloudState.steps.filter((s) => s.status === DeploymentStepStatus.ROLLED_BACK).length).toBe(2);
 
     const currentStatus = await deploymentStateManager.getStatus();
     const cloudStatus = await DeploymentStateManager.getStatusFromCloud(mockContext);

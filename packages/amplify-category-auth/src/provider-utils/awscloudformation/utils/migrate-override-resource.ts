@@ -1,7 +1,12 @@
 import {
-  $TSObject, AmplifyCategories, projectNotInitializedError, AmplifyError, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+  $TSObject,
+  AmplifyCategories,
+  projectNotInitializedError,
+  AmplifyError,
+  JSONUtilities,
+  pathManager,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import * as fs from 'fs-extra';
@@ -56,10 +61,14 @@ export const migrateResourceToSupportOverride = async (resourceName: string): Pr
   } catch (e) {
     rollback(authResourceDirPath, backupAuthResourceFolder!);
     rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
-    throw new AmplifyError('MigrationError', {
-      message: `There was an error migrating your project: ${e.message}`,
-      details: `Migration operations are rolled back.`,
-    }, e);
+    throw new AmplifyError(
+      'MigrationError',
+      {
+        message: `There was an error migrating your project: ${e.message}`,
+        details: `Migration operations are rolled back.`,
+      },
+      e,
+    );
   } finally {
     cleanUp(backupAuthResourceFolder);
     cleanUp(backupUserPoolGroupResourceFolder);
@@ -186,7 +195,7 @@ const mapParametersJsonToCliInputs = (parameters: $TSObject): CognitoCLIInputs =
   }
 
   // removing undefined values
-  const filteredCliInputs = _.pickBy(cliInputs, v => v !== undefined) as CognitoConfiguration;
+  const filteredCliInputs = _.pickBy(cliInputs, (v) => v !== undefined) as CognitoConfiguration;
 
   return {
     version: '1',

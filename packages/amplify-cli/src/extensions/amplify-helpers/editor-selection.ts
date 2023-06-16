@@ -1,5 +1,5 @@
 import * as inquirer from 'inquirer';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { merge } from 'lodash';
 
 export const editors = [
@@ -42,7 +42,7 @@ export const editors = [
 ];
 
 export async function editorSelection(defaultEditor?) {
-  const normalizedDefaultEditor = editors.findIndex(editor => editor.value === defaultEditor) > -1 ? defaultEditor : undefined;
+  const normalizedDefaultEditor = editors.findIndex((editor) => editor.value === defaultEditor) > -1 ? defaultEditor : undefined;
 
   const editorQuestion: inquirer.ListQuestion = {
     type: 'list',
@@ -60,7 +60,7 @@ export async function editorSelection(defaultEditor?) {
 }
 
 // To support earlier version of the value we need to fix-up mixed case 'Code' to 'code',
-// map 'code' to 'vscode' or 'idea14ce' to 'intellij'
+// map code to vscode or idea14ce to intellij
 export function normalizeEditor(editor) {
   if (editor) {
     editor = editor.toLowerCase();
@@ -71,7 +71,7 @@ export function normalizeEditor(editor) {
       editor = 'vscode';
     }
 
-    editor = editors.findIndex(editorEntry => editorEntry.value === editor) > -1 ? editor : undefined;
+    editor = editors.findIndex((editorEntry) => editorEntry.value === editor) > -1 ? editor : undefined;
   }
 
   return editor;
@@ -85,7 +85,7 @@ export function normalizeEditor(editor) {
  */
 function hideNoManualEdit(editor) {
   switch (editor) {
-    case 'vscode':
+    case 'vscode': {
       const workspaceSettingsPath = '.vscode/settings.json';
       const exclusionRules = {
         'files.exclude': {
@@ -108,6 +108,7 @@ function hideNoManualEdit(editor) {
         JSONUtilities.writeJson(workspaceSettingsPath, exclusionRules);
       }
       break;
+    }
     default:
       break;
   }

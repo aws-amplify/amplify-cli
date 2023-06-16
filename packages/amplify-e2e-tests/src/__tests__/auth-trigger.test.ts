@@ -32,7 +32,7 @@ describe('amplify init and add auth...', () => {
     const emailVerificationTriggerName = `${Object.keys(meta.auth)[0]}CustomMessage-integtest`;
     const addUserToGroupTriggerName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];

@@ -6,8 +6,8 @@ import {
   AmplifySupportedService,
   INotificationsResourceMeta,
   stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { IChannelAPIResponse, ChannelAction, INotificationsConfigStatus } from './channel-types';
 import { PinpointName } from './pinpoint-name';
 import { disableNotificationsChannel, enableNotificationsChannel, getChannelAvailability } from './notifications-backend-cfg-channel-api';
@@ -20,8 +20,8 @@ import { getCurrentNotificationsAppConfig, getNotificationsAppConfig } from './n
  * Meta = API to interact with deployment metadata in AmplifyMeta
  */
 
-const buildPartialChannelMeta = (channelNames: Array<string>): Record<string, $TSAny>|undefined => {
-  const partialOutput : Record<string, $TSAny> = {};
+const buildPartialChannelMeta = (channelNames: Array<string>): Record<string, $TSAny> | undefined => {
+  const partialOutput: Record<string, $TSAny> = {};
   for (const channelName of channelNames) {
     partialOutput[channelName] = { Enabled: true };
   }
@@ -34,9 +34,9 @@ const buildPartialChannelMeta = (channelNames: Array<string>): Record<string, $T
  * @param cfg Pinpoint resource config in BackendConfig for the environment.
  * @returns Pinpoint resource meta to be stored in amplify-meta.
  */
-export const generateMetaFromConfig = (envName: string, cfg:$TSAny): Partial<INotificationsResourceMeta> => {
-  const outputRecords: Record<string, $TSAny>|undefined = (cfg?.channels?.length && cfg.channels.length > 0)
-    ? buildPartialChannelMeta(cfg.channels) : undefined;
+export const generateMetaFromConfig = (envName: string, cfg: $TSAny): Partial<INotificationsResourceMeta> => {
+  const outputRecords: Record<string, $TSAny> | undefined =
+    cfg?.channels?.length && cfg.channels.length > 0 ? buildPartialChannelMeta(cfg.channels) : undefined;
   if (cfg.resourceName === undefined) {
     throw new AmplifyError('ConfigurationError', {
       message: 'Pinpoint resource name is missing in the backend config',
@@ -45,7 +45,7 @@ export const generateMetaFromConfig = (envName: string, cfg:$TSAny): Partial<INo
   const notificationsMeta: Partial<INotificationsResourceMeta> = {
     Name: PinpointName.generatePinpointAppName(cfg.resourceName, envName), // Env specific resource name
     ResourceName: cfg.resourceName, // Logical name of Notifications App.
-    service: (cfg.service) || AmplifySupportedService.PINPOINT, // AWS Service e.g Pinpoint
+    service: cfg.service || AmplifySupportedService.PINPOINT, // AWS Service e.g Pinpoint
   };
   if (outputRecords) {
     notificationsMeta.output = outputRecords;
@@ -56,26 +56,29 @@ export const generateMetaFromConfig = (envName: string, cfg:$TSAny): Partial<INo
 /**
  * update channel api response
  */
-export const updateChannelAPIResponse = async (
-  context: $TSContext,
-  channelAPIResponse: IChannelAPIResponse,
-): Promise<$TSContext> => {
+export const updateChannelAPIResponse = async (context: $TSContext, channelAPIResponse: IChannelAPIResponse): Promise<$TSContext> => {
   let notificationConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
   if (notificationConfig) {
     switch (channelAPIResponse.action) {
       case ChannelAction.ENABLE:
         if (notificationConfig.channels && !notificationConfig.channels.includes(channelAPIResponse.channel)) {
           notificationConfig = enableNotificationsChannel(notificationConfig, channelAPIResponse.channel);
-          context.exeInfo.amplifyMeta = await toggleNotificationsChannelAppMeta(channelAPIResponse.channel, true,
-            context.exeInfo.amplifyMeta);
+          context.exeInfo.amplifyMeta = await toggleNotificationsChannelAppMeta(
+            channelAPIResponse.channel,
+            true,
+            context.exeInfo.amplifyMeta,
+          );
         }
         break;
       case ChannelAction.DISABLE:
         if (notificationConfig.channels?.includes(channelAPIResponse.channel)) {
           notificationConfig = disableNotificationsChannel(notificationConfig, channelAPIResponse.channel);
         }
-        context.exeInfo.amplifyMeta = await toggleNotificationsChannelAppMeta(channelAPIResponse.channel, false,
-          context.exeInfo.amplifyMeta);
+        context.exeInfo.amplifyMeta = await toggleNotificationsChannelAppMeta(
+          channelAPIResponse.channel,
+          false,
+          context.exeInfo.amplifyMeta,
+        );
         break;
       case ChannelAction.CONFIGURE:
         // no-op - configure calls enable or disable
@@ -91,12 +94,12 @@ export const updateChannelAPIResponse = async (
 };
 
 /**
-* Get notifications resource localBackend, deployedBackend and channel availability
-* most useful in displaying status.
-* @param context amplify cli context
-* @returns backendConfig and channel availability for notifications
-*/
-export const getNotificationConfigStatus = async (context: $TSContext): Promise<INotificationsConfigStatus|undefined> => {
+ * Get notifications resource localBackend, deployedBackend and channel availability
+ * most useful in displaying status.
+ * @param context amplify cli context
+ * @returns backendConfig and channel availability for notifications
+ */
+export const getNotificationConfigStatus = async (context: $TSContext): Promise<INotificationsConfigStatus | undefined> => {
   const notificationConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
 
   // no Notifications resource
@@ -106,7 +109,7 @@ export const getNotificationConfigStatus = async (context: $TSContext): Promise<
   let appInitialized = true;
   let deployedBackendConfig: $TSAny;
   try {
-    deployedBackendConfig = (stateManager.getCurrentBackendConfig()) || undefined;
+    deployedBackendConfig = stateManager.getCurrentBackendConfig() || undefined;
   } catch (e) {
     appInitialized = false;
     deployedBackendConfig = undefined;
@@ -121,7 +124,7 @@ export const getNotificationConfigStatus = async (context: $TSContext): Promise<
     },
     deployed: {
       config: deployedNotificationConfig,
-      channels: (deployedNotificationConfig) ? await getChannelAvailability(deployedNotificationConfig) : emptyChannels,
+      channels: deployedNotificationConfig ? await getChannelAvailability(deployedNotificationConfig) : emptyChannels,
     },
     appInitialized,
   } as INotificationsConfigStatus;

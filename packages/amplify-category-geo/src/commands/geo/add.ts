@@ -1,9 +1,9 @@
 import { chooseServiceMessageAdd, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { addResource } from '../../provider-controllers';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export const name = 'add';
 
@@ -19,11 +19,11 @@ export const run = async (context: $TSContext) => {
 
     if (result.providerName !== provider) {
       printer.error(`Provider ${result.providerName} not configured for this category`);
-      return;
+      return undefined;
     }
 
     return await addResource(context, result.service);
-  } catch (error: $TSAny) {
+  } catch (error) {
     if (error.message) {
       printer.error(error.message);
     }
@@ -32,7 +32,8 @@ export const run = async (context: $TSContext) => {
       printer.info(error.stack);
     }
     printer.error('There was an error adding the geo resource');
-    context.usageData.emitError(error);
+    void context.usageData.emitError(error);
     process.exitCode = 1;
   }
+  return undefined;
 };

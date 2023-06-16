@@ -27,32 +27,23 @@ export type AddAuthUserPoolOnlyWithOAuthSettings = AddAuthUserPoolOnlyNoOAuthSet
 export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnlyWithOAuthSettings & {
   identityPoolName: string;
   allowUnauthenticatedIdentities: boolean;
-  thirdPartyAuth: boolean;
   idpFacebookAppId: string;
   idpGoogleAppId: string;
   idpAmazonAppId: string;
   idpAppleAppId: string;
 };
 
-export function addAuthWithDefault(cwd: string, settings: any = {}, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
-      .wait('Do you want to use the default authentication')
-      .sendCarriageReturn()
-      .wait('How do you want users to be able to sign in')
-      .sendCarriageReturn()
-      .wait('Do you want to configure advanced settings?')
-      .sendCarriageReturn()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const addAuthWithDefault = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
+  return spawn(getCLIPath(testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to use the default authentication')
+    .sendCarriageReturn()
+    .wait('How do you want users to be able to sign in')
+    .sendCarriageReturn()
+    .wait('Do you want to configure advanced settings?')
+    .sendCarriageReturn()
+    .sendEof()
+    .runAsync();
+};
 
 export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -70,9 +61,9 @@ export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   });
 }
 
-export function removeAuthWithDefault(cwd: string): Promise<void> {
+export function removeAuthWithDefault(cwd: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['remove', 'auth'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource? This')
@@ -88,7 +79,7 @@ export function removeAuthWithDefault(cwd: string): Promise<void> {
   });
 }
 
-export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<void> {
+export function addAuthWithGroupTrigger(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -398,8 +389,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Which redirect signin URIs do you want to edit?')
-      .sendCtrlA()
-      .sendCarriageReturn()
+      .selectAll()
       .wait(`Update ${settings.signinUrl}`)
       .sendCarriageReturn()
       .send(settings.updatesigninUrl)
@@ -407,8 +397,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
       .wait('Do you want to add redirect signin URIs?')
       .sendConfirmNo()
       .wait('Which redirect signout URIs do you want to edit?')
-      .sendCtrlA()
-      .sendCarriageReturn()
+      .selectAll()
       .wait(`Update ${settings.signoutUrl}`)
       .send(settings.updatesignoutUrl)
       .sendCarriageReturn()
@@ -507,7 +496,7 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Prom
   });
 }
 
-export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
+export function addAuthWithRecaptchaTrigger(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -635,7 +624,7 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
   });
 }
 
-export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Promise<void> {
+export function addAuthWithDefaultSocial_v4_30(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } =
       getSocialProviders(true);
@@ -690,7 +679,7 @@ export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Prom
   });
 }
 
-export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<void> {
+export function addAuthWithDefaultSocial(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
       FACEBOOK_APP_ID,
@@ -753,7 +742,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
       .wait('Enter your Key ID for your OAuth flow:')
       .send(APPLE_KEY_ID)
       .sendCarriageReturn()
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .send(APPLE_PRIVATE_KEY)
       .sendCarriageReturn()
       .sendEof()
@@ -767,7 +756,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
   });
 }
 
-export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
+export function addAuthUserPoolOnly(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
       FACEBOOK_APP_ID,
@@ -994,7 +983,7 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
 }
 
 // creates 2 groups: Admins, Users
-export function addAuthWithGroupsAndAdminAPI(cwd: string, settings?: any): Promise<void> {
+export function addAuthWithGroupsAndAdminAPI(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration')
@@ -1303,7 +1292,7 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
 
 export function updateAuthAddUserGroups(projectDir: string, groupNames: string[], settings?: any): Promise<void> {
   if (groupNames.length == 0) {
-    return;
+    return undefined;
   }
   const testingWithLatestCodebase = settings && settings.testingWithLatestCodebase ? settings.testingWithLatestCodebase : false;
   return new Promise((resolve, reject) => {
@@ -1432,7 +1421,7 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
       .sendLine(settings.appleAppTeamId)
       .wait('Enter your Key ID for your OAuth flow:')
       .sendLine(settings.appleAppKeyID)
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .sendLine(settings.appleAppPrivateKey)
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()
@@ -1452,7 +1441,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
   settings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .sendKeyDown(2)
       .sendCarriageReturn()
@@ -1556,7 +1545,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .sendLine(settings.appleAppTeamId)
       .wait('Enter your Key ID for your OAuth flow:')
       .sendLine(settings.appleAppKeyID)
-      .wait('Enter your Private Key for your OAuth flow:')
+      .wait('Enter your Private Key for your OAuth flow')
       .sendLine(settings.appleAppPrivateKey)
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()
@@ -1626,7 +1615,7 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
   });
 }
 
-export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings: any = {}): Promise<void> {
+export function updateAuthAddAdminQueries(projectDir: string, groupName = 'adminQueriesGroup', settings: any = {}): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
@@ -1772,6 +1761,53 @@ export function updateAuthMFAConfiguration(projectDir: string, settings: any = {
     .sendCarriageReturn()
     .wait('Do you want to configure Lambda Triggers for Cognito?')
     .sendNo()
+    .sendCarriageReturn()
+    .runAsync();
+}
+
+export function updateAuthWithGroupTrigger(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    .wait('What do you want to do?')
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .wait('Select the authentication/authorization services that you want to use:')
+    .sendCarriageReturn()
+    .wait('Allow unauthenticated logins?')
+    .sendCarriageReturn()
+    .wait('Do you want to enable 3rd party authentication providers in your identity pool?')
+    .sendCarriageReturn()
+    .wait('Do you want to add User Pool Groups?')
+    .sendCarriageReturn()
+    .wait('Do you want to add an admin queries API?')
+    .sendCarriageReturn()
+    .wait('Multifactor authentication (MFA) user login options:')
+    .sendCarriageReturn()
+    .wait('Email based user registration/forgot password:')
+    .sendCarriageReturn()
+    .wait('Please specify an email verification subject:')
+    .sendCarriageReturn()
+    .wait('Please specify an email verification message:')
+    .sendCarriageReturn()
+    .wait('Do you want to override the default password policy for this User Pool?')
+    .sendCarriageReturn()
+    .wait("Specify the app's refresh token expiration period (in days):")
+    .sendCarriageReturn()
+    .wait('Do you want to specify the user attributes this app can read and write?')
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities?')
+    .sendCarriageReturn()
+    .wait('Do you want to use an OAuth flow?')
+    .sendCarriageReturn()
+    .wait('Do you want to configure Lambda Triggers for Cognito?')
+    .sendCarriageReturn()
+    .wait('Which triggers do you want to enable for Cognito')
+    .sendCarriageReturn()
+    .wait('What functionality do you want to use for Pre Sign-up')
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .send(KEY_DOWN_ARROW)
+    .send(' ')
     .sendCarriageReturn()
     .runAsync();
 }

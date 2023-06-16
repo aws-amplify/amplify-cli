@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as pinpointHelper from '../../pinpoint-helper';
 
 export const name = 'console';
@@ -8,5 +8,5 @@ export const name = 'console';
  * @param context amplify cli context
  */
 export const run = async (context: $TSContext): Promise<void> => {
-  pinpointHelper.console(context);
+  await pinpointHelper.console(context);
 };

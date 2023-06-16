@@ -1,9 +1,9 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { ManuallyTimedCodePath } from '../domain/amplify-usageData/UsageDataTypes';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { ManuallyTimedCodePath } from '@aws-amplify/amplify-cli-core';
 import { pushResources } from '../extensions/amplify-helpers/push-resources';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as $TSAny),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as $TSAny),
   FeatureFlags: {
     isInitialized: jest.fn().mockReturnValue(true),
     getNumber: jest.fn().mockResolvedValue(0),
@@ -12,7 +12,9 @@ jest.mock('amplify-cli-core', () => ({
 
 jest.mock('@aws-amplify/amplify-category-custom', () => ({ generateDependentResourcesType: jest.fn() }));
 // this method also returns if there are resources to be created or updated
-jest.mock('../extensions/amplify-helpers/resource-status', () => ({ showResourceTable: jest.fn().mockReturnValue(Promise.resolve(false)) }));
+jest.mock('../extensions/amplify-helpers/resource-status', () => ({
+  showResourceTable: jest.fn().mockReturnValue(Promise.resolve(false)),
+}));
 
 const mockContext = {
   exeInfo: {

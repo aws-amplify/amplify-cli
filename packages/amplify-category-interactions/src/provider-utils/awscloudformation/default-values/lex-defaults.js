@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-const getAllDefaults = project => {
+const getAllDefaults = (project) => {
   const name = project.projectConfig.projectName.toLowerCase().replace('-', '_');
   const [shortId] = uuid.v4().split('-');
   const botName = `${name}_bot`;

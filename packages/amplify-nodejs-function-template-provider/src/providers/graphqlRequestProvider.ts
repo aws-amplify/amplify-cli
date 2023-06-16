@@ -1,11 +1,9 @@
-import { FunctionTemplateParameters } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import path from 'path';
 import fs from 'fs-extra';
-import {
-  AmplifySupportedService, exitOnNextTick, $TSContext,
-} from 'amplify-cli-core';
+import { AmplifySupportedService, exitOnNextTick, $TSContext } from '@aws-amplify/amplify-cli-core';
 
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getDstMap } from '../utils/destFileMapper';
 import { templateRoot } from '../utils/constants';
 
@@ -29,9 +27,12 @@ export async function graphqlRequest(context: $TSContext): Promise<FunctionTempl
     return authType === AWS_IAM;
   }
 
-  function isAppSyncWithIAM(config : any) {
+  function isAppSyncWithIAM(config: any) {
     const { authConfig } = config.output;
-    return [authConfig.defaultAuthentication.authenticationType, ...authConfig.additionalAuthenticationProviders.map((provider : any) => provider.authenticationType)].some(isIAM);
+    return [
+      authConfig.defaultAuthentication.authenticationType,
+      ...authConfig.additionalAuthenticationProviders.map((provider: any) => provider.authenticationType),
+    ].some(isIAM);
   }
 
   const iamCheck = isAppSyncWithIAM(apiResource);

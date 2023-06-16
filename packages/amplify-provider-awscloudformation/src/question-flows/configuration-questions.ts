@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import { ListQuestion, ConfirmQuestion, PasswordQuestion } from 'inquirer';
 import awsRegions from '../aws-regions';
 
@@ -65,7 +65,7 @@ export const createConfirmQuestion: ConfirmQuestion = {
   default: true,
 };
 
-export const removeProjectComfirmQuestion: ConfirmQuestion = {
+export const removeProjectConfirmQuestion: ConfirmQuestion = {
   type: 'confirm',
   name: 'removeProjectConfig',
   message: 'Remove project level configuration',

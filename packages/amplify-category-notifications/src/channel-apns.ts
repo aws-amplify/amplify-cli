@@ -1,11 +1,9 @@
 /* eslint-disable no-param-reassign */
 import ora from 'ora';
 import fs from 'fs-extra';
-import {
-  $TSAny, $TSContext, AmplifyFault,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 
-import { byValue, printer, prompter } from 'amplify-prompts';
+import { byValue, printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as configureKey from './apns-key-config';
 import * as configureCertificate from './apns-cert-config';
 import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './channel-types';
@@ -21,7 +19,7 @@ const deploymentType = ChannelConfigDeploymentType.INLINE;
  */
 export const configure = async (context: $TSContext): Promise<IChannelAPIResponse> => {
   const isChannelEnabled = context.exeInfo.serviceMeta.output[channelName]?.Enabled;
-  let response: IChannelAPIResponse|undefined;
+  let response: IChannelAPIResponse | undefined;
   if (isChannelEnabled) {
     printer.info(`The ${channelName} channel is currently enabled`);
     const disableChannel = await prompter.yesOrNo(`Do you want to disable the ${channelName} channel`, false);
@@ -48,7 +46,7 @@ export const configure = async (context: $TSContext): Promise<IChannelAPIRespons
  * @param context amplify cli context
  * @param successMessage optional message to be displayed on successfully enabling channel for notifications
  */
-export const enable = async (context: $TSContext, successMessage: string | undefined) : Promise<$TSAny> => {
+export const enable = async (context: $TSContext, successMessage: string | undefined): Promise<$TSAny> => {
   let channelInput;
   let answers;
   if (context.exeInfo.pinpointInputParams?.[channelName]) {
@@ -57,15 +55,13 @@ export const enable = async (context: $TSContext, successMessage: string | undef
       DefaultAuthenticationMethod: channelInput.DefaultAuthenticationMethod,
     };
   } else {
-    let channelOutput : $TSAny = {};
+    let channelOutput: $TSAny = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
     }
-    const authMethod = await prompter.pick(
-      'Select the authentication method for the APNS channel',
-      ['Certificate', 'Key'],
-      { initial: byValue(channelOutput.DefaultAuthenticationMethod || 'Certificate') },
-    );
+    const authMethod = await prompter.pick('Select the authentication method for the APNS channel', ['Certificate', 'Key'], {
+      initial: byValue(channelOutput.DefaultAuthenticationMethod || 'Certificate'),
+    });
     answers = {
       DefaultAuthenticationMethod: authMethod,
     };
@@ -104,9 +100,13 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
   } catch (e) {
     spinner.stop();
-    throw new AmplifyFault('NotificationsChannelAPNSFault', {
-      message: `Failed to enable the ${channelName} channel.`,
-    }, e);
+    throw new AmplifyFault(
+      'NotificationsChannelAPNSFault',
+      {
+        message: `Failed to enable the ${channelName} channel.`,
+      },
+      e,
+    );
   }
 
   if (!successMessage) {
@@ -168,7 +168,7 @@ const validateInputParams = (action: ChannelAction, channelInput: $TSAny): $TSAn
  * @param context amplify cli notifications
  * @returns APNChannel response
  */
-export const disable = async (context: $TSContext) : Promise<$TSAny> => {
+export const disable = async (context: $TSContext): Promise<$TSAny> => {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     APNSChannelRequest: {
@@ -191,10 +191,14 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
     await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
   } catch (e) {
     spinner.fail(`Failed to update the ${channelName} channel.`);
-    throw new AmplifyFault('NotificationsChannelAPNSFault', {
-      message: `Failed to update the ${channelName} channel.`,
-      details: `Action: ${ChannelAction.DISABLE}. ${e.message}`,
-    }, e);
+    throw new AmplifyFault(
+      'NotificationsChannelAPNSFault',
+      {
+        message: `Failed to update the ${channelName} channel.`,
+        details: `Action: ${ChannelAction.DISABLE}. ${e.message}`,
+      },
+      e,
+    );
   }
   spinner.succeed(`The ${channelName} channel has been disabled.`);
   context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
@@ -207,7 +211,7 @@ export const disable = async (context: $TSContext) : Promise<$TSAny> => {
  * @param pinpointApp Pinpoint resource metadata
  * @returns APNChannel response
  */
-export const pull = async (context:$TSContext, pinpointApp:$TSAny): Promise<$TSAny> => {
+export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$TSAny> => {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
@@ -222,10 +226,14 @@ export const pull = async (context:$TSContext, pinpointApp:$TSAny): Promise<$TSA
   } catch (err) {
     spinner.stop();
     if (err.code !== 'NotFoundException') {
-      throw new AmplifyFault('NotificationsChannelAPNSFault', {
-        message: `Failed to pull the ${channelName} channel.`,
-        details: `Action: ${ChannelAction.PULL}. ${err.message}`,
-      }, err);
+      throw new AmplifyFault(
+        'NotificationsChannelAPNSFault',
+        {
+          message: `Failed to pull the ${channelName} channel.`,
+          details: `Action: ${ChannelAction.PULL}. ${err.message}`,
+        },
+        err,
+      );
     }
 
     return undefined;

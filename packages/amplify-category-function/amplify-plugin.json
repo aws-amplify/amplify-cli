@@ -5,5 +5,5 @@
   "commandAliases": {
     "configure": "update"
   },
-  "eventHandlers": ["PrePush", "PostPush", "InternalOnlyPostEnvRemove"]
+  "eventHandlers": ["PrePush", "PostPush", "InternalOnlyPostEnvRemove", "PreExport"]
 }

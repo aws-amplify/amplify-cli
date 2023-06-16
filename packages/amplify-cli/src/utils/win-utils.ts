@@ -2,8 +2,11 @@ import * as fs from 'fs-extra';
 import { command } from 'execa';
 import { oldVersionPath, pendingDeletePath, tmpRegPath } from './win-constants';
 
+// eslint-disable-next-line spellcheck/spell-checker
 const regPath = 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager';
 const regKey = 'PendingFileRenameOperations';
+
+// eslint-disable-next-line spellcheck/spell-checker
 const regPreamble = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager]
@@ -45,11 +48,11 @@ export const setRegPendingDelete = async () => {
     .slice(startIdx)
     .trim()
     .split('\\0')
-    .filter(p => !!p);
+    .filter((p) => !!p);
   const newPaths = currentPaths.concat(`\\??\\${pendingDeletePath}`);
   const newHex = newPaths
     .map(strToLittleEndianHex)
-    .map(hexArr => hexArr.join(','))
+    .map((hexArr) => hexArr.join(','))
     .join(',00,00,00,00,')
     .concat(',00,00,00,00,00,00');
   const regContent = `${regPreamble}${newHex}`;
@@ -61,7 +64,7 @@ export const setRegPendingDelete = async () => {
 const strToLittleEndianHex = (str: string) => {
   const hexArr: string[] = [];
   for (let i = 0; i < str.length; i++) {
-    let hexCode = str.charCodeAt(i).toString(16);
+    const hexCode = str.charCodeAt(i).toString(16);
     switch (hexCode.length) {
       case 1:
         hexArr.push(`0${hexCode}`);

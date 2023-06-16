@@ -2,38 +2,42 @@ import { existsSync, createWriteStream } from 'fs-extra';
 import { InvokeOptions } from './invoke';
 import path from 'path';
 import exit from 'exit';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
-process.on('message', async (options: InvokeOptions) => {
+process.on('message', (options: InvokeOptions) => {
   const parentPipe = createWriteStream('', { fd: 3 });
   parentPipe.setDefaultEncoding('utf-8');
-  try {
-    const result = await invokeFunction(options);
-    parentPipe.write(JSON.stringify({ result }));
-  } catch (error) {
-    let plainError = error;
-    if (typeof error === 'object') {
-      plainError = Object.getOwnPropertyNames(error).reduce((acc, key) => {
-        acc[key] = error[key];
-        return acc;
-      }, {} as Record<string, any>);
-    }
-    parentPipe.write(JSON.stringify({ error: plainError }));
-  }
-  exit(0);
+  void invokeFunction(options)
+    .then((result) => {
+      parentPipe.write(JSON.stringify({ result }));
+    })
+    .catch((error) => {
+      let plainError = error;
+      if (typeof error === 'object') {
+        plainError = Object.getOwnPropertyNames(error).reduce((acc, key) => {
+          acc[key] = error[key];
+          return acc;
+        }, {} as Record<string, any>);
+      }
+      parentPipe.write(JSON.stringify({ error: plainError }));
+    })
+    .then(() => {
+      exit(0);
+    });
 });
 
 const invokeFunction = async (options: InvokeOptions) => {
   if (options.packageFolder) {
     const p = path.resolve(options.packageFolder);
     if (!existsSync(p)) {
-      throw new Error(`Lambda package folder ${options.packageFolder} does not exist`);
+      throw new AmplifyError('LambdaFunctionInvokeError', { message: `Lambda package folder ${options.packageFolder} does not exist` });
     }
     process.chdir(p);
   } else {
-    throw new Error(`Invalid lambda invoke request. No package folder specified.`);
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Invalid lambda invoke request. No package folder specified.` });
   }
   if (!options.handler) {
-    throw new Error('Invalid lambda invoke request. No handler specified.');
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Invalid lambda invoke request. No handler specified.` });
   }
 
   const lambdaHandler = await loadHandler(options.packageFolder, options.handler);
@@ -51,7 +55,7 @@ const invokeFunction = async (options: InvokeOptions) => {
     ...options.context,
   };
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const callback = (error: any, response: any) => {
       if (error) {
         reject(error);
@@ -62,7 +66,7 @@ const invokeFunction = async (options: InvokeOptions) => {
     try {
       const lambdaPromise = lambdaHandler(event, lambdaMockContext, callback);
       if (typeof lambdaPromise === 'object' && typeof lambdaPromise.then === 'function') {
-        resolve(await lambdaPromise);
+        resolve(lambdaPromise);
       }
     } catch (e) {
       reject(e);
@@ -71,6 +75,7 @@ const invokeFunction = async (options: InvokeOptions) => {
 };
 
 // handler is a string like 'path/to/handler.func'
+// eslint-disable-next-line @typescript-eslint/ban-types
 const loadHandler = async (root: string, handler: string): Promise<Function> => {
   const handlerParts = path.parse(handler);
   try {
@@ -78,10 +83,12 @@ const loadHandler = async (root: string, handler: string): Promise<Function> => 
     const handlerFuncName = handlerParts.ext.replace('.', '');
     const handlerFunc = handler?.[handlerFuncName];
     if (typeof handlerFunc !== 'function') {
-      throw new Error(`Lambda handler ${handlerParts.name} has no exported function named ${handlerFuncName}`);
+      throw new AmplifyError('LambdaFunctionInvokeError', {
+        message: `Lambda handler ${handlerParts.name} has no exported function named ${handlerFuncName}`,
+      });
     }
     return handlerFunc;
   } catch (err) {
-    throw new Error(`Could not load lambda handler function due to ${err}`);
+    throw new AmplifyError('LambdaFunctionInvokeError', { message: `Could not load lambda handler function due to ${err}` }, err);
   }
 };

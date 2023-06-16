@@ -1,12 +1,12 @@
-import { $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { $TSContext, convertNumBytes, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { packageLayer } from '../../../../provider-utils/awscloudformation/utils/packageLayer';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';
 import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
 import { loadLayerConfigurationFile } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoader');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
@@ -41,18 +41,18 @@ loadLayerConfigurationFile_mock.mockReturnValue({
 
 pathManager_mock.getResourceDirectoryPath.mockReturnValue('backend/dir/path/testcategory/testResourceName/');
 
-const runtimePlugin_stub = ({
+const runtimePlugin_stub = {
   checkDependencies: jest.fn().mockResolvedValue({ hasRequiredDependencies: true }),
   package: jest.fn().mockResolvedValue({ packageHash: true }),
-} as unknown) as jest.Mocked<FunctionRuntimeLifecycleManager>;
+} as unknown as jest.Mocked<FunctionRuntimeLifecycleManager>;
 
-const context_stub = ({
+const context_stub = {
   amplify: {
     loadRuntimePlugin: jest.fn().mockResolvedValue(runtimePlugin_stub),
     getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
     updateAmplifyMetaAfterPackage: jest.fn(),
   },
-} as unknown) as jest.Mocked<$TSContext>;
+} as unknown as jest.Mocked<$TSContext>;
 
 const resourceRequest: PackageRequestMeta = {
   category: 'testcategory',
@@ -66,27 +66,27 @@ const resourceRequest: PackageRequestMeta = {
 };
 
 const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
-layerCloudState_mock.getInstance.mockReturnValue(({
+layerCloudState_mock.getInstance.mockReturnValue({
   latestVersionLogicalId: 'mockLogicalId',
-} as unknown) as LayerCloudState);
+} as unknown as LayerCloudState);
 
 describe('package function', () => {
   it('delegates packaging to the runtime manager', async () => {
     getFolderSize_mock.mockResolvedValue(100 * 1024 ** 2); // 100MB
-    await packageLayer((context_stub as unknown) as $TSContext, resourceRequest);
+    await packageLayer(context_stub as unknown as $TSContext, resourceRequest);
     expect(runtimePlugin_stub.package.mock.calls[0][0].srcRoot).toEqual('backend/dir/path/testcategory/testResourceName/lib/nodejs');
   });
 
   it('updates amplify meta after packaging', async () => {
     getFolderSize_mock.mockResolvedValue(100 * 1024 ** 2); // 100MB
-    await packageLayer((context_stub as unknown) as $TSContext, resourceRequest);
+    await packageLayer(context_stub as unknown as $TSContext, resourceRequest);
     expect((context_stub.amplify.updateAmplifyMetaAfterPackage as jest.Mock).mock.calls[0][0]).toEqual(resourceRequest);
   });
 
   it('fails to pacakge layer that is greater than 250MB in size', async () => {
     getFolderSize_mock.mockResolvedValue(260 * 1024 ** 2); // 260MB
     convertNumBytes_mock.mockReturnValue({ toKB: jest.fn(), toMB: jest.fn().mockReturnValueOnce(260) });
-    await expect(async () => await packageLayer((context_stub as unknown) as $TSContext, resourceRequest)).rejects.toEqual(
+    await expect(async () => await packageLayer(context_stub as unknown as $TSContext, resourceRequest)).rejects.toEqual(
       new Error(`Lambda layer ${resourceRequest.resourceName} is too large: 260/250 MB`),
     );
   });

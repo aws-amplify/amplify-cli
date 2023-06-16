@@ -6,12 +6,16 @@ import glob from 'glob';
 import { coerce, lt } from 'semver';
 import { Context } from './domain/context';
 import { ConfirmQuestion } from 'inquirer';
-import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
+import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import Resource from 'cloudform-types/types/resource';
 import Lambda from 'cloudform-types/types/lambda';
 
-const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x'];
-const lambdaRuntimeVersion = 'nodejs14.x';
+// See https://docs.aws.amazon.com/lambda/latest/dg/lambda-nodejs.html.
+const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x', 'nodejs12.x'];
+// Note. It's safe to auto migrate existing lambdas above to nodejs16.x by replacing runtime
+// as they bundle AWS SDK v2. This mechanism isn't viable to upgrade to nodejs18.x
+// as that version bundles AWS SDK v3 which is not compatible.
+const lambdaRuntimeVersion = 'nodejs16.x';
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
   const { constants } = context.amplify;
@@ -23,8 +27,7 @@ export async function checkProjectConfigVersion(context: Context): Promise<void>
       default: undefined,
     });
 
-    // If we do not have a projectConig, just bail out, probably it is an
-    // uninitialized project
+    // If we do not have a projectConfig, just bail out, probably it is an uninitialized project
     if (!projectConfig?.version) {
       return;
     }
@@ -126,7 +129,7 @@ async function updateFileContent(filePath: string): Promise<void> {
       r.Type === 'AWS::Lambda::Function' && previousLambdaRuntimeVersions.includes(_.get(r, ['Properties', 'Runtime'], undefined)),
   );
 
-  lambdaFunctions.map(f => (f.Properties.Runtime = lambdaRuntimeVersion));
+  lambdaFunctions.map((f) => (f.Properties.Runtime = lambdaRuntimeVersion));
 
   return writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
 }

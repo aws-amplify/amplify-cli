@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/uninstall';
 import execa from 'execa';
 
@@ -18,7 +18,7 @@ const context_stub = {
   },
 };
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
   },
@@ -26,10 +26,10 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 jest.mock('chalk', () => ({
-  blueBright: jest.fn().mockImplementation(input => input),
+  blueBright: jest.fn().mockImplementation((input) => input),
 }));
 
-const context_stub_typed = (context_stub as unknown) as $TSContext;
+const context_stub_typed = context_stub as unknown as $TSContext;
 
 describe('uninstall node CLI', () => {
   afterEach(() => {
@@ -39,7 +39,7 @@ describe('uninstall node CLI', () => {
     await run(context_stub_typed);
 
     expect(context_stub.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(
-      `"\\"uninstall\\" is not available in this installation of Amplify."`,
+      `""uninstall" is not available in this installation of Amplify."`,
     );
     expect(context_stub.print.info.mock.calls[0][0]).toMatchInlineSnapshot(`"Use npm uninstall -g @aws-amplify/cli instead."`);
   });

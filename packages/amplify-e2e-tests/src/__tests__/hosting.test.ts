@@ -5,14 +5,14 @@ import {
   resetBuildCommand,
   initJSProjectWithProfile,
   deleteProject,
-  addDEVHosting,
+  addPRODHosting,
   removeHosting,
   amplifyPushWithoutCodegen,
   extractHostingBucketInfo,
   deleteS3Bucket,
   deleteProjectDir,
   getProjectMeta,
-  amplifyPublishWithoutUpdateWithYesFlag
+  amplifyPublishWithoutUpdateWithYesFlag,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -23,7 +23,7 @@ describe('amplify add hosting', () => {
   beforeAll(async () => {
     projRoot = await createReactTestProject();
     await initJSProjectWithProfile(projRoot, {});
-    await addDEVHosting(projRoot);
+    await addPRODHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
   });
 
@@ -35,7 +35,7 @@ describe('amplify add hosting', () => {
     if (hostingBucket) {
       try {
         await deleteS3Bucket(hostingBucket);
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch {}
     }
     deleteProjectDir(projRoot);

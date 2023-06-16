@@ -7,7 +7,7 @@ import {
   buildOverrideDir,
   stateManager,
   ApiCategoryFacade,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-package/types';
 import * as fs from 'fs-extra';
 
@@ -25,7 +25,7 @@ const mockMeta = jest.fn(() => {
   };
 });
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta = mockMeta;
 stateManager_mock.getTeamProviderInfo = jest.fn().mockReturnValue({});
@@ -54,7 +54,7 @@ JSONUtilitiesMock.readJson.mockImplementation((pathToJson: string) => {
   }
 });
 const readCFNTemplate_mock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;
-readCFNTemplate_mock.mockImplementation(path => {
+readCFNTemplate_mock.mockImplementation((path) => {
   if (path.includes('function') && path.includes('amplifyexportestlayer5f16d693')) {
     return {
       cfnTemplate: lambdaTemplate,
@@ -106,12 +106,12 @@ jest.mock('../../zip-util', () => ({
 jest.mock('../../pre-push-cfn-processor/cfn-pre-processor', () => ({
   preProcessCFNTemplate: jest.fn().mockImplementation((cfnPath) => cfnPath),
   writeCustomPoliciesToCFNTemplate: jest.fn(),
-}))
+}));
 
 jest.mock('../../template-description-utils', () => ({
   prePushTemplateDescriptionHandler: jest.fn(),
   getDefaultTemplateDescription: jest.fn().mockReturnValue('mock description'),
-}))
+}));
 jest.mock('../../download-api-models', () => ({}));
 jest.mock('../../amplify-service-manager', () => ({}));
 jest.mock('../../iterative-deployment', () => ({}));
@@ -310,10 +310,10 @@ describe('test resource export', () => {
       category: 'providers',
     });
 
-    const resourcesWithoutProvider = mockResource.allResources.filter(r => r.category !== 'providers');
+    const resourcesWithoutProvider = mockResource.allResources.filter((r) => r.category !== 'providers');
     resourcesWithoutProvider
-      .filter(r => r.service === 'LambdaLayer')
-      .forEach(resource => {
+      .filter((r) => r.service === 'LambdaLayer')
+      .forEach((resource) => {
         expect(invokePluginMethod).nthCalledWith(invokePluginCount, mockContext, resource.category, 'LambdaLayer', 'migrateLegacyLayer', [
           mockContext,
           resource.resourceName,
@@ -328,8 +328,8 @@ describe('test resource export', () => {
     invokePluginCount++;
 
     resourcesWithoutProvider
-      .filter(r => r.build)
-      .forEach(resource => {
+      .filter((r) => r.build)
+      .forEach((resource) => {
         expect(invokePluginMethod).nthCalledWith(invokePluginCount, mockContext, 'function', resource.service, 'buildResource', [
           mockContext,
           resource,
@@ -337,7 +337,7 @@ describe('test resource export', () => {
         invokePluginCount = invokePluginCount + 1;
       });
 
-    const mockBuiltResources = resourcesWithoutProvider.map(resource => {
+    const mockBuiltResources = resourcesWithoutProvider.map((resource) => {
       if (resource.build) {
         return {
           ...resource,
@@ -348,8 +348,8 @@ describe('test resource export', () => {
     });
 
     mockBuiltResources
-      .filter(resource => resource.build)
-      .forEach(resource => {
+      .filter((resource) => resource.build)
+      .forEach((resource) => {
         expect(invokePluginMethod).nthCalledWith(invokePluginCount, mockContext, 'function', resource.service, 'packageResource', [
           mockContext,
           resource,
@@ -365,7 +365,7 @@ describe('test resource export', () => {
     await resourceExport.writeResourcesToDestination(packagedResources);
 
     let copyCount = 1;
-    packagedResources.forEach(resource => {
+    packagedResources.forEach((resource) => {
       if (resource.packagerParams) {
         expect(fs_mock.copy).nthCalledWith(
           copyCount++,
@@ -427,7 +427,7 @@ describe('test resource export', () => {
       }
     });
 
-    if (packagedResources.some(r => r.service === 'ElasticContainer')) {
+    if (packagedResources.some((r) => r.service === 'ElasticContainer')) {
       expect(fs_mock.copy).nthCalledWith(
         copyCount++,
         path.join(__dirname, '../../../', 'resources', 'custom-resource-pipeline-awaiter.zip'),
@@ -458,7 +458,7 @@ describe('test resource export', () => {
     expect(transformedResources).toBeDefined();
 
     expect(invokePluginMethod).nthCalledWith(invokePluginCount++, mockContext, 'auth', undefined, 'prePushAuthHook', [mockContext]);
-    const apiResource = packagedResources.find(r => r.service === 'ElasticContainer');
+    const apiResource = packagedResources.find((r) => r.service === 'ElasticContainer');
     expect(invokePluginMethod).nthCalledWith(invokePluginCount++, mockContext, 'api', undefined, 'generateContainersArtifacts', [
       mockContext,
       apiResource,

@@ -1,5 +1,5 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager, BuildRequest, BuildType } from 'amplify-function-plugin-interface';
+import { $TSContext, AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionRuntimeLifecycleManager, BuildRequest, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as path from 'path';
 import { categoryName } from '../../../constants';
 import { BuildRequestMeta } from './buildFunction';
@@ -24,9 +24,7 @@ export const buildLayer = async (context: $TSContext, { resourceName, lastBuildT
     const depCheck = await runtimePlugin.checkDependencies(runtime.value);
     if (!depCheck.hasRequiredDependencies) {
       context.print.error(depCheck.errorMessage || `Required dependencies to build ${resourceName} are missing`);
-      const err = new Error(`Required dependencies to build ${resourceName} are missing`);
-      err.stack = undefined;
-      throw err;
+      throw new AmplifyError('PackagingLambdaFunctionError', { message: `Required dependencies to build ${resourceName} are missing` });
     }
 
     const prevBuildTimestamp = lastBuildTimestamp ? new Date(lastBuildTimestamp) : undefined;

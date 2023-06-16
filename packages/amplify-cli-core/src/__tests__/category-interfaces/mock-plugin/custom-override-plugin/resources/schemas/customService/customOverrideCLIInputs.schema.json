@@ -4,17 +4,12 @@
     "version": {
       "description": "The schema version.",
       "type": "number",
-      "enum": [
-        1
-      ]
+      "enum": [1]
     },
     "param1": {
       "type": "string"
     }
   },
-  "required": [
-    "param1",
-    "version"
-  ],
+  "required": ["param1", "version"],
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

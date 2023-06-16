@@ -5,6 +5,7 @@ import { JSONSchema7, JSONSchema7Definition } from 'json-schema'; // eslint-disa
 import _ from 'lodash';
 import * as path from 'path';
 import { CLIEnvironmentProvider } from '../cliEnvironmentProvider';
+// eslint-disable-next-line import/no-cycle
 import { AmplifyError } from '../errors/amplify-error';
 import { AmplifyFault } from '../errors/amplify-fault';
 import { JSONUtilities } from '../jsonUtilities';
@@ -12,9 +13,7 @@ import { pathManager, stateManager } from '../state-manager'; // eslint-disable-
 /* eslint-disable import/no-cycle */
 import { FeatureFlagEnvironmentProvider } from './featureFlagEnvironmentProvider';
 import { FeatureFlagFileProvider } from './featureFlagFileProvider'; // eslint-disable-line import/no-cycle
-import {
-  FeatureFlagConfiguration, FeatureFlagRegistration, FeatureFlagsEntry, FeatureFlagType,
-} from './featureFlagTypes';
+import { FeatureFlagConfiguration, FeatureFlagRegistration, FeatureFlagsEntry, FeatureFlagType } from './featureFlagTypes';
 /* eslint-enable */
 
 /**
@@ -57,7 +56,7 @@ export class FeatureFlags {
     instance.registerFlags();
 
     if (additionalFlags) {
-      Object.keys(additionalFlags).forEach(sectionName => {
+      Object.keys(additionalFlags).forEach((sectionName) => {
         const flags = additionalFlags[sectionName];
 
         instance.registerFlag(sectionName, flags);
@@ -116,10 +115,10 @@ export class FeatureFlags {
     });
 
     if (!config?.features) {
-      FeatureFlags.ensureDefaultFeatureFlags(false);
+      await FeatureFlags.ensureDefaultFeatureFlags(false);
     } else if (config.features?.[featureFlagSection]?.[featureFlagName] === undefined) {
       const features = FeatureFlags.getExistingProjectDefaults();
-      _.set(config, ['features', featureFlagSection, featureFlagName], features[featureFlagSection][featureFlagName]);
+      _.setWith(config, ['features', featureFlagSection, featureFlagName], features[featureFlagSection][featureFlagName]);
 
       stateManager.setCLIJSON(FeatureFlags.instance.projectPath, config);
     }
@@ -172,11 +171,10 @@ export class FeatureFlags {
       await fs.remove(configFileName);
     }
 
-    envNames.forEach(async envName => {
+    for (const envName of envNames) {
       const configFileName = pathManager.getCLIJSONFilePath(FeatureFlags.instance.projectPath, envName);
-
       await fs.remove(configFileName);
-    });
+    }
   };
 
   public static isInitialized = (): boolean => FeatureFlags.instance !== undefined;
@@ -236,7 +234,7 @@ export class FeatureFlags {
       throw new Error(`Section '${parts[0]}' is not registered in feature provider`);
     }
 
-    const flagRegistrationEntry = sectionRegistration?.find(flag => flag.name === parts[1]);
+    const flagRegistrationEntry = sectionRegistration?.find((flag) => flag.name === parts[1]);
 
     if (!flagRegistrationEntry) {
       throw new Error(`Flag '${parts[1]}' within '${parts[0]}' is not registered in feature provider`);
@@ -247,7 +245,7 @@ export class FeatureFlags {
     }
 
     // Check if effective values has a value for the requested flag
-    value = <T> this.effectiveFlags[parts[0]]?.[parts[1]];
+    value = <T>this.effectiveFlags[parts[0]]?.[parts[1]];
 
     // If there is no value, return the registered defaults for existing projects
     if (value === undefined && flagRegistrationEntry) {
@@ -261,38 +259,39 @@ export class FeatureFlags {
     return value ?? false;
   };
 
-  private buildJSONSchemaFromRegistrations = (): JSONSchema7 => [...this.registrations.entries()].reduce<JSONSchema7>(
-    (schema: JSONSchema7, r: [string, FeatureFlagRegistration[]]) => {
-      // r is a tuple, 0=section, 1=array of registrations for that section
-      const currentSection = <JSONSchema7>(schema.properties![r[0].toLowerCase()] ?? {
-        type: 'object',
-        additionalProperties: false,
-      });
+  private buildJSONSchemaFromRegistrations = (): JSONSchema7 =>
+    [...this.registrations.entries()].reduce<JSONSchema7>(
+      (schema: JSONSchema7, r: [string, FeatureFlagRegistration[]]) => {
+        // r is a tuple, 0=section, 1=array of registrations for that section
+        const currentSection = <JSONSchema7>(schema.properties![r[0].toLowerCase()] ?? {
+          type: 'object',
+          additionalProperties: false,
+        });
 
-      currentSection.properties = r[1].reduce<{ [key: string]: JSONSchema7Definition }>((p, fr) => {
+        currentSection.properties = r[1].reduce<{ [key: string]: JSONSchema7Definition }>((p, fr) => {
+          /* eslint-disable no-param-reassign */
+          p![fr.name.toLowerCase()] = {
+            type: fr.type,
+            default: fr.defaultValueForNewProjects,
+          };
+          /* eslint-enable */
+
+          return p;
+        }, {});
+
         /* eslint-disable no-param-reassign */
-        p![fr.name.toLowerCase()] = {
-          type: fr.type,
-          default: fr.defaultValueForNewProjects,
-        };
+        schema.properties![r[0].toLowerCase()] = currentSection;
         /* eslint-enable */
 
-        return p;
-      }, {});
-
-      /* eslint-disable no-param-reassign */
-      schema.properties![r[0].toLowerCase()] = currentSection;
-      /* eslint-enable */
-
-      return schema;
-    },
-    {
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      additionalProperties: false,
-      properties: {},
-    },
-  );
+        return schema;
+      },
+      {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        additionalProperties: false,
+        properties: {},
+      },
+    );
 
   private buildDefaultValues = (): void => {
     this.newProjectDefaults = [...this.registrations.entries()].reduce<FeatureFlagsEntry>(
@@ -358,7 +357,7 @@ export class FeatureFlags {
         const unknownFlags: string[] = [];
         const otherErrors: string[] = [];
 
-        schemaValidate.errors.forEach(error => {
+        schemaValidate.errors.forEach((error) => {
           if (error.keyword === 'additionalProperties') {
             const additionalProperty = (<AdditionalPropertiesParams>error.params)?.additionalProperty;
             let flagName: string = error.dataPath.length > 0 && error.dataPath[0] === '.' ? `${error.dataPath.slice(1)}.` : '';
@@ -374,9 +373,10 @@ export class FeatureFlags {
               unknownFlags.push(flagName);
             }
           } else {
-            const errorMessage = error.dataPath.length > 0 && error.dataPath[0] === '.'
-              ? `${error.dataPath.slice(1)}: ${error.message}`
-              : `${error.dataPath}: ${error.message}`;
+            const errorMessage =
+              error.dataPath.length > 0 && error.dataPath[0] === '.'
+                ? `${error.dataPath.slice(1)}: ${error.message}`
+                : `${error.dataPath}: ${error.message}`;
 
             otherErrors.push(errorMessage);
           }
@@ -386,10 +386,17 @@ export class FeatureFlags {
           throw new AmplifyError('FeatureFlagsValidationError', {
             message: 'Invalid feature flag configuration',
             details:
-              (unknownFlags.length > 0 ? `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:\n${unknownFlags.map(el => `- ${el}`).join(',\n')}\n` : '')
-              + (otherErrors.length > 0 ? `The following feature flags have validation errors:\n${otherErrors.map(el => `- ${el}`).join(',\n')}` : ''),
+              (unknownFlags.length > 0
+                ? `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:\n${unknownFlags
+                    .map((el) => `- ${el}`)
+                    .join(',\n')}\n`
+                : '') +
+              (otherErrors.length > 0
+                ? `The following feature flags have validation errors:\n${otherErrors.map((el) => `- ${el}`).join(',\n')}`
+                : ''),
             resolution: `This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.${
-              isCI ? '\nEnsure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.' : ''}`,
+              isCI ? '\nEnsure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.' : ''
+            }`,
             link: 'https://docs.amplify.aws/cli/reference/feature-flags',
           });
         }
@@ -399,12 +406,12 @@ export class FeatureFlags {
     const featureFlagsValidator = (features: FeatureFlagConfiguration): void => {
       validator(features.project);
 
-      Object.keys(features.environments).forEach(env => {
+      Object.keys(features.environments).forEach((env) => {
         validator(features.environments[env]);
       });
     };
 
-    allFlags.forEach(flagItem => {
+    allFlags.forEach((flagItem) => {
       // Validate file provider settings
       featureFlagsValidator(flagItem.flags);
     });
@@ -424,7 +431,7 @@ export class FeatureFlags {
         throw new Error(`Section '${section}' is not registered in feature provider`);
       }
 
-      const flagRegistrationEntry = sectionRegistration.find(flag => flag.name === flagName);
+      const flagRegistrationEntry = sectionRegistration.find((flag) => flag.name === flagName);
 
       if (!flagRegistrationEntry) {
         throw new Error(`Flag '${flagName}' within '${section}' is not registered in feature provider`);
@@ -434,7 +441,8 @@ export class FeatureFlags {
         case 'boolean':
           if (value === 'true') {
             return true;
-          } if (value === 'false') {
+          }
+          if (value === 'false') {
             return false;
           }
           throw new Error(`Invalid boolean value: '${value}' for '${flagName}' in section '${section}'`);
@@ -451,26 +459,25 @@ export class FeatureFlags {
       }
     };
 
-    const mapFeatureFlagEntry = (input: FeatureFlagsEntry): FeatureFlagsEntry => Object.keys(
-      input,
-    ).reduce<FeatureFlagsEntry>((result, section) => {
-      const sourceObject = input[section];
+    const mapFeatureFlagEntry = (input: FeatureFlagsEntry): FeatureFlagsEntry =>
+      Object.keys(input).reduce<FeatureFlagsEntry>((result, section) => {
+        const sourceObject = input[section];
 
-      /* eslint-disable no-param-reassign */
-      result[section] = Object.keys(sourceObject).reduce<FeatureFlagsEntry>((resultFlag, flagName) => {
-        const sourceValue = sourceObject[flagName];
+        /* eslint-disable no-param-reassign */
+        result[section] = Object.keys(sourceObject).reduce<FeatureFlagsEntry>((resultFlag, flagName) => {
+          const sourceValue = sourceObject[flagName];
 
-        resultFlag[flagName] = convertValue(section, flagName, sourceValue);
+          resultFlag[flagName] = convertValue(section, flagName, sourceValue);
 
-        return resultFlag;
+          return resultFlag;
+        }, {});
+
+        return result;
       }, {});
-
-      return result;
-    }, {});
 
     features.project = mapFeatureFlagEntry(features.project);
 
-    Object.keys(features.environments).forEach(env => {
+    Object.keys(features.environments).forEach((env) => {
       features.environments[env] = mapFeatureFlagEntry(features.environments[env]);
     });
     /* eslint-enable */
@@ -531,12 +538,12 @@ export class FeatureFlags {
 
     const newFlags = this.registrations.get(section.toLowerCase()) ?? new Array<FeatureFlagRegistration>();
 
-    flags.forEach(flag => {
+    flags.forEach((flag) => {
       if (!flag.name || flag.name.trim().length === 0) {
         throw new Error('Flag does not have a name specified');
       }
 
-      if (newFlags.find(f => f.name === flag.name.toLowerCase())) {
+      if (newFlags.find((f) => f.name === flag.name.toLowerCase())) {
         throw new Error(`Flag with name: '${flag.name}' is already registered in section: '${section}'`);
       }
 
@@ -768,6 +775,12 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
+      },
+      {
+        name: 'generateModelsForLazyLoadAndCustomSelectionSet',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
       },
     ]);
 

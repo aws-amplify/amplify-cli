@@ -4,7 +4,7 @@ export const apiDocs = {
   mapStyles: 'https://docs.aws.amazon.com/location-maps/latest/APIReference/API_MapConfiguration.html',
   pricingPlan: 'https://aws.amazon.com/location/pricing/',
   dataSourceUsage: 'https://docs.aws.amazon.com/location-places/latest/APIReference/API_DataSourceConfiguration.html',
-  locationServiceTerms: 'https://aws.amazon.com/service-terms/'
+  locationServiceTerms: 'https://aws.amazon.com/service-terms/',
 };
 
 export const previewBanner = 'Amplify Geo category is in developer preview and not intended for production use at this time.';
@@ -15,7 +15,10 @@ export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
 export const customMapLambdaCodePath = path.join(__dirname, '../../resources/custom-map-resource-handler.js');
 export const customPlaceIndexLambdaCodePath = path.join(__dirname, '../../resources/custom-place-index-resource-handler.js');
-export const customGeofenceCollectionLambdaCodePath = path.join(__dirname, '../../resources/custom-geofence-collection-resource-handler.js');
+export const customGeofenceCollectionLambdaCodePath = path.join(
+  __dirname,
+  '../../resources/custom-geofence-collection-resource-handler.js',
+);
 
 export enum ServiceName {
   Map = 'Map',

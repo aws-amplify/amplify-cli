@@ -10,19 +10,19 @@ import {
   stateManager,
   HooksMeta,
   AmplifyError,
-} from 'amplify-cli-core';
+  constants,
+} from '@aws-amplify/amplify-cli-core';
+import { CLIInput } from './domain/command-input';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { printer, prompter } from 'amplify-prompts';
-import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { saveAll as saveAllEnvParams, ServiceUploadHandler } from '@aws-amplify/amplify-environment-parameters';
 import { logInput } from './conditional-local-logging-init';
 import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
-import { constants } from './domain/constants';
 import { Context } from './domain/context';
-import { Input } from './domain/input';
 import { executeCommand } from './execution-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
 import { getPluginPlatform, scan } from './plugin-manager';
@@ -33,7 +33,7 @@ import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
-import { init as initErrorHandler, handleException } from './amplify-exception-handler';
+import { init as initErrorHandler, handleException, handleUnhandledRejection } from './amplify-exception-handler';
 
 export { UsageData } from './domain/amplify-usageData';
 
@@ -44,55 +44,19 @@ EventEmitter.defaultMaxListeners = 1000;
 // Change stacktrace limit to max value to capture more details if needed
 Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
 
-process.on('uncaughtException', handleException);
+process.on('uncaughtException', (e): void => void handleException(e));
 
 // In this handler we have to re-throw the error otherwise the process hangs there.
-process.on('unhandledRejection', error => {
-  throw error;
-});
+process.on('unhandledRejection', handleUnhandledRejection);
 
-const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> => {
-  const newObj = {};
-  Object.entries(obj).forEach(([key, value]) => { newObj[key.toLowerCase()] = value; });
-  return newObj;
-};
-
-const normalizeStatusCommandOptions = (input: Input): Input => {
-  const options = input.options ? input.options : {};
-  const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
-  // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
-  allowedVerboseIndicators.forEach(verboseFlag => {
-    if (options.verboseFlag !== undefined) {
-      if (typeof options[verboseFlag] === 'string') {
-        const pluginName = (options[verboseFlag] as string).toLowerCase();
-        options[pluginName] = true;
-      }
-      delete options[verboseFlag];
-      options.verbose = true;
-    }
-  });
-
-  // Merge plugins and sub-commands as options (except help/verbose)
-  const returnInput = input;
-  if (returnInput.plugin) {
-    options[returnInput.plugin] = true;
-    delete returnInput.plugin;
+/**
+ * Disable the CDK deprecation warning in production but not in CI/debug mode
+ */
+const disableCDKDeprecationWarning = () => {
+  const isDebug = process.argv.includes('--debug') || process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
+  if (!isDebug) {
+    process.env.JSII_DEPRECATED = 'quiet';
   }
-  if (returnInput.subCommands) {
-    const allowedSubCommands = [constants.HELP, constants.VERBOSE]; // list of sub-commands supported in Status
-    const inputSubCommands: string[] = [];
-    returnInput.subCommands.forEach(subCommand => {
-      // plugins are inferred as sub-commands when positionally supplied
-      if (!allowedSubCommands.includes(subCommand)) {
-        options[subCommand.toLowerCase()] = true;
-      } else {
-        inputSubCommands.push(subCommand);
-      }
-    });
-    returnInput.subCommands = inputSubCommands;
-  }
-  returnInput.options = convertKeysToLowerCase(options); // normalize keys to lower case
-  return input;
 };
 
 /**
@@ -100,6 +64,12 @@ const normalizeStatusCommandOptions = (input: Input): Input => {
  */
 export const run = async (startTime: number): Promise<void> => {
   deleteOldVersion();
+
+  //TODO: This is a temporary suppression for CDK deprecation warnings, which should be removed after the migration is complete
+  // Most of these warning messages are targeting searchable directive, which needs to migrate from elastic search to open search
+  // This is not disabled in debug mode
+  disableCDKDeprecationWarning();
+
   let pluginPlatform = await getPluginPlatform();
   let input = getCommandLineInput(pluginPlatform);
 
@@ -107,11 +77,6 @@ export const run = async (startTime: number): Promise<void> => {
   if (input.command !== 'help') {
     // Checks for available update, defaults to a 1 day interval for notification
     notify({ defer: false, isGlobal: true });
-  }
-
-  // Normalize status command options
-  if (input.command === 'status') {
-    input = normalizeStatusCommandOptions(input);
   }
 
   // Initialize Banner messages. These messages are set on the server side
@@ -136,6 +101,7 @@ export const run = async (startTime: number): Promise<void> => {
   if (!verificationResult.verified) {
     if (verificationResult.helpCommandAvailable) {
       input.command = constants.HELP;
+      input.plugin = constants.CORE;
     } else {
       throw new AmplifyError('InputValidationError', {
         message: verificationResult.message ?? 'Invalid input',
@@ -171,7 +137,7 @@ export const run = async (startTime: number): Promise<void> => {
     });
   }
 
-  process.on('SIGINT', sigIntHandler.bind(context));
+  process.on('SIGINT', (): void => void sigIntHandler(context));
 
   // Skip NodeJS version check and migrations if Amplify CLI is executed in CI/CD or
   // the command is not push
@@ -186,18 +152,34 @@ export const run = async (startTime: number): Promise<void> => {
   await displayBannerMessages(input);
   await executeCommand(context);
 
-  const exitCode = process.exitCode || 0;
-  if (exitCode === 0) {
-    context.usageData.emitSuccess();
-  }
-
   // no command supplied defaults to help, give update notification at end of execution
   if (input.command === 'help') {
     // Checks for available update, defaults to a 1 day interval for notification
     notify({ defer: true, isGlobal: true });
   }
 
-  await saveAllEnvParams();
+  if (context.input.command === 'push') {
+    const { providers } = stateManager.getProjectConfig(undefined, { throwIfNotExist: false, default: {} });
+    const CloudFormationProviderName = 'awscloudformation';
+    let uploadHandler: ServiceUploadHandler | undefined;
+    if (Array.isArray(providers) && providers.find((value) => value === CloudFormationProviderName)) {
+      uploadHandler = await context.amplify.invokePluginMethod(
+        context,
+        CloudFormationProviderName,
+        undefined,
+        'getEnvParametersUploadHandler',
+        [context],
+      );
+    }
+    await saveAllEnvParams(uploadHandler);
+  } else {
+    await saveAllEnvParams();
+  }
+
+  const exitCode = process.exitCode || 0;
+  if (exitCode === 0) {
+    await context.usageData.emitSuccess();
+  }
 };
 
 const ensureFilePermissions = (filePath: string): void => {
@@ -209,15 +191,15 @@ const ensureFilePermissions = (filePath: string): void => {
 
 // This function cannot be converted to an arrow function because it uses 'this' binding
 // eslint-disable-next-line func-style
-async function sigIntHandler(this: Context): Promise<void> {
-  this.usageData.emitAbort();
+async function sigIntHandler(context: Context): Promise<void> {
+  void context.usageData.emitAbort();
 
   try {
-    await this.amplify.runCleanUpTasks(this);
+    await context.amplify.runCleanUpTasks(context);
   } catch (err) {
-    this.print.warning(`Could not run clean up tasks\nError: ${err.message}`);
+    context.print.warning(`Could not run clean up tasks\nError: ${err.message}`);
   }
-  this.print.warning('^Aborted!');
+  context.print.warning('^Aborted!');
 
   exitOnNextTick(2);
 }
@@ -225,7 +207,7 @@ async function sigIntHandler(this: Context): Promise<void> {
 /**
  * entry from library call
  */
-export const execute = async (input: Input): Promise<void> => {
+export const execute = async (input: CLIInput): Promise<void> => {
   let pluginPlatform = await getPluginPlatform();
   let verificationResult = verifyInput(pluginPlatform, input);
 
@@ -241,6 +223,7 @@ export const execute = async (input: Input): Promise<void> => {
     if (verificationResult.helpCommandAvailable) {
       // eslint-disable-next-line no-param-reassign
       input.command = constants.HELP;
+      input.plugin = constants.CORE;
     } else {
       throw new Error(verificationResult.message);
     }
@@ -252,13 +235,13 @@ export const execute = async (input: Input): Promise<void> => {
   await attachUsageData(context, Date.now());
   initErrorHandler(context);
 
-  process.on('SIGINT', sigIntHandler.bind(context));
+  process.on('SIGINT', (): void => void sigIntHandler(context));
 
   await executeCommand(context);
 
   const exitCode = process.exitCode || 0;
   if (exitCode === 0) {
-    context.usageData.emitSuccess();
+    void context.usageData.emitSuccess();
   }
 };
 
@@ -273,3 +256,6 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
     await commandModule.run(context);
   }
 };
+
+// bump version to 12.1.0
+//

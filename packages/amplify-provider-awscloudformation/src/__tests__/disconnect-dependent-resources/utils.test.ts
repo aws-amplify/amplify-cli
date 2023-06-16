@@ -5,7 +5,7 @@ import {
   prependDeploymentSteps,
   uploadTempFuncDeploymentFiles,
 } from '../../disconnect-dependent-resources/utils';
-import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from 'amplify-cli-core';
+import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { S3 } from '../../aws-utils/aws-s3';
 import { CloudFormation } from 'aws-sdk';
@@ -14,8 +14,7 @@ import Template from 'cloudform-types/types/template';
 import { DeploymentOp, DeploymentStep } from '../../iterative-deployment';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core');
-jest.mock('amplify-cli-logger');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../utils/amplify-resource-state-utils');
 
 const fs_mock = fs as jest.Mocked<typeof fs>;
@@ -99,37 +98,37 @@ describe('uploadTempFuncDeploymentFiles', () => {
 
     await uploadTempFuncDeploymentFiles(s3Client_stub as unknown as S3, ['func1', 'func2']);
     expect(s3Client_stub.uploadFile.mock.calls).toMatchInlineSnapshot(`
-      Array [
-        Array [
-          Object {
-            "Body": "func1Template",
-            "Key": "amplify-cfn-templates/function/temp/temp-func1-cloudformation-template.json",
-          },
-          false,
-        ],
-        Array [
-          Object {
-            "Body": "func1Meta",
-            "Key": "amplify-cfn-templates/function/temp/temp-func1-deployment-meta.json",
-          },
-          false,
-        ],
-        Array [
-          Object {
-            "Body": "func2Template",
-            "Key": "amplify-cfn-templates/function/temp/temp-func2-cloudformation-template.json",
-          },
-          false,
-        ],
-        Array [
-          Object {
-            "Body": "func2Meta",
-            "Key": "amplify-cfn-templates/function/temp/temp-func2-deployment-meta.json",
-          },
-          false,
-        ],
-      ]
-    `);
+[
+  [
+    {
+      "Body": "func1Template",
+      "Key": "amplify-cfn-templates/function/temp/temp-func1-cloudformation-template.json",
+    },
+    false,
+  ],
+  [
+    {
+      "Body": "func1Meta",
+      "Key": "amplify-cfn-templates/function/temp/temp-func1-deployment-meta.json",
+    },
+    false,
+  ],
+  [
+    {
+      "Body": "func2Template",
+      "Key": "amplify-cfn-templates/function/temp/temp-func2-cloudformation-template.json",
+    },
+    false,
+  ],
+  [
+    {
+      "Body": "func2Meta",
+      "Key": "amplify-cfn-templates/function/temp/temp-func2-deployment-meta.json",
+    },
+    false,
+  ],
+]
+`);
   });
 
   it('logs and throws upload error', async () => {

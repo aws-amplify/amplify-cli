@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSMeta, $TSObject, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, $TSObject, getPackageManager, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import crypto from 'crypto';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
@@ -155,7 +155,7 @@ export function previousPermissionsQuestion(): ListQuestion {
 export function layerInputParamsToLayerPermissionArray(parameters: LayerInputParams): LayerPermission[] {
   const { layerPermissions = [] } = parameters;
 
-  if (layerPermissions.filter(p => p === PermissionEnum.Public).length > 0) {
+  if (layerPermissions.filter((p) => p === PermissionEnum.Public).length > 0) {
     return [
       {
         type: PermissionEnum.Public,
@@ -165,7 +165,7 @@ export function layerInputParamsToLayerPermissionArray(parameters: LayerInputPar
 
   const permissionObj: Array<LayerPermission> = [];
 
-  layerPermissions.forEach(val => {
+  layerPermissions.forEach((val) => {
     let obj: LayerPermission;
     if (val === PermissionEnum.Public) {
       obj = {
@@ -245,7 +245,7 @@ export function getLambdaFunctionsDependentOnLayerFromMeta(layerName: string, me
   return Object.entries(meta[categoryName]).filter(
     ([_, lambdaFunction]: [string, $TSObject]) =>
       lambdaFunction.service === ServiceName.LambdaFunction &&
-      lambdaFunction?.dependsOn?.filter(dependency => dependency.resourceName === layerName).length > 0,
+      lambdaFunction?.dependsOn?.filter((dependency) => dependency.resourceName === layerName).length > 0,
   );
 }
 
@@ -320,7 +320,7 @@ const getLayerGlobs = async (
 
     //TODO let function runtimes export globs later instead of hardcoding in here
     if (runtimeId === 'nodejs') {
-      const packageManager = getPackageManager(layerCodePath);
+      const packageManager = await getPackageManager(layerCodePath);
 
       // If no packagemanager was detected it means no package.json present at the resource path,
       // so no files to hash related to packages.
@@ -340,7 +340,7 @@ const getLayerGlobs = async (
       // files must be relative to resource folder as that will be used as a base path for hashing.
       const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
         cwd: resourcePath,
-        ignore: ['node_modules', packageJson, 'yarn.lock', 'package-lock.json'].map(name =>
+        ignore: ['node_modules', packageJson, 'yarn.lock', 'package-lock.json'].map((name) =>
           path.join(libPathName, layerExecutablePath, name),
         ),
       });
@@ -365,7 +365,7 @@ const getLayerGlobs = async (
       // files must be relative to resource folder as that will be used as a base path for hashing.
       const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
         cwd: resourcePath,
-        ignore: ['lib', pipfile, pipfileLock].map(name => path.join(libPathName, layerExecutablePath, name)),
+        ignore: ['lib', pipfile, pipfileLock].map((name) => path.join(libPathName, layerExecutablePath, name)),
       });
 
       result.push(...contentFilePaths);
@@ -382,7 +382,7 @@ const getLayerGlobs = async (
 
 // hashes just the content that will be zipped into the layer version.
 // for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
-const hashLayerVersion = async (layerPath: string, layerName: string, includeResourceFiles: boolean = false): Promise<string> => {
+const hashLayerVersion = async (layerPath: string, layerName: string, includeResourceFiles = false): Promise<string> => {
   const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName, false);
 
   if (layerConfig) {
@@ -395,7 +395,7 @@ const hashLayerVersion = async (layerPath: string, layerName: string, includeRes
     filePaths.sort();
 
     return filePaths
-      .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'binary'))
+      .map((filePath) => fs.readFileSync(path.join(layerPath, filePath), 'binary'))
       .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
       .digest('hex');
   } else {
@@ -438,7 +438,7 @@ const legacyResourceHashing = async (layerPath: string): Promise<string> => {
   const files = await globby(layerResourceGlobs, { cwd: layerPath });
 
   const hash = files
-    .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'utf8'))
+    .map((filePath) => fs.readFileSync(path.join(layerPath, filePath), 'utf8'))
     .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
     .update(await legacyContentHashing(layerPath))
     .digest('base64');

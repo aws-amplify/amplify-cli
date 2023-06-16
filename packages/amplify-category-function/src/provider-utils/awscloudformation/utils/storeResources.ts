@@ -1,15 +1,11 @@
 /* eslint-disable import/no-cycle */
-import {
-  $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
 import { categoryName } from '../../../constants';
-import {
-  cfnTemplateSuffix, functionParametersFileName, parametersFileName, provider, ServiceName,
-} from './constants';
+import { cfnTemplateSuffix, functionParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { FunctionSecretsStateManager } from '../secrets/functionSecretsStateManager';
@@ -20,13 +16,15 @@ import { isNewVersion, loadPreviousLayerHash } from './layerHelpers';
 import { createLayerConfiguration, loadLayerParametersJson, saveLayerPermissions } from './layerConfiguration';
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 import { saveEnvironmentVariables } from './environmentVariablesHelper';
+import { truncateResourceNames } from './truncateResourceNames';
 
 /**
  * handling both FunctionParameters and FunctionTriggerParameters here is a hack
  * ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
  */
 export const createFunctionResources = async (
-  context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters,
+  context: $TSContext,
+  parameters: FunctionParameters | FunctionTriggerParameters,
 ): Promise<void> => {
   context.amplify.updateamplifyMetaAfterResourceAdd(
     categoryName,
@@ -143,7 +141,8 @@ export const saveCFNParameters = (
 };
 
 const syncSecrets = async (
-  context: $TSContext, parameters: Partial<FunctionParameters> | Partial<FunctionTriggerParameters>,
+  context: $TSContext,
+  parameters: Partial<FunctionParameters> | Partial<FunctionTriggerParameters>,
 ): Promise<void> => {
   if ('secretDeltas' in parameters) {
     const doConfirm = hasSetSecrets(parameters.secretDeltas) && isFunctionPushed(parameters.resourceName);
@@ -200,7 +199,7 @@ const saveLayerDescription = (layerName: string, description?: string): boolean 
 const copyTemplateFiles = (context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters): void => {
   // copy function template files
   const destDir = pathManager.getBackendDirPath();
-  const copyJobs = parameters.functionTemplate.sourceFiles.map(file => ({
+  const copyJobs = parameters.functionTemplate.sourceFiles.map((file) => ({
     dir: parameters.functionTemplate.sourceRoot,
     template: file,
     target: path.join(
@@ -211,6 +210,11 @@ const copyTemplateFiles = (context: $TSContext, parameters: FunctionParameters |
     ),
   }));
 
+  parameters = {
+    ...parameters,
+    ...truncateResourceNames(parameters),
+  };
+
   // this is a hack to reuse some old code
   let templateParams: $TSAny = parameters;
   if ('trigger' in parameters) {
@@ -218,7 +222,7 @@ const copyTemplateFiles = (context: $TSContext, parameters: FunctionParameters |
     // eslint-disable-next-line no-param-reassign
     parameters.triggerEnvs = JSONUtilities.parse(parameters.triggerEnvs) || [];
 
-    parameters.triggerEnvs.forEach(c => {
+    parameters.triggerEnvs.forEach((c) => {
       triggerEnvs[c.key] = c.value;
     });
     templateParams = _.assign(templateParams, triggerEnvs);
@@ -251,7 +255,7 @@ export const ensureLayerFolders = (parameters: LayerParameters): string => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const layerDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
   fs.ensureDirSync(path.join(layerDirPath, 'opt'));
-  parameters.runtimes.forEach(runtime => ensureLayerRuntimeFolder(layerDirPath, runtime));
+  parameters.runtimes.forEach((runtime) => ensureLayerRuntimeFolder(layerDirPath, runtime));
   return layerDirPath;
 };
 
@@ -261,7 +265,9 @@ const ensureLayerRuntimeFolder = (layerDirPath: string, runtime: LayerRuntime): 
   if (!fs.pathExistsSync(runtimeDirPath)) {
     fs.ensureDirSync(runtimeDirPath);
     fs.writeFileSync(path.join(runtimeDirPath, 'README.txt'), 'Replace this file with your layer files');
-    (runtime.layerDefaultFiles || []).forEach(defaultFile => fs.writeFileSync(path.join(layerDirPath, 'lib', defaultFile.path, defaultFile.filename), defaultFile.content));
+    (runtime.layerDefaultFiles || []).forEach((defaultFile) =>
+      fs.writeFileSync(path.join(layerDirPath, 'lib', defaultFile.path, defaultFile.filename), defaultFile.content),
+    );
   }
 };
 
@@ -289,7 +295,7 @@ const updateLayerCfnFile = async (context: $TSContext, parameters: LayerParamete
 
 const setParametersInAmplifyMeta = (layerName: string, parameters: LayerMetaAndBackendConfigParams): void => {
   const amplifyMeta = stateManager.getMeta();
-  _.set(amplifyMeta, [categoryName, layerName], parameters);
+  _.setWith(amplifyMeta, [categoryName, layerName], parameters);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
@@ -297,7 +303,7 @@ const assignParametersInAmplifyMeta = (layerName: string, parameters: LayerMetaA
   const amplifyMeta = stateManager.getMeta();
   const layer = _.get(amplifyMeta, [categoryName, layerName], {});
   _.assign(layer, parameters);
-  _.set(amplifyMeta, [categoryName, layerName], layer);
+  _.setWith(amplifyMeta, [categoryName, layerName], layer);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 

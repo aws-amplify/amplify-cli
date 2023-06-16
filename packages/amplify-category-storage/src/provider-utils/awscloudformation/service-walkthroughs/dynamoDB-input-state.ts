@@ -7,7 +7,7 @@ import {
   CLIInputSchemaValidator,
   JSONUtilities,
   pathManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getFieldType } from '../cfn-template-utils';
@@ -49,17 +49,17 @@ export class DynamoDBInputState {
     return fs.existsSync(this._cliInputsFilePath);
   }
 
-  public isCLIInputsValid(cliInputs?: DynamoDBCLIInputs) {
+  public async isCLIInputsValid(cliInputs?: DynamoDBCLIInputs): Promise<void> {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
     }
 
     const schemaValidator = new CLIInputSchemaValidator(this.context, this._service, this._category, 'DynamoDBCLIInputs');
-    schemaValidator.validateInput(JSON.stringify(cliInputs));
+    await schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
-  public saveCliInputPayload(cliInputs: DynamoDBCLIInputs): void {
-    this.isCLIInputsValid(cliInputs);
+  public async saveCliInputPayload(cliInputs: DynamoDBCLIInputs): Promise<void> {
+    await this.isCLIInputsValid(cliInputs);
 
     fs.ensureDirSync(pathManager.getResourceDirectoryPath(undefined, this._category, this._resourceName));
     try {
@@ -69,9 +69,7 @@ export class DynamoDBInputState {
     }
   }
 
-  public migrate() {
-    let cliInputs: DynamoDBCLIInputs;
-
+  public async migrate(): Promise<void> {
     // migrate the resource to new directory structure if cli-inputs.json is not found for the resource
 
     const backendDir = pathManager.getBackendDirPath();
@@ -115,11 +113,11 @@ export class DynamoDBInputState {
       return attrType;
     };
 
-    let gsi: DynamoDBCLIInputsGSIType[] = [];
+    const gsi: DynamoDBCLIInputsGSIType[] = [];
 
     if (oldCFN?.Resources?.DynamoDBTable?.Properties?.GlobalSecondaryIndexes) {
       oldCFN.Resources.DynamoDBTable.Properties.GlobalSecondaryIndexes.forEach((cfnGSIValue: $TSAny) => {
-        let gsiValue: $TSAny = {};
+        const gsiValue: $TSAny = {};
         (gsiValue.name = cfnGSIValue.IndexName),
           cfnGSIValue.KeySchema.forEach((keySchema: $TSObject) => {
             if (keySchema.KeyType === 'HASH') {
@@ -137,7 +135,7 @@ export class DynamoDBInputState {
         gsi.push(gsiValue);
       });
     }
-    cliInputs = {
+    const cliInputs: DynamoDBCLIInputs = {
       resourceName: this._resourceName,
       tableName: oldParameters.tableName,
       partitionKey,
@@ -146,7 +144,7 @@ export class DynamoDBInputState {
       gsi,
     };
 
-    this.saveCliInputPayload(cliInputs);
+    await this.saveCliInputPayload(cliInputs);
 
     // Remove old files
 

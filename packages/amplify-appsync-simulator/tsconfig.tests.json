@@ -7,8 +7,5 @@
     "outDir": "lib"
   },
   "references": [],
-  "exclude": [
-    "**/lib/**/*",
-    "resources/**/*"
-  ]
+  "exclude": ["**/lib/**/*", "resources/**/*"]
 }

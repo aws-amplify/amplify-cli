@@ -1,4 +1,4 @@
-import { HydrateTags } from 'amplify-cli-core';
+import { HydrateTags } from '@aws-amplify/amplify-cli-core';
 import { Context } from '../domain/context';
 import { getTags } from '../extensions/amplify-helpers/get-tags';
 
@@ -11,7 +11,7 @@ describe('getTags', () => {
       envName: 'bar',
     },
   };
-  jest.setMock('amplify-cli-core', {
+  jest.setMock('@aws-amplify/amplify-cli-core', {
     pathManager: {
       findProjectRoot: jest.fn().mockResolvedValue('mockProjectRoot'),
     },
@@ -38,7 +38,7 @@ describe('getTags', () => {
   it('test for values', () => {
     const readTags = getTags(mockContext);
     expect(readTags).toBeDefined();
-    expect(readTags.filter(r => r.Key === 'user:Application')[0].Value).toEqual(mockConfig.projectConfig.projectName);
-    expect(readTags.filter(r => r.Key === 'user:Stack')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
+    expect(readTags.filter((r) => r.Key === 'user:Application')[0].Value).toEqual(mockConfig.projectConfig.projectName);
+    expect(readTags.filter((r) => r.Key === 'user:Stack')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
   });
 });

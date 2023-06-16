@@ -1,10 +1,18 @@
 /* eslint-disable */
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, $TSContext, exitOnNextTick, JSONUtilities, NotImplementedError, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+  $TSAny,
+  $TSContext,
+  $TSMeta,
+  AmplifySupportedService,
+  exitOnNextTick,
+  NotImplementedError,
+  open,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import _ from 'lodash';
+import { categoryName } from '../../constants';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
 import { importedS3EnvInit, importS3 } from './import/import-s3';
 
@@ -20,7 +28,7 @@ export const addResource = async (context: $TSContext, category: string, service
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
     return resourceName;
   });
-}
+};
 
 export const updateResource = async (context: $TSContext, category: string, service: string) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
@@ -36,7 +44,7 @@ export const updateResource = async (context: $TSContext, category: string, serv
   }
 
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
-}
+};
 
 export const migrateResource = async (context: $TSContext, projectPath: string, service: string, resourceName: string) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
@@ -50,7 +58,7 @@ export const migrateResource = async (context: $TSContext, projectPath: string, 
   }
 
   return migrate(context, projectPath, resourceName);
-}
+};
 
 export const getPermissionPolicies = async (service: string, resourceName: string, crudOptions: $TSAny) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
@@ -59,7 +67,7 @@ export const getPermissionPolicies = async (service: string, resourceName: strin
   const { getIAMPolicies } = await import(serviceWalkthroughSrc);
 
   return getIAMPolicies(resourceName, crudOptions);
-}
+};
 
 export const updateConfigOnEnvInit = async (context: $TSContext, category: string, resourceName: string, service: string) => {
   const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
@@ -142,25 +150,55 @@ export const updateConfigOnEnvInit = async (context: $TSContext, category: strin
         resource.lastPushTimeStamp = new Date();
       }
 
-      _.set(meta, [category, resourceName, 'lastPushTimeStamp'], cloudTimestamp);
+      _.setWith(meta, [category, resourceName, 'lastPushTimeStamp'], cloudTimestamp);
       stateManager.setMeta(undefined, meta);
     }
 
     return envSpecificParametersResult;
   }
-}
+};
 
 const isInHeadlessMode = (context: $TSContext) => {
   return context.exeInfo.inputParams.yes;
-}
+};
 
 const getHeadlessParams = (context: $TSContext) => {
-  const { inputParams } = context.exeInfo;
   try {
-    // If the input given is a string validate it using JSON parse
-    const { categories = {} } = typeof inputParams === 'string' ? JSONUtilities.parse(inputParams) : inputParams;
+    const { categories = {} } = context.exeInfo.inputParams;
     return categories.storage || {};
   } catch (err) {
     throw new Error(`Failed to parse storage headless parameters: ${err}`);
   }
-}
+};
+
+export const console = async (amplifyMeta: $TSMeta, provider: string, service: string) => {
+  if (service === AmplifySupportedService.S3) {
+    const s3Resource = Object.values<any>(amplifyMeta[categoryName])
+      .filter((resource) => resource.service === service)
+      .pop();
+    if (!s3Resource) {
+      const errMessage = 'No S3 resources to open. You need to add a resource.';
+      printer.error(errMessage);
+      return;
+    }
+    const { BucketName: bucket, Region: region } = s3Resource.output;
+    const url = `https://s3.console.aws.amazon.com/s3/buckets/${bucket}?region=${region}`;
+    await open(url, { wait: false });
+  } else if (service === AmplifySupportedService.DYNAMODB) {
+    type Pickchoice = { name: string; value: { tableName: string; region: string } };
+    const tables: Pickchoice[] = Object.values<any>(amplifyMeta[categoryName])
+      .filter((resource) => resource.service === service)
+      .map((resource) => ({
+        name: resource.output.Name,
+        value: { tableName: resource.output.Name, region: resource.output.Region },
+      }));
+    if (!tables.length) {
+      const errMessage = 'No DynamoDB tables to open. You need to add a resource.';
+      printer.error(errMessage);
+      return;
+    }
+    const { tableName, region } = await prompter.pick<'one', Pickchoice['value']>('Select DynamoDB table to open on your browser', tables);
+    const url = `https://${region}.console.aws.amazon.com/dynamodbv2/home?region=${region}#table?name=${tableName}&tab=overview`;
+    await open(url, { wait: false });
+  }
+};

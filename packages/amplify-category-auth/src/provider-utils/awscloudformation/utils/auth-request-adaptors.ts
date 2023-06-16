@@ -15,8 +15,10 @@ import {
   CognitoIdentityPoolModification,
   CognitoAutoVerifiedAttributesConfiguration,
 } from 'amplify-headless-interface';
-import { identityPoolProviders, userPoolProviders } from '../service-walkthroughs/auth-questions';
 import { isEmpty, merge } from 'lodash';
+import { pascalCase } from 'change-case';
+import { AmplifyFrontend, FeatureFlags } from '@aws-amplify/amplify-cli-core';
+import { identityPoolProviders, userPoolProviders } from '../service-walkthroughs/auth-questions';
 import { authProviders as authProviderList } from '../assets/string-maps';
 import {
   OAuthResult,
@@ -32,22 +34,19 @@ import {
   ServiceQuestionHeadlessResult,
   AutoVerifiedAttributesResult,
 } from '../service-walkthrough-types/cognito-user-input-types';
-import { pascalCase } from 'change-case';
-import { FeatureFlags } from 'amplify-cli-core';
 
-export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
+export type AddAuthRequestAdaptorFactory = (projectType: AmplifyFrontend) => AddAuthRequestAdaptor;
 
 export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestionHeadlessResult;
 /**
- * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguation output format
- * @param projectType The project type (such as 'javascript', 'ios', 'android')
+ * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoConfiguration output format
  */
 export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory =
-  projectType =>
+  (projectType: AmplifyFrontend) =>
   ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionHeadlessResult => {
     const userPoolConfig = cognitoConfig.userPoolConfiguration;
     const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
-    const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
+    const requiredAttributes = userPoolConfig.requiredSignupAttributes.map((att) => att.toLowerCase());
     return {
       serviceName: cognitoConfig.serviceName,
       resourceName,
@@ -58,7 +57,7 @@ export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory =
   };
 
 export const getUpdateAuthRequestAdaptor =
-  (projectType: string, requiredAttributes: string[]) =>
+  (projectType: AmplifyFrontend, requiredAttributes: string[]) =>
   ({ serviceModification }: UpdateAuthRequest): ServiceQuestionHeadlessResult => {
     const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
     return {
@@ -74,47 +73,46 @@ export const getUpdateAuthRequestAdaptor =
     };
   };
 
-const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration, identityPoolConfig?: CognitoIdentityPoolConfiguration) => {
-  return {
-    userPoolName: userPoolConfig.userPoolName,
-    usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
-    aliasAttributes: FeatureFlags.getBoolean('auth.forceAliasAttributes')
-      ? userPoolConfig.aliasAttributes?.map(attr => aliasAttributeMap[attr]) ?? []
-      : [],
-    ...immutableIdentityPoolMap(identityPoolConfig),
-  };
-};
+const immutableAttributeAdaptor = (
+  userPoolConfig: CognitoUserPoolConfiguration,
+  identityPoolConfig?: CognitoIdentityPoolConfiguration,
+) => ({
+  userPoolName: userPoolConfig.userPoolName,
+  usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
+  aliasAttributes: FeatureFlags.getBoolean('auth.forceAliasAttributes')
+    ? userPoolConfig.aliasAttributes?.map((attr) => aliasAttributeMap[attr]) ?? []
+    : [],
+  ...immutableIdentityPoolMap(identityPoolConfig),
+});
 
 const mutableAttributeAdaptor = (
-  projectType: string,
+  projectType: AmplifyFrontend,
   requiredAttributes: string[],
   userPoolConfig: CognitoUserPoolConfiguration | CognitoUserPoolModification,
   includeIdentityPool: boolean,
   identityPoolConfig?: CognitoIdentityPoolConfiguration | CognitoIdentityPoolModification,
-) => {
-  return {
-    useDefault: 'manual' as const,
-    updateFlow: 'manual' as const,
-    authSelections: includeIdentityPool ? 'identityPoolAndUserPool' : ('userPoolOnly' as 'userPoolOnly' | 'identityPoolAndUserPool'),
-    userPoolGroups: (userPoolConfig.userPoolGroups?.length || 0) > 0,
-    userPoolGroupList: (userPoolConfig.userPoolGroups || []).map(group => group.groupName), // TODO may need to map "customPolicy"
-    userpoolClientRefreshTokenValidity: userPoolConfig.refreshTokenPeriod,
-    userpoolClientReadAttributes: (userPoolConfig.readAttributes || []).map(att => att.toLowerCase()),
-    userpoolClientWriteAttributes: (userPoolConfig.writeAttributes || []).map(att => att.toLowerCase()),
-    ...adminQueriesMap(userPoolConfig.adminQueries),
-    ...mfaMap(userPoolConfig.mfa),
-    ...autoVerifiedAttributesMap(userPoolConfig.autoVerifiedAttributes),
-    ...passwordPolicyMap(userPoolConfig.passwordPolicy),
-    ...mutableIdentityPoolMap(projectType, identityPoolConfig),
-    ...oauthMap(userPoolConfig.oAuth, requiredAttributes),
-  };
-};
+) => ({
+  useDefault: 'manual' as const,
+  updateFlow: 'manual' as const,
+  authSelections: includeIdentityPool ? 'identityPoolAndUserPool' : ('userPoolOnly' as 'userPoolOnly' | 'identityPoolAndUserPool'),
+  userPoolGroups: (userPoolConfig.userPoolGroups?.length || 0) > 0,
+  userPoolGroupList: (userPoolConfig.userPoolGroups || []).map((group) => group.groupName), // TODO may need to map "customPolicy"
+  userpoolClientRefreshTokenValidity: userPoolConfig.refreshTokenPeriod,
+  userpoolClientReadAttributes: (userPoolConfig.readAttributes || []).map((att) => att.toLowerCase()),
+  userpoolClientWriteAttributes: (userPoolConfig.writeAttributes || []).map((att) => att.toLowerCase()),
+  ...adminQueriesMap(userPoolConfig.adminQueries),
+  ...mfaMap(userPoolConfig.mfa),
+  ...autoVerifiedAttributesMap(userPoolConfig.autoVerifiedAttributes),
+  ...passwordPolicyMap(userPoolConfig.passwordPolicy),
+  ...mutableIdentityPoolMap(projectType, identityPoolConfig),
+  ...oauthMap(userPoolConfig.oAuth, requiredAttributes),
+});
 
 // converts the oauth config to the existing format
 const oauthMap = (
   oauthConfig?: Partial<CognitoOAuthConfiguration>,
   requiredAttributes: string[] = [],
-): (OAuthResult & SocialProviderResult) | {} => {
+): (OAuthResult & SocialProviderResult) | Record<string, unknown> => {
   if (!oauthConfig) return {};
   if (isEmpty(oauthConfig)) {
     return {
@@ -127,7 +125,7 @@ const oauthMap = (
     newCallbackURLs: oauthConfig.redirectSigninURIs,
     newLogoutURLs: oauthConfig.redirectSignoutURIs,
     AllowedOAuthFlows: oauthConfig?.oAuthGrantType?.toLowerCase() as 'code' | 'implicit',
-    AllowedOAuthScopes: oauthConfig?.oAuthScopes?.map(scope => scope.toLowerCase()),
+    AllowedOAuthScopes: oauthConfig?.oAuthScopes?.map((scope) => scope.toLowerCase()),
     ...socialProviderMap(oauthConfig.socialProviderConfigurations, requiredAttributes),
   };
 };
@@ -137,7 +135,7 @@ const socialProviderMap = (
   socialConfig: CognitoSocialProviderConfiguration[] = [],
   requiredAttributes: string[] = [],
 ): SocialProviderResult => {
-  const authProvidersUserPool = socialConfig.map(sc => sc.provider).map(provider => pascalCase(provider));
+  const authProvidersUserPool = socialConfig.map((sc) => sc.provider).map((provider) => pascalCase(provider));
   const socialConfigMap = socialConfig.reduce((acc, it) => {
     switch (it.provider) {
       case 'FACEBOOK':
@@ -171,23 +169,24 @@ const socialProviderMap = (
 
 // converts the identity pool config to the existing format
 const mutableIdentityPoolMap = (
-  projectType: string,
+  projectType: AmplifyFrontend,
   idPoolConfig?: CognitoIdentityPoolConfiguration | CognitoIdentityPoolModification,
 ): IdentityPoolResult => {
-  if (!idPoolConfig)
+  if (!idPoolConfig) {
     return {
       thirdPartyAuth: false,
       authProviders: [],
     };
+  }
   type AppIds = Pick<IdentityPoolResult, 'facebookAppId' | 'googleClientId' | 'googleIos' | 'googleAndroid' | 'amazonAppId' | 'appleAppId'>;
   const result = {
     allowUnauthenticatedIdentities: idPoolConfig.unauthenticatedLogin,
     thirdPartyAuth: !!idPoolConfig.identitySocialFederation,
     authProviders: (idPoolConfig.identitySocialFederation || [])
-      .map(socialFed => socialFed.provider)
-      .map(provider => pascalCase(provider))
-      .map(provider => authProviderList.find(ap => ap.name === provider)!)
-      .map(ap => ap.value),
+      .map((socialFed) => socialFed.provider)
+      .map((provider) => pascalCase(provider))
+      .map((provider) => authProviderList.find((ap) => ap.name === provider)!)
+      .map((ap) => ap.value),
     // convert the list of social federation configs into individual key: client id pairs
     ...(idPoolConfig?.identitySocialFederation || []).reduce(
       (acc, it): AppIds => merge(acc, { [socialFederationKeyMap(it.provider, projectType)]: it.clientId }),
@@ -208,17 +207,15 @@ const passwordPolicyMap = (pwPolicy?: CognitoPasswordPolicy): PasswordPolicyResu
   if (!pwPolicy) return {};
   return {
     passwordPolicyMinLength: pwPolicy.minimumLength,
-    passwordPolicyCharacters: (pwPolicy.additionalConstraints || []).map(constraint => passwordConstraintMap[constraint]),
+    passwordPolicyCharacters: (pwPolicy.additionalConstraints || []).map((constraint) => passwordConstraintMap[constraint]),
   };
 };
 
 // converts admin queries config to existing format
-const adminQueriesMap = (adminQueries?: CognitoAdminQueries): AdminQueriesResult => {
-  return {
-    adminQueries: !!adminQueries,
-    adminQueryGroup: adminQueries?.permissions.groupName,
-  };
-};
+const adminQueriesMap = (adminQueries?: CognitoAdminQueries): AdminQueriesResult => ({
+  adminQueries: !!adminQueries,
+  adminQueryGroup: adminQueries?.permissions.groupName,
+});
 
 // converts mfa config to existing format
 const mfaMap = (mfaConfig: CognitoMFAConfiguration = { mode: 'OFF' }): MfaResult => {
@@ -229,7 +226,7 @@ const mfaMap = (mfaConfig: CognitoMFAConfiguration = { mode: 'OFF' }): MfaResult
   }
   return {
     mfaConfiguration: mfaConfig.mode,
-    mfaTypes: mfaConfig.mfaTypes.map(type => mfaTypeMap[type]),
+    mfaTypes: mfaConfig.mfaTypes.map((type) => mfaTypeMap[type]),
     smsAuthenticationMessage: mfaConfig.smsMessage,
   };
 };
@@ -282,7 +279,7 @@ const aliasAttributeMap: Record<CognitoUserAliasAttributes, AliasAttributes> = {
   [CognitoUserAliasAttributes.PHONE_NUMBER]: AttributeType.PHONE_NUMBER,
 };
 
-const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'APPLE', projectType: string): string => {
+const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'APPLE', projectType: AmplifyFrontend): string => {
   switch (provider) {
     case 'FACEBOOK':
       return 'facebookAppId';
@@ -290,11 +287,12 @@ const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'AP
       return 'amazonAppId';
     case 'GOOGLE':
       switch (projectType) {
-        case 'ios':
+        case AmplifyFrontend.ios:
           return 'googleIos';
-        case 'android':
+        case AmplifyFrontend.android:
           return 'googleAndroid';
-        case 'javascript':
+        case AmplifyFrontend.javascript:
+        case AmplifyFrontend.flutter:
           return 'googleClientId';
         default:
           throw new Error(`Unknown project type [${projectType}] when mapping federation type`);

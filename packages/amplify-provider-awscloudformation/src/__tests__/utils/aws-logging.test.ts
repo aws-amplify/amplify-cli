@@ -1,15 +1,15 @@
-const { Redactor } = require('amplify-cli-logger');
+const { Redactor } = require('@aws-amplify/amplify-cli-logger');
 
 describe('test amplify logger', () => {
   test('undefined object logger', () => {
     const info = jest.fn();
     const error = jest.fn();
-    jest.mock('amplify-cli-logger', () => ({
-      Redactor: Redactor,
-      logger: {
+    jest.mock('@aws-amplify/amplify-cli-logger', () => ({
+      Redactor,
+      getAmplifyLogger: () => ({
         logInfo: info,
         logError: error,
-      },
+      }),
     }));
     const { fileLogger } = require('../../utils/aws-logger');
     fileLogger('aws-logging-test')('test-func', [undefined])();

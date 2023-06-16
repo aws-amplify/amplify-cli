@@ -1,15 +1,12 @@
 // normalize command line arguments, allow verb / noun place switch
-import { Input } from './domain/input';
-import { constants } from './domain/constants';
-import { PluginPlatform } from './domain/plugin-platform';
+import { constants, PluginPlatform, pathManager, stateManager, commandsInfo } from '@aws-amplify/amplify-cli-core';
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
-import { pathManager, stateManager } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
+import { CLIInput } from './domain/command-input';
 
-export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
-  const result = new Input(process.argv);
-  /* tslint:disable */
+export function getCommandLineInput(pluginPlatform: PluginPlatform): CLIInput {
+  const result = new CLIInput(process.argv);
   if (result.argv && result.argv.length > 2) {
     let index = 2;
     aliasArgs(result.argv);
@@ -58,12 +55,60 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
       }
     }
   }
-  /* tslint:enable */
 
   return result;
 }
 
-function normalizeInput(input: Input): Input {
+function preserveHelpInformation(input: CLIInput): CLIInput {
+  const subCommands = input.subCommands ? input.subCommands : [];
+  // preserve non-help command in subcommands
+  if (input.command && input.command.toLowerCase() !== constants.HELP) {
+    subCommands.unshift(input.command.toLocaleLowerCase());
+  }
+
+  const hasLongHelpOption = typeof input.options?.[constants.HELP] === 'string';
+  const hasShortHelpOption = typeof input.options?.[constants.HELP_SHORT] === 'string';
+  // prevent information in help option from being overwritten to true by saving it in subcommands
+  if (hasLongHelpOption) {
+    subCommands.push(input.options?.[constants.HELP] as string);
+  } else if (hasShortHelpOption) {
+    subCommands.push(input.options?.[constants.HELP_SHORT] as string);
+  }
+
+  // preserve command information in plugin field
+  if (input.plugin && input.plugin !== 'core') {
+    const isCommandPrecedingPluginName = subCommands?.length && input.argv.indexOf(input.plugin) > input.argv.indexOf(subCommands[0]);
+    if (isCommandPrecedingPluginName) {
+      subCommands.push(input.plugin);
+    } else {
+      subCommands.unshift(input.plugin);
+    }
+  }
+
+  if (input.command == 'status' && input.options) {
+    const statusSubcommands = commandsInfo
+      .find((commandInfo) => commandInfo.command == 'status')
+      ?.subCommands.map((subCommandInfo) => subCommandInfo.subCommand);
+    const potentialStatusSubcommands: Array<string> = statusSubcommands ? statusSubcommands : [];
+    const optionKeys = Object.keys(input.options);
+    for (const potentialSubcommand of potentialStatusSubcommands) {
+      if (optionKeys.includes(potentialSubcommand)) {
+        subCommands.push(potentialSubcommand);
+        break;
+      }
+    }
+  }
+
+  if (input.options) {
+    input.options[constants.HELP] = true;
+    delete input.options[constants.HELP_SHORT];
+  }
+  input.command = constants.HELP;
+  input.subCommands = subCommands;
+  return input;
+}
+
+function normalizeInput(input: CLIInput): CLIInput {
   // -v --version => version command
   // -h --help => help command
   // -y --yes => yes option
@@ -74,8 +119,7 @@ function normalizeInput(input: Input): Input {
     }
 
     if (input.options[constants.HELP] || input.options[constants.HELP_SHORT]) {
-      input.options[constants.HELP] = true;
-      delete input.options[constants.HELP_SHORT];
+      preserveHelpInformation(input);
     }
 
     if (input.options[constants.YES] || input.options[constants.YES_SHORT]) {
@@ -95,8 +139,13 @@ function normalizeInput(input: Input): Input {
   return input;
 }
 
-export function verifyInput(pluginPlatform: PluginPlatform, input: Input): InputVerificationResult {
+export function verifyInput(pluginPlatform: PluginPlatform, input: CLIInput): InputVerificationResult {
   const result = new InputVerificationResult();
+
+  // Normalize status command options
+  if (input.command === 'status') {
+    input = normalizeStatusCommandOptions(input);
+  }
 
   input.plugin = input.plugin || constants.CORE;
 
@@ -138,7 +187,7 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
         }
 
         // same as above, but check if the first sub-command is an alias.
-        if (commandAliases && commandAliases.hasOwnProperty(input.subCommands[0])) {
+        if (commandAliases && Object.prototype.hasOwnProperty.call(commandAliases, input.subCommands[0])) {
           const command = commandAliases[input.subCommands[0]];
           input.subCommands[0] = input.command!;
           input.command = command;
@@ -200,9 +249,55 @@ function aliasArgs(argv: string[]) {
   if (argv.length >= 4 && argv[2] === 'override' && argv[3] === 'project') {
     argv[3] = 'root';
 
-    // Also update gitignore to latest list - mainly to exclude amplify/backend/awscloudformation dir from .gitingore for older projects
+    // Also update gitignore to latest list - mainly to exclude amplify/backend/awscloudformation dir from .gitignore for older projects
     const { projectPath } = stateManager.getLocalEnvInfo();
     const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projectPath);
     insertAmplifyIgnore(gitIgnoreFilePath);
   }
 }
+
+const convertKeysToLowerCase = <T>(obj: Record<string, T>): Record<string, T> => {
+  const newObj = {};
+  Object.entries(obj).forEach(([key, value]) => {
+    newObj[key.toLowerCase()] = value;
+  });
+  return newObj;
+};
+
+const normalizeStatusCommandOptions = (input: CLIInput): CLIInput => {
+  const options = input.options ? input.options : {};
+  const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
+  // Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
+  allowedVerboseIndicators.forEach((verboseFlag) => {
+    if (options[verboseFlag] !== undefined) {
+      if (typeof options[verboseFlag] === 'string') {
+        const pluginName = (options[verboseFlag] as string).toLowerCase();
+        options[pluginName] = true;
+      }
+      delete options[verboseFlag];
+      options.verbose = true;
+    }
+  });
+
+  // Merge plugins and sub-commands as options (except help/verbose)
+  const returnInput = input;
+  if (returnInput.plugin) {
+    options[returnInput.plugin] = true;
+    delete returnInput.plugin;
+  }
+  if (returnInput.subCommands) {
+    const allowedSubCommands = [constants.HELP, constants.VERBOSE]; // list of sub-commands supported in Status
+    const inputSubCommands: string[] = [];
+    returnInput.subCommands.forEach((subCommand) => {
+      // plugins are inferred as sub-commands when positionally supplied
+      if (!allowedSubCommands.includes(subCommand)) {
+        options[subCommand.toLowerCase()] = true;
+      } else {
+        inputSubCommands.push(subCommand);
+      }
+    });
+    returnInput.subCommands = inputSubCommands;
+  }
+  returnInput.options = convertKeysToLowerCase(options); // normalize keys to lower case
+  return returnInput;
+};

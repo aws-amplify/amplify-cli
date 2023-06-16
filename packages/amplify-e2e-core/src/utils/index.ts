@@ -13,6 +13,7 @@ export * from './appsync';
 export * from './envVars';
 export * from './getAppId';
 export * from './headless';
+export * from './overrides';
 export * from './nexpect';
 export * from './pinpoint';
 export * from './projectMeta';
@@ -26,11 +27,12 @@ export * from './transformConfig';
 export * from './admin-ui';
 export * from './hooks';
 export * from './git-operations';
+export * from './help';
 
 /**
  * Whether the current environment is CircleCI or not
  */
-export const isCI = (): boolean => JSON.parse(process.env.CI) && JSON.parse(process.env.CIRCLECI);
+export const isCI = (): boolean => JSON.parse(process.env.CI || 'false') && JSON.parse(process.env.CIRCLECI || 'false');
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
@@ -42,7 +44,11 @@ config();
  * delete project directory
  */
 export const deleteProjectDir = (root: string): void => {
-  rimraf.sync(root);
+  try {
+    rimraf.sync(root);
+  } catch (e) {
+    // directory does not exist/was already deleted
+  }
 };
 
 /**
@@ -169,9 +175,15 @@ export const getFunctionSrcNode = (root: string, functionName: string, fileName 
   return fs.readFileSync(indexPath).toString();
 };
 
-const getTestFileNamePath = (fileName: string): string => path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
+const isWindowsPlatform = (): boolean => !!process?.platform?.startsWith('win');
+
+const getTestFileNamePath = (fileName: string): string =>
+  process.env.CODEBUILD_SRC_DIR && isWindowsPlatform()
+    ? path.join(process.env.CODEBUILD_SRC_DIR, 'packages', 'amplify-e2e-tests', 'functions', fileName) // This condition is to account for a difference in the use of __dirname and paths in CodeBuild Windows jobs
+    : path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
 const getPathToFunction = (root: string, funcName: string): string => path.join(root, 'amplify', 'backend', 'function', funcName);
-const getPathToLayer = (root: string, layerProjectName: LayerDirectoryType): string => path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName));
+const getPathToLayer = (root: string, layerProjectName: LayerDirectoryType): string =>
+  path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjectName));
 
 /**
  * Generate short v4 UUID

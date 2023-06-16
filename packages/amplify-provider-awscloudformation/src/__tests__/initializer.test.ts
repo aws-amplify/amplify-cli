@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, stateManager } from '@aws-amplify/amplify-cli-core';
 import { run } from '../initializer';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import CloudFormation from '../aws-utils/aws-cfn';
@@ -9,7 +9,7 @@ jest.mock('../configuration-manager');
 jest.mock('../aws-utils/aws-cfn');
 jest.mock('fs-extra');
 jest.mock('../amplify-service-manager');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../permissions-boundary/permissions-boundary');
 
 const CloudFormationMock = CloudFormation as jest.MockedClass<typeof CloudFormation>;
@@ -42,15 +42,16 @@ describe('run', () => {
       input: {},
     } as unknown as $TSContext;
     CloudFormationMock.mockImplementation(
-      () => ({
-        createResourceStack: jest.fn().mockResolvedValue({
-          Stacks: [
-            {
-              Outputs: [],
-            },
-          ],
-        }),
-      } as unknown as CloudFormation),
+      () =>
+        ({
+          createResourceStack: jest.fn().mockResolvedValue({
+            Stacks: [
+              {
+                Outputs: [],
+              },
+            ],
+          }),
+        } as unknown as CloudFormation),
     );
     amplifyServiceManagerMock.init.mockResolvedValueOnce({} as any);
     JSONUtilitiesMock.readJson.mockReturnValueOnce({});

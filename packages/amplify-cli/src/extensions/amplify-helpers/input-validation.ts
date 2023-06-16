@@ -21,11 +21,11 @@
  * There is some translation logic at the top of the function to translate the legacy parameter into the new form
  */
 export function inputValidation(validation) {
-  if (validation.hasOwnProperty('validation')) {
+  if (Object.prototype.hasOwnProperty.call(validation, 'validation')) {
     Object.assign(validation, { ...validation.validation });
     delete validation.validation;
   }
-  return input => {
+  return (input) => {
     if (validation.operator === 'includes') {
       return input.includes(validation.value) ? true : validation.onErrorMsg;
     }
@@ -45,5 +45,6 @@ export function inputValidation(validation) {
     if (validation.required) {
       return input ? true : 'A response is required for this field';
     }
+    return undefined;
   };
 }

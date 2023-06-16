@@ -1,25 +1,19 @@
 /* eslint-disable spellcheck/spell-checker */
-/* eslint-disable import/no-extraneous-dependencies */
 
 import {
   addAuthWithDefault,
   addS3StorageWithSettings,
   AddStorageSettings,
+  amplifyPull,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppId,
+  getTeamProviderInfo,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  createStorageSettings,
-  getShortId,
-  headlessPullExpectError,
-  importS3,
-} from '../import-helpers';
-
-const profileName = 'amplify-integ-test-user';
+import { createStorageSettings, getShortId, importS3 } from '../import-helpers';
 
 describe('s3 import b', () => {
   const projectPrefix = 'sssimp';
@@ -55,7 +49,7 @@ describe('s3 import b', () => {
     ogSettings = createStorageSettings(ogProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
-    await addAuthWithDefault(ogProjectRoot, {});
+    await addAuthWithDefault(ogProjectRoot);
     await addS3StorageWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -63,7 +57,7 @@ describe('s3 import b', () => {
     dummyOGSettings = createStorageSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
-    await addAuthWithDefault(dummyOGProjectRoot, {});
+    await addAuthWithDefault(dummyOGProjectRoot);
     await addS3StorageWithSettings(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });
@@ -93,12 +87,14 @@ describe('s3 import b', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('storage headless pull missing parameters', async () => {
+  it('storage headless pull in empty dir', async () => {
+    const envName = 'integtest';
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
+      envName,
     });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importS3(projectRoot, ogSettings.bucketName);
 
     await amplifyPushAuth(projectRoot);
@@ -106,29 +102,16 @@ describe('s3 import b', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    let projectRootPull;
+    const storageParams1 = getTeamProviderInfo(projectRoot)?.[envName]?.categories?.storage;
+    expect(storageParams1).toBeDefined();
 
+    let projectRootPull;
     try {
       projectRootPull = await createNewProjectDir('s3import-pull');
 
-      const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
-
-      await expect(
-        headlessPullExpectError(
-          projectRootPull,
-          { envName, appId },
-          providersParam,
-          'Error: storage headless is missing the following inputParams bucketName, region',
-          {},
-        ),
-      ).rejects.toThrowError('Process exited with non zero exit code 1');
+      await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
+      const storageParams2 = getTeamProviderInfo(projectRootPull)?.[envName]?.categories?.storage;
+      expect(storageParams1).toEqual(storageParams2);
     } finally {
       deleteProjectDir(projectRootPull);
     }

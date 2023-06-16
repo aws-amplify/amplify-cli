@@ -1,7 +1,7 @@
 {
   "body": null,
   "resource": "<%= props.functionTemplate.parameters.path %>/{proxy+}",
-  "path": "<%= props.functionTemplate.parameters.path %>/",
+  "path": "<%= props.functionTemplate.parameters.path %>/<%= props.functionTemplate.parameters.database.tableDefinition.partitionKeyName %>:foo",
   "httpMethod": "GET",
   "isBase64Encoded": false,
   "queryStringParameters": {

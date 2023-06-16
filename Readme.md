@@ -18,7 +18,6 @@
 
 [![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-cli/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 [![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-cli/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
-[![Enhancements](https://img.shields.io/github/issues/aws-amplify/amplify-cli/enhancement?color=4287f5&label=enhancement)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
 [![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-cli?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aclosed+)
 
 # AWS Amplify CLI
@@ -34,7 +33,7 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 
 ## Install the CLI
 
-- Requires Node.js® version 12 or later
+- Requires Node.js® version 18 or later
 
 Install and configure the Amplify CLI as follows:
 
@@ -65,7 +64,7 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify pull                                                           | Fetch upstream backend environment definition changes from the cloud and updates the local environment to match that definition.                                                                                     |
 | amplify publish                                                        | Runs `amplify push`, publishes a static assets to Amazon S3 and Amazon CloudFront (\*hosting category is required).                                                                                                  |
 | amplify status [ `<category>`...]                                      | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete).                                                                                                                  |
-| amplify status -v [ `<category>`...]                                   | Verbose mode - Shows the detailed verbose diff between local and deployed resources, including cloudformation-diff | 
+| amplify status -v [ `<category>`...]                                   | Verbose mode - Shows the detailed verbose diff between local and deployed resources, including cloudformation-diff                                                                                                   |
 | amplify serve                                                          | Runs `amplify push`, and then executes the project's start command to test run the client-side application.                                                                                                          |
 | amplify delete                                                         | Deletes resources tied to the project.                                                                                                                                                                               |
 | amplify help \| amplify `<category>` help                              | Displays help for the core CLI.                                                                                                                                                                                      |

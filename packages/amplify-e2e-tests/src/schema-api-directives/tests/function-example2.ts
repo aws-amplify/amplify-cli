@@ -93,8 +93,8 @@ var authMyResourceNameUserPoolId = process.env.AUTH_MYRESOURCENAME_USERPOOLID
 
 Amplify Params - DO NOT EDIT */
 
-const { CognitoIdentityServiceProvider } = require('aws-sdk');
-const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
+const { AdminGetUserCommand, CognitoIdentityProviderClient } = require('@aws-sdk/client-cognito-identity-provider');
+const cognitoIdentityServiceProvider = new CognitoIdentityProviderClient({ region: process.env.REGION });
 
 /**
  * Get user pool information from environment variables.
@@ -120,7 +120,7 @@ const resolvers = {
       };
       try {
         // Read more: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#adminGetUser-property
-        return await cognitoIdentityServiceProvider.adminGetUser(params).promise();
+        return await cognitoIdentityServiceProvider.send(new AdminGetUserCommand(params));
       } catch (e) {
         throw new Error('NOT FOUND');
       }

@@ -4,9 +4,7 @@ import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
-import {
-  deploy, launchDDBLocal, logDebug, terminateDDB,
-} from './utils/index';
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
 let graphqlClient;
 let server;

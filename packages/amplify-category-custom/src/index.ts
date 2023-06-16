@@ -1,8 +1,5 @@
-import {
-  $TSAny,
-  $TSContext, AmplifyError, IAmplifyResource, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext, AmplifyError, IAmplifyResource, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { buildCustomResources } from './utils/build-custom-resources';
 import { categoryName } from './utils/constants';
@@ -50,3 +47,5 @@ export const handleAmplifyEvent = async (__context: $TSContext, args: $TSAny): P
 export const transformCategoryStack = async (context: $TSContext, resource: IAmplifyResource): Promise<void> => {
   await buildCustomResources(context, resource.resourceName);
 };
+
+// force major version bump for cdk v2

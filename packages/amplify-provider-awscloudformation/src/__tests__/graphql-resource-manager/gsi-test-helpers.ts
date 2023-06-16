@@ -1,4 +1,4 @@
-import { DynamoDB } from 'cloudform';
+import { DynamoDB } from 'cloudform-types';
 import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
 
 export type GSIDefinition = {
@@ -16,7 +16,7 @@ export type GSIDefinition = {
 };
 
 export const makeTableWithGSI = (props: { gsis?: GSIDefinition[] }): DynamoDB.Table => {
-  const gsis: GlobalSecondaryIndex[] | undefined = props.gsis?.map<GlobalSecondaryIndex>(gsi => {
+  const gsis: GlobalSecondaryIndex[] | undefined = props.gsis?.map<GlobalSecondaryIndex>((gsi) => {
     const index: GlobalSecondaryIndex = {
       IndexName: gsi.indexName,
       Projection: {

@@ -1,12 +1,12 @@
-import { JSONUtilities, $TSContext, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { JSONUtilities, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { printEnvInfo } from '../helpers/envUtils';
 
 /**
  * Executes the 'env get' command
  */
-export const run = async (context: $TSContext) : Promise<void> => {
-  const envName = context.parameters.options.name;
+export const run = async (context: $TSContext): Promise<void> => {
+  const envName = context.parameters.options?.name;
   const allEnvs = context.amplify.getEnvDetails();
 
   if (!envName) {
@@ -22,7 +22,7 @@ export const run = async (context: $TSContext) : Promise<void> => {
     });
   }
 
-  if (context.parameters.options.json) {
+  if (context.parameters.options?.json) {
     printer.info(JSONUtilities.stringify(allEnvs[envName]) as string);
     return;
   }

@@ -17,7 +17,7 @@ export type Recording = {
 };
 
 export class Recorder {
-  private isPaused: boolean = false;
+  private isPaused = false;
   private childProcess: pty.IPty;
   private onDataHandlers: ((data: string) => void)[] = [];
   private onExitHandlers: ((exitCode: number, signal: string | number) => void)[] = [];
@@ -93,7 +93,7 @@ export class Recorder {
   }
 
   getRecording(): string {
-    return [JSON.stringify(this.recording.header), ...this.recording.frames.map(frame => JSON.stringify(frame))].join('\n');
+    return [JSON.stringify(this.recording.header), ...this.recording.frames.map((frame) => JSON.stringify(frame))].join('\n');
   }
 
   getRecordingFrames(): Readonly<RecordingFrame[]> {
@@ -120,7 +120,7 @@ export class Recorder {
     if (!this.isPaused) {
       this.addFrame(data);
     }
-    for (let handler of this.onDataHandlers) {
+    for (const handler of this.onDataHandlers) {
       try {
         handler(data);
       } catch (e) {
@@ -134,7 +134,7 @@ export class Recorder {
     const length = (Date.now() - this.startTime) / 1000;
     this.addFrame(this.renderPrompt(this.cwd));
     this.recording.header.timestamp = length;
-    for (let handler of this.onExitHandlers) {
+    for (const handler of this.onExitHandlers) {
       try {
         handler(this.exitCode, status.signal);
       } catch (e) {

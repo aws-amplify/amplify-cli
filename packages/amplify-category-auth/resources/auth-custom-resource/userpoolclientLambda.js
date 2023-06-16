@@ -13,10 +13,10 @@ exports.handler = (event, context, callback) => {
     identity
       .describeUserPoolClient(params)
       .promise()
-      .then(res => {
+      .then((res) => {
         response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
       })
-      .catch(err => {
+      .catch((err) => {
         response.send(event, context, response.FAILED, { err });
       });
   }

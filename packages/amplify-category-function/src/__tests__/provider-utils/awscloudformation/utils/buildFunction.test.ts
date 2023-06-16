@@ -1,8 +1,8 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import { BuildType, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
+import { BuildType, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import { buildFunction } from '../../../../provider-utils/awscloudformation/utils/buildFunction';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 pathManager_mock.getBackendDirPath.mockReturnValue('mockpath');
@@ -10,18 +10,18 @@ describe('build function', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  const runtimePlugin_stub = ({
+  const runtimePlugin_stub = {
     checkDependencies: jest.fn().mockResolvedValue({ hasRequiredDependencies: true }),
     build: jest.fn().mockResolvedValue({ rebuilt: true }),
-  } as unknown) as jest.Mocked<FunctionRuntimeLifecycleManager>;
+  } as unknown as jest.Mocked<FunctionRuntimeLifecycleManager>;
 
-  const context_stub = ({
+  const context_stub = {
     amplify: {
       readBreadcrumbs: jest.fn().mockReturnValue({ pluginId: 'testPluginId' }),
       loadRuntimePlugin: jest.fn().mockResolvedValue(runtimePlugin_stub),
       updateamplifyMetaAfterBuild: jest.fn(),
     },
-  } as unknown) as jest.Mocked<$TSContext>;
+  } as unknown as jest.Mocked<$TSContext>;
   it('delegates dependency checks to the runtime manager before building', async () => {
     let depCheck = false;
     runtimePlugin_stub.checkDependencies.mockImplementationOnce(async () => {

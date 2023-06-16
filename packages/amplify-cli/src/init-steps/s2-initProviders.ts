@@ -1,4 +1,4 @@
-import { $TSAny, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import * as inquirer from 'inquirer';
 import sequential from 'promise-sequential';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
@@ -35,7 +35,7 @@ const getProviders = async (context, providerPlugins): Promise<$TSAny> => {
 
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify && inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       // eslint-disable-next-line no-param-reassign
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export const fetchPermissionCategories = permissionMap => {
+export const fetchPermissionCategories = (permissionMap) => {
   return _.keys(permissionMap);
 };
 

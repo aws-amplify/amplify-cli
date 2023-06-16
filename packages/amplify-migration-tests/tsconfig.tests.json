@@ -3,6 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
+    "esModuleInterop": true,
     "outDir": "lib",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

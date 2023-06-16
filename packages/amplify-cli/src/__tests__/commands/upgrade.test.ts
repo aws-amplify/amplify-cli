@@ -1,6 +1,6 @@
 import execa from 'execa';
 import { run } from '../../commands/upgrade';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('execa');
 const execa_mock = execa as jest.Mocked<typeof execa>;
@@ -12,7 +12,7 @@ const context_stub = {
   },
 };
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir'),
   },
@@ -20,10 +20,10 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 jest.mock('chalk', () => ({
-  blueBright: jest.fn().mockImplementation(input => input),
+  blueBright: jest.fn().mockImplementation((input) => input),
 }));
 
-const context_stub_typed = (context_stub as unknown) as $TSContext;
+const context_stub_typed = context_stub as unknown as $TSContext;
 
 describe('run upgrade using node CLI', () => {
   beforeEach(() => {
@@ -38,7 +38,7 @@ describe('run upgrade using node CLI', () => {
 
     // validate
     expect(context_stub.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(
-      `"\\"upgrade\\" is not supported in this installation of Amplify."`,
+      `""upgrade" is not supported in this installation of Amplify."`,
     );
     expect(context_stub.print.info.mock.calls[0][0]).toMatchInlineSnapshot(`"Use npm i -g @aws-amplify/cli instead."`);
   });

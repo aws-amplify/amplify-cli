@@ -1,4 +1,6 @@
 /* eslint-disable import/no-cycle */
+import * as ExeInfo from './exeInfo';
+export { ExeInfo };
 export * from './banner-message';
 export * from './category-interfaces';
 export * from './cfnUtilities';
@@ -32,3 +34,13 @@ export * from './errors/amplify-error';
 export * from './errors/amplify-fault';
 export * from './errors/amplify-exception';
 export * from './errors/project-not-initialized-error';
+export * from './context/context-extensions';
+export * from './context/plugin-platform';
+export * from './context/amplify-event';
+export * from './context/plugin-collection';
+export * from './context/plugin-info';
+export * from './context/plugin-manifest';
+export * from './context/plugin-verification-result';
+export * from './constants';
+export * from './help';
+export * from './amplify-node-pkg-detector';

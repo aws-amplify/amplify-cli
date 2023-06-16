@@ -1,21 +1,19 @@
 import util from 'util';
 import { Context } from '../domain/context';
-import { PluginInfo } from '../domain/plugin-info';
-import { PluginCollection } from '../domain/plugin-collection';
-import { PluginPlatform } from '../domain/plugin-platform';
+import { PluginInfo, PluginCollection, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 
 const defaultIndentationStr = '  ';
 
-export function displaySimpleString(context: Context, title: string, contents: string, indentation: number = 0) {
+export function displaySimpleString(context: Context, title: string, contents: string, indentation = 0) {
   const indentationStr = createIndentation(indentation);
   context.print.blue(`${indentationStr}${title}:`);
   context.print.info(`${indentationStr}${defaultIndentationStr}${contents}`);
 }
 
-export function displayStringArray(context: Context, title: string, contents: string[], indentation: number = 0) {
+export function displayStringArray(context: Context, title: string, contents: string[], indentation = 0) {
   const indentationStr = createIndentation(indentation);
   context.print.blue(`${indentationStr}${title}:`);
-  contents.forEach(strItem => {
+  contents.forEach((strItem) => {
     context.print.info(`${indentationStr}${defaultIndentationStr}${strItem}`);
   });
 }
@@ -62,19 +60,19 @@ export function displayPluginPlatform(context: Context, pluginPlatform: PluginPl
   displayPluginCollection(context, pluginPlatform.excluded, 'excluded plugin');
 }
 
-export function displayPluginCollection(context: Context, pluginCollection: PluginCollection, group: string = '') {
-  Object.keys(pluginCollection).forEach(key => {
+export function displayPluginCollection(context: Context, pluginCollection: PluginCollection, group = '') {
+  Object.keys(pluginCollection).forEach((key) => {
     displayPluginInfoArray(context, pluginCollection[key], group);
   });
 }
 
-export function displayPluginInfoArray(context: Context, pluginInfoArray: Array<PluginInfo>, group: string = '') {
-  pluginInfoArray.forEach(pluginInfo => {
+export function displayPluginInfoArray(context: Context, pluginInfoArray: Array<PluginInfo>, group = '') {
+  pluginInfoArray.forEach((pluginInfo) => {
     displayPluginInfo(context, pluginInfo, group);
   });
 }
 
-export function displayPluginInfo(context: Context, pluginInfo: PluginInfo, group: string = '') {
+export function displayPluginInfo(context: Context, pluginInfo: PluginInfo, group = '') {
   const { manifest, packageName, packageVersion } = pluginInfo;
   const title = `${manifest.name}: ${packageName}@${packageVersion}`;
   context.print.info('');

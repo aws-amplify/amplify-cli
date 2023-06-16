@@ -20,7 +20,7 @@ var customBlocks = [];
  * @param {boolean} ignoreSpace if set true, then ignore the newline trim.
  * @return {array} ast array
  */
-var parse = function(str, blocks, ignoreSpace) {
+var parse = function (str, blocks, ignoreSpace) {
   var asts = _parse(str);
   customBlocks = blocks || {};
 

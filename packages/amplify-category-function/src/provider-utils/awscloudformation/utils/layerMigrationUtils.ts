@@ -1,7 +1,5 @@
-import {
-  $TSContext, exitOnNextTick, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, exitOnNextTick, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -11,9 +9,7 @@ import { layerConfigurationFileName, LegacyFilename, versionHash } from './const
 import { loadPluginFromFactory } from './functionPluginLoader';
 // eslint-disable-next-line import/no-cycle
 import { writeLayerConfigurationFile } from './layerConfiguration';
-import {
-  defaultLayerPermission, LayerPermission, LayerRuntime, PermissionEnum,
-} from './layerParams';
+import { defaultLayerPermission, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 /**
  * Layer config state
@@ -75,7 +71,9 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
 
   printer.blankLine();
   printer.warn('Amplify updated the way Lambda layers work to better support team workflows and additional features.');
-  printer.info('This change requires a migration. Amplify will create a new Lambda layer version even if no layer content changes are made.');
+  printer.info(
+    'This change requires a migration. Amplify will create a new Lambda layer version even if no layer content changes are made.',
+  );
 
   if (context?.exeInfo?.inputParams?.yes !== true) {
     const shouldProceedWithMigration = await context.amplify.confirmPrompt('Continue?');
@@ -100,12 +98,14 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
   }
 
   /* eslint-disable no-param-reassign */
-  const runtimeCloudTemplateValues = legacyRuntimeArray.map(legacyRuntime => legacyRuntime.cloudTemplateValue);
-  legacyRuntimeArray.forEach((runtime: LegacyRuntime) => { runtime.cloudTemplateValue = undefined; });
+  const runtimeCloudTemplateValues = legacyRuntimeArray.map((legacyRuntime) => legacyRuntime.cloudTemplateValue);
+  legacyRuntimeArray.forEach((runtime: LegacyRuntime) => {
+    runtime.cloudTemplateValue = undefined;
+  });
   layerConfiguration.runtimes = legacyRuntimeArray;
 
   await Promise.all(
-    layerConfiguration.runtimes.map(async runtime => {
+    layerConfiguration.runtimes.map(async (runtime) => {
       if (runtime.value === 'nodejs') {
         runtime.runtimePluginId = 'amplify-nodejs-function-runtime-provider';
       } else if (runtime.value === 'python') {
@@ -119,7 +119,7 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
   /* eslint-enable */
 
   const layerVersions = Object.keys(layerVersionMap)
-    .map(version => parseInt(version, 10))
+    .map((version) => parseInt(version, 10))
     .sort((a, b) => b - a);
 
   const permissions: LegacyPermission[] = layerVersionMap[`${_.first(layerVersions)}`]?.permissions;
@@ -129,7 +129,7 @@ export const migrateLegacyLayer = async (context: $TSContext, layerName: string)
     layerConfiguration.permissions = [defaultLayerPermission];
   } else {
     layerConfiguration.permissions = [];
-    permissions.forEach(permission => {
+    permissions.forEach((permission) => {
       switch (permission.type) {
         case LegacyPermissionEnum.Private:
           layerConfiguration.permissions.push({ type: PermissionEnum.Private });
@@ -197,9 +197,8 @@ export const readLegacyRuntimes = (layerName: string, legacyState: LegacyState):
   return undefined;
 };
 
-const readLegacyLayerParametersJson = (
-  layerDirPath: string,
-): LegacyLayerParametersJson => JSONUtilities.readJson<LegacyLayerParametersJson>(path.join(layerDirPath, LegacyFilename.layerParameters));
+const readLegacyLayerParametersJson = (layerDirPath: string): LegacyLayerParametersJson =>
+  JSONUtilities.readJson<LegacyLayerParametersJson>(path.join(layerDirPath, LegacyFilename.layerParameters));
 
 const migrateAmplifyProjectFiles = (layerName: string, latestLegacyHash: string): void => {
   const projectRoot = pathManager.findProjectRoot();
@@ -209,6 +208,6 @@ const migrateAmplifyProjectFiles = (layerName: string, latestLegacyHash: string)
     meta[categoryName][layerName][layerVersionMapKey] = undefined;
   }
 
-  _.set(meta, [categoryName, layerName, versionHash], latestLegacyHash);
+  _.setWith(meta, [categoryName, layerName, versionHash], latestLegacyHash);
   stateManager.setMeta(projectRoot, meta);
 };

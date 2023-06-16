@@ -1,24 +1,33 @@
 {
-  "name": "amplify-util-import",
-  "version": "2.3.0",
+  "name": "@aws-amplify/amplify-util-import",
+  "version": "2.6.1",
   "description": "Resource import support package",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules"
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "aws",
     "amplify",
     "import"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.1233.0"
+    "aws-sdk": "^2.1354.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

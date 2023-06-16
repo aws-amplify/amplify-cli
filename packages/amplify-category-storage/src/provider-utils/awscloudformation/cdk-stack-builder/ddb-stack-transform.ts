@@ -1,10 +1,7 @@
-import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
-import { App } from '@aws-cdk/core';
-import {
-  $TSAny, $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
-import { formatter } from 'amplify-prompts';
+import { AmplifyDDBResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
+import { $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { formatter } from '@aws-amplify/amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
@@ -18,7 +15,7 @@ import { AmplifyDDBResourceInputParameters } from './types';
  * Entry point class to transform User parameters into stack and apply overrides
  */
 export class DDBStackTransform {
-  app: App;
+  app: cdk.App;
   _context: $TSContext;
   _cliInputs: DynamoDBCLIInputs;
   _resourceTemplateObj: AmplifyDDBResourceStack | undefined;
@@ -28,14 +25,14 @@ export class DDBStackTransform {
   _resourceName: string;
 
   constructor(context: $TSContext, resourceName: string) {
-    this.app = new App();
+    this.app = new cdk.App();
     this._context = context;
     this._resourceName = resourceName;
 
     // Validate the cli-inputs.json for the resource
     this._cliInputsState = new DynamoDBInputState(context, resourceName);
     this._cliInputs = this._cliInputsState.getCliInputPayload();
-    this._cliInputsState.isCLIInputsValid();
+    void this._cliInputsState.isCLIInputsValid();
   }
 
   /**
@@ -217,16 +214,21 @@ export class DDBStackTransform {
             external: true,
           },
         });
+        const projectInfo = getProjectInfo();
         try {
           await sandboxNode
             .run(overrideCode, overrideJSFilePath)
-            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
-        } catch (err: $TSAny) {
-          throw new AmplifyError('InvalidOverrideError', {
-            message: `Executing overrides failed.`,
-            details: err.message,
-            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-          }, err);
+            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate, projectInfo);
+        } catch (err) {
+          throw new AmplifyError(
+            'InvalidOverrideError',
+            {
+              message: `Executing overrides failed.`,
+              details: err.message,
+              resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+            },
+            err,
+          );
         }
       }
     }

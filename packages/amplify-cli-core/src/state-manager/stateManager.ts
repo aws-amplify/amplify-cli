@@ -5,9 +5,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
 import { PathConstants, pathManager } from './pathManager';
-import {
-  $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject,
-} from '..';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
@@ -65,11 +63,10 @@ export class StateManager {
     return data;
   };
 
-  getDeploymentSecrets = (): DeploymentSecrets => (
+  getDeploymentSecrets = (): DeploymentSecrets =>
     JSONUtilities.readJson<DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
       throwIfNotExist: false,
-    }) || { appSecrets: [] }
-  );
+    }) || { appSecrets: [] };
 
   getProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getTagFilePath(projectPath));
 
@@ -102,7 +99,7 @@ export class StateManager {
     return JSONUtilities.readJson<CustomIAMPolicies>(filePath, { throwIfNotExist: false }) || [];
   };
 
-  getCurrentRegion = (projectPath?: string):string | undefined => this.getMeta(projectPath).providers.awscloudformation.Region;
+  getCurrentRegion = (projectPath?: string): string | undefined => this.getMeta(projectPath).providers.awscloudformation.Region;
 
   getCurrentEnvName = (projectPath?: string): string | undefined => this.getLocalEnvInfo(projectPath, { throwIfNotExist: false })?.envName;
 
@@ -144,14 +141,25 @@ export class StateManager {
 
   backendConfigFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getBackendConfigFilePath, projectPath);
 
-  getBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
+  /**
+   * Returns `backend-config.json` as an object
+   *
+   * includeParameters should only be used by the BackendConfigParameterMapController to get the parameters from backend-config.json
+   */
+  getBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>, includeParameters = false): $TSAny => {
     const filePath = pathManager.getBackendConfigFilePath(projectPath);
     const mergedOptions = {
       throwIfNotExist: true,
       ...options,
     };
 
-    return this.getData<$TSAny>(filePath, mergedOptions);
+    const data = this.getData<$TSAny>(filePath, mergedOptions);
+
+    if (includeParameters) {
+      return data;
+    }
+    // omit parameters
+    return _.omit(data, 'parameters');
   };
 
   getCurrentBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
@@ -166,16 +174,16 @@ export class StateManager {
   getProjectName = (): string => {
     const { projectName } = this.getProjectConfig();
     return projectName;
-  }
+  };
 
-  getAppID = () : string => {
+  getAppID = (): string => {
     const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
     const appId = meta?.providers?.awscloudformation?.AmplifyAppId;
     if (!appId) {
       throw new Error('Could not find an Amplify AppId in the amplify-meta.json file. Make sure your project is initialized in the cloud.');
     }
     return appId;
-  }
+  };
 
   getResourceParametersJson = (
     projectPath: string | undefined,
@@ -228,7 +236,8 @@ export class StateManager {
       default: {},
       ...options,
     };
-    const adminConfig = JSONUtilities.readJson<$TSAny>(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) ?? mergedOptions.default;
+    const adminConfig =
+      JSONUtilities.readJson<$TSAny>(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) ?? mergedOptions.default;
 
     return adminConfig[appId];
   };
@@ -289,13 +298,13 @@ export class StateManager {
   setBackendConfig = (projectPath: string | undefined, backendConfig: $TSAny): void => {
     const filePath = pathManager.getBackendConfigFilePath(projectPath);
 
-    JSONUtilities.writeJson(filePath, backendConfig);
+    JSONUtilities.writeJson(filePath, backendConfig, { orderedKeys: true });
   };
 
   setCurrentBackendConfig = (projectPath: string | undefined, backendConfig: $TSAny): void => {
     const filePath = pathManager.getCurrentBackendConfigFilePath(projectPath);
 
-    JSONUtilities.writeJson(filePath, backendConfig);
+    JSONUtilities.writeJson(filePath, backendConfig, { orderedKeys: true });
   };
 
   setMeta = (projectPath: string | undefined, meta: $TSMeta): void => {
@@ -310,7 +319,8 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
-  getHooksConfigJson = (projectPath?: string): HooksConfig => this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), { throwIfNotExist: false }) ?? {};
+  getHooksConfigJson = (projectPath?: string): HooksConfig =>
+    this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), { throwIfNotExist: false }) ?? {};
 
   setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {
     const targetDirPath = pathManager.getHooksDirPath(projectPath);
@@ -370,9 +380,7 @@ export class StateManager {
   setCLIJSON = (projectPath: string, cliJSON: $TSAny, env?: string): void => {
     const filePath = pathManager.getCLIJSONFilePath(projectPath, env);
 
-    JSONUtilities.writeJson(filePath, cliJSON, {
-      keepComments: true,
-    });
+    JSONUtilities.writeJson(filePath, cliJSON);
   };
 
   getResourceFromMeta = (

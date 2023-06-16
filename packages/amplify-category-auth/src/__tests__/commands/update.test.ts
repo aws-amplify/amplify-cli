@@ -1,8 +1,8 @@
 import * as fs from 'fs-extra';
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as update from '../../commands/auth/update';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
+import { AuthContext } from '../../context';
 
 jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 jest.mock('fs-extra', () => ({
@@ -10,10 +10,10 @@ jest.mock('fs-extra', () => ({
   existsSync: () => true,
 }));
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
   FeatureFlags: {
     getBoolean: jest.fn().mockReturnValue(true),
   },
@@ -58,6 +58,7 @@ jest.mock('amplify-cli-core', () => ({
       }),
     getLocalEnvInfo: jest.fn().mockReturnValue({ envName: 'testEnv' }),
     getTeamProviderInfo: jest.fn(),
+    getBackendConfig: jest.fn(),
   },
 }));
 
@@ -75,7 +76,7 @@ describe('auth update:', () => {
       serviceSelectionPrompt: mockSelectionPrompt,
       getPluginInstance: jest.fn().mockReturnValue(mockPluginInstance),
       getImportedAuthProperties: jest.fn().mockReturnValue({ imported: false }),
-      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path, 'utf-8'))),
+      readJsonFile: jest.fn((path) => JSON.parse(fs.readFileSync(path, 'utf-8'))),
       pathManager: {
         getBackendDirPath: jest.fn(),
       },
@@ -90,7 +91,7 @@ describe('auth update:', () => {
     input: {
       options: {},
     },
-  } as unknown as $TSContext;
+  } as unknown as AuthContext;
 
   it('update run method should exist', async () => {
     await expect(update.run).toBeDefined();

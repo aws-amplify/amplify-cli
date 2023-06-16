@@ -1,6 +1,4 @@
-import {
-  $TSContext, pathManager, stateManager, AmplifyCategories, spinner, AmplifyFault,
-} from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager, AmplifyCategories, spinner, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import type { S3 } from 'aws-sdk';
 import { createReadStream, readdirSync, existsSync } from 'fs-extra';
 import mime from 'mime-types';
@@ -38,7 +36,7 @@ export const uploadFiles = async (context: $TSContext): Promise<void> => {
     }
     const fileList = readdirSync(assetPath);
     const uploadFileTasks: (() => Promise<S3.ManagedUpload.SendData>)[] = [];
-    fileList.forEach(file => {
+    fileList.forEach((file) => {
       uploadFileTasks.push(async () => uploadFile(s3Client, bucketName, path.join(assetPath, file), file));
     });
 
@@ -66,7 +64,5 @@ const uploadFile = async (s3Client: S3, hostingBucketName: string, filePath: str
     ACL: 'public-read',
   };
 
-  return s3Client
-    .upload(uploadParams)
-    .promise();
+  return s3Client.upload(uploadParams).promise();
 };

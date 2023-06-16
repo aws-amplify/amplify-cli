@@ -1,25 +1,19 @@
 /* eslint-disable spellcheck/spell-checker */
-/* eslint-disable import/no-extraneous-dependencies */
 
 import {
   addAuthWithDefault,
   AddDynamoDBSettings,
   addDynamoDBWithGSIWithSettings,
+  amplifyPull,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppId,
+  getTeamProviderInfo,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  createDynamoDBSettings,
-  getShortId,
-  headlessPullExpectError,
-  importDynamoDBTable,
-} from '../import-helpers';
-
-const profileName = 'amplify-integ-test-user';
+import { createDynamoDBSettings, getShortId, importDynamoDBTable } from '../import-helpers';
 
 describe('dynamodb import 2b', () => {
   const projectPrefix = 'ddbimp';
@@ -56,7 +50,7 @@ describe('dynamodb import 2b', () => {
     ogSettings = createDynamoDBSettings(ogProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
-    await addAuthWithDefault(ogProjectRoot, {});
+    await addAuthWithDefault(ogProjectRoot);
     await addDynamoDBWithGSIWithSettings(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
@@ -65,7 +59,7 @@ describe('dynamodb import 2b', () => {
     dummyOGSettings = createDynamoDBSettings(dummyOGProjectSettings.name, dummyOGShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
-    await addAuthWithDefault(dummyOGProjectRoot, {});
+    await addAuthWithDefault(dummyOGProjectRoot);
     await addDynamoDBWithGSIWithSettings(dummyOGProjectRoot, dummyOGSettings);
     await amplifyPushAuth(dummyOGProjectRoot);
   });
@@ -95,12 +89,15 @@ describe('dynamodb import 2b', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('dynamodb headless pull missing parameters', async () => {
+  it('dynamodb headless pull in empty dir', async () => {
+    const envName = 'integtest';
+
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
+      envName,
     });
-    await addAuthWithDefault(projectRoot, {});
+    await addAuthWithDefault(projectRoot);
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
     await amplifyPushAuth(projectRoot);
@@ -108,29 +105,16 @@ describe('dynamodb import 2b', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    let projectRootPull;
+    const storageParams1 = getTeamProviderInfo(projectRoot)?.[envName]?.categories?.storage;
+    expect(storageParams1).toBeDefined();
 
+    let projectRootPull;
     try {
       projectRootPull = await createNewProjectDir('ddbimport-pull');
 
-      const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
-
-      await expect(
-        headlessPullExpectError(
-          projectRootPull,
-          { envName, appId },
-          providersParam,
-          'Error: storage headless is missing the following inputParams tableName, region',
-          {},
-        ),
-      ).rejects.toThrowError('Process exited with non zero exit code 1');
+      await amplifyPull(projectRootPull, { appId, emptyDir: true, envName, yesFlag: true });
+      const storageParams2 = getTeamProviderInfo(projectRootPull)?.[envName]?.categories?.storage;
+      expect(storageParams1).toEqual(storageParams2);
     } finally {
       deleteProjectDir(projectRootPull);
     }

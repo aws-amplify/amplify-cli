@@ -1,10 +1,10 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { ServiceName } from '../..';
 import { categoryName } from '../../constants';
 import { PackageRequestMeta } from '../../provider-utils/awscloudformation/types/packaging-types';
 import { buildFunction } from '../../provider-utils/awscloudformation/utils/buildFunction';
 import { packageResource } from '../../provider-utils/awscloudformation/utils/package';
-
 export const name = 'build';
 
 /**
@@ -15,14 +15,14 @@ export const run = async (context: $TSContext) => {
   const confirmContinue =
     !!resourceName ||
     context.input?.options?.yes ||
-    (await context.amplify.confirmPrompt('Are you sure you want to continue building the resources?', false));
+    (await prompter.yesOrNo('Are you sure you want to continue building the resources?', false));
   if (!confirmContinue) {
     return;
   }
   try {
     const resourcesToBuild = (await getSelectedResources(context, resourceName))
-      .filter(resource => resource.build)
-      .filter(resource => resource.service === ServiceName.LambdaFunction);
+      .filter((resource) => resource.build)
+      .filter((resource) => resource.service === ServiceName.LambdaFunction);
     for await (const resource of resourcesToBuild) {
       resource.lastBuildTimeStamp = await buildFunction(context, resource);
       await packageResource(context, resource);
@@ -30,7 +30,12 @@ export const run = async (context: $TSContext) => {
   } catch (err) {
     context.print.info(err.stack);
     context.print.error('There was an error building the function resources');
-    context.usageData.emitError(err);
+    const amplifyError = new AmplifyError(
+      'PackagingLambdaFunctionError',
+      { message: `There was an error building the function resources ${err.message}` },
+      err,
+    );
+    void context.usageData.emitError(amplifyError);
     process.exitCode = 1;
   }
 };

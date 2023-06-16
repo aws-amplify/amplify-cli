@@ -1,9 +1,9 @@
-import { stateManager, $TSContext, AmplifyError } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as remove from '../../commands/auth/remove';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 
 const saveCLIInputPayloadMock = jest.fn();
 
@@ -21,7 +21,7 @@ jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input
   })),
 }));
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 stateManagerMock.getMeta.mockReturnValue({
@@ -42,7 +42,7 @@ stateManagerMock.getMeta.mockReturnValue({
 });
 
 const AmplifyErrorMock = AmplifyError as jest.MockedClass<typeof AmplifyError>;
-AmplifyErrorMock.mockImplementation(() => (new Error('test error') as unknown) as any);
+AmplifyErrorMock.mockImplementation(() => new Error('test error') as unknown as any);
 
 const removeResourceMock = jest.fn().mockResolvedValue({
   service: 'Cognito',
@@ -57,7 +57,7 @@ const mockContext = {
     first: 'mockFirst',
   },
 };
-const ContextStubTyped = (mockContext as unknown) as $TSContext;
+const ContextStubTyped = mockContext as unknown as $TSContext;
 
 beforeEach(() => jest.clearAllMocks());
 

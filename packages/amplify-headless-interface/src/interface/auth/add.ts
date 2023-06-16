@@ -40,7 +40,7 @@ export interface BaseCognitoServiceConfiguration {
  */
 export interface NoCognitoIdentityPool {
   /**
-   * Indicates an indentity pool should not be configured.
+   * Indicates an identity pool should not be configured.
    */
   includeIdentityPool: false;
 }
@@ -295,7 +295,7 @@ export interface CognitoUserPoolGroup {
 }
 
 /**
- * Password contraints that can be applied to Cognito user pools.
+ * Password constraints that can be applied to Cognito user pools.
  */
 export enum CognitoPasswordConstraint {
   REQUIRE_LOWERCASE = 'REQUIRE_LOWERCASE',

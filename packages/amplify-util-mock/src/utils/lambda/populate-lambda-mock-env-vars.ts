@@ -1,7 +1,7 @@
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
-import { loadConfigurationForEnv, resolveAppId } from 'amplify-provider-awscloudformation';
+import { loadConfigurationForEnv, resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 
 /**
@@ -13,11 +13,9 @@ export const populateLambdaMockEnvVars = async (context: $TSContext, processedLa
   // eslint-disable-next-line no-param-reassign
   processedLambda.environment = (
     await Promise.all(
-      [getAwsCredentials,
-        getStaticDefaults,
-        getDynamicDefaults,
-        getDotEnvValues,
-      ].map(envVarGetter => envVarGetter(processedLambda, context)),
+      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map((envVarGetter) =>
+        envVarGetter(processedLambda, context),
+      ),
     )
   ).reduce((acc, it) => ({ ...acc, ...it }), processedLambda.environment);
 };

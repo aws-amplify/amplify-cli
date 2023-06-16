@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import {
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,
@@ -14,7 +14,7 @@ import {
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { ICognitoUserPoolService } from 'amplify-util-import';
+import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
 import { loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
@@ -54,8 +54,8 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
         {
           MaxResults: 60,
         },
-        response => response?.UserPools,
-        async response => response?.NextToken,
+        (response) => response?.UserPools,
+        async (response) => response?.NextToken,
       );
 
       this.cachedUserPoolIds.push(...result);
@@ -90,14 +90,14 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
         UserPoolId: userPoolId,
         MaxResults: 60,
       },
-      response => response?.UserPoolClients,
-      async response => response?.NextToken,
+      (response) => response?.UserPoolClients,
+      async (response) => response?.NextToken,
     );
 
     const userPoolClientDetails: UserPoolClientType[] = [];
 
     if (userPoolClients.length > 0) {
-      const describeUserPoolClientPromises = userPoolClients.map(upc => {
+      const describeUserPoolClientPromises = userPoolClients.map((upc) => {
         logger('listUserPoolClients.cognito.listUserPoolClients', [
           {
             UserPoolId: userPoolId,
@@ -114,7 +114,7 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
 
       const userPoolClientDetailsResults = await Promise.all(describeUserPoolClientPromises);
 
-      userPoolClientDetails.push(...userPoolClientDetailsResults.map(response => response.UserPoolClient));
+      userPoolClientDetails.push(...userPoolClientDetailsResults.map((response) => response.UserPoolClient));
     }
 
     return userPoolClientDetails;
@@ -140,14 +140,14 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
         UserPoolId: userPoolId,
         MaxResults: 60,
       },
-      response => response?.Providers,
-      async response => response?.NextToken,
+      (response) => response?.Providers,
+      async (response) => response?.NextToken,
     );
 
     const identityPoolDetails: IdentityProviderType[] = [];
 
     if (identityProviders.length > 0) {
-      const describeIdentityProviderPromises = identityProviders.map(idp => {
+      const describeIdentityProviderPromises = identityProviders.map((idp) => {
         logger('listUserPoolIdentityProviders.cognito.describeIdentityProviderPromises', [
           {
             UserPoolId: userPoolId,
@@ -164,7 +164,7 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
 
       const identityProviderDetailsResults = await Promise.all(describeIdentityProviderPromises);
 
-      identityPoolDetails.push(...identityProviderDetailsResults.map(response => response.IdentityProvider));
+      identityPoolDetails.push(...identityProviderDetailsResults.map((response) => response.IdentityProvider));
     }
 
     return identityPoolDetails;

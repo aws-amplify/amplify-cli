@@ -29,7 +29,7 @@ function onInitSuccessful(context) {
  * This function enables export to write these files to an external path
  * @param {TSContext} context
  * @param {metaWithOutput} amplifyResources
- * @param {cloudMetaWithOuput} amplifyCloudResources
+ * @param {cloudMetaWithOutput} amplifyCloudResources
  * @param {string} exportPath path to where the files need to be written
  */
 async function createFrontendConfigsAtPath(context, amplifyResources, amplifyCloudResources, exportPath) {
@@ -37,7 +37,7 @@ async function createFrontendConfigsAtPath(context, amplifyResources, amplifyClo
   const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
 
   const amplifyConfig = await getAWSExports(context, newOutputsForFrontend, cloudOutputsForFrontend);
-  generateAwsExportsAtPath(context, path.join(exportPath, constants.exportsFilename), amplifyConfig);
+  await generateAwsExportsAtPath(context, path.join(exportPath, constants.exportsFilename), amplifyConfig);
 }
 
 async function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
@@ -55,7 +55,7 @@ function displayFrontendDefaults(context, projectPath) {
   return configManager.displayFrontendDefaults(context, projectPath);
 }
 
-const initializeAwsExports = destDir => {
+const initializeAwsExports = (destDir) => {
   const dest = path.resolve(destDir, 'aws-exports.js');
   if (!fs.existsSync(dest)) {
     fs.copySync(emptyAwsExportsPath, dest);

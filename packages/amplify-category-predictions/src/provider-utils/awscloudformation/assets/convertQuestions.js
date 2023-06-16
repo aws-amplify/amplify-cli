@@ -88,88 +88,78 @@ const deniedCombos = {
 
 const convertAccess = {
   prompt(options) {
-    return [
-      {
-        type: 'list',
-        name: 'access',
-        message: 'Who should have access?',
-        choices: [
-          {
-            name: 'Auth users only',
-            value: 'auth',
-          },
-          {
-            name: 'Auth and Guest users',
-            value: 'authAndGuest',
-          },
-        ],
-        default: options.access ? options.access : 'auth',
-      },
-    ];
+    return {
+      type: 'list',
+      name: 'access',
+      message: 'Who should have access?',
+      choices: [
+        {
+          name: 'Auth users only',
+          value: 'auth',
+        },
+        {
+          name: 'Auth and Guest users',
+          value: 'authAndGuest',
+        },
+      ],
+      default: options.access ? options.access : 'auth',
+    };
   },
 };
 
 const setup = {
   type() {
-    return [
-      {
-        type: 'list',
-        name: 'convertType',
-        message: 'What would you like to convert?',
-        choices: [
-          {
-            name: 'Translate text into a different language',
-            value: 'translateText',
-          },
-          {
-            name: 'Generate speech audio from text',
-            value: 'speechGenerator',
-          },
-          {
-            name: 'Transcribe text from audio',
-            value: 'transcription',
-          },
-        ],
-      },
-    ];
+    return {
+      type: 'list',
+      name: 'convertType',
+      message: 'What would you like to convert?',
+      choices: [
+        {
+          name: 'Translate text into a different language',
+          value: 'translateText',
+        },
+        {
+          name: 'Generate speech audio from text',
+          value: 'speechGenerator',
+        },
+        {
+          name: 'Transcribe text from audio',
+          value: 'transcription',
+        },
+      ],
+    };
   },
   name(defaultName) {
-    return [
-      {
-        name: 'resourceName',
-        message: 'Provide a friendly name for your resource',
-        validate: value => {
-          const regex = new RegExp('^[a-zA-Z0-9]+$');
-          return regex.test(value) ? true : 'Resource name should be alphanumeric!';
-        },
-        default: defaultName,
+    return {
+      name: 'resourceName',
+      message: 'Provide a friendly name for your resource',
+      validate: (value) => {
+        const regex = new RegExp('^[a-zA-Z0-9]+$');
+        return regex.test(value) ? true : 'Resource name should be alphanumeric!';
       },
-    ];
+      default: defaultName,
+    };
   },
 };
 
 const translateText = {
   questions(options) {
-    return [
-      {
-        type: 'list',
-        name: 'sourceLang',
-        message: 'What is the source language?',
-        choices: translateOptions,
-        default: options.sourceLang,
-      },
-    ];
+    return {
+      type: 'list',
+      name: 'sourceLang',
+      message: 'What is the source language?',
+      choices: translateOptions,
+      default: options.sourceLang,
+    };
   },
   targetQuestion(targetOptions, options) {
-    return [
-      {
-        type: 'list',
-        name: 'targetLang',
-        message: 'What is the target language?',
-        choices: targetOptions,
-        default: options.targetLang,
-      },
-    ];
+    return {
+      type: 'list',
+      name: 'targetLang',
+      message: 'What is the target language?',
+      choices: targetOptions,
+      default: options.targetLang,
+    };
   },
   service: 'Translate',
   authAccess: convertAccess,
@@ -177,26 +167,22 @@ const translateText = {
 
 const speechGenerator = {
   questions(options) {
-    return [
-      {
-        type: 'list',
-        name: 'language',
-        message: 'What is the source language?',
-        choices: options.languages,
-        default: options.language,
-      },
-    ];
+    return {
+      type: 'list',
+      name: 'language',
+      message: 'What is the source language?',
+      choices: options.languages,
+      default: options.language,
+    };
   },
   voiceQuestion(langID, options) {
-    return [
-      {
-        type: 'list',
-        name: 'voice',
-        message: 'Select a speaker',
-        choices: options.voices[langID],
-        default: options.voice,
-      },
-    ];
+    return {
+      type: 'list',
+      name: 'voice',
+      message: 'Select a speaker',
+      choices: options.voices[langID],
+      default: options.voice,
+    };
   },
   service: 'Polly',
   authAccess: convertAccess,
@@ -204,15 +190,13 @@ const speechGenerator = {
 
 const transcription = {
   questions(options) {
-    return [
-      {
-        type: 'list',
-        name: 'language',
-        message: 'What is the source language?',
-        choices: transcriptionOptions,
-        default: options.language,
-      },
-    ];
+    return {
+      type: 'list',
+      name: 'language',
+      message: 'What is the source language?',
+      choices: transcriptionOptions,
+      default: options.language,
+    };
   },
   service: 'Transcribe',
   authAccess: convertAccess,

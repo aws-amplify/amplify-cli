@@ -28,7 +28,7 @@ async function getProvider(context, providerPlugins) {
 
   const { inputParams } = context.exeInfo;
   if (inputParams && inputParams.amplify && inputParams.amplify.providers) {
-    inputParams.amplify.providers.forEach(provider => {
+    inputParams.amplify.providers.forEach((provider) => {
       provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
         providers.push(provider);

@@ -66,6 +66,7 @@ export const getJWTToken = (
   const token: JWTToken = {
     iss: `https://cognito-idp.us-west-2.amazonaws.com/us-west-2_${userPool}`,
     sub: v4(),
+    // eslint-disable-next-line spellcheck/spell-checker
     aud: '75pk49boud2olipfda0ke3snic',
     exp: Math.floor(Date.now() / 1000) + 10000,
     iat: Math.floor(Date.now() / 1000),
@@ -83,6 +84,7 @@ export const getGenericToken = (username: string, email: string, groups: string[
   return {
     iss: 'https://some-oidc-provider/auth',
     sub: v4(),
+    // eslint-disable-next-line spellcheck/spell-checker
     aud: '75pk49boud2olipfda0ke3snic',
     exp: Math.floor(Date.now() / 1000) + 10000,
     iat: Math.floor(Date.now() / 1000),

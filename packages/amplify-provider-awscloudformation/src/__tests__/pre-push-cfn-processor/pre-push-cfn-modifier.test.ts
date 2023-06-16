@@ -6,7 +6,7 @@ jest.mock('../../pre-push-cfn-processor/modifiers/s3-sse-modifier');
 
 const applyS3SSEModification_mock = applyS3SSEModification as jest.MockedFunction<typeof applyS3SSEModification>;
 
-applyS3SSEModification_mock.mockImplementation(async bucket => {
+applyS3SSEModification_mock.mockImplementation(async (bucket) => {
   bucket.Properties = {};
   (bucket.Properties as any).something = 'test';
   return bucket;
@@ -26,19 +26,19 @@ describe('prePushCfnTemplateModifier', () => {
     };
     await prePushCfnTemplateModifier(template);
     expect(template).toMatchInlineSnapshot(`
-      Object {
-        "Resources": Object {
-          "TestResource1": Object {
-            "Type": "AWS::IAM::Role",
-          },
-          "TestResource2": Object {
-            "Properties": Object {
-              "something": "test",
-            },
-            "Type": "AWS::S3::Bucket",
-          },
-        },
-      }
-    `);
+{
+  "Resources": {
+    "TestResource1": {
+      "Type": "AWS::IAM::Role",
+    },
+    "TestResource2": {
+      "Properties": {
+        "something": "test",
+      },
+      "Type": "AWS::S3::Bucket",
+    },
+  },
+}
+`);
   });
 });

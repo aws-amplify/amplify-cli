@@ -3,9 +3,10 @@ const { fromEvent } = require('promise-toolbox');
 const fs = require('fs-extra');
 const waitPort = require('wait-port');
 const detectPort = require('detect-port');
+// eslint-disable-next-line spellcheck/spell-checker
 const log = require('logdown')('dynamodb-emulator');
 const execa = require('execa');
-const { pathManager } = require('amplify-cli-core');
+const { pathManager } = require('@aws-amplify/amplify-cli-core');
 
 // random port I chose in the ephemeral range.
 const basePort = 62224;
@@ -53,9 +54,9 @@ class Emulator {
   }
 }
 
-const wait = ms => {
+const wait = (ms) => {
   let timeoutHandle;
-  const promise = new Promise(accept => {
+  const promise = new Promise((accept) => {
     timeoutHandle = setTimeout(accept, ms);
   });
 
@@ -196,10 +197,10 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
           log.error('Dynamo DB Simulator has prematurely exited... need to retry');
           const err = new Error('premature exit');
           err.code = 'premature';
-          proc.removeListener('exit', prematureExit);
+          proc.removeListener('exit', prematureExit).catch(reject);
           reject(err);
         };
-        proc.on('exit', prematureExit);
+        void proc.on('exit', prematureExit);
       }),
     ]);
 
@@ -221,7 +222,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
   } finally {
     waiter && waiter.cancel();
     if (typeof prematureExit === 'function') {
-      proc.removeListener('exit', prematureExit);
+      void proc.removeListener('exit', prematureExit);
     }
   }
 

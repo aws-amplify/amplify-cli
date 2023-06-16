@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
 import { v4 as uuid } from 'uuid';
-import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
 import { advancedSettingsList } from '../utils/constants';
 
 /**
@@ -8,21 +8,28 @@ import { advancedSettingsList } from '../utils/constants';
  * @param context The Amplify Context object
  */
 export async function generalQuestionsWalkthrough(context: any): Promise<Partial<FunctionParameters>> {
-  return await inquirer.prompt(generalQuestions(context));
+  return await inquirer.prompt(await generalQuestions(context));
 }
 
-function generalQuestions(context: any): object[] {
+async function generalQuestions(context: any): Promise<object[]> {
+  const existingLambdaFunctions = await context.amplify.getResourceStatus('function');
   return [
     {
       type: 'input',
       name: 'functionName',
       message: 'Provide an AWS Lambda function name:',
-      validate: context.amplify.inputValidation({
-        operator: 'regex',
-        value: '^[a-zA-Z0-9]+$',
-        onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
-        required: true,
-      }),
+      validate: (input: string) => {
+        const functionExists = existingLambdaFunctions.allResources.some((resource) => resource.resourceName === input);
+        if (functionExists) {
+          return 'A function with this name already exists.';
+        }
+        return context.amplify.inputValidation({
+          operator: 'regex',
+          value: '^[a-zA-Z0-9]+$',
+          onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
+          required: true,
+        })(input);
+      },
       default: () => {
         const appName = context.amplify
           .getProjectDetails()

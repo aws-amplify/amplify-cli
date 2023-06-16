@@ -6,7 +6,7 @@ function getRegionMapping(context, service, type) {
     RegionMapping: {},
   };
   const regionMapping = provider.predictionsRegionMap[service];
-  Object.keys(regionMapping).forEach(region => {
+  Object.keys(regionMapping).forEach((region) => {
     Mappings.RegionMapping[region] = {
       [type]: regionMapping[region],
     };

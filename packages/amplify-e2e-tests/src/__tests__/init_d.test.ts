@@ -10,6 +10,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
+import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify init d', () => {
   let projRoot: string;
@@ -32,7 +33,15 @@ describe('amplify init d', () => {
     const localEnvData = fs.readJsonSync(localEnvPath);
     const originalPath = localEnvData.projectPath;
 
-    expect(localEnvData.projectPath).toEqual(fs.realpathSync(projRoot));
+    if (isWindowsPlatform()) {
+      // The project dir created using os.tmpdir() has shortened C:\\Users\\CIRCLE~1.PAC\\ segment
+      // but projectPath comes as C:\\Users\\circleci.PACKER-633B1A5A\\ for example
+      // which is fine but makes comparison harder
+      expect(path.isAbsolute(localEnvData.projectPath)).toBe(true);
+      expect(fs.statSync(localEnvData.projectPath)).toEqual(fs.statSync(projRoot));
+    } else {
+      expect(localEnvData.projectPath).toEqual(fs.realpathSync(projRoot));
+    }
 
     localEnvData.projectPath = path.join('foo', 'bar');
 

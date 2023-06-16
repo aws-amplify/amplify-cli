@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, $TSObject, exitOnNextTick, JSONUtilities } from 'amplify-cli-core';
-import { prompter } from 'amplify-prompts';
+import { $TSAny, $TSContext, $TSObject, exitOnNextTick, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
@@ -28,7 +28,7 @@ const FunctionServiceNameLambdaFunction = 'Lambda';
  * { PostConfirmation: parentAuthResourcePostConfirmation}
  */
 
-export const addTrigger = async triggerOptions => {
+export const addTrigger = async (triggerOptions) => {
   const {
     key,
     values,
@@ -73,7 +73,7 @@ export const addTrigger = async triggerOptions => {
    * override does not exist.
    */
   const templateFiles = Object.keys(templateMap);
-  const sourceFiles = templateFiles.map(file => {
+  const sourceFiles = templateFiles.map((file) => {
     const defaultTemplate = path.resolve(defaultRoot, file);
     const overrideTemplate = path.resolve(sourceRoot, file);
     const templateToUse = fs.existsSync(overrideTemplate) ? overrideTemplate : defaultTemplate;
@@ -146,7 +146,7 @@ export const addTrigger = async triggerOptions => {
  * @returns {null}
  */
 
-export const updateTrigger = async triggerOptions => {
+export const updateTrigger = async (triggerOptions) => {
   const {
     key,
     values,
@@ -196,11 +196,12 @@ export const updateTrigger = async triggerOptions => {
     }
     context.print.success('Successfully updated the Cognito trigger locally');
     return null;
-  } catch (err: $TSAny) {
+  } catch (err) {
     context.print.error(`Error updating the Cognito trigger: ${err.message}`);
     await context.usageData.emitError(err);
     exitOnNextTick(1);
   }
+  return undefined;
 };
 
 export const deleteDeselectedTriggers = async (currentTriggers, previousTriggers, functionName, targetDir, context) => {
@@ -355,8 +356,7 @@ export const getTriggerPermissions = async (context, triggers, category) => {
       }
     }
   }
-
-  return permissions.map(i => JSONUtilities.stringify(i));
+  return permissions.map((i) => JSONUtilities.stringify(i));
 };
 
 // helper function to show help text and redisplay question if 'learn more' is selected
@@ -374,7 +374,7 @@ const learnMoreLoop = async (key, map, metaData: { URL?; name }, question) => {
       prefix = prefix.concat('\n');
     } else {
       prefix = `\nThe following ${key} are available in ${map}\n`;
-      Object.values(metaData).forEach(m => {
+      Object.values(metaData).forEach((m) => {
         prefix = prefix.concat('\n');
         prefix = prefix.concat(`\n${chalk.green('Name:')} ${m.name}\n${chalk.green('Description:')} ${m.description}\n`);
         prefix = prefix.concat('\n');
@@ -389,13 +389,13 @@ const learnMoreLoop = async (key, map, metaData: { URL?; name }, question) => {
 // get triggerFlow options based on metadata stored in trigger directory;
 export const choicesFromMetadata = (triggerPath: string, selection, isDir?) => {
   const templates = isDir
-    ? fs.readdirSync(triggerPath).filter(f => fs.statSync(path.join(triggerPath, f)).isDirectory())
-    : fs.readdirSync(triggerPath).map(t => t.substring(0, t.length - 3));
+    ? fs.readdirSync(triggerPath).filter((f) => fs.statSync(path.join(triggerPath, f)).isDirectory())
+    : fs.readdirSync(triggerPath).map((t) => t.substring(0, t.length - 3));
 
   const metaData = getTriggerMetadata(triggerPath, selection);
-  const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
-  const options: (string | Separator | { name; value })[] = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
-  // add learn more w/ seperator
+  const configuredOptions = Object.keys(metaData).filter((k) => templates.includes(k));
+  const options: (string | Separator | { name; value })[] = configuredOptions.map((c) => ({ name: `${metaData[c].name}`, value: c }));
+  // add learn more w/ separator
   options.unshift(new inquirer.Separator());
   options.unshift({ name: 'Learn More', value: 'learn' });
   return options;
@@ -476,7 +476,7 @@ export const getTriggerEnvVariables = (context, trigger, category) => {
   if (trigger.modules) {
     for (let x = 0; x < trigger.modules.length; x++) {
       if (meta[trigger.modules[x]] && meta[trigger.modules[x]].env) {
-        const newEnv = meta[trigger.modules[x]].env.filter(a => !a.question);
+        const newEnv = meta[trigger.modules[x]].env.filter((a) => !a.question);
         env = env.concat(newEnv);
       }
     }
@@ -488,11 +488,11 @@ export const getTriggerEnvVariables = (context, trigger, category) => {
 
 export const getTriggerEnvInputs = async (context, triggerPath, triggerKey, triggerValues, currentEnvVars) => {
   const metadata = context.amplify.getTriggerMetadata(triggerPath, triggerKey);
-  const intersection = Object.keys(metadata).filter(value => triggerValues.includes(value));
+  const intersection = Object.keys(metadata).filter((value) => triggerValues.includes(value));
   const answers = {};
   for (let i = 0; i < intersection.length; i += 1) {
     if (metadata[intersection[i]].env) {
-      const questions = metadata[intersection[i]].env.filter(m => m.question);
+      const questions = metadata[intersection[i]].env.filter((m) => m.question);
       if (questions && questions.length) {
         for (let j = 0; j < questions.length; j += 1) {
           if (
@@ -504,7 +504,7 @@ export const getTriggerEnvInputs = async (context, triggerPath, triggerKey, trig
               input: 'input',
               list: 'pick',
               confirm: 'confirmContinue',
-            }
+            };
             const prompterFunction = prompterTypeMapping[questions[j].question.type];
             const answer: any = await prompter[prompterFunction](questions[j].question.message);
             answers[questions[j].key] = answer;
@@ -520,8 +520,8 @@ export const dependsOnBlock = (context, triggerKeys: any = [], provider) => {
   if (!context) throw new Error('No context provided to dependsOnBlock');
   if (!provider) throw new Error('No provider provided to dependsOnBlock');
   const dependsOnArray = context.updatingAuth && context.updatingAuth.dependsOn ? context.updatingAuth.dependsOn : [];
-  triggerKeys.forEach(l => {
-    if (!dependsOnArray.find(a => a.resourceName === l)) {
+  triggerKeys.forEach((l) => {
+    if (!dependsOnArray.find((a) => a.resourceName === l)) {
       dependsOnArray.push({
         category: 'function',
         resourceName: l,
@@ -531,9 +531,9 @@ export const dependsOnBlock = (context, triggerKeys: any = [], provider) => {
     }
   });
   const tempArray = Object.assign([], dependsOnArray);
-  tempArray.forEach(x => {
+  tempArray.forEach((x) => {
     if (x.triggerProvider === provider && !triggerKeys.includes(x.resourceName)) {
-      const index = dependsOnArray.findIndex(i => i.resourceName === x.resourceName);
+      const index = dependsOnArray.findIndex((i) => i.resourceName === x.resourceName);
       dependsOnArray.splice(index, 1);
     }
   });

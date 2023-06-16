@@ -6,7 +6,7 @@ export class AppSyncPipelineResolver extends AppSyncBaseResolver {
   constructor(protected config: AppSyncSimulatorPipelineResolverConfig, simulatorContext: AmplifyAppSyncSimulator) {
     super(config, simulatorContext);
     try {
-      config.functions.map(fn => simulatorContext.getFunction(fn));
+      config.functions.map((fn) => simulatorContext.getFunction(fn));
     } catch (e) {
       throw new Error(`Invalid config for PIPELINE_RESOLVER ${JSON.stringify(config)}`);
     }
@@ -45,7 +45,7 @@ export class AppSyncPipelineResolver extends AppSyncBaseResolver {
     }
 
     let prevResult = result;
-    for (let fnName of this.config.functions) {
+    for (const fnName of this.config.functions) {
       const fnResolver = this.simulatorContext.getFunction(fnName);
       ({ result: prevResult, stash, hadException, args } = await fnResolver.resolve(source, args, stash, prevResult, context, info));
 

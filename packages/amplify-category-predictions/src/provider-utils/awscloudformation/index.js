@@ -1,6 +1,6 @@
 const path = require('path');
 const chalk = require('chalk');
-const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick, open } = require('amplify-cli-core');
+const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick, open } = require('@aws-amplify/amplify-cli-core');
 const parametersFileName = 'parameters.json';
 const prefixForAdminTrigger = 'protected/predictions/index-faces/admin';
 
@@ -8,7 +8,7 @@ function addResource(context, category, predictionsCategoryFilename, options) {
   const predictionCtgWalkthroughSrc = `${__dirname}/prediction-category-walkthroughs/${predictionsCategoryFilename}`;
   const { addWalkthrough } = require(predictionCtgWalkthroughSrc);
 
-  return addWalkthrough(context).then(async resources => {
+  return addWalkthrough(context).then(async (resources) => {
     options = Object.assign(options, resources);
     delete options.resourceName;
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resources.resourceName, options);
@@ -27,7 +27,7 @@ function updateResource(context, predictionsCategoryFilename) {
     exitOnNextTick(0);
   }
 
-  return updateWalkthrough(context).then(resource => resource.resourceName);
+  return updateWalkthrough(context).then((resource) => resource.resourceName);
 }
 
 // currently only supports sagemaker and rekognition
@@ -83,7 +83,7 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
     const projectStorage = amplifyMeta.storage;
     const keys = Object.keys(projectStorage);
     let bucketName = '';
-    keys.forEach(resource => {
+    keys.forEach((resource) => {
       if (projectStorage[resource].service === 'S3') {
         if (projectStorage[resource].output) {
           bucketName = projectStorage[resource].output.BucketName;

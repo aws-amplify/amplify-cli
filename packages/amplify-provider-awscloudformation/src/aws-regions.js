@@ -7,6 +7,7 @@ const regionMappings = {
   'us-west-1': 'US West (N. California)',
   'us-west-2': 'US West (Oregon)',
   'eu-north-1': 'EU (Stockholm)',
+  'eu-south-1': 'EU (Milan)',
   'eu-west-1': 'EU (Ireland)',
   'eu-west-2': 'EU (London)',
   'eu-west-3': 'EU (Paris)',

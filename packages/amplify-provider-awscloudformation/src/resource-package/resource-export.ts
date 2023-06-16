@@ -7,7 +7,7 @@ import {
   readCFNTemplate,
   stateManager,
   writeCFNTemplate,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { Template, Fn } from 'cloudform-types';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -23,7 +23,7 @@ import { Constants } from './constants';
 import { ResourcePackager } from './resource-packager';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
 import _ from 'lodash';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { AUTH_TRIGGER_STACK } from '../utils/upload-auth-trigger-template';
 import { S3 } from '../aws-utils/aws-s3';
 import { downloadZip } from '../zip-util';
@@ -100,7 +100,7 @@ export class ResourceExport extends ResourcePackager {
       });
       const nestedStackName = resource.category + resource.resourceName;
       const usedParameters = nestedStack[nestedStackName].parameters;
-      Object.keys(usedParameters).forEach(paramKey => {
+      Object.keys(usedParameters).forEach((paramKey) => {
         if (paramKey in fileParameters) {
           usedParameters[paramKey] = fileParameters[paramKey];
         }
@@ -141,7 +141,7 @@ export class ResourceExport extends ResourcePackager {
       printer.blankLine();
       printer.warn(
         `The ${NOTIFICATIONS_CATEGORY.NAME} resource '${notificationsResources
-          .map(r => r.resourceName)
+          .map((r) => r.resourceName)
           .join(', ')}' cannot be exported since it is managed using SDK`,
       );
     }
@@ -239,7 +239,7 @@ export class ResourceExport extends ResourcePackager {
     }
   }
 
-  private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters: boolean = true) {
+  private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters = true) {
     const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
     return await this.processAndWriteCfnTemplate(cfnTemplate, destinationPath, templateFormat, deleteParameters);
   }
@@ -258,7 +258,7 @@ export class ResourceExport extends ResourcePackager {
 
   private async copyResource(sourcePath: string, destinationPath: string) {
     let dir = destinationPath;
-    if(!fs.existsSync(sourcePath)){
+    if (!fs.existsSync(sourcePath)) {
       return;
     }
     // if there is an extension then get the dir path
@@ -293,13 +293,14 @@ export class ResourceExport extends ResourcePackager {
         if (resource.category === API_CATEGORY.NAME && resource.service === API_CATEGORY.SERVICE.APP_SYNC) {
           const parameters = await this.processAndWriteCfn(cfnFile, destination, false);
 
-          [...parameters.keys()].forEach(key => {
+          [...parameters.keys()].forEach((key) => {
             const nestedStackPath = path.join(
               this.exportDirectoryPath,
               resource.category,
               resource.resourceName,
               AMPLIFY_APPSYNC_FILES,
               APPSYNC_STACK_FOLDER,
+              // eslint-disable-next-line spellcheck/spell-checker
               key === 'CustomResourcesjson' ? 'CustomResources.json' : `${key}.json`,
             );
 
@@ -311,8 +312,8 @@ export class ResourceExport extends ResourcePackager {
         } else if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
           const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
           Object.keys(cfnTemplate.Resources)
-            .filter(key => cfnTemplate.Resources[key].Type === 'AWS::Lambda::LayerVersion')
-            .forEach(layerVersionResourceKey => {
+            .filter((key) => cfnTemplate.Resources[key].Type === 'AWS::Lambda::LayerVersion')
+            .forEach((layerVersionResourceKey) => {
               const layerVersionResource = cfnTemplate.Resources[layerVersionResourceKey];
               const s3Key = _.get(layerVersionResource.Properties, ['Content', 'S3Key']);
 
@@ -323,11 +324,11 @@ export class ResourceExport extends ResourcePackager {
             });
           await this.processAndWriteCfnTemplate(cfnTemplate, destination, templateFormat, false);
         } else {
-          this.copyResource(cfnFile, destination);
+          await this.copyResource(cfnFile, destination);
         }
         stackParameters[stackName].nestedStacks[logicalId] = nestedStack;
 
-        _.set(this.amplifyMeta, [resource.category, resource.resourceName, PROVIDER_METADATA], {
+        _.setWith(this.amplifyMeta, [resource.category, resource.resourceName, PROVIDER_METADATA], {
           s3TemplateURL: templateURL,
           logicalId,
         });
@@ -335,14 +336,14 @@ export class ResourceExport extends ResourcePackager {
     }
 
     if (this.resourcesHasContainers(resources)) {
-      // create network resouce
+      // create network resource
       const template = (await getNetworkResourceCfn(this.context, stackName)) as Template;
       const destinationPath = path.join(this.exportDirectoryPath, AMPLIFY_CFN_TEMPLATES, NETWORK_STACK_FILENAME);
       stackParameters[stackName].nestedStacks[NETWORK_STACK_LOGICAL_ID] = {
         destination: destinationPath,
       };
       JSONUtilities.writeJson(destinationPath, template);
-      _.set(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
+      _.setWith(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
     }
 
     if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
@@ -354,7 +355,7 @@ export class ResourceExport extends ResourcePackager {
           destination: destination,
         };
         await this.copyResource(apiGWAuthFile, destination);
-        _.set(
+        _.setWith(
           this.amplifyMeta,
           [PROVIDER, PROVIDER_NAME, API_GATEWAY_AUTH_URL],
           this.createTemplateUrl(bucket, APIGW_AUTH_STACK_FILE_NAME, API_CATEGORY.NAME),
@@ -376,7 +377,7 @@ export class ResourceExport extends ResourcePackager {
           destination: destination,
         };
         await this.copyResource(pathToTriggerFile, destination);
-        _.set(
+        _.setWith(
           this.amplifyMeta,
           [PROVIDER, PROVIDER_NAME, AUTH_TRIGGER_TEMPLATE_URL],
           this.createTemplateUrl(bucket, AUTH_TRIGGER_TEMPLATE_FILE, AUTH_CATEGORY.NAME),
@@ -424,7 +425,7 @@ export class ResourceExport extends ResourcePackager {
    * @returns {Template}
    */
   private async modifyRootStack(template: Template, deleteParameters: boolean): Promise<Template> {
-    Object.keys(template.Resources).map(resourceKey => {
+    Object.keys(template.Resources).map((resourceKey) => {
       const resource = template.Resources[resourceKey];
       if (resource.Type === AWS_CLOUDFORMATION_STACK_TYPE) {
         // remove url parameters will set it in the construct
@@ -452,7 +453,7 @@ export class ResourceExport extends ResourcePackager {
   }
 
   private getAuthCognitoResource(resources: ResourceDefinition[]): ResourceDefinition | undefined {
-    return resources.find(resource => resource.category === AUTH_CATEGORY.NAME && resource.service === AUTH_CATEGORY.SERVICE.COGNITO);
+    return resources.find((resource) => resource.category === AUTH_CATEGORY.NAME && resource.service === AUTH_CATEGORY.SERVICE.COGNITO);
   }
 
   private writeRootStackToPath(template: Template) {

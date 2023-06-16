@@ -1,8 +1,8 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyUserPoolGroupTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as Record<string, unknown>),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as Record<string, unknown>),
   stateManager: {
     getLocalEnvInfo: jest.fn().mockReturnValue('testEnv'),
   },
@@ -31,12 +31,8 @@ jest.mock('amplify-cli-core', () => ({
                 Statement: [
                   {
                     Effect: 'Allow',
-                    Action: [
-                      'mockActions',
-                    ],
-                    Resource: [
-                      'mockArn',
-                    ],
+                    Action: ['mockActions'],
+                    Resource: ['mockArn'],
                   },
                 ],
               },

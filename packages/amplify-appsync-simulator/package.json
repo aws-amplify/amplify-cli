@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.7.0",
+  "version": "2.12.4",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -20,27 +20,28 @@
     "access": "public"
   },
   "scripts": {
-    "copy-assets": "yarn rimraf ./public && yarn copyfiles -u 3 \"../amplify-graphiql-explorer/build/**/*\" ./public",
+    "copy-assets": "rimraf ./public && copyfiles -u 3 \"../amplify-graphiql-explorer/build/**/*\" ./public",
     "build": "yarn copy-assets && tsc",
     "build-tests": "tsc --build tsconfig.tests.json",
     "clean": "rimraf ./lib tsconfig.tsbuildinfo tsconfig.tests.tsbuildinfo node_modules",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
-    "test": "jest --logHeapUsage --forceExit"
+    "test": "jest --logHeapUsage --forceExit",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "3.3.0",
-    "amplify-prompts": "2.6.0",
+    "@aws-amplify/amplify-cli-core": "4.1.0",
+    "@aws-amplify/amplify-prompts": "2.8.0",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
-    "amplify-velocity-template": "1.4.8",
-    "aws-sdk": "^2.1233.0",
+    "amplify-velocity-template": "1.4.12",
+    "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
     "express": "^4.17.3",
     "get-port": "^5.1.1",
-    "graphql": "^14.5.8",
+    "graphql": "^15.5.0",
     "graphql-iso-date": "^3.6.1",
     "graphql-subscriptions": "^1.1.0",
     "ip": "^1.1.5",
@@ -53,16 +54,24 @@
     "moment-timezone": "0.5.35",
     "promise-toolbox": "^0.20.0",
     "slash": "^3.0.0",
+    "ulid": "^2.3.0",
     "uuid": "^8.3.2",
     "ws": "^8.5.0"
   },
   "devDependencies": {
-    "@aws-amplify/amplify-graphiql-explorer": "2.5.0",
+    "@aws-amplify/amplify-graphiql-explorer": "2.5.8",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
     "@types/node": "^12.12.6",
     "@types/ws": "^8.2.2",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^9.0.0"
+  },
+  "packageExtensions": {
+    "graphql-iso-date": {
+      "peerDependencies": {
+        "graphql": "^15.8.0"
+      }
+    }
   },
   "jest": {
     "testRunner": "jest-circus/runner",
@@ -74,7 +83,9 @@
       "src/**/*.ts",
       "!**/*.d.ts"
     ],
-    "testURL": "http://localhost/",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
@@ -83,6 +94,11 @@
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

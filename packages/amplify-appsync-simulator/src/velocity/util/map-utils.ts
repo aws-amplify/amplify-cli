@@ -15,7 +15,7 @@ export const mapUtils = {
             ...sum,
             [key]: valJSON,
           };
-        }, {})
+        }, {}),
     );
   },
   copyAndRemoveAllKeys(map: JavaMap, keys: JavaArray): JavaMap {

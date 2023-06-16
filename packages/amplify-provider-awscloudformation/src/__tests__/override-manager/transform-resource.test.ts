@@ -1,22 +1,24 @@
-import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, IAmplifyResource } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { transformResourceWithOverrides } from '../../override-manager/transform-resource';
 import CustomOverridePlugin from './mock-plugin/custom-override-plugin';
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('./mock-plugin/custom-override-plugin');
 
-const mockContext: $TSContext = ({
+const mockContext: $TSContext = {
   amplify: {
     getCategoryPluginInfo: jest.fn(),
   },
   parameters: {
     options: {},
   },
-} as unknown) as $TSContext;
-const mockGetCategoryPluginInfo = mockContext.amplify.getCategoryPluginInfo as jest.MockedFunction<$TSContext['amplify']['getCategoryPluginInfo']>;
+} as unknown as $TSContext;
+const mockGetCategoryPluginInfo = mockContext.amplify.getCategoryPluginInfo as jest.MockedFunction<
+  $TSContext['amplify']['getCategoryPluginInfo']
+>;
 
 describe('transformResourceWithOverrides', () => {
   beforeEach(() => {

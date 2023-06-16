@@ -1,5 +1,4 @@
-// disabling eslint until this file is migrated to TS
-/* eslint-disable */
+/* eslint-disable spellcheck/spell-checker */
 const constants = require('../constants/plugin-constants');
 const pathManager = require('../utils/path-manager');
 const fs = require('fs-extra');
@@ -8,9 +7,9 @@ const configUtils = require('../utils/config-utils');
 const questions = require('../modules/questions/question-generator');
 const ValidationError = require('../error/validation-error').default;
 const clientFactory = require('../utils/client-factory');
-const ora = require('ora');
-const tableUtis = require('../utils/table-utils');
-const {ensureEnvParamManager} = require('@aws-amplify/amplify-environment-parameters');
+const tableUtils = require('../utils/table-utils');
+const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
+const { spinner } = require('@aws-amplify/amplify-cli-core');
 
 const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
@@ -63,7 +62,7 @@ async function initEnv(context) {
     // hosting is deleted. But current env config is not cleaned
     const { type } = consoleConfig;
     // clean team provider info
-    await configUtils.deleteHostingEnvParams(context);
+    await configUtils.deleteHostingEnvParams();
     // clean #current-backend-env for CICD.
     if (type === constants.TYPE_CICD) {
       await configUtils.deleteConsoleConfigFromCurrMeta(context);
@@ -98,7 +97,7 @@ async function remove(context) {
     await configUtils.deleteConsoleConfigFromCurrMeta(context);
   }
 
-  return amplify.removeResource(context, category, resource).catch(err => {
+  return amplify.removeResource(context, category, resource).catch((err) => {
     context.print.info(err.stack);
     context.print.error(REMOVE_ERROR_MESSAGE);
     context.usageData.emitError(err);
@@ -133,7 +132,7 @@ async function status(context, mute) {
   }
 
   const appId = utils.getAppIdForCurrEnv(context);
-  await tableUtis.generateTableContentForApp(context, appId);
+  await tableUtils.generateTableContentForApp(context, appId);
 }
 
 function loadDeployType(context) {
@@ -144,7 +143,6 @@ function loadDeployType(context) {
 }
 
 async function validateHosting(context) {
-  const spinner = ora();
   spinner.start();
   try {
     if (isHostingEnabled(context)) {
@@ -185,4 +183,3 @@ module.exports = {
   configure,
   status,
 };
-/* eslint-enable */

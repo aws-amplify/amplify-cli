@@ -1,9 +1,8 @@
-const inquirer = require('inquirer');
-const mockirer = require('mockirer');
-
+const { prompter } = require('@aws-amplify/amplify-prompts');
 const mockTemplate = require('../../../../__mocks__/mockTemplate-noCloudFront');
-
 const configureWebsite = require('../../../../lib/S3AndCloudFront/helpers/configure-Website');
+
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('configure-Website', () => {
   const mockContext = {
@@ -18,10 +17,7 @@ describe('configure-Website', () => {
   const indexDoc = 'index.html';
   const errorDoc = 'error.html';
   beforeAll(() => {
-    mockirer(inquirer, {
-      IndexDocument: indexDoc,
-      ErrorDocument: errorDoc,
-    });
+    prompter.input = jest.fn().mockReturnValueOnce(indexDoc).mockReturnValueOnce(errorDoc);
   });
 
   test('configure', async () => {

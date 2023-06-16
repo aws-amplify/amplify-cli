@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema } from '@aws-amplify/amplify-e2e-core';
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 import { testQueries, testMutations } from '../common';

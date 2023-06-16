@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyError, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyError, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Mobile hub command compatibility check
@@ -34,9 +32,9 @@ const checkIfMobileHubProject = (context: $TSContext): void => {
   let hasMigratedResources = false;
 
   Object.keys(meta)
-    .filter(k => k !== 'providers')
-    .forEach(category => {
-      Object.keys(meta[category]).forEach(resourceName => {
+    .filter((k) => k !== 'providers')
+    .forEach((category) => {
+      Object.keys(meta[category]).forEach((resourceName) => {
         const resource = meta[category][resourceName];
 
         // Mobile hub migrated resources has this property on the resource record set to true by migrator plugin.

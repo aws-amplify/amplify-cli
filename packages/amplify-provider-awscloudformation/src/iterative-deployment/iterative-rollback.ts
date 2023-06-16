@@ -7,7 +7,7 @@ import {
   DeploymentStepStatus,
   IDeploymentStateManager,
   JSONUtilities,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import { DeploymentOp, DeploymentManager } from './deployment-manager';
 import { S3 } from '../aws-utils/aws-s3';
 import { formUserAgentParam } from '../aws-utils/user-agent';
@@ -77,7 +77,7 @@ export const runIterativeRollback = async (
     }
   }
   if (rollbackSteps.length > 0) {
-    rollbackSteps.forEach(step => {
+    rollbackSteps.forEach((step) => {
       deploymentManager.addRollbackStep(step);
     });
 

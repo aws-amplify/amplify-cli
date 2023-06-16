@@ -3,7 +3,7 @@
  */
 export interface S3ServiceConfigurationBase {
   /**
-   * Descriminant used to determine the service config type
+   * Discriminant used to determine the service config type
    */
   serviceName: 'S3';
 }
@@ -33,7 +33,7 @@ export interface S3Permissions {
  */
 export interface PermissionGroups {
   /**
-   * Each key is a Cognito user group name and each value is the CRUD opterations permitted for that group
+   * Each key is a Cognito user group name and each value is the CRUD operations permitted for that group
    */
   [k: string]: CrudOperation[];
 }

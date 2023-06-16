@@ -4,10 +4,8 @@ import {
   exitOnNextTick,
   JSONUtilities,
   pathManager,
-  ResourceAlreadyExistsError,
-  ResourceDoesNotExistError,
   stateManager,
-} from 'amplify-cli-core';
+} from '@aws-amplify/amplify-cli-core';
 import {
   addTextractPolicies,
   generateLambdaAccessForRekognition,
@@ -26,7 +24,9 @@ import {
   invokeS3RegisterAdminTrigger,
   invokeS3RemoveAdminLambdaTrigger,
 } from './storage-api';
-const inquirer = require('inquirer');
+import { byValue, prompter, alphanumeric, between } from '@aws-amplify/amplify-prompts';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+
 const path = require('path');
 const fs = require('fs-extra');
 const os = require('os');
@@ -52,7 +52,7 @@ const PREDICTIONS_WALKTHROUGH_MODE = {
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt(
+      await prompter.yesOrNo(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -73,7 +73,7 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
     if (identifyTypes.includes(amplifyMeta[category][resourceName].identifyType)) {
       predictionsResources.push({
         name: resourceName,
@@ -82,20 +82,13 @@ async function updateWalkthrough(context) {
     }
   });
   if (predictionsResources.length === 0) {
-    const errMessage = 'No resources to update. You need to add a resource.';
-    context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    exitOnNextTick(0);
+    throw new AmplifyError('ResourceDoesNotExistError', {
+      message: 'No resources to update. You need to add a resource.',
+    });
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources.length > 1) {
-    const resourceAnswer = await inquirer.prompt({
-      type: 'list',
-      name: 'resource',
-      message: 'Which identify resource would you like to update?',
-      choices: predictionsResources,
-    });
-    resourceObj = resourceAnswer.resource;
+    resourceObj = await prompter.pick('Which identify resource would you like to update?', predictionsResources);
   }
 
   return await configure(context, resourceObj, PREDICTIONS_WALKTHROUGH_MODE.UPDATE);
@@ -105,7 +98,7 @@ async function createAndRegisterAdminLambdaS3Trigger(context, predictionsResourc
   //In Add mode, predictions cloudformation is not yet created, hence do not use this in add-function
   const predictionsResourceSavedName = configMode === PREDICTIONS_WALKTHROUGH_MODE.ADD ? undefined : predictionsResourceName;
   let predictionsTriggerFunctionName = await createNewFunction(context, predictionsResourceSavedName, s3ResourceName);
-  // adding additinal lambda trigger
+  // adding additional lambda trigger
   const adminTriggerFunctionParams = {
     tag: 'adminTriggerFunction',
     category: 'predictions', //function is owned by storage category
@@ -141,24 +134,38 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
 
   // only ask this for add
   if (!parameters.resourceName) {
-    answers = await inquirer.prompt(identifyAssets.setup.type());
+    answers.identifyType = await prompter.pick('What would you like to identify?', [
+      {
+        name: 'Identify Text',
+        value: 'identifyText',
+      },
+      {
+        name: 'Identify Entities',
+        value: 'identifyEntities',
+      },
+      {
+        name: 'Identify Labels',
+        value: 'identifyLabels',
+      },
+    ]);
 
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.identifyType);
     if (resourceType) {
-      const errMessage = `${resourceType} has already been added to this project.`;
-      context.print.warning(errMessage);
-      context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-      exitOnNextTick(0);
+      throw new AmplifyError('ResourceAlreadyExistsError', {
+        message: `${resourceType} has already been added to this project.`,
+      });
     }
 
-    Object.assign(answers, await inquirer.prompt(identifyAssets.setup.name(`${answers.identifyType}${defaultValues.resourceName}`)));
+    answers.resourceName = await prompter.input('Provide a friendly name for your resource', {
+      initial: `${answers.identifyType}${defaultValues.resourceName}`,
+      validate: alphanumeric(),
+    });
     identifyType = answers.identifyType;
     parameters.resourceName = answers.resourceName;
   }
 
-  // category specific questions
-  Object.assign(answers, await followUpQuestions(identifyAssets[identifyType], identifyType, parameters));
+  Object.assign(answers, await followUpQuestions(identifyType, parameters));
   delete answers.setup;
   Object.assign(defaultValues, answers);
 
@@ -187,8 +194,8 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
       }
     } else {
       //create S3 bucket
-      s3Resource = await addS3ForIdentity(context, answers.access, undefined, predictionsResourceName);
-      //create admin lamda and register with s3 as trigger
+      s3Resource = await addS3ForIdentity(context, answers.access, undefined);
+      //create admin lambda and register with s3 as trigger
       const s3UserInputs = await createAndRegisterAdminLambdaS3Trigger(
         context,
         predictionsResourceName,
@@ -202,17 +209,17 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
     /**
      * Update function name
      */
-    const functionresourceDirPath = path.join(projectBackendDirPath, functionCategory, predictionsTriggerFunctionName);
-    const functionparametersFilePath = path.join(functionresourceDirPath, parametersFileName);
+    const functionResourceDirPath = path.join(projectBackendDirPath, functionCategory, predictionsTriggerFunctionName);
+    const functionParametersFilePath = path.join(functionResourceDirPath, parametersFileName);
     let functionParameters;
     try {
-      functionParameters = amplify.readJsonFile(functionparametersFilePath);
+      functionParameters = amplify.readJsonFile(functionParametersFilePath);
     } catch (e) {
       functionParameters = {};
     }
     functionParameters.resourceName = answers.resourceName || parameters.resourceName;
-    const functionjsonString = JSON.stringify(functionParameters, null, 4);
-    fs.writeFileSync(functionparametersFilePath, functionjsonString, 'utf8');
+    const functionJsonString = JSON.stringify(functionParameters, null, 4);
+    fs.writeFileSync(functionParametersFilePath, functionJsonString, 'utf8');
   } else if (parameters.resourceName) {
     const s3ResourceName = s3ResourceAlreadyExists();
     if (s3ResourceName) {
@@ -254,7 +261,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
     });
 
     if (answers.folderPolicies === 'app' && parameters.resourceName && configMode != PREDICTIONS_WALKTHROUGH_MODE.ADD) {
-      addStorageIAMResourcestoIdentifyCFNFile(parameters.resourceName, s3Resource.resourceName);
+      addStorageIAMResourcesToIdentifyCFNFile(parameters.resourceName, s3Resource.resourceName);
     }
   }
 
@@ -325,34 +332,165 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
   return await context.amplify.copyBatch(context, copyJobs, options);
 }
 
-async function followUpQuestions(typeObj, identifyType, parameters) {
-  const answers = await inquirer.prompt(typeObj.questions(parameters));
-  Object.assign(answers, await inquirer.prompt(typeObj.auth(parameters)));
+// eslint-disable-next-line consistent-return
+async function followUpQuestions(identifyType, parameters) {
+  switch (identifyType) {
+    case 'identifyText': {
+      return followUpIdentifyTextQuestions(parameters);
+    }
+    case 'identifyEntities': {
+      return followUpIdentifyEntitiesQuestions(parameters);
+    }
+    case 'identifyLabels': {
+      return followUpIdentifyLabelsQuestions(parameters);
+    }
+  }
+}
+
+async function followUpIdentifyTextQuestions(parameters) {
+  const answers = {
+    identifyDoc: await prompter.yesOrNo('Would you also like to identify documents?', parameters?.identifyDoc ?? false),
+    access: await askIdentifyAccess(parameters),
+  };
+
+  if (answers.identifyDoc) {
+    service = 'RekognitionAndTextract';
+  }
+
+  Object.assign(answers, { format: answers.identifyDoc ? 'ALL' : 'PLAIN' });
+}
+
+async function askIdentifyAccess(parameters) {
+  return await prompter.pick(
+    'Who should have access?',
+    [
+      {
+        name: 'Auth users only',
+        value: 'auth',
+      },
+      {
+        name: 'Auth and Guest users',
+        value: 'authAndGuest',
+      },
+    ],
+    {
+      initial: byValue(parameters.access ?? 'auth'),
+    },
+  );
+}
+
+async function followUpIdentifyEntitiesQuestions(parameters) {
+  const answers = {};
+
+  answers.setup = await prompter.pick('Would you like to use the default configuration?', [
+    {
+      name: 'Default Configuration',
+      value: 'default',
+    },
+    {
+      name: 'Advanced Configuration',
+      value: 'advanced',
+    },
+  ]);
+
+  if (answers.setup === 'advanced') {
+    answers.celebrityDetectionEnabled = await prompter.yesOrNo(
+      'Would you like to enable celebrity detection?',
+      parameters?.celebrityDetectionEnabled ?? true,
+    );
+    answers.adminTask = await prompter.yesOrNo(
+      'Would you like to identify entities from a collection of images?',
+      parameters?.adminTask ?? false,
+    );
+
+    if (answers.adminTask) {
+      answers.maxEntities = await prompter.input('How many entities would you like to identify?', {
+        initial: parameters?.maxEntities ?? 50,
+        validate: between(1, 100, 'Please enter a number between 1 and 100!'),
+        transform: (input) => Number.parseInt(input, 10),
+      });
+      answers.folderPolicies = await prompter.pick(
+        'Would you like to allow users to add images to this collection?',
+        [
+          {
+            name: 'Yes',
+            value: 'app',
+          },
+          {
+            name: 'No',
+            value: 'admin',
+          },
+        ],
+        {
+          initial: parameters.folderPolicies ? byValue(parameters.folderPolicies) : 0,
+        },
+      );
+    }
+  }
+
+  answers.access = await askIdentifyAccess(parameters);
+
   if (answers.setup && answers.setup === 'default') {
-    Object.assign(answers, typeObj.defaults);
+    Object.assign(answers, { celebrityDetectionEnabled: true });
   }
-  if (identifyType === 'identifyText') {
-    if (answers.identifyDoc) {
-      service = 'RekognitionAndTextract';
-    }
-    Object.assign(answers, typeObj.formatFlag(answers.identifyDoc));
+
+  if (!answers.adminTask) {
+    answers.maxEntities = 0;
+    answers.adminTask = false;
+    answers.folderPolicies = '';
   }
-  // default values for admin tasks are set
-  if (identifyType === 'identifyEntities') {
-    if (!answers.adminTask) {
-      answers.maxEntities = 0;
-      answers.adminTask = false;
-      answers.folderPolicies = '';
-    }
-    if (answers.folderPolicies === 'app') {
-      answers.adminAuthProtected = 'ALLOW';
-      if (answers.access === 'authAndGuest') {
-        answers.adminGuestProtected = 'ALLOW';
-      }
+  if (answers.folderPolicies === 'app') {
+    answers.adminAuthProtected = 'ALLOW';
+    if (answers.access === 'authAndGuest') {
+      answers.adminGuestProtected = 'ALLOW';
     }
   }
 
   return answers;
+}
+
+async function followUpIdentifyLabelsQuestions(parameters) {
+  const answers = {
+    setup: await prompter.pick('Would you like to use the default configuration', [
+      {
+        name: 'Default Configuration',
+        value: 'default',
+      },
+      {
+        name: 'Advanced Configuration',
+        value: 'advanced',
+      },
+    ]),
+  };
+
+  if (answers.setup === 'advanced') {
+    answers.type = await prompter.pick(
+      'What kind of label detection?',
+      [
+        {
+          name: 'Only identify unsafe labels',
+          value: 'UNSAFE',
+        },
+        {
+          name: 'Identify labels',
+          value: 'LABELS',
+        },
+        {
+          name: 'Identify all kinds',
+          value: 'ALL',
+        },
+      ],
+      {
+        initial: byValue(parameters.type ?? 'LABELS'),
+      },
+    );
+  }
+
+  answers.access = await askIdentifyAccess(parameters);
+
+  if (answers.setup === 'default') {
+    Object.assign(answers, { type: 'LABELS' });
+  }
 }
 
 function checkIfAuthExists(context) {
@@ -364,7 +502,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -380,7 +518,7 @@ function resourceAlreadyExists(context, identifyType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].identifyType === identifyType) {
         type = identifyType;
       }
@@ -389,7 +527,7 @@ function resourceAlreadyExists(context, identifyType) {
   return type;
 }
 
-async function addS3ForIdentity(context, storageAccess, bucketName, predictionsResourceName) {
+async function addS3ForIdentity(context, storageAccess, bucketName) {
   const defaultValuesSrc = `${__dirname}/../default-values/${s3defaultValuesFilename}`;
   const { getAllAuthDefaultPerm, getAllAuthAndGuestDefaultPerm } = require(defaultValuesSrc);
   let s3UserInputs = await invokeS3GetAllDefaults(context, storageAccess); //build the predictions specific s3 bucket
@@ -405,17 +543,15 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
     const question = {
       name: identifyAssets.s3bucket.key,
       message: identifyAssets.s3bucket.question,
-      validate: value => {
+      validate: (value) => {
         const regex = new RegExp('^[a-zA-Z0-9-]+$');
         return regex.test(value) ? true : 'Bucket name can only use the following characters: a-z 0-9 -';
       },
-      default: () => {
-        const defaultValue = s3UserInputs.bucketName;
-        return defaultValue;
-      },
     };
-    const answers1 = await inquirer.prompt(question);
-    s3UserInputs.bucketName = answers1.bucketName;
+    s3UserInputs.bucketName = await prompter.input(question.message, {
+      validate: question.validate,
+      initial: s3UserInputs.bucketName,
+    });
   } else {
     s3UserInputs.bucketName = bucketName;
   }
@@ -449,7 +585,11 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
   if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
-    throw new Error(checkResult.errors.join(os.EOL));
+    throw new AmplifyError('ConfigurationError', {
+      message: 'The imported auth config is not compatible with the specified predictions config',
+      details: checkResult.errors.join(os.EOL),
+      resolution: 'Manually configure the imported auth resource according to the details above',
+    });
   }
 
   if (checkResult.errors && checkResult.errors.length > 0) {
@@ -490,7 +630,7 @@ function s3ResourceAlreadyExists() {
 
   if (amplifyMeta[storageCategory]) {
     const categoryResources = amplifyMeta[storageCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === AmplifySupportedService.S3) {
         resourceName = resource;
       }
@@ -584,7 +724,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
   return functionName;
 }
 
-function addStorageIAMResourcestoIdentifyCFNFile(predictionsResourceName, s3ResourceName) {
+function addStorageIAMResourcesToIdentifyCFNFile(predictionsResourceName, s3ResourceName) {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(
     projectBackendDirPath,

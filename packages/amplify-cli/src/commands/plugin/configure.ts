@@ -2,8 +2,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
-import { PluginPlatform } from '../../domain/plugin-platform';
-import { constants } from '../../domain/constants';
+import { constants, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 import { writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 import { scan } from '../../plugin-manager';
@@ -47,7 +46,7 @@ export const run = async (context: Context): Promise<PluginPlatform> => {
         await configureScanInterval(context, pluginPlatform);
         break;
       default:
-        configurePluginDirectories(context, pluginPlatform);
+        await configurePluginDirectories(context, pluginPlatform);
         break;
     }
   } while (answer.selection !== exit);
@@ -78,8 +77,10 @@ async function configurePluginDirectories(context: Context, pluginPlatform: Plug
     await removePluginDirectory(pluginPlatform);
     if (pluginPlatform.pluginDirectories.length === 0) {
       context.print.warning('You have removed all plugin directories.');
-      context.print.info('Plugin scan is now ineffective. \
-Only explicitly added plugins are active.');
+      context.print.info(
+        'Plugin scan is now ineffective. \
+Only explicitly added plugins are active.',
+      );
       context.print.info('The Amplify CLI might not be fully functional.');
     }
   } else if (actionAnswer.action === LEARNMORE) {
@@ -93,30 +94,34 @@ Only explicitly added plugins are active.');
 function displayPluginDirectoriesLearnMore(context: Context) {
   context.print.info('');
   context.print.green('A plugin scan searches this directory list for plugins.');
-  context.print.green('You can add or remove from this list to change the \
-scan behavior, and consequently its outcome.');
-  context.print.green('There are three well-known directories that the CLI \
-usually scans for plugins.');
-  context.print.red(constants.ParentDirectory);
-  context.print.green(`${constants.ParentDirectory} \
+  context.print.green(
+    'You can add or remove from this list to change the \
+scan behavior, and consequently its outcome.',
+  );
+  context.print.green(
+    'There are three well-known directories that the CLI \
+usually scans for plugins.',
+  );
+  context.print.red(constants.PARENT_DIRECTORY);
+  context.print.green(`${constants.PARENT_DIRECTORY} \
 is the directory that contains the Amplify CLI Core package.`);
-  context.print.blue(normalizePluginDirectory(constants.ParentDirectory));
-  context.print.red(constants.LocalNodeModules);
-  context.print.green(`${constants.LocalNodeModules} \
+  context.print.blue(normalizePluginDirectory(constants.PARENT_DIRECTORY));
+  context.print.red(constants.LOCAL_NODE_MODULES);
+  context.print.green(`${constants.LOCAL_NODE_MODULES} \
 is the Amplify CLI Core package's local node_modules directory. `);
-  context.print.blue(normalizePluginDirectory(constants.LocalNodeModules));
-  context.print.red(constants.GlobalNodeModules);
-  context.print.green(`${constants.GlobalNodeModules} \
+  context.print.blue(normalizePluginDirectory(constants.LOCAL_NODE_MODULES));
+  context.print.red(constants.GLOBAL_NODE_MODULES);
+  context.print.green(`${constants.GLOBAL_NODE_MODULES} \
 is the global node_modules directory.`);
-  context.print.blue(normalizePluginDirectory(constants.GlobalNodeModules));
+  context.print.blue(normalizePluginDirectory(constants.GLOBAL_NODE_MODULES));
   context.print.info('');
 }
 
 async function addPluginDirectory(pluginPlatform: PluginPlatform) {
   const ADDCUSTOMDIRECTORY = 'Add custom directory >';
-  let options = [constants.ParentDirectory, constants.LocalNodeModules, constants.GlobalNodeModules];
+  let options = [constants.PARENT_DIRECTORY, constants.LOCAL_NODE_MODULES, constants.GLOBAL_NODE_MODULES, constants.DEV_NODE_MODULES];
 
-  options = options.filter(item => !pluginPlatform.pluginDirectories.includes(item.toString()));
+  options = options.filter((item) => !pluginPlatform.pluginDirectories.includes(item.toString()));
 
   let addCustomDirectory = false;
   if (options.length > 0) {
@@ -159,7 +164,7 @@ async function removePluginDirectory(pluginPlatform: PluginPlatform) {
     message: 'Select the directories that Amplify CLI should NOT scan for plugins',
     choices: pluginPlatform.pluginDirectories,
   });
-  pluginPlatform.pluginDirectories = pluginPlatform.pluginDirectories.filter(dir => !answer.directoriesToRemove.includes(dir));
+  pluginPlatform.pluginDirectories = pluginPlatform.pluginDirectories.filter((dir) => !answer.directoriesToRemove.includes(dir));
 }
 
 async function configurePrefixes(context: Context, pluginPlatform: PluginPlatform) {
@@ -198,26 +203,32 @@ during a plugin scan. This can significantly increase the scan time.',
 
 function displayPluginPrefixesLearnMore(context: Context) {
   context.print.info('');
-  context.print.green('The package name prefixes contained this list are used for \
-plugin name matching in plugin scans.');
+  context.print.green(
+    'The package name prefixes contained this list are used for \
+plugin name matching in plugin scans.',
+  );
   context.print.green(
     'Only packages with matching name are considered plugin candidates, \
 they are verified and then added to the Amplify CLI.',
   );
-  context.print.green('If this list is empty, all packages inside the scanned directories \
-are checked in plugin scans.');
-  context.print.green('You can add or remove from this list to change the plugin \
-scan behavior, and consequently its outcome.');
+  context.print.green(
+    'If this list is empty, all packages inside the scanned directories \
+are checked in plugin scans.',
+  );
+  context.print.green(
+    'You can add or remove from this list to change the plugin \
+scan behavior, and consequently its outcome.',
+  );
   context.print.green('The offical prefix is:');
-  context.print.red(constants.AmplifyPrefix);
+  context.print.red(constants.AMPLIFY_PREFIX);
   context.print.info('');
 }
 
 async function addPrefix(pluginPlatform: PluginPlatform) {
   const ADDCUSTOMPREFIX = 'Add custom prefix >';
-  let options = [constants.AmplifyPrefix];
+  let options = [constants.AMPLIFY_PREFIX];
 
-  options = options.filter(item => !pluginPlatform.pluginPrefixes.includes(item.toString()));
+  options = options.filter((item) => !pluginPlatform.pluginPrefixes.includes(item.toString()));
 
   let addCustomPrefix = false;
   if (options.length > 0) {
@@ -264,7 +275,7 @@ async function removePrefixes(pluginPlatform: PluginPlatform) {
     message: 'Select the prefixes to remove',
     choices: pluginPlatform.pluginPrefixes,
   });
-  pluginPlatform.pluginPrefixes = pluginPlatform.pluginPrefixes.filter(prefix => !answer.prefixesToRemove.includes(prefix));
+  pluginPlatform.pluginPrefixes = pluginPlatform.pluginPrefixes.filter((prefix) => !answer.prefixesToRemove.includes(prefix));
 }
 
 async function configureScanInterval(context: Context, pluginPlatform: PluginPlatform) {
@@ -272,8 +283,10 @@ async function configureScanInterval(context: Context, pluginPlatform: PluginPla
     'The Amplify CLI plugin platform regularly scans the local \
 system to update its internal metadata on the locally installed plugins.',
   );
-  context.print.green('This automatic scan will happen if the last scan \
-time has passed for longer than max-scan-interval-in-seconds.');
+  context.print.green(
+    'This automatic scan will happen if the last scan \
+time has passed for longer than max-scan-interval-in-seconds.',
+  );
   context.print.info('');
   displayScanInterval(context, pluginPlatform);
   const answer = await inquirer.prompt({
@@ -283,7 +296,7 @@ time has passed for longer than max-scan-interval-in-seconds.');
     default: pluginPlatform.maxScanIntervalInSeconds,
     validate: (input: string) => {
       if (isNaN(Number(input))) {
-        return 'must enter nubmer';
+        return 'must enter number';
       }
       return true;
     },

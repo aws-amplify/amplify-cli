@@ -1,15 +1,11 @@
 /* eslint-disable jest/no-conditional-expect */
 
 import { MultiProgressBar as MultiBar } from '../progressbars/multibar';
-import {
-  BarOptions,
-  ItemPayload,
-  ProgressPayload,
-} from '../progressbars/progressbar';
+import { BarOptions, ItemPayload, ProgressPayload } from '../progressbars/progressbar';
 
-const options : BarOptions = {
-  progressBarFormatter: (payload : ProgressPayload) => payload.progressName,
-  itemFormatter: (payload : ItemPayload) => ({ renderString: payload.ResourceStatus, color: '' }),
+const options: BarOptions = {
+  progressBarFormatter: (payload: ProgressPayload) => payload.progressName,
+  itemFormatter: (payload: ItemPayload) => ({ renderString: payload.ResourceStatus, color: '' }),
   loneWolf: false,
   hideCursor: true,
   barCompleteChar: '=',
@@ -23,19 +19,21 @@ const options : BarOptions = {
 };
 
 describe('Bar update operations', () => {
-  let multiBar : MultiBar;
+  let multiBar: MultiBar;
 
   beforeEach(() => {
     multiBar = new MultiBar(options);
-    multiBar.create([{
-      name: 'test-bar',
-      value: 0,
-      total: 2,
-      payload: {
-        progressName: 'test',
-        envName: 'dev',
+    multiBar.create([
+      {
+        name: 'test-bar',
+        value: 0,
+        total: 2,
+        payload: {
+          progressName: 'test',
+          envName: 'dev',
+        },
       },
-    }]);
+    ]);
   });
 
   afterEach(() => {

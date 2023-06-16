@@ -1,12 +1,12 @@
-import { loadConfigurationForEnv } from 'amplify-provider-awscloudformation';
+import { loadConfigurationForEnv } from '@aws-amplify/amplify-provider-awscloudformation';
 import { ProcessedLambdaFunction } from '../../../CFNParser/stack/types';
 import { populateLambdaMockEnvVars } from '../../../utils/lambda/populate-lambda-mock-env-vars';
-import { stateManager, pathManager, $TSContext } from 'amplify-cli-core';
+import { stateManager, pathManager, $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 
-jest.mock('amplify-provider-awscloudformation');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-provider-awscloudformation');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('dotenv');
 
 const loadConfigurationForEnv_mock = loadConfigurationForEnv as jest.MockedFunction<typeof loadConfigurationForEnv>;
@@ -25,7 +25,7 @@ pathManager_mock.getBackendDirPath.mockReturnValue('backend/path');
 
 const dotenv_mock = dotenv as jest.Mocked<typeof dotenv>;
 
-describe('populate labmda mock env vars', () => {
+describe('populate lambda mock env vars', () => {
   beforeEach(() => jest.clearAllMocks());
   it('populates AWS credential variables', async () => {
     const processedLambda: ProcessedLambdaFunction = {
@@ -50,8 +50,8 @@ describe('populate labmda mock env vars', () => {
       handler: 'test.handler',
       environment: {},
     };
-    stateManager_mock.getTeamProviderInfo.mockReturnValueOnce({
-      test: {
+    stateManager_mock.getMeta.mockReturnValue({
+      providers: {
         awscloudformation: {
           Region: 'test-region',
         },

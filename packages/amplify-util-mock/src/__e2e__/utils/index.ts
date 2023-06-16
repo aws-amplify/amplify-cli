@@ -11,18 +11,18 @@ import { getFunctionDetails } from './lambda-helper';
 import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { querySearchable } from '../../utils/opensearch';
-import { isWindowsPlatform } from 'amplify-cli-core';
+import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
 export * from './graphql-client';
 
-jest.mock('amplify-cli-core', () => ({
-  ...(jest.requireActual('amplify-cli-core') as {}),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
   pathManager: {
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
-    getAmplifyLibRoot: jest.fn().mockReturnValue('')
-  }
+    getAmplifyLibRoot: jest.fn().mockReturnValue(''),
+  },
 }));
 
 export async function launchDDBLocal() {
@@ -42,7 +42,11 @@ export async function launchDDBLocal() {
   return { emulator, dbPath, client };
 }
 
-export async function deploy(transformerOutput: any, client?: DynamoDB, opensearchURL?: URL): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
+export async function deploy(
+  transformerOutput: any,
+  client?: DynamoDB,
+  opensearchURL?: URL,
+): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
@@ -77,13 +81,13 @@ export async function reDeploy(
 
 async function configureLambdaDataSource(config) {
   config.dataSources
-    .filter(d => d.type === 'AWS_LAMBDA')
-    .forEach(d => {
+    .filter((d) => d.type === 'AWS_LAMBDA')
+    .forEach((d) => {
       const arn = d.LambdaFunctionArn;
       const arnParts = arn.split(':');
       let functionName = arnParts[arnParts.length - 1];
       const lambdaConfig = getFunctionDetails(functionName);
-      d.invoke = payload => {
+      d.invoke = (payload) => {
         logDebug('Invoking lambda with config', lambdaConfig);
         return invoke({
           srcRoot: lambdaConfig.packageFolder,
@@ -97,29 +101,29 @@ async function configureLambdaDataSource(config) {
 }
 
 async function configureOpensearchDataSource(config, opensearchURL) {
-  if (isWindowsPlatform) {
+  if (isWindowsPlatform()) {
     return config;
   }
   const opensearchDataSourceType = 'AMAZON_ELASTICSEARCH';
-  const opensearchDataSources = config.dataSources.filter(d => d.type === opensearchDataSourceType);
+  const opensearchDataSources = config.dataSources.filter((d) => d.type === opensearchDataSourceType);
   if (_.isEmpty(opensearchDataSources)) {
     return config;
   }
   return {
     ...config,
     dataSources: await Promise.all(
-      config.dataSources.map(async d => {
+      config.dataSources.map(async (d) => {
         if (d.type !== opensearchDataSourceType) {
           return d;
         }
         return {
           ...d,
-          invoke: async payload => {
+          invoke: async (payload) => {
             return await querySearchable(opensearchURL, payload);
           },
         };
       }),
-    )
+    ),
   };
 }
 
@@ -151,23 +155,27 @@ export function logDebug(...msgs) {
   }
 }
 
-export async function setupSearchableMockResources(pathToSearchableMockResources: string): Promise<{ emulator: openSearchEmulator.OpenSearchEmulator}> {
+export async function setupSearchableMockResources(
+  pathToSearchableMockResources: string,
+): Promise<{ emulator: openSearchEmulator.OpenSearchEmulator }> {
   const pathToSearchableTrigger = path.join(pathToSearchableMockResources, 'searchable-lambda-trigger');
   fs.ensureDirSync(pathToSearchableTrigger);
 
   const searchableLambdaResourceDir = path.resolve(__dirname, '..', '..', '..', 'resources', 'mock-searchable-lambda-trigger');
   fs.copySync(searchableLambdaResourceDir, pathToSearchableTrigger, { overwrite: true });
 
-  const pathToOpensearchLocal = path.join(pathToSearchableMockResources, openSearchEmulator.packageName, openSearchEmulator.relativePathToOpensearchLocal);
+  const pathToOpensearchLocal = path.join(
+    pathToSearchableMockResources,
+    openSearchEmulator.packageName,
+    openSearchEmulator.relativePathToOpensearchLocal,
+  );
   fs.ensureDirSync(pathToOpensearchLocal);
   const pathToOpensearchData = path.join(pathToSearchableMockResources, 'searchable-data');
   fs.ensureDirSync(pathToOpensearchData);
 
-  const emulator = await openSearchEmulator.launch(
-    pathToOpensearchData, {
-      port: null,
-    }
-  );
+  const emulator = await openSearchEmulator.launch(pathToOpensearchData, {
+    port: null,
+  });
 
   return { emulator };
 }

@@ -1,17 +1,14 @@
-import {
-  $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { execSync } from 'child_process';
-import {
-  ensureDir, existsSync, readFileSync, readJSON, readdirSync,
-} from 'fs-extra';
+import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
 import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
+import { coerce } from 'semver';
 
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('child_process');
 jest.mock('fs-extra');
 jest.mock('which');
@@ -22,11 +19,16 @@ jest.mock('which');
 (existsSync as jest.Mock).mockReturnValue(true);
 (readdirSync as jest.Mock).mockReturnValue([]);
 (sync as jest.MockedFunction<typeof sync>).mockReturnValue('mock/path');
-(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
-  executable: 'yarn',
-  lockFile: 'mock.lock',
-  packageManager: 'yarn',
-});
+(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(
+  new Promise((resolve) =>
+    resolve({
+      executable: 'yarn',
+      lockFile: 'mock.lock',
+      packageManager: 'yarn',
+      version: coerce('1.22.0') ?? undefined,
+    }),
+  ),
+);
 
 describe('amplify init:', () => {
   const mockGetProjectConfigFilePath = jest.spyOn(pathManager, 'getProjectConfigFilePath');
@@ -57,7 +59,7 @@ describe('amplify init:', () => {
     getLocalAWSInfo: mockGetLocalAWSInfo,
   };
 
-  const mockContext = ({
+  const mockContext = {
     amplify: {
       AmplifyToolkit: jest.fn(),
       pathManager: mockPathManager,
@@ -89,9 +91,9 @@ describe('amplify init:', () => {
     input: {},
     runtime: {},
     pluginPlatform: {},
-  } as unknown) as $TSContext;
+  } as unknown as $TSContext;
 
-  jest.mock('amplify-cli-core', () => ({
+  jest.mock('@aws-amplify/amplify-cli-core', () => ({
     exitOnNextTick: jest.fn(),
     JSONUtilities: {
       readJSON: mockReadJson,
@@ -122,7 +124,7 @@ describe('amplify init:', () => {
           },
         },
       };
-      await preInitSetup(context);
+      await preInitSetup(context as unknown as $TSContext);
       expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
       expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });
       expect(execSync).toBeCalledWith('yarn install', { stdio: 'inherit' });
@@ -135,13 +137,15 @@ describe('amplify init:', () => {
       expect(newContext.exeInfo.projectConfig).not.toBeUndefined();
       expect(newContext.exeInfo.localEnvInfo).not.toBeUndefined();
       expect(newContext.exeInfo.teamProviderInfo).not.toBeUndefined();
-      expect(newContext.exeInfo.metaData).not.toBeUndefined();
     });
   });
 
   describe('init:initFrontend', () => {
     it('should use current project config if it is not a new project', async () => {
-      await initFrontend({ ...mockContext, exeInfo: { isNewProject: false } });
+      await initFrontend({
+        ...mockContext,
+        exeInfo: { isNewProject: false, inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo },
+      });
       expect(mockGetProjectConfig).toBeCalled();
     });
   });
@@ -150,13 +154,15 @@ describe('amplify init:', () => {
     it('should scaffold a new project', async () => {
       const projectName = 'projectName';
       const frontend = 'ios';
-      const context = {
+      const context: $TSContext = {
         ...mockContext,
         exeInfo: {
           projectConfig: {
             projectName,
             frontend,
           },
+          inputParams: {},
+          localEnvInfo: {} as unknown as LocalEnvInfo,
         },
       };
       const cwd = 'currentDir';

@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { categoryName } from '../../constants';
 
 export const run = async (context: $TSContext) => {
@@ -15,7 +15,7 @@ export const run = async (context: $TSContext) => {
 
   if (!providerController) {
     printer.error('Provider not configured for this category');
-    return;
+    return undefined;
   }
 
   return providerController.importResource(context, categoryName, serviceSelection);

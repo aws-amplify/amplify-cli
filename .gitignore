@@ -1,5 +1,17 @@
+.yarn/*
+.bin/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 **/.DS_Store
 .circleci/generated_config.yml
+scripts/cci-job.data.json
+scripts/cci-test.data.json
+scripts/.yarn/*
+artifacts/cci-workflow-results.json
+artifacts/cci-workflow-results.html
 build
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/
 !packages/amplify-graphql-function-transformer/src/__tests__/overrides/build/
@@ -25,6 +37,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 packages/amplify-opensearch-simulator/emulator
 .vscode/*
 .history/*
+!.vscode/amplify-cli.code-workspace
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea
@@ -33,6 +46,7 @@ packages/amplify-graphql-transformer-*/lib
 packages/amplify-cli/lib
 packages/amplify-cli-npm/lib
 packages/amplify-cli-core/lib
+packages/amplify-cli-core-vNext/lib
 packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
@@ -54,6 +68,7 @@ packages/amplify-migration-tests/lib
 packages/amplify-headless-interface/lib
 packages/amplify-provider-awscloudformation/lib
 packages/amplify-prompts/lib
+packages/amplify-prompts-vNext/lib
 packages/amplify-util-import/lib
 packages/amplify-util-headless-input/lib
 packages/amplify-util-uibuilder/lib

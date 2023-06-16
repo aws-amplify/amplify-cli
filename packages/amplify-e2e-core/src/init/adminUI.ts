@@ -11,12 +11,12 @@ export const enableAdminUI = async (appId: string, __envName: string, region: st
   try {
     await retry(
       () => getAmplifyBackendJobStatus(JobId, appId, BackendEnvironmentName, region),
-      jobDetails => jobDetails.Status === 'COMPLETED',
+      (jobDetails) => jobDetails.Status === 'COMPLETED',
       {
         timeoutMS: 1000 * 60 * 5, // 5 minutes
         stopOnError: false,
       },
-      jobDetails => jobDetails.Status === 'FAILED',
+      (jobDetails) => jobDetails.Status === 'FAILED',
     );
   } catch {
     throw new Error('Setting up Amplify Studio failed');

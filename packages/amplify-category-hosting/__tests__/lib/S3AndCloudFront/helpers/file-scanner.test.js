@@ -38,7 +38,7 @@ describe('file-scanner', () => {
   });
 
   test('scan, happy route', async () => {
-    fs.existsSync = jest.fn(itemPath => {
+    fs.existsSync = jest.fn((itemPath) => {
       let result = false;
       if (itemPath === mockDistDirPath) {
         result = true;
@@ -73,7 +73,7 @@ describe('file-scanner', () => {
   });
 
   test('scan, dist dir empty', async () => {
-    fs.existsSync = jest.fn(itemPath => {
+    fs.existsSync = jest.fn((itemPath) => {
       let result = false;
       if (itemPath === mockDistDirPath) {
         result = true;
@@ -107,7 +107,7 @@ describe('file-scanner', () => {
   });
 
   test('scan, dist dir does not exist', async () => {
-    fs.existsSync = jest.fn(itemPath => {
+    fs.existsSync = jest.fn((itemPath) => {
       let result = false;
       if (itemPath === mockDistDirPath) {
         result = false;
@@ -141,7 +141,7 @@ describe('file-scanner', () => {
   });
 
   test('scan, index doc does not exist', async () => {
-    fs.existsSync = jest.fn(itemPath => {
+    fs.existsSync = jest.fn((itemPath) => {
       let result = false;
       if (itemPath === mockDistDirPath) {
         result = false;

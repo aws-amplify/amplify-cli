@@ -2,27 +2,24 @@
   "editor.rulers": [140],
   "files.exclude": {
     "**/.git": true,
-    "**/node_modules": true,
-    "**/build": true,
-    "**/coverage": true
+    "**/build": true
   },
+  "files.insertFinalNewline": true,
   "editor.formatOnSave": true,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
-  "eslint.alwaysShowStatus": true,
-  "eslint.format.enable": true,
   "eslint.lintTask.enable": true,
   "eslint.packageManager": "yarn",
-  "eslint.quiet": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "jest.enableInlineErrorMessages": true,
-  "jest.showCoverageOnLoad": true,
-  "jest.runAllTestsFirst": false,
+  "eslint.quiet": false,
   "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[javascript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  }
+  "prettier.requireConfig": true,
+  "prettier.configPath": "./.prettierrc",
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "prettier.prettierPath": "../node_modules/prettier",
+  "jest.jestCommandLine": "./node_modules/.bin/jest"
 }

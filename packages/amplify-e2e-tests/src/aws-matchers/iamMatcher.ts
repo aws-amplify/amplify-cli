@@ -29,8 +29,8 @@ export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
 };
 
 export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, idpId: string) => {
-  let pass: boolean = false;
-  let message: string = '';
+  let pass = false;
+  let message = '';
 
   try {
     const iam = new IAM({
@@ -42,7 +42,7 @@ export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, 
     const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
     const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
 
-    pass = assumeRolePolicyDocument.Statement.some(statement => {
+    pass = assumeRolePolicyDocument.Statement.some((statement) => {
       if (statement.Condition) {
         return (
           statement.Condition.StringEquals &&

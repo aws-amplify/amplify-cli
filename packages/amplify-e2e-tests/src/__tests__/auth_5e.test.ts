@@ -52,11 +52,11 @@ describe('headless auth e', () => {
     };
 
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await updateHeadlessAuth(projRoot, updateAuthRequest, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
     expect(_.get(meta, ['auth', 'userPoolGroups'])).toBeDefined();

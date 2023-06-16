@@ -60,12 +60,13 @@ describe('amplify delete', () => {
     const pinpointResourceName = await addPinpointAnalytics(projRoot);
     await pushToCloud(projRoot);
     const amplifyMeta = getProjectMeta(projRoot);
-    const pintpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
-    let pinpointAppExists = await pinpointAppExist(pintpointAppId);
+    const pinpointAppId = amplifyMeta.analytics[pinpointResourceName].output.Id;
+    const pinpointRegion = amplifyMeta.analytics[pinpointResourceName].output.Region;
+    let pinpointAppExists = await pinpointAppExist(pinpointAppId, pinpointRegion);
     expect(pinpointAppExists).toBeTruthy();
     await amplifyDelete(projRoot);
     await timeout(4 * 1000);
-    pinpointAppExists = await pinpointAppExist(pintpointAppId);
+    pinpointAppExists = await pinpointAppExist(pinpointAppId, pinpointRegion);
     expect(pinpointAppExists).toBeFalsy();
   });
 
@@ -84,8 +85,8 @@ describe('amplify delete', () => {
 
   it('should delete bucket', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addS3(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addS3(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
     const bucketName = getS3StorageBucketName(projRoot);
     await putFiles(bucketName);
@@ -143,7 +144,7 @@ async function putFiles(bucket: string, count = 1001) {
     Body: 'dummy body',
     Key: `${num}.txt`,
   }));
-  await Promise.all(s3Params.map(p => s3.putObject(p).promise()));
+  await Promise.all(s3Params.map((p) => s3.putObject(p).promise()));
 }
 
 async function bucketExists(bucket: string) {

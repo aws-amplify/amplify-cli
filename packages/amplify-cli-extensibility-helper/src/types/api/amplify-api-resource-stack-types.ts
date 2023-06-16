@@ -1,13 +1,11 @@
 // Amplify generated Types for API - override.ts
 
-import {
-  CfnApiKey, CfnDataSource, CfnFunctionConfiguration, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver,
-} from '@aws-cdk/aws-appsync';
-import { CfnTable } from '@aws-cdk/aws-dynamodb';
-import { CfnPolicy, CfnRole } from '@aws-cdk/aws-iam';
-import { CfnDomain } from '@aws-cdk/aws-elasticsearch';
-import { CfnFunction, CfnEventSourceMapping } from '@aws-cdk/aws-lambda';
-import { CfnStack } from '@aws-cdk/core';
+import { CfnApiKey, CfnDataSource, CfnFunctionConfiguration, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from 'aws-cdk-lib/aws-appsync';
+import { CfnTable } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnPolicy, CfnRole } from 'aws-cdk-lib/aws-iam';
+import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnFunction, CfnEventSourceMapping } from 'aws-cdk-lib/aws-lambda';
+import { CfnStack } from 'aws-cdk-lib';
 
 // Base template
 // Customer can use these params to mutate the Cloudformation for the resource

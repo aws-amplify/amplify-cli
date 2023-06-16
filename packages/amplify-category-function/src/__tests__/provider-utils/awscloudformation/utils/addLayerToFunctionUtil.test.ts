@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { FunctionDependency, LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import enquirer from 'enquirer';
 import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
 import { categoryName } from '../../../../constants';
@@ -27,12 +27,12 @@ const getLayerRuntimes_mock = getLayerRuntimes as jest.MockedFunction<typeof get
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
 
-const context_stub = ({
+const context_stub = {
   amplify: {
     getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
     getProviderPlugins: jest.fn(),
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
 const runtimeValue = 'lolcode';
 
@@ -65,7 +65,7 @@ getLayerRuntimes_mock.mockImplementation(() => {
       name: 'NodeJs',
       value: 'nodejs',
       layerExecutablePath: 'nodejs/node_modules',
-      cloudTemplateValue: 'nodejs14.x',
+      cloudTemplateValue: 'nodejs16.x',
     },
   ];
 });
@@ -75,7 +75,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     LayerVersionArn: 'fakeArn1',
     Description: '',
     CreatedDate: '',
-    CompatibleRuntimes: ['nodejs14.x'],
+    CompatibleRuntimes: ['nodejs16.x'],
     LicenseInfo: '',
     permissions: [],
     LogicalName: 'myLayer',
@@ -88,7 +88,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     LayerVersionArn: 'fakeArn2',
     Description: '',
     CreatedDate: '',
-    CompatibleRuntimes: ['nodejs14.x'],
+    CompatibleRuntimes: ['nodejs16.x'],
     LicenseInfo: '',
     permissions: [],
     legacyLayer: false,
@@ -96,10 +96,10 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
 ];
 
 const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
-layerCloudState_mock.getInstance.mockReturnValue(({
+layerCloudState_mock.getInstance.mockReturnValue({
   getLayerVersionsFromCloud: jest.fn(async () => layerCloudReturnStub),
   latestVersionLogicalId: 'mockLogicalId',
-} as unknown) as LayerCloudState);
+} as unknown as LayerCloudState);
 
 describe('layer selection question', () => {
   beforeEach(() => {

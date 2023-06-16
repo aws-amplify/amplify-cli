@@ -5,35 +5,57 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "test",
-          "lint",
-          "package",
-          "prepare"
-        ]
+        "cacheableOperations": ["build", "test", "lint", "package", "prepare", "extract-api"],
+        "parallel": 8
       }
     }
   },
-  "targetDependencies": {
-    "build": [
-      {
-        "target": "build",
-        "projects": "dependencies"
-      }
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "!{projectRoot}/**/*.md",
+      "!{projectRoot}/coverage/**",
+      "!{projectRoot}/reports/**",
+      "!{projectRoot}/src/schemas/BackendParameters.schema.json"
     ],
-    "prepare": [
-      {
-        "target": "prepare",
-        "projects": "dependencies"
-      }
-    ],
-    "package": [
-      {
-        "target": "package",
-        "projects": "dependencies"
-      }
+    "production": [
+      "default",
+      "!{projectRoot}/src/__tests__/**",
+      "!{projectRoot}/tests/**",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.tsbuildinfo"
     ]
+  },
+  "targetDefaults": {
+    "build": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^build"]
+    },
+    "build-tests": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build", "^build"]
+    },
+    "prepare": {
+      "inputs": ["default", "^default"],
+      "dependsOn": ["^prepare"]
+    },
+    "package": {
+      "inputs": ["default", "^default"],
+      "dependsOn": ["^package"]
+    },
+    "smoketest": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build"]
+    },
+    "test": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["build"]
+    },
+    "extract-api": {
+      "dependsOn": ["build"],
+      "inputs": ["{projectRoot}/src/**/*", "!{projectRoot}/src/__tests__/**/*"],
+      "outputs": ["{projectRoot}/API.md"]
+    }
   },
   "affected": {
     "defaultBase": "dev"

@@ -4,10 +4,10 @@ import { JavaString } from '../../../velocity/value-mapper/string';
 import { map as mapper } from '../../../velocity/value-mapper/mapper';
 
 describe('JavaMap', () => {
-  let identityMapper = jest.fn().mockImplementation(val => val);
+  let identityMapper = jest.fn().mockImplementation((val) => val);
 
   beforeEach(() => {
-    identityMapper = jest.fn().mockImplementation(val => val);
+    identityMapper = jest.fn().mockImplementation((val) => val);
   });
   it('New Map', () => {
     const obj = { foo: 1, bar: 2 };

@@ -3,7 +3,7 @@ import { askEnvironmentVariableQuestions } from '../../../../provider-utils/awsc
 jest.mock('../../../../provider-utils/awscloudformation/secrets/functionSecretsStateManager');
 
 jest.mock('inquirer', () => ({
-  prompt: () => new Promise(resolve => resolve({ operation: 'abort' })),
+  prompt: () => new Promise((resolve) => resolve({ operation: 'abort' })),
 }));
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper', () => ({

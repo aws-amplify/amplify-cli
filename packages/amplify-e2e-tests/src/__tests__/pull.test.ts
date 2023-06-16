@@ -14,6 +14,7 @@ import {
   getBackendAmplifyMeta,
   getTeamProviderInfo,
   amplifyPullNonInteractive,
+  amplifyPullWithCtrlCOnFrameworkPrompt,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -44,6 +45,18 @@ describe('amplify pull in two directories', () => {
     await amplifyPull(projRoot2, { appId, emptyDir: true, noUpdateBackend: true });
     await amplifyPull(projRoot2, { appId, noUpdateBackend: true });
   });
+
+  it('works if previous pull is interrupted', async () => {
+    const envName = 'integtest';
+    await initJSProjectWithProfile(projRoot, {
+      disableAmplifyAppCreation: false,
+      envName,
+      name: 'testapi',
+    });
+    const appId = getAppId(projRoot);
+    await amplifyPullWithCtrlCOnFrameworkPrompt(projRoot2, { appId, envName });
+    await amplifyPull(projRoot2, { appId, envName, emptyDir: true });
+  });
 });
 
 describe('amplify pull', () => {
@@ -56,7 +69,11 @@ describe('amplify pull', () => {
 
   it('preserves team-provider-info contents across restore backend calls', async () => {
     // add a function with an env var and push
-    await addFunction(projRoot, { functionTemplate: 'Hello World', environmentVariables: { key: 'testVar', value: 'testValue' } }, 'nodejs');
+    await addFunction(
+      projRoot,
+      { functionTemplate: 'Hello World', environmentVariables: { key: 'testVar', value: 'testValue' } },
+      'nodejs',
+    );
     await amplifyPushAuth(projRoot);
 
     // grab the appId from the meta file

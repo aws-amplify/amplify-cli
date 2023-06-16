@@ -1,10 +1,9 @@
 import { promptConsoleSupportedCategory } from './provider-utils/supportedPredictions';
+import { prompter } from '@aws-amplify/amplify-prompts';
+import { ResourceDoesNotExistError, exitOnNextTick } from '@aws-amplify/amplify-cli-core';
 
 const predictionsConsole = require('./provider-utils/awscloudformation/index');
-const inquirer = require('inquirer');
 const path = require('path');
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
-
 const category = 'predictions';
 
 async function console(context) {
@@ -12,10 +11,9 @@ async function console(context) {
   const { amplifyMeta } = amplify.getProjectDetails();
 
   return promptConsoleSupportedCategory()
-    .then(async result => {
-      result = result.category;
+    .then(async (result) => {
       const predictionsResources = [];
-      Object.keys(amplifyMeta[category]).forEach(resourceName => {
+      Object.keys(amplifyMeta[category]).forEach((resourceName) => {
         if (
           result.services.includes(amplifyMeta[category][resourceName].service) &&
           result.types.includes(amplifyMeta[category][resourceName][result.type])
@@ -31,27 +29,18 @@ async function console(context) {
         context.print.error(errMessage);
         await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
         exitOnNextTick(0);
-        return;
+        return undefined;
       }
-      let resourceObj = predictionsResources[0].value;
-      if (predictionsResources.length > 1) {
-        const resourceAnswer = await inquirer.prompt({
-          type: 'list',
-          name: 'resource',
-          messages: `Select an ${result.category} resource`,
-          choices: predictionsResources,
-        });
-        resourceObj = resourceAnswer.resource;
-      }
+      let resourceObj = await prompter.pick(`Select an ${result} resource`, predictionsResources);
       const providerController = require(`./provider-utils/${result.provider}/index`);
       if (!providerController) {
         context.print.error('Provider not configured for this category');
-        return;
+        return undefined;
       }
 
       return providerController.console(context, resourceObj, amplifyMeta);
     })
-    .catch(err => {
+    .catch((err) => {
       context.print.error('Error opening console.');
       context.print.info(err.message);
       context.usageData.emitError(err);

@@ -1,5 +1,5 @@
 const _ = require('lodash');
-module.exports = function(Velocity, utils) {
+module.exports = function (Velocity, utils) {
   /**
    * expression运算
    */
@@ -9,7 +9,7 @@ module.exports = function(Velocity, utils) {
      * 基本数据类型，使用 getLiteral求值，getLiteral遇到是引用的时候，使用
      * getReferences求值
      */
-    compareEqualExpressions: function(exp0, exp1) {
+    compareEqualExpressions: function (exp0, exp1) {
       const val0 = this.getExpression(exp0);
       const val1 = this.getExpression(exp1);
       const val0Json = val0 && val0.toJSON ? val0.toJSON() : val0;
@@ -17,7 +17,7 @@ module.exports = function(Velocity, utils) {
       return _.isEqual(val0Json, val1Json);
     },
 
-    getExpression: function(ast) {
+    getExpression: function (ast) {
       var exp = ast.expression;
       var ret;
       if (ast.type === 'math') {

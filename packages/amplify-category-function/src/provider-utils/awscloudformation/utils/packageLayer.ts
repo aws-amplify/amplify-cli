@@ -1,5 +1,5 @@
-import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager, ZipEntry } from 'amplify-function-plugin-interface';
+import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionRuntimeLifecycleManager, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -102,14 +102,14 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
 
   if (changedLayerResources.length > 0) {
     context.print.info('');
-    if (layerResources.filter(layer => loadPreviousLayerHash(layer.resourceName) !== undefined).length > 0) {
+    if (layerResources.filter((layer) => loadPreviousLayerHash(layer.resourceName) !== undefined).length > 0) {
       context.print.info('Content changes in Lambda layers detected.');
     }
     context.print.info('Suggested configuration for new layer versions:');
     context.print.info('');
 
     const timestampString = new Date().toISOString();
-    const prepushNotificationMessage = changedLayerResources.map(layer => {
+    const prepushNotificationMessage = changedLayerResources.map((layer) => {
       const { resourceName } = layer;
       const parameters = loadStoredLayerParameters(context, resourceName);
       layer.parameters = parameters;

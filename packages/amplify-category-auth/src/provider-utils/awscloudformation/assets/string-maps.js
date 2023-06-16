@@ -603,7 +603,7 @@ const capabilities = [
   },
 ];
 
-const additonalConfigMap = [
+const additionalConfigMap = [
   {
     name: 'No, I am done.',
     value: [],
@@ -615,10 +615,10 @@ const additonalConfigMap = [
 ];
 
 const disableOptionsOnEdit = () => {
-  mfaOptions.find(i => i.value === 'ON').disabled = true;
+  mfaOptions.find((i) => i.value === 'ON').disabled = true;
 };
 
-const getAllMaps = edit => {
+const getAllMaps = (edit) => {
   if (edit) {
     disableOptionsOnEdit();
   }
@@ -642,7 +642,7 @@ const getAllMaps = edit => {
     attributeProviderMap,
     updateFlowMap,
     capabilities,
-    additonalConfigMap,
+    additionalConfigMap,
   };
 };
 
@@ -668,5 +668,5 @@ module.exports = {
   attributeProviderMap,
   updateFlowMap,
   capabilities,
-  additonalConfigMap,
+  additionalConfigMap,
 };

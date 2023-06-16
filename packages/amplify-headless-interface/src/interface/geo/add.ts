@@ -1,7 +1,7 @@
 /**
  * Defines the json object expected by `amplify add geo --headless`
  */
- export interface AddGeoRequest {
+export interface AddGeoRequest {
   /**
    * The schema version.
    */
@@ -45,7 +45,7 @@ export interface MapConfiguration {
   /**
    * The service name of the resource provider.
    */
-  serviceName: "Map";
+  serviceName: 'Map';
   /**
    * The map style type.
    */
@@ -56,23 +56,24 @@ export interface MapConfiguration {
  * Definition of access type
  */
 export enum AccessType {
-  AuthorizedUsers = "AuthorizedUsers",
-  AuthorizedAndGuestUsers = "AuthorizedAndGuestUsers"
+  AuthorizedUsers = 'AuthorizedUsers',
+  AuthorizedAndGuestUsers = 'AuthorizedAndGuestUsers',
 }
 
 /**
  * Supported Geo Map Styles
  */
- export enum MapStyle {
-  VectorEsriNavigation = "VectorEsriNavigation",
-  VectorEsriStreets = "VectorEsriStreets",
-  VectorEsriTopographic = "VectorEsriTopographic",
-  VectorEsriDarkGrayCanvas = "VectorEsriDarkGrayCanvas",
-  VectorEsriLightGrayCanvas = "VectorEsriLightGrayCanvas",
-  RasterEsriImagery = "RasterEsriImagery",
-  VectorHereBerlin = "VectorHereBerlin",
-  VectorHereExplore = "VectorHereExplore",
-  VectorHereExploreTruck = "VectorHereExploreTruck",
-  RasterHereExploreSatellite = "RasterHereExploreSatellite",
-  HybridHereExploreSatellite = "HybridHereExploreSatellite"
+export enum MapStyle {
+  VectorEsriNavigation = 'VectorEsriNavigation',
+  VectorEsriStreets = 'VectorEsriStreets',
+  VectorEsriTopographic = 'VectorEsriTopographic',
+  VectorEsriDarkGrayCanvas = 'VectorEsriDarkGrayCanvas',
+  VectorEsriLightGrayCanvas = 'VectorEsriLightGrayCanvas',
+  RasterEsriImagery = 'RasterEsriImagery',
+  VectorHereBerlin = 'VectorHereBerlin',
+  VectorHereExplore = 'VectorHereExplore',
+  VectorHereExploreTruck = 'VectorHereExploreTruck',
+  RasterHereExploreSatellite = 'RasterHereExploreSatellite',
+  HybridHereExploreSatellite = 'HybridHereExploreSatellite',
+  VectorOpenDataStandardLight = 'VectorOpenDataStandardLight',
 }

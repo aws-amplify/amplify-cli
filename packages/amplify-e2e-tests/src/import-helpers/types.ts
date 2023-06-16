@@ -6,7 +6,7 @@ import {
   SupportedIdentityProvidersListType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
-import { $TSObject } from 'amplify-cli-core';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
 
 export type AuthProjectDetails = {
   authResourceName?: string;

@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
+import { $TSAny, $TSContext, readCFNTemplate, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import * as os from 'os';
 import * as path from 'path';
 import { getCfnFiles } from './push-resources';
@@ -24,7 +24,7 @@ type TemplateDescription = {
 };
 
 export async function prePushTemplateDescriptionHandler(context: $TSContext, resourcesToBeCreated: $TSAny) {
-  let promises = [];
+  const promises = [];
 
   for (const { category, resourceName, service } of resourcesToBeCreated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
@@ -52,13 +52,10 @@ export async function setDefaultTemplateDescription(
 }
 
 export function getDefaultTemplateDescription(context: $TSContext, category: string, service?: string): string {
-  let descriptionJson: TemplateDescription;
-
   // get platform "createdOn"
 
   let platformDescription: SupportedPlatforms;
   let deploymentTypeDescription: DeploymentTypes;
-  let stackTypeDescription: string;
 
   const platform = os.platform();
 
@@ -72,9 +69,9 @@ export function getDefaultTemplateDescription(context: $TSContext, category: str
     platformDescription = SupportedPlatforms.OTHER;
   }
 
-  // get deployment mchanism "createdBy"
+  // get deployment mechanism "createdBy"
 
-  if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
+  if (process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
     deploymentTypeDescription = DeploymentTypes.AMPLIFY_ADMIN;
   } else {
     deploymentTypeDescription = DeploymentTypes.AMPLIFY_CLI;
@@ -84,9 +81,9 @@ export function getDefaultTemplateDescription(context: $TSContext, category: str
   const cliVersion = context.pluginPlatform.plugins.core[0].packageVersion;
 
   // get stack type "stackType"
-  stackTypeDescription = service ? `${category}-${service}` : category;
+  const stackTypeDescription = service ? `${category}-${service}` : category;
 
-  descriptionJson = {
+  const descriptionJson: TemplateDescription = {
     createdOn: platformDescription,
     createdBy: deploymentTypeDescription,
     createdWith: cliVersion,

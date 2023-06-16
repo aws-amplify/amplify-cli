@@ -4,6 +4,7 @@ import { toJSON } from './to-json';
 
 export class JavaMap {
   private map: Map<string, any>;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private mapper: Function;
   constructor(obj, mapper) {
     this.mapper = mapper;

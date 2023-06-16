@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`save mutable state destructures mutableParametersState in the stored object 1`] = `
-Object {
-  "lambdaLayers": Array [],
-  "permissions": Object {
+{
+  "lambdaLayers": [],
+  "permissions": {
     "something": "a value",
   },
 }
 `;
 
 exports[`save mutable state removes mutableParametersState from the existing file if present 1`] = `
-Object {
-  "lambdaLayers": Array [],
-  "permissions": Object {
+{
+  "lambdaLayers": [],
+  "permissions": {
     "something": "the latest value",
     "somethingElse": "other value",
   },

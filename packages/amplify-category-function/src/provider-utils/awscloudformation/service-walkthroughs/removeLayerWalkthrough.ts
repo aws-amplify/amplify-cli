@@ -1,7 +1,6 @@
-import { $TSContext, $TSObject, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, pathManager, spinner, stateManager } from '@aws-amplify/amplify-cli-core';
 import chalk from 'chalk';
 import inquirer, { QuestionCollection } from 'inquirer';
-import ora from 'ora';
 import { categoryName } from '../../../constants';
 import { LayerCloudState } from '../utils/layerCloudState';
 import { saveLayerVersionsToBeRemovedByCfn } from '../utils/layerConfiguration';
@@ -33,8 +32,8 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
     return undefined;
   }
 
-  const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.legacyLayer);
-  const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.legacyLayer);
+  const legacyLayerSelectedVersions = selectedLayerVersion.filter((r) => r.legacyLayer);
+  const newLayerSelectedVersions = selectedLayerVersion.filter((r) => !r.legacyLayer);
 
   // if everything is selected remove the layer entirely
   if (layerVersionList.length === newLayerSelectedVersions.length && legacyLayerSelectedVersions.length === 0) {
@@ -42,7 +41,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
   }
 
   context.print.info('Layer versions marked for deletion:');
-  selectedLayerVersion.forEach(version => {
+  selectedLayerVersion.forEach((version) => {
     context.print.info(`- ${version.Version} | Description: ${version.Description || ''}`);
   });
 
@@ -53,7 +52,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
     await deleteLayerVersionsWithSdk(
       context,
       getLayerName(context, layerName),
-      legacyLayerSelectedVersions.map(r => r.Version),
+      legacyLayerSelectedVersions.map((r) => r.Version),
     );
   }
 
@@ -63,14 +62,14 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
       const { envName } = stateManager.getLocalEnvInfo();
       saveLayerVersionsToBeRemovedByCfn(
         layerName,
-        newLayerSelectedVersions.map(r => r.Version),
+        newLayerSelectedVersions.map((r) => r.Version),
         envName,
       );
     }
 
     // Load configuration for layer and regenerate cfn template
     const layerParameters = loadStoredLayerParameters(context, layerName);
-    updateLayerArtifacts(context, layerParameters, {
+    await updateLayerArtifacts(context, layerParameters, {
       generateCfnFile: true,
       updateDescription: false,
       updateLayerParams: false,
@@ -89,7 +88,7 @@ function warnLegacyRemoval(
   newLayerVersions: LayerVersionForPossibleRemoval[],
 ) {
   const amplifyPush = chalk.green('amplify push');
-  const legacyVersions: number[] = legacyLayerVersions.map(r => r.Version);
+  const legacyVersions: number[] = legacyLayerVersions.map((r) => r.Version);
 
   if (legacyLayerVersions.length > 0 && newLayerVersions.length > 0) {
     context.print.warning(
@@ -110,7 +109,7 @@ function warnLegacyRemoval(
 async function deleteLayerVersionsWithSdk(context: $TSContext, layerName: string, versions: number[]) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
   const lambdaClient = await providerPlugin.getLambdaSdk(context);
-  const spinner = ora('Deleting layer version from the cloud...').start();
+  spinner.start('Deleting layer version from the cloud...');
   try {
     await lambdaClient.deleteLayerVersions(layerName, versions);
     spinner.succeed('Layers deleted');
@@ -132,7 +131,7 @@ function disablePinnedVersions(
       pathManager.getResourceDirectoryPath(undefined, categoryName, lambdaFunctionName),
     );
 
-    lambdaLayerDependencies.forEach(layerDependency => {
+    lambdaLayerDependencies.forEach((layerDependency) => {
       if (layerDependency.resourceName === layerName && layerDependency.isLatestVersionSelected === false) {
         for (const layerVersion of layerVersionList) {
           if (layerVersion.Version === layerDependency.version) {
@@ -152,8 +151,8 @@ const question = (layerVersionList: LayerVersionForPossibleRemoval[]): QuestionC
     message: removeLayerQuestion,
     type: 'checkbox',
     choices: layerVersionList
-      .sort((versiona, versionb) => versiona.Version - versionb.Version)
-      .map(version => ({
+      .sort((versionA, versionB) => versionA.Version - versionB.Version)
+      .map((version) => ({
         disabled:
           Array.isArray(version.pinnedByFunctions) && version.pinnedByFunctions.length > 0
             ? `Can't be removed. ${version.pinnedByFunctions.join(', ')} depend${

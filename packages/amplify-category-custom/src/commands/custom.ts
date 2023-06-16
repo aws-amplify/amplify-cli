@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { categoryName } from '../utils/constants';
 
@@ -7,6 +7,9 @@ export const name = 'update';
 export async function run(context: $TSContext) {
   if (/^win/.test(process.platform)) {
     try {
+      if (!context.parameters.first) {
+        throw new TypeError('Missing command');
+      }
       const { run } = await import(path.join('.', categoryName, context.parameters.first));
 
       return run(context);
@@ -39,4 +42,5 @@ export async function run(context: $TSContext) {
   context.amplify.showHelp(header, commands);
 
   printer.blankLine();
+  return undefined;
 }

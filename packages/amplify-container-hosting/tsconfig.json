@@ -8,10 +8,5 @@
     "checkJs": false, // TODO enable till we move everything to TS
     "lib": ["ESNext", "dom"]
   },
-  "exclude": [
-    "lib",
-    "coverage",
-    "src/__tests__",
-    "resources"
-  ]
+  "exclude": ["lib", "coverage", "src/__tests__", "resources"]
 }

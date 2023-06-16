@@ -1,8 +1,8 @@
-module.exports = function(Velocity, utils) {
+module.exports = function (Velocity, utils) {
   utils.mixin(Velocity.prototype, {
     //获取变量类型
     //TODO: foreach嵌套处理
-    getRefType: function(ast) {
+    getRefType: function (ast) {
       var local = this.getLocal(ast);
       var real = local.real || ast;
       var ret = { ignore: false, type: 'string', real: real, foreach: false };
@@ -39,7 +39,7 @@ module.exports = function(Velocity, utils) {
       return ret;
     },
 
-    hasParamInForeach: function(ast) {
+    hasParamInForeach: function (ast) {
       var args = ast.args;
       var ret = false;
 
@@ -50,14 +50,14 @@ module.exports = function(Velocity, utils) {
       if (args) {
         utils.some(
           args,
-          function(a) {
+          function (a) {
             var local = this.getLocal(a);
             if (local.type === 'foreach') {
               ret = local.ast;
               return true;
             }
           },
-          this
+          this,
         );
       }
 
@@ -68,7 +68,7 @@ module.exports = function(Velocity, utils) {
      * @param ast references ast
      * @return {true|false|'ignore'} true:pass, false:no method, ignore:ignore
      */
-    hasMethod: function(ast) {
+    hasMethod: function (ast) {
       var ret = false;
 
       ret = ast.args !== undefined;
@@ -77,7 +77,7 @@ module.exports = function(Velocity, utils) {
 
       if (path) {
         var len = path.length;
-        var methods = utils.filter(path, function(a) {
+        var methods = utils.filter(path, function (a) {
           var isGet = a.id.indexOf('get') === 0 && a.args === false;
           return a.type === 'method' && !isGet;
         });
@@ -94,7 +94,7 @@ module.exports = function(Velocity, utils) {
       return ret;
     },
 
-    isFn: function(ast) {
+    isFn: function (ast) {
       var fns = this.fns.context;
       var isNoPass = true;
       fns = fns[ast.id];
@@ -102,7 +102,7 @@ module.exports = function(Velocity, utils) {
       if (fns) {
         var args = null;
         var fn;
-        utils.forEach(ast.path, function(a) {
+        utils.forEach(ast.path, function (a) {
           if (typeof fn !== 'function') {
             fn = fns[a.id];
           } else {
@@ -120,7 +120,7 @@ module.exports = function(Velocity, utils) {
         });
 
         var _arg = [];
-        utils.forEach(args, function(arg) {
+        utils.forEach(args, function (arg) {
           _arg.push(arg.value);
         });
 
@@ -130,7 +130,7 @@ module.exports = function(Velocity, utils) {
       return !isNoPass;
     },
 
-    getReferences: function(ast) {
+    getReferences: function (ast) {
       if (ast.type !== 'references') return;
 
       if (this.isFn(ast)) {
@@ -149,12 +149,12 @@ module.exports = function(Velocity, utils) {
       }
     },
 
-    getLocal: function(ref) {
+    getLocal: function (ref) {
       var ret = { context: this.context, isGlobal: true };
 
       utils.some(
         this.conditions,
-        function(content) {
+        function (content) {
           var local = this.local[content];
           var index = local.variable.indexOf(ref.id);
 
@@ -168,7 +168,7 @@ module.exports = function(Velocity, utils) {
             return true;
           }
         },
-        this
+        this,
       );
 
       if (ret.type === 'macro' && ret.real && !this.context[ref.id]) {

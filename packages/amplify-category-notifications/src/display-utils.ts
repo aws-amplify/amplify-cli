@@ -1,5 +1,4 @@
-import { spinner } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * Display warning all channels have been enabled
@@ -18,14 +17,14 @@ export const viewShowDeferredModeInstructions = (): void => {
  * Display status that Auth and Pinpoint resources are being deployed to the cloud
  */
 export const viewShowInlineModeInstructionsStart = async (channelName: string): Promise<void> => {
-  spinner.start(`Channel ${channelName} requires a Pinpoint resource in the cloud. Proceeding to deploy Auth and Pinpoint resources...`);
+  printer.info(`Channel ${channelName} requires a Pinpoint resource in the cloud. Proceeding to deploy Auth and Pinpoint resources...`);
 };
 
 /**
  * Display status that Auth and Pinpoint resources have been successfully deployed to the cloud
  */
 export const viewShowInlineModeInstructionsStop = async (channelName: string): Promise<void> => {
-  spinner.succeed(`Channel ${channelName}: Auth and Pinpoint resources deployed successfully...`);
+  printer.success(`Channel ${channelName}: Auth and Pinpoint resources deployed successfully.`);
 };
 
 /**
@@ -33,6 +32,6 @@ export const viewShowInlineModeInstructionsStop = async (channelName: string): P
  * @param channelName name of the channel to be enabled
  * @param err Error thrown by the pinpoint helper
  */
-export const viewShowInlineModeInstructionsFail = async (channelName: string, err: Error|string): Promise<void> => {
-  spinner.fail(`Channel ${channelName}: Auth and Pinpoint resources deployment failed with Error ${err}`);
+export const viewShowInlineModeInstructionsFail = async (channelName: string, err: Error | string): Promise<void> => {
+  printer.error(`Channel ${channelName}: Auth and Pinpoint resources deployment failed with Error ${err}`);
 };

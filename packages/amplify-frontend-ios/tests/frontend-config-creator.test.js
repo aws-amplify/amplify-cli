@@ -18,7 +18,9 @@ describe('test config creator', () => {
 
   const awsConfigFilePath = path.join(dir, constants.awsConfigFilename);
   const amplifyConfigFilePath = path.join(dir, constants.amplifyConfigFilename);
-  const files = constants.fileNames.map(filename => path.join(dir, 'graphql', `${filename}.${constants.FILE_EXTENSION_MAP['javascript']}`));
+  const files = constants.fileNames.map((filename) =>
+    path.join(dir, 'graphql', `${filename}.${constants.FILE_EXTENSION_MAP['javascript']}`),
+  );
 
   it('should not attempt deleted generatedfile name if empty', () => {
     fs.removeSync = jest.fn();
@@ -41,7 +43,7 @@ describe('test config creator', () => {
 
     frontConfigCreator.deleteAmplifyConfig(mockContext);
     const removeSyncCalls = _.flatten(fs.removeSync.mock.calls);
-    [awsConfigFilePath, amplifyConfigFilePath, ...files].forEach(file => {
+    [awsConfigFilePath, amplifyConfigFilePath, ...files].forEach((file) => {
       expect(removeSyncCalls).toContain(file);
     });
     expect(removeSyncCalls.includes(path.join(dir, ''))).toBeFalsy();

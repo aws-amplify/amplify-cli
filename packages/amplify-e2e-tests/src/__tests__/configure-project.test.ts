@@ -1,5 +1,11 @@
-import { amplifyConfigureProject, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile } from '@aws-amplify/amplify-e2e-core';
-import { stateManager } from 'amplify-cli-core';
+import {
+  amplifyConfigureProject,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
+} from '@aws-amplify/amplify-e2e-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 
 describe('amplify configure project tests', () => {
   let projRoot: string;

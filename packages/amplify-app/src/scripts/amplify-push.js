@@ -15,7 +15,7 @@ function getNamedProfiles() {
   if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
     namedProfiles = {};
-    Object.keys(config).forEach(key => {
+    Object.keys(config).forEach((key) => {
       const profileName = key.replace('profile', '').trim();
       if (!namedProfiles[profileName]) {
         namedProfiles[profileName] = config[key];
@@ -53,7 +53,7 @@ async function configureProfile() {
   const amplifyConfigure = spawn(amplify, ['configure'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
   return new Promise((resolve, reject) => {
-    amplifyConfigure.on('exit', code => {
+    amplifyConfigure.on('exit', (code) => {
       if (code === 0) {
         resolve();
       } else {
@@ -131,7 +131,7 @@ async function run() {
     cloudPush = spawn(amplify, ['push', '--yes'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
   }
 
-  cloudPush.on('exit', code => {
+  cloudPush.on('exit', (code) => {
     if (code === 0) {
       process.exit(0);
     } else {

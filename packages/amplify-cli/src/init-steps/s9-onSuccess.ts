@@ -1,11 +1,9 @@
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import sequential from 'promise-sequential';
-import {
-  CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny,
-} from 'amplify-cli-core';
+import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
@@ -87,7 +85,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
 
   await initializeEnv(context, currentAmplifyMeta);
 
-  if (!context.parameters.options.app) {
+  if (!context.parameters.options?.app) {
     printWelcomeMessage(context);
   }
 
@@ -123,14 +121,14 @@ const generateLocalTagsFile = (context: $TSContext): void => {
     // Preserve existing tags if present
     const tags = stateManager.getProjectTags(projectPath);
 
-    if (!tags.find(t => t.Key === 'user:Stack')) {
+    if (!tags.find((t) => t.Key === 'user:Stack')) {
       tags.push({
         Key: 'user:Stack',
         Value: '{project-env}',
       });
     }
 
-    if (!tags.find(t => t.Key === 'user:Application')) {
+    if (!tags.find((t) => t.Key === 'user:Application')) {
       tags.push({
         Key: 'user:Application',
         Value: '{project-name}',

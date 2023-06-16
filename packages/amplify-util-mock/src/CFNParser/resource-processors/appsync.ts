@@ -1,12 +1,12 @@
 import { parseValue } from '../field-parser';
 import { CloudFormationProcessedResourceResult } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
-import { isWindowsPlatform } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
-export function dynamoDBResourceHandler(resourceName, resource, cfnContext: CloudFormationParseContext) {
+export function dynamoDBResourceHandler(resourceName, resource) {
   const tableName = resourceName;
-  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map(gsi => {
+  const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map((gsi) => {
     const p = { ...gsi };
     delete p.ProvisionedThroughput;
     return p;
@@ -23,8 +23,8 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
       AttributeDefinitions: resource.Properties.AttributeDefinitions,
       StreamSpecification: {
         StreamEnabled: true,
-        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || 'NEW_AND_OLD_IMAGES'
-      }
+        StreamViewType: resource?.Properties?.StreamSpecification?.StreamViewType || 'NEW_AND_OLD_IMAGES',
+      },
     },
   };
 
@@ -86,7 +86,7 @@ export function appSyncDataSourceHandler(
   }
 
   if (typeName === 'AMAZON_ELASTICSEARCH') {
-    if (isWindowsPlatform) {
+    if (isWindowsPlatform()) {
       printer.info(`@searchable mocking is not supported on Windows. Search queries against the mock API will not work.`);
     }
 
@@ -130,7 +130,7 @@ export function appSyncAPIResourceHandler(resourceName, resource, cfnContext: Cl
     GraphQLUrl: 'http://localhost:20002/',
     ...(resource.Properties.AdditionalAuthenticationProviders
       ? {
-          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map(p => {
+          additionalAuthenticationProviders: resource.Properties.AdditionalAuthenticationProviders.map((p) => {
             return {
               authenticationType: p.AuthenticationType,
               ...(p.OpenIDConnectConfig ? { openIDConnectConfig: p.OpenIDConnectConfig } : {}),
@@ -149,12 +149,10 @@ export type AppSyncAPIKeyProcessedResource = CloudFormationProcessedResourceResu
   ApiKey: string;
   Ref: string;
 };
-export function appSyncAPIKeyResourceHandler(
-  resourceName,
-  resource,
-  cfnContext: CloudFormationParseContext,
-): AppSyncAPIKeyProcessedResource {
-  const value = 'da2-fakeApiId123456'; // TODO: Generate
+export function appSyncAPIKeyResourceHandler(): AppSyncAPIKeyProcessedResource {
+  // eslint-disable-next-line spellcheck/spell-checker
+  const value = 'da2-fakeApiId123456';
+  // eslint-disable-next-line spellcheck/spell-checker
   const arn = `arn:aws:appsync:us-east-1:123456789012:apis/graphqlapiid/apikey/apikeya1bzhi${value}`;
   const processedResource = {
     cfnExposedAttributes: { ApiKey: 'ApiKey', Arn: 'ref' },
@@ -216,7 +214,7 @@ export function appSyncResolverHandler(resourceName, resource, cfnContext: Cloud
     if (typeof properties.PipelineConfig === 'undefined') {
       throw new Error('Pipeline DataSource config is missing required property PipelineConfig');
     }
-    functions = (properties.PipelineConfig.Functions || []).map(f => parseValue(f, cfnContext));
+    functions = (properties.PipelineConfig.Functions || []).map((f) => parseValue(f, cfnContext));
   } else {
     dataSourceName = parseValue(properties.DataSourceName, cfnContext);
   }

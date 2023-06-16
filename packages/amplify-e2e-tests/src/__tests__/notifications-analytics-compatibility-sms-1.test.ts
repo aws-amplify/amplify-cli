@@ -41,7 +41,7 @@ describe('notification category compatibility test', () => {
   });
 
   afterEach(async () => {
-    await removeAnalytics(projectRoot, {});
+    await removeAnalytics(projectRoot);
     await deleteProject(projectRoot);
     deleteProjectDir(projectRoot);
     if (pullTestProjectRoot) {

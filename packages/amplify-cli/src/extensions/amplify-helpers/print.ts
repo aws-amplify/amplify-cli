@@ -1,7 +1,7 @@
 import importedColors from 'colors/safe';
 import CLITable from 'cli-table3';
 
-//TODO: refector, this is a copy of conext-extensions.ts
+//TODO: refactor, this is a copy of context-extensions.ts
 importedColors.setTheme({
   highlight: 'cyan',
   info: 'reset',
@@ -97,7 +97,7 @@ function table(data, options: any = {}) {
 }
 
 function columnHeaderDivider(cliTable) {
-  return findWidths(cliTable).map(w => Array(w).join('-'));
+  return findWidths(cliTable).map((w) => Array(w).join('-'));
 }
 
 function findWidths(cliTable) {

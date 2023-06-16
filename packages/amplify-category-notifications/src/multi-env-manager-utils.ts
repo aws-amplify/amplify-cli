@@ -1,7 +1,13 @@
 import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
-  $TSAny, $TSContext, $TSMeta, AmplifyCategories, AmplifyFault, AmplifySupportedService, stateManager,
-} from 'amplify-cli-core';
+  $TSAny,
+  $TSContext,
+  $TSMeta,
+  AmplifyCategories,
+  AmplifyFault,
+  AmplifySupportedService,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import { ChannelConfigDeploymentType, IChannelAPIResponse } from './channel-types';
 import { getEnabledChannelsFromAppMeta, getNotificationsAppMeta } from './notifications-amplify-meta-api';
 import { getNotificationsAppConfig } from './notifications-backend-cfg-api';
@@ -11,11 +17,17 @@ const writeTeamProviderInfo = (pinpointMeta: $TSAny): void => {
   if (!pinpointMeta) {
     return;
   }
-  getEnvParamManager().getResourceParamManager(AmplifyCategories.ANALYTICS, AmplifySupportedService.PINPOINT).setAllParams({
+  const envParamManager = getEnvParamManager();
+  const params = {
     Name: pinpointMeta.Name,
     Id: pinpointMeta.Id,
     Region: pinpointMeta.Region,
-  });
+  };
+  [AmplifyCategories.NOTIFICATIONS, AmplifyCategories.ANALYTICS]
+    .map((category) => envParamManager.getResourceParamManager(category, AmplifySupportedService.PINPOINT))
+    .forEach((resourceParamManager) => {
+      resourceParamManager.setAllParams(params);
+    });
 };
 
 const updateBackendConfig = (pinpointMeta: $TSAny, backendConfig: $TSAny): $TSAny => {
@@ -51,7 +63,7 @@ const updateBackendConfig = (pinpointMeta: $TSAny, backendConfig: $TSAny): $TSAn
  * upload currentBackend deployment bucket. channelAPIResponse is undefined for legacy non CFN behavior.
  * @param context amplify-cli context
  */
-export const writeData = async (context: $TSContext, channelAPIResponse: IChannelAPIResponse | undefined):Promise<void> => {
+export const writeData = async (context: $TSContext, channelAPIResponse: IChannelAPIResponse | undefined): Promise<void> => {
   // channelAPIResponse is not set in a `amplify pull` and `amplify env add` flow.
   // Inline deployment is set for all legacy channels (not deployed through CFN)
   // Here the Pinpoint resource is deployed and Id is valid, also the cloudBackend is synced.
@@ -67,16 +79,17 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     // This normalization will be removed once all notifications are deployed through CFN
     let pinpointMeta;
     if (notificationsServiceMeta) {
-      const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta.ResourceName]?.output?.Id;
-      const lastPushTimeStamp = (notificationsServiceMeta.lastPushTimeStamp)
-        || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
+      const applicationId = notificationsServiceMeta.Id || analyticsMeta[notificationsServiceMeta.ResourceName]?.output?.Id;
+      const lastPushTimeStamp =
+        notificationsServiceMeta.lastPushTimeStamp || analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp;
+      const region = notificationsServiceMeta.Region || analyticsMeta[notificationsServiceMeta.ResourceName]?.output?.Region;
       pinpointMeta = {
         serviceName: notificationsServiceMeta.ResourceName,
         service: notificationsServiceMeta.service,
         channels: enabledChannels,
         Name: notificationsServiceMeta.output.Name,
         Id: applicationId,
-        Region: notificationsServiceMeta.Region,
+        Region: region,
         lastPushTimeStamp,
       };
     }
@@ -107,9 +120,9 @@ export const writeData = async (context: $TSContext, channelAPIResponse: IChanne
     // Until we find a generalized way to sync updates from provider categories like
     // Analytics to dependent categories like Notifications, we need to explicitly sync
     // the applicationId into Notifications.
-    const applicationId = (notificationsServiceMeta.Id) || analyticsMeta[notificationsServiceMeta?.ResourceName]?.output?.Id;
-    const lastPushTimeStamp = (notificationsServiceMeta.lastPushTimeStamp)
-      || (analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp);
+    const applicationId = notificationsServiceMeta.Id || analyticsMeta[notificationsServiceMeta?.ResourceName]?.output?.Id;
+    const lastPushTimeStamp =
+      notificationsServiceMeta.lastPushTimeStamp || analyticsMeta[notificationsServiceMeta.ResourceName]?.lastPushTimeStamp;
     const pinpointConfig = await getNotificationsAppConfig(context.exeInfo.backendConfig);
     const pinpointMeta = {
       serviceName: notificationsServiceMeta.ResourceName,

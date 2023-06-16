@@ -1,4 +1,4 @@
-import { $TSMeta, AmplifyCategories, stateManager } from 'amplify-cli-core';
+import { $TSMeta, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Get the outputs of a resource
@@ -19,7 +19,7 @@ export const getResourceOutputs = (amplifyMeta: $TSMeta) => {
   };
 
   if (amplifyMeta.providers) {
-    Object.keys(amplifyMeta.providers).forEach(provider => {
+    Object.keys(amplifyMeta.providers).forEach((provider) => {
       outputsByProvider[provider] = {};
       outputsByProvider[provider].metadata = amplifyMeta.providers[provider] || {};
       outputsByProvider[provider].serviceResourceMapping = {};
@@ -27,10 +27,10 @@ export const getResourceOutputs = (amplifyMeta: $TSMeta) => {
   }
 
   if (amplifyMeta) {
-    Object.keys(amplifyMeta).forEach(category => {
+    Object.keys(amplifyMeta).forEach((category) => {
       const categoryMeta = amplifyMeta[category];
       const isVirtualCategory = checkIfVirtualCategory(category);
-      Object.keys(categoryMeta).forEach(resourceName => {
+      Object.keys(categoryMeta).forEach((resourceName) => {
         const resourceMeta = categoryMeta[resourceName];
         if (resourceMeta.output && (resourceMeta.lastPushTimeStamp || isVirtualCategory)) {
           const { providerPlugin } = resourceMeta;

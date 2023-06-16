@@ -1,5 +1,5 @@
 {
-    "version": 1,
-    "userPoolId": "123",
-    "nativeClientId": "222"
+  "version": 1,
+  "userPoolId": "123",
+  "nativeClientId": "222"
 }

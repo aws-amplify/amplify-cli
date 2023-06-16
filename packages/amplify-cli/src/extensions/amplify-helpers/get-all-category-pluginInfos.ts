@@ -1,11 +1,11 @@
 export function getAllCategoryPluginInfo(context) {
   const categoryPluginInfoList: { notifications: { packageLocation }[] } = { notifications: [] };
-  Object.keys(context.pluginPlatform.plugins).forEach(pluginName => {
-    const pluginInfos = context.pluginPlatform.plugins[pluginName].filter(pluginInfo => {
-      return pluginInfo.manifest.type === 'category';
+  Object.keys(context.pluginPlatform.plugins).forEach((pluginName) => {
+    const pluginInfo = context.pluginPlatform.plugins[pluginName].filter((singlePluginInfo) => {
+      return singlePluginInfo.manifest.type === 'category';
     });
-    if (pluginInfos.length > 0) {
-      categoryPluginInfoList[pluginName] = pluginInfos;
+    if (pluginInfo.length > 0) {
+      categoryPluginInfoList[pluginName] = pluginInfo;
     }
   });
   return categoryPluginInfoList;

@@ -46,7 +46,7 @@ describe('amplify mock api (GraphQL)', () => {
     await addCustomResolver(projRoot, apiName, resolverReqName, resolver);
 
     await addCodegen(projRoot, {});
-    await cancelAmplifyMockApi(projRoot, {});
+    await cancelAmplifyMockApi(projRoot);
 
     const resolversPath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'resolvers');
     const files = await fs.readdir(resolversPath);

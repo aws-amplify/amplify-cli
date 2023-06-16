@@ -2,7 +2,7 @@ import * as path from 'path';
 
 // parse the request url to get the path and storing in the request.params.path  with the prefix if present
 
-export function parseUrl(request, route: String) {
+export function parseUrl(request, route: string) {
   request.url = path.normalize(decodeURIComponent(request.url));
   const temp = request.url.split(route);
   request.params.path = '';
@@ -24,7 +24,7 @@ export function parseUrl(request, route: String) {
 
   // changing file path by removing invalid file path characters for windows
   if (process.platform === 'win32') {
-    request.params.path = request.params.path.replace(/[<>:"|?*]/g, (match, capture) => '%' + Buffer.from(match, 'utf8').toString('hex'));
+    request.params.path = request.params.path.replace(/[<>:"|?*]/g, (match) => '%' + Buffer.from(match, 'utf8').toString('hex'));
   }
 
   if (request.method === 'GET') {
@@ -35,7 +35,7 @@ export function parseUrl(request, route: String) {
 }
 
 // check for the delimiter in the file for list object request
-export function checkfile(file: String, prefix: String, delimiter: String) {
+export function checkFile(file: string, prefix: string, delimiter: string) {
   if (delimiter === '') {
     return true;
   } else {
@@ -50,24 +50,24 @@ export function checkfile(file: String, prefix: String, delimiter: String) {
 
 // removing chunk siognature from request payload if present
 export function stripChunkSignature(buf: Buffer) {
-  let str = buf.toString();
-  var regex = /^[A-Fa-f0-9]+;chunk-signature=[0-9a-f]{64}/gm;
+  const str = buf.toString();
+  const regex = /^[A-Fa-f0-9]+;chunk-signature=[0-9a-f]{64}/gm;
   let m;
-  let offset = [];
-  let chunk_size = [];
-  let arr = [];
+  const offset = [];
+  const chunk_size = [];
+  const arr = [];
   while ((m = regex.exec(str)) !== null) {
     // This is necessary to avoid infinite loops with zero-width matches
     if (m.index === regex.lastIndex) {
       regex.lastIndex++;
     }
-    m.forEach((match, groupIndex, index) => {
+    m.forEach((match) => {
       offset.push(Buffer.from(match).byteLength);
-      var temp = match.split(';')[0];
+      const temp = match.split(';')[0];
       chunk_size.push(parseInt(temp, 16));
     });
   }
-  var start = 0;
+  let start = 0;
   //if no chunk signature is present
   if (offset.length === 0) {
     return buf;

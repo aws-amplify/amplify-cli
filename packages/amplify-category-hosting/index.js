@@ -1,4 +1,5 @@
-const inquirer = require('inquirer');
+const { AmplifyError } = require('@aws-amplify/amplify-cli-core');
+const { prompter } = require('@aws-amplify/amplify-prompts');
 const sequential = require('promise-sequential');
 const path = require('path');
 const categoryManager = require('./lib/category-manager');
@@ -11,15 +12,12 @@ async function add(context) {
 
   if (availableServices.length > 0) {
     if (disabledServices.length > 1) {
-      const answers = await inquirer.prompt({
-        type: 'checkbox',
-        name: 'selectedServices',
-        message: 'Please select the service(s) to add.',
-        choices: disabledServices,
-        default: disabledServices[0],
+      const selectedServices = await prompter.pick('Please select the service(s) to add.', disabledServices, {
+        initial: 0,
+        returnSize: 'many',
       });
       const tasks = [];
-      answers.selectedServices.forEach(service => {
+      selectedServices.forEach((service) => {
         tasks.push(() => categoryManager.runServiceAction(context, service, 'enable'));
       });
       return sequential(tasks);
@@ -41,15 +39,12 @@ async function configure(context) {
 
   if (availableServices.length > 0) {
     if (enabledServices.length > 1) {
-      const answers = await inquirer.prompt({
-        type: 'checkbox',
-        name: 'selectedServices',
-        message: 'Please select the service(s) to configure.',
-        choices: enabledServices,
-        default: enabledServices[0],
+      const selectedServices = await prompter.pick('Please select the service(s) to configure.', enabledServices, {
+        initial: 0,
+        returnSize: 'many',
       });
       const tasks = [];
-      answers.selectedServices.forEach(service => {
+      selectedServices.forEach((service) => {
         tasks.push(() => categoryManager.runServiceAction(context, service, 'configure'));
       });
       return sequential(tasks);
@@ -64,9 +59,20 @@ async function configure(context) {
 
 function publish(context, service, args) {
   const { enabledServices } = categoryManager.getCategoryStatus(context);
-
   if (enabledServices.length > 0) {
     if (enabledServices.includes(service)) {
+      // checks if hosting with S3 and CloudFront and has a secure URL otherwise,
+      // the user is hosting from S3 without CloudFront distribution and should throw an error
+      if (service === 'S3AndCloudFront') {
+        const cfnOutput = context.exeInfo?.amplifyMeta?.hosting?.S3AndCloudFront?.output;
+        if (typeof cfnOutput === 'object' && (cfnOutput === undefined || cfnOutput.CloudFrontSecureURL === undefined)) {
+          throw new AmplifyError('ProjectPublishError', {
+            message: 'You are trying to host an application without a CloudFront distribution. This is not supported on S3 by default.',
+            details:
+              'Run "amplify remove hosting" to remove the current hosting configuration, then run "amplify add hosting" and choose "S3AndCloudFront" when prompted to add a new hosting setup.',
+          });
+        }
+      }
       return categoryManager.runServiceAction(context, service, 'publish', args);
     }
     throw new Error(`Hosting service ${service} is NOT enabled.`);
@@ -80,14 +86,8 @@ async function console(context) {
 
   if (availableServices.length > 0) {
     if (enabledServices.length > 1) {
-      const answer = await inquirer.prompt({
-        type: 'list',
-        name: 'selectedService',
-        message: 'Please select the service.',
-        choices: enabledServices,
-        default: enabledServices[0],
-      });
-      return categoryManager.runServiceAction(context, answer.selectedService, 'console');
+      const selectedService = await prompter.pick('Please select the service.', enabledServices, { initial: 0 });
+      return categoryManager.runServiceAction(context, selectedService, 'console');
     } else if (enabledServices.length === 1) {
       return categoryManager.runServiceAction(context, enabledServices[0], 'console');
     }
@@ -105,7 +105,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     const { policy, attributes } = categoryManager.getIAMPolicies(resourceName, resourceOpsMapping[resourceName]);
     permissionPolicies.push(policy);
     resourceAttributes.push({ resourceName, attributes, category });

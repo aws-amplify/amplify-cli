@@ -16,5 +16,4 @@ export const install = async (): Promise<void> => {
   return binary.install();
 };
 
-// force minor version bump
-// ---
+// force version bump to 12.1.0

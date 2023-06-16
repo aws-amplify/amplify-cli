@@ -1,4 +1,4 @@
-import { MultiProgressBar } from 'amplify-prompts';
+import { MultiProgressBar } from '@aws-amplify/amplify-prompts';
 import columnify from 'columnify';
 import { StackProgressPrinter } from '../../iterative-deployment/stack-progress-printer';
 import { IStackProgressPrinter } from '../../iterative-deployment/stack-event-monitor';

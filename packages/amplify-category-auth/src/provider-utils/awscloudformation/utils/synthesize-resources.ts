@@ -8,16 +8,14 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { copySync, ensureDirSync, existsSync } from 'fs-extra';
 import { get } from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { UserPoolGroupMetadata } from '../auth-stack-builder/user-pool-group-stack-transform';
-import {
-  adminAuthAssetRoot, cfnTemplateRoot, privateKeys, triggerRoot,
-} from '../constants';
+import { adminAuthAssetRoot, cfnTemplateRoot, privateKeys, triggerRoot } from '../constants';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConfig, AuthTriggerConnection } from '../service-walkthrough-types/cognito-user-input-types';
 import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
@@ -29,7 +27,10 @@ import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-s
  * @param request The Cognito configuration request
  */
 // eslint-disable-next-line max-len
-export const getResourceSynthesizer = async (context: $TSContext, request: Readonly<CognitoConfiguration>): Promise<CognitoConfiguration> => {
+export const getResourceSynthesizer = async (
+  context: $TSContext,
+  request: Readonly<CognitoConfiguration>,
+): Promise<CognitoConfiguration> => {
   await lambdaTriggers(request, context, null);
   // transformation handled in api and functions.
   await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
@@ -50,9 +51,9 @@ export const getResourceUpdater = async (context: $TSContext, request: Readonly<
   const resources = context.amplify.getProjectMeta();
 
   const adminQueriesFunctionName = get<{ category: string; resourceName: string }[]>(resources, ['api', 'AdminQueries', 'dependsOn'], [])
-    .filter(resource => resource.category === AmplifyCategories.FUNCTION)
-    .map(resource => resource.resourceName)
-    .find(resourceName => resourceName.includes('AdminQueries'));
+    .filter((resource) => resource.category === AmplifyCategories.FUNCTION)
+    .map((resource) => resource.resourceName)
+    .find((resourceName) => resourceName.includes('AdminQueries'));
   if (adminQueriesFunctionName) {
     await addAdminAuth(context, request.resourceName!, 'update', request.adminQueryGroup, adminQueriesFunctionName);
   } else {
@@ -85,7 +86,7 @@ export const copyCfnTemplate = async (context: $TSContext, category: string, opt
   ];
 
   const privateParams = { ...options };
-  privateKeys.forEach(p => delete privateParams[p]);
+  privateKeys.forEach((p) => delete privateParams[p]);
 
   return context.amplify.copyBatch(context, copyJobs, privateParams, true);
 };
@@ -103,7 +104,7 @@ export const saveResourceParameters = (
 ): void => {
   const provider = context.amplify.getPluginInstance(context, providerName);
   let privateParams = { ...params };
-  privateKeys.forEach(p => delete privateParams[p]);
+  privateKeys.forEach((p) => delete privateParams[p]);
   privateParams = removeDeprecatedProps(privateParams);
   provider.saveResourceParameters(context, category, resource, privateParams, envSpecificParams);
 };
@@ -136,8 +137,8 @@ export const removeDeprecatedProps = (props: $TSObject): $TSObject => {
     'PreAuthentication',
     'PreSignup',
     'VerifyAuthChallengeResponse',
-  // eslint-disable-next-line no-param-reassign
-  ].forEach(deprecatedField => delete props[deprecatedField]);
+    // eslint-disable-next-line no-param-reassign
+  ].forEach((deprecatedField) => delete props[deprecatedField]);
   return props;
 };
 
@@ -179,7 +180,7 @@ const lambdaTriggers = async (coreAnswers: $TSObject, context: $TSContext, previ
     );
   } else if (previouslySaved) {
     const targetDir = pathManager.getBackendDirPath();
-    Object.keys(previouslySaved).forEach(p => {
+    Object.keys(previouslySaved).forEach((p) => {
       // eslint-disable-next-line no-param-reassign
       delete coreAnswers[p];
     });
@@ -192,7 +193,7 @@ const lambdaTriggers = async (coreAnswers: $TSObject, context: $TSContext, previ
   }
 
   // handle dependsOn data
-  const dependsOnKeys = Object.keys(triggerKeyValues).map(i => `${coreAnswers.resourceName}${i}`);
+  const dependsOnKeys = Object.keys(triggerKeyValues).map((i) => `${coreAnswers.resourceName}${i}`);
   // eslint-disable-next-line no-param-reassign
   coreAnswers.dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
 };
@@ -262,7 +263,10 @@ export const createUserPoolGroups = async (context: $TSContext, resourceName: st
 export const updateUserPoolGroups = async (context: $TSContext, resourceName: string, userPoolGroupList?: string[]): Promise<void> => {
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     const userPoolGroupFolder = path.join(pathManager.getBackendDirPath(), AmplifyCategories.AUTH, 'userPoolGroups');
-    const prevUserPoolGroupPrecedenceList = JSONUtilities.readJson<UserPoolGroupMetadata[]>(path.join(userPoolGroupFolder, 'user-pool-group-precedence.json'), { throwIfNotExist: false }) ?? [];
+    const prevUserPoolGroupPrecedenceList =
+      JSONUtilities.readJson<UserPoolGroupMetadata[]>(path.join(userPoolGroupFolder, 'user-pool-group-precedence.json'), {
+        throwIfNotExist: false,
+      }) ?? [];
     const currentUserPoolGroupPrecedenceList = userPoolGroupList.map((groupName: string, index: number) => ({
       groupName,
       precedence: index + 1,
@@ -270,9 +274,9 @@ export const updateUserPoolGroups = async (context: $TSContext, resourceName: st
     // underlying logic takes previous user-pool precedece files object (amplifygenerated/ Cx overided)
     // and updates with new settings keeping custom policies intact
     const updatedUserPoolGroupList: UserPoolGroupMetadata[] = [];
-    currentUserPoolGroupPrecedenceList.forEach(group1 => {
+    currentUserPoolGroupPrecedenceList.forEach((group1) => {
       let newGroup = group1;
-      prevUserPoolGroupPrecedenceList.forEach(group2 => {
+      prevUserPoolGroupPrecedenceList.forEach((group2) => {
         const oldGroup = group2;
         if (newGroup.groupName === oldGroup.groupName) {
           newGroup = { ...oldGroup, ...newGroup };
@@ -323,7 +327,7 @@ const addAdminAuth = async (
   }
 };
 
-const createAdminAuthFunction = async (
+export const createAdminAuthFunction = async (
   context: $TSContext,
   authResourceName: string,
   functionName: string,
@@ -345,46 +349,46 @@ const createAdminAuthFunction = async (
     lambdaGroupVar = 'NONE';
   }
 
-  const functionProps = {
-    functionName: `${functionName}`,
-    roleName: `${functionName}LambdaRole`,
-    dependsOn,
-    authResourceName,
-    lambdaGroupVar,
-  };
-
-  const copyJobs = [
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-auth-app.js',
-      target: path.join(targetDir, 'src/app.js'),
-    },
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-auth-cognitoActions.js',
-      target: path.join(targetDir, 'src/cognitoActions.js'),
-    },
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-auth-index.js',
-      target: path.join(targetDir, 'src/index.js'),
-    },
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-auth-package.json',
-      target: path.join(targetDir, 'src/package.json'),
-    },
-    {
-      dir: adminAuthAssetRoot,
-      template: 'admin-queries-function-template.json.ejs',
-      target: path.join(targetDir, `${functionName}-cloudformation-template.json`),
-    },
-  ];
-
-  // copy over the files
-  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
-
   if (operation === 'add') {
+    const functionProps = {
+      functionName: `${functionName}`,
+      roleName: `${functionName}LambdaRole`,
+      dependsOn,
+      authResourceName,
+      lambdaGroupVar,
+    };
+
+    const copyJobs = [
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-auth-app.js',
+        target: path.join(targetDir, 'src/app.js'),
+      },
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-auth-cognitoActions.js',
+        target: path.join(targetDir, 'src/cognitoActions.js'),
+      },
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-auth-index.js',
+        target: path.join(targetDir, 'src/index.js'),
+      },
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-auth-package.json',
+        target: path.join(targetDir, 'src/package.json'),
+      },
+      {
+        dir: adminAuthAssetRoot,
+        template: 'admin-queries-function-template.json.ejs',
+        target: path.join(targetDir, `${functionName}-cloudformation-template.json`),
+      },
+    ];
+
+    // copy over the files
+    await context.amplify.copyBatch(context, copyJobs, functionProps, true);
+
     // add amplify-meta and backend-config
     const backendConfigs = {
       service: AmplifySupportedService.LAMBDA,
@@ -400,7 +404,12 @@ const createAdminAuthFunction = async (
   }
 };
 
-const createAdminAuthAPI = async (context: $TSContext, authResourceName: string, functionName: string, operation: 'update' | 'add'): Promise<void> => {
+const createAdminAuthAPI = async (
+  context: $TSContext,
+  authResourceName: string,
+  functionName: string,
+  operation: 'update' | 'add',
+): Promise<void> => {
   const apiName = 'AdminQueries';
   const dependsOn = [
     {
@@ -433,7 +442,7 @@ const createAdminAuthAPI = async (context: $TSContext, authResourceName: string,
 
 const copyS3Assets = async (request: CognitoConfiguration): Promise<void> => {
   const targetDir = path.join(pathManager.getBackendDirPath(), AmplifyCategories.AUTH, request.resourceName!, 'assets');
-  const triggers = request.triggers ? JSONUtilities.parse<$TSAny>(request.triggers) : null;
+  const triggers = request.triggers ? JSONUtilities.parse<$TSAny>(request.triggers as string) : null;
   const confirmationFileNeeded = request.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');
   if (confirmationFileNeeded) {
     if (!existsSync(targetDir)) {

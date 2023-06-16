@@ -1,9 +1,9 @@
-import { prompter } from 'amplify-prompts';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import * as p8decoder from '../apns-cert-p8decoder';
 import * as apnsKeyConfig from '../apns-key-config';
 
 jest.mock('../apns-cert-p8decoder');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
 describe('apns-key-config', () => {

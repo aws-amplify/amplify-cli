@@ -1,6 +1,4 @@
-import {
-  $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities,
-} from 'amplify-cli-core';
+import { $TSContext, AmplifyFault, AmplifyError, getPackageManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { execSync } from 'child_process';
 import _ from 'lodash';
 import * as path from 'path';
@@ -15,7 +13,7 @@ const MISSING_SCRIPTS_ERROR = new Error(
  * Run the post initialization setup for the current project
  */
 export const postInitSetup = async (context: $TSContext): Promise<void> => {
-  if (context.parameters.options.app) {
+  if (context.parameters.options?.app) {
     // Pushing a sample app
     try {
       context.parameters.options.app = true;
@@ -27,10 +25,14 @@ export const postInitSetup = async (context: $TSContext): Promise<void> => {
       if (e instanceof AmplifyError) {
         throw e;
       }
-      throw new AmplifyFault('ProjectInitFault', {
-        message: 'An error occurred during project initialization',
-        link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
-      }, e);
+      throw new AmplifyFault(
+        'ProjectInitFault',
+        {
+          message: 'An error occurred during project initialization',
+          link: 'https://docs.amplify.aws/cli/project/troubleshooting/',
+        },
+        e,
+      );
     }
   }
 };
@@ -41,7 +43,7 @@ export const postInitSetup = async (context: $TSContext): Promise<void> => {
  * @param packageManager either npm or yarn
  */
 const runPackage = async (): Promise<void> => {
-  const packageManager = getPackageManager();
+  const packageManager = await getPackageManager();
 
   if (packageManager !== null) {
     const packageScript = getPackageScript();
@@ -61,8 +63,8 @@ const getPackageScript = (): string => {
   const scripts = _.get(packageJsonContent, 'scripts', {});
 
   return (
-    _.keys(scripts).find(scriptName => initializationScripts.includes(scriptName))
-    || (() => {
+    _.keys(scripts).find((scriptName) => initializationScripts.includes(scriptName)) ||
+    (() => {
       throw MISSING_SCRIPTS_ERROR;
     })()
   );

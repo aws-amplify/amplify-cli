@@ -2,12 +2,12 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import { execSync } from 'child_process';
-import { $TSAny, AmplifyError } from 'amplify-cli-core';
+import { $TSAny, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Certificate Info
  */
-export interface ICertificateInfo{
+export interface ICertificateInfo {
   Certificate: string;
   PrivateKey: string;
 }
@@ -48,7 +48,7 @@ export const run = (info: $TSAny): ICertificateInfo => {
   };
 };
 
-const getPemFileContent = (filePath: string, filePassword: string):string => {
+const getPemFileContent = (filePath: string, filePassword: string): string => {
   // eslint-disable-next-line spellcheck/spell-checker
   const outputFilePath = path.join(os.tmpdir(), 'temp.pem');
   // eslint-disable-next-line spellcheck/spell-checker
@@ -59,7 +59,7 @@ const getPemFileContent = (filePath: string, filePassword: string):string => {
   return content;
 };
 
-const getCertificate = (pemFileContent: $TSAny): string|undefined => {
+const getCertificate = (pemFileContent: $TSAny): string | undefined => {
   let certificate;
   const beginMark = '-----BEGIN CERTIFICATE-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
@@ -74,7 +74,7 @@ const getCertificate = (pemFileContent: $TSAny): string|undefined => {
   return certificate;
 };
 
-const getPrivateKey = (pemFileContent: $TSAny):string|undefined => {
+const getPrivateKey = (pemFileContent: $TSAny): string | undefined => {
   let privateKey;
   const beginMark = '-----BEGIN PRIVATE KEY-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
@@ -89,7 +89,7 @@ const getPrivateKey = (pemFileContent: $TSAny):string|undefined => {
   return privateKey;
 };
 
-const getRSAPrivateKey = (pemFileContent: $TSAny):string|undefined => {
+const getRSAPrivateKey = (pemFileContent: $TSAny): string | undefined => {
   let privateKey;
   const beginMark = '-----BEGIN RSA PRIVATE KEY-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
@@ -104,7 +104,7 @@ const getRSAPrivateKey = (pemFileContent: $TSAny):string|undefined => {
   return privateKey;
 };
 
-const getEncryptedPrivateKey = (pemFileContent: $TSAny):string|undefined => {
+const getEncryptedPrivateKey = (pemFileContent: $TSAny): string | undefined => {
   let privateKey;
   const beginMark = '-----BEGIN ENCRYPTED PRIVATE KEY-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;

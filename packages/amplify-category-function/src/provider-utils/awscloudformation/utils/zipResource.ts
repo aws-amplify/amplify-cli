@@ -1,4 +1,4 @@
-import { ZipEntry } from 'amplify-function-plugin-interface';
+import { ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import archiver from 'archiver';
 
@@ -10,11 +10,11 @@ export const zipPackage = (zipEntries: ZipEntry[], packageFileName: string): Pro
       file.on('close', () => {
         resolve('Successfully zipped');
       });
-      file.on('error', err => {
+      file.on('error', (err) => {
         reject(new Error(`Failed to zip with error: [${err}]`));
       });
       zip.pipe(file);
-      zipEntries.forEach(entry => {
+      zipEntries.forEach((entry) => {
         if (entry.sourceFolder) {
           zip.glob('**/*', {
             cwd: entry.sourceFolder,
@@ -26,7 +26,8 @@ export const zipPackage = (zipEntries: ZipEntry[], packageFileName: string): Pro
           zip.directory(entry?.packageFolder, false);
         }
       });
-      zip.finalize();
+      zip.finalize().catch(reject);
     });
   }
+  return undefined;
 };

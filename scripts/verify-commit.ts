@@ -16,11 +16,11 @@ function main(): void {
   execa.commandSync(`git secrets --register-aws`);
   const allowedSecrets = ['123456789012', 'undefined'];
   const allowed = execa.commandSync('git config --get secrets.allowed').stdout;
-  allowedSecrets.forEach(allowedSecret => {
+  allowedSecrets.forEach((allowedSecret) => {
     if (!allowed.includes(allowedSecret)) {
       execa.commandSync(`git config --add secrets.allowed ${allowedSecret}`);
     }
-  })
+  });
   try {
     execa.commandSync(`git secrets --scan`);
   } catch {

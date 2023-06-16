@@ -66,31 +66,33 @@ describe('minLength', () => {
 
 describe('and', () => {
   it('returns true if all validators return true', async () => {
-    expect(await and([input => true, input => true])('anything')).toBe(true);
+    expect(await and([(input) => true, (input) => true])('anything')).toBe(true);
   });
 
   it('returns first error message', async () => {
-    expect(await and([input => true, input => 'first error', input => 'second error'])('anything')).toMatchInlineSnapshot(`"first error"`);
+    expect(await and([(input) => true, (input) => 'first error', (input) => 'second error'])('anything')).toMatchInlineSnapshot(
+      `"first error"`,
+    );
   });
 
   it('returns override message if any validators return error message', async () => {
     expect(
-      await and([input => true, input => 'first error', input => 'second error'], 'custom error message')('anything'),
+      await and([(input) => true, (input) => 'first error', (input) => 'second error'], 'custom error message')('anything'),
     ).toMatchInlineSnapshot(`"custom error message"`);
   });
 });
 
 describe('or', () => {
   it('returns true if one validator returns true', async () => {
-    expect(await or([input => 'first error', input => true])('anything')).toBe(true);
+    expect(await or([(input) => 'first error', (input) => true])('anything')).toBe(true);
   });
 
   it('returns last error message if all validators return error', async () => {
-    expect(await or([input => 'first error', input => 'second error'])('anything')).toMatchInlineSnapshot(`"second error"`);
+    expect(await or([(input) => 'first error', (input) => 'second error'])('anything')).toMatchInlineSnapshot(`"second error"`);
   });
 
   it('returns override error mmessage if all validators return error', async () => {
-    expect(await or([input => 'first error', input => 'second error'], 'custom message')('anything')).toMatchInlineSnapshot(
+    expect(await or([(input) => 'first error', (input) => 'second error'], 'custom message')('anything')).toMatchInlineSnapshot(
       `"custom message"`,
     );
   });
@@ -98,11 +100,11 @@ describe('or', () => {
 
 describe('not', () => {
   it('returns error message if validator returns true', async () => {
-    expect(await not(input => true, 'custom error message')('anything')).toMatchInlineSnapshot(`"custom error message"`);
+    expect(await not((input) => true, 'custom error message')('anything')).toMatchInlineSnapshot(`"custom error message"`);
   });
 
   it('returns true when validator returns error message', async () => {
-    expect(await not(input => 'error message', 'other message')('anything')).toBe(true);
+    expect(await not((input) => 'error message', 'other message')('anything')).toBe(true);
   });
 });
 

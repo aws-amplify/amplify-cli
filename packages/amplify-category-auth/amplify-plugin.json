@@ -2,5 +2,5 @@
   "name": "auth",
   "type": "category",
   "commands": ["add", "console", "enable", "import", "push", "remove", "update", "help", "override"],
-  "eventHandlers": []
+  "eventHandlers": ["PrePush"]
 }

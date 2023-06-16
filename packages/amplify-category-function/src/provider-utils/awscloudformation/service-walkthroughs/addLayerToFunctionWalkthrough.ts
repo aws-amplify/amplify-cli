@@ -1,5 +1,5 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { FunctionDependency, FunctionParameters, FunctionRuntime, LambdaLayer } from 'amplify-function-plugin-interface';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionDependency, FunctionParameters, FunctionRuntime, LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { askCustomArnQuestion, askLayerOrderQuestion, askLayerSelection } from '../utils/addLayerToFunctionUtils';
 
 const confirmationPrompt = 'Do you want to enable Lambda layers for this function?';
@@ -24,14 +24,10 @@ export const addLayersToFunctionWalkthrough = async (
   if (!(await context.amplify.confirmPrompt(confirmationPrompt, defaultConfirm))) {
     return { lambdaLayers: previousSelections, dependsOn };
   }
+  const result = await askLayerSelection(context, stateManager.getMeta(), runtime.value, previousSelections);
 
-  let askArnQuestion: boolean;
-  ({ lambdaLayers, dependsOn, askArnQuestion } = await askLayerSelection(
-    context,
-    stateManager.getMeta(),
-    runtime.value,
-    previousSelections,
-  ));
+  ({ lambdaLayers, dependsOn } = result);
+  const { askArnQuestion } = result;
 
   if (askArnQuestion) {
     lambdaLayers = lambdaLayers.concat(await askCustomArnQuestion(lambdaLayers.length, previousSelections));

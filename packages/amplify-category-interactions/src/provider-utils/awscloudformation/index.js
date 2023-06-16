@@ -1,13 +1,11 @@
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
-
 const authHelper = require('./auth-helper');
+const { servicesMetadata } = require(`../supported-services`);
 
 const parametersFileName = 'lex-params.json';
 const cfnParametersFilename = 'parameters.json';
-
-let serviceMetadata;
 
 function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
@@ -52,7 +50,7 @@ function getTemplateMappings(context) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins['awscloudformation']);
   const regionMapping = provider.getLexRegionMapping();
-  Object.keys(regionMapping).forEach(region => {
+  Object.keys(regionMapping).forEach((region) => {
     mappings.RegionMapping[region] = {
       lexRegion: regionMapping[region],
     };
@@ -62,7 +60,7 @@ function getTemplateMappings(context) {
 
 async function addResource(context, category, service, options) {
   await authHelper.ensureAuth(context, ''); // There is no resourceName available this early
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = servicesMetadata[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -75,7 +73,7 @@ async function addResource(context, category, service, options) {
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
-  return addWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
+  return addWalkthrough(context, defaultValuesFilename, serviceMetadata).then((answers) => {
     copyCfnTemplate(context, category, answers, cfnFilename);
 
     const parameters = { ...answers };
@@ -102,14 +100,14 @@ async function addResource(context, category, service, options) {
 }
 
 function updateResource(context, category, service) {
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = servicesMetadata[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
-  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then(answers => {
+  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata).then((answers) => {
     answers.shortId = uuid.v4().substring(0, 8);
     copyCfnTemplate(context, category, answers, cfnFilename);
 
@@ -126,28 +124,28 @@ function updateResource(context, category, service) {
 }
 
 async function migrateResource(context, projectPath, service, resourceName) {
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = servicesMetadata[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { migrate } = require(serviceWalkthroughSrc);
 
   if (!migrate) {
     context.print.info(`No migration required for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return await migrate(context, projectPath, resourceName);
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = servicesMetadata[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
 
   if (!getPermissionPolicies) {
     context.print.info(`No policies found for ${resourceName}`);
-    return;
+    return undefined;
   }
 
   return getIAMPolicies(resourceName, crudOptions);

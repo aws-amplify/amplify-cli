@@ -72,6 +72,7 @@ export interface AppSyncSimulatorDataSourceNoneConfig extends AppSyncSimulatorDa
 }
 export interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulatorDataSourceBaseConfig {
   type: AppSyncSimulatorDataSourceType.Lambda | `${AppSyncSimulatorDataSourceType.Lambda}`;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   invoke: Function;
 }
 export type AppSyncSimulatorDataSourceConfig =
@@ -157,5 +158,5 @@ export type AmplifyAppSyncSimulatorRequestContext = {
   jwt?: object;
   requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType;
   request: Request;
-  appsyncErrors: {};
+  appsyncErrors: any[];
 };

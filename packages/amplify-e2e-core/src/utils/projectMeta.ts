@@ -1,15 +1,16 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny } from '@aws-amplify/amplify-cli-core';
 
 // eslint-disable-next-line spellcheck/spell-checker
-export const getAWSConfigAndroidPath = (projectRoot: string): string => path.join(projectRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
+export const getAWSConfigAndroidPath = (projectRoot: string): string =>
+  path.join(projectRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
 
 // eslint-disable-next-line spellcheck/spell-checker
-export const getAmplifyConfigAndroidPath = (projectRoot: string): string => path.join(projectRoot, 'app', 'src', 'main', 'res', 'raw', 'amplifyconfiguration.json');
+export const getAmplifyConfigAndroidPath = (projectRoot: string): string =>
+  path.join(projectRoot, 'app', 'src', 'main', 'res', 'raw', 'amplifyconfiguration.json');
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const getAmplifyConfigIOSPath = (projectRoot: string): string => path.join(projectRoot, 'amplifyconfiguration.json');
@@ -22,12 +23,15 @@ export const getAmplifyDirPath = (projectRoot: string): string => path.join(proj
 // eslint-disable-next-line spellcheck/spell-checker
 export const getAWSConfigIOSPath = (projectRoot: string): string => path.join(projectRoot, 'awsconfiguration.json');
 
+export const getProjectMetaPath = (projectRoot: string) => path.join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+
 export const getProjectMeta = (projectRoot: string): $TSAny => {
-  const metaFilePath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+  const metaFilePath: string = getProjectMetaPath(projectRoot);
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 };
 
-export const getCustomPoliciesPath = (projectRoot: string, category: string, resourceName: string): string => path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'custom-policies.json');
+export const getCustomPoliciesPath = (projectRoot: string, category: string, resourceName: string): string =>
+  path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'custom-policies.json');
 
 export const getProjectTags = (projectRoot: string): $TSAny => {
   const projectTagsFilePath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'tags.json');
@@ -64,11 +68,14 @@ export const getRootStackTemplate = (projectRoot: string): $TSAny => {
   return JSON.parse(fs.readFileSync(rootStackPath, 'utf8'));
 };
 
-const getParameterPath = (projectRoot: string, category: string, resourceName: string): string => path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
+const getParameterPath = (projectRoot: string, category: string, resourceName: string): string =>
+  path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
 
-const getCLIInputsPath = (projectRoot: string, category: string, resourceName: string): string => path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'cli-inputs.json');
+const getCLIInputsPath = (projectRoot: string, category: string, resourceName: string): string =>
+  path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'cli-inputs.json');
 
-const getCategoryParameterPath = (projectRoot: string, category: string, resourceName: string): string => path.join(projectRoot, 'amplify', 'backend', category, resourceName, `${category}-parameters.json`);
+const getCategoryParameterPath = (projectRoot: string, category: string, resourceName: string): string =>
+  path.join(projectRoot, 'amplify', 'backend', category, resourceName, `${category}-parameters.json`);
 
 export const getTeamProviderInfo = (projectRoot: string): $TSAny => {
   const teamProviderFilePath: string = path.join(projectRoot, 'amplify', 'team-provider-info.json');
@@ -83,7 +90,7 @@ export const setTeamProviderInfo = (projectRoot: string, content: unknown): void
 export const getS3StorageBucketName = (projectRoot: string): string => {
   const meta = getProjectMeta(projectRoot);
   const { storage } = meta;
-  const s3 = Object.keys(storage).filter(r => storage[r].service === 'S3');
+  const s3 = Object.keys(storage).filter((r) => storage[r].service === 'S3');
   const fStorageName = s3[0];
   return storage[fStorageName].output.BucketName;
 };
@@ -123,7 +130,7 @@ export const isDeploymentSecretForEnvExists = (projectRoot: string, envName: str
   const rootStackId = teamProviderInfo[envName].awscloudformation.StackId.split('/')[2];
   const resource = _.first(Object.keys(teamProviderInfo[envName].categories.auth));
   const deploymentSecrets = getDeploymentSecrets();
-  const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
+  const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, (appSecret) => appSecret.rootStackId === rootStackId);
   if (deploymentSecretByAppId) {
     const providerCredsPath = [envName, 'auth', resource, 'hostedUIProviderCreds'];
     return _.has(deploymentSecretByAppId.environments, providerCredsPath);
@@ -131,9 +138,34 @@ export const isDeploymentSecretForEnvExists = (projectRoot: string, envName: str
   return false;
 };
 
+export const parametersExists = (projectRoot: string, category: string, resourceName: string): boolean =>
+  fs.existsSync(getParameterPath(projectRoot, category, resourceName));
+
 export const getParameters = (projectRoot: string, category: string, resourceName: string): $TSAny => {
   const parametersPath = getParameterPath(projectRoot, category, resourceName);
   return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
+};
+
+export const getCloudFormationTemplate = (projectRoot: string, category: string, resourceName: string): $TSAny => {
+  let templatePath = path.join(
+    projectRoot,
+    'amplify',
+    'backend',
+    category,
+    resourceName,
+    'build',
+    `${resourceName}-cloudformation-template.json`,
+  );
+  if (!fs.existsSync(templatePath)) {
+    templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'build', 'cloudformation-template.json');
+  }
+  if (!fs.existsSync(templatePath)) {
+    templatePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, `${resourceName}-cloudformation-template.json`);
+  }
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Unable to locate cloudformation template for ${category} ${resourceName}`);
+  }
+  return JSONUtilities.parse(fs.readFileSync(templatePath, 'utf8'));
 };
 
 export const setParameters = (projectRoot: string, category: string, resourceName: string, parameters: unknown): void => {
@@ -141,9 +173,8 @@ export const setParameters = (projectRoot: string, category: string, resourceNam
   JSONUtilities.writeJson(parametersPath, parameters);
 };
 
-export const cliInputsExists = (
-  projectRoot: string, category: string, resourceName: string,
-): boolean => fs.existsSync(getCLIInputsPath(projectRoot, category, resourceName));
+export const cliInputsExists = (projectRoot: string, category: string, resourceName: string): boolean =>
+  fs.existsSync(getCLIInputsPath(projectRoot, category, resourceName));
 
 export const getCLIInputs = (projectRoot: string, category: string, resourceName: string): $TSAny => {
   const parametersPath = getCLIInputsPath(projectRoot, category, resourceName);

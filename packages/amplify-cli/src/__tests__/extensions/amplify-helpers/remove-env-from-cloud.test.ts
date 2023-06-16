@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { AmplifyError } from 'amplify-cli-core';
+import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { removeEnvFromCloud } from '../../../extensions/amplify-helpers/remove-env-from-cloud';
 import { getAllCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-all-category-pluginInfos';
 
@@ -63,9 +63,7 @@ describe('remove-env-from-cloud', () => {
   it('throws error when deleteEnv promise rejected', async () => {
     deleteEnvMock.mockRejectedValue(new Error('a generic deleteEnv error'));
 
-    await expect(removeEnvFromCloud(context, envName, false))
-      .rejects
-      .toThrow(`Error occurred while deleting env: ${envName}.`);
+    await expect(removeEnvFromCloud(context, envName, false)).rejects.toThrow(`Error occurred while deleting env: ${envName}.`);
   });
 
   it('does not throw bucket not found error when deleteEnv promise rejected', async () => {

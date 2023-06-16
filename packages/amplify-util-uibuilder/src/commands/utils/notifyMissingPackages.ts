@@ -1,7 +1,5 @@
-import {
-  pathManager, JSONUtilities, $TSContext, $TSAny,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { pathManager, JSONUtilities, $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import path from 'path';
 import rangeSubset from 'semver/ranges/subset';
@@ -9,13 +7,14 @@ import { RequiredDependency } from '@aws-amplify/codegen-ui';
 import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react';
 import { extractArgs } from './extractArgs';
 
-const getRequiredDependencies = (): RequiredDependency[] => new ReactRequiredDependencyProvider().getRequiredDependencies();
+const getRequiredDependencies = (hasStorageManagerField?: boolean): RequiredDependency[] =>
+  new ReactRequiredDependencyProvider().getRequiredDependencies(hasStorageManagerField);
 
 /**
  * Displays a warning to the user if they have npm dependencies
  * they need to install in their application for UIBuilder components to work properly
  */
-export const notifyMissingPackages = (context: $TSContext): void => {
+export const notifyMissingPackages = (context: $TSContext, hasStorageManagerField?: boolean): void => {
   const args = extractArgs(context);
   const localEnvFilePath = args.localEnvFilePath ?? pathManager.getLocalEnvFilePath();
   if (!fs.existsSync(localEnvFilePath)) {
@@ -29,7 +28,7 @@ export const notifyMissingPackages = (context: $TSContext): void => {
     return;
   }
   const packageJson = JSONUtilities.readJson(packageJsonPath) as { dependencies: { [key: string]: string } };
-  getRequiredDependencies().forEach((dependency: $TSAny) => {
+  getRequiredDependencies(hasStorageManagerField).forEach((dependency: $TSAny) => {
     const packageIsInstalled = Object.keys(packageJson.dependencies).includes(dependency.dependencyName);
     if (!packageIsInstalled) {
       printer.warn(

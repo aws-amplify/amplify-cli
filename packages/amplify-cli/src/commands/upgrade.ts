@@ -1,6 +1,4 @@
-import {
-  $TSContext, isPackaged, pathManager,
-} from 'amplify-cli-core';
+import { $TSContext, isPackaged, pathManager } from '@aws-amplify/amplify-cli-core';
 import fetch from 'node-fetch';
 import { gt } from 'semver';
 import * as path from 'path';
@@ -16,12 +14,13 @@ import { oldVersionPath } from '../utils/win-constants';
 const repoOwner = 'aws-amplify';
 const repoName = 'amplify-cli';
 
-const binName = (platform: 'macos' | 'win.exe' | 'linux'):string => `amplify-pkg-${platform}`;
-const binUrl = (version: string, binaryName: string):string => `https://github.com/${repoOwner}/${repoName}/releases/download/v${version}/${binaryName}.tgz`;
+const binName = (platform: 'macos' | 'win.exe' | 'linux'): string => `amplify-pkg-${platform}`;
+const binUrl = (version: string, binaryName: string): string =>
+  `https://github.com/${repoOwner}/${repoName}/releases/download/v${version}/${binaryName}.tgz`;
 const latestVersionUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`;
 
 /**
- * Downloads the latest version of amplify-cli (only if it doesnt match the current version)
+ * Downloads the latest version of amplify-cli (only if it does not match the current version)
  */
 export const run = async (context: $TSContext): Promise<void> => {
   if (!isPackaged) {
@@ -42,7 +41,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   }
 };
 
-const upgradeCli = async (print, version: string) : Promise<void> => {
+const upgradeCli = async (print, version: string): Promise<void> => {
   const isWin = process.platform.startsWith('win');
   const binDir = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin');
   const binPath = path.join(binDir, isWin ? 'amplify.exe' : 'amplify');
@@ -72,7 +71,7 @@ const upgradeCli = async (print, version: string) : Promise<void> => {
   });
   print.info('Downloading latest Amplify CLI');
   const downloadPromise = promisify(pipeline)(response.body, gunzip(), tar.extract(binDir));
-  response.body.on('data', chunk => progressBar.tick(chunk.length));
+  response.body.on('data', (chunk) => progressBar.tick(chunk.length));
   await downloadPromise;
   await fs.move(extractedPath, binPath, { overwrite: true });
   await fs.chmod(binPath, '700');

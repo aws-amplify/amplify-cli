@@ -1,7 +1,5 @@
-import {
-  $TSContext, $TSObject, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { category } from '../../constants';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { DataSourceIntendedUse, PlaceIndexParameters } from '../../service-utils/placeIndexParams';
@@ -9,8 +7,8 @@ import { AccessType, DataProvider } from '../../service-utils/resourceParams';
 import { createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } from '../../service-walkthroughs/placeIndexWalkthrough';
 import { removeWalkthrough } from '../../service-walkthroughs/removeWalkthrough';
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-prompts');
 
 describe('Search walkthrough works as expected', () => {
   const projectName = 'mockProject';
@@ -44,7 +42,7 @@ describe('Search walkthrough works as expected', () => {
     groupPermissions: [mockUserPoolGroup],
   };
 
-  const mockContext = ({
+  const mockContext = {
     amplify: {
       serviceSelectionPrompt: async () => ({ service, providerName: provider }),
       inputValidation: jest.fn(),
@@ -55,7 +53,7 @@ describe('Search walkthrough works as expected', () => {
       updateBackendConfigAfterResourceRemove: jest.fn(),
     },
     usageData: { emitError: jest.fn() },
-  } as unknown) as $TSContext;
+  } as unknown as $TSContext;
 
   // construct mock amplify meta
   const mockAmplifyMeta: $TSObject = {
@@ -84,7 +82,7 @@ describe('Search walkthrough works as expected', () => {
       if (message === 'Provide a name for the location search index (place index):') {
         mockUserInput = mockPlaceIndexParameters.name;
       }
-      return new Promise<any>(resolve => {
+      return new Promise<any>((resolve) => {
         resolve(mockUserInput);
       });
     });
@@ -109,7 +107,7 @@ describe('Search walkthrough works as expected', () => {
       } else if (message === 'Specify the data provider of geospatial data for this search index:') {
         mockUserInput = mockPlaceIndexParameters.dataProvider;
       }
-      return new Promise<any>(resolve => {
+      return new Promise<any>((resolve) => {
         resolve(mockUserInput);
       });
     });
@@ -133,10 +131,8 @@ describe('Search walkthrough works as expected', () => {
 
     // The default place index is now changed to secondary map
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, mockPlaceIndexName, 'isDefault', false);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, secondaryPlaceIndexName, 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, mockPlaceIndexName, 'isDefault', false);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, secondaryPlaceIndexName, 'isDefault', true);
 
     expect(mockContext.amplify.updateBackendConfigAfterResourceUpdate).toBeCalledTimes(2);
     // The place index parameters are updated
@@ -187,7 +183,7 @@ describe('Search walkthrough works as expected', () => {
   });
 
   it('sets the resource to remove correctly', async () => {
-    expect(await (removeWalkthrough(service))).toEqual(mockPlaceIndexName);
+    expect(await removeWalkthrough(service)).toEqual(mockPlaceIndexName);
   });
 
   it('early returns and prints error if no place index resource to remove', async () => {
@@ -211,13 +207,11 @@ describe('Search walkthrough works as expected', () => {
 
     const { removePlaceIndexResource } = require('../../provider-controllers/placeIndex');
 
-    expect(await (removePlaceIndexResource(mockContext))).toEqual(mockPlaceIndexName);
+    expect(await removePlaceIndexResource(mockContext)).toEqual(mockPlaceIndexName);
     // The default place index is now changed to secondary place index
     expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledTimes(2);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, mockPlaceIndexName, 'isDefault', false);
-    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
-      .toBeCalledWith(category, secondaryPlaceIndexName, 'isDefault', true);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, mockPlaceIndexName, 'isDefault', false);
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(category, secondaryPlaceIndexName, 'isDefault', true);
     expect(mockContext.amplify.updateBackendConfigAfterResourceUpdate).toBeCalledTimes(2);
   });
 });

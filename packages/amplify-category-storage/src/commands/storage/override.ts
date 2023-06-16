@@ -11,8 +11,8 @@ import {
   getMigrateResourceMessageForOverride,
   pathManager,
   stateManager,
-} from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as path from 'path';
 import { DDBStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import { AmplifyS3ResourceStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
@@ -26,7 +26,7 @@ export const run = async (context: $TSContext) => {
   const storageResources: string[] = [];
 
   if (amplifyMeta[AmplifyCategories.STORAGE]) {
-    Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
+    Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach((resourceName) => {
       storageResources.push(resourceName);
     });
   }
@@ -60,7 +60,7 @@ export const run = async (context: $TSContext) => {
     const resourceInputState = new DynamoDBInputState(context, selectedResourceName);
     if (!resourceInputState.cliInputFileExists()) {
       if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
-        resourceInputState.migrate();
+        await resourceInputState.migrate();
         const stackGenerator = new DDBStackTransform(context, selectedResourceName);
         await stackGenerator.transform();
       } else {
@@ -73,7 +73,7 @@ export const run = async (context: $TSContext) => {
       if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
         await s3ResourceInputState.migrate(context); //migrate auth and storage config resources
         const stackGenerator = new AmplifyS3ResourceStackTransform(selectedResourceName, context);
-        stackGenerator.transform(CLISubCommandType.MIGRATE);
+        await stackGenerator.transform(CLISubCommandType.MIGRATE);
       } else {
         return;
       }

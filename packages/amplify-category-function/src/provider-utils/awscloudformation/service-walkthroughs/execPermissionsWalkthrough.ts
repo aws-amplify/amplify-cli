@@ -1,5 +1,6 @@
-import { $TSAny, $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
+import { $TSAny, $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { FunctionDependency, FunctionParameters } from '@aws-amplify/amplify-function-plugin-interface';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
@@ -37,7 +38,7 @@ export const askExecRolePermissionsQuestions = async (
 
   const amplifyMeta = stateManager.getMeta();
 
-  const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers' && category !== 'predictions');
+  const categories = Object.keys(amplifyMeta).filter((category) => category !== 'providers' && category !== 'predictions');
 
   // retrieve api's AppSync resource name for conditional logic
   // in blending appsync @model-backed dynamoDB tables into storage category flow
@@ -64,40 +65,61 @@ export const askExecRolePermissionsQuestions = async (
     let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];
 
     // filter out lambda layers always, we don't support granting permissions to layers
-    resourcesList = resourcesList.filter(resourceName => amplifyMeta[selectedCategory][resourceName].service !== ServiceName.LambdaLayer);
+    resourcesList = resourcesList.filter((resourceName) => amplifyMeta[selectedCategory][resourceName].service !== ServiceName.LambdaLayer);
 
     if (selectedCategory === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
-        const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
-        const directivesMap: any = TransformPackage.collectDirectivesByTypeNames(project.schema);
+        let project;
+        let directivesMap: $TSAny;
+        try {
+          project = await TransformPackage.readProjectConfiguration(resourceDirPath);
+          directivesMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+        } catch (err) {
+          if (err.message?.includes('Syntax Error')) {
+            throw new AmplifyError(
+              'GraphQLError',
+              {
+                message: err?.message,
+              },
+              err,
+            );
+          }
+          throw new AmplifyFault(
+            'GraphQLTransformerV1Fault',
+            {
+              message: err?.message,
+            },
+            err,
+          );
+        }
         const modelNames = Object.keys(directivesMap.types)
-          .filter(typeName => directivesMap.types[typeName].includes('model'))
-          .map(modelName => `${modelName}:${appsyncTableSuffix}`);
+          .filter((typeName) => directivesMap.types[typeName].includes('model'))
+          .map((modelName) => `${modelName}:${appsyncTableSuffix}`);
         resourcesList.push(...modelNames);
       }
     } else if (selectedCategory === category || selectedCategory === categoryName) {
       // A Lambda function cannot depend on itself
-      // Lambda layer dependencies are handled seperately, also apply the filter if the selected resource is within the function category
+      // Lambda layer dependencies are handled separately, also apply the filter if the selected resource is within the function category
       // but serviceName argument was no passed in
       if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
         const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
         // A new function resource does not exist in amplifyMeta yet
         const isNewFunctionResource = !selectedResource;
         resourcesList = resourcesList.filter(
-          resourceName =>
+          (resourceName) =>
             resourceName !== resourceNameToUpdate &&
             (isNewFunctionResource || amplifyMeta[selectedCategory][resourceName].service === selectedResource.service),
         );
       } else {
         resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
+          (resourceName) => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
         );
       }
     }
 
     if (_.isEmpty(resourcesList)) {
-      context.print.warning(`No resources found for ${selectedCategory}`);
+      printer.warn(`No resources found for ${selectedCategory}`);
       continue;
     }
 
@@ -113,7 +135,7 @@ export const askExecRolePermissionsQuestions = async (
         selectedResources = _.concat(resourcesList);
       }
 
-      for (let resourceName of selectedResources) {
+      for (const resourceName of selectedResources) {
         // If the resource is AppSync, use GraphQL operations for permission policies.
         // Otherwise, default to CRUD permissions.
         const serviceType = _.get(amplifyMeta, [selectedCategory, resourceName, 'service']);
@@ -130,9 +152,7 @@ export const askExecRolePermissionsQuestions = async (
         // In case of some resources they are not in the meta file so check for resource existence as well
         const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
         if (isMobileHubImportedResource) {
-          context.print.warning(
-            `Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`,
-          );
+          printer.warn(`Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`);
           continue;
         } else {
           const currentPermissions = fetchPermissionsForResourceInCategory(currentPermissionMap, selectedCategory, resourceName);
@@ -155,18 +175,18 @@ export const askExecRolePermissionsQuestions = async (
         }
       }
     } catch (e) {
-      if (e.name === 'MethodNotFound') {
-        context.print.warning(`${selectedCategory} category does not support resource policies yet.`);
+      if (e.name === 'PluginMethodNotFoundError') {
+        printer.warn(`${selectedCategory} category does not support resource policies yet.`);
       } else {
-        context.print.warning(`Policies cannot be added for ${selectedCategory}`);
+        throw new AmplifyError(
+          'PluginPolicyAddError',
+          {
+            message: `Policies cannot be added for ${selectedCategory}`,
+            details: e.message,
+          },
+          e,
+        );
       }
-
-      if (e.stack) {
-        context.print.info(e.stack);
-      }
-
-      context.usageData.emitError(e);
-      process.exitCode = 1;
     }
   }
 
@@ -210,7 +230,7 @@ const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: a
   name: 'options',
   message: `Select the operations you want to permit on ${resourceName}`,
   choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one operation' : true),
+  validate: (answers) => (_.isEmpty(answers) ? 'You must select at least one operation' : true),
   default: currentPermissions,
 });
 
@@ -241,14 +261,14 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
 
   // replace resource attributes for @model-backed dynamoDB tables
   const cfnResources = await Promise.all<$TSAny>(
-    resourceAttributes.map(async attributes =>
+    resourceAttributes.map(async (attributes) =>
       attributes.resourceName?.endsWith(appsyncTableSuffix)
         ? {
             resourceName: appsyncResourceName,
             category: 'api',
             attributes: ['GraphQLAPIIdOutput'],
             needsAdditionalDynamoDBResourceProps: true,
-            // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+            // data to pass so we construct additional resourceProps for lambda environment variable for @model back dynamoDB tables
             _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
             _cfJoinComponentTableName: await constructCFModelTableNameComponent(
               appsyncResourceName,
@@ -271,7 +291,7 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
   const environmentMap = {};
   const envVars = new Set<string>();
   const dependsOn: FunctionDependency[] = [];
-  resources.forEach(resource => {
+  resources.forEach((resource) => {
     const { category, resourceName, attributes } = resource;
     /**
      * while resourceProperties
@@ -294,14 +314,14 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
       envVars.add(modelEnvArnKey);
     }
 
-    attributes.forEach(attribute => {
+    attributes.forEach((attribute) => {
       const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
       const refName = `${category}${resourceName}${attribute}`;
       environmentMap[envName] = { Ref: refName };
       envVars.add(envName);
     });
 
-    if (!dependsOn.find(dep => dep.resourceName === resourceName && dep.category === category)) {
+    if (!dependsOn.find((dep) => dep.resourceName === resourceName && dep.category === category)) {
       dependsOn.push({
         category: resource.category,
         resourceName: resource.resourceName,
@@ -311,7 +331,7 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
   });
 
   if (currentEnvMap) {
-    _.keys(currentEnvMap).forEach(key => {
+    _.keys(currentEnvMap).forEach((key) => {
       envVars.add(key);
     });
   }
@@ -319,7 +339,7 @@ export async function generateEnvVariablesForCfn(context: $TSContext, resources:
   const envVarStringList = Array.from(envVars).sort().join('\n\t');
 
   if (envVarStringList) {
-    context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
+    printer.info(`${envVarPrintoutPrefix}${envVarStringList}`);
   }
   return { environmentMap, dependsOn, envVarStringList };
 }

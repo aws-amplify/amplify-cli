@@ -1,12 +1,12 @@
 import { EOL } from 'os';
-import { BannerMessage } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { BannerMessage } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 /**
  * A factory function that returns a function that prints the "success message" after adding auth
  * @param print The amplify print object
  */
-export const getPostAddAuthMessagePrinter = (resourceName: string, skipNextSteps: boolean = false) => {
+export const getPostAddAuthMessagePrinter = (resourceName: string, skipNextSteps = false) => {
   printer.success(`Successfully added auth resource ${resourceName} locally`);
 
   if (!skipNextSteps) {
@@ -18,7 +18,7 @@ export const getPostAddAuthMessagePrinter = (resourceName: string, skipNextSteps
  * A factory function that returns a function that prints the "success message" after updating auth
  * @param context The amplify print object
  */
-export const getPostUpdateAuthMessagePrinter = (print: any) => (resourceName: string) => {
+export const getPostUpdateAuthMessagePrinter = () => (resourceName: string) => {
   printer.success(`Successfully updated auth resource ${resourceName} locally`);
   printCommonText();
 };

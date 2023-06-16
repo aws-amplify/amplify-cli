@@ -1,11 +1,11 @@
 import { lambdasWithApiDependency } from '../../../../provider-utils/awscloudformation/utils/getDependentFunction';
 import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('fs-extra');
 jest.mock('../../../../provider-utils/awscloudformation/utils/loadFunctionParameters');
 jest.mock('path');
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),
@@ -87,8 +87,8 @@ test('get dependent functions', async () => {
         },
       },
     });
-  const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted);
-  expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
+  const fnMetaToBeUpdated = await lambdasWithApiDependency(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted);
+  expect(fnMetaToBeUpdated.map((resource) => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
 });
 
 test('get dependent functions with empty permissions', async () => {
@@ -106,6 +106,6 @@ test('get dependent functions with empty permissions', async () => {
       },
     })
     .mockReturnValueOnce({});
-  const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted);
-  expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
+  const fnMetaToBeUpdated = await lambdasWithApiDependency(contextStub as unknown as $TSContext, allResources, backendDir, modelsDeleted);
+  expect(fnMetaToBeUpdated.map((resource) => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
 });

@@ -1,15 +1,24 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as which from 'which';
+import { coerce, SemVer } from 'semver';
+import { execWithOutputAsString } from './shell-utils';
 
+/**
+ * package managers type
+ */
 export type PackageManagerType = 'yarn' | 'npm';
 
 const packageJson = 'package.json';
 
+/**
+ * package Manager type
+ */
 export type PackageManager = {
   packageManager: PackageManagerType;
   lockFile: string;
   executable: string;
+  version?: SemVer;
 };
 
 const isWindows = process.platform === 'win32';
@@ -30,15 +39,16 @@ const packageManagers: Record<string, PackageManager> = {
 /**
   * Detect the package manager in the passed in directory or process.cwd, with a preference to yarn over npm
   * 1. Check if a package.json file present in the directory as it is mandatory, if not return null
-  * 2. Check if yarn.lock is present and yarn is present on the system
-  * 3. Check if package-lock.json is present
-  * 4. Check if yarn present on the system
-  * 5. Fallback to npm
+  * 2. Check if yarn.lock is present and yarn is present and .yarnrc.yml is present on the system for yarn2
+  * 3. Check if yarn.lock is present and yarn is present on the system
+  * 4. Check if package-lock.json is present
+  * 5. Check if yarn present on the system
+  * 6. Fallback to npm
 
   @returns {PackageManager | null} instance for the package manager that was detected or null if not found.
 
  */
-export const getPackageManager = (rootPath?: string): PackageManager | null => {
+export const getPackageManager = async (rootPath?: string): Promise<PackageManager | null> => {
   const effectiveRootPath = rootPath ?? process.cwd();
   const checkExecutable = (executable: string) => which.sync(executable, { nothrow: true });
 
@@ -48,23 +58,29 @@ export const getPackageManager = (rootPath?: string): PackageManager | null => {
     return null;
   }
 
+  // checks for yarn
   tempFilePath = path.join(effectiveRootPath, packageManagers.yarn.lockFile);
-
   if (fs.existsSync(tempFilePath) && checkExecutable(packageManagers.yarn.executable)) {
-    return packageManagers.yarn;
+    return await getYarnPackageManager(rootPath);
   }
 
+  // checks for npm
   tempFilePath = path.join(effectiveRootPath, packageManagers.npm.lockFile);
-
   if (fs.existsSync(tempFilePath)) {
     return packageManagers.npm;
   }
 
-  // No lock files present at this point
-
+  // no lock files found
   if (checkExecutable(packageManagers.yarn.executable)) {
-    return packageManagers.yarn;
+    return await getYarnPackageManager(rootPath);
   }
 
   return packageManagers.npm;
+};
+
+const getYarnPackageManager = async (rootPath: string | undefined): Promise<PackageManager | null> => {
+  return {
+    ...packageManagers.yarn,
+    version: coerce(await execWithOutputAsString(`${packageManagers.yarn.executable} --version`, { cwd: rootPath })) ?? undefined,
+  };
 };

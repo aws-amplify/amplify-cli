@@ -1,20 +1,4 @@
-/* eslint-disable max-depth */
-/* eslint-disable max-lines-per-function */
-/* eslint-disable prefer-const */
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-return-await */
-/* eslint-disable consistent-return */
-/* eslint-disable no-continue */
-/* eslint-disable max-len */
-/* eslint-disable spellcheck/spell-checker */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable func-style */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-import {
-  $TSContext, $TSMeta, JSONUtilities, PathConstants, stateManager,
-} from 'amplify-cli-core';
+import { $TSContext, $TSMeta, AmplifyError, JSONUtilities, PathConstants, stateManager } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';
@@ -25,6 +9,7 @@ import { buildOverridesEnabledResources } from './build-override-enabled-resourc
 import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { downloadZip, extractZip } from './zip-util';
+import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 
 const logger = fileLogger('initialize-env');
 
@@ -39,9 +24,21 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     const backendDir = context.amplify.pathManager.getBackendDirPath();
 
     const s3 = await S3.getInstance(context);
-    const cfnItem = await new Cloudformation(context);
-    const file = await downloadZip(s3, tempDir, S3BackendZipFileName);
-    const unzippedDir = await extractZip(tempDir, file);
+    let currentCloudBackendZip: string;
+    try {
+      currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
+    } catch (err) {
+      if (err?.code === 'NoSuchBucket') {
+        throw new AmplifyError('EnvironmentNotInitializedError', {
+          message: `Could not find a deployment bucket for the specified backend environment. This environment may have been deleted.`,
+          resolution: 'Make sure the environment has been initialized with "amplify init" or "amplify env add".',
+        });
+      }
+      // if there was some other error, rethrow it
+      throw err;
+    }
+
+    const unzippedDir = await extractZip(tempDir, currentCloudBackendZip);
 
     fs.removeSync(currentCloudBackendDir);
 
@@ -75,16 +72,17 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     fs.removeSync(tempDir);
 
     logger('run.cfn.updateamplifyMetaFileWithStackOutputs', [{ StackName: providerMetadata.StackName }])();
+    const cfnItem = await new Cloudformation(context);
     await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);
 
-    // Copy provider metadata from current-cloud-backend/amplify-meta to backend/ampliy-meta
+    // Copy provider metadata from current-cloud-backend/amplify-meta to backend/amplify-meta
     const currentAmplifyMeta = stateManager.getCurrentMeta();
     const amplifyMeta = stateManager.getMeta();
 
     // Copy providerMetadata for each resource - from what is there in the cloud
 
-    Object.keys(amplifyMeta).forEach(category => {
-      Object.keys(amplifyMeta[category]).forEach(resource => {
+    Object.keys(amplifyMeta).forEach((category) => {
+      Object.keys(amplifyMeta[category]).forEach((resource) => {
         if (currentAmplifyMeta[category] && currentAmplifyMeta[category][resource]) {
           amplifyMeta[category][resource].providerMetadata = currentAmplifyMeta[category][resource].providerMetadata;
         }
@@ -106,14 +104,14 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     );
 
     Object.keys(s3AmplifyMeta)
-      .filter(k => k !== 'providers')
-      .forEach(category => {
-        Object.keys(s3AmplifyMeta[category]).forEach(resourceName => {
+      .filter((k) => k !== 'providers')
+      .forEach((category) => {
+        Object.keys(s3AmplifyMeta[category]).forEach((resourceName) => {
           const resource = s3AmplifyMeta[category][resourceName];
 
           // Mobile hub migrated resources does not have an assigned provider
           if (resource.mobileHubMigrated === true) {
-            _.set(amplifyMeta, [category, resourceName], resource);
+            _.setWith(amplifyMeta, [category, resourceName], resource);
             hasMigratedResources = true;
           }
         });
@@ -128,5 +126,6 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     }
   }
   await buildOverridesEnabledResources(context);
+  await generateDependentResourcesType();
   return context;
 }

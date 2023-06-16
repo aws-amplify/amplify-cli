@@ -3,7 +3,7 @@ import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types
 import { CloudFormation } from 'aws-sdk';
 import { Capabilities } from 'aws-sdk/clients/cloudformation';
 import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 export interface GSIRecord {
   attributeDefinition: AttributeDefinition[];
@@ -18,7 +18,7 @@ export interface DeploymentRecord {
 }
 
 export const getPreviousDeploymentRecord = async (cfnClient: CloudFormation, stackId: string): Promise<DeploymentRecord> => {
-  let depRecord: DeploymentRecord = {};
+  const depRecord: DeploymentRecord = {};
   const apiStackInfo = await cfnClient
     .describeStacks({
       StackName: stackId,
@@ -65,7 +65,7 @@ export class TemplateState {
     return Boolean(key in this.changes);
   }
 
-  public isEmpty(): Boolean {
+  public isEmpty(): boolean {
     return !Object.keys(this.changes).length;
   }
 

@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
+import { AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import {
   generateUiBuilderComponents,
@@ -12,9 +12,10 @@ import {
 import { AmplifyStudioClient } from '../clients';
 import * as createUiBuilderComponentDependency from '../commands/utils/codegenResources';
 import { exampleSchema } from './utils';
+import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 
-jest.mock('amplify-cli-core', () => ({
-  ...jest.requireActual('amplify-cli-core'),
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-cli-core'),
   FeatureFlags: {
     getBoolean: () => false,
     getNumber: () => 0,
@@ -24,12 +25,20 @@ jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
 }));
 
+jest.mock('@aws-amplify/amplify-category-api', () => ({
+  ...jest.requireActual('@aws-amplify/amplify-category-api'),
+  isDataStoreEnabled: jest.fn(),
+}));
+
 const awsMock = aws as any;
 const stateManagerMock = stateManager as any;
 const createUiBuilderComponentDependencyMock = createUiBuilderComponentDependency as any;
+const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
+
 describe('should sync amplify ui builder components', () => {
   let context: any;
   beforeEach(() => {
+    isDataStoreEnabledMocked.mockResolvedValue(true);
     context = {
       exeInfo: {
         projectConfig: {
@@ -90,44 +99,48 @@ describe('should sync amplify ui builder components', () => {
       })),
       exportForms: jest.fn(() => ({
         promise: jest.fn(() => ({
-          entities: [{
-            name: 'BasicFormCreate',
-            formActionType: 'create',
-            dataType: {
-              dataSourceType: 'Custom',
-              dataTypeName: 'Post',
-            },
-            fields: {
-              name: {
-                inputType: {
-                  required: true,
-                  type: 'TextField',
-                  name: 'name',
-                  defaultValue: 'John Doe',
-                },
-                label: 'name',
+          entities: [
+            {
+              name: 'BasicFormCreate',
+              formActionType: 'create',
+              dataType: {
+                dataSourceType: 'Custom',
+                dataTypeName: 'Post',
               },
+              fields: {
+                name: {
+                  inputType: {
+                    required: true,
+                    type: 'TextField',
+                    name: 'name',
+                    defaultValue: 'John Doe',
+                  },
+                  label: 'name',
+                },
+              },
+              sectionalElements: {},
+              style: {},
             },
-            sectionalElements: {},
-            style: {},
-          }],
+          ],
         })),
       })),
       exportViews: jest.fn(() => ({
         promise: jest.fn(() => ({
-          entities: [{
-            appId: '23342',
-            dataSource: { type: 'Custom' },
-            environmentName: 'staging',
-            id: 'id',
-            name: 'ProductTable',
-            // TODO: replace with export when Codegen updated
-            schemaVersion: '1.0',
-            style: {},
-            viewConfiguration: {
-              type: 'Table',
+          entities: [
+            {
+              appId: '23342',
+              dataSource: { type: 'Custom' },
+              environmentName: 'staging',
+              id: 'id',
+              name: 'ProductTable',
+              // TODO: replace with export when Codegen updated
+              schemaVersion: '1.0',
+              style: {},
+              viewConfiguration: {
+                type: 'Table',
+              },
             },
-          }],
+          ],
         })),
       })),
       getMetadata: jest.fn(() => ({
@@ -135,6 +148,10 @@ describe('should sync amplify ui builder components', () => {
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
           },
         })),
       })),
@@ -168,18 +185,19 @@ describe('should sync amplify ui builder components', () => {
     process.env.UI_BUILDER_ENDPOINT = 'https://mock-endpoint.com';
     process.env.UI_BUILDER_REGION = 'mock-region';
     const client = await AmplifyStudioClient.setClientInfo(context);
-    expect(Object.keys(client)).toEqual(expect.arrayContaining([
-      'listComponents',
-      'listThemes',
-      'listForms',
-      'getModels',
-      'loadMetadata',
-      'createComponent',
-    ]));
-    expect(client.metadata).toEqual(expect.objectContaining({
-      autoGenerateForms: true,
-      autoGenerateViews: true,
-    }));
+    expect(Object.keys(client)).toEqual(
+      expect.arrayContaining(['listComponents', 'listThemes', 'listForms', 'getModels', 'loadMetadata', 'createComponent']),
+    );
+    expect(client.metadata).toEqual(
+      expect.objectContaining({
+        autoGenerateForms: true,
+        autoGenerateViews: true,
+        formFeatureFlags: {
+          isRelationshipSupported: false,
+          isNonModelSupported: false,
+        },
+      }),
+    );
   });
   it('can list components', async () => {
     const client = await AmplifyStudioClient.setClientInfo(context);
@@ -217,72 +235,72 @@ describe('should sync amplify ui builder components', () => {
   it('can generate ui builder components', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn().mockImplementation(() => ({}));
     const components = generateUiBuilderComponents(context, [{}, {}]);
-    expect(components.every(component => component.resultType === 'SUCCESS')).toBeTruthy();
+    expect(components.every((component) => component.resultType === 'SUCCESS')).toBeTruthy();
   });
   it('can handle failed generation generate ui builder components', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn().mockImplementation(() => {
       throw new Error('ahh!');
     });
     const components = generateUiBuilderComponents(context, [{}, {}]);
-    expect(components.every(component => component.resultType === 'FAILURE')).toBeTruthy();
+    expect(components.every((component) => component.resultType === 'FAILURE')).toBeTruthy();
   });
   it('can generate ui builder themes', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => ({}));
     const themes = generateUiBuilderThemes(context, [{}, {}]);
-    expect(themes.every(theme => theme.resultType === 'SUCCESS')).toBeTruthy();
+    expect(themes.every((theme) => theme.resultType === 'SUCCESS')).toBeTruthy();
   });
   it('can handle failed generation generate ui builder themes', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => {
       throw new Error('ahh!');
     });
     const themes = generateUiBuilderThemes(context, [{}, {}]);
-    expect(themes.every(theme => theme.resultType === 'FAILURE')).toBeTruthy();
+    expect(themes.every((theme) => theme.resultType === 'FAILURE')).toBeTruthy();
   });
   it('can generate ui builder default theme when no themes are passed', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => ({}));
     const themes = generateUiBuilderThemes(context, []);
-    expect(themes.every(theme => theme.resultType === 'SUCCESS')).toBeTruthy();
+    expect(themes.every((theme) => theme.resultType === 'SUCCESS')).toBeTruthy();
   });
   it('can handle failed generation generate ui builder default theme when no themes are passed', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => {
       throw new Error('ahh!');
     });
     const themes = generateUiBuilderThemes(context, []);
-    expect(themes.every(theme => theme.resultType === 'FAILURE')).toBeTruthy();
+    expect(themes.every((theme) => theme.resultType === 'FAILURE')).toBeTruthy();
   });
   it('can generate ui builder forms', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
     const forms = generateUiBuilderForms(context, [{}, {}]);
-    expect(forms.every(form => form.resultType === 'SUCCESS')).toBeTruthy();
+    expect(forms.every((form) => form.resultType === 'SUCCESS')).toBeTruthy();
   });
   it('can handle failed generation generate ui builder forms', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => {
       throw new Error('ahh!');
     });
     const forms = generateUiBuilderForms(context, [{}, {}]);
-    expect(forms.every(form => form.resultType === 'FAILURE')).toBeTruthy();
+    expect(forms.every((form) => form.resultType === 'FAILURE')).toBeTruthy();
   });
-  it('can generate uibuilder forms from data schema if autogen true', async () => {
+  it('can generate uibuilder forms from data schema if autogenerate true', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
     const forms = generateUiBuilderForms(context, [], exampleSchema, true);
-    expect(forms.every(form => form.resultType === 'SUCCESS')).toBeTruthy();
+    expect(forms.every((form) => form.resultType === 'SUCCESS')).toBeTruthy();
     // create & update form for author model
     expect(forms.length).toEqual(2);
   });
 
-  it('should not autogen forms for join tables or unsupported models', async () => {
+  it('should not autogenerate forms for join tables or unsupported models', async () => {
     expect(Object.keys(exampleSchema.models)).toStrictEqual(['Author', 'JoinTable', 'EmptyModel']);
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (_ctx, schema, _dataSchema) => ({ name: schema.dataType.dataTypeName }),
     );
     const forms = generateUiBuilderForms(context, [], exampleSchema, true);
-    expect(forms.every(form => form.resultType === 'SUCCESS')).toBeTruthy();
+    expect(forms.every((form) => form.resultType === 'SUCCESS')).toBeTruthy();
     // only create & update form for author model
-    expect(forms.map(f => (f.schema as any).name)).toStrictEqual(['Author', 'Author']);
+    expect(forms.map((f) => (f.schema as any).name)).toStrictEqual(['Author', 'Author']);
   });
 
-  it('does not generate uibuilder forms from data schema if autogen false', async () => {
+  it('does not generate uibuilder forms from data schema if autogenerate false', async () => {
     createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
     const forms = generateUiBuilderForms(context, [], exampleSchema, false);
     expect(forms.length).toEqual(0);

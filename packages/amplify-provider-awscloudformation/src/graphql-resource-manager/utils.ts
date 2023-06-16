@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import * as path from 'path';
-import { JSONUtilities } from 'amplify-cli-core';
-import { Template } from 'cloudform';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { Template } from 'cloudform-types';
 import { Diff, diff as getDiffs } from 'deep-diff';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
@@ -13,10 +13,10 @@ export interface DiffableProject {
   root: Template;
 }
 
-export type DiffChanges<T> = Array<Diff<DiffableProject, DiffableProject>>;
+export type DiffChanges = Array<Diff<DiffableProject, DiffableProject>>;
 
 interface GQLDiff {
-  diff: DiffChanges<DiffableProject>;
+  diff: DiffChanges;
   next: DiffableProject;
   current: DiffableProject;
 }
@@ -51,7 +51,7 @@ function loadDiffableProject(path: string, rootStackName: string): DiffableProje
 export function readFromPath(directory: string): any {
   const pathExists = fs.pathExistsSync(directory);
   if (!pathExists) {
-    return;
+    return undefined;
   }
   const dirStats = fs.lstatSync(directory);
   if (!dirStats.isDirectory()) {
@@ -59,11 +59,11 @@ export function readFromPath(directory: string): any {
     return buf.toString();
   }
   const files = fs.readdirSync(directory);
-  const accum = {};
+  const filesObject = {};
   for (const fileName of files) {
     const fullPath = path.join(directory, fileName);
     const value = readFromPath(fullPath);
-    accum[fileName] = value;
+    filesObject[fileName] = value;
   }
-  return accum;
+  return filesObject;
 }

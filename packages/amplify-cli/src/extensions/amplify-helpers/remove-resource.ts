@@ -1,12 +1,14 @@
 import {
   $TSContext,
+  AmplifyError,
+  AmplifyFault,
   exitOnNextTick,
   pathManager,
   promptConfirmationRemove,
   ResourceDoesNotExistError,
   stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
 import { removeResourceParameters } from './envResourceParams';
@@ -48,43 +50,28 @@ export async function removeResource(
 
   if (
     !amplifyMeta[category] ||
-    Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
+    Object.keys(amplifyMeta[category]).filter((r) => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
   ) {
-    printer.error('No resources added for this category');
-    await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
-    exitOnNextTick(1);
+    throw new AmplifyError('ResourceRemoveError', { message: 'No resources added for this category' });
   }
 
   let enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category]).filter(
-    r => amplifyMeta[category][r].mobileHubMigrated !== true,
+    (r) => amplifyMeta[category][r].mobileHubMigrated !== true,
   );
 
   if (resourceName) {
     if (!enabledCategoryResources.includes(resourceName)) {
-      const errMessage = `Resource ${resourceName} has not been added to ${category}`;
-      printer.error(errMessage);
-      await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-      exitOnNextTick(1);
+      throw new AmplifyError('ResourceRemoveError', { message: `Resource ${resourceName} has not been added to ${category}` });
     }
   } else {
     if (options.serviceSuffix) {
-      enabledCategoryResources = enabledCategoryResources.map(resource => {
-        let service = _.get(amplifyMeta, [category, resource, 'service']);
-        let suffix = _.get(options, ['serviceSuffix', service], '');
+      enabledCategoryResources = enabledCategoryResources.map((resource) => {
+        const service = _.get(amplifyMeta, [category, resource, 'service']);
+        const suffix = _.get(options, ['serviceSuffix', service], '');
         return { name: `${resource} ${suffix}`, value: resource };
       });
     }
-    const question = [
-      {
-        name: 'resource',
-        message: 'Choose the resource you would want to remove',
-        type: 'list',
-        choices: enabledCategoryResources,
-      },
-    ];
-    const answer = await inquirer.prompt(question);
-
-    resourceName = answer.resource as string;
+    resourceName = await prompter.pick<'one', string>('Choose the resource you would want to remove', enabledCategoryResources);
   }
 
   if (resourceNameCallback) {
@@ -105,19 +92,18 @@ export async function removeResource(
     const confirm = await promptConfirmationRemove(context, serviceType);
 
     if (!confirm) {
-      return;
+      return undefined;
     }
   }
 
   try {
     return await deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
-    if (err.stack) {
-      printer.info(err.stack);
-    }
-    printer.error('An error occurred when removing the resources from the local directory');
-    await context.usageData.emitError(err);
-    process.exitCode = 1;
+    throw new AmplifyFault(
+      'ResourceRemoveFault',
+      { message: 'An error occurred when removing the resources from the local directory' },
+      err,
+    );
   }
 }
 
@@ -125,15 +111,14 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   const amplifyMeta = stateManager.getMeta();
   if (!force) {
     const { allResources } = await context.amplify.getResourceStatus();
-    allResources.forEach(resourceItem => {
+    allResources.forEach((resourceItem) => {
       if (resourceItem.dependsOn) {
-        resourceItem.dependsOn.forEach(dependsOnItem => {
+        resourceItem.dependsOn.forEach((dependsOnItem) => {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
-            printer.error('Resource cannot be removed because it has a dependency on another resource');
-            printer.error(`Dependency: ${resourceItem.service} - ${resourceItem.resourceName}`);
-            const error = new Error('Resource cannot be removed because it has a dependency on another resource');
-            error.stack = undefined;
-            throw error;
+            throw new AmplifyError('ResourceRemoveError', {
+              message: 'Resource cannot be removed because it has a dependency on another resource',
+              details: `Dependency: ${resourceItem.service} - ${resourceItem.resourceName}. Remove the dependency first.`,
+            });
           }
         });
       }

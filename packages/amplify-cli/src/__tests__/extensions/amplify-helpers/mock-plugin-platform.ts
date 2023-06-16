@@ -1,5 +1,4 @@
-import { PluginPlatform } from '../../../domain/plugin-platform';
-import { PluginInfo } from '../../../domain/plugin-info';
+import { PluginInfo, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 
 export function constructMockPluginPlatform(): PluginPlatform {
   const mockPluginPlatform = new PluginPlatform();
@@ -35,7 +34,7 @@ export function constructMockPluginPlatform(): PluginPlatform {
     },
   };
   const categoryHostingPluginInfo: PluginInfo = {
-    packageName: 'amplify-category-hosting',
+    packageName: '@aws-amplify/amplify-category-hosting',
     packageVersion: '2.1.11',
     packageLocation: '/root/amplify-cli/packages/amplify-category-hosting',
     manifest: {
@@ -51,7 +50,7 @@ export function constructMockPluginPlatform(): PluginPlatform {
     },
   };
   const consoleHostingPluginInfo: PluginInfo = {
-    packageName: 'amplify-console-hosting',
+    packageName: '@aws-amplify/amplify-console-hosting',
     packageVersion: '1.0.0',
     packageLocation: '/root/amplify-cli/packages/amplify-console-hosting',
     manifest: {

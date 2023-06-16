@@ -1,32 +1,32 @@
-import { JSONUtilities } from 'amplify-cli-core';
-import { Input } from '../input';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { CLIInput } from '../command-input';
 
 const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app'];
 const quotes = '\\\\?"';
 const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
-//matches any string with contiansToRedact in it
-const keyregex: RegExp = new RegExp(keyMatcher, 'gmi');
+//matches any string with containsToRedact in it
+const keyRegEx = new RegExp(keyMatcher, 'gmi');
 // matches any json and gives values in json
-const jsonregex: RegExp = new RegExp(completeMatch, 'gmi');
+const jsonRegex = new RegExp(completeMatch, 'gmi');
 function testReplaceJsonValues(json: string, redactedInput: string): string {
   if (!json) return json;
   let s: string = json.toString();
-  if (jsonregex.test(s)) {
-    jsonregex.lastIndex = 0;
+  if (jsonRegex.test(s)) {
+    jsonRegex.lastIndex = 0;
     let m: RegExpExecArray | null;
-    const valuesToRedact: any = [];
+    const valuesToRedact: string[] = [];
 
     //find all values to redact
     do {
-      m = jsonregex.exec(s);
+      m = jsonRegex.exec(s);
       if (m != null) {
         valuesToRedact.push(m[3]);
       }
     } while (m !== null);
 
     //replace them
-    valuesToRedact.forEach(val => {
+    valuesToRedact.forEach((val) => {
       s = s.replace(val, redactedInput);
     });
   } else {
@@ -35,11 +35,11 @@ function testReplaceJsonValues(json: string, redactedInput: string): string {
   return s;
 }
 
-export default function redactInput(originalInput: Input, deleteArgAndOption: Boolean, replacementString: string = '************'): Input {
-  const input: Input = JSONUtilities.parse(JSONUtilities.stringify(originalInput)!);
+export default function redactInput(originalInput: CLIInput, deleteArgAndOption: boolean, replacementString = '************'): CLIInput {
+  const input: CLIInput = JSONUtilities.parse(JSONUtilities.stringify(originalInput) as string);
   const argv = input.argv;
   const length = argv.length;
-  let redactString: Boolean = false;
+  let redactString = false;
   if (deleteArgAndOption) {
     input.argv = [];
     delete input.options;
@@ -52,15 +52,15 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: Bo
       redactString = false;
       continue;
     }
-    if (!isJson(argv[i]) && keyregex.test(argv[i])) {
+    if (!isJson(argv[i]) && keyRegEx.test(argv[i])) {
       redactString = true;
       continue;
     }
   }
   if (input.options) {
-    Object.keys(input.options).forEach(key => {
+    Object.keys(input.options).forEach((key) => {
       if (key && input.options && input.options[key] && typeof input.options[key] === 'string') {
-        if (keyregex.test(key) && !isJson(input.options[key].toString())) {
+        if (keyRegEx.test(key) && !isJson(input.options[key].toString())) {
           input.options[key] = replacementString;
         } else if (typeof input.options[key] === 'string') {
           input.options[key] = testReplaceJsonValues(input.options[key].toString(), replacementString);
@@ -72,7 +72,7 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: Bo
   return input;
 }
 
-function isJson(s: string): Boolean {
+function isJson(s: string): boolean {
   try {
     JSONUtilities.parse(s);
     return true;

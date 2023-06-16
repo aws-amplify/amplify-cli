@@ -1,11 +1,13 @@
 import {
   addNotificationChannel,
   amplifyPushAuth,
+  amplifyPushAuthV5V6,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck } from '../../../migration-helpers';
+import { versionCheck } from '../../../migration-helpers';
 import { addLegacySmsNotificationChannel } from '../../../migration-helpers/notifications-helpers';
 import { getShortId } from '../../../migration-helpers/utils';
 
@@ -16,6 +18,8 @@ describe('amplify add notifications', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir('notification-migration-2');
+    await versionCheck(process.cwd(), false, migrateFromVersion);
+    await versionCheck(process.cwd(), true, migrateToVersion);
   });
 
   afterEach(async () => {
@@ -23,16 +27,11 @@ describe('amplify add notifications', () => {
     deleteProjectDir(projectRoot);
   });
 
-  beforeAll(async () => {
-    await versionCheck(process.cwd(), false, migrateFromVersion);
-    await versionCheck(process.cwd(), true, migrateToVersion);
-  });
-
   it('should add in app notifications if another notification channel added with an older version', async () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
-    await initJSProjectWithProfile(projectRoot, {}, false);
+    await initJSProjectWithProfile(projectRoot, { includeUsageDataPrompt: false });
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);
@@ -42,9 +41,9 @@ describe('amplify add notifications', () => {
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     const settings = { resourceName: `notification${getShortId()}` };
 
-    await initJSProjectWithProfile(projectRoot, {}, false);
+    await initJSProjectWithProfile(projectRoot, { includeUsageDataPrompt: false });
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
-    await amplifyPushAuth(projectRoot, false);
+    await amplifyPushAuthV5V6(projectRoot);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await amplifyPushAuth(projectRoot, true);
   });

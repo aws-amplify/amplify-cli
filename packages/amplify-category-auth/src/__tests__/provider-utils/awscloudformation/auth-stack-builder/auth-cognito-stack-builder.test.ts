@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable max-lines-per-function */
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { AmplifyAuthCognitoStack } from '../../../../provider-utils/awscloudformation/auth-stack-builder/auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from '../../../../provider-utils/awscloudformation/auth-stack-builder/stack-synthesizer';
-import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
-import { CognitoStackOptions } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
+import {
+  AttributeType,
+  CognitoStackOptions,
+} from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 
 describe('generateCognitoStackResources', () => {
   const props: CognitoStackOptions = {
@@ -83,14 +83,14 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.oAuthCustomResource).toBeDefined();
     expect(
       cognitoStack
-        .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.target.logicalId)
-        .map(logicalIdToken => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1]),
+        .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.logicalId)
+        .map((logicalIdToken) => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1]),
     ).toMatchInlineSnapshot(`
-      Array [
-        "HostedUICustomResourceInputs",
-        "HostedUIProvidersCustomResourceInputs",
-      ]
-    `);
+[
+  "HostedUICustomResourceInputs",
+  "HostedUIProvidersCustomResourceInputs",
+]
+`);
   });
 
   it('adds correct preSignUp  lambda config and permissions', () => {
@@ -122,12 +122,12 @@ describe('generateCognitoStackResources', () => {
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
-      Object {
-        "attributesRequireVerificationBeforeUpdate": Array [
-          "email",
-        ],
-      }
-    `);
+{
+  "attributesRequireVerificationBeforeUpdate": [
+    "email",
+  ],
+}
+`);
   });
 
   it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', () => {
@@ -142,12 +142,12 @@ describe('generateCognitoStackResources', () => {
     };
     cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
-      Object {
-        "attributesRequireVerificationBeforeUpdate": Array [
-          "email",
-        ],
-      }
-    `);
+{
+  "attributesRequireVerificationBeforeUpdate": [
+    "email",
+  ],
+}
+`);
     expect(cognitoStack.userPool!.lambdaConfig).toHaveProperty('preSignUp');
     expect(cognitoStack.userPoolClientWeb!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.userPoolClient!.tokenValidityUnits).toHaveProperty('refreshToken');

@@ -1,6 +1,6 @@
 {
-  "name": "amplify-container-hosting",
-  "version": "2.5.5",
+  "name": "@aws-amplify/amplify-container-hosting",
+  "version": "2.6.9",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",
@@ -14,16 +14,21 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "test-ci": "yarn jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "watch": "tsc --watch",
-    "test": "jest --logHeapUsage --coverage --passWithNoTests"
+    "test": "jest --logHeapUsage --coverage --passWithNoTests",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^4.0.9",
-    "amplify-cli-core": "3.3.0",
+    "@aws-amplify/amplify-category-api": "^5.4.1",
+    "@aws-amplify/amplify-cli-core": "4.1.0",
+    "@aws-amplify/amplify-environment-parameters": "1.6.4",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
@@ -34,6 +39,11 @@
     "collectCoverageFrom": [
       "lib/**/*.js",
       "index.js"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

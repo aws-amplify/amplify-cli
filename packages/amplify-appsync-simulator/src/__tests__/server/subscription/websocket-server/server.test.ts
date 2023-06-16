@@ -83,18 +83,18 @@ describe('WebsocketSubscriptionServer', () => {
     httpServer?.close();
   });
 
-  beforeAll(done => {
+  beforeAll((done) => {
     done();
   });
 
-  afterAll(done => {
+  afterAll((done) => {
     done();
   });
 
   describe('Connect', () => {
-    it('should close connection when the protocol is not graphql-ws', done => {
+    it('should close connection when the protocol is not graphql-ws', (done) => {
       const client = new WS(`ws://localhost:${serverPort}${REALTIME_SUBSCRIPTION_PATH}`, 'something');
-      client.addEventListener('close', event => {
+      client.addEventListener('close', (event) => {
         expect(event.code).toEqual(1002);
         expect(onConnectHandler).not.toHaveBeenCalled();
         done();
@@ -104,7 +104,7 @@ describe('WebsocketSubscriptionServer', () => {
     it('should accept connection when the protocol is graphql-ws', async () => {
       const client = new WS(`ws://localhost:${serverPort}${REALTIME_SUBSCRIPTION_PATH}`, 'graphql-ws');
       const messagePromise = new Promise((resolve, _) => {
-        client.addEventListener('close', event => {
+        client.addEventListener('close', (event) => {
           expect(event.wasClean).toBeTruthy();
           resolve(undefined);
         });
@@ -134,7 +134,7 @@ describe('WebsocketSubscriptionServer', () => {
       onConnectHandler.mockRejectedValue('error');
       const client = new WS(`ws://localhost:${serverPort}${REALTIME_SUBSCRIPTION_PATH}`, 'graphql-ws');
       const messagePromise = new Promise((resolve, _) => {
-        client.addEventListener('close', event => {
+        client.addEventListener('close', (event) => {
           expect(event.code).toEqual(1002);
           resolve(undefined);
         });
@@ -236,7 +236,7 @@ describe('WebsocketSubscriptionServer', () => {
       const url = new URL(`ws://localhost:${serverPort}${REALTIME_SUBSCRIPTION_PATH}`).toString();
       client = new WS(url, 'graphql-ws');
       pubsub = new PubSub();
-      onConnectHandler.mockImplementation(context => {
+      onConnectHandler.mockImplementation((context) => {
         connectionContext = context;
       });
       await waitForConnection(client);
@@ -425,7 +425,7 @@ describe('WebsocketSubscriptionServer', () => {
       pubsub = new PubSub();
       asyncIterator = pubsub.asyncIterator('something');
       onSubscribeHandler.mockReturnValue(asyncIterator);
-      onConnectHandler.mockImplementation(context => {
+      onConnectHandler.mockImplementation((context) => {
         connectionContext = context;
       });
       await waitForConnection(client);

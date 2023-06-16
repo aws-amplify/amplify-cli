@@ -1,6 +1,6 @@
 import {
   addAuthWithDefault,
-  addDEVHosting,
+  addPRODHosting,
   addS3,
   amplifyPushAuth,
   createNewProjectDir,
@@ -24,9 +24,9 @@ describe('amplify always enables SSE on S3 buckets', () => {
   it('enables SSE on the deployment, category and hosting buckets', async () => {
     // setup
     await initJSProjectWithProfile(projRoot, {});
-    await addAuthWithDefault(projRoot, {});
-    await addS3(projRoot, {});
-    await addDEVHosting(projRoot);
+    await addAuthWithDefault(projRoot);
+    await addS3(projRoot);
+    await addPRODHosting(projRoot);
     await amplifyPushAuth(projRoot);
 
     const meta = getProjectMeta(projRoot);

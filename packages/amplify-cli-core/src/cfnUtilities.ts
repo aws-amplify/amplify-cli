@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 import { JSONUtilities } from './jsonUtilities';
+import { AmplifyFault } from './errors/amplify-fault';
 
 const defaultReadCFNTemplateOptions = { throwIfNotExist: true };
 
@@ -22,7 +23,12 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
     if (options.throwIfNotExist === false) {
       return undefined;
     }
-    throw new Error(`No CloudFormation template found at ${filePath}`);
+    throw new AmplifyFault('CloudFormationTemplateFault', {
+      message: `No CloudFormation template found at ${filePath}`,
+      resolution: `Ensure the file exists and is a valid CloudFormation template.
+File path should match the following pattern: '<projectRoot>/amplify/backend/<category>/<resourceName>/<resourceName>-cloudformation-template.json' where <resourceName> should match the value from <projectRoot>/amplify/team-provider-info.json.
+If the resource directory was manually removed, run 'amplify remove <category>' to remove the resource from the project.`,
+    });
   }
   const fileContent = fs.readFileSync(filePath, 'utf8');
 
@@ -60,7 +66,7 @@ const writeCFNTemplateDefaultOptions: Required<WriteCFNTemplateOptions> = {
  */
 export const writeCFNTemplate = async (template: object, filePath: string, options?: WriteCFNTemplateOptions): Promise<void> => {
   const mergedOptions = { ...writeCFNTemplateDefaultOptions, ...options };
-  let serializedTemplate: string | undefined;
+  let serializedTemplate: string;
   switch (mergedOptions.templateFormat) {
     case CFNTemplateFormat.JSON:
       serializedTemplate = JSONUtilities.stringify(template, { minify: mergedOptions.minify });

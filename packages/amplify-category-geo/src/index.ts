@@ -1,5 +1,5 @@
-import { $TSContext, $TSObject, stateManager, $TSAny } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, $TSObject, stateManager, $TSAny } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { category } from './constants';
 import * as addCommand from './commands/geo/add';
 import * as updateCommand from './commands/geo/update';
@@ -47,7 +47,7 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
   const permissionPolicies: $TSObject[] = [];
   const resourceAttributes: $TSObject[] = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     try {
       const service: ServiceName = amplifyMeta[resourceName].service as ServiceName;
 

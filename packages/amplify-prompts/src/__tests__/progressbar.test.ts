@@ -2,9 +2,9 @@
 
 import { ProgressBar as Bar, BarOptions } from '../progressbars/progressbar';
 
-const options : BarOptions = {
-  progressBarFormatter: payload => payload.progressName,
-  itemFormatter: payload => ({ renderString: payload.ResourceStatus, color: '' }),
+const options: BarOptions = {
+  progressBarFormatter: (payload) => payload.progressName,
+  itemFormatter: (payload) => ({ renderString: payload.ResourceStatus, color: '' }),
   loneWolf: false,
   hideCursor: true,
   barCompleteChar: '=',
@@ -18,7 +18,7 @@ const options : BarOptions = {
 };
 
 describe('Check item add/update operations', () => {
-  let bar : Bar;
+  let bar: Bar;
 
   beforeEach(async () => {
     bar = new Bar(options);
@@ -53,7 +53,7 @@ describe('Check item add/update operations', () => {
 });
 
 describe('Test progressBar status', () => {
-  let bar : Bar;
+  let bar: Bar;
 
   beforeEach(async () => {
     bar = new Bar(options);

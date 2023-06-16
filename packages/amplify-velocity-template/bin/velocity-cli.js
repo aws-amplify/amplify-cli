@@ -27,7 +27,7 @@ function escapeIt(buf) {
 
 function buildAst(files, prefix) {
   var _template = fs.readFileSync(__dirname + '/build-tpl.js').toString();
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (path.extname(file) === '.vm') {
       console.log('read file ' + file);
       var template = _template;

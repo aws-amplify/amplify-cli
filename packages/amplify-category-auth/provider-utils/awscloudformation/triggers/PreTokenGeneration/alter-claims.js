@@ -1,7 +1,7 @@
 /**
  * @type {import('@types/aws-lambda').PreTokenGenerationTriggerHandler}
  */
-exports.handler = async event => {
+exports.handler = async (event) => {
   event.response = {
     claimsOverrideDetails: {
       claimsToAddOrOverride: {

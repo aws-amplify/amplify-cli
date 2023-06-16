@@ -1,9 +1,16 @@
-import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
-import * as cdk from '@aws-cdk/core';
+import { AmplifyRootStackTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
+import * as cdk from 'aws-cdk-lib';
 import {
-  $TSContext, AmplifyError, AmplifyFault, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate,
-} from 'amplify-cli-core';
-import { formatter } from 'amplify-prompts';
+  $TSContext,
+  AmplifyError,
+  AmplifyFault,
+  buildOverrideDir,
+  CFNTemplateFormat,
+  pathManager,
+  Template,
+  writeCFNTemplate,
+} from '@aws-amplify/amplify-cli-core';
+import { formatter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
@@ -36,7 +43,8 @@ export class AmplifyRootStackTransform {
     await this.generateRootStackTemplate();
 
     // apply override on Amplify Object having CDK Constructs for Root Stack
-    if (context.input.command !== 'init') {
+    // enabling overrides for hosting when forcepush flag is used with init
+    if (context.input.command !== 'init' || (context.input.command === 'init' && context?.input?.options?.forcePush === true)) {
       await this.applyOverride();
     }
 
@@ -71,14 +79,19 @@ export class AmplifyRootStackTransform {
           external: true,
         },
       });
+      const projectInfo = getProjectInfo();
       try {
-        await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
+        await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate, projectInfo);
       } catch (err) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
   };

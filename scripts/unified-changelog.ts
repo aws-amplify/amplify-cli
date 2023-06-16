@@ -18,9 +18,9 @@ const getChangelogPaths = async (): Promise<string[]> => {
   const changelogPaths = statusResult
     .split('\n')
     // match lines of the form ` M package/name/whatever`
-    .map(item => item.match(/^\s*M\s*(.*)/)?.[1])
-    .filter(item => item && item.endsWith('CHANGELOG.md'))
-    .map(item => join(packageRoot, item!));
+    .map((item) => item.match(/^\s*M\s*(.*)/)?.[1])
+    .filter((item) => item && item.endsWith('CHANGELOG.md'))
+    .map((item) => join(packageRoot, item!));
   return changelogPaths;
 };
 
@@ -45,9 +45,7 @@ const extractChangelogInfo = async (changelogPath: string): Promise<ChangelogInf
 
   const latestChanges = changelog.slice(startIdx, endIdx).trim();
   // assumes CHANGELOG is in the root of the package directory and that the package directory is named after the package
-  const packageName = parse(changelogPath)
-    .dir.split(sep)
-    .reverse()[0];
+  const packageName = parse(changelogPath).dir.split(sep).reverse()[0];
   return {
     packageName,
     latestChanges,
@@ -56,16 +54,19 @@ const extractChangelogInfo = async (changelogPath: string): Promise<ChangelogInf
 
 const formatUnifiedChangelog = (infos: ChangelogInfo[]): string => {
   console.log('Formatting all changes into single changelog');
-  const formattedChangelog = infos
-    .filter(info => info.latestChanges)
-    .filter(info => !info.latestChanges.includes('Version bump only for package'))
-    .filter(info => info.latestChanges.includes('\n')) // if the latestChanges string doesn't contain a newline it's only a version bump
+  var formattedChangelogComponents = infos
+    .filter((info) => info.latestChanges)
+    .filter((info) => info.latestChanges.includes('\n')) // if the latestChanges string doesn't contain a newline it's only a version bump
     .sort((a, b) => a.packageName.localeCompare(b.packageName))
-    .map(info => {
+    .map((info) => {
       const latestChanges = info.latestChanges.replace(/^#+\s+/, ''); // strip off any leading markdown headers
       return `# ${info.packageName} ${latestChanges}`;
-    })
-    .join('\n\n');
+    });
+  // only include version bump sections if the release is all version bumps to avoid an empty change log
+  if (formattedChangelogComponents.some((component) => !component.includes('Version bump only for package'))) {
+    formattedChangelogComponents = formattedChangelogComponents.filter((component) => !component.includes('Version bump only for package'));
+  }
+  const formattedChangelog = formattedChangelogComponents.join('\n\n');
   return `# Change Log\n\n${formattedChangelog}`;
 };
 

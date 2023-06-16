@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 
 const subcommand = 'push';
 const category = 'analytics';
@@ -7,7 +7,7 @@ const category = 'analytics';
  * @param context amplify cli context
  * @returns deployment status
  */
-export const run = async (context : $TSContext) : Promise<$TSAny> => {
+export const run = async (context: $TSContext): Promise<$TSAny> => {
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
   context.amplify.constructExeInfo(context);

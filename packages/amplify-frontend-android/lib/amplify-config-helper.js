@@ -5,6 +5,7 @@ function generateConfig(context, newAWSConfig) {
     Version: '1.0',
   };
   constructAnalytics(metadata, amplifyConfig);
+  constructNotifications(metadata, amplifyConfig);
   constructApi(metadata, amplifyConfig);
   // Auth plugin with entire awsconfiguration contained required for Native GA release
   constructAuth(metadata, amplifyConfig, newAWSConfig);
@@ -22,6 +23,43 @@ function constructAuth(metadata, amplifyConfig, awsConfig) {
     amplifyConfig[categoryName] = {};
     amplifyConfig[categoryName].plugins = {};
     amplifyConfig[categoryName].plugins[pluginName] = awsConfig;
+  }
+}
+
+/**
+ * update amplifyConfiguration notifications channel sections with pinpoint appId
+ * and region if present and enabled in amplify-meta.json notification output section
+ * @param {*} metadata - contents of amplify-meta.json
+ * @param {*} amplifyConfiguration - contents of amplifyconfiguration.json
+ */
+function constructNotifications(metadata, amplifyConfiguration) {
+  // ignore APNS channel as it not supported for iOS frontend
+  const notificationChannelsMap = {
+    SMS: 'awsPinpointSmsNotificationsPlugin',
+    EMAIL: 'awsPinpointEmailNotificationsPlugin',
+    FCM: 'awsPinpointPushNotificationsPlugin',
+    InAppMessaging: 'awsPinpointInAppMessagingNotificationsPlugin',
+  };
+  const categoryName = 'notifications';
+
+  if (metadata[categoryName] && Object.keys(metadata[categoryName]).length > 0) {
+    const r = Object.keys(metadata[categoryName])[0]; // only one resource in analytics
+    const resourceMeta = metadata[categoryName][r];
+    if (resourceMeta.output) {
+      for (const [channel, plugin] of Object.entries(notificationChannelsMap)) {
+        const channelOutput = resourceMeta.output[channel];
+        if (channelOutput && channelOutput.Enabled) {
+          amplifyConfiguration[categoryName] = amplifyConfiguration[categoryName] ?? {};
+          amplifyConfiguration[categoryName].plugins = amplifyConfiguration[categoryName].plugins ?? {};
+          amplifyConfiguration[categoryName].plugins[plugin] = {};
+
+          amplifyConfiguration[categoryName].plugins[plugin] = {
+            appId: channelOutput.ApplicationId,
+            region: resourceMeta.output.Region,
+          };
+        }
+      }
+    }
   }
 }
 
@@ -52,7 +90,7 @@ function constructApi(metadata, amplifyConfig) {
   const pluginName = 'awsAPIPlugin';
   const region = metadata.providers.awscloudformation.Region;
   if (metadata[categoryName] && Object.keys(metadata[categoryName]).length > 0) {
-    Object.keys(metadata[categoryName]).forEach(r => {
+    Object.keys(metadata[categoryName]).forEach((r) => {
       const resourceMeta = metadata[categoryName][r];
       if (resourceMeta.output) {
         amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
@@ -98,7 +136,7 @@ function constructPredictions(metadata, amplifyConfig) {
   const pluginName = 'awsPredictionsPlugin';
   const region = metadata.providers.awscloudformation.Region;
   if (metadata[categoryName]) {
-    Object.keys(metadata[categoryName]).forEach(r => {
+    Object.keys(metadata[categoryName]).forEach((r) => {
       const resourceMeta = metadata[categoryName][r];
       if (resourceMeta.output) {
         amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
@@ -154,7 +192,7 @@ function constructStorage(metadata, amplifyConfig) {
   const s3PluginName = 'awsS3StoragePlugin';
   const dynamoDbPluginName = 'awsDynamoDbStoragePlugin';
   if (metadata[categoryName]) {
-    Object.keys(metadata[categoryName]).forEach(r => {
+    Object.keys(metadata[categoryName]).forEach((r) => {
       const resourceMeta = metadata[categoryName][r];
       if (resourceMeta.output) {
         amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
@@ -177,7 +215,7 @@ function constructStorage(metadata, amplifyConfig) {
           };
         } else if (resourceMeta.service === 'DynamoDB') {
           amplifyConfig[categoryName].plugins[dynamoDbPluginName] = {};
-          Object.keys(metadata[categoryName][r].output).forEach(key => {
+          Object.keys(metadata[categoryName][r].output).forEach((key) => {
             const value = metadata[categoryName][r].output[key];
             key = key[0].toLowerCase() + key.slice(1);
             amplifyConfig[categoryName].plugins[dynamoDbPluginName][key] = value;
@@ -197,31 +235,30 @@ function constructGeo(metadata, amplifyConfig) {
   }
   let defaultMap = '';
   const mapConfig = {
-    items: {}
+    items: {},
   };
   let defaultPlaceIndex = '';
   const placeIndexConfig = {
-    items: []
+    items: [],
   };
 
-  Object.keys(metadata[categoryName]).forEach(r => {
+  Object.keys(metadata[categoryName]).forEach((r) => {
     const resourceMeta = metadata[categoryName][r];
     if (resourceMeta.output) {
       if (resourceMeta.service === 'Map') {
         const mapName = resourceMeta.output.Name;
         geoRegion = resourceMeta.output.Region || geoRegion;
         mapConfig.items[mapName] = {
-          style: resourceMeta.output.Style
-        }
-        if(resourceMeta.isDefault === true) {
+          style: resourceMeta.output.Style,
+        };
+        if (resourceMeta.isDefault === true) {
           defaultMap = mapName;
         }
-      }
-      else if (resourceMeta.service === 'PlaceIndex') {
+      } else if (resourceMeta.service === 'PlaceIndex') {
         const placeIndexName = resourceMeta.output.Name;
         geoRegion = resourceMeta.output.Region || geoRegion;
         placeIndexConfig.items.push(placeIndexName);
-        if(resourceMeta.isDefault === true) {
+        if (resourceMeta.isDefault === true) {
           defaultPlaceIndex = placeIndexName;
         }
       }
@@ -232,10 +269,10 @@ function constructGeo(metadata, amplifyConfig) {
   placeIndexConfig.default = defaultPlaceIndex;
 
   amplifyConfig[categoryName] = {
-    plugins: {}
+    plugins: {},
   };
   amplifyConfig[categoryName].plugins[pluginName] = {
-    region: geoRegion
+    region: geoRegion,
   };
   if (Object.keys(mapConfig.items).length > 0) {
     amplifyConfig[categoryName].plugins[pluginName]['maps'] = mapConfig;
@@ -247,4 +284,5 @@ function constructGeo(metadata, amplifyConfig) {
 
 module.exports = {
   generateConfig,
+  constructNotifications,
 };

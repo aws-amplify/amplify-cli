@@ -13,9 +13,7 @@ import {
   removeNotificationChannel,
 } from '@aws-amplify/amplify-e2e-core';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
-import {
-  getShortId,
-} from '../import-helpers';
+import { getShortId } from '../import-helpers';
 
 describe('notifications in-app with existing pinpoint', () => {
   const testChannel = 'InAppMessaging';

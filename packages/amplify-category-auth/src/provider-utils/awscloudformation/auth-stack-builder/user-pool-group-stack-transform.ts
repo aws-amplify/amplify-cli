@@ -1,13 +1,20 @@
-import * as cdk from '@aws-cdk/core';
 import {
-  $TSAny, $TSContext,
-  AmplifyCategories, AmplifyCategoryTransform, AmplifyError, AmplifyStackTemplate, AmplifySupportedService,
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyCategoryTransform,
+  AmplifyError,
+  AmplifyStackTemplate,
+  AmplifySupportedService,
   buildOverrideDir,
   CFNTemplateFormat,
   JSONUtilities,
-  pathManager, Template, writeCFNTemplate,
-} from 'amplify-cli-core';
-import { formatter } from 'amplify-prompts';
+  pathManager,
+  Template,
+  writeCFNTemplate,
+} from '@aws-amplify/amplify-cli-core';
+import { formatter } from '@aws-amplify/amplify-prompts';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
@@ -15,6 +22,7 @@ import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './index';
 import { AuthStackSynthesizer } from './stack-synthesizer';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 
 /**
  * UserPool groups metadata
@@ -162,7 +170,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
 
     // generate CFN outputs again to generate same Output Names as cdk doesn't allow resource with same logical names
     if (props.identityPoolName) {
-      props.groups.forEach(group => {
+      props.groups.forEach((group) => {
         this.__userPoolGroupTemplateObjOutputs.addCfnOutput(
           {
             value: cdk.Fn.getAtt(`${group.groupName}GroupRole`, 'Arn').toString(),
@@ -187,23 +195,28 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
         timeout: 5000,
         sandbox: {},
       });
+      const projectInfo = getProjectInfo();
       try {
         await sandboxNode
           .run(overrideCode)
-          .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
+          .override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate, projectInfo);
       } catch (err: $TSAny) {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
   };
 
   /**
    * Object required to generate Stack using cdk
-  */
+   */
   private generateStackProps = async (context: $TSContext): Promise<AmplifyUserPoolGroupStackOptions> => {
     const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
     const groups = JSONUtilities.readJson(resourceDirPath, { throwIfNotExist: true });

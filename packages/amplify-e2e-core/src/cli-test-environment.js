@@ -20,7 +20,7 @@ class CLIEnvironment extends NodeEnvironment {
 
   async setup() {
     await super.setup();
-    this.global.storeCLIExecutionLog = result => {
+    this.global.storeCLIExecutionLog = (result) => {
       this.currentBlock.logs.push(result);
     };
 
@@ -30,7 +30,7 @@ class CLIEnvironment extends NodeEnvironment {
     };
 
     this.global.getDescibeBlocks = () => {
-      return this.describeBlocks.filter(b => b !== 'ROOT_DESCRIBE_BLOCK');
+      return this.describeBlocks.filter((b) => b !== 'ROOT_DESCRIBE_BLOCK');
     };
 
     this.global.getHookName = () => {
@@ -40,7 +40,7 @@ class CLIEnvironment extends NodeEnvironment {
 
   async teardown() {
     if (this.context.global.addCLITestRunnerLogs) {
-      const result = this.cliExecutionLogs.children.find(log => log.type === 'describe' && log.name === 'ROOT_DESCRIBE_BLOCK');
+      const result = this.cliExecutionLogs.children.find((log) => log.type === 'describe' && log.name === 'ROOT_DESCRIBE_BLOCK');
       if (result) {
         this.context.global.addCLITestRunnerLogs(result);
       }
@@ -52,7 +52,7 @@ class CLIEnvironment extends NodeEnvironment {
     return super.runScript(script);
   }
 
-  handleTestEvent(event, state) {
+  handleTestEvent(event) {
     let hookName;
     let currentBlock;
     switch (event.name) {

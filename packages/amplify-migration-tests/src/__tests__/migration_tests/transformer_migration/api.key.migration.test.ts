@@ -1,5 +1,5 @@
 import {
-  amplifyPush,
+  amplifyPushLegacy,
   amplifyPushForce,
   apiGqlCompile,
   createNewProjectDir,
@@ -7,24 +7,28 @@ import {
   deleteProjectDir,
   updateApiSchema,
   getProjectConfig,
+  initJSProjectWithProfile,
+  addApiWithBlankSchema,
+  setTransformerVersionFlag,
 } from '@aws-amplify/amplify-e2e-core';
-import { initJSProjectWithProfile, versionCheck, addApiWithoutSchemaOldDx, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 describe('amplify key force push', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('api-key-cli-migration');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('api-key-cli-migration');
-    await initJSProjectWithProfile(projRoot, { name: 'gqlkeymigration' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'gqlkeymigration',
+      includeUsageDataPrompt: false,
+    });
   });
 
   afterEach(async () => {
@@ -36,9 +40,10 @@ describe('amplify key force push', () => {
     const initialSchema = 'migrations_key/simple_key.graphql';
     const { projectName } = getProjectConfig(projRoot);
     // add api and push with installed cli
-    await addApiWithoutSchemaOldDx(projRoot);
+    await addApiWithBlankSchema(projRoot, { testingWithLatestCodebase: false });
     updateApiSchema(projRoot, projectName, initialSchema);
-    await amplifyPush(projRoot);
+    setTransformerVersionFlag(projRoot, 1);
+    await amplifyPushLegacy(projRoot);
     // gql-compile and force push with codebase cli
     await apiGqlCompile(projRoot, true);
     await amplifyPushForce(projRoot, true);

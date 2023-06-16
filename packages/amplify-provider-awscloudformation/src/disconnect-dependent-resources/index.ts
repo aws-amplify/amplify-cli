@@ -1,6 +1,4 @@
-import {
-  $TSAny, $TSContext, pathManager, stateManager,
-} from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { CloudFormation } from 'aws-sdk';
 import * as fs from 'fs-extra';
 import { S3 } from '../aws-utils/aws-s3';
@@ -15,6 +13,7 @@ import {
   s3Prefix,
   localPrefix,
 } from './utils';
+import { handleCommonSdkError } from '../handle-common-sdk-errors';
 
 let functionsDependentOnReplacedModelTables: string[] = [];
 
@@ -58,11 +57,16 @@ export const postDeploymentCleanup = async (s3Client: S3, deploymentBucketName: 
   if (functionsDependentOnReplacedModelTables.length < 1) {
     return;
   }
-  await s3Client.deleteDirectory(deploymentBucketName, s3Prefix);
-  await Promise.all(functionsDependentOnReplacedModelTables.map(funcName => fs.remove(localPrefix(funcName))));
+  try {
+    await s3Client.deleteDirectory(deploymentBucketName, s3Prefix);
+  } catch (error) {
+    throw handleCommonSdkError(error);
+  }
+  await Promise.all(functionsDependentOnReplacedModelTables.map((funcName) => fs.remove(localPrefix(funcName))));
 };
 
 // helper function to load the function-parameters.json file given a functionName
-const getFunctionParamsSupplier = (context: $TSContext) => async (functionName: string) => context.amplify.invokePluginMethod(context, 'function', undefined, 'loadFunctionParameters', [
-  pathManager.getResourceDirectoryPath(undefined, 'function', functionName),
-]) as $TSAny;
+const getFunctionParamsSupplier = (context: $TSContext) => async (functionName: string) =>
+  context.amplify.invokePluginMethod(context, 'function', undefined, 'loadFunctionParameters', [
+    pathManager.getResourceDirectoryPath(undefined, 'function', functionName),
+  ]) as $TSAny;

@@ -1,13 +1,12 @@
-const { JSONUtilities, pathManager } = require('amplify-cli-core');
+const { JSONUtilities, pathManager } = require('@aws-amplify/amplify-cli-core');
 const path = require('path');
 const { generateUserPoolGroupStackTemplate } = require('./generate-user-pool-group-stack-template');
-const { AuthInputState } = require('../auth-inputs-manager/auth-input-state');
 
 async function transformUserPoolGroupSchema(context) {
   const userPoolPrecedencePath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
 
   const { allResources } = await context.amplify.getResourceStatus();
-  const authResource = allResources.filter(resource => resource.service === 'Cognito');
+  const authResource = allResources.filter((resource) => resource.service === 'Cognito');
   let authResourceName;
 
   if (authResource.length > 0) {
@@ -21,11 +20,11 @@ async function transformUserPoolGroupSchema(context) {
 
   // Replace env vars with subs
 
-  groups.forEach(group => {
+  groups.forEach((group) => {
     if (group.customPolicies) {
-      group.customPolicies.forEach(policy => {
+      group.customPolicies.forEach((policy) => {
         if (policy.PolicyDocument && policy.PolicyDocument.Statement) {
-          policy.PolicyDocument.Statement.forEach(statement => {
+          policy.PolicyDocument.Statement.forEach((statement) => {
             // eslint-disable-next-line
             if (statement.Resource.includes('${env}')) {
               // eslint-disable-line

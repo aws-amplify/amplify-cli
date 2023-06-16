@@ -8,7 +8,7 @@ const pluginManifest = require('../../amplify-plugin.json');
 
 module.exports = {
   name: subcommand,
-  run: async context => {
+  run: async (context) => {
     const { amplify, input } = context;
 
     const inputResourceName = input.subCommands && input.subCommands.length > 0 ? input.subCommands[0] : undefined;
@@ -40,9 +40,9 @@ async function chooseResource(context, inputResourceName) {
     const amplifyMeta = amplify.readJsonFile(amplifyMetaFilePath);
     if (
       amplifyMeta[category] &&
-      Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true).length > 0
+      Object.keys(amplifyMeta[category]).filter((r) => amplifyMeta[category][r].mobileHubMigrated !== true).length > 0
     ) {
-      let enabledResources = Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true);
+      let enabledResources = Object.keys(amplifyMeta[category]).filter((r) => amplifyMeta[category][r].mobileHubMigrated !== true);
 
       let inputIsValid = true;
       context.print.info(`which resource is this ${inputResourceName} ${services}`);
@@ -57,7 +57,7 @@ async function chooseResource(context, inputResourceName) {
           }
         }
 
-        enabledResources = enabledResources.filter(item => {
+        enabledResources = enabledResources.filter((item) => {
           return services.includes(item);
         });
       }

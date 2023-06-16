@@ -1,15 +1,17 @@
 import * as path from 'path';
 import { $TSContext, CLIInputSchemaValidator } from '../..';
 
-const mockContext: $TSContext = ({
+const mockContext: $TSContext = {
   amplify: {
     getCategoryPluginInfo: jest.fn(),
   },
   parameters: {
     options: {},
   },
-} as unknown) as $TSContext;
-const mockGetCategoryPluginInfo = mockContext.amplify.getCategoryPluginInfo as jest.MockedFunction<$TSContext['amplify']['getCategoryPluginInfo']>;
+} as unknown as $TSContext;
+const mockGetCategoryPluginInfo = mockContext.amplify.getCategoryPluginInfo as jest.MockedFunction<
+  $TSContext['amplify']['getCategoryPluginInfo']
+>;
 
 describe('CLIInputSchemaValidator', () => {
   it('getUserInputSchema returns user input schema', async () => {
@@ -25,36 +27,26 @@ describe('CLIInputSchemaValidator', () => {
           version: {
             description: 'The schema version.',
             type: 'number',
-            enum: [
-              1,
-            ],
+            enum: [1],
           },
           param1: {
             type: 'string',
           },
         },
-        required: [
-          'param1',
-          'version',
-        ],
+        required: ['param1', 'version'],
         $schema: 'http://json-schema.org/draft-07/schema#',
       },
       properties: {
         version: {
           description: 'The schema version.',
           type: 'number',
-          enum: [
-            1,
-          ],
+          enum: [1],
         },
         param1: {
           type: 'string',
         },
       },
-      required: [
-        'param1',
-        'version',
-      ],
+      required: ['param1', 'version'],
       $schema: 'http://json-schema.org/draft-07/schema#',
     });
   });
@@ -64,7 +56,7 @@ describe('CLIInputSchemaValidator', () => {
       packageLocation: path.join(__dirname, 'mock-plugin', 'custom-override-plugin'),
     }));
     const validator = new CLIInputSchemaValidator(mockContext, 'customService', 'customOverride', 'invalid');
-    await expect(validator.getUserInputSchema()).rejects.toThrow('Schema definition doesn\'t exist');
+    await expect(validator.getUserInputSchema()).rejects.toThrow("Schema definition doesn't exist");
   });
 
   it('validateInput returns true when userInput is valid', async () => {
@@ -72,10 +64,14 @@ describe('CLIInputSchemaValidator', () => {
       packageLocation: path.join(__dirname, 'mock-plugin', 'custom-override-plugin'),
     }));
     const validator = new CLIInputSchemaValidator(mockContext, 'customService', 'customOverride', 'customOverrideCLIInputs');
-    await expect(validator.validateInput(JSON.stringify({
-      version: 1,
-      param1: 'value1',
-    }))).resolves.toBe(true);
+    await expect(
+      validator.validateInput(
+        JSON.stringify({
+          version: 1,
+          param1: 'value1',
+        }),
+      ),
+    ).resolves.toBe(true);
   });
 
   it('validateInput throws error when userInput is invalid', async () => {
@@ -83,8 +79,12 @@ describe('CLIInputSchemaValidator', () => {
       packageLocation: path.join(__dirname, 'mock-plugin', 'custom-override-plugin'),
     }));
     const validator = new CLIInputSchemaValidator(mockContext, 'customService', 'customOverride', 'customOverrideCLIInputs');
-    await expect(validator.validateInput(JSON.stringify({
-      version: 1,
-    }))).rejects.toThrow('Data did not validate against the supplied schema.');
+    await expect(
+      validator.validateInput(
+        JSON.stringify({
+          version: 1,
+        }),
+      ),
+    ).rejects.toThrow('Data did not validate against the supplied schema.');
   });
 });

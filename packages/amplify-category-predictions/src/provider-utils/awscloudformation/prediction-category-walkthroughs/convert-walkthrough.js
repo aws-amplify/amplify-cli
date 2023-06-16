@@ -2,11 +2,11 @@ import convertAssets from '../assets/convertQuestions';
 import getAllDefaults from '../default-values/convert-defaults';
 import regionMapper from '../assets/regionMapping';
 import { enableGuestAuth } from './enable-guest-auth';
+import { prompter, byValue } from '@aws-amplify/amplify-prompts';
 
-const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
-const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('@aws-amplify/amplify-cli-core');
 // Predictions Info
 const category = 'predictions';
 const parametersFileName = 'parameters.json';
@@ -17,7 +17,7 @@ let service = '';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt(
+      await prompter.yesOrNo(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -38,7 +38,7 @@ async function updateWalkthrough(context) {
 
   const predictionsResources = [];
 
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
     if (convertTypes.includes(amplifyMeta[category][resourceName].convertType)) {
       predictionsResources.push({
         name: resourceName,
@@ -51,17 +51,11 @@ async function updateWalkthrough(context) {
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
-    return;
+    return undefined;
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources.length > 1) {
-    const resourceAnswer = await inquirer.prompt({
-      type: 'list',
-      name: 'resource',
-      message: 'Which convert resource would you like to update',
-      choices: predictionsResources,
-    });
-    resourceObj = resourceAnswer.resource;
+    resourceObj = await prompter.pick('Which convert resource would you like to update', predictionsResources);
   }
 
   return configure(context, resourceObj);
@@ -91,7 +85,8 @@ async function configure(context, resourceObj) {
 
   // only ask this for add
   if (!parameters.resourceName) {
-    answers = await inquirer.prompt(convertAssets.setup.type());
+    const convertTypeQuestion = convertAssets.setup.type();
+    answers.convertType = await prompter.pick(convertTypeQuestion.message, convertTypeQuestion.choices);
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.convertType);
     if (resourceType) {
@@ -101,7 +96,13 @@ async function configure(context, resourceObj) {
       exitOnNextTick(0);
     }
 
-    Object.assign(answers, await inquirer.prompt(convertAssets.setup.name(`${answers.convertType}${defaultValues.resourceName}`)));
+    const convertNameQuestion = convertAssets.setup.name(`${answers.convertType}${defaultValues.resourceName}`);
+    Object.assign(answers, {
+      resourceName: await prompter.input(convertNameQuestion.message, {
+        validate: convertNameQuestion.validate,
+        initial: convertNameQuestion.default,
+      }),
+    });
     defaultValues.convertPolicyName = `${answers.convertType}${defaultValues.convertPolicyName}`;
     convertType = answers.convertType;
   }
@@ -167,23 +168,64 @@ async function followupQuestions(context, convertType, parameters) {
   if (convertType === 'speechGenerator') {
     Object.assign(parameters, await getVoiceOptions(context));
   }
-  const answers = await inquirer.prompt(typeQuestions.questions(parameters));
+  const answers = {
+    [typeQuestions.questions(parameters).name]: await prompter.pick(
+      typeQuestions.questions(parameters).message,
+      typeQuestions.questions(parameters).choices,
+      {
+        ...(typeQuestions.questions(parameters).default ? { initial: byValue(typeQuestions.questions(parameters).default) } : {}),
+      },
+    ),
+  };
   // ask questions based on convert type
   if (convertType === 'speechGenerator') {
-    Object.assign(answers, await inquirer.prompt(typeQuestions.voiceQuestion(answers.language, parameters)));
+    Object.assign(answers, {
+      [typeQuestions.voiceQuestion(answers.language, parameters).name]: await prompter.pick(
+        typeQuestions.voiceQuestion(answers.language, parameters).message,
+        typeQuestions.voiceQuestion(answers.language, parameters).choices,
+        {
+          ...(typeQuestions.voiceQuestion(answers.language, parameters).default
+            ? { initial: byValue(typeQuestions.voiceQuestion(answers.language, parameters).default) }
+            : {}),
+        },
+      ),
+    });
   }
+
   if (convertType === 'translateText') {
     const targetOptions = filterLang(answers.sourceLang);
-    Object.assign(answers, await inquirer.prompt(typeQuestions.targetQuestion(targetOptions, parameters)));
+    Object.assign(answers, {
+      [typeQuestions.targetQuestion(targetOptions, parameters).name]: await prompter.pick(
+        typeQuestions.targetQuestion(targetOptions, parameters).message,
+        typeQuestions.targetQuestion(targetOptions, parameters).choices,
+        {
+          ...(typeQuestions.targetQuestion(targetOptions, parameters).default
+            ? { initial: byValue(typeQuestions.targetQuestion(targetOptions, parameters).default) }
+            : {}),
+        },
+      ),
+    });
   }
-  Object.assign(answers, await inquirer.prompt(typeQuestions.authAccess.prompt(parameters)));
+
+  Object.assign(answers, {
+    [typeQuestions.authAccess.prompt(parameters).name]: await prompter.pick(
+      typeQuestions.authAccess.prompt(parameters).message,
+      typeQuestions.authAccess.prompt(parameters).choices,
+      {
+        ...(typeQuestions.authAccess.prompt(parameters).default
+          ? { initial: byValue(typeQuestions.authAccess.prompt(parameters).default) }
+          : {}),
+      },
+    ),
+  });
+
   return answers;
 }
 
 function filterLang(srcLang) {
   let targetOptions = [...convertAssets.translateOptions];
   const denyCombos = Object.assign({}, convertAssets.deniedCombos);
-  targetOptions = targetOptions.filter(lang => {
+  targetOptions = targetOptions.filter((lang) => {
     if (denyCombos[srcLang] && denyCombos[srcLang].includes(lang.value)) {
       return false;
     }
@@ -199,7 +241,7 @@ async function getVoiceOptions(context) {
   const polly = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getPollyVoices');
   const speechLanguages = [];
   const voiceID = {};
-  polly.Voices.forEach(voice => {
+  polly.Voices.forEach((voice) => {
     speechLanguages[voice.LanguageCode] = { name: `${voice.LanguageName}`, value: `${voice.LanguageCode}` };
     (voiceID[voice.LanguageCode] = voiceID[voice.LanguageCode] || []).push({
       name: `${voice.Name} - ${voice.Gender}`,
@@ -216,7 +258,7 @@ function resourceAlreadyExists(context, convertType) {
 
   if (amplifyMeta[category] && context.commandName !== 'update') {
     const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].convertType === convertType) {
         type = convertType;
       }
@@ -234,7 +276,7 @@ function checkIfAuthExists(context) {
 
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }

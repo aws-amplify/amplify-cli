@@ -1,4 +1,4 @@
-import { pathManager, readCFNTemplate, writeCFNTemplate, generateCustomPoliciesInTemplate } from 'amplify-cli-core';
+import { pathManager, readCFNTemplate, writeCFNTemplate, generateCustomPoliciesInTemplate } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
@@ -48,4 +48,4 @@ export const writeCustomPoliciesToCFNTemplate = async (
   const { templateFormat, cfnTemplate } = readCFNTemplate(cfnPath);
   const newCfnTemplate = generateCustomPoliciesInTemplate(cfnTemplate, resourceName, service, category);
   await writeCFNTemplate(newCfnTemplate, cfnPath, { templateFormat, minify: options?.minify });
-}
+};

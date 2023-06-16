@@ -2,7 +2,7 @@ import {
   addFunction,
   addLayer,
   amplifyPush,
-  amplifyPushAuth,
+  amplifyPushAuthV5V6,
   amplifyPushLayer,
   createNewProjectDir,
   deleteProject,
@@ -19,25 +19,27 @@ import {
   validateLayerMetadata,
   addApiWithoutSchema,
   generateRandomShortId,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('functions');
     const migrateFromVersion = { v: 'unintialized' };
     const migrateToVersion = { v: 'unintialized' };
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
-  });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
-    await initJSProjectWithProfile(projRoot, { name: 'functionmigration' });
+    await initJSProjectWithProfile(projRoot, {
+      name: 'functionmigration',
+      includeUsageDataPrompt: false,
+    });
   });
 
   afterEach(async () => {
@@ -58,13 +60,13 @@ describe('amplify function migration', () => {
       'nodejs',
     );
 
-    const functionCode = loadFunctionTestFile('dynamodb-scan.js');
+    const functionCode = loadFunctionTestFile('dynamodb-scan-v2.js');
 
     overrideFunctionSrcNode(projRoot, fnName, functionCode);
 
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
     let meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+    const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
@@ -90,7 +92,7 @@ describe('amplify function migration', () => {
     await amplifyPush(projRoot, true);
 
     meta = getProjectMeta(projRoot);
-    const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
+    const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map((key) => meta.api[key])[0].output;
     const result = await invokeFunction(functionName, JSON.stringify({ tableName: `Todo-${appsyncId}-integtest` }), region);
     expect(result.StatusCode).toBe(200);
     expect(result.Payload).toBeDefined();
@@ -112,7 +114,7 @@ describe('amplify function migration', () => {
 
     await addFunction(projRoot, { name: function1, functionTemplate: 'Hello World' }, runtime, undefined);
     await addFunction(projRoot, { name: function2, functionTemplate: 'Hello World' }, runtime, undefined);
-    await amplifyPushAuth(projRoot);
+    await amplifyPushAuthV5V6(projRoot);
 
     const layerName = `test${shortId}`;
     const layerSettings = {

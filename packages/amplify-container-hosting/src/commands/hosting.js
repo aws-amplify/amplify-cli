@@ -2,7 +2,7 @@ const featureName = 'hosting';
 
 module.exports = {
   name: featureName,
-  run: async context => {
+  run: async (context) => {
     if (/^win/.test(process.platform)) {
       try {
         const { run } = require(`./${featureName}/${context.parameters.first}`);
@@ -39,5 +39,6 @@ module.exports = {
     context.amplify.showHelp(header, commands);
 
     context.print.info('');
+    return undefined;
   },
 };

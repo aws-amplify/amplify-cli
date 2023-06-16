@@ -1,7 +1,6 @@
-/* eslint-disable jsdoc/require-jsdoc */
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import * as util from '../util';
 
 export const removeDotConfigDir = (projectRootDirPath: string): void => {
@@ -17,7 +16,7 @@ export const removeFilesForTeam = (projectRootDirPath: string): void => {
 
   const dotConfigDirPath = path.join(amplifyDirPath, '.config');
   const files = fs.readdirSync(dotConfigDirPath);
-  files.forEach(fileName => {
+  files.forEach((fileName) => {
     if (fileName.includes('local')) {
       const filePath = path.join(dotConfigDirPath, fileName);
       fs.removeSync(filePath);
@@ -64,16 +63,16 @@ export const checkAmplifyFolderStructure = (projectRootDirPath: string): boolean
   const amplifyMetaFilePath = path.join(backendDirPath, 'amplify-meta.json');
 
   return (
-    fs.existsSync(amplifyDirPath)
-    && fs.existsSync(teamProviderInfoFilePath)
-    && fs.existsSync(dotConfigDirPath)
-    && fs.existsSync(localAWSInfoFilePath)
-    && fs.existsSync(localEnvInfoFilePath)
-    && fs.existsSync(projectConfigFilePath)
-    && fs.existsSync(currentCloudBackendDirPath)
-    && fs.existsSync(currentAmplifyMetaFilePath)
-    && fs.existsSync(backendDirPath)
-    && fs.existsSync(amplifyMetaFilePath)
+    fs.existsSync(amplifyDirPath) &&
+    fs.existsSync(teamProviderInfoFilePath) &&
+    fs.existsSync(dotConfigDirPath) &&
+    fs.existsSync(localAWSInfoFilePath) &&
+    fs.existsSync(localEnvInfoFilePath) &&
+    fs.existsSync(projectConfigFilePath) &&
+    fs.existsSync(currentCloudBackendDirPath) &&
+    fs.existsSync(currentAmplifyMetaFilePath) &&
+    fs.existsSync(backendDirPath) &&
+    fs.existsSync(amplifyMetaFilePath)
   );
 };
 

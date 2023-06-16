@@ -45,7 +45,7 @@ const callNodeAmplify = async (args, opts) => {
 
 const callPkgAmplify = isWin ? callPkgAmplifyWin : callPkgAmplifyNix;
 
-const callAmplify = !!process.pkg ? callPkgAmplify : callNodeAmplify;
+const callAmplify = !process.pkg ? callNodeAmplify : callPkgAmplify;
 
 module.exports = {
   callAmplify,

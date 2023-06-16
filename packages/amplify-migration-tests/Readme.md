@@ -38,10 +38,10 @@ The exact command is different for some tests. See `package.json` for all of the
 
 ## Writing a new integration test
 
-E2E tests internally use [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfile` is a helper method that is used in `init` tests and also used in all the other tests to initalize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using `aws-sdk` to make assert the resource configuration.
+E2E tests internally use [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfileV4_52_0 is a helper method that is used in `init`tests and also used in all the other tests to initalize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using`aws-sdk` to make assert the resource configuration.
 
 ```typescript
-import { initJSProjectWithProfile, deleteProject, amplifyPush } from '../init';
+import { initJSProjectWithProfileV4_52_0, deleteProject, amplifyPush } from '../init';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
 
 describe('amplify your test', () => {
@@ -57,7 +57,7 @@ describe('amplify your test', () => {
   });
 
   it('<your test>', async () => {
-    await initJSProjectWithProfile(projRoot, { name: '<project-name>' });
+    await initJSProjectWithProfileV4_52_0(projRoot, { name: '<project-name>' });
     // add resources that you want to test
     await amplifyPush(projRoot); // Push it to the cloud
     const { output } = getProjectMeta(projRoot).api.simplemodel;

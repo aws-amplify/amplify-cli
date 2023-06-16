@@ -1,4 +1,4 @@
-const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app', 'bucket', 'token'];
+const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app', 'bucket', 'token', 'secret'];
 const quotes = '\\\\?"';
 const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
@@ -23,8 +23,9 @@ export const Redactor = (arg: string | undefined): string => {
         valuesToRedact.push(m[3]);
       }
     } while (m !== null);
-    valuesToRedact.forEach(val => {
+    valuesToRedact.forEach((val) => {
       // replace value using string Masker
+      // eslint-disable-next-line no-param-reassign
       arg = arg?.replace(val, stringMasker);
     });
   }
@@ -44,7 +45,7 @@ export const stringMasker = (s: string): string => {
   if (s.includes('/') && !s.includes('-')) return redactBySlashSplit(s);
   const newString = s
     .split('-') // split string by '-'
-    .map(part => {
+    .map((part) => {
       // and then redact the smaller pieces separated by '/'
       if (part.includes('/')) {
         // start redacting only when it contains '/'

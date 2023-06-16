@@ -1,5 +1,5 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
-import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
+import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { FunctionDependency, LambdaLayer } from '@aws-amplify/amplify-function-plugin-interface';
 import { addLayersToFunctionWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/addLayerToFunctionWalkthrough';
 import {
   askCustomArnQuestion,
@@ -11,7 +11,7 @@ import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformati
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
-jest.mock('amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core');
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({
@@ -35,7 +35,7 @@ const askLayerOrderQuestion_mock = askLayerOrderQuestion as jest.MockedFunction<
 const confirmPromptFalse_mock = jest.fn(() => false);
 const confirmPromptTrue_mock = jest.fn(() => true);
 const getContextStubWith = (prompt: jest.Mock) =>
-  (({
+  ({
     amplify: {
       confirmPrompt: prompt,
       getProjectMeta: () => {},
@@ -43,7 +43,7 @@ const getContextStubWith = (prompt: jest.Mock) =>
         getBackendDirPath: () => {},
       },
     },
-  } as unknown) as $TSContext);
+  } as unknown as $TSContext);
 
 const runtimeStub = {
   value: 'lolcode', // http://www.lolcode.org/
@@ -54,7 +54,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     LayerVersionArn: 'fakeArn1',
     Description: '',
     CreatedDate: '',
-    CompatibleRuntimes: ['nodejs14.x'],
+    CompatibleRuntimes: ['nodejs16.x'],
     LicenseInfo: '',
     permissions: [],
     LogicalName: 'myLayer',
@@ -67,7 +67,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     LayerVersionArn: 'fakeArn2',
     Description: '',
     CreatedDate: '',
-    CompatibleRuntimes: ['nodejs14.x'],
+    CompatibleRuntimes: ['nodejs16.x'],
     LicenseInfo: '',
     permissions: [],
     legacyLayer: true,
@@ -75,9 +75,9 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
 ];
 
 const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
-layerCloudState_mock.getInstance.mockReturnValue(({
+layerCloudState_mock.getInstance.mockReturnValue({
   getLayerVersionsFromCloud: jest.fn(async () => layerCloudReturnStub),
-} as unknown) as LayerCloudState);
+} as unknown as LayerCloudState);
 
 const layerSelectionStub: LambdaLayer[] = [
   {
@@ -130,7 +130,7 @@ askLayerSelection_mock.mockImplementation(async () => ({
 
 askCustomArnQuestion_mock.mockImplementation(async () => arnEntryStub);
 
-askLayerOrderQuestion_mock.mockImplementation(async layers => layers);
+askLayerOrderQuestion_mock.mockImplementation(async (layers) => layers);
 
 describe('add layer to function walkthrough', () => {
   beforeEach(() => {

@@ -1,17 +1,17 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Duration, Fn } from '@aws-cdk/core';
-import { Effect } from '@aws-cdk/aws-iam';
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { CfnResource, Duration, Fn } from 'aws-cdk-lib';
+import { Effect } from 'aws-cdk-lib/aws-iam';
 import * as fs from 'fs-extra';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
 import { PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
 import { customPlaceIndexLambdaCodePath } from '../service-utils/constants';
 
-type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> &
-  TemplateMappings & { authResourceName: string };
+type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType' | 'groupPermissions'> & TemplateMappings & { authResourceName: string };
 
 /**
  * class to generate cfn for placeIndex resource
@@ -24,7 +24,7 @@ export class PlaceIndexStack extends BaseStack {
   protected readonly placeIndexName: string;
   protected readonly authResourceName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: PlaceIndexStackProps) {
+  constructor(scope: Construct, id: string, private readonly props: PlaceIndexStackProps) {
     super(scope, id, props);
 
     this.accessType = this.props.accessType;
@@ -32,9 +32,7 @@ export class PlaceIndexStack extends BaseStack {
     this.authResourceName = this.props.authResourceName;
     this.placeIndexRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
-    const inputParameters: string[] = this.props.groupPermissions.map(
-      (group: string) => `authuserPoolGroups${group}GroupRole`,
-    );
+    const inputParameters: string[] = this.props.groupPermissions.map((group: string) => `authuserPoolGroups${group}GroupRole`);
     inputParameters.push(
       `auth${this.authResourceName}UserPoolId`,
       'authRoleName',
@@ -96,7 +94,7 @@ export class PlaceIndexStack extends BaseStack {
     const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
       code: lambda.Code.fromInline(customPlaceIndexLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_18_X,
       timeout: Duration.seconds(300),
     });
     customPlaceIndexLambda.addToRolePolicy(geoCreateIndexStatement);
@@ -123,19 +121,14 @@ export class PlaceIndexStack extends BaseStack {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: [
-            'geo:SearchPlaceIndexForPosition',
-            'geo:SearchPlaceIndexForText',
-            'geo:SearchPlaceIndexForSuggestions',
-            'geo:GetPlace'],
+          actions: ['geo:SearchPlaceIndexForPosition', 'geo:SearchPlaceIndexForText', 'geo:SearchPlaceIndexForSuggestions', 'geo:GetPlace'],
           resources: [indexResource.getAtt('IndexArn').toString()],
         }),
       ],
     });
 
     const cognitoRoles: Array<string> = [];
-    if (this.accessType === AccessType.AuthorizedUsers
-      || this.accessType === AccessType.AuthorizedAndGuestUsers) {
+    if (this.accessType === AccessType.AuthorizedUsers || this.accessType === AccessType.AuthorizedAndGuestUsers) {
       cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
     }
     if (this.accessType === AccessType.AuthorizedAndGuestUsers) {
@@ -144,11 +137,7 @@ export class PlaceIndexStack extends BaseStack {
     if (this.groupPermissions && this.authResourceName) {
       this.groupPermissions.forEach((group: string) => {
         cognitoRoles.push(
-          cdk.Fn.join('-',
-            [
-            this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
-            `${group}GroupRole`,
-            ]),
+          cdk.Fn.join('-', [this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString, `${group}GroupRole`]),
         );
       });
     }

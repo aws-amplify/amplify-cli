@@ -8,7 +8,11 @@ import { ConnectionContext, WebsocketSubscriptionServer, REALTIME_SUBSCRIPTION_P
 
 export class AppSyncSimulatorSubscriptionServer {
   private realtimeServer: WebsocketSubscriptionServer;
-  constructor(private simulatorContext: AmplifyAppSyncSimulator, private server: Server, private subscriptionPath: string = REALTIME_SUBSCRIPTION_PATH) {
+  constructor(
+    private simulatorContext: AmplifyAppSyncSimulator,
+    private server: Server,
+    private subscriptionPath: string = REALTIME_SUBSCRIPTION_PATH,
+  ) {
     this.onSubscribe = this.onSubscribe.bind(this);
     this.onConnect = this.onConnect.bind(this);
     this.realtimeServer = new WebsocketSubscriptionServer(
@@ -25,8 +29,8 @@ export class AppSyncSimulatorSubscriptionServer {
   start() {
     this.realtimeServer.start();
   }
-  stop() {
-    this.realtimeServer.stop();
+  async stop() {
+    await this.realtimeServer.stop();
   }
 
   onSubscribe = async (

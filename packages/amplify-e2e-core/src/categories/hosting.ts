@@ -2,32 +2,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile, getNpxPath } from '..';
 import _ from 'lodash';
-import { spawnSync } from 'child_process';
 import { getBackendAmplifyMeta } from '../utils';
-
-export function addDEVHosting(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
-      .wait('Select the plugin module to execute')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Select the environment setup:')
-      .sendCarriageReturn()
-      .wait('hosting bucket name')
-      .sendCarriageReturn()
-      .wait('index doc for the website')
-      .sendCarriageReturn()
-      .wait('error doc for the website')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+import * as execa from 'execa';
 
 export function enableContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -73,9 +49,6 @@ export function addPRODHosting(cwd: string): Promise<void> {
       .wait('Select the plugin module to execute')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Select the environment setup:')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
       .wait('hosting bucket name')
       .sendCarriageReturn()
       .run((err: Error) => {
@@ -88,21 +61,12 @@ export function addPRODHosting(cwd: string): Promise<void> {
   });
 }
 
-export function removePRODCloudFront(cwd: string): Promise<void> {
+export function addManualHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'hosting'], { cwd, stripColors: true })
-      .wait('Specify the section to configure')
-      .send(KEY_DOWN_ARROW)
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+      .wait(/.*Hosting with Amplify Console*/)
       .sendCarriageReturn()
-      .wait('Remove CloudFront from hosting')
-      .send('y')
-      .sendCarriageReturn()
-      .wait('index doc for the website')
-      .sendCarriageReturn()
-      .wait('error doc for the website')
-      .sendCarriageReturn()
-      .wait('Specify the section to configure')
-      .send(KEY_DOWN_ARROW)
+      .wait('Manual deployment')
       .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
@@ -114,48 +78,32 @@ export function removePRODCloudFront(cwd: string): Promise<void> {
   });
 }
 
-export function amplifyPushWithUpdate(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue?')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPushWithUpdate = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue?')
+    .sendCarriageReturn()
+    .runAsync();
+};
 
-export function amplifyPublishWithUpdate(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue?')
-      .sendCarriageReturn()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyPublishWithUpdate = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue?')
+    .sendCarriageReturn()
+    .runAsync();
+};
 
 export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
-    .wait('Do you still want to publish the frontend')
-    .sendConfirmYes()
-    .run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+      .wait('Do you still want to publish the frontend')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }
 
@@ -190,7 +138,7 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync(getNpxPath(), ['create-react-app', '--scripts-version', '4.0.3', projectName], { cwd: projectDir });
+  execa.sync(getNpxPath(), ['create-react-app', projectName, '--scripts-version', '5.0.1', '--use-npm'], { cwd: projectDir });
 
   return projRoot;
 }

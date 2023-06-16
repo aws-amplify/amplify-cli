@@ -1,7 +1,5 @@
-import {
-  $TSAny, $TSContext, $TSObject, stateManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSAny, $TSObject, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { getSupportedServices } from '../../supported-services';
 import { authProviders } from '../assets/string-maps';
@@ -21,15 +19,14 @@ import {
   removeDeprecatedProps,
   updateUserPoolGroups,
 } from '../utils/synthesize-resources';
+import { AuthContext } from '../../../context';
 
 /**
  * Factory function that returns a CognitoCLIInputs consumer that handles all of the resource generation logic.
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (
-  context: $TSContext,
-) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getAddAuthHandler = (context: AuthContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = getSupportedServices()[request.serviceName];
   const { defaultValuesFilename, provider } = serviceMetadata;
 
@@ -41,13 +38,13 @@ export const getAddAuthHandler = (
 
   // replace secret keys from cli inputs to be stored in deployment secrets
 
-  let sharedParams = ({ ...requestWithDefaults }) as $TSAny;
-  privateKeys.forEach(p => delete sharedParams[p]);
+  let sharedParams = { ...requestWithDefaults } as $TSAny;
+  privateKeys.forEach((p) => delete sharedParams[p]);
   sharedParams = removeDeprecatedProps(sharedParams);
   // extracting env-specific params from parameters object
   const envSpecificParams: $TSObject = {};
   const cliInputs = { ...sharedParams };
-  ENV_SPECIFIC_PARAMS.forEach(paramName => {
+  ENV_SPECIFIC_PARAMS.forEach((paramName) => {
     if (paramName in request) {
       envSpecificParams[paramName] = cliInputs[paramName];
       delete cliInputs[paramName];
@@ -84,7 +81,7 @@ export const getAddAuthHandler = (
   } catch (err: $TSAny) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
   return cognitoCLIInputs.cognitoConfig.resourceName;
@@ -93,9 +90,13 @@ export const getAddAuthHandler = (
 /**
  * Factory function that returns a CognitoConfiguration consumer and handles updates to the auth resource
  */
-export const getUpdateAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getUpdateAuthHandler = (context: AuthContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
-  const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
+  const requestWithDefaults = await getUpdateAuthDefaultsApplier(
+    context,
+    defaultValuesFilename,
+    context.updatingAuth as CognitoConfiguration,
+  )(request);
   const resources = stateManager.getMeta();
   if (resources.auth.userPoolGroups) {
     await updateUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
@@ -103,12 +104,12 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     await createUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
   }
   if (
-    (!requestWithDefaults.updateFlow && !requestWithDefaults.thirdPartyAuth)
-    || (requestWithDefaults.updateFlow === 'manual' && !requestWithDefaults.thirdPartyAuth)
+    (!requestWithDefaults.updateFlow && !requestWithDefaults.thirdPartyAuth) ||
+    (requestWithDefaults.updateFlow === 'manual' && !requestWithDefaults.thirdPartyAuth)
   ) {
     delete requestWithDefaults.selectedParties;
     requestWithDefaults.authProviders = [];
-    authProviders.forEach(a => delete (requestWithDefaults as $TSAny)[a.answerHashKey]);
+    authProviders.forEach((a) => delete (requestWithDefaults as $TSAny)[a.answerHashKey]);
     if (requestWithDefaults.googleIos) {
       delete requestWithDefaults.googleIos;
     }
@@ -128,14 +129,14 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     delete requestWithDefaults.authProvidersUserPool;
   }
 
-  let sharedParams = ({ ...requestWithDefaults }) as $TSAny;
-  privateKeys.forEach(p => delete sharedParams[p]);
+  let sharedParams = { ...requestWithDefaults } as $TSAny;
+  privateKeys.forEach((p) => delete sharedParams[p]);
   sharedParams = removeDeprecatedProps(sharedParams);
   // extracting env-specific params from parameters object
   const envSpecificParams: $TSAny = {};
   const cliInputs = { ...sharedParams };
-  ENV_SPECIFIC_PARAMS.forEach(paramName => {
-    if (paramName in request) {
+  ENV_SPECIFIC_PARAMS.forEach((paramName) => {
+    if (paramName in cliInputs) {
       envSpecificParams[paramName] = cliInputs[paramName];
       delete cliInputs[paramName];
     }
@@ -169,7 +170,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     }
 
     await getPostUpdateAuthMetaUpdater(context)(cognitoCLIInputs.cognitoConfig.resourceName);
-    await getPostUpdateAuthMessagePrinter(context.print)(cognitoCLIInputs.cognitoConfig.resourceName);
+    await getPostUpdateAuthMessagePrinter()(cognitoCLIInputs.cognitoConfig.resourceName);
 
     if (doesConfigurationIncludeSMS(cliInputs)) {
       await printSMSSandboxWarning();
@@ -177,7 +178,7 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   } catch (err: $TSAny) {
     printer.info(err.stack);
     printer.error('There was an error updating the auth resource');
-    context.usageData.emitError(err);
+    void context.usageData.emitError(err);
     process.exitCode = 1;
   }
   return cognitoCLIInputs.cognitoConfig.resourceName;

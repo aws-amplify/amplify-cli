@@ -1,4 +1,4 @@
-import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
+import { FunctionRuntime, ProviderContext } from '@aws-amplify/amplify-function-plugin-interface';
 
 export type LayerRuntime = Pick<FunctionRuntime, 'name' | 'value' | 'layerExecutablePath' | 'runtimePluginId'> & {
   cloudTemplateValues?: string[];

@@ -9,6 +9,7 @@ export abstract class AmplifyException extends Error {
   public readonly resolution?: string;
   public readonly details?: string;
   public readonly link?: string;
+  public readonly code?: string;
 
   /**
    * You should use AmplifyError or AmplifyFault to throw an exception.
@@ -41,18 +42,22 @@ export abstract class AmplifyException extends Error {
     this.message = options.message;
     this.details = options.details;
     this.resolution = options.resolution;
+    this.code = options.code;
     this.link = options.link ?? AMPLIFY_SUPPORT_DOCS.CLI_PROJECT_TROUBLESHOOTING.url;
   }
 
   toObject = (): object => {
-    const {
-      name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack,
-    } = this;
+    const { name: errorName, message: errorMessage, details: errorDetails, resolution, link, stack } = this;
 
     return {
-      errorName, errorMessage, errorDetails, resolution, link, ...(process.argv.includes('--debug') ? { stack } : {}),
+      errorName,
+      errorMessage,
+      errorDetails,
+      resolution,
+      link,
+      ...(process.argv.includes('--debug') ? { stack } : {}),
     };
-  }
+  };
 }
 
 /**
@@ -64,10 +69,13 @@ export type AmplifyExceptionClassification = 'FAULT' | 'ERROR';
  * Amplify Error options object
  */
 export type AmplifyExceptionOptions = {
-  message: string,
-  details?: string,
-  resolution?: string,
-  link?: string,
+  message: string;
+  details?: string;
+  resolution?: string;
+  link?: string;
+
+  // CloudFormation or NodeJS error codes
+  code?: string;
 };
 
 /**
@@ -90,43 +98,61 @@ export type AmplifyErrorType =
   | 'AmplifyStudioLoginError'
   | 'AmplifyStudioNotEnabledError'
   | 'ApiCategorySchemaNotFoundError'
+  | 'APIRateExceededError'
   | 'AuthImportError'
+  | 'BackendConfigValidationError'
   | 'BucketAlreadyExistsError'
   | 'BucketNotFoundError'
   | 'CategoryNotEnabledError'
   | 'CloudFormationTemplateError'
   | 'CommandNotSupportedError'
   | 'ConfigurationError'
+  | 'CustomPoliciesFormatError'
+  | 'DebugConfigValueNotSetError'
   | 'DeploymentError'
   | 'DeploymentInProgressError'
-  | 'DirectoryError'
+  | 'DestructiveMigrationError'
+  | 'DiagnoseReportUploadError'
   | 'DirectoryAlreadyExistsError'
+  | 'DirectoryError'
   | 'DuplicateLogicalIdError'
   | 'EnvironmentConfigurationError'
   | 'EnvironmentNameError'
   | 'EnvironmentNotInitializedError'
+  | 'ExportError'
   | 'FeatureFlagsValidationError'
+  | 'FileSystemPermissionsError'
   | 'FrameworkNotSupportedError'
   | 'FunctionTooLargeError'
+  | 'GraphQLError'
   | 'InputValidationError'
   | 'InvalidAmplifyAppIdError'
   | 'InvalidCustomResourceError'
+  | 'InvalidDirectiveError'
+  | 'InvalidGSIMigrationError'
+  | 'InvalidMigrationError'
   | 'InvalidOverrideError'
   | 'InvalidStackError'
+  | 'InvalidTransformerError'
   | 'IterativeRollbackError'
+  | 'LambdaFunctionInvokeError'
   | 'LambdaLayerDeleteError'
   | 'MigrationError'
   | 'MissingAmplifyMetaFileError'
+  | 'MissingExpectedParameterError'
   | 'MissingOverridesInstallationRequirementsError'
+  | 'MockProcessError'
   | 'ModelgenError'
   | 'NestedProjectInitError'
-  | 'NoUpdateBackendError'
   | 'NotImplementedError'
+  | 'NoUpdateBackendError'
   | 'OpenSslCertificateError'
+  | 'PackagingLambdaFunctionError'
   | 'ParameterNotFoundError'
   | 'PermissionsError'
   | 'PluginMethodNotFoundError'
   | 'PluginNotFoundError'
+  | 'PluginPolicyAddError'
   | 'ProfileConfigurationError'
   | 'ProjectAppIdResolveError'
   | 'ProjectInitError'
@@ -136,47 +162,69 @@ export type AmplifyErrorType =
   | 'RegionNotAvailableError'
   | 'RemoveNotificationAppError'
   | 'ResourceAlreadyExistsError'
+  | 'ResourceCountLimitExceedError'
+  | 'ResourceDoesNotExistError'
   | 'ResourceInUseError'
   | 'ResourceNotReadyError'
+  | 'ResourceRemoveError'
+  | 'SchemaNotFoundError'
+  | 'SchemaValidationError'
+  | 'SearchableMockProcessError'
+  | 'SearchableMockUnavailablePortError'
+  | 'SearchableMockUnsupportedPlatformError'
+  | 'ShellCommandExecutionError'
   | 'StackNotFoundError'
   | 'StackStateError'
-  | 'UserInputError'
-  | 'MockProcessError'
-  | 'SearchableMockUnsupportedPlatformError'
-  | 'SearchableMockUnavailablePortError'
-  | 'SearchableMockProcessError';
+  | 'StorageImportError'
+  | 'TransformerContractError'
+  | 'UnknownDirectiveError'
+  | 'UnsupportedLockFileTypeError'
+  | 'UserInputError';
 
 /**
  * Amplify fault types
  */
 export type AmplifyFaultType =
-  | 'AnalyticsCategoryFault'
   | 'AmplifyBackupFault'
-  | 'BackendPullFault'
-  | 'ConfigurationFault'
+  | 'AnalyticsCategoryFault'
+  | 'AuthCategoryFault'
   | 'BackendDeleteFault'
+  | 'BackendPullFault'
+  | 'CloudFormationTemplateFault'
+  | 'ConfigurationFault'
   | 'ConfigurationFault'
   | 'DeploymentFault'
+  | 'DeploymentStateUploadFault'
+  | 'FileNotFoundFault'
+  | 'GraphQLTransformerV1Fault'
+  | 'LockFileNotFoundFault'
+  | 'LockFileParsingFault'
+  | 'MockProcessFault'
   | 'NotificationsChannelAPNSFault'
   | 'NotificationsChannelEmailFault'
   | 'NotificationsChannelFCMFault'
-  | 'NotificationsChannelSmsFault'
   | 'NotificationsChannelInAppMessagingFault'
+  | 'NotificationsChannelSmsFault'
   | 'NotImplementedFault'
-  | 'ProjectDeleteFault'
-  | 'ProjectInitFault'
+  | 'ParameterDownloadFault'
+  | 'ParameterUploadFault'
   | 'PluginNotLoadedFault'
-  | 'PushResourcesFault'
+  | 'ProjectDeleteFault'
+  | 'ParametersDeleteFault'
+  | 'ProjectInitFault'
   | 'PullBackendFault'
+  | 'PushResourcesFault'
+  | 'ResourceAddFault'
   | 'ResourceExportFault'
   | 'ResourceNotFoundFault'
   | 'ResourceNotReadyFault'
   | 'ResourceRemoveFault'
   | 'RootStackNotFoundFault'
   | 'ServiceCallFault'
+  | 'SnsSandboxModeCheckFault'
   | 'TimeoutFault'
   | 'TriggerUploadFault'
   | 'UnexpectedS3Fault'
   | 'UnknownFault'
   | 'UnknownNodeJSFault'
-  | 'MockProcessFault';
+  | 'ZipExtractFault';

@@ -1,8 +1,17 @@
-import { $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  AmplifyCategories,
+  AmplifyError,
+  AmplifyFault,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
 import inquirer from 'inquirer';
 import path from 'path';
 const TransformPackage = require('graphql-transformer-core');
-const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+const { ResourceDoesNotExistError, exitOnNextTick } = require('@aws-amplify/amplify-cli-core');
 export async function askDynamoDBQuestions(context: $TSContext, currentProjectOnly = false): Promise<{ resourceName: string }> {
   const dynamoDbTypeQuestion = {
     type: 'list',
@@ -30,7 +39,7 @@ export async function askDynamoDBQuestions(context: $TSContext, currentProjectOn
           context.print.error('There are no DynamoDB resources configured in your project currently');
           break;
         }
-        Object.keys(storageResources).forEach(resourceName => {
+        Object.keys(storageResources).forEach((resourceName) => {
           if (storageResources[resourceName].service === 'DynamoDB') {
             dynamoDbProjectResources.push(resourceName);
           }
@@ -68,7 +77,7 @@ export async function askDynamoDBQuestions(context: $TSContext, currentProjectOn
   throw new Error('Invalid option selected');
 }
 
-export async function getTableParameters(dynamoAnswers: any): Promise<TableParams | {}> {
+export async function getTableParameters(dynamoAnswers: any): Promise<TableParams | Record<string, unknown>> {
   if (dynamoAnswers.Arn) {
     // Looking for table parameters on DynamoDB public API
     const hashKey = dynamoAnswers.KeySchema.find((attr: any) => attr.KeyType === 'HASH') || {};
@@ -138,9 +147,30 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
 
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(backendDir, 'api', targetResourceName);
-  const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
-  const directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
-  const modelNames = Object.keys(directiveMap.types).filter(typeName => directiveMap.types[typeName].includes('model'));
+  let project;
+  let directiveMap: $TSAny;
+  try {
+    project = await TransformPackage.readProjectConfiguration(resourceDirPath);
+    directiveMap = TransformPackage.collectDirectivesByTypeNames(project.schema);
+  } catch (err) {
+    if (err.message?.includes('Syntax Error')) {
+      throw new AmplifyError(
+        'GraphQLError',
+        {
+          message: err?.message,
+        },
+        err,
+      );
+    }
+    throw new AmplifyFault(
+      'GraphQLTransformerV1Fault',
+      {
+        message: err?.message,
+      },
+      err,
+    );
+  }
+  const modelNames = Object.keys(directiveMap.types).filter((typeName) => directiveMap.types[typeName].includes('model'));
 
   let targetModelNames: string[] = [];
   if (modelNames.length === 0) {
@@ -166,7 +196,7 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
     }
   }
 
-  const triggerEventSourceMappings = targetModelNames.map(modelName => {
+  const triggerEventSourceMappings = targetModelNames.map((modelName) => {
     const streamArnParamRef = {
       'Fn::ImportValue': {
         'Fn::Sub': [`\${api${targetResourceName}GraphQLAPIIdOutput}`, 'GetAtt', `${modelName}Table`, 'StreamArn'].join(':'),

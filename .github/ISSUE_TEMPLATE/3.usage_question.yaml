@@ -1,6 +1,6 @@
 name: Usage Question
 description: Ask a question about AWS Amplify CLI usage
-labels: ["question", "pending-triage"]
+labels: ['question', 'pending-triage']
 body:
   - type: markdown
     attributes:

@@ -66,6 +66,7 @@ export const PathConstants = {
   ExportManifestJsonFilename: 'amplify-export-manifest.json',
   ExportTagsJsonFileName: 'export-tags.json',
   ExportCategoryStackMappingJsonFilename: 'category-stack-mapping.json',
+  OverrideFileName: 'override.ts',
 };
 
 /**
@@ -95,31 +96,25 @@ export class PathManager {
 
   getAmplifyAdminDirPath = (): string => this.constructPath(this.getHomeDotAmplifyDirPath(), [PathConstants.AmplifyAdminDirName]);
 
-  getAmplifyAdminConfigFilePath = (): string => this.constructPath(
-    this.getAmplifyAdminDirPath(), [PathConstants.AmplifyAdminConfigFileName],
-  );
+  getAmplifyAdminConfigFilePath = (): string =>
+    this.constructPath(this.getAmplifyAdminDirPath(), [PathConstants.AmplifyAdminConfigFileName]);
 
   getAmplifyDirPath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.AmplifyDirName]);
 
-  getDotConfigDirPath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.DotConfigDirName],
-  );
+  getDotConfigDirPath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.DotConfigDirName]);
 
-  getBackendDirPath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName],
-  );
+  getBackendDirPath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName]);
 
-  getCurrentCloudBackendDirPath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName],
-  );
+  getCurrentCloudBackendDirPath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName]);
 
-  getCurrentResourceParametersJsonPath = (projectPath: string | undefined, categoryName: string, resourceName: string): string => path.join(
-    this.getCurrentCloudBackendDirPath(projectPath), categoryName, resourceName, PathConstants.ParametersJsonFileName,
-  );
+  getCurrentResourceParametersJsonPath = (projectPath: string | undefined, categoryName: string, resourceName: string): string =>
+    path.join(this.getCurrentCloudBackendDirPath(projectPath), categoryName, resourceName, PathConstants.ParametersJsonFileName);
 
-  getCurrentCfnTemplatePath = (projectPath: string | undefined, categoryName: string, resourceName: string): string => path.join(
-    this.getCurrentCloudBackendDirPath(projectPath), categoryName, resourceName, PathConstants.CfnFileName(resourceName),
-  );
+  getCurrentCfnTemplatePath = (projectPath: string | undefined, categoryName: string, resourceName: string): string =>
+    path.join(this.getCurrentCloudBackendDirPath(projectPath), categoryName, resourceName, PathConstants.CfnFileName(resourceName));
 
   getAmplifyRcFilePath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.AmplifyRcFileName]);
 
@@ -129,53 +124,43 @@ export class PathManager {
    * Returns the full path to the `team-provider-info.json` file
    * @deprecated Use envParamManager from amplify-environment-parameters
    */
-  getTeamProviderInfoFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.TeamProviderInfoFileName],
-  );
+  getTeamProviderInfoFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.TeamProviderInfoFileName]);
 
-  getProjectConfigFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.DotConfigDirName, PathConstants.ProjectConfigFileName],
-  );
+  getProjectConfigFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.DotConfigDirName, PathConstants.ProjectConfigFileName]);
 
-  getLocalEnvFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.DotConfigDirName, PathConstants.LocalEnvFileName],
-  );
+  getLocalEnvFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.DotConfigDirName, PathConstants.LocalEnvFileName]);
 
-  getLocalAWSInfoFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.DotConfigDirName, PathConstants.LocalAWSInfoFileName],
-  );
+  getLocalAWSInfoFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.DotConfigDirName, PathConstants.LocalAWSInfoFileName]);
 
-  getAmplifyMetaFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.AmplifyMetaFileName],
-  );
+  getAmplifyMetaFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.AmplifyMetaFileName]);
 
-  getBackendConfigFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.BackendConfigFileName],
-  );
+  getBackendConfigFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.BackendConfigFileName]);
 
-  getTagFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.TagsFileName],
-  );
+  getTagFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.TagsFileName]);
 
-  getCurrentTagFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName, PathConstants.TagsFileName],
-  );
+  getCurrentTagFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName, PathConstants.TagsFileName]);
 
-  getResourceDirectoryPath = (projectPath: string | undefined, category: string, resourceName: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, category, resourceName],
-  );
+  getResourceDirectoryPath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, category, resourceName]);
 
-  getResourceInputsJsonFilePath = (projectPath: string | undefined, category: string, resourceName: string): string => path.join(
-    this.getResourceDirectoryPath(projectPath, category, resourceName), PathConstants.CLIInputsJsonFileName,
-  );
+  getResourceInputsJsonFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    path.join(this.getResourceDirectoryPath(projectPath, category, resourceName), PathConstants.CLIInputsJsonFileName);
 
   getResourceParametersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string => {
     let isBuildParametersJson = false;
     const resourceDirPath = this.getResourceDirectoryPath(projectPath, category, resourceName);
     if (
-      !fs.existsSync(path.join(resourceDirPath, PathConstants.ParametersJsonFileName))
-      && fs.existsSync(path.join(resourceDirPath, PathConstants.CLIInputsJsonFileName))
-      && overriddenCategories.includes(category)
+      !fs.existsSync(path.join(resourceDirPath, PathConstants.ParametersJsonFileName)) &&
+      fs.existsSync(path.join(resourceDirPath, PathConstants.CLIInputsJsonFileName)) &&
+      overriddenCategories.includes(category)
     ) {
       isBuildParametersJson = true;
     }
@@ -194,31 +179,33 @@ export class PathManager {
     return path.join(basePath, PathConstants.CfnFileName(resourceName));
   };
 
-  getReadMeFilePath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.ReadMeFileName],
-  );
+  getReadMeFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.ReadMeFileName]);
 
-  getCurrentAmplifyMetaFilePath = (projectPath?: string): string => this.constructPath(projectPath, [
-    PathConstants.AmplifyDirName,
-    PathConstants.CurrentCloudBackendDirName,
-    PathConstants.AmplifyMetaFileName,
-  ]);
+  getCurrentAmplifyMetaFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.AmplifyMetaFileName,
+    ]);
 
-  getCurrentBackendConfigFilePath = (projectPath?: string): string => this.constructPath(projectPath, [
-    PathConstants.AmplifyDirName,
-    PathConstants.CurrentCloudBackendDirName,
-    PathConstants.BackendConfigFileName,
-  ]);
+  getCurrentBackendConfigFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.BackendConfigFileName,
+    ]);
 
   getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName));
 
-  getCustomPoliciesPath = (category: string, resourceName: string): string => path.join(
-    this.getResourceDirectoryPath(undefined, category, resourceName), PathConstants.CustomPoliciesFilename,
-  );
+  getCustomPoliciesPath = (category: string, resourceName: string): string =>
+    path.join(this.getResourceDirectoryPath(undefined, category, resourceName), PathConstants.CustomPoliciesFilename);
 
-  getAWSCredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSCredentials));
+  getAWSCredentialsFilePath = (): string =>
+    process.env.AWS_SHARED_CREDENTIALS_FILE || path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSCredentials));
 
-  getAWSConfigFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSConfig));
+  getAWSConfigFilePath = (): string =>
+    process.env.AWS_CONFIG_FILE || path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSConfig));
 
   getCLIJSONFilePath = (projectPath: string, env?: string): string => {
     const fileName = env === undefined ? PathConstants.CLIJSONFileName : PathConstants.CLIJsonWithEnvironmentFileName(env);
@@ -230,42 +217,53 @@ export class PathManager {
 
   getDeploymentSecrets = (): string => path.normalize(path.join(this.getDotAWSAmplifyDirPath(), PathConstants.DeploymentSecretsFileName));
 
-  getHooksDirPath = (projectPath?: string): string => this.constructPath(
-    projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName],
-  );
+  getHooksDirPath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName]);
 
-  getHooksConfigFilePath = (projectPath?: string): string => path.join(
-    this.getHooksDirPath(projectPath), PathConstants.HooksConfigFileName,
-  );
+  getHooksConfigFilePath = (projectPath?: string): string =>
+    path.join(this.getHooksDirPath(projectPath), PathConstants.HooksConfigFileName);
 
-  getOverrideDirPath = (projectPath: string, category: string, resourceName: string): string => this.constructPath(projectPath, [
-    PathConstants.AmplifyDirName,
-    PathConstants.BackendDirName,
-    category,
-    resourceName,
-    PathConstants.OverrideDirName,
-  ]);
+  getOverrideDirPath = (projectPath: string, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      category,
+      resourceName,
+      PathConstants.OverrideDirName,
+    ]);
 
-  getRootOverrideDirPath = (projectPath: string): string => this.constructPath(projectPath, [
-    PathConstants.AmplifyDirName,
-    PathConstants.BackendDirName,
-    PathConstants.ProviderName,
-    PathConstants.OverrideDirName,
-  ]);
+  getRootOverrideDirPath = (projectPath: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.OverrideDirName,
+    ]);
 
-  getRootStackBuildDirPath = (projectPath: string): string => this.constructPath(projectPath, [
-    PathConstants.AmplifyDirName,
-    PathConstants.BackendDirName,
-    PathConstants.ProviderName,
-    PathConstants.BuildDirName,
-  ]);
+  getRootStackBuildDirPath = (projectPath: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.BuildDirName,
+    ]);
 
-  getCurrentCloudRootStackDirPath = (projectPath: string): string => this.constructPath(projectPath, [
-    PathConstants.AmplifyDirName,
-    PathConstants.CurrentCloudBackendDirName,
-    PathConstants.ProviderName,
-    PathConstants.BuildDirName,
-  ]);
+  getCurrentCloudRootStackDirPath = (projectPath: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.BuildDirName,
+    ]);
+
+  getResourceOverrideFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      category,
+      resourceName,
+      PathConstants.OverrideFileName,
+    ]);
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {

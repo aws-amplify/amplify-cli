@@ -1,6 +1,6 @@
 const { getWhen } = require('../../lib/extensions/amplify-helpers/get-when-function');
 
-describe('get-when helper: ', () => {
+describe('get-when helper:', () => {
   let input = {};
   let answers = {};
   let previousValues = {};

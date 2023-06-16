@@ -1,5 +1,5 @@
-import { $TSContext, $TSAny } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const subcommand = 'update';
 const category = 'analytics';
@@ -9,13 +9,13 @@ const category = 'analytics';
  * @param context amplify cli context
  * @returns response from the resource's update function
  */
-export const run = async (context: $TSContext) : Promise<$TSAny> => {
+export const run = async (context: $TSContext): Promise<$TSAny> => {
   const { amplify } = context;
   const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
 
   return amplify
     .serviceSelectionPrompt(context, category, servicesMetadata)
-    .then(result => {
+    .then((result) => {
       const options = {
         service: result.service,
         providerPlugin: result.providerName,
@@ -30,7 +30,7 @@ export const run = async (context: $TSContext) : Promise<$TSAny> => {
 
       return providerController.updateResource(context, category, result.service, options);
     })
-    .then(resourceName => {
+    .then((resourceName) => {
       printer.success(`Successfully updated resource ${resourceName} locally`);
       printer.info('');
       printer.success('Some next steps:');
@@ -40,10 +40,10 @@ export const run = async (context: $TSContext) : Promise<$TSAny> => {
       );
       printer.info('');
     })
-    .catch(err => {
+    .catch((err) => {
       printer.info(err.stack);
       printer.error(`There was an error updating the ${category} resource`);
-      context.usageData.emitError(err);
+      void context.usageData.emitError(err);
       process.exitCode = 1;
     });
 };

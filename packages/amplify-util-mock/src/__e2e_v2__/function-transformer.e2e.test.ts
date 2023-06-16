@@ -36,7 +36,7 @@ describe('@function transformer', () => {
       const transformer = new GraphQLTransform({
         transformers: [new ModelTransformer(), new FunctionTransformer()],
         featureFlags: {
-          getBoolean: name => (name === 'improvePluralization' ? true : false),
+          getBoolean: (name) => (name === 'improvePluralization' ? true : false),
         } as FeatureFlagProvider,
       });
       const out = transformer.transform(validSchema);
@@ -57,18 +57,18 @@ describe('@function transformer', () => {
   afterAll(async () => {
     try {
       if (server) {
-        server.stop();
+        await server.stop();
       }
     } catch (e) {
       console.error(e);
-      expect(true).toEqual(false);
+      throw e;
     }
   });
 
   /**
    * Test queries below
    */
-  test('Test simple echo function', async () => {
+  test('simple echo function', async () => {
     const response = await GRAPHQL_CLIENT.query(
       `query {
         echo(msg: "Hello") {
@@ -88,7 +88,7 @@ describe('@function transformer', () => {
     expect(response.data.echo.fieldName).toEqual('echo');
   });
 
-  test('Test simple duplicate function', async () => {
+  test('simple duplicate function', async () => {
     const response = await GRAPHQL_CLIENT.query(
       `query {
           duplicate(msg: "Hello") {
@@ -107,7 +107,7 @@ describe('@function transformer', () => {
     expect(response.data.duplicate.fieldName).toEqual('duplicate');
   });
 
-  test('Test pipeline of @function(s)', async () => {
+  test('pipeline of @function(s)', async () => {
     const response = await GRAPHQL_CLIENT.query(
       `query {
           pipeline(msg: "IGNORED")
@@ -118,7 +118,7 @@ describe('@function transformer', () => {
     expect(response.data.pipeline).toEqual('Hello, world!');
   });
 
-  test('Test pipelineReverse of @function(s)', async () => {
+  test('pipelineReverse of @function(s)', async () => {
     const response = await GRAPHQL_CLIENT.query(
       `query {
           pipelineReverse(msg: "Hello") {

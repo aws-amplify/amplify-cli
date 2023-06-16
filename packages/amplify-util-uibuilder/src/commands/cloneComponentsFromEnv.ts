@@ -1,5 +1,5 @@
-import { printer } from 'amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { extractArgs } from './utils';
 import { AmplifyStudioClient } from '../clients';
 
@@ -11,11 +11,13 @@ export const run = async (context: $TSContext): Promise<void> => {
   const args = extractArgs(context);
   const sourceEnvName = args.sourceEnvName ? args.sourceEnvName : context.exeInfo.sourceEnvName;
   const newEnvName = args.newEnvName ? args.newEnvName : context.exeInfo.localEnvInfo.envName;
-  const appId = args.appId ?? context.exeInfo.teamProviderInfo[sourceEnvName].awscloudformation.AmplifyAppId;
+  const appId = args.appId ?? context.exeInfo?.teamProviderInfo?.[sourceEnvName]?.awscloudformation?.AmplifyAppId;
   const studioClient = await AmplifyStudioClient.setClientInfo(context, sourceEnvName, appId);
 
   const [existingComponents, existingComponentsNewEnv] = await Promise.all([
-    studioClient.listComponents(sourceEnvName), studioClient.listComponents(newEnvName)]);
+    studioClient.listComponents(sourceEnvName),
+    studioClient.listComponents(newEnvName),
+  ]);
   if (existingComponents.entities.length === 0) {
     printer.debug(`${existingComponents.entities.length} components exist in source env. Skipping creation of local components.`);
     return;
@@ -42,11 +44,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       modifiedAt, // eslint-disable-line @typescript-eslint/no-unused-vars
       ...componentCreateData
     } = components[i];
-    await studioClient.createComponent(
-      componentCreateData,
-      newEnvName,
-      appId,
-    );
+    await studioClient.createComponent(componentCreateData, newEnvName, appId);
   }
 
   printer.info(

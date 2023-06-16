@@ -1,5 +1,4 @@
-/* eslint-disable */
-import { getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { getCLIPath, listUserPools, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 
 export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {
@@ -41,45 +40,75 @@ export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clie
   });
 };
 
-export const importIdentityPoolAndUserPool = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
-      .wait('What type of auth resource do you want to import')
-      .sendCarriageReturn()
-      .wait('Select the User Pool you want to import')
-      .send(autoCompletePrefix)
+export const importSingleIdentityPoolAndUserPool = async (
+  cwd: string,
+  autoCompletePrefix: string,
+  region: string,
+  clientNames?: { web?: string; native?: string },
+) => {
+  const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
+    .wait('What type of auth resource do you want to import')
+    .sendCarriageReturn();
+
+  const userpools = await listUserPools(region);
+
+  if (userpools.length > 1) {
+    chain.wait('Select the User Pool you want to import:').sendLine(autoCompletePrefix);
+  } else {
+    chain.wait('Only one Cognito User Pool');
+  }
+
+  chain.delay(500); // Some delay required for autocomplete and terminal to catch up
+
+  if (clientNames?.web) {
+    chain
+      .wait('Select a Web client to import:')
+      .send(clientNames.web)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendCarriageReturn();
+  }
 
-    if (clientNames?.web) {
-      chain
-        .wait('Select a Web client to import:')
-        .send(clientNames.web)
-        .delay(500) // Some delay required for autocomplete and terminal to catch up
-        .sendCarriageReturn();
-    }
-
-    if (clientNames?.native) {
-      chain.wait('Select a Native client to import:');
-      chain
-        .send(clientNames.native)
-        .delay(500) // Some delay required for autocomplete and terminal to catch up
-        .sendCarriageReturn();
-    } else {
-      chain.wait('Select a Native client to import:').sendCarriageReturn();
-    }
-
+  if (clientNames?.native) {
+    chain.wait('Select a Native client to import:');
     chain
-      .wait('- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js')
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve(undefined);
-        } else {
-          reject(err);
-        }
-      });
-  });
+      .send(clientNames.native)
+      .delay(500) // Some delay required for autocomplete and terminal to catch up
+      .sendCarriageReturn();
+  } else {
+    chain.wait('Select a Native client to import:').sendCarriageReturn();
+  }
+
+  return chain.wait('- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js').sendEof().runAsync();
+};
+
+export const importIdentityPoolAndUserPool = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
+  const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
+    .wait('What type of auth resource do you want to import')
+    .sendCarriageReturn()
+    .wait('Select the User Pool you want to import')
+    .send(autoCompletePrefix)
+    .delay(500) // Some delay required for autocomplete and terminal to catch up
+    .sendCarriageReturn();
+
+  if (clientNames?.web) {
+    chain
+      .wait('Select a Web client to import:')
+      .send(clientNames.web)
+      .delay(500) // Some delay required for autocomplete and terminal to catch up
+      .sendCarriageReturn();
+  }
+
+  if (clientNames?.native) {
+    chain.wait('Select a Native client to import:');
+    chain
+      .send(clientNames.native)
+      .delay(500) // Some delay required for autocomplete and terminal to catch up
+      .sendCarriageReturn();
+  } else {
+    chain.wait('Select a Native client to import:').sendCarriageReturn();
+  }
+
+  return chain.wait('- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js').sendEof().runAsync();
 };
 
 export const removeImportedAuthWithDefault = (cwd: string) => {
@@ -100,7 +129,12 @@ export const removeImportedAuthWithDefault = (cwd: string) => {
   });
 };
 
-export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, settings: any) => {
+export const removeImportedAuthHeadless = async (cwd: string, authResourceName: string) => {
+  const chain = spawn(getCLIPath(), ['auth', 'remove', authResourceName, '-y'], { cwd, stripColors: true });
+  await chain.runAsync();
+};
+
+export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string) => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -129,11 +163,11 @@ export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, setting
 
 export const headlessPullExpectError = (
   projectRoot: string,
-  amplifyParameters: Object,
-  providersParameter: Object,
+  amplifyParameters: Record<string, unknown>,
+  providersParameter: Record<string, unknown>,
   errorMessage: string,
-  categoriesParameter?: Object,
-  frontendParameter?: Object,
+  categoriesParameter?: Record<string, unknown>,
+  frontendParameter?: Record<string, unknown>,
 ): Promise<void> => {
   const pullCommand: string[] = [
     'pull',
@@ -168,10 +202,10 @@ export const headlessPullExpectError = (
 
 export const headlessPull = (
   projectRoot: string,
-  amplifyParameters: Object,
-  providersParameter: Object,
-  categoriesParameter?: Object,
-  frontendParameter?: Object,
+  amplifyParameters: Record<string, unknown>,
+  providersParameter: Record<string, unknown>,
+  categoriesParameter?: Record<string, unknown>,
+  frontendParameter?: Record<string, unknown>,
 ): Promise<void> => {
   const pullCommand: string[] = [
     'pull',

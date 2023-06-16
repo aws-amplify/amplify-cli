@@ -1,12 +1,10 @@
-import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
-import ora from 'ora';
+import { $TSContext, exitOnNextTick, spinner } from '@aws-amplify/amplify-cli-core';
 import { LayerCfnLogicalNamePrefix } from './constants';
 // eslint-disable-next-line import/no-cycle
 import { isMultiEnvLayer } from './layerHelpers';
 import { LegacyPermissionEnum } from './layerMigrationUtils';
 import { LayerVersionMetadata, PermissionEnum } from './layerParams';
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 export class LayerCloudState {
   private static instances: Record<string, LayerCloudState> = {};
   private layerVersionsMetadata: LayerVersionMetadata[];
@@ -15,7 +13,6 @@ export class LayerCloudState {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
   static getInstance(layerName: string): LayerCloudState {
     if (!LayerCloudState.instances[layerName]) {
       LayerCloudState.instances[layerName] = new LayerCloudState();
@@ -24,7 +21,7 @@ export class LayerCloudState {
   }
 
   private async loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
-    const spinner = ora('Loading layer data from the cloud...').start();
+    spinner.start('Loading layer data from the cloud...');
     try {
       const { envName }: { envName: string } = context.amplify.getEnvInfo();
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
@@ -34,7 +31,7 @@ export class LayerCloudState {
       const stackList = await cfnClient.listStackResources();
       const layerStacks = stackList?.StackResourceSummaries?.filter(
         // do this because cdk does some rearranging of resources
-        stack => stack.LogicalResourceId.includes(layerName) && stack.ResourceType === 'AWS::CloudFormation::Stack',
+        (stack) => stack.LogicalResourceId.includes(layerName) && stack.ResourceType === 'AWS::CloudFormation::Stack',
       );
       let detailedLayerStack;
 
@@ -47,7 +44,7 @@ export class LayerCloudState {
 
       layerVersionList.forEach((layerVersion: LayerVersionMetadata) => {
         let layerLogicalIdSuffix: string;
-        detailedLayerStack.forEach(stack => {
+        detailedLayerStack.forEach((stack) => {
           if (stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn) {
             // eslint-disable-next-line no-param-reassign
             layerVersion.LogicalName = stack.LogicalResourceId;
@@ -55,10 +52,10 @@ export class LayerCloudState {
           }
         });
 
-        detailedLayerStack.forEach(stack => {
+        detailedLayerStack.forEach((stack) => {
           if (
-            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission'
-            && stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
+            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission' &&
+            stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
           ) {
             // eslint-disable-next-line no-param-reassign
             layerVersion.permissions = layerVersion.permissions || [];
@@ -119,7 +116,6 @@ export class LayerCloudState {
     return this.layerVersionsMetadata;
   }
 
-  // eslint-disable-next-line jsdoc/require-jsdoc
   public async getLayerVersionsFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
     return this.layerVersionsMetadata || this.loadLayerDataFromCloud(context, layerName);
   }

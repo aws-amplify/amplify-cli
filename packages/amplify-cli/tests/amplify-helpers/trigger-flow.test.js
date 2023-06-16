@@ -1,7 +1,7 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-unused-vars */
 const triggerFlow = require('../../lib/extensions/amplify-helpers/trigger-flow');
-const func = require('amplify-category-function');
+const func = require('@aws-amplify/amplify-category-function');
 const inquirer = require('inquirer');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
@@ -23,7 +23,7 @@ const triggerPackagePath = '';
 const triggerDir = '';
 const triggerTemplate = '';
 
-describe('TriggerFlow:  ', () => {
+describe('TriggerFlow:', () => {
   beforeEach(() => {
     context = {
       runtime: {
@@ -130,13 +130,11 @@ describe('TriggerFlow:  ', () => {
   describe('When updating a trigger...', () => {
     let spyUpdate;
     let readdirSyncSpy;
-    let unlinkSyncSpy;
     let metadataSpy;
 
     beforeEach(() => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1']);
       spyUpdate = jest.spyOn(func, 'update').mockImplementation(() => Promise.resolve());
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => Promise.resolve());
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
@@ -246,7 +244,7 @@ describe('TriggerFlow:  ', () => {
     });
   });
 
-  describe('When deleteting deselected triggers...', () => {
+  describe('When deleting deselected triggers...', () => {
     const currentTriggers = ['arya'];
     let previousTriggers;
     let deleteSpy;
@@ -569,7 +567,7 @@ describe('TriggerFlow:  ', () => {
 
     beforeEach(() => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
-      copySyncSpy = jest.spyOn(fsExtra, 'copySync').mockImplementation(() => Promise.resolve());
+      copySyncSpy = jest.spyOn(fsExtra, 'copySync').mockImplementation(() => null);
     });
 
     afterEach(() => {
@@ -605,7 +603,7 @@ describe('TriggerFlow:  ', () => {
     let unlinkSyncSpy;
 
     beforeEach(() => {
-      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => Promise.resolve());
+      unlinkSyncSpy = jest.spyOn(fs, 'unlinkSync').mockImplementation(() => null);
       metadataSpy = jest.spyOn(context.amplify, 'getTriggerMetadata').mockImplementation(() => {
         return {
           stark: {
@@ -654,12 +652,6 @@ describe('TriggerFlow:  ', () => {
       expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('...should call readdirSync once', async () => {
-      readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
-      await triggerFlow.cleanFunctions(key, values, category, context, path);
-      expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
-    });
-
     it('...should call unlinkSync if the dir contents have values not present in passed values', async () => {
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['stark.js']);
       await triggerFlow.cleanFunctions(key, values, category, context, path);
@@ -686,12 +678,11 @@ describe('TriggerFlow:  ', () => {
 
   describe('When calling choicesFromMetadata...', () => {
     let readdirSyncSpy;
-    let readFileSync;
     let statSyncSpy;
 
     beforeEach(() => {
       statSyncSpy = jest.spyOn(fs, 'statSync').mockImplementation(() => ({ isDirectory: jest.fn() }));
-      readFileSync = jest.spyOn(fs, 'readFileSync').mockImplementation(() => '{}');
+      jest.spyOn(fs, 'readFileSync').mockImplementation(() => '{}');
       readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => ['file1', 'file2']);
     });
 

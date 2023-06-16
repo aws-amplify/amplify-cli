@@ -108,7 +108,7 @@ const addEnvironmentVariableQuestion = async (
       name: 'newEnvironmentVariableKey',
       message: 'Enter the environment variable name:',
       type: 'input',
-      validate: input => {
+      validate: (input) => {
         if (!validKey.test(input)) {
           return 'You can use the following characters: a-z A-Z 0-9 _';
         }
@@ -149,7 +149,7 @@ const updateEnvironmentVariableQuestion = async (
       name: 'newEnvironmentVariableKey',
       message: 'Enter the environment variable name:',
       type: 'input',
-      validate: input => {
+      validate: (input) => {
         if (!validKey.test(input)) {
           return 'You can use the following characters: a-z A-Z 0-9 _';
         }

@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, LocalEnvInfo } from '@aws-amplify/amplify-cli-core';
 import { constructInputParams } from '../amplify-service-helper';
 import { Context } from '../domain/context';
 import { raisePostEnvAddEvent } from '../execution-manager';
@@ -14,13 +14,15 @@ import { checkForNestedProject } from './helpers/projectUtils';
 const constructExeInfo = (context: $TSContext): void => {
   context.exeInfo = {
     inputParams: constructInputParams(context),
+    localEnvInfo: {} as unknown as LocalEnvInfo,
   };
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const runStrategy = (quickstart: boolean) => (quickstart
-  ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-  : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup]);
+const runStrategy = (quickstart: boolean) =>
+  quickstart
+    ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command
@@ -29,7 +31,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   constructExeInfo(context);
   checkForNestedProject();
 
-  const steps = runStrategy(context?.parameters?.options?.quickstart);
+  const steps = runStrategy(!!context?.parameters?.options?.quickstart);
   for (const step of steps) {
     await step(context);
   }

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Context } from '../../domain/context';
-import { constants } from '../../domain/constants';
+import { constants } from '@aws-amplify/amplify-cli-core';
 import { createNewPlugin } from '../../plugin-manager';
 import { addUserPluginPackage } from '../../plugin-manager';
 import { AddPluginError } from '../../domain/add-plugin-result';
@@ -28,7 +28,7 @@ async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string):
       addPluginResult.pluginVerificationResult.error
     ) {
       const { error } = addPluginResult.pluginVerificationResult;
-      context.print.info(`Plugin verification error code: \ ${error}`);
+      context.print.info(`Plugin verification error code: ${error}`);
     }
   }
 

@@ -1,7 +1,7 @@
 export type CloudFormationParameter = {
   Type: string;
   Description?: string;
-  Default?: String | Number;
+  Default?: string | number;
 };
 export type CloudFormationFnIf = {
   'Fn::If': [string, CloudFormationIntrinsicFunction, CloudFormationIntrinsicFunction];
@@ -52,7 +52,7 @@ export type CloudFormationIntrinsicConditionFunction =
   | CloudFormationFnNot
   | CloudFormationFnOr;
 export type CloudFormationIntrinsicFunction =
-  | String
+  | string
   | CloudFormationIntrinsicConditionFunction
   | CloudFormationFnFindInMap
   | CloudFormationRef
@@ -93,11 +93,11 @@ export type CloudFormationTemplate = {
 export type CloudFormationProcessedResourceResult = {
   cfnExposedAttributes: Record<string, string>;
   arn?: string;
-  ref?: String;
+  ref?: string;
 };
 
 export type CloudFormationProcessedResource = {
-  Type: String;
+  Type: string;
   result: CloudFormationProcessedResourceResult;
 };
 

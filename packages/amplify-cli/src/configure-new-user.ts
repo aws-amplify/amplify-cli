@@ -20,7 +20,7 @@ export async function configureNewUser(context) {
   const { selectedProviders } = await selectProviders;
   const configTasks: (() => Promise<any>)[] = [];
 
-  selectedProviders.forEach(providerKey => {
+  selectedProviders.forEach((providerKey) => {
     const provider = require(providerPlugins[providerKey]);
     configTasks.push(() => provider.configureNewUser(context));
   });

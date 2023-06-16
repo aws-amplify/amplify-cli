@@ -1,7 +1,7 @@
 /**
  * @type {import('@types/aws-lambda').CustomMessageTriggerHandler}
  */
-exports.handler = async event => {
+exports.handler = async (event) => {
   // Define the URL that you want the user to be directed to after verification is complete
   if (event.triggerSource === 'CustomMessage_SignUp') {
     const { codeParameter } = event.request;
@@ -31,6 +31,7 @@ exports.handler = async event => {
         clientId,
       }),
     ).toString('base64');
+    // eslint-disable-next-line spellcheck/spell-checker
     const bucketUrl = `http://${resourcePrefix}verificationbucket-${process.env.ENV}.s3-website${separator}${region}.amazonaws.com`;
     const url = `${bucketUrl}/?data=${payload}&code=${codeParameter}`;
     const message = `${process.env.EMAILMESSAGE}. \n ${url}`;

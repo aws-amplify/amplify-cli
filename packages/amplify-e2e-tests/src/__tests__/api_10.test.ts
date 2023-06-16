@@ -14,12 +14,9 @@ import {
   getTransformConfig,
   initJSProjectWithProfile,
   setCustomRolesConfig,
-  updateApiSchema
+  updateApiSchema,
 } from '@aws-amplify/amplify-e2e-core';
-import {
-  existsSync,
-  readFileSync
-} from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import _ from 'lodash';
 import * as path from 'path';
 

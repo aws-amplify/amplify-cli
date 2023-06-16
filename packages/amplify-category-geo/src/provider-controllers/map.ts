@@ -1,5 +1,5 @@
-import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { GeoServiceConfiguration, GeoServiceModification } from 'amplify-headless-interface';
 import { createMapResource, modifyMapResource, getCurrentMapParameters } from '../service-utils/mapUtils';
 import { removeWalkthrough } from '../service-walkthroughs/removeWalkthrough';
@@ -11,9 +11,7 @@ import { ServiceName } from '../service-utils/constants';
 import { getMapStyleComponents } from '../service-utils/mapParams';
 import { merge } from '../service-utils/resourceUtils';
 
-export const addMapResource = async (
-  context: $TSContext,
-): Promise<string> => {
+export const addMapResource = async (context: $TSContext): Promise<string> => {
   // initialize the Map parameters
   const mapParams: Partial<MapParameters> = {
     providerContext: setProviderContext(context, ServiceName.Map),
@@ -23,9 +21,7 @@ export const addMapResource = async (
   return addMapResourceWithParams(context, mapParams);
 };
 
-export const updateMapResource = async (
-  context: $TSContext,
-): Promise<string> => {
+export const updateMapResource = async (context: $TSContext): Promise<string> => {
   // initialize the Map parameters
   const mapParams: Partial<MapParameters> = {
     providerContext: setProviderContext(context, ServiceName.Map),
@@ -35,9 +31,7 @@ export const updateMapResource = async (
   return updateMapResourceWithParams(context, mapParams);
 };
 
-export const removeMapResource = async (
-  context: $TSContext,
-): Promise<string | undefined> => {
+export const removeMapResource = async (context: $TSContext): Promise<string | undefined> => {
   const { amplify } = context;
   const resourceToRemove = await removeWalkthrough(ServiceName.Map);
   if (!resourceToRemove) return undefined;
@@ -56,10 +50,7 @@ export const removeMapResource = async (
   return resourceToRemove;
 };
 
-export const addMapResourceHeadless = async (
-  context: $TSContext,
-  config: GeoServiceConfiguration,
-): Promise<string> => {
+export const addMapResourceHeadless = async (context: $TSContext, config: GeoServiceConfiguration): Promise<string> => {
   // initialize the Map parameters
   const mapParams: Partial<MapParameters> = {
     providerContext: setProviderContext(context, ServiceName.Map),
@@ -72,10 +63,7 @@ export const addMapResourceHeadless = async (
   return addMapResourceWithParams(context, mapParams);
 };
 
-export const updateMapResourceHeadless = async (
-  context: $TSContext,
-  config: GeoServiceModification,
-): Promise<string> => {
+export const updateMapResourceHeadless = async (context: $TSContext, config: GeoServiceModification): Promise<string> => {
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
     providerContext: setProviderContext(context, ServiceName.Map),
@@ -87,10 +75,7 @@ export const updateMapResourceHeadless = async (
   return updateMapResourceWithParams(context, mapParams);
 };
 
-export const addMapResourceWithParams = async (
-  context: $TSContext,
-  mapParams: Partial<MapParameters>,
-): Promise<string> => {
+export const addMapResourceWithParams = async (context: $TSContext, mapParams: Partial<MapParameters>): Promise<string> => {
   const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
   await createMapResource(context, completeParameters);
   printer.success(`Successfully added resource ${completeParameters.name} locally.`);
@@ -98,10 +83,7 @@ export const addMapResourceWithParams = async (
   return completeParameters.name;
 };
 
-export const updateMapResourceWithParams = async (
-  context: $TSContext,
-  mapParams: Partial<MapParameters>,
-): Promise<string> => {
+export const updateMapResourceWithParams = async (context: $TSContext, mapParams: Partial<MapParameters>): Promise<string> => {
   const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
 
   await modifyMapResource(context, completeParameters);

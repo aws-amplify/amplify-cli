@@ -1,5 +1,6 @@
-import { $TSContext, FeatureFlags } from 'amplify-cli-core';
+import { FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
+import { AuthContext } from '../../../context';
 import { immutableAttributes, safeDefaults } from '../constants';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
@@ -8,7 +9,7 @@ import { removeDeprecatedProps } from './synthesize-resources';
 import { verificationBucketName } from './verification-bucket-name';
 
 /**
- * Factory function that returns a function that applies default values to a CognitoConfiguation request.
+ * Factory function that returns a function that applies default values to a CognitoConfiguration request.
  * It does not overwrite existing values in the request.
  *
  * The logic here has been refactored from service-walkthroughs/auth-questions.js and is mostly unchanged
@@ -16,7 +17,7 @@ import { verificationBucketName } from './verification-bucket-name';
  * @param projectName The name of the current project (used to generate some default values)
  */
 export const getAddAuthDefaultsApplier =
-  (context: $TSContext, defaultValuesFilename: string, projectName: string) =>
+  (context: AuthContext, defaultValuesFilename: string, projectName: string) =>
   async (result: CognitoConfiguration | ServiceQuestionHeadlessResult): Promise<CognitoConfiguration> => {
     const { functionMap, generalDefaults, roles, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
     result = assignDefaults({}, generalDefaults(projectName), result);
@@ -40,7 +41,7 @@ export const getAddAuthDefaultsApplier =
   };
 
 export const getUpdateAuthDefaultsApplier =
-  (context: $TSContext, defaultValuesFilename: string, previousResult: CognitoConfiguration) =>
+  (context: AuthContext, defaultValuesFilename: string, previousResult: CognitoConfiguration) =>
   async (result: CognitoConfiguration | ServiceQuestionHeadlessResult): Promise<CognitoConfiguration> => {
     const { functionMap, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
     if (!result.authSelections) {
@@ -50,10 +51,14 @@ export const getUpdateAuthDefaultsApplier =
     const defaults = functionMap[result.authSelections](previousResult.resourceName);
 
     // ensure immutable attributes are removed from result
-    immutableAttributes.filter(pv => pv in previousResult).forEach(pv => delete (result as any)[pv]);
+    immutableAttributes
+      .filter((pv) => pv in previousResult)
+      .forEach((pv) => {
+        delete (result as CognitoConfiguration)[pv];
+      });
 
     if (['default', 'defaultSocial'].includes(result.useDefault)) {
-      safeDefaults.forEach(sd => delete (previousResult as any)[sd]);
+      safeDefaults.forEach((sd) => delete previousResult[sd]);
     }
 
     await verificationBucketName(result, previousResult);

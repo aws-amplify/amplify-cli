@@ -1,8 +1,8 @@
 /* eslint-disable jest/no-interpolation-in-snapshots */
 import * as fs from 'fs-extra';
 import fetch, { Response } from 'node-fetch';
-import { $TSContext } from 'amplify-cli-core';
-import * as core from 'amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import * as core from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import execa from 'execa';
 import { run } from '../../commands/upgrade';
@@ -45,7 +45,7 @@ jest.mock('progress');
 
 jest.mock('tar-fs');
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir'),
   },
@@ -120,21 +120,21 @@ describe('run upgrade using packaged CLI', () => {
 
     // validate
     expect(fsMock.move.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "${path.join('homedir', 'bin', 'amplify-pkg-linux')}",
-        "${path.join('homedir', 'bin', 'amplify')}",
-        Object {
-          "overwrite": true,
-        },
-      ]
-    `);
+[
+  "homedir/bin/amplify-pkg-linux",
+  "homedir/bin/amplify",
+  {
+    "overwrite": true,
+  },
+]
+`);
 
     expect(fsMock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "${path.join('homedir', 'bin', 'amplify')}",
-        "700",
-      ]
-    `);
+[
+  "homedir/bin/amplify",
+  "700",
+]
+`);
   });
 
   it('moves old binary to temp location before downloading on windows', async () => {
@@ -176,26 +176,26 @@ describe('run upgrade using packaged CLI', () => {
 
     // validate
     expect(fsMock.move.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "${path.join('homedir', 'bin', 'amplify.exe')}",
-        "${path.join('homedir', 'bin', 'amplify-old.exe')}",
-      ]
-    `);
+[
+  "homedir/bin/amplify.exe",
+  "homedir/bin/amplify-old.exe",
+]
+`);
     expect(fsMock.move.mock.calls[1]).toMatchInlineSnapshot(`
-      Array [
-        "${path.join('homedir', 'bin', 'amplify-pkg-win.exe')}",
-        "${path.join('homedir', 'bin', 'amplify.exe')}",
-        Object {
-          "overwrite": true,
-        },
-      ]
-    `);
+[
+  "homedir/bin/amplify-pkg-win.exe",
+  "homedir/bin/amplify.exe",
+  {
+    "overwrite": true,
+  },
+]
+`);
     expect(fsMock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "${path.join('homedir', 'bin', 'amplify.exe')}",
-        "700",
-      ]
-    `);
+[
+  "homedir/bin/amplify.exe",
+  "700",
+]
+`);
   });
 
   it('throws error if binary download fails', async () => {});

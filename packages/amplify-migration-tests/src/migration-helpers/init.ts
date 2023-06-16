@@ -18,7 +18,11 @@ const defaultSettings = {
   disableAmplifyAppCreation: true,
 };
 
-export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
+export function initJSProjectWithProfileV4_28_2(
+  cwd: string,
+  settings: Record<string, unknown>,
+  testingWithLatestCodebase = false,
+): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -39,7 +43,7 @@ export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, tes
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine(s.appType)
+      .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendLine(s.framework)
       .wait('Source Directory Path:')
@@ -66,7 +70,11 @@ export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, tes
   });
 }
 
-export function initJSProjectWithProfile(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
+export function initJSProjectWithProfileV4_52_0(
+  cwd: string,
+  settings: Record<string, unknown>,
+  testingWithLatestCodebase = false,
+): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -89,7 +97,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine(s.appType)
+      .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendLine(s.framework)
       .wait('Source Directory Path:')
@@ -116,7 +124,49 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initAndroidProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
+  const s = { ...defaultSettings, ...settings };
+
+  addCircleCITags(cwd);
+
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['init'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    })
+      .wait('Enter a name for the project')
+      .sendLine(s.name)
+      .wait('Initialize the project with the above configuration?')
+      .sendConfirmNo()
+      .wait('Enter a name for the environment')
+      .sendLine(s.envName)
+      .wait('Choose your default editor:')
+      .sendLine(s.editor)
+      .wait("Choose the type of app that you're building")
+      .sendLine('android')
+      .wait('Where is your Res directory')
+      .sendCarriageReturn()
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
+      .wait('Please choose the profile you want to use')
+      .sendLine(s.profileName)
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
+        if (!err) {
+          addCircleCITags(cwd);
+
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function initAndroidProjectWithProfileInquirer(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);

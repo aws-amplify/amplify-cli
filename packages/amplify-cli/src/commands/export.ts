@@ -5,12 +5,12 @@ import {
   UnrecognizedFrontendError,
   validateExportDirectoryPath,
   PathConstants,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import chalk from 'chalk';
 import { getResourceOutputs } from '../extensions/amplify-helpers/get-resource-outputs';
 import Ora from 'ora';
-import { getResources } from './build';
+import { getChangedResources } from './build';
 import * as _ from 'lodash';
 
 export const run = async (context: $TSContext) => {
@@ -40,7 +40,7 @@ export const run = async (context: $TSContext) => {
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontends = Object.keys(frontendPlugins);
     printer.blankLine();
-    printer.info("'amplify export pull', Allows you to genreate frontend config files at a desired location");
+    printer.info("'amplify export pull', Allows you to generate frontend config files at a desired location");
     printer.blankLine();
     printer.info(`${chalk.yellow('--rootStackName')}         Amplify CLI deployed Root Stack name`);
     printer.info(`${chalk.yellow('--frontend')}             Front end type ex: ${frontends.join(', ')}`);
@@ -48,6 +48,7 @@ export const run = async (context: $TSContext) => {
     printer.blankLine();
     printer.info(
       `Example: ${chalk.green(
+        // eslint-disable-next-line spellcheck/spell-checker
         'amplify export pull --rootStackName amplify-myapp-stack-123 --out ~/myCDKApp/src/config/ --frontend javascript',
       )}`,
     );
@@ -76,15 +77,15 @@ async function exportBackend(context: $TSContext, exportPath: string) {
 }
 
 async function buildAllResources(context: $TSContext) {
-  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  const resourcesToBuild: IAmplifyResource[] = await getChangedResources(context);
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
 }
 
 async function createFrontEndConfigFile(context: $TSContext, exportPath: string) {
-  const { rootStackName, frontend } = context.input.options;
+  const { rootStackName, frontend } = context.input.options ?? {};
 
   const frontendSet = new Set(Object.keys(context.amplify.getFrontendPlugins(context)));
-  if (!frontendSet.has(frontend)) {
+  if (!frontend || (frontend && !frontendSet.has(frontend))) {
     throw new UnrecognizedFrontendError(`${frontend} is not a supported Amplify frontend`);
   }
   const spinner = Ora(`Extracting outputs from ${rootStackName}`);
@@ -110,7 +111,7 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
       validatedExportPath,
     );
     spinner.succeed('Successfully generated frontend config files');
-  } catch (ex: any) {
+  } catch (ex) {
     spinner.fail('Failed to generate frontend config files ' + ex.message);
     throw ex;
   } finally {

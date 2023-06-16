@@ -6,11 +6,11 @@ export function getWhen(input, answers, previousValues, amplify) {
     let orConditions = true;
 
     if (input.andConditions && input.andConditions.length > 0) {
-      andConditions = input.andConditions.every(condition => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
+      andConditions = input.andConditions.every((condition) => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
     }
 
     if (input.orConditions && input.orConditions.length > 0) {
-      orConditions = input.orConditions.some(condition => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
+      orConditions = input.orConditions.some((condition) => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
     }
 
     return andConditions && orConditions;
@@ -20,35 +20,42 @@ export function getWhen(input, answers, previousValues, amplify) {
 }
 
 // HELPER FUNCTION TO DETERMINE IF A SINGLE CONDITION IS MET BY ANSWERS
-const findMatch = (cond, answers, previousValues, amplify) => {
+const findMatch = (condition, answers, previousValues, amplify) => {
   let response = true;
 
-  if (!previousValues && cond.onCreate) {
+  if (!previousValues && condition.onCreate) {
     return false;
   }
   /*eslint-disable*/
-  if (!cond.preventEdit) {
-    if (cond.operator === '=' && ((answers[cond.key] != undefined && answers[cond.key] !== cond.value) || !answers[cond.key])) {
+  if (!condition.preventEdit) {
+    if (
+      condition.operator === '=' &&
+      ((answers[condition.key] != undefined && answers[condition.key] !== condition.value) || !answers[condition.key])
+    ) {
       response = false;
-    } else if (cond.operator === '!=' && (!answers[cond.key] || answers[cond.key] === cond.value)) {
+    } else if (condition.operator === '!=' && (!answers[condition.key] || answers[condition.key] === condition.value)) {
       response = false;
-    } else if (cond.operator === 'includes' && (!answers[cond.key] || !answers[cond.key].includes(cond.value))) {
+    } else if (condition.operator === 'includes' && (!answers[condition.key] || !answers[condition.key].includes(condition.value))) {
       response = false;
-    } else if (cond.operator === 'configMatch' && cond.value && cond.key && amplify) {
-      const configKey = amplify.getProjectConfig()[cond.key];
-      return configKey.toLowerCase() === cond.value.toLowerCase();
-    } else if (cond.operator === 'exists' && previousValues && !previousValues[cond.key]) {
+    } else if (condition.operator === 'configMatch' && condition.value && condition.key && amplify) {
+      const configKey = amplify.getProjectConfig()[condition.key];
+      return configKey.toLowerCase() === condition.value.toLowerCase();
+    } else if (condition.operator === 'exists' && previousValues && !previousValues[condition.key]) {
       return false;
     }
   } else if (previousValues && Object.keys(previousValues).length > 0) {
-    if (cond.preventEdit === 'always') {
+    if (condition.preventEdit === 'always') {
       response = false;
-    } else if (cond.preventEdit === 'exists' && !!previousValues[cond.key]) {
+    } else if (condition.preventEdit === 'exists' && !!previousValues[condition.key]) {
       response = false;
-    } else if (cond.preventEdit === '=' && previousValues[cond.key] != undefined && previousValues[cond.key] === cond.value) {
+    } else if (
+      condition.preventEdit === '=' &&
+      previousValues[condition.key] != undefined &&
+      previousValues[condition.key] === condition.value
+    ) {
       response = false;
-    } else if (cond.preventEdit === 'existsInCurrent') {
-      if (answers[cond.key]) {
+    } else if (condition.preventEdit === 'existsInCurrent') {
+      if (answers[condition.key]) {
         return false;
       }
     }

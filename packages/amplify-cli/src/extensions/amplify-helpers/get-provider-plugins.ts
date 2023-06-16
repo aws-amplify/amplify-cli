@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 
 /**
@@ -6,7 +6,7 @@ import _ from 'lodash';
  */
 export const getProviderPlugins = (context: $TSContext): Record<string, string> => {
   const providers = {};
-  context.runtime.plugins.forEach(plugin => {
+  context.runtime.plugins.forEach((plugin) => {
     if (plugin.pluginType === 'provider') {
       providers[plugin.pluginName] = plugin.directory;
     }
@@ -29,8 +29,8 @@ export const getConfiguredProviders = (context: $TSContext): Record<string, stri
  * Execute the provider command
  */
 export const executeProviderCommand = async (context: $TSContext, command: string, args: unknown[] = []): Promise<$TSAny> => {
-  const providers = await Promise.all(Object.values(getConfiguredProviders(context)).map(providerPath => import(providerPath)));
+  const providers = await Promise.all(Object.values(getConfiguredProviders(context)).map((providerPath) => import(providerPath)));
   await Promise.all(
-    providers.filter(provider => typeof provider?.[command] === 'function').map(provider => provider[command](context, ...args)),
+    providers.filter((provider) => typeof provider?.[command] === 'function').map((provider) => provider[command](context, ...args)),
   );
 };

@@ -1,11 +1,11 @@
 import fs from 'fs-extra';
-import { AmplifyError, stateManager } from 'amplify-cli-core';
+import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as configurationManager from './configuration-manager';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
-import { storeCurrentCloudBackend } from './push-resources';
 import constants from './constants';
 import { fileLogger } from './utils/aws-logger';
+import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
 
 const logger = fileLogger('amplify-service-migrate');
 
@@ -74,10 +74,14 @@ export const run = async (context): Promise<void> => {
         .promise();
       context.print.info(`Amplify AppID found: ${amplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
     } catch (e) {
-      throw new AmplifyError('ProjectNotFoundError', {
-        message: `Amplify AppID: ${amplifyAppId} not found.`,
-        resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
-      }, e);
+      throw new AmplifyError(
+        'ProjectNotFoundError',
+        {
+          message: `Amplify AppID: ${amplifyAppId} not found.`,
+          resolution: `Please ensure your local profile matches the AWS account or region in which the Amplify app exists.`,
+        },
+        e,
+      );
     }
 
     let backendEnvs = [];

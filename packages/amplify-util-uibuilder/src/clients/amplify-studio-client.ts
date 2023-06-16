@@ -1,12 +1,11 @@
-import { $TSContext, CloudformationProviderFacade } from 'amplify-cli-core';
+import { $TSContext, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
 import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-import type {
-  CreateComponentData, Component, Theme, Form,
-} from 'aws-sdk/clients/amplifyuibuilder';
+import type { CreateComponentData, Component, Theme, Form } from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';
-import { printer } from 'amplify-prompts';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { getAppId, getEnvName } from '../commands/utils/environmentHelpers';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
+import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 
 /**
  * studio client metadata
@@ -14,6 +13,10 @@ import { getTransformerVersion } from '../commands/utils/featureFlags';
 export type StudioMetadata = {
   autoGenerateForms: boolean;
   autoGenerateViews: boolean;
+  formFeatureFlags: {
+    isRelationshipSupported: boolean;
+    isNonModelSupported: boolean;
+  };
 };
 
 /**
@@ -58,6 +61,7 @@ export default class AmplifyStudioClient {
   #envName: string;
   metadata: StudioMetadata;
   isGraphQLSupported = false;
+  isDataStoreEnabled = false;
 
   /**
    * static function meant to check if given appId is studio enabled
@@ -72,7 +76,7 @@ export default class AmplifyStudioClient {
       printer.debug(`Failed admin app check: ${err.message}`);
       return false;
     }
-  }
+  };
 
   /**
    * Used to configure the AWS Amplify clients.
@@ -80,11 +84,14 @@ export default class AmplifyStudioClient {
   static async setClientInfo(context: $TSContext, envName?: string, appId?: string): Promise<AmplifyStudioClient> {
     const resolvedEnvName = getEnvName(context, envName);
     const resolvedAppId = getAppId(context, appId);
-    const awsConfigInfo = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
-      context,
-      resolvedEnvName,
-      resolvedAppId,
-    ])) as ServiceConfigurationOptions;
+    const [awsConfigInfo, dataStoreStatus] = await Promise.all([
+      context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'loadConfigurationForEnv', [
+        context,
+        resolvedEnvName,
+        resolvedAppId,
+      ]) as ServiceConfigurationOptions,
+      isDataStoreEnabled(context),
+    ]);
 
     const client = new AmplifyStudioClient(awsConfigInfo, resolvedAppId, resolvedEnvName);
 
@@ -94,6 +101,8 @@ export default class AmplifyStudioClient {
     } else {
       client.isGraphQLSupported = false;
     }
+
+    client.isDataStoreEnabled = dataStoreStatus;
 
     return client;
   }
@@ -109,6 +118,10 @@ export default class AmplifyStudioClient {
     this.metadata = {
       autoGenerateForms: false,
       autoGenerateViews: false,
+      formFeatureFlags: {
+        isRelationshipSupported: false,
+        isNonModelSupported: false,
+      },
     };
   }
 
@@ -128,6 +141,10 @@ export default class AmplifyStudioClient {
       this.metadata = {
         autoGenerateForms: response.features?.autoGenerateForms === 'true',
         autoGenerateViews: response.features?.autoGenerateViews === 'true',
+        formFeatureFlags: {
+          isRelationshipSupported: response.features?.isRelationshipSupported === 'true',
+          isNonModelSupported: response.features?.isNonModelSupported === 'true',
+        },
       };
     } catch (err) {
       throw new Error(`Failed to load metadata: ${err.message}`);
@@ -227,6 +244,17 @@ export default class AmplifyStudioClient {
       return response.entity;
     } catch (err) {
       throw new Error(`Failed to create component: ${err.message}`);
+    }
+  };
+
+  deleteForm = async (formId: string, envName?: string, appId?: string): Promise<void> => {
+    const environmentName = envName || this.#envName;
+    const resolvedAppId = appId || this.#appId;
+    try {
+      await this.#amplifyUiBuilder.deleteForm({ id: formId, environmentName, appId: resolvedAppId }).promise();
+    } catch (err) {
+      printer.debug(err.toString());
+      throw err;
     }
   };
 

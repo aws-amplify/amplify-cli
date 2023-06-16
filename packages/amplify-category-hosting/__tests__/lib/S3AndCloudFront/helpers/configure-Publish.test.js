@@ -1,9 +1,16 @@
-jest.mock('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
-const inquirer = require('inquirer');
-
 const configurePublish = require('../../../../lib/S3AndCloudFront/helpers/configure-Publish');
+const amplifyPrompts = require('@aws-amplify/amplify-prompts');
+
+jest.mock('@aws-amplify/amplify-prompts', () => ({
+  prompter: {
+    input: jest.fn(),
+    yesOrNo: jest.fn(),
+    pick: jest.fn(),
+  },
+  byValue: jest.fn(),
+}));
 
 describe('configure-Publish', () => {
   const DONE = 'exit';
@@ -21,7 +28,7 @@ describe('configure-Publish', () => {
           return path.join(__dirname, '../../../../__mocks__/');
         }),
       },
-      readJsonFile: jsonFilePath => {
+      readJsonFile: (jsonFilePath) => {
         let content = fs.readFileSync(jsonFilePath, 'utf8');
         if (content.charCodeAt(0) === 0xfeff) {
           content = content.slice(1);
@@ -45,20 +52,22 @@ describe('configure-Publish', () => {
   });
 
   beforeEach(() => {
-    inquirer.prompt.mockClear();
     fs.existsSync.mockClear();
     fs.writeFileSync.mockClear();
   });
 
   test('configure, flow1', async () => {
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.list });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce({ patternToAdd: 'mockPattern1' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce({ patternToAdd: 'mockPattern2' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.remove });
-    inquirer.prompt.mockResolvedValueOnce({ patternToRemove: 'mockPattern1' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+    amplifyPrompts.byValue.mockResolvedValueOnce('list');
+    amplifyPrompts.prompter.pick
+      .mockResolvedValueOnce(configActions.list)
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(configActions.remove)
+      .mockResolvedValueOnce('mockPattern1')
+      .mockResolvedValueOnce(configActions.done);
+
+    amplifyPrompts.prompter.input.mockResolvedValueOnce('mockPattern1').mockResolvedValueOnce('mockPattern2');
+
     const result = await configurePublish.configure(mockContext);
     expect(mockContext.print.info).toBeCalled();
     expect(fs.writeFileSync).toBeCalled();
@@ -68,12 +77,15 @@ describe('configure-Publish', () => {
   });
 
   test('configure, flow2', async () => {
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce({ patternToAdd: 'mockPattern1' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.add });
-    inquirer.prompt.mockResolvedValueOnce({ patternToAdd: 'mockPattern2' });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.removeAll });
-    inquirer.prompt.mockResolvedValueOnce({ action: configActions.done });
+    amplifyPrompts.byValue.mockResolvedValueOnce('list');
+    amplifyPrompts.prompter.pick
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(configActions.add)
+      .mockResolvedValueOnce(configActions.removeAll)
+      .mockResolvedValueOnce(configActions.done);
+
+    amplifyPrompts.prompter.input.mockResolvedValueOnce('mockPattern1').mockResolvedValueOnce('mockPattern2');
+
     const result = await configurePublish.configure(mockContext);
     expect(mockContext.print.info).toBeCalled();
     expect(fs.writeFileSync).toBeCalled();

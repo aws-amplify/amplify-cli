@@ -1,7 +1,14 @@
 import {
-  $TSContext, AmplifyError, AmplifyErrorType, AmplifyException, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+  $TSContext,
+  AmplifyError,
+  AmplifyErrorType,
+  AmplifyException,
+  FeatureFlags,
+  IAmplifyResource,
+  JSONUtilities,
+  pathManager,
+} from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import ora from 'ora';
 import * as path from 'path';
@@ -27,7 +34,7 @@ export const transformResourceWithOverrides = async (context: $TSContext, resour
         spinner = ora(`Building resource ${resource.category}/${resource.resourceName}`);
         spinner.start();
         await transformCategoryStack(context, resource);
-        FeatureFlags.ensureFeatureFlag('project', 'overrides');
+        await FeatureFlags.ensureFeatureFlag('project', 'overrides');
         spinner.stop();
         return;
       }
@@ -67,20 +74,23 @@ export const transformResourceWithOverrides = async (context: $TSContext, resour
       'InvalidCustomResourceError',
     ];
     if (
-      (err instanceof AmplifyException
-      && overrideOrCustomStackErrorsList.find(v => v === err.name))
+      (err instanceof AmplifyException && overrideOrCustomStackErrorsList.find((v) => v === err.name)) ||
       // this is a special exception for the API category which would otherwise have a
       // circular dependency if it imported AmplifyException
-      || err['_amplifyErrorType'] === 'InvalidOverrideError') {
-      
+      err['_amplifyErrorType'] === 'InvalidOverrideError'
+    ) {
       // if the exception is not already an AmplifyException re-throw it as an AmplifyException
       // so that user's get the appropriate resolution steps that we intended
-      if(err['_amplifyErrorType'] === 'InvalidOverrideError') {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: `Executing overrides failed.`,
-          details: err.message,
-          resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-        }, err);
+      if (err['_amplifyErrorType'] === 'InvalidOverrideError') {
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
       // otherwise just rethrow the AmplifyException
       throw err;

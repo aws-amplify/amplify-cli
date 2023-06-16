@@ -1,12 +1,19 @@
-import { $TSContext, $TSObject, stateManager, generateOverrideSkeleton, pathManager, AmplifySupportedService } from 'amplify-cli-core';
+import {
+  $TSContext,
+  $TSObject,
+  stateManager,
+  generateOverrideSkeleton,
+  pathManager,
+  AmplifySupportedService,
+} from '@aws-amplify/amplify-cli-core';
 import { run } from '../../commands/storage/override';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import path from 'path';
 import { DynamoDBInputState } from '../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import { S3InputState } from '../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
 
-jest.mock('amplify-cli-core');
-jest.mock('amplify-prompts');
+jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('path');
 jest.mock('../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state');
 jest.mock('../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform');
@@ -94,7 +101,6 @@ describe('override ddb command tests', () => {
   });
 });
 
-
 describe('override s3 command tests', () => {
   let mockContext: $TSContext;
   let mockAmplifyMeta: $TSObject = {};
@@ -123,7 +129,7 @@ describe('override s3 command tests', () => {
     pathManager.getResourceDirectoryPath = jest.fn().mockReturnValue(destDir);
     path.join = jest.fn().mockReturnValue(srcDir);
 
-    jest.spyOn( S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
 
     await run(mockContext);
 

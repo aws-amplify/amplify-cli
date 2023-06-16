@@ -1,7 +1,7 @@
 // Some convenience types for the existing service walkthrough logic
 
-import { $TSObject } from 'amplify-cli-core';
-import { FunctionDependency } from 'amplify-function-plugin-interface';
+import { $TSObject } from '@aws-amplify/amplify-cli-core';
+import { FunctionDependency } from '@aws-amplify/amplify-function-plugin-interface';
 import { CognitoConfiguration } from './awsCognito-user-input-types';
 
 export type AuthTriggerPermissions = {
@@ -26,6 +26,7 @@ type AuthStackMetadata = {
   permissions?: AuthTriggerPermissions[];
   authTriggerConnections?: AuthTriggerConnection[];
   userAutoVerifiedAttributeUpdateSettings?: string[];
+  authTriggerPermissions?: AuthTriggerPermissions[];
 };
 
 export type ServiceQuestionHeadlessResult = ServiceQuestionsBaseResult &
@@ -60,6 +61,7 @@ export interface ServiceQuestionsBaseResult {
   verificationBucketName?: string;
   resourceNameTruncated?: string;
   sharedId?: string;
+  permissions?: string;
 }
 
 export interface OAuthResult {
@@ -163,4 +165,5 @@ export type AuthTriggerConnection = {
 export type AuthTriggerConfig = {
   triggers: $TSObject;
   authTriggerConnections: AuthTriggerConnection[];
+  authTriggerPermissions?: AuthTriggerPermissions[];
 };

@@ -1,10 +1,9 @@
 /* eslint-disable spellcheck/spell-checker */
 /* eslint-disable import/no-extraneous-dependencies */
-import { buildTypeKeyMap, ServiceName } from 'amplify-category-function';
-import {
-  $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager,
-} from 'amplify-cli-core';
-import { BuildType } from 'amplify-function-plugin-interface';
+import { saveAll as saveAllEnvParams } from '@aws-amplify/amplify-environment-parameters';
+import { buildTypeKeyMap, ServiceName } from '@aws-amplify/amplify-category-function';
+import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from '@aws-amplify/amplify-cli-core';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';
@@ -110,7 +109,7 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   }
 };
 
-const removeNodeModulesDir = (currentCloudBackendDir: string):void => {
+const removeNodeModulesDir = (currentCloudBackendDir: string): void => {
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: currentCloudBackendDir,
     absolute: true,
@@ -128,7 +127,7 @@ const removeNodeModulesDir = (currentCloudBackendDir: string):void => {
 export const updateamplifyMetaAfterResourceAdd = (
   category: string,
   resourceName: string,
-  metadataResource: { dependsOn?: [{ category: string; resourceName: string; }] } = {},
+  metadataResource: { dependsOn?: [{ category: string; resourceName: string }] } = {},
   backendConfigResource?: { dependsOn?: $TSAny },
   overwriteObjectIfExists?: boolean,
 ): void => {
@@ -169,7 +168,7 @@ export const updateProviderAmplifyMeta = (providerName: string, options: $TSObje
     amplifyMeta.providers[providerName] = {};
   }
 
-  Object.keys(options).forEach(key => {
+  Object.keys(options).forEach((key) => {
     amplifyMeta.providers[providerName][key] = options[key];
   });
 
@@ -207,7 +206,9 @@ export const updateamplifyMetaAfterResourceUpdate = (category: string, resourceN
  * b. Timestamp of last push
  * @param resources all resources from amplify-meta.json
  */
-export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise<void> => {
+export const updateamplifyMetaAfterPush = async (resources: $TSObject[]): Promise<void> => {
+  // ensure backend config is written before copying to current-cloud-backend
+  await saveAllEnvParams();
   const amplifyMeta = stateManager.getMeta();
   const currentTimestamp = new Date();
 
@@ -265,22 +266,16 @@ export const updateamplifyMetaAfterPush = async (resources: $TSObject[]):Promise
 
 /**
  * Update Amplify Meta with build information ( lastBuildType and timestamp)
- * @param param0.category Category which was updated
- * @param param0.resourceName  Name of the resource which was updated
- * @param buildType PROD/DEV
  */
 export const updateamplifyMetaAfterBuild = ({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD): void => {
   const amplifyMeta = stateManager.getMeta();
-  _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
-  _.set(amplifyMeta, [category, resourceName, 'lastBuildType'], buildType);
+  _.setWith(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
+  _.setWith(amplifyMeta, [category, resourceName, 'lastBuildType'], buildType);
   stateManager.setMeta(undefined, amplifyMeta);
 };
 
 /**
  * Update Amplify Meta with packaging information ( lastPackageTimeStamp, distZipFilename, hash)
- * @param param0 A tuple with category and resourceName
- * @param zipFilename - Name of the distribution zip file
- * @param hash - hash value of the resource
  */
 export const updateAmplifyMetaAfterPackage = (
   { category, resourceName }: ResourceTuple,
@@ -288,10 +283,10 @@ export const updateAmplifyMetaAfterPackage = (
   hash?: { resourceKey: string; hashValue: string },
 ): void => {
   const amplifyMeta = stateManager.getMeta();
-  _.set(amplifyMeta, [category, resourceName, 'lastPackageTimeStamp'], new Date());
-  _.set(amplifyMeta, [category, resourceName, 'distZipFilename'], zipFilename);
+  _.setWith(amplifyMeta, [category, resourceName, 'lastPackageTimeStamp'], new Date());
+  _.setWith(amplifyMeta, [category, resourceName, 'distZipFilename'], zipFilename);
   if (hash) {
-    _.set(amplifyMeta, [category, resourceName, hash.resourceKey], hash.hashValue);
+    _.setWith(amplifyMeta, [category, resourceName, hash.resourceKey], hash.hashValue);
   }
   stateManager.setMeta(undefined, amplifyMeta);
 };
@@ -303,7 +298,7 @@ export const updateAmplifyMetaAfterPackage = (
  * @param category category of the resource
  * @param resourceName logical name of the resource
  */
-export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string):void => {
+export const updateamplifyMetaAfterResourceDelete = (category: string, resourceName: string): void => {
   const currentMeta = stateManager.getCurrentMeta();
 
   const resourceDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
@@ -320,20 +315,20 @@ export const updateamplifyMetaAfterResourceDelete = (category: string, resourceN
 const checkForCyclicDependencies = (
   category: $TSAny,
   resourceName: string,
-  dependsOn: [{ category:string; resourceName:string }],
+  dependsOn: [{ category: string; resourceName: string }],
 ): void => {
   const amplifyMeta = stateManager.getMeta();
   let cyclicDependency = false;
 
   if (dependsOn) {
-    dependsOn.forEach(resource => {
+    dependsOn.forEach((resource) => {
       if (resource.category === category && resource.resourceName === resourceName) {
         cyclicDependency = true;
       }
       if (amplifyMeta[resource.category] && amplifyMeta[resource.category][resource.resourceName]) {
         const dependsOnResourceDependency = amplifyMeta[resource.category][resource.resourceName].dependsOn;
         if (dependsOnResourceDependency) {
-          dependsOnResourceDependency.forEach(dependsOnResource => {
+          dependsOnResourceDependency.forEach((dependsOnResource) => {
             if (dependsOnResource.category === category && dependsOnResource.resourceName === resourceName) {
               cyclicDependency = true;
             }

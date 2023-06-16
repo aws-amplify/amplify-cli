@@ -57,12 +57,14 @@ export interface ConflictResolution {
   /**
    * Strategies that will be used for individual models.
    */
+  // eslint-disable-next-line spellcheck/spell-checker
   perModelResolutionStrategy?: PerModelResolutionstrategy[];
 }
 
 /**
  * Defines a resolution strategy for a single model.
  */
+// eslint-disable-next-line spellcheck/spell-checker
 export interface PerModelResolutionstrategy {
   /**
    * The resolution strategy for the model.
@@ -179,7 +181,7 @@ export interface AppSyncOpenIDConnectAuthType {
 /**
  * Specifies that the AppSync API should be secured using Lambda.
  */
- export interface AppSyncLambdaAuthType {
+export interface AppSyncLambdaAuthType {
   mode: 'AWS_LAMBDA';
   lambdaFunction: string;
   ttlSeconds?: string;

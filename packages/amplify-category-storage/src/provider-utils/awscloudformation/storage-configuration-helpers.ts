@@ -2,30 +2,28 @@ import {
   $TSAny,
   $TSContext,
   $TSMeta,
-  $TSObject, ResourceAlreadyExistsError,
+  $TSObject,
+  ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
-  stateManager
-} from 'amplify-cli-core';
-import {
-  AddStorageRequest,
-  CrudOperation,
-  ImportStorageRequest, RemoveStorageRequest, UpdateStorageRequest
-} from 'amplify-headless-interface';
-import { printer } from 'amplify-prompts';
+  stateManager,
+} from '@aws-amplify/amplify-cli-core';
+import { AddStorageRequest, ImportStorageRequest, RemoveStorageRequest, UpdateStorageRequest } from 'amplify-headless-interface';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { v4 as uuid } from 'uuid';
 import { S3UserInputTriggerFunctionParams } from '../..';
 import { authCategoryName, categoryName } from '../../constants';
 import { ProviderUtils } from '../awscloudformation/import/types';
 import { updateStateFiles } from './import/import-s3';
 import { ServiceName } from './provider-constants';
-import { buildS3UserInputFromHeadlessStorageRequest, buildS3UserInputFromHeadlessUpdateStorageRequest, buildTriggerFunctionParams } from './s3-headless-adapter';
 import {
-  S3UserInputs
-} from './service-walkthrough-types/s3-user-input-types';
+  buildS3UserInputFromHeadlessStorageRequest,
+  buildS3UserInputFromHeadlessUpdateStorageRequest,
+  buildTriggerFunctionParams,
+} from './s3-headless-adapter';
+import { S3UserInputs } from './service-walkthrough-types/s3-user-input-types';
 import { checkStorageAuthenticationRequirements } from './service-walkthroughs/s3-auth-api';
 import { s3AddStorageLambdaTrigger, s3CreateStorageResource, s3UpdateUserInput } from './service-walkthroughs/s3-resource-api';
 import { resourceAlreadyExists } from './service-walkthroughs/s3-walkthrough';
-
 
 // map of s3 actions corresponding to CRUD verbs
 // 'create/update' have been consolidated since s3 only has put concept
@@ -108,7 +106,7 @@ export async function headlessUpdateStorage(context: $TSContext, storageRequest:
       throw error;
     }
 
-    await updateS3StorageArtifacts(context, storageRequest, storageResource);
+    await updateS3StorageArtifacts(context, storageRequest);
   } else if (storageRequest.serviceModification.serviceName === ServiceName.DynamoDB) {
     const error = new Error('Headless support for DynamoDB resources is not yet implemented.');
     await context.usageData.emitError(error);
@@ -200,7 +198,7 @@ export async function headlessRemoveStorage(context: $TSContext, storageRequest:
 }
 
 async function createS3StorageArtifacts(context: $TSContext, storageRequest: AddStorageRequest) {
-  const storageInput: S3UserInputs  = buildS3UserInputFromHeadlessStorageRequest( context, storageRequest );
+  const storageInput: S3UserInputs = buildS3UserInputFromHeadlessStorageRequest(context, storageRequest);
   const s3UserInput = await s3CreateStorageResource(context, storageInput);
   const allowUnauthenticatedIdentities = storageInput.guestAccess && storageInput.guestAccess.length > 0;
   //update auth dependency
@@ -208,16 +206,16 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
 
   //create new function if required
   const lambdaConfig = storageRequest.serviceConfiguration.lambdaTrigger;
-  if(lambdaConfig){
-    if (lambdaConfig.mode === 'new'){
-      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name)
+  if (lambdaConfig) {
+    if (lambdaConfig.mode === 'new') {
+      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name);
       //create function and add as trigger
-      await s3AddStorageLambdaTrigger(context,  storageInput.resourceName as string , storageLambdaParams)
+      await s3AddStorageLambdaTrigger(context, storageInput.resourceName as string, storageLambdaParams);
     }
   }
 }
 
-async function updateS3StorageArtifacts(context: $TSContext, updateStorageRequest: UpdateStorageRequest, _storageResource: $TSAny) {
+async function updateS3StorageArtifacts(context: $TSContext, updateStorageRequest: UpdateStorageRequest) {
   const lambdaConfig = updateStorageRequest.serviceModification.lambdaTrigger;
   const storageInput: S3UserInputs = await buildS3UserInputFromHeadlessUpdateStorageRequest(context, updateStorageRequest);
   const allowUnauthenticatedIdentities = storageInput.guestAccess && storageInput.guestAccess.length > 0;
@@ -227,16 +225,15 @@ async function updateS3StorageArtifacts(context: $TSContext, updateStorageReques
   //regenerate storage resource artifacts
   let s3UserInput = await s3UpdateUserInput(context, storageInput);
   //create new function if required
-  if(lambdaConfig){
-    if (lambdaConfig.mode === 'new'){
-      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name)
+  if (lambdaConfig) {
+    if (lambdaConfig.mode === 'new') {
+      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name);
       //create function and add as trigger
-      s3UserInput = await s3AddStorageLambdaTrigger(context,  storageInput.resourceName as string , storageLambdaParams)
+      s3UserInput = await s3AddStorageLambdaTrigger(context, storageInput.resourceName as string, storageLambdaParams);
     }
   }
   return s3UserInput;
 }
-
 
 function doUserPoolGroupsExist(meta: $TSMeta) {
   const { userPoolGroups } = meta[authCategoryName];
@@ -252,7 +249,7 @@ export const checkIfAuthExists = () => {
   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
     const categoryResources = amplifyMeta[authCategory];
 
-    Object.keys(categoryResources).forEach(resource => {
+    Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === authServiceName) {
         authExists = true;
       }
@@ -273,4 +270,3 @@ export async function getAuthResourceName(context: $TSContext) {
 
   return authResources[0].resourceName;
 }
-

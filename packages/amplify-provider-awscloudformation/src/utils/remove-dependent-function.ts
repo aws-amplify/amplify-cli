@@ -1,6 +1,4 @@
-import {
-  $TSAny, $TSContext, $TSObject, AmplifyError, pathManager,
-} from 'amplify-cli-core';
+import { $TSContext, $TSObject, $TSAny, AmplifyError, AmplifyFault, pathManager } from '@aws-amplify/amplify-cli-core';
 import path from 'path';
 import { readProjectConfiguration, collectDirectivesByTypeNames, getTableNameForModel } from 'graphql-transformer-core';
 
@@ -13,23 +11,23 @@ export const ensureValidFunctionModelDependencies = async (
   allResources: $TSObject[],
 ): Promise<$TSObject[]> => {
   // get #current-cloud-backed and cloud backend schema.graphql
-  let dependentFunctionResource;
   const backendDir = pathManager.getBackendDirPath();
   const currentBackendDir = pathManager.getCurrentCloudBackendDirPath();
   const tablesDeleted = await getTableNameDiff(currentBackendDir, backendDir, apiResource[0].resourceName);
   if (tablesDeleted.length === 0) {
-    return dependentFunctionResource;
+    return undefined;
   }
-  dependentFunctionResource = await context.amplify.invokePluginMethod(context, 'function', undefined, 'lambdasWithApiDependency', [
+  const dependentFunctionResource = await context.amplify.invokePluginMethod<any[]>(
     context,
-    allResources,
-    backendDir,
-    tablesDeleted,
-  ]);
+    'function',
+    undefined,
+    'lambdasWithApiDependency',
+    [context, allResources, backendDir, tablesDeleted],
+  );
   if (dependentFunctionResource.length === 0) {
     return dependentFunctionResource;
   }
-  const dependentFunctionsNames = dependentFunctionResource.map(lambda => lambda.resourceName);
+  const dependentFunctionsNames = dependentFunctionResource.map((lambda) => lambda.resourceName);
   context.print.info('');
   context.print.warning(`Functions ${dependentFunctionsNames} have access to removed GraphQL API model(s) ${tablesDeleted}`);
 
@@ -46,8 +44,8 @@ export const ensureValidFunctionModelDependencies = async (
       apiResource[0].resourceName,
     ]);
   } else if (
-    !continueToPush
-    && (await context.amplify.confirmPrompt('Do you want to remove the GraphQL model access on these affected functions?', false))
+    !continueToPush &&
+    (await context.amplify.confirmPrompt('Do you want to remove the GraphQL model access on these affected functions?', false))
   ) {
     await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
       context,
@@ -68,7 +66,7 @@ export const ensureValidFunctionModelDependencies = async (
 const getTableNameDiff = async (currentBackendDir: string, backendDir: string, apiResourceName: string): Promise<string[]> => {
   const deployedModelNames = await getTableNames(currentBackendDir, apiResourceName);
   const currentModelNames = await getTableNames(backendDir, apiResourceName);
-  const modelsDeleted = deployedModelNames.filter(val => !currentModelNames.includes(val));
+  const modelsDeleted = deployedModelNames.filter((val) => !currentModelNames.includes(val));
   return modelsDeleted;
 };
 
@@ -76,11 +74,32 @@ const getTableNames = async (backendDir: string, apiResourceName: string): Promi
   // need all object type name definition node with @model directives present
   const appsyncTableSuffix = '@model(appsync)';
   const resourceDirPath = path.join(backendDir, 'api', apiResourceName);
-  const project = await readProjectConfiguration(resourceDirPath);
-  const directivesMap: $TSAny = collectDirectivesByTypeNames(project.schema);
-  const modelNames = Object.keys(directivesMap.types).filter(typeName => directivesMap.types[typeName].includes('model'));
+  let project;
+  let directivesMap: $TSAny;
+  try {
+    project = await readProjectConfiguration(resourceDirPath);
+    directivesMap = collectDirectivesByTypeNames(project.schema);
+  } catch (err) {
+    if (err.message?.includes('Syntax Error')) {
+      throw new AmplifyError(
+        'GraphQLError',
+        {
+          message: err?.message,
+        },
+        err,
+      );
+    }
+    throw new AmplifyFault(
+      'GraphQLTransformerV1Fault',
+      {
+        message: err?.message,
+      },
+      err,
+    );
+  }
+  const modelNames = Object.keys(directivesMap.types).filter((typeName) => directivesMap.types[typeName].includes('model'));
   const tableNames = modelNames
-    .map(modelName => getTableNameForModel(project.schema, modelName))
-    .map(modelName => `${modelName}:${appsyncTableSuffix}`);
+    .map((modelName) => getTableNameForModel(project.schema, modelName))
+    .map((modelName) => `${modelName}:${appsyncTableSuffix}`);
   return tableNames;
 };

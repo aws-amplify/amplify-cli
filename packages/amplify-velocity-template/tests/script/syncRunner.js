@@ -5,7 +5,7 @@ var files = fs.readdirSync(path.join(__dirname, '../'));
 
 var ret = '';
 
-files.forEach(function(file) {
+files.forEach(function (file) {
   if (path.extname(file) !== '.js') {
     return;
   }

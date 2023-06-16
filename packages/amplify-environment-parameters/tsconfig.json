@@ -2,11 +2,13 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
+    "rootDir": "src"
   },
-  "exclude": [
-    "lib",
-    "src/__tests__"
+  "exclude": ["lib", "src/__tests__"],
+  "include": [
+    // I'm not sure why this is necessary but the json import was failing without this config
+    "src/**/*.ts",
+    "src/**/*.json"
   ],
   "references": [
     {

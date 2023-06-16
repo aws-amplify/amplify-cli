@@ -1,6 +1,6 @@
 {
-  "name": "amplify-category-function",
-  "version": "4.2.0",
+  "name": "@aws-amplify/amplify-category-function",
+  "version": "5.3.4",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -15,31 +15,34 @@
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
     "test": "jest --logHeapUsage",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "keywords": [
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
-    "@aws-amplify/amplify-environment-parameters": "1.2.0",
-    "amplify-cli-core": "3.3.0",
-    "amplify-function-plugin-interface": "1.9.5",
-    "amplify-prompts": "2.6.0",
+    "@aws-amplify/amplify-cli-core": "4.1.0",
+    "@aws-amplify/amplify-environment-parameters": "1.6.4",
+    "@aws-amplify/amplify-function-plugin-interface": "1.10.3",
+    "@aws-amplify/amplify-prompts": "2.8.0",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.1233.0",
+    "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
-    "graphql-transformer-core": "^7.6.6",
+    "graphql-transformer-core": "^8.1.2",
     "inquirer": "^7.3.3",
     "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",
     "lodash": "^4.17.21",
-    "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2"
   },
@@ -48,10 +51,16 @@
   },
   "jest": {
     "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
@@ -60,6 +69,11 @@
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

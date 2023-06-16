@@ -1,9 +1,7 @@
 import { Pinpoint } from 'aws-sdk';
 import _ from 'lodash';
 import { EOL } from 'os';
-import {
-  getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW,
-} from '..';
+import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 
 const settings = {
   name: EOL,
@@ -22,41 +20,17 @@ const settings = {
   pinpointResourceName: 'testpinpoint',
 };
 
-const defaultPinpointRegion = 'us-east-1';
-const serviceRegionMap = {
-  'us-east-1': 'us-east-1',
-  'us-east-2': 'us-east-1',
-  'sa-east-1': 'us-east-1',
-  'ca-central-1': 'ca-central-1',
-  'us-west-1': 'us-west-2',
-  'us-west-2': 'us-west-2',
-  'cn-north-1': 'us-west-2',
-  'cn-northwest-1': 'us-west-2',
-  'ap-south-1': 'ap-south-1',
-  'ap-northeast-3': 'us-west-2',
-  'ap-northeast-2': 'ap-northeast-2',
-  'ap-southeast-1': 'ap-southeast-1',
-  'ap-southeast-2': 'ap-southeast-2',
-  'ap-northeast-1': 'ap-northeast-1',
-  'eu-central-1': 'eu-central-1',
-  'eu-north-1': 'eu-central-1',
-  'eu-west-1': 'eu-west-1',
-  'eu-west-2': 'eu-west-2',
-  'eu-west-3': 'eu-west-1',
-  'me-south-1': 'ap-south-1',
-};
-
 /**
  * checks to see if the pinpoint app exists
  */
-export async function pinpointAppExist(pinpointProjectId: string): Promise<boolean> {
+export async function pinpointAppExist(pinpointProjectId: string, region: string): Promise<boolean> {
   let result = false;
 
   const pinpointClient = new Pinpoint({
     accessKeyId: settings.accessKeyId,
     secretAccessKey: settings.secretAccessKey,
     sessionToken: settings.sessionToken,
-    region: _.get(serviceRegionMap, settings.region, defaultPinpointRegion),
+    region,
   });
 
   try {
@@ -102,7 +76,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
       .wait('Choose your default editor:')
       .sendLine(settings.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine(settings.appType)
+      .sendLine('javascript')
       .wait('What javascript framework are you using')
       .sendLine(settings.framework)
       .wait('Source Directory Path:')
@@ -126,9 +100,11 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
       .wait('region');
 
     singleSelect(chain, settings.region, amplifyRegions);
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    chain
+      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
       .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -166,38 +142,22 @@ export function addPinpointAnalytics(cwd: string, testingWithLatestCodebase = tr
 /**
  * calls amplify push and verifies that the pinpoint resource succeeds
  */
-export function pushToCloud(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue')
-      .sendCarriageReturn()
-      .wait('Pinpoint URL to track events')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const pushToCloud = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue')
+    .sendCarriageReturn()
+    .wait('Pinpoint URL to track events')
+    .runAsync();
+};
 
 /**
  * delete the project
  */
-export function amplifyDelete(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait('Project deleted in the cloud')
-      .wait('Project deleted locally.')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
+export const amplifyDelete = async (cwd: string): Promise<void> => {
+  return spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
+    .wait('Are you sure you want to continue?')
+    .sendYes()
+    .wait('Project deleted in the cloud')
+    .wait('Project deleted locally.')
+    .runAsync();
+};

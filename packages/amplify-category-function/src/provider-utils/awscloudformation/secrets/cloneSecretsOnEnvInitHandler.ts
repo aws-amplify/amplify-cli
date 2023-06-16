@@ -1,13 +1,12 @@
-import { $TSContext, ResourceName, stateManager } from 'amplify-cli-core';
-import { SecretDeltas } from 'amplify-function-plugin-interface';
-import _ from 'lodash';
+import { $TSContext, ResourceName, stateManager } from '@aws-amplify/amplify-cli-core';
+import { SecretDeltas } from '@aws-amplify/amplify-function-plugin-interface';
 import { categoryName } from '../../../constants';
 import { cloneEnvWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { FunctionSecretsStateManager, getLocalFunctionSecretNames } from './functionSecretsStateManager';
 
 export const cloneSecretsOnEnvInitHandler = async (context: $TSContext, sourceEnv: string, destEnv: string) => {
   const functionNames = Object.keys((stateManager.getBackendConfig(undefined, { throwIfNotExist: false }) || {})?.[categoryName]);
-  const functionsWithSecrets = functionNames.filter(name => !!getLocalFunctionSecretNames(name).length);
+  const functionsWithSecrets = functionNames.filter((name) => !!getLocalFunctionSecretNames(name).length);
 
   // if there are no functions with secrets, there's nothing to clone
   if (!functionsWithSecrets.length) {

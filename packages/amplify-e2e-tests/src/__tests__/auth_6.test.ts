@@ -1,4 +1,4 @@
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithDefault,
   addAuthWithMaxOptions,
@@ -11,6 +11,7 @@ import {
   getProjectMeta,
   getUserPool,
   initJSProjectWithProfile,
+  replaceOverrideFileWithProjectInfo,
   runAmplifyAuthConsole,
 } from '@aws-amplify/amplify-e2e-core';
 import * as path from 'path';
@@ -40,14 +41,14 @@ describe('zero config auth', () => {
     const authMeta: $TSAny = Object.values(meta.auth)[1];
 
     expect(authMeta.frontendAuthConfig).toMatchInlineSnapshot(`
-      Object {
+      {
         "mfaConfiguration": "ON",
-        "mfaTypes": Array [
+        "mfaTypes": [
           "SMS",
           "TOTP",
         ],
-        "passwordProtectionSettings": Object {
-          "passwordPolicyCharacters": Array [
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [
             "REQUIRES_LOWERCASE",
             "REQUIRES_UPPERCASE",
             "REQUIRES_NUMBERS",
@@ -55,17 +56,17 @@ describe('zero config auth', () => {
           ],
           "passwordPolicyMinLength": 8,
         },
-        "signupAttributes": Array [
+        "signupAttributes": [
           "EMAIL",
         ],
-        "socialProviders": Array [
+        "socialProviders": [
           "FACEBOOK",
           "GOOGLE",
           "AMAZON",
           "APPLE",
         ],
-        "usernameAttributes": Array [],
-        "verificationMechanisms": Array [
+        "usernameAttributes": [],
+        "verificationMechanisms": [
           "EMAIL",
         ],
       }
@@ -74,12 +75,12 @@ describe('zero config auth', () => {
 
   it('...should init a project and add auth with defaults with overrides', async () => {
     await initJSProjectWithProfile(projRoot, defaultSettings);
-    await addAuthWithDefault(projRoot, {});
+    await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     await runAmplifyAuthConsole(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authResourceName = Object.keys(meta.auth).filter(key => meta.auth[key].service === 'Cognito');
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const authResourceName = Object.keys(meta.auth).filter((key) => meta.auth[key].service === 'Cognito');
+    const id = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
 
@@ -101,7 +102,7 @@ describe('zero config auth', () => {
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-auth.ts');
-    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', PROJECT_NAME);
     await amplifyPushOverride(projRoot);
 
     // check overwritten config

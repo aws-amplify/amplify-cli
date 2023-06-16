@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const path = require('path');
 const categoryManager = require('./lib/category-manager');
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 const category = 'hosting';
 const { generateHostingResources } = require('./lib/ElasticContainer/index');
@@ -32,7 +32,7 @@ async function configure(context) {
         default: enabledServices[0],
       });
       const tasks = [];
-      answers.selectedServices.forEach(service => {
+      answers.selectedServices.forEach((service) => {
         tasks.push(() => categoryManager.runServiceAction(context, service, 'configure'));
       });
       return sequential(tasks);
@@ -89,7 +89,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
   const permissionPolicies = [];
   const resourceAttributes = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
     const { policy, attributes } = categoryManager.getIAMPolicies(resourceName, resourceOpsMapping[resourceName]);
     permissionPolicies.push(policy);
     resourceAttributes.push({ resourceName, attributes, category });

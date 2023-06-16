@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { pathManager } from 'amplify-cli-core';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { homedir, tmpdir } from 'os';
 
 export const oldVersionPath = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin', 'amplify-old.exe');

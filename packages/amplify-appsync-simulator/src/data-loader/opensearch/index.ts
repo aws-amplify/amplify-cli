@@ -1,11 +1,11 @@
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
-import { AmplifyFault, AMPLIFY_SUPPORT_DOCS } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { AmplifyFault, AMPLIFY_SUPPORT_DOCS } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   constructor(private _config) {}
 
-  async load(payload, extraData) {
+  async load(payload) {
     try {
       if (process?.platform?.startsWith('win')) {
         return null;
@@ -13,10 +13,14 @@ export class OpenSearchDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       return await this._config.invoke(payload);
     } catch (e) {
       printer.info('Opensearch Data source failed with the following error:' + e?.message);
-      throw new AmplifyFault('MockProcessFault', {
-        message: 'Failed to load data from Opensearch data source',
-        link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url
-      }, e);
+      throw new AmplifyFault(
+        'MockProcessFault',
+        {
+          message: 'Failed to load data from Opensearch data source',
+          link: AMPLIFY_SUPPORT_DOCS.CLI_GRAPHQL_TROUBLESHOOTING.url,
+        },
+        e,
+      );
     }
   }
 }

@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 import { Context } from '../domain/context';
 import { getPath } from './getPath';
@@ -25,7 +25,7 @@ export function getConfig() {
   return Config.Instance;
 }
 
-export function write(context: Context, keyValues: Object) {
+export function write(context: Context, keyValues: unknown) {
   Config.Instance.setValues(keyValues);
 
   JSONUtilities.writeJson(getPath(context), Config.Instance);

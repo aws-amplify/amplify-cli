@@ -1,10 +1,13 @@
 const fs = require('fs');
 const fsext = require('fs-extra');
 const path = require('path');
+const { AmplifyCategories, AmplifySupportedService, pathManager } = require('@aws-amplify/amplify-cli-core');
 
 const TransformPackage = require('graphql-transformer-core');
 const { S3 } = require('./aws-utils/aws-s3');
 const { fileLogger } = require('./utils/aws-logger');
+const { minifyAllJSONInFolderRecursively } = require('./utils/minify-json');
+
 const logger = fileLogger('upload-appsync-files');
 
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
@@ -29,13 +32,13 @@ function getProjectBucket(context) {
  * @param {*} options
  */
 async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, options = {}) {
-  const allApiResourceToUpdate = resourcesToUpdate.filter(resource => resource.service === 'AppSync');
-  const allApiResources = allResources.filter(resource => resource.service === 'AppSync');
+  const allApiResourceToUpdate = resourcesToUpdate.filter((resource) => resource.service === 'AppSync');
+  const allApiResources = allResources.filter((resource) => resource.service === 'AppSync');
   const { defaultParams, useDeprecatedParameters } = options;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const projectBucket = getProjectBucket(context);
 
-  const getDeploymentRootKey = async resourceDir => {
+  const getDeploymentRootKey = async (resourceDir) => {
     let deploymentSubKey;
     if (useDeprecatedParameters) {
       deploymentSubKey = new Date().getTime();
@@ -71,7 +74,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
           hasApiKey = true;
         } else if (
           authConfig.additionalAuthenticationProviders &&
-          authConfig.additionalAuthenticationProviders.find(p => p.authenticationType === 'API_KEY')
+          authConfig.additionalAuthenticationProviders.find((p) => p.authenticationType === 'API_KEY')
         ) {
           hasApiKey = true;
         }
@@ -189,11 +192,14 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     if (!fs.existsSync(resourceBuildDir)) {
       return;
     }
+    if (context.input.options?.minify) {
+      minifyAllJSONInFolderRecursively(resourceBuildDir);
+    }
     const spinner = new ora('Uploading files.');
     spinner.start();
     await TransformPackage.uploadAPIProject({
       directory: resourceBuildDir,
-      upload: async blob => {
+      upload: async (blob) => {
         const { Key, Body } = blob;
         const fullKey = `${deploymentRootKey}/${Key}`;
         logger('uploadAppSyncFiles.upload.s3Client.uploadFile', [{ Key }])();
@@ -220,6 +226,27 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const deploymentRootKey = await getDeploymentRootKey(resourceDir);
     writeUpdatedParametersJson(resource, deploymentRootKey);
+  } else {
+    // case where api is deployed already and non api resources are pushed
+    // this is done to keep the nested stack same if api resource is in update state (updated gql schema)
+    const { resourcesToBeCreated, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.API);
+    const apiResource = allResources.find((resource) => resource.service === AmplifySupportedService.APPSYNC);
+    const apiResourceToBeCreated = resourcesToBeCreated.find((resource) => resource.service === AmplifySupportedService.APPSYNC);
+
+    if (!apiResource) {
+      return;
+    }
+    if (apiResourceToBeCreated) {
+      return;
+    }
+    // get the deployment key from #current-cloud-backend
+    const currentBackEndDir = pathManager.getCurrentCloudBackendDirPath();
+    const currentResourceDirectoryPath = path.join(currentBackEndDir, apiResource.category, apiResource.resourceName);
+    // check api resource folder is present in #current-cloud-backend and is not empty
+    if (fs.existsSync(currentResourceDirectoryPath) && fs.readdirSync(currentResourceDirectoryPath).length !== 0) {
+      const deploymentRootKey = await getDeploymentRootKey(currentResourceDirectoryPath);
+      writeUpdatedParametersJson(apiResource, deploymentRootKey);
+    }
   }
 }
 

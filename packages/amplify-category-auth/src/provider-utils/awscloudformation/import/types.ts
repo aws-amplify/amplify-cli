@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject } from '@aws-amplify/amplify-cli-core';
 import {
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,
@@ -6,7 +6,7 @@ import {
   UserPoolType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
-import { ICognitoUserPoolService, IIdentityPoolService } from 'amplify-util-import';
+import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 
 export type AuthSelections = 'userPoolOnly' | 'identityPoolAndUserPool';
 
