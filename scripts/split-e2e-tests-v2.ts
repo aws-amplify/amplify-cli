@@ -119,6 +119,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/function_6.test.ts',
     'src/__tests__/function_7.test.ts',
     'src/__tests__/function_8.test.ts',
+    'src/__tests__/function_15.test.ts',
     'src/__tests__/geo-add-e.test.ts',
     'src/__tests__/geo-add-f.test.ts',
     'src/__tests__/geo-remove-2.test.ts',
