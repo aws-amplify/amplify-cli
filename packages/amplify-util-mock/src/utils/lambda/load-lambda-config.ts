@@ -28,7 +28,7 @@ export const loadLambdaConfig = async (
   const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: $TSObject }>(
     path.join(resourcePath, `${resourceName}-cloudformation-template.json`),
   );
-  const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, $TSAny]) => resourceDef.Type === 'AWS::Lambda::Function');
+  const lambdaDef = Object.entries(cfnResources).find(([, resourceDef]: [string, $TSAny]) => resourceDef.Type === 'AWS::Lambda::Function');
   if (!lambdaDef) {
     return undefined;
   }

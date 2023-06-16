@@ -41,6 +41,10 @@ const { checkAuthResourceMigration } = require('./provider-utils/awscloudformati
 const { run: authRunPush } = require('./commands/auth/push');
 const { getAuthTriggerStackCfnParameters } = require('./provider-utils/awscloudformation/utils/get-auth-trigger-stack-cfn-parameters');
 const { updateAppClientWithGeneratedSecret } = require('./provider-utils/awscloudformation/utils/generate-cognito-app-client-secret');
+const {
+  migrateResourcesToCfn,
+  getHostedUIProviderCredsFromCloud,
+} = require('./provider-utils/awscloudformation/utils/migrate-idp-resources');
 const { prePushHandler } = require('./events/prePushHandler');
 
 // this function is being kept for temporary compatability.
@@ -577,6 +581,8 @@ module.exports = {
   authPluginAPIPush: authPushYes,
   getAuthTriggerStackCfnParameters,
   updateAppClientWithGeneratedSecret,
+  migrateResourcesToCfn,
+  getHostedUIProviderCredsFromCloud,
 };
 
 // force major version bump for cdk v2

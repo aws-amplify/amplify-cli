@@ -31,6 +31,7 @@ import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from './stack-synthesizer';
 import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import { ProviderCreds, ProviderMeta } from './types';
+import { migrateResourcesToCfn, getHostedUIProviderCredsFromCloud } from '../utils/migrate-idp-resources';
 
 /**
  *  Class to handle Auth cdk generation / override functionality
@@ -75,7 +76,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       await generateNestedAuthTriggerTemplate(this._category, this.resourceName, this._cognitoStackProps);
     }
     // this will also include lambda triggers and adminQueries once api and function transform are done
-    await this.generateStackResources(this._cognitoStackProps);
+    await this.generateStackResources(this._cognitoStackProps, context);
 
     // apply override on Amplify Object having CDK Constructs for Auth Stack
     await this.applyOverride();
@@ -91,18 +92,18 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    * Generates CFN Resources for Auth
    */
-  private async generateStackResources(props: CognitoStackOptions): Promise<void> {
+  private async generateStackResources(props: CognitoStackOptions, context?: $TSContext): Promise<void> {
     // add CFN parameter
-    this.addCfnParameters(props);
+    await this.addCfnParameters(props, context);
 
     // add CFN condition
-    this.addCfnConditions();
+    await this.addCfnConditions();
     // generate Resources
 
-    await this._authTemplateObj.generateCognitoStackResources(props);
+    await this._authTemplateObj.generateCognitoStackResources(props, context);
 
     // generate Output
-    this.generateCfnOutputs(props);
+    await this.generateCfnOutputs(props);
   }
 
   public applyOverride = async (): Promise<void> => {
@@ -318,7 +319,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    * generate cfn outputs
    */
-  private generateCfnOutputs = (props: CognitoStackOptions): void => {
+  private generateCfnOutputs = async (props: CognitoStackOptions): Promise<void> => {
     const configureSMS = configureSmsOption(props);
 
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') {
@@ -469,7 +470,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    *  adds cfn parameters
    */
-  private addCfnParameters = (props: CognitoStackOptions): void => {
+  private addCfnParameters = async (props: CognitoStackOptions, context?: $TSContext): Promise<void> => {
     this._authTemplateObj.addCfnParameter(
       {
         type: 'String',
@@ -559,7 +560,17 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
 
     const hostedUIProviderMeta = JSON.parse(props.hostedUIProviderMeta || '[]');
-    const hostedUIProviderCreds = JSON.parse(props.hostedUIProviderCreds || '[]');
+    let hostedUIProviderCreds = JSON.parse(props.hostedUIProviderCreds || '[]');
+
+    if (migrateResourcesToCfn(props.resourceName)) {
+      hostedUIProviderCreds = await getHostedUIProviderCredsFromCloud(
+        props.resourceName,
+        hostedUIProviderMeta,
+        hostedUIProviderCreds,
+        context,
+      );
+      props.hostedUIProviderCreds = JSON.stringify(hostedUIProviderCreds);
+    }
 
     hostedUIProviderCreds.forEach((providerCreds: ProviderCreds) => {
       const { ProviderName } = providerCreds;
@@ -610,7 +621,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    *  adds cfn conditions
    */
-  private addCfnConditions = (): void => {
+  private addCfnConditions = async (): Promise<void> => {
     this._authTemplateObj.addCfnCondition(
       {
         expression: cdk.Fn.conditionEquals(cdk.Fn.ref('env'), 'NONE'),

@@ -116,6 +116,15 @@ export class PathManager {
   getCurrentCfnTemplatePath = (projectPath: string | undefined, categoryName: string, resourceName: string): string =>
     path.join(this.getCurrentCloudBackendDirPath(projectPath), categoryName, resourceName, PathConstants.CfnFileName(resourceName));
 
+  getCurrentCfnTemplatePathFromBuild = (categoryName: string, resourceName: string): string =>
+    path.join(
+      this.getCurrentCloudBackendDirPath(),
+      categoryName,
+      resourceName,
+      PathConstants.BuildDirName,
+      `${resourceName}-cloudformation-template.json`,
+    );
+
   getAmplifyRcFilePath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.AmplifyRcFileName]);
 
   getGitIgnoreFilePath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.GitIgnoreFileName]);

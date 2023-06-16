@@ -66,14 +66,14 @@ describe('function start', () => {
     prompter_mock.pick.mockResolvedValue(['funcName']);
     await start(context_stub);
     expect(printer_mock.error.mock.calls[0][0]).toMatchInlineSnapshot(`"funcName failed with the following error:"`);
-    expect(printer_mock.info.mock.calls[2][0]).toMatchSnapshot();
+    expect(printer_mock.error.mock.calls[0][1]).toMatchSnapshot();
     context_stub.input.options.timeout = 1;
   });
 
   it('times out function execution at the specified time', async () => {
     getInvoker_mock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 2000)));
     await start(context_stub);
-    expect(printer_mock.info.mock.calls[2][0]).toMatchSnapshot();
+    expect(printer_mock.error.mock.calls[0][1]).toMatchSnapshot();
   });
 
   it('triggers a dev build before invoking', async () => {
