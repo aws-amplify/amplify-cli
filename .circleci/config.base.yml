@@ -902,8 +902,8 @@ jobs:
   deployment_verification:
     <<: *linux-e2e-executor-large
     steps:
-      #      - restore_cache:
-      #          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
       #      - restore_cache:
       #          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       #      - restore_cache:
@@ -911,7 +911,6 @@ jobs:
       - run:
           name: Verify Deployment
           command: |
-            commit=$(git rev-parse HEAD)
             version=$(cat .amplify-pkg-version)
             version=12.1.0
             yarn ts-node scripts/verify-deployment.ts $version
@@ -1342,6 +1341,8 @@ workflows:
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
       - deployment_verification:
+          requires:
+            - build
           filters:
             branches:
               only:
