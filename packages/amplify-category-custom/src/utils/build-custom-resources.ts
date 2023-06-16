@@ -76,7 +76,7 @@ const buildResource = async (resource: ResourceMeta): Promise<void> => {
   const packageManager = await getPackageManager(targetDir);
 
   if (packageManager === null) {
-    throw new Error('No package manager found. Please install npm, yarn or pnpm to compile overrides for this project.');
+    throw new Error('No package manager found. Please install npm, yarn, or pnpm to compile overrides for this project.');
   }
 
   try {
