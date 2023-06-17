@@ -59,5 +59,5 @@ async function generateSkeletonDir(resourceName: string) {
   fs.writeFileSync(cdkFilepath, fs.readFileSync(path.join(srcResourceDirPath, 'cdk-stack.ts.sample')));
 
   const npmRcPath = path.join(targetDir, '.npmrc');
-  fs.writeFileSync(npmRcPath, fs.readFileSync(path.join(srcResourceDirPath, '.npmrc')));
+  fs.writeFileSync(npmRcPath, fs.readFileSync(path.join(srcResourceDirPath, 'sample.npmrc')));
 }
