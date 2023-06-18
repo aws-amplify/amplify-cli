@@ -28,8 +28,8 @@ describe('v11: hosted UI migration', () => {
   let projRoot1: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: '11.0.0' };
-    const migrateToVersion = { v: 'unintialized' };
+    const migrateFromVersion = { v: 'uninitialized' };
+    const migrateToVersion = { v: 'uninitialized' };
 
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);

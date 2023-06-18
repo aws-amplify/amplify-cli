@@ -41,7 +41,7 @@ IAM Statement Changes
 ├───┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼────────┼────────────────────────────────────┼───────────────────────────┼───────────┤
 │ + │ \${UserPool.Arn}                                                                                                                                                                             │ Allow  │ cognito-idp:DeleteUserPoolDomain   │ AWS:\${UserPoolClientRole} │           │
 │ + │ \${UserPool.Arn}                                                                                                                                                                             │ Allow  │ cognito-idp:DeleteIdentityProvider │ AWS:\${UserPoolClientRole} │           │
-│   │                                                                                                                                                                                             │        │ cognito-idp:ListIdentityProviders  │                           │           │
+│   │                                                                                                                                                                                             │        │ cognito-idp:UpdateIdentityProvider │                           │           │
 └───┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴────────┴────────────────────────────────────┴───────────────────────────┴───────────┘
 (NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)
 
@@ -81,7 +81,6 @@ Resources
 [+] AWS::Cognito::UserPoolIdentityProvider HostedUIFacebookProviderResource 
 [+] AWS::Cognito::UserPoolIdentityProvider HostedUIGoogleProviderResource 
 [+] AWS::Cognito::UserPoolIdentityProvider HostedUILoginWithAmazonProviderResource 
-[+] AWS::Cognito::UserPoolIdentityProvider HostedUISignInWithAppleProviderResource 
 [~] AWS::Cognito::UserPoolClient UserPoolClientWeb 
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
@@ -96,13 +95,12 @@ Resources
  ├─ [+] SupportedIdentityProviders
  │   └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
  └─ [~] DependsOn
-     └─ @@ -1,3 +1,8 @@
+     └─ @@ -1,3 +1,7 @@
         [ ] [
         [+]   "HostedUIFacebookProviderResource",
         [+]   "HostedUIGoogleProviderResource",
         [+]   "HostedUILoginWithAmazonProviderResource",
         [+]   "HostedUIProvidersCustomResourceInputs",
-        [+]   "HostedUISignInWithAppleProviderResource",
         [ ]   "UserPool"
         [ ] ]
 [~] AWS::Cognito::UserPoolClient UserPoolClient 
@@ -119,13 +117,12 @@ Resources
  ├─ [+] SupportedIdentityProviders
  │   └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
  └─ [~] DependsOn
-     └─ @@ -1,3 +1,8 @@
+     └─ @@ -1,3 +1,7 @@
         [ ] [
         [+]   "HostedUIFacebookProviderResource",
         [+]   "HostedUIGoogleProviderResource",
         [+]   "HostedUILoginWithAmazonProviderResource",
         [+]   "HostedUIProvidersCustomResourceInputs",
-        [+]   "HostedUISignInWithAppleProviderResource",
         [ ]   "UserPool"
         [ ] ]
 [~] AWS::IAM::Role UserPoolClientRole 
@@ -380,17 +377,43 @@ async function handleEvent(event, context) {
   try {
     const userPoolId = event.ResourceProperties.userPoolId;
     const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
+    const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
 
-    for (const { ProviderName } of hostedUIProviderMeta) {
-      try {
-        const params = { ProviderName, UserPoolId: userPoolId };
-        await identity.deleteIdentityProvider(params).promise();
-      } catch (e) {
-        if (!e?.code?.toString()?.match(/NotFoundException/)) {
-          // bubble up to outer catch.
+    for (const providerMeta of hostedUIProviderMeta) {
+      const providerCreds = hostedUIProviderCreds.find(({ ProviderName }) => providerMeta.ProviderName === ProviderName);
+      if (providerMeta.ProviderName === 'SignInWithApple' && !providerCreds.private_key && event.RequestType === 'Update') {
+        try {
+          const params = {
+            UserPoolId: userPoolId,
+            ProviderName: providerMeta.ProviderName,
+            AttributeMapping: providerMeta.AttributeMapping,
+          };
+
+          if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
+            params.ProviderDetails = {
+              client_id: providerCreds.client_id,
+              team_id: providerCreds.team_id,
+              key_id: providerCreds.key_id,
+              private_key: providerCreds.private_key,
+              authorize_scopes: providerMeta.authorize_scopes,
+            };
+          }
+
+          await identity.updateIdentityProvider(params).promise();
+        } catch (e) {
           throw e;
-        } else {
-          console.log('Not Found', ProviderName);
+        }
+      } else {
+        try {
+          const params = { ProviderName: providerMeta.ProviderName, UserPoolId: userPoolId };
+          await identity.deleteIdentityProvider(params).promise();
+        } catch (e) {
+          if (!e?.code?.toString()?.match(/NotFoundException/)) {
+            // bubble up to outer catch.
+            throw e;
+          } else {
+            console.log('Not Found', providerMeta.ProviderName);
+          }
         }
       }
     }
@@ -402,21 +425,26 @@ async function handleEvent(event, context) {
   }
 }
 
+async function updateSignInWithAppleIdp(event, context) {
+
+}
+
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
 [~] AWS::IAM::Policy HostedUIProvidersCustomResourcePolicy 
  └─ [~] PolicyDocument
      └─ [~] .Statement:
-         └─ @@ -2,8 +2,6 @@
+         └─ @@ -2,9 +2,7 @@
             [ ] {
             [ ]   "Effect": "Allow",
             [ ]   "Action": [
             [-]     "cognito-idp:CreateIdentityProvider",
-            [-]     "cognito-idp:UpdateIdentityProvider",
-            [ ]     "cognito-idp:ListIdentityProviders",
+            [ ]     "cognito-idp:UpdateIdentityProvider",
+            [-]     "cognito-idp:ListIdentityProviders",
             [ ]     "cognito-idp:DeleteIdentityProvider"
             [ ]   ],
+            [ ]   "Resource": {
 [~] AWS::Cognito::IdentityPool IdentityPool 
  └─ [-] DependsOn
      └─ ["UserPoolClientInputs"]

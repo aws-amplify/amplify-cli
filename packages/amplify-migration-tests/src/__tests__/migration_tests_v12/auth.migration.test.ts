@@ -17,8 +17,8 @@ describe('v11: amplify migration test auth', () => {
   let projRoot1: string;
 
   beforeAll(async () => {
-    const migrateFromVersion = { v: '11.0.0' };
-    const migrateToVersion = { v: 'unintialized' };
+    const migrateFromVersion = { v: '12.0.3' };
+    const migrateToVersion = { v: 'uninitialized' };
 
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);

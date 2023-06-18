@@ -793,7 +793,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: ['cognito-idp:ListIdentityProviders', 'cognito-idp:DeleteIdentityProvider'],
+            Action: ['cognito-idp:UpdateIdentityProvider', 'cognito-idp:DeleteIdentityProvider'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
           {
@@ -1223,6 +1223,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       JSON.parse(props.hostedUIProviderMeta).forEach((provider: ProviderMeta) => {
         const providerCreds: ProviderCreds = creds.find(({ ProviderName }: ProviderCreds) => ProviderName === provider.ProviderName);
         const hasProviderCreds = providerCreds?.client_id && (providerCreds.client_secret || providerCreds.private_key);
+
+        if (provider.ProviderName === 'SignInWithApple' && !hasProviderCreds) {
+          return;
+        }
 
         this.createHostedUIProviderResource(provider, !!hasProviderCreds);
       });
