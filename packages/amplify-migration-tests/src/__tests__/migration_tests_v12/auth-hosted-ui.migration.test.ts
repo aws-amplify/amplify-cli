@@ -24,7 +24,7 @@ const oauthSettings = {
 const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
 const { readJson } = JSONUtilities;
 
-describe('v11: hosted UI migration', () => {
+describe('v12: hosted UI migration', () => {
   let projRoot1: string;
 
   beforeAll(async () => {

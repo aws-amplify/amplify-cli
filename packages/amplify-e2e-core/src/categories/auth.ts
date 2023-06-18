@@ -428,7 +428,6 @@ export function updateAuthSignInSignOutUrlAfterPull(
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
   return chain
     .wait('What do you want to do?')
-    .send(KEY_DOWN_ARROW)
     .sendCarriageReturn()
     .wait('Which redirect signin URIs do you want to edit?')
     .sendCtrlA()
@@ -447,7 +446,6 @@ export function updateAuthSignInSignOutUrlAfterPull(
     .sendCarriageReturn()
     .wait('Do you want to add redirect signout URIs?')
     .sendConfirmNo()
-    .sendEof()
     .runAsync();
 }
 
