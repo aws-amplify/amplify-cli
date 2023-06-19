@@ -33,45 +33,28 @@ describe('adding custom resources test', () => {
     deleteProjectDir(projRoot);
   });
 
-  it.only('verify export custom storage types', async () => {
-    console.log('here 1');
+  it('verify export custom storage types', async () => {
     await addAuthWithDefault(projRoot);
-    console.log('here 2');
     await addS3WithGuestAccess(projRoot);
-    console.log('here 3');
     const appId = getAppId(projRoot);
-    console.log('here 4');
     console.log('appid', appId);
     console.log('projectmeta', getProjectMeta(projRoot));
     const cdkResourceName = `c${uuid().split('-')[0]}`;
-    console.log('here 5');
     await addCDKCustomResource(projRoot, { name: cdkResourceName });
-    console.log('here 6');
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack-with-storage.ts');
-    console.log('here 7');
     const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
-    console.log('here 8');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
-    console.log('here 9');
     await buildCustomResources(projRoot);
-    console.log('here 10');
     await amplifyPushAuth(projRoot);
-    console.log('here 11');
     await gitCleanFdX(projRoot);
-    console.log('here 12');
+    console.log('doing init line 50');
+    await new Promise((resolve) => setTimeout(resolve, 180 * 1000)); // sleep for 180 seconds
     await initHeadless(projRoot, envName, appId);
-    console.log('here 13');
     const typesPath = path.join(projRoot, 'amplify', 'backend', 'types', 'amplify-dependent-resources-ref.d.ts');
-    console.log('here 14');
     const typesFileContents = await fs.readFile(typesPath, 'utf-8');
-    console.log('here 15');
     const jsonObj = JSON.parse(typesFileContents.split('=')[1]);
-    console.log('here 16');
     const jsonObjKeys = Object.keys(jsonObj);
-    console.log('here 17');
     expect(jsonObjKeys.includes('auth')).toBeTruthy();
-    console.log('here 18');
     expect(jsonObjKeys.includes('storage')).toBeTruthy();
-    console.log('here 19');
   });
 });
