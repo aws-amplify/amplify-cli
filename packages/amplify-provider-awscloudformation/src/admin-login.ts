@@ -61,7 +61,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
           }
           finished = true;
           adminLoginServer.shutdown();
-          reject();
+          resolve();
         };
       });
 
@@ -116,7 +116,7 @@ export const adminLoginFlow = async (context: $TSContext, appId: string, envName
           }
           finished = true;
           closeReadline(rl);
-          reject();
+          resolve();
         };
       });
       return [promise, cancel];

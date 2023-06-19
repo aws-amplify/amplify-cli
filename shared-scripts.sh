@@ -507,7 +507,7 @@ function _uploadReportsToS3 {
     source_version=$1
     build_identifier=$2
     test_package=$3
-    reports_dir=$CODEBUILD_SRC_DIR/packages/$test_package/reports/junit
+    reports_dir=packages/$test_package/reports/junit
     cd $reports_dir
     for filename in $(ls); do aws s3 cp "$filename" "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$build_identifier-$filename"; done
 }
