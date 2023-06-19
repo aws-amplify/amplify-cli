@@ -78,10 +78,10 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
    ```sh
    # Linux / macOS
-   yarn setup-dev
+   yarn && yarn setup-dev
 
    # Windows
-   yarn setup-dev-win
+   yarn && yarn setup-dev-win
    ## Must be run in Powershell
    ```
 
