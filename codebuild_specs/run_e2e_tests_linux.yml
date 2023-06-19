@@ -34,7 +34,7 @@ phases:
       - source ./shared-scripts.sh && _runE2ETestsLinux
   post_build:
     commands:
-      - source ./shared-scripts.sh && _convertCoverage # && _uploadCoverageLinux (disabled while troubleshooting E2E test failures during initial CodeBuild setup)
+      - source ./shared-scripts.sh && _convertCoverage && _uploadCoverageLinux
       - source ./shared-scripts.sh && _scanArtifacts
       - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-e2e-tests
 artifacts:
