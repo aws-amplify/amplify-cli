@@ -11,11 +11,11 @@ const parseArgs = async (): Promise<ProcessArgs> => {
     .version(false)
     .options({
       v: { alias: 'version', type: 'string', demandOption: true },
-      g: { alias: 'exclude-github', type: 'boolean', default: false },
+      'exclude-github': { type: 'boolean', default: false },
     })
     .parseSync();
 
-  return { version: args.v, excludeGithub: args.g };
+  return { version: args.v, excludeGithub: args['exclude-github'] };
 };
 
 const existsInNpm = (version: string): boolean => {
