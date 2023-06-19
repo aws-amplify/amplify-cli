@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.1.0...@aws-amplify/cli-internal@12.1.1) (2023-06-16)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [12.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.0.3...@aws-amplify/cli-internal@12.1.0) (2023-06-13)
+
+
+### Bug Fixes
+
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+
+
+### Features
+
+* bump version ([#12752](https://github.com/aws-amplify/amplify-cli/issues/12752)) ([2def814](https://github.com/aws-amplify/amplify-cli/commit/2def814808a18440a7be71baccda902f07fedc49))
+
+
+
+
+
 ## [12.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.0.1...@aws-amplify/cli-internal@12.0.3) (2023-05-25)
 
 

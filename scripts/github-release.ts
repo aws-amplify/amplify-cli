@@ -13,6 +13,7 @@ const publishRelease = async (version: string, commit: string) => {
     method: 'PATCH',
     body: JSON.stringify({
       prerelease: false,
+      make_latest: 'true',
       target_commitish: commit,
     }),
   });
