@@ -1357,7 +1357,6 @@ workflows:
       - deployment_verification_rc_or_tagged:
           requires:
             - publish_to_npm
-            - github_prerelease
             - upload_pkg_binaries
           filters:
             branches:
