@@ -425,10 +425,6 @@ async function handleEvent(event, context) {
   }
 }
 
-async function updateSignInWithAppleIdp(event, context) {
-
-}
-
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
