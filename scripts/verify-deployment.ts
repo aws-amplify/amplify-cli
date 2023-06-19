@@ -3,7 +3,7 @@ import yargs from 'yargs';
 
 type ProcessArgs = {
   version: string;
-  isPrerelease: boolean;
+  excludeGithub: boolean;
 };
 const githubBinaries = ['amplify-pkg-linux-arm64.tgz', 'amplify-pkg-linux.tgz', 'amplify-pkg-macos.tgz', 'amplify-pkg-win.exe.tgz'];
 const parseArgs = async (): Promise<ProcessArgs> => {
@@ -11,11 +11,11 @@ const parseArgs = async (): Promise<ProcessArgs> => {
     .version(false)
     .options({
       v: { alias: 'version', type: 'string', demandOption: true },
-      p: { alias: 'prerelease', type: 'boolean', default: false },
+      g: { alias: 'exclude-github', type: 'boolean', default: false },
     })
     .parseSync();
 
-  return { version: args.v, isPrerelease: args.p };
+  return { version: args.v, excludeGithub: args.g };
 };
 
 const existsInNpm = (version: string): boolean => {
@@ -44,9 +44,9 @@ const existsInS3 = async (version: string): Promise<boolean> => {
 };
 
 const main = async () => {
-  const { version, isPrerelease } = await parseArgs();
+  const { version, excludeGithub } = await parseArgs();
   console.log(`#### Verifying version ${version} deployed correctly ####`);
-  const isGitHubSatisfied = isPrerelease || (await existsInGitHub(version));
+  const isGitHubSatisfied = excludeGithub || (await existsInGitHub(version));
   if (!isGitHubSatisfied) {
     console.error('Release not found in GitHub');
     process.exit(1);
