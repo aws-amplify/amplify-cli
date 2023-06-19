@@ -517,6 +517,84 @@ export function updateAuthSignInSignOutUrlWithAll(
     .runAsync();
 }
 
+export function updateAuthToAddSignInSignOutUrlAfterPull(
+  cwd: string,
+  settings: {
+    signinUrl: string;
+    signoutUrl: string;
+    testingWithLatestCodebase: boolean;
+    updateSigninUrl: string;
+    updateSignoutUrl: string;
+  },
+): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
+  const {
+    FACEBOOK_APP_ID,
+    FACEBOOK_APP_SECRET,
+    GOOGLE_APP_ID,
+    GOOGLE_APP_SECRET,
+    AMAZON_APP_ID,
+    AMAZON_APP_SECRET,
+    APPLE_APP_ID,
+    APPLE_KEY_ID,
+    APPLE_TEAM_ID,
+    APPLE_PRIVATE_KEY,
+  } = getSocialProviders(true);
+
+  return chain
+    .wait('What do you want to do?')
+    .sendCarriageReturn()
+    .wait('What domain name prefix do you want to use?')
+    .sendCarriageReturn()
+    .wait('Enter your redirect signin URI:')
+    .send(settings.updateSigninUrl)
+    .sendCarriageReturn()
+    .wait('Do you want to add another redirect signin URI')
+    .sendNo()
+    .sendCarriageReturn()
+    .wait('Enter your redirect signout URI:')
+    .sendLine(settings.signoutUrl)
+    .sendCarriageReturn()
+    .wait('Do you want to add another redirect signout URI')
+    .sendNo()
+    .sendCarriageReturn()
+    .wait('Select the identity providers you want to configure for your user pool:')
+    .send('a')
+    .sendCarriageReturn()
+    .wait('Enter your Facebook App ID for your OAuth flow:')
+    .send(FACEBOOK_APP_ID)
+    .sendCarriageReturn()
+    .wait('Enter your Facebook App Secret for your OAuth flow:')
+    .send(FACEBOOK_APP_SECRET)
+    .sendCarriageReturn()
+    .wait('Enter your Google Web Client ID for your OAuth flow:')
+    .send(GOOGLE_APP_ID)
+    .sendCarriageReturn()
+    .wait('Enter your Google Web Client Secret for your OAuth flow:')
+    .send(GOOGLE_APP_SECRET)
+    .sendCarriageReturn()
+    .wait('Enter your Amazon App ID for your OAuth flow:')
+    .send(AMAZON_APP_ID)
+    .sendCarriageReturn()
+    .wait('Enter your Amazon App Secret for your OAuth flow:')
+    .send(AMAZON_APP_SECRET)
+    .sendCarriageReturn()
+    .wait('Enter your Services ID for your OAuth flow:')
+    .send(APPLE_APP_ID)
+    .sendCarriageReturn()
+    .wait('Enter your Team ID for your OAuth flow:')
+    .send(APPLE_TEAM_ID)
+    .sendCarriageReturn()
+    .wait('Enter your Key ID for your OAuth flow:')
+    .send(APPLE_KEY_ID)
+    .sendCarriageReturn()
+    .wait('Enter your Private Key for your OAuth flow')
+    .send(APPLE_PRIVATE_KEY)
+    .sendCarriageReturn()
+    .runAsync();
+}
+
 export function updateAuthToRemoveFederation(cwd: string, settings: any): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {

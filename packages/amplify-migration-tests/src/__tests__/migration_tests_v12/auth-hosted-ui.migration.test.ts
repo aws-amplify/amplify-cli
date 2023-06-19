@@ -10,7 +10,9 @@ import {
   getUserPool,
   getProjectMeta,
   initJSProjectWithProfile,
+  listSocialIdpProviders,
   updateAuthSignInSignOutUrlAfterPull,
+  updateAuthToAddSignInSignOutUrlAfterPull,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 import { JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
@@ -56,9 +58,7 @@ describe('v12: hosted UI migration', () => {
       const appId = getAppId(projRoot1);
       const region = meta.providers.awscloudformation.Region;
       const authName = Object.keys(meta.auth).find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
-      const { HostedUIDomain, UserPoolId } = Object.keys(meta.auth)
-        .map((key) => meta.auth[key])
-        .find((auth) => auth.service === 'Cognito').output;
+      const { HostedUIDomain, UserPoolId } = meta.auth[authName].output;
 
       const userPoolRes1 = await getUserPool(UserPoolId, region);
       const projRoot2 = await createNewProjectDir('authMigration2');
@@ -138,15 +138,16 @@ exports.handler = (event, context, callback) => {
       const meta = getProjectMeta(projRoot1);
       const appId = getAppId(projRoot1);
       const region = meta.providers.awscloudformation.Region;
-      const { HostedUIDomain, UserPoolId } = Object.keys(meta.auth)
-        .map((key) => meta.auth[key])
-        .find((auth) => auth.service === 'Cognito').output;
-
-      const userPoolRes1 = await getUserPool(UserPoolId, region);
+      const authName = Object.keys(meta.auth).find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
+      const output1 = meta.auth[authName].output;
+      const userPoolRes1 = await getUserPool(output1.UserPoolId, region);
+      const idpsRes1 = await listSocialIdpProviders(output1.UserPoolId, region);
+      
+      expect(output1.HostedUIDomain).not.toBeDefined();
+      expect(userPoolRes1.UserPool.Domain).not.toBeDefined();
+      expect(idpsRes1.Providers.length).toEqual(0);
+      
       const projRoot2 = await createNewProjectDir('authMigration2');
-
-      expect(HostedUIDomain).toBeDefined();
-      expect(HostedUIDomain).toEqual(userPoolRes1.UserPool.Domain);
 
       try {
         let oauthUpdateSettings = {
@@ -157,16 +158,25 @@ exports.handler = (event, context, callback) => {
         };
 
         await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
-        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
+        await updateAuthToAddSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
+
+        const authCfnTemplatePath = getResourceCfnTemplatePath(projRoot2, 'auth', authName);
+        let authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
+
+        expect(authCfnTemplate?.Resources?.HostedUICustomResource).toBeUndefined();
+
         await amplifyPushAuth(projRoot2, true);
 
-        const userPoolRes2 = await getUserPool(UserPoolId, region);
-        const authName = Object.keys(meta.auth).find((authProvider) => meta.auth[authProvider]?.service === 'Cognito');
-        const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', authName);
-        const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
+        const meta2 = getProjectMeta(projRoot2);
+        const output2 = meta2.auth[authName].output;
+        const userPoolRes2 = await getUserPool(output2.UserPoolId, region);
+        const idpsRes2 = await listSocialIdpProviders(output2.UserPoolId, region);
+        authCfnTemplate = readJson(authCfnTemplatePath, { throwIfNotExist: false });
 
-        expect(userPoolRes1.UserPool.Domain).toEqual(userPoolRes2.UserPool.Domain);
-        expect(authCfnTemplate.Resources.HostedUICustomResource).toBeUndefined();
+        expect(userPoolRes2.UserPool.Domain).toBeDefined();
+        expect(userPoolRes2.UserPool.Domain).toEqual(output2.HostedUIDomain);
+        expect(idpsRes1.Providers.length).toEqual(4);
+        expect(authCfnTemplate?.Resources?.HostedUICustomResource).toBeUndefined();
       } finally {
         deleteProjectDir(projRoot2);
       }
