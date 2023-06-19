@@ -22,7 +22,7 @@ const defaultSettings = {
   permissionsBoundaryArn: undefined,
 };
 
-export function initJSProjectWithProfileV11(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
+export function initJSProjectWithProfileV12(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -96,7 +96,7 @@ export function initJSProjectWithProfileV11(cwd: string, settings?: Partial<type
   });
 }
 
-export function initIosProjectWithProfile11(cwd: string, settings: Record<string, unknown>): Promise<void> {
+export function initIosProjectWithProfile12(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);

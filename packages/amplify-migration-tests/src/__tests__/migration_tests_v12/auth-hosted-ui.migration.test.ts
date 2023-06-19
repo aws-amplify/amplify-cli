@@ -1,6 +1,7 @@
 import {
   addAuthWithDefault,
   addAuthWithSignInSignOutUrl,
+  addAuthWithDefaultSocial,
   amplifyPull,
   amplifyPushAuth,
   createNewProjectDir,
@@ -11,7 +12,9 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   listSocialIdpProviders,
-  updateAuthSignInSignOutUrlAfterPull,
+  updateAuthSignInSignOutUrl,
+  updateAuthToAddOauthProviders,
+  updateAuthToUpdateUrls,
   updateAuthToAddSignInSignOutUrlAfterPull,
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
@@ -19,8 +22,8 @@ import { JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import Template from 'cloudform-types/types/template';
 
 const oauthSettings = {
-  signinUrl: 'https://danielle.lol/',
-  signoutUrl: 'https://danielle.lol/',
+  signinUrl: 'https://amplify.lol/',
+  signoutUrl: 'https://amplify.lol/',
 };
 
 const { getResourceCfnTemplatePath, getBackendDirPath } = pathManager;
@@ -49,9 +52,9 @@ describe('v12: hosted UI migration', () => {
   });
 
   describe('...updating auth with hosted UI', () => {
-    it('...maintains the user pool domain and deletes lambda', async () => {
+    it('...maintains the user pool domain and idps, and deletes lambda', async () => {
       await initJSProjectWithProfile(projRoot1, { name: 'authTest', disableAmplifyAppCreation: false });
-      await addAuthWithSignInSignOutUrl(projRoot1, oauthSettings);
+      await addAuthWithDefaultSocial(projRoot1);
       await amplifyPushAuth(projRoot1);
 
       const meta = getProjectMeta(projRoot1);
@@ -61,10 +64,12 @@ describe('v12: hosted UI migration', () => {
       const { HostedUIDomain, UserPoolId } = meta.auth[authName].output;
 
       const userPoolRes1 = await getUserPool(UserPoolId, region);
+      const idpsRes1 = await listSocialIdpProviders(UserPoolId, region);
       const projRoot2 = await createNewProjectDir('authMigration2');
 
       expect(HostedUIDomain).toBeDefined();
       expect(HostedUIDomain).toEqual(userPoolRes1.UserPool.Domain);
+      expect(idpsRes1.Providers.length).toEqual(4);
 
       try {
         let oauthUpdateSettings = {
@@ -74,37 +79,21 @@ describe('v12: hosted UI migration', () => {
           testingWithLatestCodebase: true,
         };
 
+        // Does not update idps
         await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
-        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
+        await updateAuthToUpdateUrls(projRoot2, oauthUpdateSettings);
         await amplifyPushAuth(projRoot2, true);
 
+        const meta2 = getProjectMeta(projRoot2);
+        const output2 = meta2.auth[authName].output;
         const userPoolRes2 = await getUserPool(UserPoolId, region);
-        const authCfnTemplatePath = getResourceCfnTemplatePath(getBackendDirPath(), 'auth', authName);
+        const idpsRes2 = await listSocialIdpProviders(output2.UserPoolId, region);
+        const authCfnTemplatePath = getResourceCfnTemplatePath(projRoot2, 'auth', authName);
         let authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
 
         expect(userPoolRes1.UserPool.Domain).toEqual(userPoolRes2.UserPool.Domain);
-
-        expect(authCfnTemplate.Resources.HostedUICustomResource.Properties.Code.ZipFile).toEqual(`const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  const userPoolId = event.ResourceProperties.userPoolId;
-  const inputDomainName = event.ResourceProperties.hostedUIDomainName;
-
-  let deleteUserPoolDomain = (domainName) => {
-    let params = { Domain: domainName, UserPoolId: userPoolId };
-    return identity.deleteUserPoolDomain(params).promise();
-  };
-
-  deleteUserPoolDomain(inputDomainName)
-    .then(() => {
-      response.send(event, context, response.SUCCESS, {});
-    })
-    .catch((err) => {
-      console.log(err);
-      response.send(event, context, response.FAILED, { err });
-    });
-};`);
+        expect(idpsRes2.Providers.length).toEqual(4);
+        expect(authCfnTemplate.Resources.HostedUICustomResource.Properties.Code.ZipFile).toMatchSnapshot();
 
         oauthUpdateSettings = {
           ...oauthUpdateSettings,
@@ -115,22 +104,34 @@ exports.handler = (event, context, callback) => {
           testingWithLatestCodebase: true,
         };
 
-        await updateAuthSignInSignOutUrlAfterPull(projRoot2, oauthUpdateSettings);
+        // Updates idps
+        await updateAuthToUpdateUrls(projRoot2, oauthUpdateSettings);
+        await updateAuthToAddOauthProviders(projRoot2, { testingWithLatestCodebase: true });
         await amplifyPushAuth(projRoot2, true);
 
         const userPoolRes3 = await getUserPool(UserPoolId, region);
+        const idpsRes3 = await listSocialIdpProviders(output2.UserPoolId, region);
         authCfnTemplate = readJson(authCfnTemplatePath, { throwIfNotExist: false });
 
         expect(userPoolRes1.UserPool.Domain).toEqual(userPoolRes3.UserPool.Domain);
+        expect(idpsRes3.Providers.length).toEqual(4);
         expect(authCfnTemplate.Resources.HostedUICustomResource).toBeUndefined();
+        expect(authCfnTemplate.Resources.hostedUIProvidersCustomResource).toMatchSnapshot();
+
+        // Updates idps
+        await updateAuthToAddOauthProviders(projRoot2, { testingWithLatestCodebase: true });
+        await amplifyPushAuth(projRoot2, true);
+
+        expect(idpsRes3.Providers.length).toEqual(4);
+        expect(authCfnTemplate.Resources.HostedUICustomResource?.Properties?.Code?.ZipFile).toBeUndefined();
       } finally {
         deleteProjectDir(projRoot2);
       }
     });
   });
 
-  describe('...updating auth without hosted UI', () => {
-    it('...creates user pool domain and does not create lambda', async () => {
+  describe('...updating auth without hosted UI and providers', () => {
+    it('...creates user pool domain and idps, and does not create lambdas', async () => {
       await initJSProjectWithProfile(projRoot1, { name: 'authTest', disableAmplifyAppCreation: false });
       await addAuthWithDefault(projRoot1);
       await amplifyPushAuth(projRoot1);
@@ -142,11 +143,11 @@ exports.handler = (event, context, callback) => {
       const output1 = meta.auth[authName].output;
       const userPoolRes1 = await getUserPool(output1.UserPoolId, region);
       const idpsRes1 = await listSocialIdpProviders(output1.UserPoolId, region);
-      
+
       expect(output1.HostedUIDomain).not.toBeDefined();
       expect(userPoolRes1.UserPool.Domain).not.toBeDefined();
       expect(idpsRes1.Providers.length).toEqual(0);
-      
+
       const projRoot2 = await createNewProjectDir('authMigration2');
 
       try {
@@ -164,6 +165,7 @@ exports.handler = (event, context, callback) => {
         let authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
 
         expect(authCfnTemplate?.Resources?.HostedUICustomResource).toBeUndefined();
+        expect(authCfnTemplate?.Resources?.hostedUIProvidersCustomResource).toBeUndefined();
 
         await amplifyPushAuth(projRoot2, true);
 
@@ -175,8 +177,9 @@ exports.handler = (event, context, callback) => {
 
         expect(userPoolRes2.UserPool.Domain).toBeDefined();
         expect(userPoolRes2.UserPool.Domain).toEqual(output2.HostedUIDomain);
-        expect(idpsRes1.Providers.length).toEqual(4);
+        expect(idpsRes2.Providers.length).toEqual(4);
         expect(authCfnTemplate?.Resources?.HostedUICustomResource).toBeUndefined();
+        expect(authCfnTemplate?.Resources?.hostedUIProvidersCustomResource).toBeUndefined();
       } finally {
         deleteProjectDir(projRoot2);
       }

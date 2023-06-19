@@ -12,7 +12,7 @@ import {
   setCLIInputs,
 } from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
-import { initIosProjectWithProfile11 } from '../../migration-helpers-v12/init';
+import { initIosProjectWithProfile12 } from '../../migration-helpers-v12/init';
 import { assertAppClientSecretInFiles, pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
 const defaultsSettings = {
@@ -35,7 +35,7 @@ describe('amplify add auth...', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projectName);
-    await initIosProjectWithProfile11(projRoot, defaultsSettings);
+    await initIosProjectWithProfile12(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
     let meta = getProjectMeta(projRoot);
