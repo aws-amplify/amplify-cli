@@ -1,6 +1,5 @@
 import {
   addAuthWithDefault,
-  addAuthWithSignInSignOutUrl,
   addAuthWithDefaultSocial,
   amplifyPull,
   amplifyPushAuth,
@@ -12,7 +11,6 @@ import {
   getProjectMeta,
   initJSProjectWithProfile,
   listSocialIdpProviders,
-  updateAuthSignInSignOutUrl,
   updateAuthToAddOauthProviders,
   updateAuthToUpdateUrls,
   updateAuthToAddSignInSignOutUrlAfterPull,
