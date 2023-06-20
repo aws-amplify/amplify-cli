@@ -35,6 +35,8 @@ describe('adding custom resources test', () => {
   });
 
   it('verify export custom storage types', async () => {
+    process.env.AWS_REGION = process.env.CLI_REGION;
+    process.env.AWS_DEFAULT_REGION = process.env.CLI_REGION;
     await addAuthWithDefault(projRoot);
     await addS3WithGuestAccess(projRoot);
     const appId = getAppId(projRoot);
