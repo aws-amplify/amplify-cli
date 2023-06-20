@@ -21,6 +21,12 @@ describe('adding custom resources test', () => {
   const projectName = 'cusres';
   let projRoot: string;
   const envName = 'dev';
+
+  beforeAll(async () => {
+    process.env.AWS_REGION = process.env.CLI_REGION;
+    process.env.AWS_DEFAULT_REGION = process.env.CLI_REGION;
+  });
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projectName);
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
