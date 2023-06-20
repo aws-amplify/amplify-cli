@@ -791,6 +791,9 @@ describe('with identity claim feature flag disabled', () => {
       transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
+        },
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
@@ -1046,6 +1049,9 @@ describe('with identity claim feature flag disabled', () => {
       transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
+        },
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
@@ -1303,6 +1309,9 @@ describe('with identity claim feature flag disabled', () => {
       transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
+        },
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
@@ -1502,6 +1511,9 @@ describe('with identity claim feature flag disabled', () => {
       transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
+        },
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
