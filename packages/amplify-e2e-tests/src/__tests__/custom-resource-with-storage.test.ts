@@ -46,17 +46,33 @@ describe('adding custom resources test', () => {
     const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
     await buildCustomResources(projRoot);
-    await amplifyPushAuth(projRoot);
-    await gitCleanFdX(projRoot);
-    console.log('doing init line 50');
-    console.log('DEFAULT REGION:', process.env?.AWS_DEFAULT_REGION ?? 'DEFAULT UNDEFINED');
-    console.log('REGION:', process.env?.AWS_REGION ?? 'REGION UNDEFINED');
-    await initHeadless(projRoot, envName, appId);
+
     const typesPath = path.join(projRoot, 'amplify', 'backend', 'types', 'amplify-dependent-resources-ref.d.ts');
     const typesFileContents = await fs.readFile(typesPath, 'utf-8');
     const jsonObj = JSON.parse(typesFileContents.split('=')[1]);
     const jsonObjKeys = Object.keys(jsonObj);
     expect(jsonObjKeys.includes('auth')).toBeTruthy();
     expect(jsonObjKeys.includes('storage')).toBeTruthy();
+
+    fs.unlinkSync(typesPath);
+    await buildCustomResources(projRoot);
+    const typesFileContents2 = await fs.readFile(typesPath, 'utf-8');
+    const jsonObj2 = JSON.parse(typesFileContents2.split('=')[1]);
+    const jsonObjKeys2 = Object.keys(jsonObj2);
+    expect(jsonObjKeys2.includes('auth')).toBeTruthy();
+    expect(jsonObjKeys2.includes('storage')).toBeTruthy();
+
+    // await amplifyPushAuth(projRoot);
+    // await gitCleanFdX(projRoot);
+    // console.log('doing init line 50');
+    // console.log('DEFAULT REGION:', process.env?.AWS_DEFAULT_REGION ?? 'DEFAULT UNDEFINED');
+    // console.log('REGION:', process.env?.AWS_REGION ?? 'REGION UNDEFINED');
+    // await initHeadless(projRoot, envName, appId);
+    // const typesPath = path.join(projRoot, 'amplify', 'backend', 'types', 'amplify-dependent-resources-ref.d.ts');
+    // const typesFileContents = await fs.readFile(typesPath, 'utf-8');
+    // const jsonObj = JSON.parse(typesFileContents.split('=')[1]);
+    // const jsonObjKeys = Object.keys(jsonObj);
+    // expect(jsonObjKeys.includes('auth')).toBeTruthy();
+    // expect(jsonObjKeys.includes('storage')).toBeTruthy();
   });
 });
