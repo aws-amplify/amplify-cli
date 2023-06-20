@@ -74,6 +74,9 @@ describe('@model with relational transformers', () => {
           new BelongsToTransformer(),
           new AuthTransformer(),
         ],
+        transformParameters: {
+          respectPrimaryKeyAttributesOnConnectionField: false,
+        },
       });
       const out = transformer.transform(validSchema);
 
