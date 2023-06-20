@@ -49,8 +49,7 @@ describe('adding custom resources test', () => {
     await amplifyPushAuth(projRoot);
     await gitCleanFdX(projRoot);
     console.log('doing init line 50');
-    // await initHeadless(projRoot, envName, appId);
-    await pullByAppId(projRoot, envName, appId);
+    await initHeadless(projRoot, envName, appId);
     const typesPath = path.join(projRoot, 'amplify', 'backend', 'types', 'amplify-dependent-resources-ref.d.ts');
     const typesFileContents = await fs.readFile(typesPath, 'utf-8');
     const jsonObj = JSON.parse(typesFileContents.split('=')[1]);
