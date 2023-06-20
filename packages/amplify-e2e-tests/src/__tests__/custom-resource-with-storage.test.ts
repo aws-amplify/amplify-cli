@@ -49,7 +49,8 @@ describe('adding custom resources test', () => {
     await amplifyPushAuth(projRoot);
     await gitCleanFdX(projRoot);
     console.log('doing init line 50');
-    console.log('REGION:', process.env.AWS_DEFAULT_REGION);
+    console.log('DEFAULT REGION:', process.env?.AWS_DEFAULT_REGION ?? 'DEFAULT UNDEFINED');
+    console.log('REGION:', process.env?.AWS_REGION ?? 'REGION UNDEFINED');
     await initHeadless(projRoot, envName, appId);
     const typesPath = path.join(projRoot, 'amplify', 'backend', 'types', 'amplify-dependent-resources-ref.d.ts');
     const typesFileContents = await fs.readFile(typesPath, 'utf-8');
