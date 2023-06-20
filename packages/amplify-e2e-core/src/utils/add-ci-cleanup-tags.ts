@@ -52,14 +52,17 @@ export const addCICleanupTags = (projectPath: string): void => {
   };
 
   const ci = CI.toLowerCase();
-  addTagIfNotExist(ci, sanitizeTagValue(CI === CIRCLECI ? process.env[CI] : process.env[`${CODEBUILD}_BUILD_IMAGE`]));
-  addTagIfNotExist(`${ci}:branch`, sanitizeTagValue(branch));
-  addTagIfNotExist(`${ci}:sha1`, sanitizeTagValue(process.env[SHA1]));
-  addTagIfNotExist(`${ci}:workflow_id`, sanitizeTagValue(process.env[WORKFLOW_ID]));
-  addTagIfNotExist(`${ci}:build_id`, sanitizeTagValue(process.env[BUILD_ID]));
-  addTagIfNotExist(`${ci}:build_url`, sanitizeTagValue(process.env[BUILD_URL]));
-  addTagIfNotExist(`${ci}:job`, sanitizeTagValue(process.env[JOB]));
-  addTagIfNotExist(`${ci}:create_time`, new Date().toISOString());
+  [
+    [ci, CI === CIRCLECI ? process.env[CI] : process.env[`${CODEBUILD}_BUILD_IMAGE`]],
+    [`${ci}:branch`, branch],
+    [`${ci}:sha1`, process.env[SHA1]],
+    [`${ci}:workflow_id`, process.env[WORKFLOW_ID]],
+    [`${ci}:build_id`, process.env[BUILD_ID]],
+    [`${ci}:build_url`, process.env[BUILD_URL]],
+    [`${ci}:job`, process.env[JOB]],
+    [`${ci}:create_time`, new Date().toISOString()],
+  ].forEach(([key, value]) => addTagIfNotExist(key, sanitizeTagValue(value)));
+
   // exposed by custom CLI test environment
   if (global.getTestName) {
     addTagIfNotExist('jest:test_name', sanitizeTagValue(global.getTestName().substr(0, 255)));
