@@ -14,20 +14,7 @@ import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
 import yargs from 'yargs';
-
-// Ensure that scripts/cci-utils.ts is also updated when this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-west-3',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-northeast-2',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
+import { AWS_REGIONS_TO_RUN_TESTS } from './cci-utils';
 
 const AWS_REGIONS_TO_RUN_TESTS_PINPOINT = AWS_REGIONS_TO_RUN_TESTS.filter((region) => region !== 'eu-west-3');
 
