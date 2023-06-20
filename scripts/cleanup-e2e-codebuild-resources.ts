@@ -141,7 +141,7 @@ const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
  */
 const handleExpiredTokenException = (): void => {
   console.log('Token expired. Exiting...');
-  process.exit();
+  process.exit(1);
 };
 
 /**
