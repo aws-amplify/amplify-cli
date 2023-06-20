@@ -22,9 +22,18 @@ describe('adding custom resources test', () => {
   let projRoot: string;
   const envName = 'dev';
 
+  let initialAwsRegion;
+  let initialAwsDefaultRegion;
   beforeAll(async () => {
+    initialAwsRegion = process.env.AWS_REGION;
+    initialAwsDefaultRegion = process.env.AWS_DEFAULT_REGION;
     process.env.AWS_REGION = process.env.CLI_REGION;
     process.env.AWS_DEFAULT_REGION = process.env.CLI_REGION;
+  });
+
+  afterAll(async () => {
+    process.env.AWS_REGION = initialAwsRegion;
+    process.env.AWS_DEFAULT_REGION = initialAwsDefaultRegion;
   });
 
   beforeEach(async () => {
