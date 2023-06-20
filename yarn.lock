@@ -209,7 +209,7 @@ __metadata:
     "@types/mime-types": ^2.1.1
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1354.0
     axios: ^0.26.0
     chalk: ^4.1.1
@@ -237,7 +237,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.1.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@types/lodash": ^4.14.149
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
     glob: ^7.2.0
@@ -284,7 +284,7 @@ __metadata:
     ajv: ^6.12.6
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1354.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
@@ -364,7 +364,7 @@ __metadata:
     "@aws-amplify/cli-extensibility-helper": 3.0.9
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
     cloudform-types: ^4.2.0
@@ -398,7 +398,7 @@ __metadata:
     "@types/yarnpkg__lockfile": ^1.1.5
     "@yarnpkg/lockfile": ^1.1.0
     ajv: ^6.12.6
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -702,7 +702,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.1.0
     "@aws-amplify/amplify-e2e-core": 5.0.4
     "@aws-cdk/cloudformation-diff": ~2.68.0
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
     graphql-transformer-core: ^8.1.3
@@ -785,7 +785,7 @@ __metadata:
     "@types/uuid": ^8.0.0
     amplify-codegen: ^4.1.2
     archiver: ^5.3.0
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1354.0
     bottleneck: 2.19.5
     chalk: ^4.1.1
@@ -1030,7 +1030,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-category-custom": 3.0.9
     "@aws-amplify/amplify-cli-core": 4.1.0
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
   languageName: unknown
   linkType: soft
 
@@ -1091,7 +1091,7 @@ __metadata:
     amplify-java-function-template-provider: 1.5.21
     amplify-nodejs-function-runtime-provider: 2.4.4
     amplify-python-function-runtime-provider: 2.4.22
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1354.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
@@ -1586,6 +1586,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-cdk/asset-awscli-v1@npm:^2.2.177":
+  version: 2.2.197
+  resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.197"
+  checksum: f1641c78b721fa5d760b5462992a8d6c3378a53abc6ea7422d37ab6681ca5584f827867e7c28f6e133617e595e33745b78d5620720ae9b33a2a9ae8e02b102f5
+  languageName: node
+  linkType: hard
+
 "@aws-cdk/asset-awscli-v1@npm:^2.2.97":
   version: 2.2.106
   resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.106"
@@ -1597,6 +1604,13 @@ __metadata:
   version: 2.1.1
   resolution: "@aws-cdk/asset-kubectl-v20@npm:2.1.1"
   checksum: d06893086e49e852e765dea48acd2dd1567820a014121804d4d88b66f6dc2bf84bbe5d11c1d91090a38f25fcf8ff994a5d172b0cc78d404146d85baeb79c3b13
+  languageName: node
+  linkType: hard
+
+"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.148":
+  version: 2.0.165
+  resolution: "@aws-cdk/asset-node-proxy-agent-v5@npm:2.0.165"
+  checksum: 437a532238e3dba3258f44746c50eb8dd4480272a13d15382b8d1d8a2a7d5e5de3635394877322ac26bfe6d5977246e867ad9deceb04dc2bde6f169e83d9c156
   languageName: node
   linkType: hard
 
@@ -11364,7 +11378,7 @@ __metadata:
     amplify-storage-simulator: 1.9.1
     aws-amplify: ^4.2.8
     aws-appsync: ^4.1.1
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1354.0
     axios: ^0.26.0
     circleci-api: ^4.1.4
@@ -12285,6 +12299,29 @@ __metadata:
   peerDependencies:
     constructs: ^10.0.0
   checksum: cb1f3beb5c1aa9132b3dc792b724f03873c138e6623325002f13223adb490901589f0abd50098fe4ffd2d7872ce4ab4dcd0ea1cb0a79d19eb1223aafd3851832
+  languageName: node
+  linkType: hard
+
+"aws-cdk-lib@npm:~2.80.0":
+  version: 2.80.0
+  resolution: "aws-cdk-lib@npm:2.80.0"
+  dependencies:
+    "@aws-cdk/asset-awscli-v1": ^2.2.177
+    "@aws-cdk/asset-kubectl-v20": ^2.1.1
+    "@aws-cdk/asset-node-proxy-agent-v5": ^2.0.148
+    "@balena/dockerignore": ^1.0.2
+    case: 1.6.3
+    fs-extra: ^11.1.1
+    ignore: ^5.2.4
+    jsonschema: ^1.4.1
+    minimatch: ^3.1.2
+    punycode: ^2.3.0
+    semver: ^7.5.1
+    table: ^6.8.1
+    yaml: 1.10.2
+  peerDependencies:
+    constructs: ^10.0.0
+  checksum: 5ab3972e3cd5101ec95f5c8ec9e7dfae6c402d9d34892df71aff44a74d17454a8ea8de3b7283786220b3a2f066b68883182a35364264da2468bdc3261afebf59
   languageName: node
   linkType: hard
 
@@ -17453,7 +17490,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0":
+"fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0, fs-extra@npm:^11.1.1":
   version: 11.1.1
   resolution: "fs-extra@npm:11.1.1"
   dependencies:
@@ -27270,6 +27307,17 @@ node-pty@beta:
   bin:
     semver: ./bin/semver.js
   checksum: 1f4959e15bcfbaf727e964a4920f9260141bb8805b399793160da4e7de128e42a7d1f79c1b7d5cd21a6073fba0d55feb9966f5fef3e5ccb8e1d7ead3d7527458
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.5.1":
+  version: 7.5.2
+  resolution: "semver@npm:7.5.2"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: d151207ab762a8067f6302076edc04e5b8da2362eb9e3f21c2567ceadfd415064936d215b4aae7791da118c230649d29089be979ffa49c5b56a6bcf82147efdd
   languageName: node
   linkType: hard
 

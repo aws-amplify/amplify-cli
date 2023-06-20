@@ -31,7 +31,7 @@
     "ajv": "^6.12.6",
     "amplify-headless-interface": "1.17.4",
     "amplify-util-headless-input": "1.9.13",
-    "aws-cdk-lib": "~2.68.0",
+    "aws-cdk-lib": "~2.80.0",
     "aws-sdk": "^2.1354.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
