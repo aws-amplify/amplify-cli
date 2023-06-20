@@ -27,33 +27,22 @@ export interface PackageManager {
 
 const isWindows = process.platform === 'win32';
 
-export class NpmPackageManager implements PackageManager {
-  readonly packageManager: PackageManagerType = 'npm';
+class NpmPackageManager implements PackageManager {
+  readonly packageManager = 'npm';
   readonly displayValue = 'NPM';
-  lockFile;
-  executable;
-  version?: SemVer;
-
-  constructor() {
-    this.lockFile = 'package-lock.json';
-    this.executable = isWindows ? 'npm.cmd' : 'npm';
-  }
+  readonly executable = isWindows ? 'npm.cmd' : 'npm';
+  readonly lockFile = 'package-lock.json';
 
   getRunScriptArgs = (scriptName: string) => ['run-script', scriptName];
   getInstallArgs = (buildType = BuildType.PROD) => ['install', '--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
 }
 
-export class YarnPackageManager implements PackageManager {
+class YarnPackageManager implements PackageManager {
   readonly packageManager: PackageManagerType = 'yarn';
   readonly displayValue = 'Yarn';
-  lockFile;
-  executable;
+  readonly executable = isWindows ? 'yarn.cmd' : 'yarn';
+  readonly lockFile = 'yarn.lock';
   version?: SemVer;
-
-  constructor() {
-    this.lockFile = 'yarn.lock';
-    this.executable = isWindows ? 'yarn.cmd' : 'yarn';
-  }
 
   getRunScriptArgs = (scriptName: string) => [scriptName];
   getInstallArgs = (buildType = BuildType.PROD) => {
@@ -62,23 +51,17 @@ export class YarnPackageManager implements PackageManager {
   };
 }
 
-export class PnpmPackageManager implements PackageManager {
+class PnpmPackageManager implements PackageManager {
   readonly packageManager: PackageManagerType = 'pnpm';
   readonly displayValue = 'PNPM';
-  lockFile;
-  executable;
-  version?: SemVer;
-
-  constructor() {
-    this.lockFile = 'pnpm-lock.yaml';
-    this.executable = isWindows ? 'pnpm.cmd' : 'pnpm';
-  }
+  readonly executable = isWindows ? 'pnpm.cmd' : 'pnpm';
+  readonly lockFile = 'pnpm-lock.yaml';
 
   getRunScriptArgs = (scriptName: string) => [scriptName];
   getInstallArgs = () => ['install'];
 }
 
-export class CustomPackageManager implements PackageManager {
+class CustomPackageManager implements PackageManager {
   readonly packageManager: PackageManagerType = 'custom';
   readonly displayValue = 'Custom Build Command or Script Path';
   lockFile;
@@ -101,7 +84,7 @@ export class CustomPackageManager implements PackageManager {
   };
 }
 
-export const packageManagers: Record<string, PackageManager> = {
+export const packageManagers: Record<PackageManagerType, PackageManager> = {
   npm: new NpmPackageManager(),
   yarn: new YarnPackageManager(),
   pnpm: new PnpmPackageManager(),

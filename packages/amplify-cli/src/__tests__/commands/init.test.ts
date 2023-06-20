@@ -5,7 +5,7 @@ import {
   LocalEnvInfo,
   pathManager,
   stateManager,
-  YarnPackageManager,
+  getPackageManagerByType,
 } from '@aws-amplify/amplify-cli-core';
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
@@ -36,14 +36,11 @@ jest.mock('which');
 (existsSync as jest.Mock).mockReturnValue(true);
 (readdirSync as jest.Mock).mockReturnValue([]);
 (sync as jest.MockedFunction<typeof sync>).mockReturnValue('mock/path');
-(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(
-  new Promise((resolve) => {
-    const packageManager = new YarnPackageManager();
-    packageManager.lockFile = 'mock.lock';
-    packageManager.version = coerce('1.22.0') ?? undefined;
-    resolve(packageManager);
-  }),
-);
+
+const packageManager = getPackageManagerByType('yarn');
+packageManager.lockFile = 'mock.lock';
+packageManager.version = coerce('1.22.0') ?? undefined;
+(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(packageManager);
 
 describe('amplify init:', () => {
   const mockGetProjectConfigFilePath = jest.spyOn(pathManager, 'getProjectConfigFilePath');
