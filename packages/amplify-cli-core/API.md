@@ -656,25 +656,6 @@ export type CustomIAMPolicy = {
 };
 
 // @public (undocumented)
-export class CustomPackageManager implements PackageManager {
-    constructor();
-    // (undocumented)
-    readonly displayValue = "Custom Build Command or Script Path";
-    // (undocumented)
-    executable: string;
-    // (undocumented)
-    getInstallArgs: () => never;
-    // (undocumented)
-    getRunScriptArgs: () => never;
-    // (undocumented)
-    lockFile: string;
-    // (undocumented)
-    readonly packageManager: PackageManagerType;
-    // (undocumented)
-    version?: SemVer;
-}
-
-// @public (undocumented)
 export class CustomPoliciesFormatError extends AmplifyError {
     constructor(errMessage?: string);
 }
@@ -1486,25 +1467,6 @@ export class NotImplementedError extends AmplifyError {
 }
 
 // @public (undocumented)
-export class NpmPackageManager implements PackageManager {
-    constructor();
-    // (undocumented)
-    readonly displayValue = "NPM";
-    // (undocumented)
-    executable: string;
-    // (undocumented)
-    getInstallArgs: (buildType?: BuildType) => string[];
-    // (undocumented)
-    getRunScriptArgs: (scriptName: string) => string[];
-    // (undocumented)
-    lockFile: string;
-    // (undocumented)
-    readonly packageManager: PackageManagerType;
-    // (undocumented)
-    version?: SemVer;
-}
-
-// @public (undocumented)
 export type NumberFeatureFlag = {
     type: 'number';
     name: string;
@@ -1538,7 +1500,7 @@ export interface PackageManager {
 }
 
 // @public (undocumented)
-export const packageManagers: Record<string, PackageManager>;
+export const packageManagers: Record<PackageManagerType, PackageManager>;
 
 // @public (undocumented)
 export type PackageManagerType = 'yarn' | 'npm' | 'pnpm' | 'custom';
@@ -1822,25 +1784,6 @@ export class PluginVerificationResult {
     packageJson?: any;
     // (undocumented)
     verified: boolean;
-}
-
-// @public (undocumented)
-export class PnpmPackageManager implements PackageManager {
-    constructor();
-    // (undocumented)
-    readonly displayValue = "PNPM";
-    // (undocumented)
-    executable: string;
-    // (undocumented)
-    getInstallArgs: () => string[];
-    // (undocumented)
-    getRunScriptArgs: (scriptName: string) => string[];
-    // (undocumented)
-    lockFile: string;
-    // (undocumented)
-    readonly packageManager: PackageManagerType;
-    // (undocumented)
-    version?: SemVer;
 }
 
 // @public (undocumented)
@@ -2284,25 +2227,6 @@ export type WriteCFNTemplateOptions = {
     templateFormat?: CFNTemplateFormat;
     minify?: boolean;
 };
-
-// @public (undocumented)
-export class YarnPackageManager implements PackageManager {
-    constructor();
-    // (undocumented)
-    readonly displayValue = "Yarn";
-    // (undocumented)
-    executable: string;
-    // (undocumented)
-    getInstallArgs: (buildType?: BuildType) => string[];
-    // (undocumented)
-    getRunScriptArgs: (scriptName: string) => string[];
-    // (undocumented)
-    lockFile: string;
-    // (undocumented)
-    readonly packageManager: PackageManagerType;
-    // (undocumented)
-    version?: SemVer;
-}
 
 // @public (undocumented)
 export function yellow(message: string): void;
