@@ -29,7 +29,7 @@ class CLIEnvironment extends NodeEnvironment {
       return this.testName;
     };
 
-    this.global.getDescibeBlocks = () => {
+    this.global.getDescribeBlocks = () => {
       return this.describeBlocks.filter((b) => b !== 'ROOT_DESCRIBE_BLOCK');
     };
 
