@@ -186,7 +186,7 @@ describe('test usageData', () => {
     const usageData = UsageData.Instance;
     usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
     expect(() => usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES)).not.toThrowError();
-    expect(printerMock.warn).toBeCalledWith(`${ManuallyTimedCodePath.INIT_ENV_CATEGORIES} already has a running timer`);
+    expect(printerMock.debug).toBeCalledWith(`${ManuallyTimedCodePath.INIT_ENV_CATEGORIES} already has a running timer`);
   });
 
   it('does nothing when stopping a timer that is not running', () => {
