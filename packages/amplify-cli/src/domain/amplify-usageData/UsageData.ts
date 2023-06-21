@@ -117,7 +117,7 @@ export class UsageData implements IUsageData {
    */
   startCodePathTimer(codePath: StartableTimedCodePath): void {
     if (this.codePathTimers.has(codePath)) {
-      printer.warn(`${codePath} already has a running timer`);
+      printer.debug(`${codePath} already has a running timer`);
     } else {
       this.codePathTimers.set(codePath, Timer.start());
     }
