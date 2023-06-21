@@ -1484,17 +1484,17 @@ export const overriddenCategories: string[];
 // @public (undocumented)
 export interface PackageManager {
     // (undocumented)
-    displayValue: string;
+    readonly displayValue: string;
     // (undocumented)
-    executable: string;
+    readonly executable: string;
     // (undocumented)
     getInstallArgs: (buildType: BuildType) => string[];
     // (undocumented)
     getRunScriptArgs: (scriptName: string) => string[];
     // (undocumented)
-    lockFile: string;
+    readonly lockFile: string;
     // (undocumented)
-    packageManager: PackageManagerType;
+    readonly packageManager: PackageManagerType;
     // (undocumented)
     version?: SemVer;
 }

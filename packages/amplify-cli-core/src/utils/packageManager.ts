@@ -16,10 +16,10 @@ const packageJson = 'package.json';
  * package Manager type
  */
 export interface PackageManager {
-  packageManager: PackageManagerType;
-  lockFile: string;
-  executable: string;
-  displayValue: string;
+  readonly packageManager: PackageManagerType;
+  readonly lockFile: string;
+  readonly executable: string;
+  readonly displayValue: string;
   version?: SemVer;
   getRunScriptArgs: (scriptName: string) => string[];
   getInstallArgs: (buildType: BuildType) => string[];

@@ -2,6 +2,7 @@ import * as path from 'path';
 import { AmplifyNodePkgDetectorProps, AmplifyNodePkgDetector } from '../../amplify-node-pkg-detector';
 import { getPackageManager, getPackageManagerByType } from '../../utils/packageManager';
 import { coerce } from 'semver';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('../../utils/packageManager', () => ({
   ...(jest.requireActual('../../utils/packageManager') as {}),
@@ -26,7 +27,7 @@ const npmPackageManager = getPackageManagerByType('npm');
 
 describe('parsing yarn lock files', () => {
   it('throws error when lock file not found', async () => {
-    yarnPackageManager.lockFile = 'yarn-test-not-found.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-test-not-found.lock';
 
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
@@ -39,7 +40,7 @@ describe('parsing yarn lock files', () => {
   });
 
   it('throw error on corrupted lock file', async () => {
-    yarnPackageManager.lockFile = 'yarn-test-error.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-test-error.lock';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
@@ -51,7 +52,7 @@ describe('parsing yarn lock files', () => {
   });
 
   it('correctly detect dependencies for @aws-cdk/core', async () => {
-    yarnPackageManager.lockFile = 'yarn-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-test.lock';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -91,7 +92,7 @@ describe('parsing yarn lock files', () => {
 `);
   });
   it('correctly detect dependencies for amplify-cli-core', async () => {
-    yarnPackageManager.lockFile = 'yarn-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-test.lock';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -125,7 +126,7 @@ describe('parsing yarn lock files', () => {
   });
 
   it('correctly detect dependencies for fs-extra', async () => {
-    yarnPackageManager.lockFile = 'yarn-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-test.lock';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -173,7 +174,7 @@ describe('parsing yarn lock files', () => {
   });
 
   it('correctly detect dependencies for aws-cdk-lib', async () => {
-    yarnPackageManager.lockFile = 'yarn-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-test.lock';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -184,7 +185,7 @@ describe('parsing yarn lock files', () => {
 
   it('should handle cycle in graph with yarn 1', async () => {
     // this test will error with stack overflow if dfs is following cycle
-    yarnPackageManager.lockFile = 'yarn-test-with-cycle.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-test-with-cycle.lock';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -197,7 +198,7 @@ describe('parsing yarn lock files', () => {
 
 describe('parsing package lock files', () => {
   it('throws error when package lock file is missing', async () => {
-    npmPackageManager.lockFile = 'package-lock-not-found.json';
+    (npmPackageManager as $TSAny).lockFile = 'package-lock-not-found.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     expect(
@@ -209,7 +210,7 @@ describe('parsing package lock files', () => {
   });
 
   it('throw error on corrupted package lock file', async () => {
-    npmPackageManager.lockFile = 'package-lock-test-error.json';
+    (npmPackageManager as $TSAny).lockFile = 'package-lock-test-error.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
@@ -223,7 +224,7 @@ describe('parsing package lock files', () => {
   });
 
   it('correctly detect dependencies', async () => {
-    npmPackageManager.lockFile = 'package-lock-test.json';
+    (npmPackageManager as $TSAny).lockFile = 'package-lock-test.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -264,7 +265,7 @@ describe('parsing package lock files', () => {
   });
 
   it('correctly detect dependencies for @aws-cdk/core when present in peer dependencies', async () => {
-    npmPackageManager.lockFile = 'package-lock-test-peer-dependencies.json';
+    (npmPackageManager as $TSAny).lockFile = 'package-lock-test-peer-dependencies.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -283,7 +284,7 @@ describe('parsing package lock files', () => {
 `);
   });
   it('correctly detect dependencies for amplify-cli-core', async () => {
-    npmPackageManager.lockFile = 'package-lock-test.json';
+    (npmPackageManager as $TSAny).lockFile = 'package-lock-test.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -317,7 +318,7 @@ describe('parsing package lock files', () => {
   });
 
   it('correctly detect dependencies for fs-extra', async () => {
-    npmPackageManager.lockFile = 'package-lock-test.json';
+    (npmPackageManager as $TSAny).lockFile = 'package-lock-test.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -365,7 +366,7 @@ describe('parsing package lock files', () => {
   });
 
   it('correctly detect dependencies for aws-cdk-lib', async () => {
-    npmPackageManager.lockFile = 'package-lock-test.json';
+    (npmPackageManager as $TSAny).lockFile = 'package-lock-test.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -375,7 +376,7 @@ describe('parsing package lock files', () => {
   });
 
   it('should handle cycle in graph with npm', async () => {
-    npmPackageManager.lockFile = 'package-lock-test-with-cycle.json';
+    (npmPackageManager as $TSAny).lockFile = 'package-lock-test-with-cycle.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
     const dec = await AmplifyNodePkgDetector.getInstance({
@@ -387,7 +388,7 @@ describe('parsing package lock files', () => {
 
 describe('parsing yarn2 lock files', () => {
   it('throw error on corrupted lock file', async () => {
-    yarnPackageManager.lockFile = 'yarn-2-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-2-test.lock';
     yarnPackageManager.version = coerce('1.22.0') ?? undefined;
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
@@ -402,7 +403,7 @@ describe('parsing yarn2 lock files', () => {
   });
 
   it('correctly detect dependencies for @aws-cdk/core', async () => {
-    yarnPackageManager.lockFile = 'yarn-2-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-2-test.lock';
     yarnPackageManager.version = coerce('2.0.0') ?? undefined;
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
@@ -444,7 +445,7 @@ describe('parsing yarn2 lock files', () => {
   });
 
   it('correctly detect dependencies for amplify-cli-core', async () => {
-    yarnPackageManager.lockFile = 'yarn-2-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-2-test.lock';
     yarnPackageManager.version = coerce('2.0.0') ?? undefined;
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
@@ -479,7 +480,7 @@ describe('parsing yarn2 lock files', () => {
   });
 
   it('correctly detect dependencies for fs-extra', async () => {
-    yarnPackageManager.lockFile = 'yarn-2-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-2-test.lock';
     yarnPackageManager.version = coerce('2.0.0') ?? undefined;
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
@@ -528,7 +529,7 @@ describe('parsing yarn2 lock files', () => {
   });
 
   it('correctly detect dependencies for aws-cdk-lib', async () => {
-    yarnPackageManager.lockFile = 'yarn-2-test.lock';
+    (yarnPackageManager as $TSAny).lockFile = 'yarn-2-test.lock';
     yarnPackageManager.version = coerce('2.0.0') ?? undefined;
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
