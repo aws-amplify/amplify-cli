@@ -524,9 +524,8 @@ function _downloadReportsFromS3 {
 }
 
 function _buildTestsStandalone {
-    echo "Running loadCache repo \$CODEBUILD_SRC_DIR"
-    loadCache repo $CODEBUILD_SRC_DIR
     echo "Running yarn install --immutable"
     yarn install --immutable
     echo "Running yarn build-tests"
+    yarn build-tests
 }
