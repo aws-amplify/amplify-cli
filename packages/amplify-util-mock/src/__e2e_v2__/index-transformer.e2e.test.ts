@@ -1,7 +1,6 @@
 import { deploy, launchDDBLocal, logDebug, terminateDDB, GraphQLClient } from '../__e2e__/utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
@@ -63,9 +62,6 @@ describe('@index transformer', () => {
 
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
-      featureFlags: {
-        getBoolean: (name) => (name === 'improvePluralization' ? true : false),
-      } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
     let ddbClient;

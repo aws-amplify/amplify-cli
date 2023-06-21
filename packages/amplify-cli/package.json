@@ -76,7 +76,7 @@
     "aws-cdk-lib": "~2.68.0",
     "aws-sdk": "^2.1354.0",
     "chalk": "^4.1.1",
-    "ci-info": "^2.0.0",
+    "ci-info": "^3.8.0",
     "cli-table3": "^0.6.0",
     "cloudform-types": "^4.2.0",
     "colors": "1.4.0",
@@ -107,7 +107,6 @@
   "devDependencies": {
     "@aws-amplify/amplify-function-plugin-interface": "1.10.3",
     "@types/archiver": "^5.3.1",
-    "@types/ci-info": "^2.0.0",
     "@types/columnify": "^1.5.1",
     "@types/folder-hash": "^4.0.1",
     "@types/fs-extra": "^8.0.1",
@@ -121,6 +120,7 @@
     "@types/treeify": "^1.0.0",
     "@types/update-notifier": "^5.1.0",
     "cloudform-types": "^4.2.0",
+    "jest": "^29.5.0",
     "nock": "^12.0.3",
     "typescript": "^4.9.5"
   },

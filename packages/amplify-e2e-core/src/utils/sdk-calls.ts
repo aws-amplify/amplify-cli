@@ -144,6 +144,17 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
+export const listUserPools = async (region, maxResults = 5) => {
+  config.update({ region });
+  let res;
+  try {
+    res = await new CognitoIdentityServiceProvider().listUserPools({ MaxResults: maxResults }).promise();
+  } catch (e) {
+    console.log(e);
+  }
+  return res?.UserPools ?? [];
+};
+
 export const getMFAConfiguration = async (
   userPoolId: string,
   region: string,

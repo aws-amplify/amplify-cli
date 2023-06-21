@@ -61,6 +61,23 @@ export function addPRODHosting(cwd: string): Promise<void> {
   });
 }
 
+export function addManualHosting(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+      .wait(/.*Hosting with Amplify Console*/)
+      .sendCarriageReturn()
+      .wait('Manual deployment')
+      .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export const amplifyPushWithUpdate = async (cwd: string): Promise<void> => {
   return spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
     .wait('Are you sure you want to continue?')

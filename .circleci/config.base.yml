@@ -112,6 +112,10 @@ jobs:
       - run:
           name: Build tests
           command: yarn build-tests
+      - run:
+          # setting versions in build step so that commit and git tags are cached and available for all steps in pipeline
+          name: Set versions
+          command: ./.circleci/publish-step-1-set-versions.sh
       - save_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
           paths:
@@ -276,8 +280,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
-            export LOCAL_PUBLISH_TO_LATEST=true
-            ./.circleci/publish.sh
+            ./.circleci/publish-step-2-verdaccio.sh
             unsetNpmRegistryUrl
       - run:
           name: Generate unified changelog
@@ -563,36 +566,6 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
 
-  amplify_migration_tests_v6:
-    parameters:
-      os:
-        type: executor
-        default: l_large
-    executor: << parameters.os >>
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
-    steps:
-      - restore_cache:
-          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Run tests migrating from CLI v6.1.0
-          command: |
-            source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
-            cd packages/amplify-migration-tests
-            retry yarn run migration_v6.1.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
-          no_output_timeout: 65m
-      - run: *scan_e2e_test_artifacts
-      - store_test_results:
-          path: ~/repo/packages/amplify-migration-tests/
-      - store_artifacts:
-          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
-    working_directory: ~/repo
-
   amplify_migration_tests_v10:
     parameters:
       os:
@@ -850,7 +823,7 @@ jobs:
       - store_artifacts:
           path: ~/aws-amplify-cypress-api/cypress/screenshots
 
-  deploy:
+  publish_to_npm:
     <<: *linux-e2e-executor-large
     steps:
       - restore_cache:
@@ -861,19 +834,26 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Upload Pkg Binary
-          command: |
-            source .circleci/local_publish_helpers.sh
-            uploadPkgCli
-            ./out/amplify-pkg-linux-x64 --version
-      - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: Publish Amplify CLI
           command: |
-            bash ./.circleci/publish.sh
-      - run: *scan_e2e_test_artifacts
+            bash ./.circleci/publish-step-3-npm.sh
+  post_publish_push_to_git:
+    <<: *linux-e2e-executor-large
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          keys:
+            - amplify-cli-ssh-deps-{{ .Branch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Push release commit and tags
+          command: |
+            bash ./.circleci/publish-step-4-push-to-git.sh
   github_prerelease:
     <<: *linux-e2e-executor-large
     steps:
@@ -934,6 +914,19 @@ jobs:
             commit=$(git rev-parse HEAD)
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version $commit
+  npm_rollback_access:
+    <<: *linux-e2e-executor-large
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          keys:
+            - amplify-cli-ssh-deps-{{ .Branch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Authenticate with npm
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
   cleanup_resources:
     <<: *linux-e2e-executor-large
     steps:
@@ -1285,11 +1278,8 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/.*/
 
-      - deploy:
+      - publish_to_npm:
           context:
-            - e2e-auth-credentials
-            - e2e-test-context
-            - amplify-s3-upload
             - npm-publish
           requires:
             - test
@@ -1314,10 +1304,31 @@ workflows:
                 - /run-e2e-with-rc\/.*/
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
+      - npm_rollback_access:
+          context:
+            - npm-publish
+          requires:
+            - upload_pkg_binaries
+            - verify-versions-match
+          filters:
+            branches:
+              only:
+                - release
+      - post_publish_push_to_git:
+          requires:
+            - publish_to_npm
+          filters:
+            branches:
+              only:
+                - release
+                - /release_rc\/.*/
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
       - github_release:
           context: github-publish
           requires:
-            - deploy
+            - post_publish_push_to_git
           filters:
             branches:
               only:
