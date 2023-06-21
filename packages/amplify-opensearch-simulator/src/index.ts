@@ -30,6 +30,7 @@ const defaultOptions: Required<OpenSearchEmulatorOptions> = {
   port: basePort,
   type: 'single-node',
   startTimeout: 20 * 1000,
+  runAsRoot: false,
 };
 
 const retryInterval = 20;
@@ -44,6 +45,7 @@ type OpenSearchEmulatorOptions = {
   nodeName?: string;
   type?: string;
   startTimeout?: number;
+  runAsRoot?: boolean;
 };
 
 export class OpenSearchEmulator {
@@ -113,6 +115,10 @@ export const buildArgs = (options: OpenSearchEmulatorOptions, pathToOpenSearchDa
 
   if (pathToOpenSearchData) {
     args.push(`-Epath.data=${pathToOpenSearchData}`);
+  }
+
+  if (options.runAsRoot) {
+    args.push(`-Des.insecure.allow.root=true -d`);
   }
 
   return args;
@@ -202,7 +208,7 @@ export const startOpensearchEmulator = async (
   let prematureExit: $TSAny;
   let waiter: $TSAny;
   /*
-   This is a fairly complex set of logic, similar to the DynamoDB emulator, 
+   This is a fairly complex set of logic, similar to the DynamoDB emulator,
    to retry starting the emulator if it fails to start. We need this logic due
    to possible race conditions between when we find an open
    port and bind to it. This situation is particularly common

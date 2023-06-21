@@ -11,7 +11,7 @@ import { getFunctionDetails } from './lambda-helper';
 import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { querySearchable } from '../../utils/opensearch';
-import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
+import { isCI, isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
@@ -175,6 +175,7 @@ export async function setupSearchableMockResources(
 
   const emulator = await openSearchEmulator.launch(pathToOpensearchData, {
     port: null,
+    runAsRoot: isCI(),
   });
 
   return { emulator };
