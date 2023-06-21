@@ -4,5 +4,5 @@ env:
 phases:
   build:
     commands:
-      - echo "integration testing"
+      - echo "Build Tests Standalone"
       - source ./shared-scripts.sh && _buildTestsStandalone
