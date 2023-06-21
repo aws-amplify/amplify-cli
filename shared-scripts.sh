@@ -522,3 +522,11 @@ function _downloadReportsFromS3 {
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done #This line moves all files into the top level directory so that the reports can be consumed by CB
 }
+
+function _buildTestsStandalone {
+    echo "Running loadCache repo \$CODEBUILD_SRC_DIR"
+    loadCache repo $CODEBUILD_SRC_DIR
+    echo "Running yarn install --immutable"
+    yarn install --immutable
+    echo "Running yarn build-tests"
+}
