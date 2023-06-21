@@ -21,7 +21,7 @@ describe('test usageData', () => {
   const printerMock = printer as jest.Mocked<typeof printer>;
 
   beforeEach(() => {
-    printerMock.warn = jest.fn();
+    printerMock.debug = jest.fn();
   });
 
   beforeAll(() => {
