@@ -834,6 +834,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       serviceToken: this.hostedUIProvidersCustomResource.attrArn,
       resourceType: 'Custom::LambdaCallout',
       properties: {
+        stackName: cdk.Fn.ref('AWS::StackName'),
         hostedUIProviderMeta: cdk.Fn.ref('hostedUIProviderMeta'),
         hostedUIProviderCreds: cdk.Fn.ref('hostedUIProviderCreds'),
         userPoolId: cdk.Fn.ref('UserPool'),
