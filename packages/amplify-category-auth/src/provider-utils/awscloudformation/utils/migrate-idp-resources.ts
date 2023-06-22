@@ -58,9 +58,9 @@ export const getHostedUIProviderCredsFromCloud = async (
       const client = await generateUserPoolClient(context);
 
       try {
-        credsFromCloud = (await getProviderCreds(userPoolId, provider.ProviderName, client));
+        credsFromCloud = await getProviderCreds(userPoolId, provider.ProviderName, client);
         credsFromCloud.ProviderName = provider.ProviderName;
-      } catch(e) {
+      } catch (e) {
         // noop
       }
     }
