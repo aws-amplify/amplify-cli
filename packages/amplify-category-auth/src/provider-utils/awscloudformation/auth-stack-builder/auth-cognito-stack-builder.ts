@@ -1220,6 +1220,14 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         const providerCreds: ProviderCreds = creds.find(({ ProviderName }: ProviderCreds) => ProviderName === provider.ProviderName);
         const hasProviderCreds = providerCreds?.client_id && (providerCreds.client_secret || providerCreds.private_key);
 
+        if (provider.ProviderName === 'SignInWithApple' && !hasProviderCreds) {
+          return;
+        }
+
+        if (migrateResources && !hasProviderCreds) {
+          return;
+        }
+
         this.createHostedUIProviderResource(provider, !!hasProviderCreds);
       });
     }

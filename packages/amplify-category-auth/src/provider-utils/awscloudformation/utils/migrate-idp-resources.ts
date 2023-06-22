@@ -49,17 +49,23 @@ export const getHostedUIProviderCredsFromCloud = async (
   const providerCredsArr = [];
 
   for (const provider of providerMeta) {
-    let providerCreds = updatedUIProviderCreds?.find(({ ProviderName }) => ProviderName === provider.ProviderName) || {};
+    const providerCreds = updatedUIProviderCreds?.find(({ ProviderName }) => ProviderName === provider.ProviderName) || {};
     const hasEmptyCreds = Object.keys(providerCreds).length === 0;
     const hasNotBeenUpdated = providerCreds && Object.keys(providerCreds).length === 1 && 'ProviderName' in providerCreds;
+    let credsFromCloud;
 
     if ((hasNotBeenUpdated || hasEmptyCreds) && userPoolId && context) {
       const client = await generateUserPoolClient(context);
-      providerCreds = (await getProviderCreds(userPoolId, provider.ProviderName, client)) || providerCreds;
-      providerCreds.ProviderName = provider.ProviderName;
+
+      try {
+        credsFromCloud = await getProviderCreds(userPoolId, provider.ProviderName, client);
+        credsFromCloud.ProviderName = provider.ProviderName;
+      } catch (e) {
+        // noop
+      }
     }
 
-    providerCredsArr.push(providerCreds);
+    providerCredsArr.push(credsFromCloud || providerCreds);
   }
 
   return providerCredsArr;
