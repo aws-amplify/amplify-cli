@@ -19,13 +19,14 @@ async function run(context, distributionDirPath) {
 
   const hasCloudFront = !!context?.exeInfo?.template?.Resources?.CloudFrontDistribution;
 
+  const filesToUploadFirst = fileList.filter(filePath => !filePath.includes('index.html'));
+  const filesToUploadLast = fileList.filter(filePath => filePath.includes('index.html'));
 
-  await Promise.all(fileList.map(async filePath => {
-    if(!filePath.includes('index.html')) {
-      return await uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront));
-  }}));
+  await Promise.all(filesToUploadFirst.map(async filePath => {
+      return uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront));
+  }));
 
-  fileList.filter(filePath => filePath.includes('index.html')).forEach(filePath => {
+  filesToUploadLast.forEach(filePath => {
     uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront));
   });
 
