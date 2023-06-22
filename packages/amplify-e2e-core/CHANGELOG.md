@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.0.3...@aws-amplify/amplify-e2e-core@5.0.4) (2023-06-13)
+
+
+### Bug Fixes
+
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+* functions e2e tests on windows ([#12745](https://github.com/aws-amplify/amplify-cli/issues/12745)) ([0de4529](https://github.com/aws-amplify/amplify-cli/commit/0de45299fbaafb090893f96c1884cdcff321f511))
+
+
+
+
+
 ## [5.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.0.1...@aws-amplify/amplify-e2e-core@5.0.3) (2023-05-25)
 
 

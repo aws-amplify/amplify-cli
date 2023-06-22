@@ -55,7 +55,7 @@ function waitJobToSucceed(job, amplifyClient) {
   return new Promise(async (resolve, reject) => {
     const timeout = setTimeout(() => {
       console.log('Job Timeout before succeeded');
-      reject();
+      reject(new Error('Job Timeout before succeeded'));
     }, 1000 * 60 * 10);
     let processing = true;
     try {

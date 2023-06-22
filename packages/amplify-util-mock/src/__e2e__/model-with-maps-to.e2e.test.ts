@@ -23,15 +23,8 @@ beforeAll(async () => {
   try {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new AuthTransformer(), new MapsToTransformer()],
-      featureFlags: {
-        getBoolean: (value: string, defaultValue?: boolean): boolean => {
-          if (value === 'userSubUsernameForDefaultIdentityClaim') {
-            return false;
-          }
-          return defaultValue;
-        },
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
       },
     });
     const out = transformer.transform(validSchema);

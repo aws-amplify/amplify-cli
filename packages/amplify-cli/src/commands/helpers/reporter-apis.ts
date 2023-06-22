@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 export const getPublicKey = async (): Promise<string> => {
   let url = 'https://aws-amplify.github.io/amplify-cli/report-public-key.pub';
   if (process.env.AMPLIFY_CLI_BETA_PUBLIC_KEY_URL && typeof process.env.AMPLIFY_CLI_BETA_PUBLIC_KEY_URL === 'string') {
-    url = process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL || url;
+    url = process.env.AMPLIFY_CLI_BETA_PUBLIC_KEY_URL || url;
   }
   const res = await fetch(url);
   if (!res.ok) {
@@ -25,7 +25,7 @@ export const getPublicKey = async (): Promise<string> => {
 export const reporterEndpoint = (): string => {
   const prodUrl = 'https://api.cli.amplify.aws/diagnose/report';
   if (process.env.AMPLIFY_CLI_BETA_REPORT_URL && typeof process.env.AMPLIFY_CLI_BETA_REPORT_URL === 'string') {
-    return process.env.AMPLIFY_CLI_BETA_USAGE_TRACKING_URL || prodUrl;
+    return process.env.AMPLIFY_CLI_BETA_REPORT_URL || prodUrl;
   }
   return prodUrl;
 };

@@ -59,6 +59,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/function_6.test.ts',
     'src/__tests__/function_7.test.ts',
     'src/__tests__/function_8.test.ts',
+    'src/__tests__/function_15.test.ts',
     'src/__tests__/geo-add-e.test.ts',
     'src/__tests__/geo-add-f.test.ts',
     'src/__tests__/geo-remove-2.test.ts',
@@ -103,7 +104,7 @@ export function saveConfig(config: any): void {
   const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true, lineWidth: -1 })];
   fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}.yml`, output.join('\n'));
 }
-function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
+export function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   return glob.sync(pattern, { cwd: dir });
 }
 type COMPUTE_TYPE = 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE';

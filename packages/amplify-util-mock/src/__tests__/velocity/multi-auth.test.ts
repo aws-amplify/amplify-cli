@@ -4,7 +4,6 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
 import { VelocityTemplateSimulator, AppSyncVTLContext, getGenericToken } from '../../velocity';
-import { featureFlags } from './test-helper';
 
 jest.mock('@aws-amplify/amplify-prompts');
 
@@ -40,7 +39,6 @@ describe('@model + @auth with oidc provider', () => {
     transformer = new GraphQLTransform({
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
     });
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -146,9 +144,8 @@ describe('with identity claim feature flag disabled', () => {
       transformer = new GraphQLTransform({
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
+        transformParameters: {
+          useSubUsernameForDefaultIdentityClaim: false,
         },
       });
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
