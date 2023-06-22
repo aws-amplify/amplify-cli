@@ -1,4 +1,4 @@
-import { addCircleCITags, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { EOL } from 'os';
 
 const defaultSettings = {
@@ -31,8 +31,6 @@ export function initJSProjectWithProfileV11(cwd: string, settings?: Partial<type
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
   }
-
-  addCircleCITags(cwd);
 
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
@@ -99,8 +97,6 @@ export function initJSProjectWithProfileV11(cwd: string, settings?: Partial<type
 export function initIosProjectWithProfile11(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCircleCITags(cwd);
-
   let env;
 
   if (s.disableAmplifyAppCreation === true) {
@@ -135,8 +131,6 @@ export function initIosProjectWithProfile11(cwd: string, settings: Record<string
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCircleCITags(cwd);
-
           resolve();
         } else {
           reject(err);
