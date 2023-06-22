@@ -23,10 +23,10 @@ const defaultSettings = {
 };
 
 export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
   let env;
 
-  if (s.disableAmplifyAppCreation === true) {
+  if (mergedSettings.disableAmplifyAppCreation === true) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -35,42 +35,42 @@ export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<type
   addCICleanupTags(cwd);
 
   const cliArgs = ['init'];
-  const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
+  const providerConfigSpecified = !!mergedSettings.providerConfig && typeof mergedSettings.providerConfig === 'object';
   if (providerConfigSpecified) {
-    cliArgs.push('--providers', JSON.stringify(s.providerConfig));
+    cliArgs.push('--providers', JSON.stringify(mergedSettings.providerConfig));
   }
 
-  if (s.permissionsBoundaryArn) {
-    cliArgs.push('--permissions-boundary', s.permissionsBoundaryArn);
+  if (mergedSettings.permissionsBoundaryArn) {
+    cliArgs.push('--permissions-boundary', mergedSettings.permissionsBoundaryArn);
   }
 
-  if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
+  if (mergedSettings?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), cliArgs, {
       cwd,
       stripColors: true,
       env,
-      disableCIDetection: s.disableCIDetection,
+      disableCIDetection: mergedSettings.disableCIDetection,
     })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Initialize the project with the above configuration?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
-      .sendLine(s.appType)
+      .sendLine(mergedSettings.appType)
       .wait('What javascript framework are you using')
-      .sendLine(s.framework)
+      .sendLine(mergedSettings.framework)
       .wait('Source Directory Path:')
-      .sendLine(s.srcDir)
+      .sendLine(mergedSettings.srcDir)
       .wait('Distribution Directory Path:')
-      .sendLine(s.distDir)
+      .sendLine(mergedSettings.distDir)
       .wait('Build Command:')
-      .sendLine(s.buildCmd)
+      .sendLine(mergedSettings.buildCmd)
       .wait('Start Command:')
       .sendCarriageReturn();
 
@@ -80,7 +80,7 @@ export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<type
         .wait('Select the authentication method you want to use:')
         .sendCarriageReturn()
         .wait('Please choose the profile you want to use')
-        .sendLine(s.profileName);
+        .sendLine(mergedSettings.profileName);
     }
     chain
       .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')

@@ -155,30 +155,41 @@ export function amplifyPushSecretsWithoutCodegen(cwd: string, testingWithLatestC
  * Function to test amplify push with allowDestructiveUpdates flag option
  */
 
-const defaultSettings = {
-  testingWithLatestCodebase: false,
-  allowDestructiveUpdates: false,
-  overridePushTimeoutMS: 0,
-  minify: false,
-  failureExpected: false,
-};
 
-export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, settings?: Partial<typeof defaultSettings>): Promise<void> {
+
+export function amplifyPushUpdate(cwd: string, waitForText?: RegExp,  
+  settings: {
+    testingWithLatestCodebase?: boolean,
+    allowDestructiveUpdates?: boolean,
+    overridePushTimeoutMS?: number,
+    minify?: boolean,
+    failureExpected?: boolean
+  } = {}
+): Promise<void> {
+  const defaultSettings = {
+    testingWithLatestCodebase: false,
+    allowDestructiveUpdates: false,
+    overridePushTimeoutMS: 0,
+    minify: false,
+    failureExpected: false
+  };
+
+  const mergedSettings = { ...defaultSettings, ...settings };
   const args = ['push'];
-  if (settings.allowDestructiveUpdates) {
+  if (mergedSettings.allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
-  if (settings.minify) {
+  if (mergedSettings.minify) {
     args.push('--minify');
   }
-  const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), args, {
+  const chain = spawn(getCLIPath(mergedSettings.testingWithLatestCodebase), args, {
     cwd,
     stripColors: true,
-    noOutputTimeout: settings.overridePushTimeoutMS || pushTimeoutMS,
+    noOutputTimeout: mergedSettings.overridePushTimeoutMS || pushTimeoutMS,
   });
 
   chain.wait('Are you sure you want to continue?').sendYes();
-  if (settings.failureExpected) {
+  if (mergedSettings.failureExpected) {
     errorReportingTestHandler(chain);
   }
   return chain.wait(waitForText || /.*/).runAsync();
