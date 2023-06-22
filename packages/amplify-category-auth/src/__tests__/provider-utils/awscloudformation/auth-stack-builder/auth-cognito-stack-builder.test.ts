@@ -31,6 +31,10 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
 }));
 
+jest.mock('../../../../provider-utils/awscloudformation/utils/get-from-amplify-meta', () => ({
+  getUserPoolIdFromMeta: jest.fn().mockReturnValue('fakeid'),
+}));
+
 describe('generateCognitoStackResources', () => {
   const props: CognitoStackOptions = {
     // eslint-disable-next-line spellcheck/spell-checker
