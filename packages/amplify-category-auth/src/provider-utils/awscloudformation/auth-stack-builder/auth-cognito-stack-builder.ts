@@ -712,11 +712,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
             Action: ['cognito-idp:DeleteUserPoolDomain'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
-          {
-            Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolDomain'],
-            Resource: '*',
-          },
         ],
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
@@ -793,12 +788,12 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: ['cognito-idp:ListIdentityProviders', 'cognito-idp:DeleteIdentityProvider'],
+            Action: ['cognito-idp:UpdateIdentityProvider', 'cognito-idp:DeleteIdentityProvider'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
           {
             Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolDomain'],
+            Action: ['cloudformation:DescribeStackResources'],
             Resource: '*',
           },
         ],
