@@ -124,7 +124,7 @@ function main(): void {
       return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
-  const splitV11MigrationTests = splitTestsV2(
+  const splitV12MigrationTests = splitTestsV2(
     splitV10MigrationTests,
     counts,
     'amplify_migration_tests_v12',
@@ -136,7 +136,7 @@ function main(): void {
     },
   );
   console.log(counts);
-  saveConfig(splitV11MigrationTests);
+  saveConfig(splitV12MigrationTests);
   verifyConfig();
 }
 main();

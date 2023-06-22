@@ -5,7 +5,7 @@ import * as yaml from 'js-yaml';
 import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
 import { REPO_ROOT } from './cci-utils';
 import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
-import { migrationFromV10Tests, migrationFromV11Tests, migrationFromV8Tests } from './split-e2e-test-filters';
+import { migrationFromV10Tests, migrationFromV12Tests, migrationFromV8Tests } from './split-e2e-test-filters';
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated');
 const RUN_SOLO = [
@@ -312,10 +312,10 @@ function main(): void {
       return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
     },
   );
-  const splitMigrationV11Tests = splitTestsV3(
+  const splitMigrationV12Tests = splitTestsV3(
     {
-      identifier: 'migration_tests_v11',
-      buildspec: 'codebuild_specs/migration_tests_v11.yml',
+      identifier: 'migration_tests_v12',
+      buildspec: 'codebuild_specs/migration_tests_v12.yml',
       env: {},
       'depend-on': ['upb'],
     },
@@ -323,11 +323,11 @@ function main(): void {
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
     true,
     (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV11Tests.find((t) => t === testName));
+      return tests.filter((testName) => migrationFromV12Tests.find((t) => t === testName));
     },
   );
 
-  let allBuilds = [...splitE2ETests, ...splitMigrationV8Tests, ...splitMigrationV10Tests, ...splitMigrationV11Tests];
+  let allBuilds = [...splitE2ETests, ...splitMigrationV8Tests, ...splitMigrationV10Tests, ...splitMigrationV12Tests];
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
   const dependeeIdentifiersFileContents = `${JSON.stringify(dependeeIdentifiers, null, 2)}\n`;
   const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
