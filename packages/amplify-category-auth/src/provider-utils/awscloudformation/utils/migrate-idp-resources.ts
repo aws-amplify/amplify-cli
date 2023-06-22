@@ -14,9 +14,7 @@ export const migrateResourcesToCfn = (resourceName: string, meta: ProviderMeta[]
   const providerCreatedInCloud = hasHostedProviderResources(authCfnTemplate);
 
   // Apple has been fully migrated to CFN-maintained resource
-  const hasSignInWithApple = meta.find((provider: ProviderMeta) => {
-    provider.ProviderName === 'SignInWithApple';
-  });
+  const hasSignInWithApple = meta.find((provider: ProviderMeta) => provider.ProviderName === 'SignInWithApple');
   const cloudDoesNotHaveApple = !hasHostedSignInWithAppleProviderResource(authCfnTemplate);
   const appleNotCreatedWithCfn = !!hasSignInWithApple && cloudDoesNotHaveApple;
 
