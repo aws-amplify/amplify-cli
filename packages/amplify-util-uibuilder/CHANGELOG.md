@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.3...@aws-amplify/amplify-util-uibuilder@1.8.4) (2023-06-13)
+
+
+### Bug Fixes
+
+* skip automatic form generation when datastore is not enabled ([e45fcc1](https://github.com/aws-amplify/amplify-cli/commit/e45fcc1a9bdff3d20645fb18bf2e2be34e16beb1))
+
+
+
+
+
 ## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.1...@aws-amplify/amplify-util-uibuilder@1.8.3) (2023-05-25)
 
 

@@ -1,4 +1,4 @@
-import { addCircleCITags, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { addCICleanupTags, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { EOL } from 'os';
 
 const defaultSettings = {
@@ -32,7 +32,7 @@ export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<type
     };
   }
 
-  addCircleCITags(cwd);
+  addCICleanupTags(cwd);
 
   const cliArgs = ['init'];
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
