@@ -227,6 +227,7 @@ const splitTestsV3 = (
   const dependeeIdentifiers: string[] = [];
   linuxJobs.forEach((j) => {
     if (j.tests.length !== 0) {
+      const isSingleTest = j.tests.length === 1;
       const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
       const identifier = getIdentifier(j.os, names);
       dependeeIdentifiers.push(identifier);
@@ -235,6 +236,10 @@ const splitTestsV3 = (
         identifier,
       };
       tmp.env.variables = {};
+      // linux supports small instances with 2 VCPUs
+      if (isMigration || isSingleTest) {
+        tmp.env.variables['compute-type'] = 'BUILD_GENERAL1_SMALL';
+      }
       tmp.env.variables.TEST_SUITE = j.tests.join('|');
       tmp.env.variables.CLI_REGION = j.region;
       if (j.useParentAccount) {
