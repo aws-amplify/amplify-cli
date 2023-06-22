@@ -383,10 +383,15 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
     if (settings?.overrides?.category === 'auth') {
       chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
     }
+    chain.wait('What do you want to do?');
+
+    if (settings?.socialProvidersAlreadyExist) {
+      chain.sendKeyDown(3);
+    } else {
+      chain.sendKeyDown(2);
+    }
+
     chain
-      .wait('What do you want to do?')
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Which redirect signin URIs do you want to edit?')
       .selectAll()
@@ -1177,15 +1182,22 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
   } = getSocialProviders(true);
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(settings?.testingWithLatestCodebase ?? false), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Select the authentication/authorization services that you want to use')
       .sendCarriageReturn()
-      .wait('Provide a friendly name for your resource that will be used')
-      .sendCarriageReturn()
+      .wait('Provide a friendly name for your resource that will be used');
+
+    if (settings?.name) {
+      chain.sendLine(settings.name);
+    } else {
+      chain.sendCarriageReturn();
+    }
+
+    chain
       .wait('Enter a name for your identity pool')
       .sendCarriageReturn()
       .wait('Allow unauthenticated logins')
@@ -1964,3 +1976,138 @@ export function updateAuthWithGroupTrigger(cwd: string): Promise<void> {
     .sendCarriageReturn()
     .runAsync();
 }
+
+export const addAuthWithOidcForNonJSProject = async (
+  cwd: string,
+  settings?: {
+    resourceName?: string;
+    frontend?: string;
+    testingWithLatestCodebase?: boolean;
+  },
+): Promise<void> => {
+  const {
+    FACEBOOK_APP_ID,
+    FACEBOOK_APP_SECRET,
+    GOOGLE_APP_ID,
+    GOOGLE_APP_SECRET,
+    AMAZON_APP_ID,
+    AMAZON_APP_SECRET,
+    APPLE_APP_ID,
+    APPLE_TEAM_ID,
+    APPLE_KEY_ID,
+    APPLE_PRIVATE_KEY,
+  } = getSocialProviders();
+
+  const resolvedSettings = { frontend: 'android', resourceName: 'oidcauthtest', testingWithLatestCodebase: false, ...settings };
+
+  const chain = spawn(getCLIPath(resolvedSettings.testingWithLatestCodebase), ['add', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to use the default authentication')
+    .sendKeyDown(2)
+    .sendCarriageReturn() // Manual config
+    .wait('Select the authentication/authorization services that you want to use')
+    .sendCarriageReturn()
+    .wait('Provide a friendly name for your resource')
+    .sendLine(resolvedSettings.resourceName)
+    .wait('Enter a name for your identity pool')
+    .sendCarriageReturn()
+    .wait('Allow unauthenticated logins?')
+    .sendCarriageReturn() // No
+    .wait('Do you want to enable 3rd party authentication providers in your identity pool')
+    .sendCarriageReturn() // Yes
+    .wait('Select the third party identity providers you want to configure for your identity pool')
+    .sendCtrlA()
+    .sendCarriageReturn()
+    .wait('Enter your Facebook App ID for your identity pool')
+    .send('fbIDPool')
+    .sendCarriageReturn()
+    .wait('Enter your Google Web Client ID for your identity pool:')
+    .send('googleIDPool')
+    .sendCarriageReturn();
+  if (resolvedSettings.frontend === 'ios') {
+    chain.wait('Enter your Google iOS Client ID for your identity pool').sendLine('googleiosclientId');
+  } else if (resolvedSettings.frontend === 'android') {
+    chain.wait('Enter your Google Android Client ID for your identity pool').sendLine('googleandroidclientid');
+  }
+  chain
+    .wait('Enter your Amazon App ID for your identity pool')
+    .send('amazonIDPool')
+    .sendCarriageReturn()
+    .wait('Enter your Bundle Identifier for your identity pool')
+    .send('appleIDPool')
+    .sendCarriageReturn()
+    .wait('Provide a name for your user pool')
+    .sendCarriageReturn()
+    .wait('How do you want users to be able to sign in')
+    .sendCarriageReturn()
+    .wait('Do you want to add User Pool Groups?')
+    .sendCarriageReturn()
+    .wait('Provide a name for your user pool group')
+    .sendLine('users')
+    .wait('Do you want to add another User Pool Group')
+    .sendCarriageReturn() // No
+    .wait('Sort the user pool groups in order of preference')
+    .sendCarriageReturn()
+    .wait('Do you want to add an admin queries API?')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('Multifactor authentication (MFA) user login options')
+    .sendCarriageReturn()
+    .wait('Email based user registration/forgot password')
+    .sendCarriageReturn()
+    .wait('Specify an email verification subject:')
+    .sendCarriageReturn()
+    .wait('Specify an email verification message:')
+    .sendCarriageReturn()
+    .wait('Do you want to override the default password policy for this User Pool?')
+    .sendCarriageReturn()
+    .wait('What attributes are required for signing up?')
+    .sendCarriageReturn()
+    .wait("Specify the app's refresh token expiration period (in days)")
+    .sendCarriageReturn()
+    .wait('Do you want to specify the user attributes this app can read and write?')
+    .sendCarriageReturn()
+    .wait('Do you want to enable any of the following capabilities?')
+    .sendCarriageReturn()
+    .wait('Do you want to use an OAuth flow?')
+    .sendCarriageReturn()
+    .wait('What domain name prefix do you want to use?')
+    .sendCarriageReturn()
+    .wait('Enter your redirect signin URI')
+    .sendLine('https://www.google.com/')
+    .wait('Do you want to add another redirect signin URI')
+    .sendCarriageReturn() // No
+    .wait('Enter your redirect signout URI')
+    .sendLine('https://www.nytimes.com/')
+    .wait('Do you want to add another redirect signout UR')
+    .sendCarriageReturn() // No
+    .wait('Select the OAuth scopes enabled for this project')
+    .sendCarriageReturn()
+    .wait('Select the social providers you want to configure for your user pool')
+    .sendCtrlA()
+    .sendCarriageReturn()
+    .wait('Enter your Facebook App ID for your OAuth flow')
+    .sendLine(FACEBOOK_APP_ID)
+    .wait('Enter your Facebook App Secret for your OAuth flow')
+    .sendLine(FACEBOOK_APP_SECRET)
+    .wait('Enter your Google Web Client ID for your OAuth flow')
+    .sendLine(GOOGLE_APP_ID)
+    .wait('Enter your Google Web Client Secret for your OAuth flow')
+    .sendLine(GOOGLE_APP_SECRET)
+    .wait('Enter your Amazon App ID for your OAuth flow')
+    .sendLine(AMAZON_APP_ID)
+    .wait('Enter your Amazon App Secret for your OAuth flow')
+    .sendLine(AMAZON_APP_SECRET)
+    .wait('Enter your Services ID for your OAuth flow')
+    .sendLine(APPLE_APP_ID)
+    .wait('Enter your Team ID for your OAuth flow')
+    .sendLine(APPLE_TEAM_ID)
+    .wait('Enter your Key ID for your OAuth flow')
+    .sendLine(APPLE_KEY_ID)
+    .wait('Enter your Private Key for your OAuth flow')
+    .sendLine(APPLE_PRIVATE_KEY)
+    .wait('Do you want to configure Lambda Triggers for Cognito?')
+    .sendConfirmNo()
+    .sendEof();
+
+  return chain.runAsync();
+};

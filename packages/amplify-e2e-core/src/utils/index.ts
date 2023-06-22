@@ -8,14 +8,18 @@ import { v4 as uuid } from 'uuid';
 import { getLayerDirectoryName, LayerDirectoryType } from '..';
 
 export * from './add-circleci-tags';
+export * from './admin-ui';
 export * from './api';
 export * from './appsync';
 export * from './auth-utils';
 export * from './envVars';
 export * from './getAppId';
+export * from './git-operations';
 export * from './headless';
-export * from './overrides';
+export * from './help';
+export * from './hooks';
 export * from './nexpect';
+export * from './overrides';
 export * from './pinpoint';
 export * from './projectMeta';
 export * from './readJsonFile';
@@ -25,10 +29,6 @@ export * from './sdk-calls';
 export * from './selectors';
 export * from './sleep';
 export * from './transformConfig';
-export * from './admin-ui';
-export * from './hooks';
-export * from './git-operations';
-export * from './help';
 
 /**
  * Whether the current environment is CircleCI or not

@@ -621,7 +621,7 @@ jobs:
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn run migration_v11.0.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v11.0.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:

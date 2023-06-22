@@ -206,7 +206,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/storage-2.test.ts|src/__tests__/export.test.ts|src/__tests__/iam-permissions-boundary.test.ts|src/__tests__/migration/node.function.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_notifications_sms_schema_auth_4b_schema_model_e_schema_versioned
@@ -222,7 +222,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_1c.test.ts|src/__tests__/auth_5e.test.ts|src/__tests__/auth_8b.test.ts|src/__tests__/geo-add-b.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_s3_sse_schema_auth_4a_schema_model_b_schema_model_d
@@ -230,7 +230,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/s3-sse.test.ts|src/__tests__/schema-auth-4a.test.ts|src/__tests__/schema-model-b.test.ts|src/__tests__/schema-model-d.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_auth_5f_env_4_frontend_config_drift_schema_auth_4d
@@ -326,7 +326,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-6d.test.ts|src/__tests__/schema-auth-7c.test.ts|src/__tests__/schema-auth-8a.test.ts|src/__tests__/transformer-migrations/function-migration.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_api_10_api_7_export_pull_a_function_9a
@@ -350,7 +350,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-8b.test.ts|src/__tests__/schema-auth-9-a.test.ts|src/__tests__/schema-auth-9-c.test.ts|src/__tests__/storage-3.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_auth_11_auth_1b_delete_geo_add_c
@@ -374,7 +374,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts|src/__tests__/migration/api.key.migration3.test.ts|src/__tests__/predictions.test.ts|src/__tests__/schema-auth-11-b.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_schema_auth_1b_schema_auth_2a_schema_auth_7a_schema_auth_7b
@@ -382,7 +382,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-1b.test.ts|src/__tests__/schema-auth-2a.test.ts|src/__tests__/schema-auth-7a.test.ts|src/__tests__/schema-auth-7b.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_schema_auth_9_b_schema_iterative_rollback_1_predictions_migration_api_6a
@@ -433,12 +433,12 @@ batch:
           CLI_REGION: ap-northeast-1
       depend-on:
         - upb
-    - identifier: l_auth_2g_build_function_custom_resource_with_storage_dynamodb_simulator
+    - identifier: l_auth_2g_hosted_ui_user_groups_build_function
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/auth_2g.test.ts|src/__tests__/build-function.test.ts|src/__tests__/custom-resource-with-storage.test.ts|src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts
-          CLI_REGION: us-west-2
+          TEST_SUITE: src/__tests__/auth_2g.test.ts|src/__tests__/auth/hosted-ui.test.ts|src/__tests__/auth/user-groups.test.ts|src/__tests__/build-function.test.ts
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_export_pull_c_function_12_function_13_function_15
@@ -566,7 +566,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/api_5.test.ts|src/__tests__/apigw.test.ts|src/__tests__/graphql-v2/api_lambda_auth_1.test.ts|src/__tests__/migration/api.key.migration2.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_schema_searchable_api_key_migration1_schema_auth_14_api_3
@@ -694,7 +694,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/import_s3_2a.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_import_s3_2c
@@ -734,7 +734,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/geo-update-2.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_import_s3_3
@@ -848,7 +848,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/import_dynamodb_1.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-northeast-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - upb
@@ -859,7 +859,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/analytics-kinesis.test.ts|src/__tests__/analytics-pinpoint-flutter.test.ts|src/__tests__/analytics-pinpoint-js.test.ts|src/__tests__/auth_2a.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-west-2
           USE_PARENT_ACCOUNT: false
       depend-on:
         - build_windows
@@ -1015,7 +1015,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-4a.test.ts|src/__tests__/schema-model-b.test.ts|src/__tests__/schema-model-d.test.ts|src/__tests__/auth_5f.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-1
           USE_PARENT_ACCOUNT: false
       depend-on:
         - build_windows
@@ -1171,7 +1171,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/api_7.test.ts|src/__tests__/export-pull-a.test.ts|src/__tests__/function_9a.test.ts|src/__tests__/geo-headless.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-northeast-1
           USE_PARENT_ACCOUNT: false
       depend-on:
         - build_windows
@@ -1183,7 +1183,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/migration/api.key.migration5.test.ts|src/__tests__/schema-auth-1a.test.ts|src/__tests__/schema-auth-5b.test.ts|src/__tests__/schema-auth-8b.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-west-2
           USE_PARENT_ACCOUNT: false
       depend-on:
         - build_windows
@@ -1308,13 +1308,13 @@ batch:
       depend-on:
         - build_windows
         - upb
-    - identifier: w_build_function_custom_resource_with_storage_dynamodb_simulator_export_pull_c
+    - identifier: w_hosted_ui_user_groups_build_function_custom_resource_with_storage
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/build-function.test.ts|src/__tests__/custom-resource-with-storage.test.ts|src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts|src/__tests__/export-pull-c.test.ts
+          TEST_SUITE: src/__tests__/auth/hosted-ui.test.ts|src/__tests__/auth/user-groups.test.ts|src/__tests__/build-function.test.ts|src/__tests__/custom-resource-with-storage.test.ts
           CLI_REGION: us-west-2
           USE_PARENT_ACCOUNT: false
       depend-on:
@@ -1675,7 +1675,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/import_dynamodb_1.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: true
       depend-on:
         - build_windows
@@ -1765,7 +1765,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-lambda.migration.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_api_rest_serverless_migration_v10
@@ -1789,7 +1789,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/migration_tests_v10/auth-override.migration.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_custom_stack_migration_v10
