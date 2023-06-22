@@ -1,4 +1,4 @@
-import { addCICleanupTags, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
+import { addCircleCITags, getCLIPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { EOL } from 'os';
 
 const defaultSettings = {
@@ -32,7 +32,7 @@ export function initJSProjectWithProfileV4_28_2(
     };
   }
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
@@ -84,7 +84,7 @@ export function initJSProjectWithProfileV4_52_0(
     };
   }
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
@@ -127,7 +127,7 @@ export function initJSProjectWithProfileV4_52_0(
 export function initAndroidProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -156,7 +156,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Record<stri
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCICleanupTags(cwd);
+          addCircleCITags(cwd);
 
           resolve();
         } else {
@@ -169,7 +169,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Record<stri
 export function initAndroidProjectWithProfileInquirer(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -199,7 +199,7 @@ export function initAndroidProjectWithProfileInquirer(cwd: string, settings: Rec
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCICleanupTags(cwd);
+          addCircleCITags(cwd);
 
           resolve();
         } else {
