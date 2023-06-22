@@ -2,17 +2,23 @@ import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, Template } f
 import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
 import { generateUserPoolClient } from './generate-user-pool-client';
 import { getUserPoolIdFromMeta } from './get-from-amplify-meta';
+import { ProviderMeta } from '../auth-stack-builder/types';
 
 const { readJson } = JSONUtilities;
 const { getCurrentCfnTemplatePathFromBuild } = pathManager;
 
-export const migrateResourcesToCfn = (resourceName: string): boolean => {
+export const migrateResourcesToCfn = (resourceName: string, meta: ProviderMeta[]): boolean => {
   const authCfnTemplatePath = getCurrentCfnTemplatePathFromBuild('auth', resourceName);
   const authCfnTemplate: Template | undefined = readJson(authCfnTemplatePath, { throwIfNotExist: false });
   const lambdaCalloutCreatedInCloud = authCfnTemplate?.Resources?.HostedUIProvidersCustomResource?.Type === 'AWS::Lambda::Function';
   const providerCreatedInCloud = hasHostedProviderResources(authCfnTemplate);
 
-  return lambdaCalloutCreatedInCloud && !providerCreatedInCloud;
+  // Apple has been fully migrated to CFN-maintained resource
+  const hasSignInWithApple = meta.find((provider: ProviderMeta) => provider.ProviderName === 'SignInWithApple');
+  const cloudDoesNotHaveApple = !hasHostedSignInWithAppleProviderResource(authCfnTemplate);
+  const appleNotCreatedWithCfn = !!hasSignInWithApple && cloudDoesNotHaveApple;
+
+  return (lambdaCalloutCreatedInCloud && !providerCreatedInCloud) || appleNotCreatedWithCfn;
 };
 
 const hasHostedProviderResources = (authCfnTemplate: Template | undefined): boolean => {
@@ -20,8 +26,12 @@ const hasHostedProviderResources = (authCfnTemplate: Template | undefined): bool
     authCfnTemplate?.Resources?.HostedUIFacebookProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider' ||
     authCfnTemplate?.Resources?.HostedUIGoogleProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider' ||
     authCfnTemplate?.Resources?.HostedUILoginWithAmazonProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider' ||
-    authCfnTemplate?.Resources?.HostedUISignInWithAppleProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider'
+    hasHostedSignInWithAppleProviderResource(authCfnTemplate)
   );
+};
+
+const hasHostedSignInWithAppleProviderResource = (authCfnTemplate: Template | undefined): boolean => {
+  return authCfnTemplate?.Resources?.HostedUISignInWithAppleProviderResource?.Type === 'AWS::Cognito::UserPoolIdentityProvider';
 };
 
 /*
@@ -39,17 +49,23 @@ export const getHostedUIProviderCredsFromCloud = async (
   const providerCredsArr = [];
 
   for (const provider of providerMeta) {
-    let providerCreds = updatedUIProviderCreds?.find(({ ProviderName }) => ProviderName === provider.ProviderName) || {};
+    const providerCreds = updatedUIProviderCreds?.find(({ ProviderName }) => ProviderName === provider.ProviderName) || {};
     const hasEmptyCreds = Object.keys(providerCreds).length === 0;
     const hasNotBeenUpdated = providerCreds && Object.keys(providerCreds).length === 1 && 'ProviderName' in providerCreds;
+    let credsFromCloud;
 
     if ((hasNotBeenUpdated || hasEmptyCreds) && userPoolId && context) {
       const client = await generateUserPoolClient(context);
-      providerCreds = (await getProviderCreds(userPoolId, provider.ProviderName, client)) || providerCreds;
-      providerCreds.ProviderName = provider.ProviderName;
+
+      try {
+        credsFromCloud = await getProviderCreds(userPoolId, provider.ProviderName, client);
+        credsFromCloud.ProviderName = provider.ProviderName;
+      } catch (e) {
+        // noop
+      }
     }
 
-    providerCredsArr.push(providerCreds);
+    providerCredsArr.push(credsFromCloud || providerCreds);
   }
 
   return providerCredsArr;

@@ -712,11 +712,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
             Action: ['cognito-idp:DeleteUserPoolDomain'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
-          {
-            Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolDomain'],
-            Resource: '*',
-          },
         ],
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
@@ -793,12 +788,12 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         Statement: [
           {
             Effect: 'Allow',
-            Action: ['cognito-idp:ListIdentityProviders', 'cognito-idp:DeleteIdentityProvider'],
+            Action: ['cognito-idp:UpdateIdentityProvider', 'cognito-idp:DeleteIdentityProvider'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
           {
             Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolDomain'],
+            Action: ['cloudformation:DescribeStackResources'],
             Resource: '*',
           },
         ],
@@ -834,6 +829,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       serviceToken: this.hostedUIProvidersCustomResource.attrArn,
       resourceType: 'Custom::LambdaCallout',
       properties: {
+        stackName: cdk.Fn.ref('AWS::StackName'),
         hostedUIProviderMeta: cdk.Fn.ref('hostedUIProviderMeta'),
         hostedUIProviderCreds: cdk.Fn.ref('hostedUIProviderCreds'),
         userPoolId: cdk.Fn.ref('UserPool'),
@@ -1209,9 +1205,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       return;
     }
 
-    const migrateResources = migrateResourcesToCfn(props.resourceName);
     const meta = JSON.parse(props.hostedUIProviderMeta || '[]');
     let creds = JSON.parse(props.hostedUIProviderCreds || '[]');
+    const migrateResources = migrateResourcesToCfn(props.resourceName, meta);
 
     if (migrateResources) {
       this.deleteExistingHostedUIProviderCustomResource();
@@ -1223,6 +1219,14 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       JSON.parse(props.hostedUIProviderMeta).forEach((provider: ProviderMeta) => {
         const providerCreds: ProviderCreds = creds.find(({ ProviderName }: ProviderCreds) => ProviderName === provider.ProviderName);
         const hasProviderCreds = providerCreds?.client_id && (providerCreds.client_secret || providerCreds.private_key);
+
+        if (provider.ProviderName === 'SignInWithApple' && !hasProviderCreds) {
+          return;
+        }
+
+        if (migrateResources && !hasProviderCreds) {
+          return;
+        }
 
         this.createHostedUIProviderResource(provider, !!hasProviderCreds);
       });
