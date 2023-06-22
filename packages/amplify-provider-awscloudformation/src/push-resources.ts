@@ -1215,10 +1215,10 @@ export const formNestedStack = async (
           category === AmplifyCategories.AUTH && parameters.hostedUIProviderCreds && parameters.hostedUIProviderCreds !== '[]';
 
         if (parameters.resourceName) {
-          const migrateAuthIdpsToCfn = migrateResourcesToCfn(parameters.resourceName);
+          const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta || '[]');
+          const migrateAuthIdpsToCfn = migrateResourcesToCfn(parameters.resourceName, hostedUIProviderMeta);
 
           if (hasAuthCreds || migrateAuthIdpsToCfn) {
-            const hostedUIProviderMeta = JSON.parse(parameters.hostedUIProviderMeta || '[]');
             let hostedUIProviderCreds = JSON.parse(parameters.hostedUIProviderCreds);
 
             if (migrateAuthIdpsToCfn) {

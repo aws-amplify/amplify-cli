@@ -124,8 +124,10 @@ export const migrate: (context: $TSContext) => Promise<void>;
 // @public (undocumented)
 export function migrateAuthResource(context: any, resourceName: any): Promise<boolean>;
 
+// Warning: (ae-forgotten-export) The symbol "ProviderMeta" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export const migrateResourcesToCfn: (resourceName: string) => boolean;
+export const migrateResourcesToCfn: (resourceName: string, meta: ProviderMeta[]) => boolean;
 
 // @public (undocumented)
 export function prePushAuthHook(context: any): Promise<void>;

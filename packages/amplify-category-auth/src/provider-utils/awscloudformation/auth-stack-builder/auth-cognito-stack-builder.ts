@@ -712,11 +712,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
             Action: ['cognito-idp:DeleteUserPoolDomain'],
             Resource: cdk.Fn.getAtt('UserPool', 'Arn'),
           },
-          {
-            Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolDomain'],
-            Resource: '*',
-          },
         ],
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
@@ -798,7 +793,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           },
           {
             Effect: 'Allow',
-            Action: ['cognito-idp:DescribeUserPoolDomain'],
+            Action: ['cloudformation:DescribeStackResources'],
             Resource: '*',
           },
         ],
@@ -834,6 +829,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       serviceToken: this.hostedUIProvidersCustomResource.attrArn,
       resourceType: 'Custom::LambdaCallout',
       properties: {
+        stackName: cdk.Fn.ref('AWS::StackName'),
         hostedUIProviderMeta: cdk.Fn.ref('hostedUIProviderMeta'),
         hostedUIProviderCreds: cdk.Fn.ref('hostedUIProviderCreds'),
         userPoolId: cdk.Fn.ref('UserPool'),
@@ -1209,9 +1205,9 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       return;
     }
 
-    const migrateResources = migrateResourcesToCfn(props.resourceName);
     const meta = JSON.parse(props.hostedUIProviderMeta || '[]');
     let creds = JSON.parse(props.hostedUIProviderCreds || '[]');
+    const migrateResources = migrateResourcesToCfn(props.resourceName, meta);
 
     if (migrateResources) {
       this.deleteExistingHostedUIProviderCustomResource();

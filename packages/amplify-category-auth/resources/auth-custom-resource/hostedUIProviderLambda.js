@@ -2,6 +2,7 @@ const response = require('cfn-response');
 const aws = require('aws-sdk');
 
 const identity = new aws.CognitoIdentityServiceProvider();
+const cloudformation = new aws.CloudFormation();
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
@@ -13,6 +14,7 @@ async function handleEvent(event, context) {
     const userPoolId = event.ResourceProperties.userPoolId;
     const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
     const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
+    const stackName = event.ResourceProperties.stackName;
 
     for (const providerMeta of hostedUIProviderMeta) {
       const providerCreds = hostedUIProviderCreds.find(({ ProviderName }) => providerMeta.ProviderName === ProviderName);
@@ -40,8 +42,17 @@ async function handleEvent(event, context) {
         }
       } else {
         try {
-          const params = { ProviderName: providerMeta.ProviderName, UserPoolId: userPoolId };
-          await identity.deleteIdentityProvider(params).promise();
+          if (stackName) {
+            const { StackResources } = await cloudformation.describeStackResources({ StackName: stackName }).promise();
+            const resource = StackResources.find((resource) => {
+              resource.LogicalResourceId === `HostedUI${providerMeta.ProviderName}ProviderResource`;
+            });
+            const params = { ProviderName: providerMeta.ProviderName, UserPoolId: userPoolId };
+
+            if (!resource) {
+              await identity.deleteIdentityProvider(params).promise();
+            }
+          }
         } catch (e) {
           if (!e?.code?.toString()?.match(/NotFoundException/)) {
             // bubble up to outer catch.

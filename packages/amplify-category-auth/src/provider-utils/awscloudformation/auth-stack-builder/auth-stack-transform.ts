@@ -562,7 +562,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     const hostedUIProviderMeta = JSON.parse(props.hostedUIProviderMeta || '[]');
     let hostedUIProviderCreds = JSON.parse(props.hostedUIProviderCreds || '[]');
 
-    if (migrateResourcesToCfn(props.resourceName)) {
+    if (migrateResourcesToCfn(props.resourceName, hostedUIProviderMeta)) {
       hostedUIProviderCreds = await getHostedUIProviderCredsFromCloud(
         props.resourceName,
         hostedUIProviderMeta,
