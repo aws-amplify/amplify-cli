@@ -833,6 +833,9 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
       "Type": "AWS::Cognito::UserPoolDomain",
     },
     "HostedUIFacebookProviderResource": {
+      "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
+      ],
       "Properties": {
         "AttributeMapping": {
           "email": "email",
@@ -858,6 +861,9 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
     "HostedUIGoogleProviderResource": {
+      "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
+      ],
       "Properties": {
         "AttributeMapping": {
           "email": "email",
@@ -883,6 +889,9 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
     "HostedUILoginWithAmazonProviderResource": {
+      "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
+      ],
       "Properties": {
         "AttributeMapping": {
           "email": "email",
@@ -907,7 +916,228 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
       },
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
+    "HostedUIProvidersCustomResource": {
+      "DependsOn": [
+        "UserPoolClientRole",
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": "const response = require('cfn-response');
+const aws = require('aws-sdk');
+
+const identity = new aws.CognitoIdentityServiceProvider();
+const cloudformation = new aws.CloudFormation();
+
+exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  const ignoredPromise = handleEvent(event, context);
+};
+
+async function handleEvent(event, context) {
+  try {
+    const userPoolId = event.ResourceProperties.userPoolId;
+    const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
+    const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
+    const stackName = event.ResourceProperties.stackName;
+
+    for (const providerMeta of hostedUIProviderMeta) {
+      const providerCreds = hostedUIProviderCreds.find(({ ProviderName }) => providerMeta.ProviderName === ProviderName);
+      if (providerMeta.ProviderName === 'SignInWithApple' && !providerCreds.private_key && event.RequestType === 'Update') {
+        const params = {
+          UserPoolId: userPoolId,
+          ProviderName: providerMeta.ProviderName,
+          AttributeMapping: providerMeta.AttributeMapping,
+        };
+
+        if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
+          params.ProviderDetails = {
+            client_id: providerCreds.client_id,
+            team_id: providerCreds.team_id,
+            key_id: providerCreds.key_id,
+            private_key: providerCreds.private_key,
+            authorize_scopes: providerMeta.authorize_scopes,
+          };
+        }
+
+        await identity.updateIdentityProvider(params).promise();
+      } else {
+        try {
+          if (stackName) {
+            const { StackResources } = await cloudformation.describeStackResources({ StackName: stackName }).promise();
+            const resource = StackResources.find((resource) => {
+              resource.LogicalResourceId === \`HostedUI\${providerMeta.ProviderName}ProviderResource\`;
+            });
+            const params = { ProviderName: providerMeta.ProviderName, UserPoolId: userPoolId };
+
+            if (!resource) {
+              await identity.deleteIdentityProvider(params).promise();
+            }
+          }
+        } catch (e) {
+          if (!e?.code?.toString()?.match(/NotFoundException/)) {
+            // bubble up to outer catch.
+            throw e;
+          } else {
+            console.log('Not Found', providerMeta.ProviderName);
+          }
+        }
+      }
+    }
+
+    response.send(event, context, response.SUCCESS);
+  } catch (err) {
+    console.log(err.stack);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+",
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "UserPoolClientRole",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs16.x",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "HostedUIProvidersCustomResourceInputs": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "HostedUIProvidersCustomResourceLogPolicy",
+      ],
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "HostedUIProvidersCustomResource",
+            "Arn",
+          ],
+        },
+        "hostedUIProviderCreds": {
+          "Ref": "hostedUIProviderCreds",
+        },
+        "hostedUIProviderMeta": {
+          "Ref": "hostedUIProviderMeta",
+        },
+        "stackName": {
+          "Ref": "AWS::StackName",
+        },
+        "userPoolId": {
+          "Ref": "UserPool",
+        },
+      },
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "HostedUIProvidersCustomResourceLogPolicy": {
+      "DependsOn": [
+        "HostedUIProvidersCustomResourcePolicy",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
+                  {
+                    "account": {
+                      "Ref": "AWS::AccountId",
+                    },
+                    "lambda": {
+                      "Ref": "HostedUIProvidersCustomResource",
+                    },
+                    "region": {
+                      "Ref": "AWS::Region",
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "UserPool",
+              },
+              "hostedUIProviderLogPolicy",
+            ],
+          ],
+        },
+        "Roles": [
+          {
+            "Ref": "UserPoolClientRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "HostedUIProvidersCustomResourcePolicy": {
+      "DependsOn": [
+        "HostedUIProvidersCustomResource",
+      ],
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cognito-idp:UpdateIdentityProvider",
+                "cognito-idp:DeleteIdentityProvider",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "UserPool",
+                  "Arn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "cloudformation:DescribeStackResources",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "UserPool",
+              },
+              "hostedUIProvider",
+            ],
+          ],
+        },
+        "Roles": [
+          {
+            "Ref": "UserPoolClientRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "HostedUISignInWithAppleProviderResource": {
+      "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
+      ],
       "Properties": {
         "AttributeMapping": {
           "email": "email",
@@ -1322,6 +1552,7 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
         "HostedUIFacebookProviderResource",
         "HostedUIGoogleProviderResource",
         "HostedUILoginWithAmazonProviderResource",
+        "HostedUIProvidersCustomResourceInputs",
         "HostedUISignInWithAppleProviderResource",
         "UserPool",
       ],
@@ -1427,6 +1658,7 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
         "HostedUIFacebookProviderResource",
         "HostedUIGoogleProviderResource",
         "HostedUILoginWithAmazonProviderResource",
+        "HostedUIProvidersCustomResourceInputs",
         "HostedUISignInWithAppleProviderResource",
         "UserPool",
       ],

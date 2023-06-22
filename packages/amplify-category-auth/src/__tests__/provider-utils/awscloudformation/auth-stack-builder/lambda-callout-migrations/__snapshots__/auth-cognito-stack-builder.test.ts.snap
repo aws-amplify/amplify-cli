@@ -52,27 +52,23 @@ async function handleEvent(event, context) {
     for (const providerMeta of hostedUIProviderMeta) {
       const providerCreds = hostedUIProviderCreds.find(({ ProviderName }) => providerMeta.ProviderName === ProviderName);
       if (providerMeta.ProviderName === 'SignInWithApple' && !providerCreds.private_key && event.RequestType === 'Update') {
-        try {
-          const params = {
-            UserPoolId: userPoolId,
-            ProviderName: providerMeta.ProviderName,
-            AttributeMapping: providerMeta.AttributeMapping,
+        const params = {
+          UserPoolId: userPoolId,
+          ProviderName: providerMeta.ProviderName,
+          AttributeMapping: providerMeta.AttributeMapping,
+        };
+
+        if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
+          params.ProviderDetails = {
+            client_id: providerCreds.client_id,
+            team_id: providerCreds.team_id,
+            key_id: providerCreds.key_id,
+            private_key: providerCreds.private_key,
+            authorize_scopes: providerMeta.authorize_scopes,
           };
-
-          if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
-            params.ProviderDetails = {
-              client_id: providerCreds.client_id,
-              team_id: providerCreds.team_id,
-              key_id: providerCreds.key_id,
-              private_key: providerCreds.private_key,
-              authorize_scopes: providerMeta.authorize_scopes,
-            };
-          }
-
-          await identity.updateIdentityProvider(params).promise();
-        } catch (e) {
-          throw e;
         }
+
+        await identity.updateIdentityProvider(params).promise();
       } else {
         try {
           if (stackName) {
