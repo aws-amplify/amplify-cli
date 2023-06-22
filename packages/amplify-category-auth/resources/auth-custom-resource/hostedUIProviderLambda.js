@@ -40,9 +40,9 @@ async function handleEvent(event, context) {
         try {
           if (stackName) {
             const { StackResources } = await cloudformation.describeStackResources({ StackName: stackName }).promise();
-            const resource = StackResources.find((resource) => {
-              resource.LogicalResourceId === `HostedUI${providerMeta.ProviderName}ProviderResource`;
-            });
+            const resource = StackResources.find(
+              (resource) => resource.LogicalResourceId === `HostedUI${providerMeta.ProviderName}ProviderResource`,
+            );
             const params = { ProviderName: providerMeta.ProviderName, UserPoolId: userPoolId };
 
             if (!resource) {
