@@ -7,7 +7,7 @@ import execa from 'execa';
 import { v4 as uuid } from 'uuid';
 import { getLayerDirectoryName, LayerDirectoryType } from '..';
 
-export * from './add-circleci-tags';
+export * from './add-ci-cleanup-tags';
 export * from './api';
 export * from './appsync';
 export * from './auth-utils';

@@ -2,7 +2,6 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
@@ -53,9 +52,6 @@ describe('@model with relational transformer', () => {
           new BelongsToTransformer(),
           new AuthTransformer(),
         ],
-        featureFlags: {
-          getBoolean: (name) => (name === 'improvePluralization' ? true : false),
-        } as FeatureFlagProvider,
       });
       const out = transformer.transform(validSchema);
 
