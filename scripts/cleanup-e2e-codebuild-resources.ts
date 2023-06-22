@@ -1,27 +1,20 @@
-/* eslint-disable camelcase */
-/* eslint-disable spellcheck/spell-checker */
-import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
-import { config } from 'dotenv';
-import yargs from 'yargs';
-import * as aws from 'aws-sdk';
-import _ from 'lodash';
+import {
+  Amplify,
+  AppSync,
+  CloudFormation,
+  CodeBuild,
+  CognitoIdentityServiceProvider,
+  IAM,
+  Organizations,
+  Pinpoint,
+  S3,
+  STS,
+} from 'aws-sdk';
 import fs from 'fs-extra';
+import _ from 'lodash';
 import path from 'path';
-import { deleteS3Bucket, sleep } from '@aws-amplify/amplify-e2e-core';
-
-// Ensure that scripts/cci-utils.ts is also updated when this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-west-3',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-northeast-2',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
+import yargs from 'yargs';
+import { AWS_REGIONS_TO_RUN_TESTS } from './cci-utils';
 
 const AWS_REGIONS_TO_RUN_TESTS_PINPOINT = AWS_REGIONS_TO_RUN_TESTS.filter((region) => region !== 'eu-west-3');
 
@@ -44,25 +37,13 @@ const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
 const ORPHAN = '<orphan>';
 const UNKNOWN = '<unknown>';
 
-type CircleCIJobDetails = {
-  build_url: string;
-  branch: string;
-  build_num: number;
-  outcome: string;
-  canceled: string;
-  infrastructure_fail: boolean;
-  status: string;
-  committer_name: null;
-  workflows: { workflow_id: string };
-};
-
 type StackInfo = {
   stackName: string;
   stackStatus: string;
   resourcesFailedToDelete?: string[];
   tags: Record<string, string>;
   region: string;
-  cciInfo: CircleCIJobDetails;
+  cbInfo?: CodeBuild.Build;
 };
 
 type AmplifyAppInfo = {
@@ -73,44 +54,43 @@ type AmplifyAppInfo = {
 };
 
 type S3BucketInfo = {
-  name: string;
-  cciInfo?: CircleCIJobDetails;
-  createTime: Date;
+  name?: string;
+  cbInfo?: CodeBuild.Build;
+  createTime?: Date;
 };
 
 type UserPoolInfo = {
-  name: string;
+  name?: string;
   region: string;
-  userPoolId: string;
+  userPoolId?: string;
 };
 
 type PinpointAppInfo = {
   id: string;
-  name: string;
+  name?: string;
   arn: string;
   region: string;
-  cciInfo?: CircleCIJobDetails;
+  cbInfo?: CodeBuild.Build;
   createTime: Date;
 };
 
 type IamRoleInfo = {
   name: string;
-  cciInfo?: CircleCIJobDetails;
+  cbInfo?: CodeBuild.Build;
   createTime: Date;
 };
 
 type AppSyncApiInfo = {
-  apiId: string;
-  name: string;
+  apiId?: string;
+  name?: string;
   region: string;
-  cciInfo?: CircleCIJobDetails;
+  cbInfo?: CodeBuild.Build;
 };
 
 type ReportEntry = {
   jobId?: string;
   workflowId?: string;
-  lifecycle?: string;
-  cciJobDetails?: CircleCIJobDetails;
+  cbInfo?: CodeBuild.Build;
   amplifyApps: AmplifyAppInfo[];
   stacks: StackInfo[];
   buckets: Record<string, S3BucketInfo>;
@@ -122,12 +102,11 @@ type ReportEntry = {
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
 
-type CCIJobInfo = {
+type CIJobInfo = {
   workflowId: string;
   workflowName: string;
-  lifecycle: string;
-  cciJobDetails: string;
-  status: string;
+  ciJobDetails: string;
+  buildStatus: string;
 };
 
 type AWSAccountInfo = {
@@ -157,33 +136,39 @@ const handleExpiredTokenException = (): void => {
  * @param created
  * @returns
  */
-const isStale = (created: Date): boolean => {
+const isStale = (created: string | Date | undefined): boolean => {
+  let normalizedDate;
+  if (typeof created === 'string') {
+    normalizedDate = new Date(created);
+  } else {
+    normalizedDate = created;
+  }
   const now = new Date().getTime();
-  const isStale = now - created.getTime() > STALE_DURATION_MS;
+  const isStale = normalizedDate ? now - normalizedDate.getTime() > STALE_DURATION_MS : false;
   return isStale;
 };
 
 /**
  * We define a resource as viable for deletion if it matches TEST_REGEX in the name, and if it is > STALE_DURATION_MS old.
  */
-const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
-  const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
+const testBucketStalenessFilter = (resource: S3.Bucket): boolean => {
+  const isTestResource = !!resource?.Name?.match(BUCKET_TEST_REGEX);
   return isTestResource && isStale(resource.CreationDate);
 };
 
-const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
-  const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
+const testRoleStalenessFilter = (resource: IAM.Role): boolean => {
+  const isTestResource = !!resource?.RoleName?.match(IAM_TEST_REGEX);
   return isTestResource && isStale(resource.CreateDate);
 };
 
-const testUserPoolStalenessFilter = (resource: aws.CognitoIdentityServiceProvider.UserPoolDescriptionType): boolean => {
-  const isTestResource = resource.Name.match(USER_POOL_TEST_REGEX);
+const testUserPoolStalenessFilter = (resource: CognitoIdentityServiceProvider.UserPoolDescriptionType): boolean => {
+  const isTestResource = !!resource?.Name?.match(USER_POOL_TEST_REGEX);
   return isTestResource && isStale(resource.CreationDate);
 };
 
-const testAppSyncApiStalenessFilter = (resource: aws.AppSync.GraphqlApi): boolean => {
-  const isTestResource = resource.name.match(APPSYNC_TEST_REGEX);
-  const createTimeTagValue = resource.tags['circleci:create_time'];
+const testAppSyncApiStalenessFilter = (resource: AppSync.GraphqlApi): boolean => {
+  const isTestResource = !!resource?.name?.match(APPSYNC_TEST_REGEX);
+  const createTimeTagValue = resource?.tags?.['codebuild:create_time'];
   let isStaleResource = true;
   if (createTimeTagValue) {
     const createTime = new Date(createTimeTagValue);
@@ -192,49 +177,45 @@ const testAppSyncApiStalenessFilter = (resource: aws.AppSync.GraphqlApi): boolea
   return isTestResource && isStaleResource;
 };
 
-const testPinpointAppStalenessFilter = (resource: aws.Pinpoint.ApplicationResponse): boolean => {
-  const isTestResource = resource.Name.match(PINPOINT_TEST_REGEX);
-  return isTestResource && isStale(new Date(resource.CreationDate));
+const testPinpointAppStalenessFilter = (resource: Pinpoint.ApplicationResponse): boolean => {
+  const isTestResource = !!(resource.Name.match(PINPOINT_TEST_REGEX) && resource.CreationDate);
+  return isTestResource && isStale(resource.CreationDate);
 };
 
 /**
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
 const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new aws.S3(getAWSConfig(account));
+  const s3Client = new S3(getAWSConfig(account));
   const listBucketResponse = await s3Client.listBuckets().promise();
-  const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
-  return staleBuckets.map((it) => ({ name: it.Name, createTime: it.CreationDate }));
+  const staleBuckets = listBucketResponse?.Buckets?.filter(testBucketStalenessFilter);
+  return staleBuckets?.map((it) => ({ name: it.Name, createTime: it.CreationDate })) ?? [];
 };
 
 /**
  * Get all iam roles in the account, and filter down to the ones we consider stale.
  */
 const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
-  const iamClient = new aws.IAM(getAWSConfig(account));
+  const iamClient = new IAM(getAWSConfig(account));
   const listRoleResponse = await iamClient.listRoles({ MaxItems: 1000 }).promise();
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map((it) => ({ name: it.RoleName, createTime: it.CreateDate }));
 };
 
 const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: string): Promise<PinpointAppInfo[]> => {
-  const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
+  const pinpoint = new Pinpoint(getAWSConfig(account, region));
   const apps: PinpointAppInfo[] = [];
-  let nextToken = null;
+  let nextToken = undefined;
 
   do {
-    const result = await pinpoint
-      .getApps({
-        Token: nextToken,
-      })
-      .promise();
+    const result: Pinpoint.GetAppsResponse = await pinpoint.getApps({ Token: nextToken }).promise();
     apps.push(
-      ...result.ApplicationsResponse.Item.filter(testPinpointAppStalenessFilter).map((it) => ({
+      ...(result.ApplicationsResponse?.Item || []).filter(testPinpointAppStalenessFilter).map((it) => ({
         id: it.Id,
         name: it.Name,
         arn: it.Arn,
         region,
-        createTime: new Date(it.CreationDate),
+        createTime: new Date(it?.CreationDate ?? 'Invalid Date'),
       })),
     );
 
@@ -245,26 +226,26 @@ const getOrphanPinpointApplications = async (account: AWSAccountInfo, region: st
 };
 
 const getOrphanUserPools = async (account: AWSAccountInfo, region: string): Promise<UserPoolInfo[]> => {
-  const cognitoClient = new aws.CognitoIdentityServiceProvider(getAWSConfig(account, region));
+  const cognitoClient = new CognitoIdentityServiceProvider(getAWSConfig(account, region));
   const userPools = await cognitoClient.listUserPools({ MaxResults: 60 }).promise();
-  const staleUserPools = userPools.UserPools.filter(testUserPoolStalenessFilter);
-  return staleUserPools.map((it) => ({ name: it.Name, userPoolId: it.Id, region }));
+  const staleUserPools = userPools?.UserPools?.filter(testUserPoolStalenessFilter);
+  return staleUserPools?.map((it) => ({ name: it.Name, userPoolId: it.Id, region })) ?? [];
 };
 
 /**
  * Get all AppSync Apis in the account, and filter down to the ones we consider stale.
  */
 const getOrphanAppSyncApis = async (account: AWSAccountInfo, region: string): Promise<AppSyncApiInfo[]> => {
-  const appSyncClient = new aws.AppSync(getAWSConfig(account, region));
+  const appSyncClient = new AppSync(getAWSConfig(account, region));
   const listApisResponse = await appSyncClient.listGraphqlApis({ maxResults: 25 }).promise();
-  const staleApis = listApisResponse.graphqlApis.filter(testAppSyncApiStalenessFilter);
-  return staleApis.map((it) => ({ apiId: it.apiId, name: it.name, region }));
+  const staleApis = listApisResponse?.graphqlApis?.filter(testAppSyncApiStalenessFilter);
+  return staleApis?.map((it) => ({ apiId: it.apiId, name: it.name, region })) ?? [];
 };
 
 /**
  * Get the relevant AWS config object for a given account and region.
  */
-const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): unknown => ({
+const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string) => ({
   credentials: {
     accessKeyId,
     secretAccessKey,
@@ -275,17 +256,92 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
 });
 
 /**
+ * delete an S3 bucket, copied from amplify-e2e-core
+ */
+const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | undefined = undefined) => {
+  const s3 = providedS3Client || new S3();
+  let continuationToken: Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> | undefined = undefined;
+  const objectKeyAndVersion = <S3.ObjectIdentifier[]>[];
+  let truncated = true;
+  while (truncated) {
+    const results: S3.ListObjectVersionsOutput = await s3
+      .listObjectVersions({
+        Bucket: bucket,
+        ...(continuationToken ? continuationToken : {}),
+      })
+      .promise();
+
+    results.Versions?.forEach(({ Key, VersionId }) => {
+      if (Key) {
+        objectKeyAndVersion.push({ Key, VersionId });
+      }
+    });
+
+    results.DeleteMarkers?.forEach(({ Key, VersionId }) => {
+      if (Key) {
+        objectKeyAndVersion.push({ Key, VersionId });
+      }
+    });
+
+    continuationToken = { KeyMarker: results.NextKeyMarker, VersionIdMarker: results.NextVersionIdMarker };
+    truncated = !!results.IsTruncated;
+  }
+  const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
+  const deleteReq = chunkedResult
+    .map((r: S3.ObjectIdentifier[]) => ({
+      Bucket: bucket,
+      Delete: {
+        Objects: r,
+        Quiet: true,
+      },
+    }))
+    .map((delParams: S3.DeleteObjectsRequest) => s3.deleteObjects(delParams).promise());
+  await Promise.all(deleteReq);
+  await s3
+    .deleteBucket({
+      Bucket: bucket,
+    })
+    .promise();
+  await bucketNotExists(bucket);
+};
+
+/**
+ * Copied from amplify-e2e-core
+ */
+const bucketNotExists = async (bucket: string) => {
+  const s3 = new S3();
+  const params = {
+    Bucket: bucket,
+    $waiter: { maxAttempts: 10, delay: 30 },
+  };
+  try {
+    await s3.waitFor('bucketNotExists', params).promise();
+    return true;
+  } catch (error) {
+    if (error.statusCode === 200) {
+      return false;
+    }
+    throw error;
+  }
+};
+
+/**
+ * Copied from amplify-e2e-core
+ */
+const sleep = async (milliseconds: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+/**
  * Returns a list of Amplify Apps in the region. The apps includes information about the CircleCI build that created the app
  * This is determined by looking at tags of the backend environments that are associated with the Apps
  * @param account aws account to query for amplify Apps
  * @param region aws region to query for amplify Apps
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
-const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
+const getAmplifyApps = async (account: AWSAccountInfo, region: string, cbClient: CodeBuild): Promise<AmplifyAppInfo[]> => {
   if (region === 'us-east-1' && account.parent) {
     return []; // temporarily disabled until us-east-1 is re-enabled for this account
   }
-  const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
+  const amplifyClient = new Amplify(getAWSConfig(account, region));
   try {
     const amplifyApps = await amplifyClient.listApps({ maxResults: 25 }).promise(); // keeping it to 25 as max supported is 25
     const result: AmplifyAppInfo[] = [];
@@ -297,9 +353,11 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
       try {
         const backendEnvironments = await amplifyClient.listBackendEnvironments({ appId: app.appId, maxResults: 5 }).promise();
         for (const backendEnv of backendEnvironments.backendEnvironments) {
-          const buildInfo = await getStackDetails(backendEnv.stackName, account, region);
-          if (buildInfo) {
-            backends[backendEnv.environmentName] = buildInfo;
+          if (backendEnv.stackName) {
+            const buildInfo = await getStackDetails(backendEnv.stackName, account, region, cbClient);
+            if (buildInfo) {
+              backends[backendEnv.environmentName] = buildInfo;
+            }
           }
         }
       } catch (e) {
@@ -320,18 +378,18 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
 };
 
 /**
- * Return the CircleCI job id looking at `circleci:build_id` in the tags
+ * Return the job id looking at `codebuild:build_id` in the tags
  * @param tags Tags associated with the resource
  * @returns build number or undefined
  */
-const getJobId = (tags: aws.CloudFormation.Tags = []): number | undefined => {
-  const jobId = tags.find((tag) => tag.Key === 'circleci:build_id')?.Value;
-  return jobId && Number.parseInt(jobId, 10);
+const getJobId = (tags: CloudFormation.Tags = []): string | undefined => {
+  const jobId = tags.find((tag) => tag.Key === 'codebuild:build_id')?.Value;
+  return jobId;
 };
 
 /**
- * Gets detail about a stack including the details about CircleCI job that created the stack. If a stack
- * has status of `DELETE_FAILED` then it also includes the list of physical id of resources that caused
+ * Gets details about a stack and CI job that created the stack. If a stack has status of
+ * `DELETE_FAILED` then it also includes the list of physical id of resources that caused
  * deletion failures
  *
  * @param stackName name of the stack
@@ -339,18 +397,17 @@ const getJobId = (tags: aws.CloudFormation.Tags = []): number | undefined => {
  * @param region region
  * @returns stack details
  */
-const getStackDetails = async (stackName: string, account: AWSAccountInfo, region: string): Promise<StackInfo | void> => {
-  const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
+const getStackDetails = async (stackName: string, account: AWSAccountInfo, region: string, cbClient: CodeBuild): Promise<StackInfo> => {
+  const cfnClient = new CloudFormation(getAWSConfig(account, region));
   const stack = await cfnClient.describeStacks({ StackName: stackName }).promise();
-  const tags = stack.Stacks.length && stack.Stacks[0].Tags;
-  const stackStatus = stack.Stacks[0].StackStatus;
+  const tags = stack?.Stacks?.[0].Tags ?? [];
+  const stackStatus = stack?.Stacks?.[0]?.StackStatus ?? 'UNDEFINED';
   let resourcesFailedToDelete: string[] = [];
   if (stackStatus === 'DELETE_FAILED') {
     // Todo: We need to investigate if we should go ahead and remove the resources to prevent account getting cluttered
     const resources = await cfnClient.listStackResources({ StackName: stackName }).promise();
-    resourcesFailedToDelete = resources.StackResourceSummaries.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map(
-      (r) => r.LogicalResourceId,
-    );
+    resourcesFailedToDelete =
+      resources?.StackResourceSummaries?.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map((r) => r.LogicalResourceId) ?? [];
   }
   const jobId = getJobId(tags);
   return {
@@ -359,12 +416,12 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
     resourcesFailedToDelete,
     region,
     tags: tags.reduce((acc, tag) => ({ ...acc, [tag.Key]: tag.Value }), {}),
-    cciInfo: jobId && (await getJobCircleCIDetails(jobId)),
+    cbInfo: jobId ? await getCIJobDetails(jobId, cbClient) : undefined,
   };
 };
 
-const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
-  const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
+const getStacks = async (account: AWSAccountInfo, region: string, cbClient: CodeBuild): Promise<StackInfo[]> => {
+  const cfnClient = new CloudFormation(getAWSConfig(account, region));
   const stackStatusFilter = [
     'CREATE_COMPLETE',
     'ROLLBACK_FAILED',
@@ -384,16 +441,20 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
     .promise();
   // loop
   let nextToken = stacks.NextToken;
-  while (nextToken && stacks.StackSummaries.length < DELETE_LIMITS.PER_REGION.CFN_STACK) {
+  while (nextToken && stacks?.StackSummaries?.length && stacks.StackSummaries.length < DELETE_LIMITS.PER_REGION.CFN_STACK) {
     const nextPage = await cfnClient
       .listStacks({
         StackStatusFilter: stackStatusFilter,
         NextToken: nextToken,
       })
       .promise();
-    stacks.StackSummaries.push(...nextPage.StackSummaries);
-    nextToken = nextPage.NextToken;
+    if (nextPage?.StackSummaries?.length) {
+      stacks.StackSummaries.push(...nextPage.StackSummaries);
+      nextToken = nextPage.NextToken;
+    }
   }
+
+  stacks.StackSummaries = stacks.StackSummaries || [];
 
   // We are interested in only the root stacks that are deployed by amplify-cli
   // NOTE: every few months, we should disable the filter , and clean up all stacks (not just root stacks)
@@ -415,7 +476,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   const results: StackInfo[] = [];
   for (const stack of rootStacks) {
     try {
-      const details = await getStackDetails(stack.StackName, account, region);
+      const details = await getStackDetails(stack.StackName, account, region, cbClient);
       if (details) {
         results.push(details);
       }
@@ -426,49 +487,31 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   return results;
 };
 
-const getCircleCIClient = (): CircleCI => {
-  const options: CircleCIOptions = {
-    token: process.env.CIRCLECI_TOKEN,
-    vcs: {
-      repo: process.env.CIRCLE_PROJECT_REPONAME,
-      owner: process.env.CIRCLE_PROJECT_USERNAME,
-      type: GitType.GITHUB,
-    },
-  };
-  return new CircleCI(options);
+const getCIJobDetails = async (build_id: string, cbClient: CodeBuild): Promise<CodeBuild.Build | undefined> => {
+  const batchBuilds = await cbClient.batchGetBuilds({ ids: [build_id] }).promise();
+  const buildInfo = batchBuilds?.builds?.[0];
+
+  return buildInfo;
 };
 
-const getJobCircleCIDetails = async (jobId: number): Promise<CircleCIJobDetails> => {
-  const client = getCircleCIClient();
-  const result = await client.build(jobId);
-
-  const r = _.pick(result, [
-    'build_url',
-    'branch',
-    'build_num',
-    'outcome',
-    'canceled',
-    'infrastructure_fail',
-    'status',
-    'committer_name',
-    'workflows.workflow_id',
-    'lifecycle',
-  ]) as unknown as CircleCIJobDetails;
-  return r;
-};
-
-const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new aws.S3(getAWSConfig(account));
+const getS3Buckets = async (account: AWSAccountInfo, cbClient: CodeBuild): Promise<S3BucketInfo[]> => {
+  const s3Client = new S3(getAWSConfig(account));
   const buckets = await s3Client.listBuckets().promise();
+  if (buckets.Buckets === undefined) {
+    return [];
+  }
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
+    if (!bucket.Name) {
+      continue;
+    }
     try {
       const bucketDetails = await s3Client.getBucketTagging({ Bucket: bucket.Name }).promise();
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
         result.push({
           name: bucket.Name,
-          cciInfo: await getJobCircleCIDetails(jobId),
+          cbInfo: await getCIJobDetails(jobId, cbClient),
           createTime: bucket.CreationDate,
         });
       }
@@ -486,22 +529,21 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
 };
 
 /**
- * extract and moves CircleCI job details
+ * extract and moves CI job details
  */
-const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): CCIJobInfo => ({
-  workflowId: _.get(record, ['0', 'cciInfo', 'workflows', 'workflow_id']),
-  workflowName: _.get(record, ['0', 'cciInfo', 'workflows', 'workflow_name']),
-  lifecycle: _.get(record, ['0', 'cciInfo', 'lifecycle']),
-  cciJobDetails: _.get(record, ['0', 'cciInfo']),
-  status: _.get(record, ['0', 'cciInfo', 'status']),
+const extractCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): CIJobInfo => ({
+  workflowId: _.get(record, ['0', 'cbInfo', 'workflows', 'workflow_id']),
+  workflowName: _.get(record, ['0', 'cbInfo', 'workflows', 'workflow_name']),
+  buildStatus: _.get(record, ['0', 'cbInfo', 'buildStatus']),
+  ciJobDetails: _.get(record, ['0', 'cbInfo']),
 });
 
 /**
- * Merges stale resources and returns a list grouped by the CircleCI jobId. Amplify Apps that don't have
- * any backend environment are grouped as Orphan apps and apps that have Backend created by different CircleCI jobs are
- * grouped as MULTI_JOB_APP. Any resource that do not have a CircleCI job is grouped under UNKNOWN
+ * Merges stale resources and returns a list grouped by the CI jobId. Amplify Apps that don't have
+ * any backend environment are grouped as Orphan apps and apps that have Backend created by different CI jobs are
+ * grouped as MULTI_JOB_APP. Any resource that do not have a CI job is grouped under UNKNOWN
  */
-const mergeResourcesByCCIJob = (
+const mergeResourcesByCIJob = (
   amplifyApp: AmplifyAppInfo[],
   cfnStacks: StackInfo[],
   s3Buckets: S3BucketInfo[],
@@ -513,16 +555,16 @@ const mergeResourcesByCCIJob = (
 ): Record<string, ReportEntry> => {
   const result: Record<string, ReportEntry> = {};
 
-  const stacksByJobId = _.groupBy(cfnStacks, (stack: StackInfo) => _.get(stack, ['cciInfo', 'build_num'], UNKNOWN));
+  const stacksByJobId = _.groupBy(cfnStacks, (stack: StackInfo) => _.get(stack, ['cbInfo', 'id'], UNKNOWN));
 
-  const bucketByJobId = _.groupBy(s3Buckets, (bucketInfo: S3BucketInfo) => _.get(bucketInfo, ['cciInfo', 'build_num'], UNKNOWN));
+  const bucketByJobId = _.groupBy(s3Buckets, (bucketInfo: S3BucketInfo) => _.get(bucketInfo, ['cbInfo', 'id'], UNKNOWN));
 
   const amplifyAppByJobId = _.groupBy(amplifyApp, (appInfo: AmplifyAppInfo) => {
     if (Object.keys(appInfo.backends).length === 0) {
       return ORPHAN;
     }
 
-    const buildIds = _.groupBy(appInfo.backends, (backendInfo) => _.get(backendInfo, ['cciInfo', 'build_num'], UNKNOWN));
+    const buildIds = _.groupBy(appInfo.backends, (backendInfo: StackInfo) => _.get(backendInfo, ['cbInfo', 'id'], UNKNOWN));
     if (Object.keys(buildIds).length === 1) {
       return Object.keys(buildIds)[0];
     }
@@ -532,10 +574,10 @@ const mergeResourcesByCCIJob = (
 
   _.mergeWith(
     result,
-    _.pickBy(amplifyAppByJobId, (__, key) => key !== MULTI_JOB_APP),
-    (val, src, key) => ({
+    _.pickBy(amplifyAppByJobId, (__: unknown, key: string) => key !== MULTI_JOB_APP),
+    (val, src: AmplifyAppInfo, key: string) => ({
       ...val,
-      ...extractCCIJobInfo(src),
+      ...extractCIJobInfo(src),
       jobId: key,
       amplifyApps: src,
     }),
@@ -545,17 +587,17 @@ const mergeResourcesByCCIJob = (
     result,
     stacksByJobId,
     (__: unknown, key: string) => key !== ORPHAN,
-    (val, src, key) => ({
+    (val: any, src: StackInfo, key: string) => ({
       ...val,
-      ...extractCCIJobInfo(src),
+      ...extractCIJobInfo(src),
       jobId: key,
       stacks: src,
     }),
   );
 
-  _.mergeWith(result, bucketByJobId, (val, src, key) => ({
+  _.mergeWith(result, bucketByJobId, (val: any, src: S3BucketInfo, key: string) => ({
     ...val,
-    ...extractCCIJobInfo(src),
+    ...extractCIJobInfo(src),
     jobId: key,
     buckets: src,
   }));
@@ -564,7 +606,7 @@ const mergeResourcesByCCIJob = (
     [ORPHAN]: orphanS3Buckets,
   };
 
-  _.mergeWith(result, orphanBuckets, (val, src, key) => ({
+  _.mergeWith(result, orphanBuckets, (val: any, src: S3BucketInfo, key: string) => ({
     ...val,
     jobId: key,
     buckets: src,
@@ -574,7 +616,7 @@ const mergeResourcesByCCIJob = (
     [ORPHAN]: orphanIamRoles,
   };
 
-  _.mergeWith(result, orphanIamRolesGroup, (val, src, key) => ({
+  _.mergeWith(result, orphanIamRolesGroup, (val: any, src: IamRoleInfo, key: string) => ({
     ...val,
     jobId: key,
     roles: src,
@@ -584,7 +626,7 @@ const mergeResourcesByCCIJob = (
     [ORPHAN]: orphanPinpointApplications,
   };
 
-  _.mergeWith(result, orphanPinpointApps, (val, src, key) => ({
+  _.mergeWith(result, orphanPinpointApps, (val: any, src: PinpointAppInfo, key: string) => ({
     ...val,
     jobId: key,
     pinpointApps: src,
@@ -595,7 +637,7 @@ const mergeResourcesByCCIJob = (
     {
       [ORPHAN]: orphanAppSyncApis,
     },
-    (val, src, key) => ({
+    (val: any, src: AppSyncApiInfo, key: string) => ({
       ...val,
       jobId: key,
       appSyncApis: src,
@@ -607,7 +649,7 @@ const mergeResourcesByCCIJob = (
     {
       [ORPHAN]: orphanUserPools,
     },
-    (val, src, key) => ({
+    (val: any, src: UserPoolInfo, key: string) => ({
       ...val,
       jobId: key,
       userPools: src,
@@ -624,7 +666,7 @@ const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, 
 const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo): Promise<void> => {
   const { name, appId, region } = app;
   console.log(`[ACCOUNT ${accountIndex}] Deleting App ${name}(${appId})`);
-  const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
+  const amplifyClient = new Amplify(getAWSConfig(account, region));
   try {
     await amplifyClient.deleteApp({ appId }).promise();
   } catch (e) {
@@ -644,7 +686,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role ${roleName}`);
     console.log(`Role creation time (PST): ${role.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
-    const iamClient = new aws.IAM(getAWSConfig(account));
+    const iamClient = new IAM(getAWSConfig(account));
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.deleteRole({ RoleName: roleName }).promise();
@@ -657,31 +699,35 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
 };
 
 const deleteAttachedRolePolicies = async (account: AWSAccountInfo, accountIndex: number, roleName: string): Promise<void> => {
-  const iamClient = new aws.IAM(getAWSConfig(account));
+  const iamClient = new IAM(getAWSConfig(account));
   const rolePolicies = await iamClient.listAttachedRolePolicies({ RoleName: roleName }).promise();
-  await Promise.all(rolePolicies.AttachedPolicies.map((policy) => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
+  if (rolePolicies?.AttachedPolicies) {
+    await Promise.all(rolePolicies.AttachedPolicies.map((policy) => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
+  }
 };
 
 const detachIamAttachedRolePolicy = async (
   account: AWSAccountInfo,
   accountIndex: number,
   roleName: string,
-  policy: aws.IAM.AttachedPolicy,
+  policy: IAM.AttachedPolicy,
 ): Promise<void> => {
-  try {
-    console.log(`[ACCOUNT ${accountIndex}] Detach Iam Attached Role Policy ${policy.PolicyName}`);
-    const iamClient = new aws.IAM(getAWSConfig(account));
-    await iamClient.detachRolePolicy({ RoleName: roleName, PolicyArn: policy.PolicyArn }).promise();
-  } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
-    if (e.code === 'ExpiredTokenException') {
-      handleExpiredTokenException();
+  if (policy?.PolicyArn) {
+    try {
+      console.log(`[ACCOUNT ${accountIndex}] Detach Iam Attached Role Policy ${policy.PolicyName}`);
+      const iamClient = new IAM(getAWSConfig(account));
+      await iamClient.detachRolePolicy({ RoleName: roleName, PolicyArn: policy.PolicyArn }).promise();
+    } catch (e) {
+      console.log(`[ACCOUNT ${accountIndex}] Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
+      if (e.code === 'ExpiredTokenException') {
+        handleExpiredTokenException();
+      }
     }
   }
 };
 
 const deleteRolePolicies = async (account: AWSAccountInfo, accountIndex: number, roleName: string): Promise<void> => {
-  const iamClient = new aws.IAM(getAWSConfig(account));
+  const iamClient = new IAM(getAWSConfig(account));
   const rolePolicies = await iamClient.listRolePolicies({ RoleName: roleName }).promise();
   await Promise.all(rolePolicies.PolicyNames.map((policy) => deleteIamRolePolicy(account, accountIndex, roleName, policy)));
 };
@@ -689,7 +735,7 @@ const deleteRolePolicies = async (account: AWSAccountInfo, accountIndex: number,
 const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number, roleName: string, policyName: string): Promise<void> => {
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Iam Role Policy ${policyName}`);
-    const iamClient = new aws.IAM(getAWSConfig(account));
+    const iamClient = new IAM(getAWSConfig(account));
     await iamClient.deleteRolePolicy({ RoleName: roleName, PolicyName: policyName }).promise();
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting iam role policy ${policyName} failed with error ${e.message}`);
@@ -704,16 +750,18 @@ const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buck
 };
 
 const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3BucketInfo): Promise<void> => {
-  const { name } = bucket;
-  try {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${name}`);
-    console.log(`Bucket creation time (PST): ${bucket.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
-    const s3 = new aws.S3(getAWSConfig(account));
-    await deleteS3Bucket(name, s3);
-  } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
-    if (e.code === 'ExpiredTokenException') {
-      handleExpiredTokenException();
+  const { createTime, name } = bucket;
+  if (name) {
+    try {
+      console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${name}`);
+      console.log(`Bucket creation time (PST): ${createTime?.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
+      const s3 = new S3(getAWSConfig(account));
+      await deleteS3Bucket(name, s3);
+    } catch (e) {
+      console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
+      if (e.code === 'ExpiredTokenException') {
+        handleExpiredTokenException();
+      }
     }
   }
 };
@@ -727,7 +775,7 @@ const deletePinpointApp = async (account: AWSAccountInfo, accountIndex: number, 
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting Pinpoint App ${name}`);
     console.log(`Pinpoint creation time (PST): ${app.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
-    const pinpoint = new aws.Pinpoint(getAWSConfig(account, region));
+    const pinpoint = new Pinpoint(getAWSConfig(account, region));
     await pinpoint.deleteApp({ ApplicationId: id }).promise();
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting pinpoint app ${name} failed with error ${e.message}`);
@@ -740,12 +788,14 @@ const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, 
 
 const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, api: AppSyncApiInfo): Promise<void> => {
   const { apiId, name, region } = api;
-  try {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name}`);
-    const appSync = new aws.AppSync(getAWSConfig(account, region));
-    await appSync.deleteGraphqlApi({ apiId }).promise();
-  } catch (e) {
-    console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name} failed with error ${e.message}`);
+  if (apiId) {
+    try {
+      console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name}`);
+      const appSync = new AppSync(getAWSConfig(account, region));
+      await appSync.deleteGraphqlApi({ apiId }).promise();
+    } catch (e) {
+      console.log(`[ACCOUNT ${accountIndex}] Deleting AppSync Api ${name} failed with error ${e.message}`);
+    }
   }
 };
 
@@ -755,11 +805,14 @@ const deleteUserPools = async (account: AWSAccountInfo, accountIndex: number, us
 
 const deleteUserPool = async (account: AWSAccountInfo, accountIndex: number, userPool: UserPoolInfo): Promise<void> => {
   const { name, region, userPoolId } = userPool;
+  if (!userPoolId) {
+    return;
+  }
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting UserPool ${name}`);
-    const cognitoClient = new aws.CognitoIdentityServiceProvider(getAWSConfig(account, region));
+    const cognitoClient = new CognitoIdentityServiceProvider(getAWSConfig(account, region));
     const userPoolDetails = await cognitoClient.describeUserPool({ UserPoolId: userPoolId }).promise();
-    if (userPoolDetails.UserPool.Domain) {
+    if (userPoolDetails?.UserPool?.Domain) {
       await cognitoClient
         .deleteUserPoolDomain({
           UserPoolId: userPoolId,
@@ -779,10 +832,10 @@ const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, st
 
 const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, stack: StackInfo): Promise<void> => {
   const { stackName, region, resourcesFailedToDelete } = stack;
-  const resourceToRetain = resourcesFailedToDelete.length ? resourcesFailedToDelete : undefined;
+  const resourceToRetain = resourcesFailedToDelete?.length ? resourcesFailedToDelete : undefined;
   console.log(`[ACCOUNT ${accountIndex}] Deleting CloudFormation stack ${stackName}`);
   try {
-    const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
+    const cfnClient = new CloudFormation(getAWSConfig(account, region));
     await cfnClient.deleteStack({ StackName: stackName, RetainResources: resourceToRetain }).promise();
     // we'll only wait up to a minute before moving on
     await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName, $waiter: { maxAttempts: 2 } }).promise();
@@ -852,25 +905,21 @@ const deleteResources = async (
 };
 
 /**
- * Grab the right CircleCI filter based on args passed in.
+ * Grab the right CI filter based on args passed in.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getFilterPredicate = (args: any): JobFilterPredicate => {
   const filterByJobId = (jobId: string) => (job: ReportEntry) => job.jobId === jobId;
   const filterByWorkflowId = (workflowId: string) => (job: ReportEntry) => job.workflowId === workflowId;
-  const filterAllStaleResources = () => (job: ReportEntry) => job.lifecycle === 'finished' || job.jobId === ORPHAN;
+  const filterAllStaleResources = () => (job: ReportEntry) => job?.cbInfo?.buildStatus === 'finished' || job.jobId === ORPHAN;
 
   if (args._.length === 0) {
     return filterAllStaleResources();
   }
   if (args._[0] === 'workflow') {
-    return filterByWorkflowId(args.workflowId as string);
+    return filterByWorkflowId(args.workflowId);
   }
   if (args._[0] === 'job') {
-    if (Number.isNaN(args.jobId)) {
-      throw new Error('job-id should be integer');
-    }
-    return filterByJobId((args.jobId as number).toString());
+    return filterByJobId(args.jobId);
   }
   throw Error('Invalid args config');
 };
@@ -880,35 +929,33 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
  * to get all accounts within the root account organization.
  */
 const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
-  const stsRes = new aws.STS({
+  const stsRes = new STS({
     apiVersion: '2011-06-15',
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: process.env.AWS_SESSION_TOKEN,
   });
   const parentAccountIdentity = await stsRes.getCallerIdentity().promise();
-  const orgApi = new aws.Organizations({
+  const orgApi = new Organizations({
     apiVersion: '2016-11-28',
     // the region where the organization exists
     region: 'us-east-1',
   });
   try {
     const orgAccounts = await orgApi.listAccounts().promise();
-    const allAccounts = orgAccounts.Accounts;
+    const allAccounts = orgAccounts.Accounts ?? [];
     let nextToken = orgAccounts.NextToken;
     while (nextToken) {
       const nextPage = await orgApi.listAccounts({ NextToken: nextToken }).promise();
+      if (!nextPage?.Accounts?.length) {
+        break;
+      }
       allAccounts.push(...nextPage.Accounts);
       nextToken = nextPage.NextToken;
     }
     const accountCredentialPromises = allAccounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
-        return {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          sessionToken: process.env.AWS_SESSION_TOKEN,
-          parent: true,
-        };
+        return getEnvVarCredentials();
       }
       const randomNumber = Math.floor(Math.random() * 100000);
       const assumeRoleRes = await stsRes
@@ -919,10 +966,15 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
           DurationSeconds: 1 * 60 * 60,
         })
         .promise();
+
+      const accessKeyId = assumeRoleRes?.Credentials?.AccessKeyId ?? '';
+      const secretAccessKey = assumeRoleRes?.Credentials?.SecretAccessKey ?? '';
+      const sessionToken = assumeRoleRes?.Credentials?.SessionToken ?? '';
+
       return {
-        accessKeyId: assumeRoleRes.Credentials.AccessKeyId,
-        secretAccessKey: assumeRoleRes.Credentials.SecretAccessKey,
-        sessionToken: assumeRoleRes.Credentials.SessionToken,
+        accessKeyId,
+        secretAccessKey,
+        sessionToken,
         parent: false,
       };
     });
@@ -932,21 +984,29 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     console.log(
       'Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.',
     );
-    return [
-      {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
-        parent: true,
-      },
-    ];
+
+    return [getEnvVarCredentials()];
   }
 };
 
+const getEnvVarCredentials = (): AWSAccountInfo => {
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_SESSION_TOKEN) {
+    throw Error('Credentials are missing in environment variables');
+  }
+
+  return {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
+    parent: true,
+  };
+};
+
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
-  const bucketPromise = getS3Buckets(account);
+  const cbClient = new CodeBuild(getAWSConfig(account));
+  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region, cbClient));
+  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region, cbClient));
+  const bucketPromise = getS3Buckets(account, cbClient);
   const orphanPinpointApplicationsPromise = AWS_REGIONS_TO_RUN_TESTS_PINPOINT.map((region) =>
     getOrphanPinpointApplications(account, region),
   );
@@ -964,7 +1024,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise)).flat();
   const orphanUserPools = (await Promise.all(orphanUserPoolsPromise)).flat();
 
-  const allResources = mergeResourcesByCCIJob(
+  const allResources = mergeResourcesByCIJob(
     apps,
     stacks,
     buckets,
@@ -1002,25 +1062,24 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
 const cleanup = async (): Promise<void> => {
   const args = yargs
     .command('*', 'clean up all the stale resources')
-    .command('workflow <workflow-id>', 'clean all the resources created by workflow', (_yargs) => {
+    .command('workflow <workflow-id>', 'clean all the resources created by workflow', (_yargs: yargs.Argv<{}>) => {
       _yargs.positional('workflowId', {
         describe: 'Workflow Id of the workflow',
         type: 'string',
         demandOption: '',
       });
     })
-    .command('job <jobId>', 'clean all the resource created by a job', (_yargs) => {
+    .command('job <jobId>', 'clean all the resource created by a job', (_yargs: yargs.Argv<{}>) => {
       _yargs.positional('jobId', {
         describe: 'job id of the job',
         type: 'number',
       });
     })
     .help().argv;
-  config();
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 3; ++i) {
     console.log('CLEANUP ROUND: ', i + 1);
     await Promise.all(
       accounts.map((account, i) => {

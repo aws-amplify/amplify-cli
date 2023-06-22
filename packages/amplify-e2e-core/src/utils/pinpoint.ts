@@ -1,6 +1,6 @@
 import { Pinpoint } from 'aws-sdk';
 import { EOL } from 'os';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
+import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCICleanupTags, KEY_DOWN_ARROW } from '..';
 
 const settings = {
   name: EOL,
@@ -56,7 +56,7 @@ export async function pinpointAppExist(pinpointProjectId: string, region: string
  * initializes a project to test pinpoint
  */
 export function initProjectForPinpoint(cwd: string): Promise<void> {
-  addCircleCITags(cwd);
+  addCICleanupTags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
