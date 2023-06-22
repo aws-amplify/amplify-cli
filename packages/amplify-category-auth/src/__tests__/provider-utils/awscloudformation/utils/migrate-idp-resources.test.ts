@@ -59,19 +59,19 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/generate-user-pool
 describe('migrateResourcesToCfn', () => {
   describe('when idps exist with lambda and not migrated', () => {
     it('returns true', () => {
-      expect(migrateResourcesToCfn('authtest1')).toBe(true);
+      expect(migrateResourcesToCfn('authtest1', [])).toBe(true);
     });
   });
 
   describe('when idps do not exist', () => {
     it('returns false', () => {
-      expect(migrateResourcesToCfn('newapp')).toBe(false);
+      expect(migrateResourcesToCfn('newapp', [])).toBe(false);
     });
   });
 
   describe('when idps in migration step', () => {
     it('returns false', () => {
-      expect(migrateResourcesToCfn('authtest2')).toBe(false);
+      expect(migrateResourcesToCfn('authtest2', [])).toBe(false);
     });
   });
 });
