@@ -18,7 +18,6 @@
     "@types/glob": "^7.2.0",
     "@types/js-yaml": "^4.0.4",
     "@types/node": "^16.11.5",
-    "@types/yargs": "^17.0.24",
     "@yarnpkg/parsers": "^3.0.0-rc.44",
     "axios": "^0.26.0",
     "execa": "^5.1.1",
@@ -33,8 +32,5 @@
       "@yarn/plugin-typescript"
     ]
   },
-  "packageManager": "yarn@3.5.0",
-  "devDependencies": {
-    "yargs": "^17.7.2"
-  }
+  "packageManager": "yarn@3.5.0"
 }
