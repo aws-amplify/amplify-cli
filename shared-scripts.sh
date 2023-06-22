@@ -529,7 +529,7 @@ function _buildTestsStandalone {
     yarn install --immutable
     echo "Running yarn build-tests"
     yarn build-tests
-
+}
 function _cleanUpResources {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
