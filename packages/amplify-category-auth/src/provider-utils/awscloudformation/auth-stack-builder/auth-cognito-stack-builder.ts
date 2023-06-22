@@ -1224,6 +1224,10 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           return;
         }
 
+        if (migrateResources && !hasProviderCreds) {
+          return;
+        }
+
         this.createHostedUIProviderResource(provider, !!hasProviderCreds);
       });
     }

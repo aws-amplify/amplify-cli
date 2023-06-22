@@ -87,6 +87,9 @@ describe('getHostedUIProviderCredsFromCloud', () => {
       {
         ProviderName: 'Google',
       },
+      {
+        ProviderName: 'LoginWithAmazon'
+      },
     ];
 
     jest.spyOn(migrateIdpResources, 'getProviderCreds').mockImplementation(async (_, providerName) => {
@@ -191,6 +194,28 @@ describe('getHostedUIProviderCredsFromCloud', () => {
         ProviderName: 'Google',
         client_id: 'updated_gg_client',
         client_secret: 'updated_gg_secret',
+      });
+    });
+  });
+
+  describe('when credentials are not in the cloud', () => {
+    it('does not add them', async () => {
+      const providerCreds = [
+        {
+          ProviderName: 'Facebook',
+        },
+        {
+          ProviderName: 'Google',
+        },
+        {
+          ProviderName: 'LoginWithAmazon',
+        },
+      ];
+
+      const results = await getHostedUIProviderCredsFromCloud('authtest', providerMeta, providerCreds, {} as $TSContext);
+
+      expect(results[2]).toEqual({
+        ProviderName: 'LoginWithAmazon',
       });
     });
   });

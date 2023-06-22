@@ -13,7 +13,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
-describe('v11: amplify migration test auth', () => {
+describe('v12: amplify migration test auth', () => {
   let projRoot1: string;
 
   beforeAll(async () => {

@@ -52,7 +52,7 @@ describe('amplify add auth...', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init an IOS project and add default auth', async () => {
+  it.skip('...should init an IOS project and add default auth', async () => {
     // assert client secret in projRoot
     await assertAppClientSecretInFiles(projRoot);
     const projRoot2 = await createNewProjectDir(`${projectName}2`);

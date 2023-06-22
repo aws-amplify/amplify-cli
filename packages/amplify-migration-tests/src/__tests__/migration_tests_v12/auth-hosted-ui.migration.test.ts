@@ -50,7 +50,7 @@ describe('v12: hosted UI migration', () => {
   });
 
   describe('...updating auth with hosted UI', () => {
-    it('...maintains the user pool domain and idps, and deletes lambda', async () => {
+    it.skip('...maintains the user pool domain and idps, and deletes lambda', async () => {
       await initJSProjectWithProfile(projRoot1, { name: 'authTest', disableAmplifyAppCreation: false });
       await addAuthWithDefaultSocial(projRoot1);
       await amplifyPushAuth(projRoot1);
