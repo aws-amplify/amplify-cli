@@ -509,8 +509,9 @@ function _uploadReportsToS3 {
     type_of_report=$3
     reports_dir=$4
     
-    cd $reports_dir
+    pushd $reports_dir
     for filename in $(ls); do aws s3 cp "$filename" "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$type_of_report/$build_identifier-$filename"; done
+    popd
 }
 
 function _downloadReportsFromS3 {
@@ -519,10 +520,11 @@ function _downloadReportsFromS3 {
 
     aggregate_reports_dir="$CODEBUILD_SRC_DIR/aggregate_reports/$type_of_report"
     mkdir $aggregate_reports_dir
-    cd $aggregate_reports_dir
+    pushd $aggregate_reports_dir
     aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$type_of_report" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done #This line moves all files into the top level directory so that the reports can be consumed by CB
+    popd
 }
 
 function _buildTestsStandalone {

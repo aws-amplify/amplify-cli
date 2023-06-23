@@ -36,8 +36,8 @@ phases:
     commands:
       - source ./shared-scripts.sh && _convertCoverage
       - source ./shared-scripts.sh && _scanArtifacts
-      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER junit packages/amplify-e2e-tests/reports/junit
       - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER coverage packages/amplify-e2e-tests/coverage
+      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER junit packages/amplify-e2e-tests/reports/junit
 artifacts:
   files:
     - '$E2E_TEST_COVERAGE_DIR/*'
