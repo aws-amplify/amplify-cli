@@ -90,7 +90,7 @@ export const updateNotificationChannel = async (
   cwd: string,
   channel: string,
   enable = true,
-  testingWithLatestCodebase = true,
+  testingWithLatestCodebase = false,
 ): Promise<void> => {
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'notification'], { cwd, stripColors: true });
   chain.wait('Choose the notification channel to configure').sendLine(channel);
