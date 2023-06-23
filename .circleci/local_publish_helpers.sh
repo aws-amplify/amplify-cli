@@ -236,7 +236,7 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE || true
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
@@ -296,9 +296,19 @@ function runE2eTestCb {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        if [[ ! -z "$DISABLE_COVERAGE" ]]; then
+            echo Running WITHOUT coverage
+            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        else
+            NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        fi
     else
-        NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        if [[ ! -z "$DISABLE_COVERAGE" ]]; then
+            echo Running WITHOUT coverage
+            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        else
+            NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        fi
     fi
 }
 
