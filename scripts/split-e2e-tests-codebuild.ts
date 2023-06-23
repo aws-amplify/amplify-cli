@@ -238,46 +238,46 @@ const splitTestsV3 = (
   };
   const result: any[] = [];
   const dependeeIdentifiers: string[] = [];
-  linuxJobs.forEach((j) => {
-    if (j.tests.length !== 0) {
-      const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
-      const identifier = getIdentifier(j.os, names);
+  linuxJobs.forEach((job) => {
+    if (job.tests.length !== 0) {
+      const names = job.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const identifier = getIdentifier(job.os, names);
       dependeeIdentifiers.push(identifier);
-      const tmp = {
+      const formattedJob = {
         ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
         identifier,
       };
-      tmp.env.variables = {};
-      tmp.env.variables.TEST_SUITE = j.tests.join('|');
-      tmp.env.variables.CLI_REGION = j.region;
-      if (j.useParentAccount) {
-        tmp.env.variables.USE_PARENT_ACCOUNT = 1;
+      formattedJob.env.variables = {};
+      formattedJob.env.variables.TEST_SUITE = job.tests.join('|');
+      formattedJob.env.variables.CLI_REGION = job.region;
+      if (job.useParentAccount) {
+        formattedJob.env.variables.USE_PARENT_ACCOUNT = 1;
       }
-      if (j.disableCoverage) {
-        tmp.env.variables.DISABLE_COVERAGE = 1;
+      if (job.disableCoverage) {
+        formattedJob.env.variables.DISABLE_COVERAGE = 1;
       }
-      result.push(tmp);
+      result.push(formattedJob);
     }
   });
-  windowsJobs.forEach((j) => {
-    if (j.tests.length !== 0) {
-      const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
-      const identifier = getIdentifier(j.os, names);
+  windowsJobs.forEach((job) => {
+    if (job.tests.length !== 0) {
+      const names = job.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const identifier = getIdentifier(job.os, names);
       dependeeIdentifiers.push(identifier);
-      const tmp = {
+      const formattedJob = {
         ...JSON.parse(JSON.stringify(baseJobWindows)), // deep clone base job
         identifier,
       };
-      tmp.env.variables = {};
-      tmp.env.variables.TEST_SUITE = j.tests.join('|');
-      tmp.env.variables.CLI_REGION = j.region;
-      if (j.useParentAccount) {
-        tmp.env.variables.USE_PARENT_ACCOUNT = 1;
+      formattedJob.env.variables = {};
+      formattedJob.env.variables.TEST_SUITE = job.tests.join('|');
+      formattedJob.env.variables.CLI_REGION = job.region;
+      if (job.useParentAccount) {
+        formattedJob.env.variables.USE_PARENT_ACCOUNT = 1;
       }
-      if (j.disableCoverage) {
-        tmp.env.variables.DISABLE_COVERAGE = 1;
+      if (job.disableCoverage) {
+        formattedJob.env.variables.DISABLE_COVERAGE = 1;
       }
-      result.push(tmp);
+      result.push(formattedJob);
     }
   });
   return result;
