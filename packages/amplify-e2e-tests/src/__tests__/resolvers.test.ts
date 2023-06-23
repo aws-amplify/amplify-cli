@@ -39,12 +39,12 @@ describe('user created resolvers', () => {
 
       await addApiWithoutSchema(projectDir, { apiName });
       await updateApiSchema(projectDir, apiName, 'simple_model.graphql');
-      await apiGqlCompile(projectDir, true);
+      await apiGqlCompile(projectDir);
 
       expect(fs.readFileSync(generatedResolverPath).toString()).not.toEqual(resolver);
 
       addCustomResolver(projectDir, apiName, resolverName, resolver);
-      await apiGqlCompile(projectDir, true);
+      await apiGqlCompile(projectDir);
 
       expect(fs.readFileSync(generatedResolverPath).toString()).toEqual(resolver);
     });
@@ -189,13 +189,13 @@ describe('user created resolvers', () => {
 
       await addApiWithoutSchema(projectDir, { apiName });
       await updateApiSchema(projectDir, apiName, 'custom_query.graphql');
-      await apiGqlCompile(projectDir, true);
+      await apiGqlCompile(projectDir);
 
       addCustomResolver(projectDir, apiName, resolverReqName, resolverReq);
       addCustomResolver(projectDir, apiName, resolverResName, resolverRes);
       writeToCustomResourcesJson(projectDir, apiName, Resources);
 
-      await apiGqlCompile(projectDir, true);
+      await apiGqlCompile(projectDir);
 
       expect(fs.readFileSync(generatedReqResolverPath).toString()).toEqual(resolverReq);
       expect(fs.readFileSync(generatedResResolverPath).toString()).toEqual(resolverRes);
