@@ -116,6 +116,7 @@ describe('nodejs', () => {
         projRoot,
         {
           name: fnName,
+          packageManager: { name: 'Yarn' },
           functionTemplate: 'Hello World',
           additionalPermissions: {
             permissions: ['api'],
@@ -176,6 +177,7 @@ describe('nodejs', () => {
         {
           name: fnName,
           functionTemplate: 'Hello World',
+          packageManager: { name: 'Yarn' },
           additionalPermissions: {
             permissions: ['api'],
             choices: ['api'],

@@ -1,15 +1,20 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
-import { Lambda } from 'aws-sdk';
-import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
-import * as glob from 'glob';
-import * as path from 'path';
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import {
+  ExecutionContext,
+  getBackendAmplifyMeta,
+  getCLIPath,
+  multiSelect,
+  singleSelect,
+  nspawn as spawn,
+  loadFeatureFlags,
+  moveUp,
+  moveDown,
+} from '@aws-amplify/amplify-e2e-core';
 import _ from 'lodash';
-import { loadFeatureFlags } from '../utils/feature-flags';
+
 type FunctionActions = 'create' | 'update';
-
 type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
-
-type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
+type FunctionCallback = (chain: $TSAny, cwd: string, settings: $TSAny) => $TSAny;
 
 // runtimeChoices are shared between tests
 export const runtimeChoices = ['.NET 6', 'Go', 'Java', 'NodeJS', 'Python'];
@@ -41,7 +46,7 @@ const crudOptions = ['create', 'read', 'update', 'delete'];
 
 const appSyncOptions = ['Query', 'Mutation', 'Subscription'];
 
-const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: any) => {
+const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: $TSAny) => {
   multiSelect(chain.wait('Select the categories you want this function to have access to'), settings.permissions, settings.choices);
 
   if (!settings.resources) {
@@ -64,9 +69,9 @@ const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: a
   // n-resources repeated questions
   settings.resources.forEach((elem: string) => {
     const service = _.get(getBackendAmplifyMeta(cwd), ['api', elem, 'service']);
-    const gqlpermff = !!_.get(loadFeatureFlags(cwd), ['features', 'appsync', 'generategraphqlpermissions']);
+    const graphQlPermFF = !!_.get(loadFeatureFlags(cwd), ['features', 'appsync', 'generateGraphQlPermissions']);
     const isAppSyncApi = service === 'AppSync';
-    const allChoices = isAppSyncApi && gqlpermff ? appSyncOptions : crudOptions;
+    const allChoices = isAppSyncApi && graphQlPermFF ? appSyncOptions : crudOptions;
     multiSelect(chain.wait(`Select the operations you want to permit on ${elem}`), settings.operations, allChoices);
   });
 };
@@ -151,10 +156,10 @@ export type CoreFunctionSettings = {
   };
   functionTemplate?: string;
   expectFailure?: boolean;
-  additionalPermissions?: any;
-  schedulePermissions?: any;
+  additionalPermissions?: $TSAny;
+  schedulePermissions?: $TSAny;
   layerOptions?: LayerOptions;
-  environmentVariables?: any;
+  environmentVariables?: $TSAny;
   secretsConfig?: AddSecretInput | UpdateSecretInput | DeleteSecretInput;
   triggerType?: string;
   eventSource?: string;
@@ -210,8 +215,7 @@ const coreFunction = (
         settings.schedulePermissions ||
         settings.layerOptions ||
         settings.environmentVariables ||
-        settings.secretsConfig ||
-        settings.packageManager
+        settings.secretsConfig
       ) {
         chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
@@ -261,20 +265,6 @@ const coreFunction = (
           chain.sendConfirmYes();
           addSecretWalkthrough(chain, settings.secretsConfig);
         }
-
-        if (runtime === 'nodejs') {
-          chain.wait('Choose the package manager that you want to use:');
-          if (settings.packageManager?.name) {
-            chain.sendLine(settings.packageManager.name);
-          } else {
-            chain.sendCarriageReturn(); // npm
-          }
-
-          if (settings.packageManager?.name.toLowerCase().includes('custom')) {
-            chain.wait('Enter command or script path to build your function:');
-            chain.sendLine(settings.packageManager.command);
-          }
-        }
       } else {
         chain.sendConfirmNo();
       }
@@ -299,7 +289,7 @@ const runChain = (chain: ExecutionContext, resolve, reject) => {
   });
 };
 
-export const addFunction = (
+export const addFunctionPreV12 = (
   cwd: string,
   settings: CoreFunctionSettings,
   runtime: FunctionRuntimes,
@@ -310,46 +300,6 @@ export const addFunction = (
 
 export const updateFunction = (cwd: string, settings: CoreFunctionSettings, runtime: FunctionRuntimes) => {
   return coreFunction(cwd, settings, 'update', runtime, undefined);
-};
-
-export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings: any) => {
-  chain = singleSelect(
-    chain.wait('What event source do you want to associate with Lambda trigger'),
-    settings.triggerType === 'Kinesis' ? 'Amazon Kinesis Stream' : 'Amazon DynamoDB Stream',
-    ['Amazon DynamoDB Stream', 'Amazon Kinesis Stream'],
-  );
-
-  const res = chain
-    .wait(`Choose a ${settings.triggerType} event source option`)
-    /**
-     * Use API category graphql @model backed DynamoDB table(s) in the current Amplify project
-     * or
-     * Use storage category DynamoDB table configured in the current Amplify project
-     */
-    .sendLine(settings.eventSource === 'DynamoDB' ? KEY_DOWN_ARROW : '');
-
-  switch (settings.triggerType + (settings.eventSource || '')) {
-    case 'DynamoDBAppSync':
-      return settings.expectFailure ? res.wait('No AppSync resources have been configured in the API category.') : res;
-    case 'DynamoDBDynamoDB':
-      return settings.expectFailure
-        ? res.wait('There are no DynamoDB resources configured in your project currently')
-        : res.wait('Choose from one of the already configured DynamoDB tables').sendCarriageReturn();
-    case 'Kinesis':
-      return settings.expectFailure
-        ? res.wait('No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream')
-        : res;
-    default:
-      return res;
-  }
-};
-
-export const functionBuild = async (cwd: string): Promise<void> => {
-  return spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
-    .wait('Are you sure you want to continue building the resources?')
-    .sendYes()
-    .sendEof()
-    .runAsync();
 };
 
 export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
@@ -371,46 +321,6 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
 
   singleSelect(chain, functionTemplate, templateChoices);
 };
-
-export const createNewDynamoDBForCrudTemplate = (chain: ExecutionContext): void => {
-  chain.wait('Choose a DynamoDB data source option');
-  singleSelect(chain, 'Create a new DynamoDB table', [
-    'Use DynamoDB table configured in the current Amplify project',
-    'Create a new DynamoDB table',
-  ]);
-  chain
-    .wait('Provide a friendly name')
-    .sendCarriageReturn()
-    .wait('Provide table name')
-    .sendCarriageReturn()
-    .wait('What would you like to name this column')
-    .sendLine('column1')
-    .wait('Choose the data type')
-    .sendCarriageReturn()
-    .wait('Would you like to add another column?')
-    .sendYes()
-    .wait('What would you like to name this column')
-    .sendLine('column2')
-    .wait('Choose the data type')
-    .sendCarriageReturn()
-    .wait('Would you like to add another column?')
-    .sendNo()
-    .wait('Choose partition key for the table')
-    .sendCarriageReturn()
-    .wait('Do you want to add a sort key to your table?')
-    .sendYes()
-    .wait('Do you want to add global secondary indexes to your table?')
-    .sendNo()
-    .wait('Do you want to add a Lambda Trigger for your Table?')
-    .sendNo();
-};
-
-export const removeFunction = (cwd: string, funcName: string) =>
-  new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run((err) =>
-      err ? reject(err) : resolve(),
-    );
-  });
 
 export interface LayerOptions {
   select?: string[]; // list options to select
@@ -510,7 +420,7 @@ const addSecretWalkthrough = (chain: ExecutionContext, input: AddSecretInput) =>
   chain.wait("I'm done").sendCarriageReturn();
 };
 
-const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string) => {
+const cronWalkthrough = (chain: ExecutionContext, settings: $TSAny, action: string) => {
   if (action === 'create') {
     addCron(chain, settings);
   } else {
@@ -533,12 +443,12 @@ const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string)
   return chain;
 };
 
-const addminutes = (chain: ExecutionContext) => {
+const addMinutes = (chain: ExecutionContext) => {
   chain.wait('Enter rate for minutes(1-59)?').sendLine('5').sendCarriageReturn();
   return chain;
 };
 
-const addhourly = (chain: ExecutionContext) => {
+const addHourly = (chain: ExecutionContext) => {
   chain.wait('Enter rate for hours(1-23)?').sendLine('5').sendCarriageReturn();
   return chain;
 };
@@ -562,15 +472,15 @@ const addYearly = (chain: ExecutionContext) => {
   return chain;
 };
 
-const addCron = (chain: ExecutionContext, settings: any) => {
+const addCron = (chain: ExecutionContext, settings: $TSAny) => {
   chain.wait('At which interval should the function be invoked:');
 
   switch (settings.schedulePermissions.interval) {
     case 'Minutes':
-      addminutes(chain);
+      addMinutes(chain);
       break;
     case 'Hourly':
-      addhourly(moveDown(chain, 1).sendCarriageReturn());
+      addHourly(moveDown(chain, 1).sendCarriageReturn());
       break;
     case 'Daily':
       moveDown(chain, 2).sendCarriageReturn().wait('Select the start time in UTC (use arrow keys):').sendCarriageReturn();
@@ -593,44 +503,6 @@ const addCron = (chain: ExecutionContext, settings: any) => {
   }
 
   return chain;
-};
-
-export const functionMockAssert = (
-  cwd: string,
-  settings: { funcName: string; successString: string; eventFile: string; timeout?: number },
-  testingWithLatestCodebase = false,
-) => {
-  return new Promise<void>((resolve, reject) => {
-    const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
-      settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
-    );
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), cliArgs, { cwd, stripColors: true });
-    chain.wait('Result:');
-    if (settings.successString) {
-      chain.wait(settings.successString);
-    }
-    chain
-      .wait('Finished execution.')
-      .sendEof()
-      .run((err) => (err ? reject(err) : resolve()));
-  });
-};
-
-export const functionCloudInvoke = async (
-  cwd: string,
-  settings: { funcName: string; payload: string },
-): Promise<Lambda.InvocationResponse> => {
-  const meta = getProjectMeta(cwd);
-  const lookupName = settings.funcName;
-  expect(meta.function[lookupName]).toBeDefined();
-  const { Name: functionName, Region: region } = meta.function[lookupName].output;
-  expect(functionName).toBeDefined();
-  expect(region).toBeDefined();
-  const result = await invokeFunction(functionName, settings.payload, region);
-  if (!result.$response.data) {
-    throw new Error('No data in lambda response');
-  }
-  return result.$response.data as Lambda.InvocationResponse;
 };
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
@@ -666,12 +538,3 @@ const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
       throw new Error(`Invalid runtime value: ${runtime}`);
   }
 };
-
-export function validateNodeModulesDirRemoval(projRoot) {
-  const functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
-  const nodeModulesDirs = glob.sync('**/node_modules', {
-    cwd: functionDir,
-    absolute: true,
-  });
-  expect(nodeModulesDirs.length).toBe(0);
-}

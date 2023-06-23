@@ -1,6 +1,28 @@
 import { CodeBuild } from 'aws-sdk';
 import * as fs from 'fs';
-import { getBatchesInProject, getBatchSourceVersionFromBatchId, getIncompleteJobIdsFromBatchId } from './codebuild-utils';
+
+const getBatchesInProject = async (cb: CodeBuild, codeBuildProjectName: string): Promise<string[]> => {
+  const retrievedBatchIds = await cb
+    .listBuildBatchesForProject({
+      projectName: codeBuildProjectName,
+      filter: { status: 'IN_PROGRESS' },
+    })
+    .promise();
+  return retrievedBatchIds.ids ?? [];
+};
+
+const getBatchSourceVersionFromBatchId = async (cb: CodeBuild, batchId: string): Promise<string> => {
+  const retrievedBatchInfo = await cb.batchGetBuildBatches({ ids: [batchId] }).promise();
+  return retrievedBatchInfo.buildBatches?.[0].resolvedSourceVersion ?? '';
+};
+
+const getIncompleteJobIdsFromBatchId = async (cb: CodeBuild, batchId: string): Promise<string[]> => {
+  const retrievedBatchInfo = await cb.batchGetBuildBatches({ ids: [batchId] }).promise();
+  const ids = retrievedBatchInfo.buildBatches?.[0].buildGroups
+    ?.filter((group) => group.currentBuildSummary?.buildStatus === 'IN_PROGRESS' || group.currentBuildSummary?.buildStatus === 'PENDING')
+    .map((group) => group.identifier ?? '');
+  return ids ?? [];
+};
 
 const main = async () => {
   const cb = new CodeBuild({ region: 'us-east-1' });

@@ -525,13 +525,9 @@ function _downloadReportsFromS3 {
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done #This line moves all files into the top level directory so that the reports can be consumed by CB
 }
 
-function _cleanUpResources {
-    loadCache repo $CODEBUILD_SRC_DIR
-    loadCache .cache $HOME/.cache
-    cd scripts
-    yarn install
-    _loadTestAccountCredentials
-    echo "Executing resource cleanup"
-    yarn ts-node cleanup-e2e-codebuild-resources.ts
-    _unassumeTestAccountCredentials
+function _buildTestsStandalone {
+    echo "Running yarn install --immutable"
+    yarn install --immutable
+    echo "Running yarn build-tests"
+    yarn build-tests
 }
