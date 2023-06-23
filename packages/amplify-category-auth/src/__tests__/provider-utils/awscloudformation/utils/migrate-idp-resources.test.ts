@@ -88,7 +88,7 @@ describe('getHostedUIProviderCredsFromCloud', () => {
         ProviderName: 'Google',
       },
       {
-        ProviderName: 'LoginWithAmazon'
+        ProviderName: 'LoginWithAmazon',
       },
     ];
 
