@@ -43,7 +43,7 @@ export const addNotificationChannel = async (
   channel: string,
   hasAnalytics = false,
   hasAuth = false,
-  testingWithLatestCodebase = true,
+  testingWithLatestCodebase = false,
 ): Promise<void> => {
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'notification'], { cwd, stripColors: true });
 
