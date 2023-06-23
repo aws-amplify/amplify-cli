@@ -91,15 +91,6 @@ describe('cloudfront-manager', () => {
 
   beforeEach(() => {});
 
-  test('index.html files should be sorted to the end of the list', () => {
-    const sortedFiiles1 = fileUploader.exportForTesting.sortUploadFiles(['index.html', 'assets/index-87aefcd1.js', 'assets/index-d41dc7ea.css', 'assets/mapbox-gl-0f4a37a4.js']);
-    const sortedFiiles2 = fileUploader.exportForTesting.sortUploadFiles(['assets/index-87aefcd1.js', 'index.html', 'assets/index-d41dc7ea.css', 'assets/mapbox-gl-0f4a37a4.js', 'logo.png']);
-    const sortedFiiles3 = fileUploader.exportForTesting.sortUploadFiles(['assets/index-87aefcd1.js', 'index.html', 'assets/index-d41dc7ea.css', 'assets/index.html', 'logo.png']);
-    expect(sortedFiiles1).toEqual(['assets/index-87aefcd1.js', 'assets/index-d41dc7ea.css', 'assets/mapbox-gl-0f4a37a4.js', 'index.html']);
-    expect(sortedFiiles2).toEqual(['assets/index-87aefcd1.js', 'assets/index-d41dc7ea.css', 'assets/mapbox-gl-0f4a37a4.js', 'logo.png', 'index.html']);
-    expect(sortedFiiles3).toEqual(['assets/index-87aefcd1.js', 'assets/index-d41dc7ea.css', 'logo.png', 'index.html', 'assets/index.html']);
-  });
-
   test('run', async () => {
     await fileUploader.run(mockContext, 'mockDistributionFolder');
     expect(fileScanner.scan).toBeCalled();

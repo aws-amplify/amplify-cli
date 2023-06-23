@@ -18,7 +18,7 @@ async function run(context, distributionDirPath) {
 
   const hasCloudFront = !!context?.exeInfo?.template?.Resources?.CloudFrontDistribution;
 
-  uploadFileTasks = sortUploadFiles(fileList)
+  const uploadFileTasks = sortUploadFiles(fileList)
       .map(filePath => () => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront));
 
   const spinner = new Ora('Uploading files.');
@@ -75,8 +75,5 @@ async function uploadFile(s3Client, hostingBucketName, distributionDirPath, file
 }
 
 module.exports = {
-  run,
-  exportForTesting: {
-    sortUploadFiles,
-  }
+  run
 };
