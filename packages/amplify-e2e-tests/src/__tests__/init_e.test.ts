@@ -45,7 +45,7 @@ describe('amplify init e', () => {
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // override new env
-    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
+    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: false });
 
     // this is where we will write overrides to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
