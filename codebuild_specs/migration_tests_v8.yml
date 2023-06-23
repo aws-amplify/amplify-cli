@@ -34,7 +34,7 @@ phases:
   post_build:
     commands:
       - source ./shared-scripts.sh && _scanArtifacts
-      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-migration-tests
+      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER junit packages/amplify-migration-tests/reports/junit
 reports:
   e2e-reports:
     files:
