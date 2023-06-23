@@ -314,7 +314,7 @@ function main(): void {
   );
   let allBuilds = [...splitE2ETests, ...splitMigrationV8Tests, ...splitMigrationV10Tests];
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
-  const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
+  const dependeeIdentifiersFileContents = `${JSON.stringify(dependeeIdentifiers, null, 2)}\n`;
   const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
   fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
   const reportsAggregator = {
