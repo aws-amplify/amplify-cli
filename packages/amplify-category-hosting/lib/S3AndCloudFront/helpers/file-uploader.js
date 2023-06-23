@@ -76,4 +76,7 @@ async function uploadFile(s3Client, hostingBucketName, distributionDirPath, file
 
 module.exports = {
   run,
+  exportForTesting: {
+    sortUploadFiles,
+  }
 };
