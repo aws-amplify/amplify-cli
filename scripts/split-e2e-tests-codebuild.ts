@@ -255,7 +255,9 @@ const splitTestsV3 = (
       tmp.env.variables = {};
       tmp.env.variables.TEST_SUITE = j.tests.join('|');
       tmp.env.variables.CLI_REGION = j.region;
-      tmp.env.variables.USE_PARENT_ACCOUNT = j.useParentAccount;
+      if (j.useParentAccount) {
+        tmp.env.variables.USE_PARENT_ACCOUNT = 1;
+      }
       result.push(tmp);
     }
   });
