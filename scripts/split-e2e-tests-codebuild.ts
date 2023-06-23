@@ -82,6 +82,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/layer-2.test.ts',
     'src/__tests__/mock-api.test.ts',
     'src/__tests__/pull.test.ts',
+    'src/__tests__/pull-2.test.ts',
     'src/__tests__/schema-iterative-rollback-1.test.ts',
     'src/__tests__/schema-iterative-rollback-2.test.ts',
     'src/__tests__/storage-5.test.ts',

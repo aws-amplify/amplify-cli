@@ -63,7 +63,7 @@ describe('init --forcePush', () => {
       projRoot,
       getAmplifyInitConfig(projectName, 'newenv'),
       undefined,
-      true,
+      false,
       undefined,
       false, // don't reject on failure
     );
