@@ -13,22 +13,19 @@ async function run(context, distributionDirPath) {
   const { WebsiteConfiguration } = context.exeInfo.template.Resources.S3Bucket.Properties;
   const fileList = fileScanner.scan(context, distributionDirPath, WebsiteConfiguration);
 
-  const uploadFileTasks = [];
   const s3Client = await getS3Client(context, 'update');
   const hostingBucketName = getHostingBucketName(context);
 
   const hasCloudFront = !!context?.exeInfo?.template?.Resources?.CloudFrontDistribution;
 
-  const filesToUploadFirst = fileList.filter(filePath => !filePath.includes('index.html'));
-  const filesToUploadLast = fileList.filter(filePath => filePath.includes('index.html'));
+  const filesToUploadLast = "index.html";
+  const sortFiles = (fileA, fileB) => 
+        fileA.includes(filesToUploadLast) ? 1 : fileB.includes(filesToUploadLast) ? -1 : 0;
 
-  await Promise.all(filesToUploadFirst.map(async filePath => {
-      return uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront));
-  }));
+  fileList.sort(sortFiles);
 
-  filesToUploadLast.forEach(filePath => {
-    uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront));
-  });
+  uploadFileTasks = fileList.map(filePath => () => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront))
+
 
   const spinner = new Ora('Uploading files.');
   try {
