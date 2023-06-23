@@ -45,7 +45,7 @@ describe('amplify init e', () => {
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // override new env
-    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
+    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: false });
 
     // this is where we will write overrides to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
@@ -85,7 +85,7 @@ describe('amplify init e', () => {
     await gitInit(projRoot);
     await gitCommitAll(projRoot);
     await gitCleanFdx(projRoot);
-    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, 'integtest'), undefined, true);
+    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, 'integtest'), undefined, false);
     // check if overrides are applied
     const gitClonedMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(await listRolePolicies(gitClonedMeta.AuthRoleName, gitClonedMeta.Region)).toMatchInlineSnapshot(`

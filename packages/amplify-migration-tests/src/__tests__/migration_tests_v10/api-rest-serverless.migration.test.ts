@@ -1,5 +1,4 @@
 import {
-  addRestApi,
   amplifyPull,
   amplifyPushAuth,
   amplifyPushUpdateLegacy,
@@ -10,6 +9,7 @@ import {
   getProjectMeta,
   validateRestApiMeta,
 } from '@aws-amplify/amplify-e2e-core';
+import { addRestApiOldDx } from '../../migration-helpers';
 import { cfnDiffExclusions } from '../../migration-helpers-v10/cfn-diff-exclusions';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';
@@ -28,7 +28,7 @@ describe('api serverless migration tests', () => {
     projRoot = await createNewProjectDir(projectName);
 
     await initJSProjectWithProfileV10(projRoot, { name: 'restApiTest', disableAmplifyAppCreation: false });
-    await addRestApi(projRoot, { isCrud: false });
+    await addRestApiOldDx(projRoot, { isCrud: false });
     await amplifyPushUpdateLegacy(projRoot);
 
     const meta = getProjectMeta(projRoot);

@@ -241,6 +241,7 @@ __metadata:
     execa: ^5.1.1
     fs-extra: ^8.1.0
     glob: ^7.2.0
+    jest: ^29.5.0
     ora: ^4.0.3
     rimraf: ^3.0.2
     uuid: ^8.3.2
@@ -267,6 +268,7 @@ __metadata:
     graphql-transformer-core: ^8.1.3
     inquirer: ^7.3.3
     inquirer-datepicker: ^2.0.0
+    jest: ^29.5.0
     jstreemap: ^1.28.2
     lodash: ^4.17.21
     promise-sequential: ^1.1.1
@@ -815,6 +817,7 @@ __metadata:
     promise-sequential: ^1.1.1
     proxy-agent: ^5.0.0
     rimraf: ^3.0.0
+    typescript: ^4.9.5
     vm2: ^3.9.19
     xstate: ^4.14.0
   languageName: unknown
@@ -29365,12 +29368,12 @@ node-pty@beta:
   linkType: hard
 
 "typescript@npm:^4.6.4 || ^5.0.0":
-  version: 5.0.4
-  resolution: "typescript@npm:5.0.4"
+  version: 5.1.3
+  resolution: "typescript@npm:5.1.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2f5bd1cead194905957cb34e220b1d6ff1662399adef8ec1864f74620922d860ee35b6e50eafb3b636ea6fd437195e454e1146cb630a4236b5095ed7617395c2
+  checksum: 1faba8d5ffd4717864ddce767613c5ab77c1c8510c1ce21dc9b112a4c662357b9338dc0a6121615266d3a44ebec699f115ef2dabf18d9d7341ea1675692b9b24
   languageName: node
   linkType: hard
 
@@ -29405,12 +29408,12 @@ node-pty@beta:
   linkType: hard
 
 "typescript@patch:typescript@^4.6.4 || ^5.0.0#~builtin<compat/typescript>":
-  version: 5.0.4
-  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=85af82"
+  version: 5.1.3
+  resolution: "typescript@patch:typescript@npm%3A5.1.3#~builtin<compat/typescript>::version=5.1.3&hash=85af82"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: eec385fd53e1800b0986bac2889deafee8e1910ce10108a5fe10644422426f71625c47b3e78e042371df16592881b1b1f97884ab45dc993f3b96a5c954f65dc2
+  checksum: 6219383250b585b201c9ea10576164c9d5760c7a167bc761b118692c9fb8e88610f37730c0a1169d96ac19b29ed80418048763d0c1ff00ce48e051abbc213a9b
   languageName: node
   linkType: hard
 
