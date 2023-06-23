@@ -85,7 +85,7 @@ describe('amplify init e', () => {
     await gitInit(projRoot);
     await gitCommitAll(projRoot);
     await gitCleanFdx(projRoot);
-    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, 'integtest'), undefined, true);
+    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, 'integtest'), undefined, false);
     // check if overrides are applied
     const gitClonedMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(await listRolePolicies(gitClonedMeta.AuthRoleName, gitClonedMeta.Region)).toMatchInlineSnapshot(`
