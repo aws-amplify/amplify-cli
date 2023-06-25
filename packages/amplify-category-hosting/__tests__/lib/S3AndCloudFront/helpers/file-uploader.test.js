@@ -6,7 +6,9 @@ jest.mock('../../../../lib/S3AndCloudFront/helpers/file-scanner', () => {
     }),
   };
 });
-jest.mock('../../../../lib/S3AndCloudFront/helpers/upload-file', () => {return {uploadFile: jest.fn()}});
+jest.mock('../../../../lib/S3AndCloudFront/helpers/upload-file', () => {
+  return { uploadFile: jest.fn() };
+});
 
 const fs = require('fs-extra');
 const mime = require('mime-types');
@@ -98,11 +100,11 @@ describe('cloudfront-manager', () => {
     expect(fileScanner.scan).toBeCalled();
   });
 
-  test('uploadFileCalls should have the index.html at the end', () => { 
+  test('uploadFileCalls should have the index.html at the end', () => {
     expect(uploadFile).toHaveBeenCalled();
     const uploadFileCalls = uploadFile.mock.calls;
 
     expect(uploadFileCalls.length).toBe(5);
     expect(uploadFileCalls[4][3]).toBe('index.html');
-  })
+  });
 });
