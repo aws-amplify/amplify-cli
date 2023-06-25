@@ -1,10 +1,8 @@
-const fs = require('fs-extra');
-const path = require('path');
 const Ora = require('ora');
-const mime = require('mime-types');
 const sequential = require('promise-sequential');
 const fileScanner = require('./file-scanner');
 const constants = require('../../constants');
+const { uploadFile } = require('./upload-file');
 
 const serviceName = 'S3AndCloudFront';
 const providerName = 'awscloudformation';
@@ -49,29 +47,6 @@ async function getS3Client(context, action) {
 function getHostingBucketName(context) {
   const { amplifyMeta } = context.exeInfo;
   return amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
-}
-
-async function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront) {
-  let relativeFilePath = path.relative(distributionDirPath, filePath);
-  // make Windows-style relative paths compatible to S3
-  relativeFilePath = relativeFilePath.replace(/\\/g, '/');
-
-  const fileStream = fs.createReadStream(filePath);
-  const contentType = mime.lookup(relativeFilePath);
-  const uploadParams = {
-    Bucket: hostingBucketName,
-    Key: relativeFilePath,
-    Body: fileStream,
-    ContentType: contentType || 'text/plain',
-  };
-
-  if (!hasCloudFront) {
-    uploadParams.ACL = 'public-read';
-  }
-
-  const data = await s3Client.upload(uploadParams).promise();
-
-  return data;
 }
 
 module.exports = {
