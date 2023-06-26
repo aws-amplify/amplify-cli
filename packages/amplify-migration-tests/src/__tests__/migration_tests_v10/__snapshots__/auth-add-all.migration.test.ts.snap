@@ -237,10 +237,10 @@ async function handleEvent(event, context) {
     await deleteUserPoolDomain(params).promise();
     response.send(event, context, response.SUCCESS);
   } catch (err) {
-    if (err.name !== 'NotFoundException' && err.name !== 'InvalidParameterException') {
-      response.send(event, context, response.FAILED, { err });
-    } else {
+    if (err?.code === 'NotFoundException' || err?.code === 'InvalidParameterException') {
       response.send(event, context, response.SUCCESS);
+    } else {
+      response.send(event, context, response.FAILED, { err });
     }
   }
 }
@@ -401,14 +401,14 @@ async function handleEvent(event, context) {
 
     for (const providerMeta of hostedUIProviderMeta) {
       const providerCreds = hostedUIProviderCreds.find(({ ProviderName }) => providerMeta.ProviderName === ProviderName);
-      if (providerMeta.ProviderName === 'SignInWithApple' && !providerCreds.private_key && event.RequestType === 'Update') {
+      if (providerMeta.ProviderName === 'SignInWithApple' && event.RequestType === 'Update') {
         const params = {
           UserPoolId: userPoolId,
           ProviderName: providerMeta.ProviderName,
           AttributeMapping: providerMeta.AttributeMapping,
         };
 
-        if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
+        if (providerCreds && providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
           params.ProviderDetails = {
             client_id: providerCreds.client_id,
             team_id: providerCreds.team_id,
@@ -433,11 +433,11 @@ async function handleEvent(event, context) {
             }
           }
         } catch (e) {
-          if (!e?.code?.toString()?.match(/NotFoundException/)) {
+          if (err?.code === 'NotFoundException' && err?.code === 'InvalidParameterException') {
+            console.log('Not Found', providerMeta.ProviderName);
+          } else {
             // bubble up to outer catch.
             throw e;
-          } else {
-            console.log('Not Found', providerMeta.ProviderName);
           }
         }
       }
