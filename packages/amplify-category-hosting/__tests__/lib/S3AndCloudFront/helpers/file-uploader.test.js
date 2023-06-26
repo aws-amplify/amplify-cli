@@ -91,16 +91,19 @@ describe('cloudfront-manager', () => {
     mime.lookup = jest.fn(() => {
       return 'text/plain';
     });
-    await fileUploader.run(mockContext, 'mockDistributionFolder');
   });
 
-  beforeEach(() => {});
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   test('file scanner should be called', async () => {
+    await fileUploader.run(mockContext, 'mockDistributionFolder');
     expect(fileScanner.scan).toBeCalled();
   });
 
-  test('uploadFileCalls should have the index.html at the end', () => {
+  test('uploadFileCalls should have the index.html at the end', async () => {
+    await fileUploader.run(mockContext, 'mockDistributionFolder');
     expect(uploadFile).toHaveBeenCalled();
     const uploadFileCalls = uploadFile.mock.calls;
 

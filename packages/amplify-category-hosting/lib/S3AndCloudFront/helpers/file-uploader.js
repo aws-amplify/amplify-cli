@@ -50,5 +50,5 @@ function getHostingBucketName(context) {
 }
 
 module.exports = {
-  run
+  run,
 };
