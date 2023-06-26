@@ -84,7 +84,7 @@ describe('cloudfront-manager', () => {
     },
   };
 
-  beforeAll(async () => {
+  beforeAll(() => {
     fs.createReadStream = jest.fn(() => {
       return {};
     });
