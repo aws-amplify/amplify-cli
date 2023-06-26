@@ -69,7 +69,8 @@
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
-    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts"
+    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
+    "postinstall": "husky install"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -80,13 +81,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
-      "pre-commit": "./scripts/package-json-check.sh && yarn verify-commit"
-    }
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -139,7 +133,7 @@
     "eslint-plugin-spellcheck": "^0.0.17",
     "execa": "^5.1.1",
     "glob": "^7.2.0",
-    "husky": "^3.1.0",
+    "husky": ">=6",
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-report": "^3.0.0",
     "istanbul-reports": "^3.1.5",
@@ -147,6 +141,7 @@
     "jest-circus": "^29.0.0",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
+    "lint-staged": ">=10",
     "lnk": "1.1.0",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.1.0",
@@ -174,5 +169,9 @@
     "nth-check": "^2.0.1",
     "undici": "^5.8.0",
     "pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
   }
 }
