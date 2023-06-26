@@ -29,8 +29,13 @@ const main = async () => {
   const expectedSourceVersion = process.argv[2];
   const jobsDependedOnFilepath = process.argv[3];
   const codeBuildProjectName = process.argv[4];
-  const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepath, 'utf8');
-  const jobsDependedOn = JSON.parse(jobsDependedOnRaw);
+  let jobsDependedOn: string[];
+  if (jobsDependedOnFilepath.includes('./')) {
+    const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepath, 'utf8');
+    jobsDependedOn = JSON.parse(jobsDependedOnRaw);  
+  } else {
+    jobsDependedOn = JSON.parse(jobsDependedOnFilepath);
+  }
   console.log(`Depending on these jobs: ${JSON.stringify(jobsDependedOn)}`);
   console.log(`Number of jobs depended on: ${jobsDependedOn.length}`);
   const allBatchBuildIds = await getBatchesInProject(cb, codeBuildProjectName);
