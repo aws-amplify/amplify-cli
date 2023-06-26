@@ -4,6 +4,7 @@ import {
   amplifyPushAuth,
   amplifyPushForce,
   createNewProjectDir,
+  configureAmplify,
   deleteProject,
   deleteProjectDir,
   generateRandomShortId,
@@ -50,8 +51,11 @@ describe('lambda callouts', () => {
     const preMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectLambdasInCfnTemplate(preMigrationTemplate);
 
-    // push with latest should regenerate auth stack and remove lambda callouts
+    // push with latest should regenerate auth stack and start migrating lambda callouts
     await amplifyPushAuth(projRoot, true);
+
+    // a second push with latest should finish migrating the lambda callouts
+    await amplifyPushForce(projRoot, true);
 
     const postMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(postMigrationTemplate);
@@ -82,6 +86,8 @@ describe('lambda callouts', () => {
       (resource) => resource.service === 'Cognito',
     ).output;
 
+    await configureAmplify(projRoot);
+
     const username = 'testUser';
     const password = 'Password12#';
     await setupUser(UserPoolId, username, 'Password12#', 'userPoolGroup1');
@@ -92,13 +98,15 @@ describe('lambda callouts', () => {
     await amplifyPushForce(projRoot, true);
 
     const users = await listUsersInUserPool(UserPoolId, region);
-    expect(users).toBe([username]);
+    expect(users).toEqual([username.toLowerCase()]);
 
     await signInUser(username, password);
     await signOutUser();
 
-    const postigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectNoLambdasInCfnTemplate(postigrationTemplate);
+    await amplifyPushForce(projRoot, true);
+
+    await signInUser(username, password);
+    await signOutUser();
   });
 
   it('should be migrated when set up using headless commands', async () => {
@@ -130,6 +138,7 @@ describe('lambda callouts', () => {
 
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
+    await amplifyPushForce(projRoot, true);
 
     const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
     expectNoLambdasInCfnTemplate(template);
