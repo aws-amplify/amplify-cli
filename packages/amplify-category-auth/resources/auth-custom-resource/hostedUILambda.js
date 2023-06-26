@@ -17,10 +17,10 @@ async function handleEvent(event, context) {
     await deleteUserPoolDomain(params).promise();
     response.send(event, context, response.SUCCESS);
   } catch (err) {
-    if (err.name !== 'NotFoundException' && err.name !== 'InvalidParameterException') {
-      response.send(event, context, response.FAILED, { err });
-    } else {
+    if (err?.code === 'NotFoundException' || err?.code === 'InvalidParameterException') {
       response.send(event, context, response.SUCCESS);
+    } else {
+      response.send(event, context, response.FAILED, { err });
     }
   }
 }
