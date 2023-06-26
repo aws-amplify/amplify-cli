@@ -532,6 +532,7 @@ function _buildTestsStandalone {
 
 function _waitForJobs {
     file_path=$1
+    echo "file_path" $file_path
     cd ./scripts
     npm install -g ts-node
     npm install aws-sdk
