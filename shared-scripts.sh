@@ -519,7 +519,7 @@ function _downloadReportsFromS3 {
     type_of_report=$2
 
     aggregate_reports_dir="$CODEBUILD_SRC_DIR/aggregate_reports/$type_of_report"
-    mkdir $aggregate_reports_dir
+    mkdir -p $aggregate_reports_dir
     pushd $aggregate_reports_dir
     aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$type_of_report" .
