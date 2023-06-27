@@ -2,3 +2,5 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npx lint-staged
+
+./scripts/package-json-check.sh && yarn verify-commit

@@ -82,6 +82,12 @@
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests"
+    }
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
@@ -133,7 +139,7 @@
     "eslint-plugin-spellcheck": "^0.0.17",
     "execa": "^5.1.1",
     "glob": "^7.2.0",
-    "husky": ">=6",
+    "husky": "^8.0.3",
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-report": "^3.0.0",
     "istanbul-reports": "^3.1.5",
@@ -141,7 +147,7 @@
     "jest-circus": "^29.0.0",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
-    "lint-staged": ">=10",
+    "lint-staged": "^13.2.2",
     "lnk": "1.1.0",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.1.0",
@@ -171,7 +177,7 @@
     "pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{js,css,md}": "prettier --write"
+    "*.{js,ts,tsx}": "eslint --cache --fix",
+    "*.{js,ts,tsx,css,md}": "prettier --write"
   }
 }
