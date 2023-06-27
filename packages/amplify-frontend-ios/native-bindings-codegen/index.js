@@ -48,7 +48,7 @@ const generateCommandParameters = (parameters) => {
     const funcParamValue = `params['${name}']`;
     let output;
     switch (kind) {
-      case 'option':
+      case 'option': {
         let value = `\${${funcParamValue}}`;
         // wrap in quotes
         if (name.includes('path')) {
@@ -56,6 +56,7 @@ const generateCommandParameters = (parameters) => {
         }
         output = [`if (${funcParamValue}) {`, `    command += \` --${name}=${value}\`;`, `  }`];
         break;
+      }
       case 'flag':
         output = [`if (${funcParamValue}) {`, `    command += \` --${name}\`;`, `  }`];
         break;
