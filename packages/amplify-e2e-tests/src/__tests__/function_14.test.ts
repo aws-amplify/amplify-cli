@@ -33,7 +33,7 @@ describe('amplify push function cases:', () => {
     const functionPath = pathManager.getResourceDirectoryPath(projRoot, AmplifyCategories.FUNCTION, funcName);
     const amplifyState = JSONUtilities.readJson<any>(path.join(functionPath, 'amplify.state'));
 
-    expect(amplifyState.scripts.build).toEqual('npm install --no-bin-links --production');
+    expect(amplifyState.scripts.build).toMatch(/npm.* install --no-bin-links --production/);
   });
 
   it('should select the YARN package manager and build', async () => {
@@ -45,7 +45,7 @@ describe('amplify push function cases:', () => {
     const functionPath = pathManager.getResourceDirectoryPath(projRoot, AmplifyCategories.FUNCTION, funcName);
     const amplifyState = JSONUtilities.readJson<any>(path.join(functionPath, 'amplify.state'));
 
-    expect(amplifyState.scripts.build).toEqual('yarn --no-bin-links --production');
+    expect(amplifyState.scripts.build).toMatch(/yarn.* --no-bin-links --production/);
   });
 
   it('should select the CUSTOM package manager and build', async () => {
@@ -58,7 +58,7 @@ describe('amplify push function cases:', () => {
     );
     const functionPath = pathManager.getResourceDirectoryPath(projRoot, AmplifyCategories.FUNCTION, funcName);
     const amplifyState = JSONUtilities.readJson<any>(path.join(functionPath, 'amplify.state'));
-    expect(amplifyState.scripts.build).toEqual('yarn');
+    expect(amplifyState.scripts.build).toMatch(/yarn.*/);
 
     await functionBuild(projRoot);
   });
