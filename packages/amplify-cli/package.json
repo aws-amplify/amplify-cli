@@ -36,7 +36,7 @@
   "dependencies": {
     "@aws-amplify/amplify-app": "5.0.10-rds.0",
     "@aws-amplify/amplify-category-analytics": "5.0.12-rds.0",
-    "@aws-amplify/amplify-category-api": "^5.5.0-rds.0",
+    "@aws-amplify/amplify-category-api": "^5.5.0-rds.3",
     "@aws-amplify/amplify-category-auth": "3.3.1-rds.0",
     "@aws-amplify/amplify-category-custom": "3.0.10-rds.0",
     "@aws-amplify/amplify-category-function": "5.3.5-rds.0",

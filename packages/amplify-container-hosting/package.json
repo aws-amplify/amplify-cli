@@ -26,7 +26,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.5.0-rds.0",
+    "@aws-amplify/amplify-category-api": "^5.5.0-rds.3",
     "@aws-amplify/amplify-cli-core": "4.1.1-rds.0",
     "@aws-amplify/amplify-environment-parameters": "1.6.5-rds.0",
     "fs-extra": "^8.1.0",
