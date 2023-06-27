@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-container-hosting",
-  "version": "2.6.10-rds.0",
+  "version": "2.6.10-rds.1",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",
