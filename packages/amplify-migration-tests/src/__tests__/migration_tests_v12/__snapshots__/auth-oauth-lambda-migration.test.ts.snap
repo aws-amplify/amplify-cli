@@ -411,9 +411,10 @@ async function handleEvent(event, context) {
         } catch (e) {
           if (err?.code === 'NotFoundException' || err?.code === 'InvalidParameterException') {
             console.log('Not Found', providerMeta.ProviderName);
+          } else {
+            // bubble up to outer catch.
+            throw e;
           }
-          // bubble up to outer catch.
-          throw e;
         }
       }
     }
@@ -868,9 +869,10 @@ async function handleEvent(event, context) {
         } catch (e) {
           if (err?.code === 'NotFoundException' || err?.code === 'InvalidParameterException') {
             console.log('Not Found', providerMeta.ProviderName);
+          } else {
+            // bubble up to outer catch.
+            throw e;
           }
-          // bubble up to outer catch.
-          throw e;
         }
       }
     }
