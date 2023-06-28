@@ -408,12 +408,13 @@ async function handleEvent(event, context) {
               await identity.deleteIdentityProvider(params).promise();
             }
           }
-        } catch (e) {
-          if (err?.code === 'NotFoundException' || err?.code === 'InvalidParameterException') {
+        } catch (err) {
+          if (!!err?.code?.toString()?.match(/NotFoundException/) || err?.code?.toString() === 'InvalidParameterException') {
             console.log('Not Found', providerMeta.ProviderName);
           } else {
+            console.log(err);
             // bubble up to outer catch.
-            throw e;
+            throw err;
           }
         }
       }
@@ -421,7 +422,7 @@ async function handleEvent(event, context) {
 
     response.send(event, context, response.SUCCESS);
   } catch (err) {
-    console.log(err.stack);
+    console.log(err?.stack);
     response.send(event, context, response.FAILED, { err });
   }
 }
@@ -866,12 +867,13 @@ async function handleEvent(event, context) {
               await identity.deleteIdentityProvider(params).promise();
             }
           }
-        } catch (e) {
-          if (err?.code === 'NotFoundException' || err?.code === 'InvalidParameterException') {
+        } catch (err) {
+          if (!!err?.code?.toString()?.match(/NotFoundException/) || err?.code?.toString() === 'InvalidParameterException') {
             console.log('Not Found', providerMeta.ProviderName);
           } else {
+            console.log(err);
             // bubble up to outer catch.
-            throw e;
+            throw err;
           }
         }
       }
@@ -879,7 +881,7 @@ async function handleEvent(event, context) {
 
     response.send(event, context, response.SUCCESS);
   } catch (err) {
-    console.log(err.stack);
+    console.log(err?.stack);
     response.send(event, context, response.FAILED, { err });
   }
 }

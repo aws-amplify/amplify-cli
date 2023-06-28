@@ -50,7 +50,7 @@ async function handleEvent(event, context) {
             }
           }
         } catch (err) {
-          if (err?.code === 'NotFoundException' || err?.code === 'InvalidParameterException') {
+          if (!!err?.code?.toString()?.match(/NotFoundException/) || err?.code?.toString() === 'InvalidParameterException') {
             console.log('Not Found', providerMeta.ProviderName);
           } else {
             console.log(err);
