@@ -299,7 +299,6 @@ function main(): void {
         type: 'WINDOWS_SERVER_2019_CONTAINER',
         image: '$WINDOWS_IMAGE_2019',
       },
-      'depend-on': ['publish_to_local_registry'],
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
