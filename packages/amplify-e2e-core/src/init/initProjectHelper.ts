@@ -26,7 +26,7 @@ const defaultSettings = {
   disableCIDetection: false,
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
-  includeUsageDataPrompt: true,
+  includeUsageDataPrompt: false,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
@@ -108,41 +108,32 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
     };
   }
 
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], {
-      cwd,
-      stripColors: true,
-      env,
-    })
-      .wait('Enter a name for the project')
-      .sendLine(s.name)
-      .wait('Initialize the project with the above configuration?')
-      .sendConfirmNo()
-      .wait('Enter a name for the environment')
-      .sendLine(s.envName)
-      .wait('Choose your default editor:')
-      .sendLine(s.editor)
-      .wait("Choose the type of app that you're building")
-      .sendLine('android')
-      .wait('Where is your Res directory')
-      .sendCarriageReturn()
-      .wait('Select the authentication method you want to use:')
-      .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          addCircleCITags(cwd);
+  const chain = spawn(getCLIPath(), ['init'], {
+    cwd,
+    stripColors: true,
+    env,
+  })
+    .wait('Enter a name for the project')
+    .sendLine(s.name)
+    .wait('Initialize the project with the above configuration?')
+    .sendConfirmNo()
+    .wait('Enter a name for the environment')
+    .sendLine(s.envName)
+    .wait('Choose your default editor:')
+    .sendLine(s.editor)
+    .wait("Choose the type of app that you're building")
+    .sendLine('android')
+    .wait('Where is your Res directory')
+    .sendCarriageReturn()
+    .wait('Select the authentication method you want to use:')
+    .sendCarriageReturn()
+    .wait('Please choose the profile you want to use')
+    .sendLine(s.profileName);
 
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+  if (s.includeUsageDataPrompt) {
+    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+  }
+  return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
 export function createRandomName(): string {
@@ -165,7 +156,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
   }
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], {
+    const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
       env,
@@ -183,19 +174,19 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          addCircleCITags(cwd);
+      .sendLine(s.profileName);
+    if (s.includeUsageDataPrompt) {
+      chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+    }
+    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      if (!err) {
+        addCircleCITags(cwd);
 
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -204,39 +195,30 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
 
   addCircleCITags(cwd);
 
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
-      .wait('Enter a name for the project')
-      .sendLine(s.name)
-      .wait('Initialize the project with the above configuration?')
-      .sendConfirmNo()
-      .wait('Enter a name for the environment')
-      .sendLine(s.envName)
-      .wait('Choose your default editor:')
-      .sendLine(s.editor)
-      .wait("Choose the type of app that you're building")
-      .sendLine('flutter')
-      .wait('Where do you want to store your configuration file')
-      .sendLine('./lib/')
-      .wait('Using default provider  awscloudformation')
-      .wait('Select the authentication method you want to use:')
-      .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName);
+  const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    .wait('Enter a name for the project')
+    .sendLine(s.name)
+    .wait('Initialize the project with the above configuration?')
+    .sendConfirmNo()
+    .wait('Enter a name for the environment')
+    .sendLine(s.envName)
+    .wait('Choose your default editor:')
+    .sendLine(s.editor)
+    .wait("Choose the type of app that you're building")
+    .sendLine('flutter')
+    .wait('Where do you want to store your configuration file')
+    .sendLine('./lib/')
+    .wait('Using default provider  awscloudformation')
+    .wait('Select the authentication method you want to use:')
+    .sendCarriageReturn()
+    .wait('Please choose the profile you want to use')
+    .sendLine(s.profileName);
+  singleSelect(chain, s.region, amplifyRegions);
 
-    singleSelect(chain, s.region, amplifyRegions);
-    chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+  if (s.includeUsageDataPrompt) {
+    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+  }
+  return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
 export function initProjectWithAccessKey(
@@ -247,97 +229,86 @@ export function initProjectWithAccessKey(
 
   addCircleCITags(cwd);
 
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['init'], {
-      cwd,
-      stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
-    })
-      .wait('Enter a name for the project')
-      .sendLine(s.name)
-      .wait('Initialize the project with the above configuration?')
-      .sendConfirmNo()
-      .wait('Enter a name for the environment')
-      .sendLine(s.envName)
-      .wait('Choose your default editor:')
-      .sendLine(s.editor)
-      .wait("Choose the type of app that you're building")
-      .sendLine('javascript')
-      .wait('What javascript framework are you using')
-      .sendLine(s.framework)
-      .wait('Source Directory Path:')
-      .sendLine(s.srcDir)
-      .wait('Distribution Directory Path:')
-      .sendLine(s.distDir)
-      .wait('Build Command:')
-      .sendLine(s.buildCmd)
-      .wait('Start Command:')
-      .sendCarriageReturn()
-      .wait('Using default provider  awscloudformation')
-      .wait('Select the authentication method you want to use:')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .pauseRecording()
-      .wait('accessKeyId')
-      .sendLine(s.accessKeyId)
-      .wait('secretAccessKey')
-      .sendLine(s.secretAccessKey)
-      .resumeRecording()
-      .wait('region');
-
-    singleSelect(chain, s.region, amplifyRegions);
-    chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+  const chain = spawn(getCLIPath(), ['init'], {
+    cwd,
+    stripColors: true,
+    env: {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    },
+  })
+    .wait('Enter a name for the project')
+    .sendLine(s.name)
+    .wait('Initialize the project with the above configuration?')
+    .sendConfirmNo()
+    .wait('Enter a name for the environment')
+    .sendLine(s.envName)
+    .wait('Choose your default editor:')
+    .sendLine(s.editor)
+    .wait("Choose the type of app that you're building")
+    .sendLine('javascript')
+    .wait('What javascript framework are you using')
+    .sendLine(s.framework)
+    .wait('Source Directory Path:')
+    .sendLine(s.srcDir)
+    .wait('Distribution Directory Path:')
+    .sendLine(s.distDir)
+    .wait('Build Command:')
+    .sendLine(s.buildCmd)
+    .wait('Start Command:')
+    .sendCarriageReturn()
+    .wait('Using default provider  awscloudformation')
+    .wait('Select the authentication method you want to use:')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .pauseRecording()
+    .wait('accessKeyId')
+    .sendLine(s.accessKeyId)
+    .wait('secretAccessKey')
+    .sendLine(s.secretAccessKey)
+    .resumeRecording()
+    .wait('region');
+  singleSelect(chain, s.region, amplifyRegions);
+  if (s.includeUsageDataPrompt) {
+    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+  }
+  return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
-export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
+export function initNewEnvWithAccessKey(
+  cwd: string,
+  settings: { envName: string; accessKeyId: string; secretAccessKey: string },
+): Promise<void> {
   addCircleCITags(cwd);
+  const s = { ...defaultSettings, ...settings };
 
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['init'], {
-      cwd,
-      stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
-    })
-      .wait('Do you want to use an existing environment?')
-      .sendConfirmNo()
-      .wait('Enter a name for the environment')
-      .sendLine(s.envName)
-      .wait('Using default provider  awscloudformation')
-      .wait('Select the authentication method you want to use:')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .pauseRecording()
-      .wait('accessKeyId')
-      .sendLine(s.accessKeyId)
-      .wait('secretAccessKey')
-      .sendLine(s.secretAccessKey)
-      .resumeRecording()
-      .wait('region');
+  const chain = spawn(getCLIPath(), ['init'], {
+    cwd,
+    stripColors: true,
+    env: {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    },
+  })
+    .wait('Do you want to use an existing environment?')
+    .sendConfirmNo()
+    .wait('Enter a name for the environment')
+    .sendLine(s.envName)
+    .wait('Using default provider  awscloudformation')
+    .wait('Select the authentication method you want to use:')
+    .send(KEY_DOWN_ARROW)
+    .sendCarriageReturn()
+    .pauseRecording()
+    .wait('accessKeyId')
+    .sendLine(s.accessKeyId)
+    .wait('secretAccessKey')
+    .sendLine(s.secretAccessKey)
+    .resumeRecording()
+    .wait('region');
 
-    singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
-    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
-  });
+  singleSelect(chain, process.env.CLI_REGION, amplifyRegions);
+  if (s.includeUsageDataPrompt) {
+    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+  }
+  return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
