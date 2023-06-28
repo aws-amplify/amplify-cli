@@ -9,4 +9,4 @@ export MSYS2_ARG_CONV_EXCL="*"
 export NODE_OPTIONS=--max-old-space-size=4096
 
 source shared-scripts.sh
-_waitForJobs "[\"upb\", \"build_windows\"]"
+_waitForJobs ./wait_windows.json
