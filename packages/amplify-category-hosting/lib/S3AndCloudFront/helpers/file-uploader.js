@@ -16,8 +16,9 @@ async function run(context, distributionDirPath) {
 
   const hasCloudFront = !!context?.exeInfo?.template?.Resources?.CloudFrontDistribution;
 
-  const uploadFileTasks = sortUploadFiles(fileList)
-      .map(filePath => () => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront));
+  const uploadFileTasks = sortUploadFiles(fileList).map(
+    (filePath) => () => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, hasCloudFront),
+  );
 
   const spinner = new Ora('Uploading files.');
   try {
@@ -31,8 +32,8 @@ async function run(context, distributionDirPath) {
 }
 
 function sortUploadFiles(fileList) {
-  const filesToUploadLast = "index.html";
-  const sortFiles = (fileA, fileB) => fileA.includes(filesToUploadLast) ? 1 : fileB.includes(filesToUploadLast) ? -1 : 0;
+  const filesToUploadLast = 'index.html';
+  const sortFiles = (fileA, fileB) => (fileA.includes(filesToUploadLast) ? 1 : fileB.includes(filesToUploadLast) ? -1 : 0);
 
   return fileList.sort(sortFiles);
 }
