@@ -27,8 +27,8 @@ describe('global sandbox mode a', () => {
 
   it('compiles schema with one model and pushes to cloud', async () => {
     await addApiWithOneModel(projectDir);
-    await apiGqlCompile(projectDir, true);
+    await apiGqlCompile(projectDir);
     await generateModels(projectDir);
-    await amplifyPush(projectDir, true);
+    await amplifyPush(projectDir);
   });
 });

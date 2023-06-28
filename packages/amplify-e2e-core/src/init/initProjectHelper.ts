@@ -40,7 +40,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     };
   }
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   const cliArgs = ['init'];
   const providerConfigSpecified = !!mergedSettings.providerConfig && typeof mergedSettings.providerConfig === 'object';
@@ -101,7 +101,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const mergedSettings = { ...defaultSettings, ...settings };
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   let env;
 
@@ -136,7 +136,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCICleanupTags(cwd);
+          addCircleCITags(cwd);
 
           resolve();
         } else {
@@ -155,7 +155,7 @@ export function createRandomName(): string {
 export function initIosProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const mergedSettings = { ...defaultSettings, ...settings };
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   let env;
 
@@ -188,7 +188,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
-          addCICleanupTags(cwd);
+          addCircleCITags(cwd);
 
           resolve();
         } else {
@@ -201,7 +201,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
 export function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const mergedSettings = { ...defaultSettings, ...settings };
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
@@ -240,7 +240,7 @@ export function initProjectWithAccessKey(
 ): Promise<void> {
   const mergedSettings = { ...defaultSettings, ...settings };
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
@@ -400,7 +400,7 @@ export function amplifyInitSandbox(cwd: string, settings: Record<string, unknown
     };
   }
 
-  addCICleanupTags(cwd);
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })

@@ -37,7 +37,7 @@ describe('minify behavior', () => {
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithBlankSchema(projRoot);
     updateApiSchema(projRoot, projName, 'simple_model.graphql', false);
-    await amplifyPush(projRoot, true, { minify: false });
+    await amplifyPush(projRoot, false, { minify: false });
 
     // Read Cfn file sizes for both nested API stacks and top-level stacks
     const currentCloudBackendPath = path.join(projRoot, 'amplify', '#current-cloud-backend');
@@ -62,6 +62,11 @@ describe('minify behavior', () => {
     updateApiSchema(projRoot, projName, 'simple_model.graphql', true);
     await amplifyPushUpdate(projRoot, undefined, {
       testingWithLatestCodebase: true,
+      projRoot,
+      waitForText: undefined,
+      useLatestCodebase: false,
+      destructivePush: false,
+      overrideTimeout: 0,
       minify: true,
     });
 

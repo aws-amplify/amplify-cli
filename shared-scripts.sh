@@ -232,7 +232,7 @@ function _install_packaged_cli_linux {
 
     cd $CODEBUILD_SRC_DIR/out
     ln -sf amplify-pkg-linux-x64 amplify
-    export PATH=$AMPLIFY_DIR:$PATH
+    export PATH=$AMPLIFY_DIR:$PATH:$CODEBUILD_SRC_DIR/node_modules/.bin/
     cd $CODEBUILD_SRC_DIR
 }
 function _convertCoverage {
@@ -523,13 +523,9 @@ function _downloadReportsFromS3 {
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done #This line moves all files into the top level directory so that the reports can be consumed by CB
 }
 
-function _cleanUpResources {
-    loadCache repo $CODEBUILD_SRC_DIR
-    loadCache .cache $HOME/.cache
-    cd scripts
-    yarn install
-    _loadTestAccountCredentials
-    echo "Executing resource cleanup"
-    yarn ts-node cleanup-e2e-codebuild-resources.ts
-    _unassumeTestAccountCredentials
+function _buildTestsStandalone {
+    echo "Running yarn install --immutable"
+    yarn install --immutable
+    echo "Running yarn build-tests"
+    yarn build-tests
 }
