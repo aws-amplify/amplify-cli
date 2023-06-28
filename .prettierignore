@@ -1,4 +1,6 @@
 .yarn
+.prettierignore
+yarn.lock
 packages/*/build
 packages/*/lib
 coverage
@@ -15,3 +17,7 @@ packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-environment-parameters/src/schemas/BackendParameters.schema.json
 packages/amplify-nodejs-function-runtime-provider/src/__tests__/utils/handlerWithSyntaxError.js
 packages/amplify-velocity-template/src/parse/velocity.yy
+
+# Exceptions:
+!packages/amplify-category-hosting/lib
+!packages/amplify-frontend-*/lib
