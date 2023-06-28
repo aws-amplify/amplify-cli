@@ -32,7 +32,7 @@ const main = async () => {
   let jobsDependedOn: string[];
   try {
     const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepath, 'utf8');
-    jobsDependedOn = JSON.parse(jobsDependedOnRaw);    
+    jobsDependedOn = JSON.parse(jobsDependedOnRaw);
   } catch {
     jobsDependedOn = [jobsDependedOnFilepath];
   }
