@@ -37,7 +37,6 @@
     "pkg-all-local": "yarn verdaccio-clean && yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
     "pkg-all": "bash -c 'source .circleci/local_publish_helpers.sh && generatePkgCli'",
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",
-    "postinstall": "husky install",
     "prettier-changes": "git diff --name-only --diff-filter MRA dev | xargs yarn prettier --write",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
@@ -85,7 +84,8 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests"
+      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
+      "pre-commit": "yarn prettier-changes && yarn lint-fix && ./scripts/package-json-check.sh && yarn verify-commit"
     }
   },
   "author": "Amazon Web Services",
@@ -147,7 +147,6 @@
     "jest-circus": "^29.0.0",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
-    "lint-staged": "^13.2.2",
     "lnk": "1.1.0",
     "lodash": "^4.17.21",
     "npm-check-updates": "^16.1.0",
@@ -175,9 +174,5 @@
     "nth-check": "^2.0.1",
     "undici": "^5.8.0",
     "pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
-  },
-  "lint-staged": {
-    "*.{js,ts,tsx}": "eslint --cache --fix",
-    "*.{js,ts,tsx,css,md}": "prettier --write"
   }
 }
