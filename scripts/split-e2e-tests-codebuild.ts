@@ -299,6 +299,7 @@ function main(): void {
         type: 'WINDOWS_SERVER_2019_CONTAINER',
         image: '$WINDOWS_IMAGE_2019',
       },
+      'depend-on': ['upb'],
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
