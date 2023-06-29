@@ -246,7 +246,7 @@ function _convertCoverage {
     # .../amplify-e2e-tests/$NODE_V8_COVERAGE - generated with setting NODE_V8_COVERAGE env var
     # .../amplify-e2e-tests/coverage/<reporter> - generated with c8 command
     pushd packages/amplify-e2e-tests
-    npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --all --src ./packages -x "**/node_modules/**" -x "**/__tests__/**" --exclude-after-remap "**/node_modules/**" -x "**/amplify-e2e-*/**" -x "**/.yarn/**" --allow-external --reporter clover
+    npx c8 report --temp-directory $E2E_TEST_COVERAGE_DIR --all --src ./packages -x "**/node_modules/**" -x "**/__tests__/**" --exclude-after-remap "**/node_modules/**" -x "**/amplify-e2e-*/**" -x "**/.yarn/**" -x "**/yarn/**" --allow-external --reporter clover
     popd
 }
 # https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader
