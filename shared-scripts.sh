@@ -202,8 +202,8 @@ function _uploadPkgBinaries {
     echo Done loading binaries
     ls $CODEBUILD_SRC_DIR/out
 
-    # source .circleci/local_publish_helpers.sh
-    # uploadPkgCli
+    source .circleci/local_publish_helpers.sh
+    uploadPkgCliForE2E
 
     storeCache $CODEBUILD_SRC_DIR/out all-binaries
 }
