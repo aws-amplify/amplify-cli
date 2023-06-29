@@ -290,7 +290,7 @@ function main(): void {
       identifier: 'run_e2e_tests_linux',
       buildspec: 'codebuild_specs/run_e2e_tests_linux.yml',
       env: {},
-      // 'depend-on': ['upb'],
+      'depend-on': ['upb'],
     },
     {
       identifier: 'run_e2e_tests_windows',
@@ -299,7 +299,7 @@ function main(): void {
         type: 'WINDOWS_SERVER_2019_CONTAINER',
         image: '$WINDOWS_IMAGE_2019',
       },
-      // 'depend-on': ['upb'],
+      'depend-on': ['upb'],
     },
     join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
     false,
@@ -310,7 +310,7 @@ function main(): void {
       identifier: 'migration_tests_v8',
       buildspec: 'codebuild_specs/migration_tests_v8.yml',
       env: {},
-      // 'depend-on': ['upb'],
+      'depend-on': ['upb'],
     },
     undefined,
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
@@ -324,7 +324,7 @@ function main(): void {
       identifier: 'migration_tests_v10',
       buildspec: 'codebuild_specs/migration_tests_v10.yml',
       env: {},
-      // 'depend-on': ['upb'],
+      'depend-on': ['upb'],
     },
     undefined,
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
@@ -345,7 +345,7 @@ function main(): void {
       variables: { WAIT_FOR_IDS_FILE_PATH: waitForIdsFilePath },
     },
     buildspec: 'codebuild_specs/aggregate_e2e_reports.yml',
-    // 'depend-on': ['upb'],
+    'depend-on': ['upb'],
   };
   allBuilds.push(reportsAggregator);
   let currentBatch = [...baseBuildGraph, ...allBuilds];
