@@ -62,11 +62,8 @@ describe('minify behavior', () => {
     updateApiSchema(projRoot, projName, 'simple_model.graphql', true);
     await amplifyPushUpdate(projRoot, undefined, {
       testingWithLatestCodebase: true,
-      projRoot,
-      waitForText: undefined,
-      useLatestCodebase: false,
-      destructivePush: false,
-      overrideTimeout: 0,
+      allowDestructiveUpdates: false,
+      overridePushTimeoutMS: 0,
       minify: true,
     });
 
