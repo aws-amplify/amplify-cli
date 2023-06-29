@@ -324,7 +324,7 @@ function main(): void {
       identifier: 'migration_tests_v10',
       buildspec: 'codebuild_specs/migration_tests_v10.yml',
       env: {},
-      'depend-on': ['upb'],
+      // 'depend-on': ['upb'],
     },
     undefined,
     join(REPO_ROOT, 'packages', 'amplify-migration-tests'),

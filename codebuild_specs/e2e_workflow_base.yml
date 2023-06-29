@@ -70,5 +70,3 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
-      depend-on:
-        - publish_to_local_registry
