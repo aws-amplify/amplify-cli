@@ -33,7 +33,7 @@ phases:
       - bash ./codebuild_specs/scripts-windows/run-e2e-windows.sh
   post_build:
     commands:
-      - source ./shared-scripts && _convertCoverage
+      - bash ./codebuild_specs/scripts-windows/convert-coverage.sh
       - bash ./codebuild_specs/upload-reports-windows.sh
 reports:
   e2e-reports:
