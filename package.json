@@ -69,7 +69,8 @@
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
-    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts"
+    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
+    "postinstall": "husky install"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -80,13 +81,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
-      "pre-commit": "yarn prettier-changes && yarn lint-fix && ./scripts/package-json-check.sh && yarn verify-commit"
-    }
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
