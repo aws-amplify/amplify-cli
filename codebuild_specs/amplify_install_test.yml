@@ -1,6 +1,11 @@
 version: 0.2
 env:
   shell: bash
+  variables:
+    E2E_TEST_COVERAGE_DIR: node_v8_coverage
+    CI: true
+    CIRCLECI: true
+    IS_AMPLIFY_CI: true
 phases:
   build:
     commands:

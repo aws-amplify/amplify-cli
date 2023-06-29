@@ -5,6 +5,7 @@ env:
     E2E_TEST_COVERAGE_DIR: node_v8_coverage
     CI: true
     CIRCLECI: true
+    IS_AMPLIFY_CI: true
     # mock values to test artifact scanning
     ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
     MOCK_ENV_VAR_FOR_SCANNING_SECRETS: 'abc123xyz'
