@@ -248,6 +248,9 @@ const splitTestsV3 = (
         identifier,
       };
       formattedJob.env.variables = {};
+      if (isMigration || job.tests.length === 1) {
+        formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_SMALL';
+      }
       formattedJob.env.variables.TEST_SUITE = job.tests.join('|');
       formattedJob.env.variables.CLI_REGION = job.region;
       if (job.useParentAccount) {
