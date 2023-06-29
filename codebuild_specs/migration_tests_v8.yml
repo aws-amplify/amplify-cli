@@ -29,6 +29,7 @@ phases:
       - export AMPLIFY_PATH=$HOME/.npm-global/bin/amplify
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
+      - source shared-scripts.sh && _waitForJobs upb
       - source ./shared-scripts.sh && _runMigrationV8Test
   post_build:
     commands:

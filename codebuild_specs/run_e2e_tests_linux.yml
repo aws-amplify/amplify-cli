@@ -31,6 +31,7 @@ phases:
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
       - npm install -g ts-node
+      - source shared-scripts.sh && _waitForJobs upb
       - source ./shared-scripts.sh && _runE2ETestsLinux
   post_build:
     commands:
