@@ -74,7 +74,7 @@ const getCompressedBinaryUrl = (): string => {
 
   if (process.env.IS_AMPLIFY_CI) {
     // use cloudfront distro for e2e
-    url = `${process.env.PKG_CLI_CLOUDFRONT_URL}/${version}/${compressedBinaryName}`;
+    url = `https://${process.env.PKG_CLI_CLOUDFRONT_URL}/${version}/${compressedBinaryName}`;
     url = url.replace('.tgz', `-${getCommitHash()}.tgz`);
   }
 
