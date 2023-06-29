@@ -26,9 +26,19 @@ phases:
   build:
     commands:
       - choco install -fy jq
+      - git config --global core.longpaths true
       - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
       - bash ./codebuild_specs/scripts-windows/rename-packaged-cli.sh
       - bash ./codebuild_specs/scripts-windows/run-e2e-windows.sh
+  post_build:
+    commands:
+      - bash ./codebuild_specs/upload-reports-windows.sh
+reports:
+  e2e-reports:
+    files:
+      - '*.xml'
+    file-format: 'JUNITXML'
+    base-directory: 'packages/amplify-e2e-tests/reports/junit'
 artifacts:
   files:
     - '$E2E_TEST_COVERAGE_DIR/*'

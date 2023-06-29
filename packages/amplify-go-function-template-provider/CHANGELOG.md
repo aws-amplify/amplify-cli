@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-go-function-template-provider@1.4.3...@aws-amplify/amplify-go-function-template-provider@1.4.4) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-go-function-template-provider
+
+
+
+
+
 ## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-go-function-template-provider@1.4.1...@aws-amplify/amplify-go-function-template-provider@1.4.3) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-go-function-template-provider

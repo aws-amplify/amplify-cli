@@ -8,6 +8,7 @@
 
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
@@ -943,6 +944,9 @@ export type GetPackageAssetPaths = () => Promise<string[]>;
 export const getPackageManager: (rootPath?: string) => Promise<PackageManager | null>;
 
 // @public (undocumented)
+export const getPackageManagerByType: (packageManagerType: PackageManagerType) => PackageManager;
+
+// @public (undocumented)
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
 
 // @public (undocumented)
@@ -1478,15 +1482,28 @@ export { open_2 as open }
 export const overriddenCategories: string[];
 
 // @public (undocumented)
-export type PackageManager = {
-    packageManager: PackageManagerType;
-    lockFile: string;
-    executable: string;
+export interface PackageManager {
+    // (undocumented)
+    readonly displayValue: string;
+    // (undocumented)
+    readonly executable: string;
+    // (undocumented)
+    getInstallArgs: (buildType: BuildType) => string[];
+    // (undocumented)
+    getRunScriptArgs: (scriptName: string) => string[];
+    // (undocumented)
+    readonly lockFile: string;
+    // (undocumented)
+    readonly packageManager: PackageManagerType;
+    // (undocumented)
     version?: SemVer;
-};
+}
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm';
+export const packageManagers: Record<PackageManagerType, PackageManager>;
+
+// @public (undocumented)
+export type PackageManagerType = 'yarn' | 'npm' | 'pnpm' | 'custom';
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {

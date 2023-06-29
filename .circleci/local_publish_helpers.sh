@@ -236,6 +236,7 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
+    # if a test takes a long time to complete, the token may expire before reaching this call, but we should still allow the test to pass
     aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE || true
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails

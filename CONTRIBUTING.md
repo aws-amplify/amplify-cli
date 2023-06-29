@@ -47,8 +47,6 @@ This section should get you running with **Amplify CLI** and get you familiar wi
    npm install --global yarn
    ```
 
-   > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
-
    > Ensure that `.bin` directory is added to your PATH. For example, add `export PATH="<amplify-cli/.bin>:$PATH"` to your shell profile file on Linux or macOS.
 
 2. Ensure you have [Java](https://aws.amazon.com/corretto/) installed and `java` command is available in your system. This is required for DynamoDB emulator.
@@ -78,10 +76,10 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
    ```sh
    # Linux / macOS
-   yarn setup-dev
+   yarn && yarn setup-dev
 
    # Windows
-   yarn setup-dev-win
+   yarn && yarn setup-dev-win
    ## Must be run in Powershell
    ```
 
