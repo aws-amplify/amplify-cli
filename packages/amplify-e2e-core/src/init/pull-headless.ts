@@ -26,7 +26,10 @@ const defaultSettings = {
  */
 export const pullProject = (cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> => {
   const mergedSettings = { ...defaultSettings, ...settings };
-  const chain = spawn(getCLIPath(), ['pull', '--appId', mergedSettings.appId, '--envName', mergedSettings.envName], { cwd, stripColors: true })
+  const chain = spawn(getCLIPath(), ['pull', '--appId', mergedSettings.appId, '--envName', mergedSettings.envName], {
+    cwd,
+    stripColors: true,
+  })
     .wait('Select the authentication method you want to use:')
     .sendLine(mergedSettings.useProfile)
     .wait('Please choose the profile you want to use')

@@ -155,23 +155,23 @@ export function amplifyPushSecretsWithoutCodegen(cwd: string, testingWithLatestC
  * Function to test amplify push with allowDestructiveUpdates flag option
  */
 
-
-
-export function amplifyPushUpdate(cwd: string, waitForText?: RegExp,  
+export function amplifyPushUpdate(
+  cwd: string,
+  waitForText?: RegExp,
   settings: {
-    testingWithLatestCodebase?: boolean,
-    allowDestructiveUpdates?: boolean,
-    overridePushTimeoutMS?: number,
-    minify?: boolean,
-    failureExpected?: boolean
-  } = {}
+    testingWithLatestCodebase?: boolean;
+    allowDestructiveUpdates?: boolean;
+    overridePushTimeoutMS?: number;
+    minify?: boolean;
+    failureExpected?: boolean;
+  } = {},
 ): Promise<void> {
   const defaultSettings = {
     testingWithLatestCodebase: false,
     allowDestructiveUpdates: false,
     overridePushTimeoutMS: 0,
     minify: false,
-    failureExpected: false
+    failureExpected: false,
   };
 
   const mergedSettings = { ...defaultSettings, ...settings };

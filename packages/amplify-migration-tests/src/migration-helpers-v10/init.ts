@@ -44,7 +44,8 @@ export function initJSProjectWithProfileV10(cwd: string, settings?: Partial<type
     cliArgs.push('--permissions-boundary', mergedSettings.permissionsBoundaryArn);
   }
 
-  if (mergedSettings?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
+  if (mergedSettings?.name?.length > 20)
+    console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), cliArgs, {
