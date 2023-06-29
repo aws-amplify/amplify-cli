@@ -16,6 +16,7 @@ import {
   FunctionTriggerParameters,
   LambdaLayer,
 } from '@aws-amplify/amplify-function-plugin-interface';
+import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
@@ -127,19 +128,18 @@ export async function addFunctionResource(
   if (completeParams.skipNextSteps) {
     return completeParams.resourceName;
   }
-  const { print } = context;
 
   const customPoliciesPath = pathManager.getCustomPoliciesPath(category, completeParams.resourceName);
 
-  print.success(`Successfully added resource ${completeParams.resourceName} locally.`);
-  print.info('');
-  print.success('Next steps:');
-  print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src`);
-  print.info('"amplify function build" builds all of your functions currently in the project');
-  print.info('"amplify mock function <functionName>" runs your function locally');
-  print.info(`To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
-  print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
-  print.info(
+  printer.success(`Successfully added resource ${completeParams.resourceName} locally.`);
+  printer.info('');
+  printer.success('Next steps:');
+  printer.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src`);
+  printer.info('"amplify function build" builds all of your functions currently in the project');
+  printer.info('"amplify mock function <functionName>" runs your function locally');
+  printer.info(`To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
+  printer.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+  printer.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
 
