@@ -33,7 +33,6 @@
     "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
     "lint-check-package-json": "yarn eslint --no-eslintrc --config .eslint.package.json.js '**/package.json'",
     "lint-fix-package-json": "yarn lint-check-package-json --fix",
-    "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
     "mergewords": "yarn ts-node ./scripts/handle-dict-conflicts.ts",
     "pkg-all-local": "yarn verdaccio-clean && yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
     "pkg-all": "bash -c 'source .circleci/local_publish_helpers.sh && generatePkgCli'",

@@ -4,7 +4,7 @@
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, singleSelect } from '..';
-import { KEY_DOWN_ARROW, addCICleanupTags, errorReportingTestHandler } from '../utils';
+import { KEY_DOWN_ARROW, addCircleCITags, errorReportingTestHandler } from '../utils';
 import { amplifyRegions } from '../configure';
 
 const defaultSettings = {
@@ -52,7 +52,8 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     cliArgs.push('--permissions-boundary', mergedSettings.permissionsBoundaryArn);
   }
 
-  if (mergedSettings?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
+  if (mergedSettings?.name?.length > 20)
+    console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
   const chain = spawn(getCLIPath(), cliArgs, {
     cwd,
@@ -95,8 +96,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   }
 
   return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
-  }
-
+}
 
 export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
   const mergedSettings = { ...defaultSettings, ...settings };
@@ -293,9 +293,10 @@ export function initProjectWithAccessKey(
   });
 }
 
-export function initNewEnvWithAccessKey(cwd: string, settings: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
-  addCICleanupTags(cwd);
-
+export function initNewEnvWithAccessKey(
+  cwd: string,
+  settings: { envName: string; accessKeyId: string; secretAccessKey: string },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
       cwd,
@@ -332,8 +333,6 @@ export function initNewEnvWithAccessKey(cwd: string, settings: { envName: string
 }
 
 export function initNewEnvWithProfile(cwd: string, settings: { envName: string }): Promise<void> {
-  addCICleanupTags(cwd);
-
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
@@ -363,8 +362,6 @@ export function initNewEnvWithProfile(cwd: string, settings: { envName: string }
 }
 
 export function updatedInitNewEnvWithProfile(cwd: string, settings: { envName: string }): Promise<void> {
-  addCICleanupTags(cwd);
-
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
