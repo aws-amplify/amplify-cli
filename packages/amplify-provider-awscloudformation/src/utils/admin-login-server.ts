@@ -98,7 +98,10 @@ export class AdminLoginServer {
         delete req.body;
         res.sendStatus(200);
       } catch (err) {
-        res.sendStatus(500);
+        res.sendStatus(500).send({
+          errorName: 'AmplifyStudioLoginError',
+          errorMessage: `Failed to receive expected authentication tokens. Error: ${err}`,
+        });
         throw new AmplifyError(
           'AmplifyStudioLoginError',
           {

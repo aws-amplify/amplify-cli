@@ -375,6 +375,7 @@ const createBreadcrumbs = (params: FunctionParameters | FunctionTriggerParameter
       functionRuntime: 'nodejs',
       useLegacyBuild: true,
       defaultEditorFile: 'src/index.js',
+      scripts: params.scripts,
     };
   }
   return {
@@ -382,6 +383,7 @@ const createBreadcrumbs = (params: FunctionParameters | FunctionTriggerParameter
     functionRuntime: params.runtime.value,
     useLegacyBuild: params.runtime.value === 'nodejs', // so we can update node builds in the future
     defaultEditorFile: params.functionTemplate.defaultEditorFile,
+    scripts: params.scripts,
   };
 };
 

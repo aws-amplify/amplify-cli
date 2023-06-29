@@ -1,5 +1,4 @@
 import {
-  addFunction,
   addLayer,
   amplifyPush,
   amplifyPushAuthV5V6,
@@ -23,6 +22,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import { versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
+import { addFunctionPreV12 } from '../../migration-helpers/lambda-function';
 
 describe('amplify function migration', () => {
   let projRoot: string;
@@ -51,7 +51,7 @@ describe('amplify function migration', () => {
     const { projectName: appName } = getProjectConfig(projRoot);
 
     const fnName = `integtestfn${generateRandomShortId()}`;
-    await addFunction(
+    await addFunctionPreV12(
       projRoot,
       {
         name: fnName,
@@ -112,8 +112,8 @@ describe('amplify function migration', () => {
     const runtime: LayerRuntime = 'nodejs';
     const { projectName: projName } = getProjectConfig(projRoot);
 
-    await addFunction(projRoot, { name: function1, functionTemplate: 'Hello World' }, runtime, undefined);
-    await addFunction(projRoot, { name: function2, functionTemplate: 'Hello World' }, runtime, undefined);
+    await addFunctionPreV12(projRoot, { name: function1, functionTemplate: 'Hello World' }, runtime, undefined);
+    await addFunctionPreV12(projRoot, { name: function2, functionTemplate: 'Hello World' }, runtime, undefined);
     await amplifyPushAuthV5V6(projRoot);
 
     const layerName = `test${shortId}`;
