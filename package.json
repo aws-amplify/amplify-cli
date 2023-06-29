@@ -37,6 +37,7 @@
     "pkg-all-local": "yarn verdaccio-clean && yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
     "pkg-all": "bash -c 'source .circleci/local_publish_helpers.sh && generatePkgCli'",
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",
+    "postinstall": "husky install",
     "prettier-changes": "git diff --name-only --diff-filter MRA dev | xargs yarn prettier --write",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
@@ -69,8 +70,7 @@
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
-    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts",
-    "postinstall": "husky install"
+    "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
