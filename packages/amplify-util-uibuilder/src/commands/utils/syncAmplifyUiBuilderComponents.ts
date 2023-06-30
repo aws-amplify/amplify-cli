@@ -11,6 +11,7 @@ import {
 } from '@aws-amplify/codegen-ui';
 import { createUiBuilderComponent, createUiBuilderForm, createUiBuilderTheme, generateBaseForms } from './codegenResources';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
+import { DataStoreRenderConfig, GraphqlRenderConfig } from '@aws-amplify/codegen-ui-react';
 
 type CodegenResponse<T extends StudioSchema> =
   | {
@@ -34,10 +35,11 @@ export const generateUiBuilderComponents = (
   context: $TSContext,
   componentSchemas: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
   dataSchema?: GenericDataSchema,
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
 ): CodegenResponse<StudioComponent>[] => {
   const componentResults = componentSchemas.map<CodegenResponse<StudioComponent>>((schema) => {
     try {
-      const component = createUiBuilderComponent(context, schema, dataSchema);
+      const component = createUiBuilderComponent(context, schema, dataSchema, apiConfiguration);
       return { resultType: 'SUCCESS', schema: component };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
@@ -58,13 +60,17 @@ export const generateUiBuilderComponents = (
  * Returns instances of StudioTheme from theme schemas
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]): CodegenResponse<StudioTheme>[] => {
+export const generateUiBuilderThemes = (
+  context: $TSContext,
+  themeSchemas: any[],
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
+): CodegenResponse<StudioTheme>[] => {
   if (themeSchemas.length === 0) {
     return [generateDefaultTheme(context)];
   }
   const themeResults = themeSchemas.map<CodegenResponse<StudioTheme>>((schema) => {
     try {
-      const theme = createUiBuilderTheme(context, schema);
+      const theme = createUiBuilderTheme(context, schema, undefined, apiConfiguration);
       return { resultType: 'SUCCESS', schema: theme };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);
@@ -82,9 +88,12 @@ export const generateUiBuilderThemes = (context: $TSContext, themeSchemas: any[]
 /**
  * Generates the defaultTheme in the user's project that's exported from @aws-amplify/codegen-ui-react
  */
-const generateDefaultTheme = (context: $TSContext): CodegenResponse<StudioTheme> => {
+const generateDefaultTheme = (
+  context: $TSContext,
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
+): CodegenResponse<StudioTheme> => {
   try {
-    const theme = createUiBuilderTheme(context, { name: 'studioTheme', values: [] }, { renderDefaultTheme: true });
+    const theme = createUiBuilderTheme(context, { name: 'studioTheme', values: [] }, { renderDefaultTheme: true }, apiConfiguration);
     printer.debug(`Generated default theme in ${getUiBuilderComponentsPath(context)}`);
     return { resultType: 'SUCCESS', schema: theme };
   } catch (e) {
@@ -104,6 +113,7 @@ export const generateUiBuilderForms = (
   dataSchema?: GenericDataSchema,
   autoGenerateForms?: boolean,
   formFeatureFlags?: FormFeatureFlags,
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
 ): CodegenResponse<StudioForm>[] => {
   const modelMap: { [model: string]: Set<'create' | 'update'> } = {};
   if (dataSchema?.dataSourceType === 'DataStore' && autoGenerateForms) {
@@ -115,7 +125,7 @@ export const generateUiBuilderForms = (
   }
   const codegenForm = (schema: StudioForm): CodegenResponse<StudioForm> => {
     try {
-      const form = createUiBuilderForm(context, schema, dataSchema, formFeatureFlags);
+      const form = createUiBuilderForm(context, schema, dataSchema, formFeatureFlags, apiConfiguration);
       return { resultType: 'SUCCESS', schema: form };
     } catch (e) {
       printer.debug(`Failure caught processing ${schema.name}`);

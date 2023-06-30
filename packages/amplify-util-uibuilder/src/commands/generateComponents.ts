@@ -1,7 +1,8 @@
 /* eslint-disable spellcheck/spell-checker */
-import { StudioSchema } from '@aws-amplify/codegen-ui';
+import { StudioComponent, StudioForm, StudioSchema, componentRequiresDataApi, formRequiresDataApi } from '@aws-amplify/codegen-ui';
 import ora from 'ora';
 import { printer } from '@aws-amplify/amplify-prompts';
+import type { Form, Component } from 'aws-sdk/clients/amplifyuibuilder';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AmplifyStudioClient } from '../clients';
 import {
@@ -18,7 +19,11 @@ import {
   deleteDetachedForms,
   hasStorageField,
   isFormSchema,
+  getUiBuilderComponentsPath,
 } from './utils';
+import { getCodegenConfig } from 'amplify-codegen';
+import { GraphqlRenderConfig, DataStoreRenderConfig } from '@aws-amplify/codegen-ui-react';
+import path from 'path';
 
 /**
  * Pulls ui components from Studio backend and generates the code in the user's file system
@@ -37,24 +42,91 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       studioClient.isGraphQLSupported ? getAmplifyDataSchema(context) : Promise.resolve(undefined),
     ]);
 
-    const nothingWouldAutogenerate =
-      !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported || !studioClient.isDataStoreEnabled;
+    let canCodegenGraphqlComponents = false;
+    let apiConfiguration: GraphqlRenderConfig | DataStoreRenderConfig = {
+      dataApi: 'DataStore',
+    };
 
-    if (nothingWouldAutogenerate && [componentSchemas, themeSchemas, formSchemas].every((group) => !group.entities.length)) {
+    if (!studioClient.isDataStoreEnabled && studioClient.metadata.isGraphQLEnabled) {
+      printer.debug('building graphql config');
+      // attempt to get api codegen info
+      const projectPath = context.exeInfo.localEnvInfo.projectPath;
+      const componentsPath = getUiBuilderComponentsPath(context);
+      function relativeToComponentsPath(importPath: string) {
+        return path.relative(componentsPath, importPath).split(path.sep).join('/');
+      }
+
+      try {
+        const codegenConfig = getCodegenConfig(projectPath);
+        const typesPath = codegenConfig.getGeneratedTypesPath();
+        apiConfiguration = {
+          dataApi: 'GraphQL',
+          typesFilePath: typesPath && relativeToComponentsPath(typesPath),
+          queriesFilePath: relativeToComponentsPath(codegenConfig.getGeneratedQueriesPath()),
+          mutationsFilePath: relativeToComponentsPath(codegenConfig.getGeneratedMutationsPath()),
+          subscriptionsFilePath: relativeToComponentsPath(codegenConfig.getGeneratedSubscriptionsPath()),
+          fragmentsFilePath: relativeToComponentsPath(codegenConfig.getGeneratedFragmentsPath()),
+        };
+        canCodegenGraphqlComponents = true;
+      } catch {
+        canCodegenGraphqlComponents = false;
+        printer.debug('unable to build configuration');
+      }
+    }
+
+    const hasDataAPI = studioClient.isDataStoreEnabled || canCodegenGraphqlComponents;
+
+    const willAutogenerateItems = dataSchema && studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && hasDataAPI;
+
+    if (!hasDataAPI) {
+      // filter components and forms that have data configurations and printer.warn()
+      const [componentsToSkip, componentsToGenerate] = componentSchemas.entities.reduce(
+        ([toSkip, toGenerate], e) => {
+          // component is configured for appsync API, cannot be generated
+          if (componentRequiresDataApi(e as StudioComponent)) {
+            toSkip.push(e);
+          } else {
+            toGenerate.push(e);
+          }
+          return [toSkip, toGenerate];
+        },
+        [[], []] as [Component[], Component[]],
+      );
+      componentSchemas.entities = componentsToGenerate;
+      printer.warn(`Skipping the following components: ${componentsToSkip.map((f) => f.name).join(', ')}`);
+
+      const [formsToSkip, formsToGenerate] = formSchemas.entities.reduce(
+        ([toSkip, toGenerate], e) => {
+          // form is configured for appsync API, cannot be generated
+          if (formRequiresDataApi(e as StudioForm)) {
+            toSkip.push(e);
+          } else {
+            toGenerate.push(e);
+          }
+          return [toSkip, toGenerate];
+        },
+        [[], []] as [Form[], Form[]],
+      );
+      formSchemas.entities = formsToGenerate;
+      printer.warn(`Skipping the following forms: ${formsToSkip.map((f) => f.name).join(', ')}`);
+    }
+
+    if (!willAutogenerateItems && [componentSchemas, themeSchemas, formSchemas].every((group) => !group.entities.length)) {
       printer.debug('Skipping UI component generation since none are found.');
       return;
     }
     spinner.start('Generating UI components...');
 
     const generatedResults = {
-      component: generateUiBuilderComponents(context, componentSchemas.entities, dataSchema),
-      theme: generateUiBuilderThemes(context, themeSchemas.entities),
+      component: generateUiBuilderComponents(context, componentSchemas.entities, dataSchema, apiConfiguration),
+      theme: generateUiBuilderThemes(context, themeSchemas.entities, apiConfiguration),
       form: generateUiBuilderForms(
         context,
         formSchemas.entities,
         dataSchema,
-        studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && studioClient.isDataStoreEnabled,
+        studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && hasDataAPI,
         studioClient.metadata.formFeatureFlags,
+        apiConfiguration,
       ),
     };
 
@@ -98,9 +170,9 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       });
     });
 
-    generateAmplifyUiBuilderIndexFile(context, successfulSchemas);
+    generateAmplifyUiBuilderIndexFile(context, successfulSchemas, apiConfiguration);
 
-    generateAmplifyUiBuilderUtilFile(context, { hasForms: hasSuccessfulForm, hasViews: false });
+    generateAmplifyUiBuilderUtilFile(context, { hasForms: hasSuccessfulForm, hasViews: false }, apiConfiguration);
 
     if (failedResponseNames.length > 0) {
       spinner.fail(`Failed to sync the following components: ${failedResponseNames.join(', ')}`);

@@ -25,26 +25,42 @@ import {
   UtilTemplateType,
   ReactUtilsStudioTemplateRenderer,
   ReactThemeStudioTemplateRendererOptions,
+  ReactRenderConfig,
+  GraphqlRenderConfig,
+  DataStoreRenderConfig,
 } from '@aws-amplify/codegen-ui-react';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { ModelIntrospectionSchema } from '@aws-amplify/appsync-modelgen-plugin';
 
-const config = {
+const baseConfig: ReactRenderConfig = {
   module: ModuleKind.ES2020,
   target: ScriptTarget.ES2020,
   script: ScriptKind.JSX,
   renderTypeDeclarations: true,
+  apiConfiguration: {
+    dataApi: 'DataStore',
+  },
 };
 
 /**
  * Writes component file to the work space
  */
-export const createUiBuilderComponent = (context: $TSContext, schema: StudioComponent, dataSchema?: GenericDataSchema): StudioComponent => {
+export const createUiBuilderComponent = (
+  context: $TSContext,
+  schema: StudioComponent,
+  dataSchema?: GenericDataSchema,
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
+): StudioComponent => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
+  const config = {
+    ...baseConfig,
+    apiConfiguration,
+  };
+
   const rendererFactory = new StudioTemplateRendererFactory(
-    (component: StudioComponent) => new AmplifyRenderer(component as StudioComponent, config, dataSchema),
+    (component: StudioComponent) => new AmplifyRenderer(component, config, dataSchema) as unknown as StudioTemplateRenderer<unknown, StudioComponent, FrameworkOutputManager<unknown>, RenderTextComponentResponse>,
   );
 
   const outputPathDir = uiBuilderComponentsPath;
@@ -64,8 +80,13 @@ export const createUiBuilderTheme = (
   context: $TSContext,
   schema: StudioTheme,
   options?: ReactThemeStudioTemplateRendererOptions,
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
 ): StudioTheme => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
+  const config = {
+    ...baseConfig,
+    apiConfiguration,
+  };
   const rendererFactory = new StudioTemplateRendererFactory(
     (component: StudioTheme) =>
       new ReactThemeStudioTemplateRenderer(component, config, options) as unknown as StudioTemplateRenderer<
@@ -101,8 +122,13 @@ export const createUiBuilderForm = (
   schema: StudioForm,
   dataSchema?: GenericDataSchema,
   formFeatureFlags?: FormFeatureFlags,
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
 ): StudioForm => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
+  const config = {
+    ...baseConfig,
+    apiConfiguration,
+  };
   const rendererFactory = new StudioTemplateRendererFactory(
     (form: StudioForm) =>
       new AmplifyFormRenderer(form, dataSchema, config, formFeatureFlags) as unknown as StudioTemplateRenderer<
@@ -133,8 +159,16 @@ export const createUiBuilderForm = (
 /**
  * Writes index file to the work space
  */
-export const generateAmplifyUiBuilderIndexFile = (context: $TSContext, schemas: StudioSchema[]): void => {
+export const generateAmplifyUiBuilderIndexFile = (
+  context: $TSContext,
+  schemas: StudioSchema[],
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
+): void => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
+  const config = {
+    ...baseConfig,
+    apiConfiguration,
+  };
   const rendererFactory = new StudioTemplateRendererFactory(
     (schema: StudioSchema[]) =>
       new ReactIndexStudioTemplateRenderer(schema, config) as unknown as StudioTemplateRenderer<
@@ -170,10 +204,24 @@ type UtilFileChecks = {
 /**
  * Writes utils file to the work space
  */
-export const generateAmplifyUiBuilderUtilFile = (context: $TSContext, { hasForms, hasViews }: UtilFileChecks): void => {
+export const generateAmplifyUiBuilderUtilFile = (
+  context: $TSContext,
+  { hasForms, hasViews }: UtilFileChecks,
+  apiConfiguration?: GraphqlRenderConfig | DataStoreRenderConfig,
+): void => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
+  const config = {
+    ...baseConfig,
+    apiConfiguration,
+  };
   const rendererFactory = new StudioTemplateRendererFactory(
-    (utils: UtilTemplateType[]) => new ReactUtilsStudioTemplateRenderer(utils, config),
+    (utils: UtilTemplateType[]) =>
+      new ReactUtilsStudioTemplateRenderer(utils, config) as unknown as StudioTemplateRenderer<
+        unknown,
+        UtilTemplateType[],
+        FrameworkOutputManager<unknown>,
+        RenderTextComponentResponse
+      >,
   );
 
   const outputPathDir = uiBuilderComponentsPath;
