@@ -529,3 +529,13 @@ function _buildTestsStandalone {
     echo "Running yarn build-tests"
     yarn build-tests
 }
+
+function _waitForJobs {
+    file_path=$1
+    echo "file_path" $file_path
+    cd ./scripts
+    npm install -g ts-node
+    npm install aws-sdk
+    ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path AmplifyCLI-E2E-Testing
+    cd ..
+}
