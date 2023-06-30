@@ -168,7 +168,7 @@
   },
   "packageManager": "yarn@3.5.0",
   "resolutions": {
-    "aws-sdk": "^2.1405.0",
+    "aws-sdk": "^2.1426.0",
     "cross-fetch": "^2.2.6",
     "glob-parent": "^6.0.2",
     "got": "^11.8.5",
