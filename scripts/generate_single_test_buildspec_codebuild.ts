@@ -9,17 +9,30 @@ import { join } from 'path';
 
 const main = () => {
   let filePath: string = process.argv[2];
-  const potentialPathPrefix = 'packages/amplify-e2e-tests/';
-  if (filePath.startsWith(potentialPathPrefix)) {
-    filePath = filePath.replace(potentialPathPrefix, '');
+  const e2ePathPrefix = 'packages/amplify-e2e-tests/';
+  const migrationPathPrefix = 'packages/amplify-migration-tests/';
+
+  if (!filePath.startsWith(e2ePathPrefix) && !filePath.startsWith(migrationPathPrefix)) {
+    throw new Error(`Invalid test path. Expected path to begin with ${e2ePathPrefix} or ${migrationPathPrefix}.`);
   }
-  const potentialFilePaths = getTestFiles(join(REPO_ROOT, 'packages', 'amplify-e2e-tests'));
+
+  filePath = filePath.replace(e2ePathPrefix, '');
+  filePath = filePath.replace(migrationPathPrefix, '');
+
+  const testType = filePath.startsWith(e2ePathPrefix) ? 'e2e' : 'migration';
+
+  const potentialFilePaths = getTestFiles(
+    join(REPO_ROOT, 'packages', testType === 'e2e' ? 'amplify-e2e-tests' : 'amplify-migration-tests')
+  );
   if (!potentialFilePaths.includes(filePath)) {
     throw new Error('Invalid path to test file.');
   }
   const os = process.argv[3];
   if (!(os === 'l' || os === 'w')) {
     throw new Error('Invalid job type. Expected "l" for linux or "w" for windows.');
+  }
+  if (os === 'w' && testType === 'migration') {
+    throw new Error('Windows is not supported for migration tests currently.');
   }
   const region = process.argv[4];
   if (!regions.includes(region)) {
@@ -51,6 +64,19 @@ const main = () => {
     'upb',
   ];
 
+  const getBuildSpec = () => {
+    const cbSpecsDir = 'codebuild_specs';
+    let specFile = os === 'l' ? 'run_e2e_tests_linux.yml' : 'run_e2e_tests_windows.yml'; // Default to e2e
+    if (testType === 'migration') {
+      if (filePath.includes('migration_tests_v10')) {
+        specFile = 'migration_tests_v10.yml';
+      } else if (filePath.includes('migration_tests_v12')) {
+        specFile = 'migration_tests_v12.yml';
+      }
+    }
+    return join(cbSpecsDir, specFile);
+  }
+
   const jobBuildSpec: jobBuildSpecType = {
     identifier: `${os}_${filePath
       .replace(/src\/__tests__\//g, '')
@@ -59,7 +85,7 @@ const main = () => {
       .replace(/\./g, '_')
       .replace(/-/g, '_')
       .replace(/\//g, '_')}`,
-    buildspec: os === 'l' ? 'codebuild_specs/run_e2e_tests_linux.yml' : 'codebuild_specs/run_e2e_tests_windows.yml',
+    buildspec: getBuildSpec(),
     env: {
       variables: {
         TEST_SUITE: filePath,
