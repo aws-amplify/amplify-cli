@@ -205,6 +205,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   generateCognitoStackResources = async (props: CognitoStackOptions, context?: $TSContext): Promise<void> => {
+    console.log(`generateCognitoStackResources()... props: ${JSON.stringify(props, null, 2)}`);
     const autoVerifiedAttributes = props.autoVerifiedAttributes
       ? props.autoVerifiedAttributes
           .concat(props.aliasAttributes ? props.aliasAttributes : [])
@@ -449,6 +450,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
        *   # Created provide application access to user pool
             # Depends on UserPool for ID reference
        */
+      console.log(`props.userpoolClientSetAttributes: ${props.userpoolClientSetAttributes}`);
       this.userPoolClientWeb = new cognito.CfnUserPoolClient(this, 'UserPoolClientWeb', {
         userPoolId: cdk.Fn.ref('UserPool'),
         clientName: `${props.resourceNameTruncated}_app_clientWeb`,
