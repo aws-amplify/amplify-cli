@@ -17,6 +17,7 @@ export type StudioMetadata = {
     isRelationshipSupported: boolean;
     isNonModelSupported: boolean;
   };
+  isGraphQLEnabled: boolean;
 };
 
 /**
@@ -122,6 +123,7 @@ export default class AmplifyStudioClient {
         isRelationshipSupported: false,
         isNonModelSupported: false,
       },
+      isGraphQLEnabled: false,
     };
   }
 
@@ -145,6 +147,7 @@ export default class AmplifyStudioClient {
           isRelationshipSupported: response.features?.isRelationshipSupported === 'true',
           isNonModelSupported: response.features?.isNonModelSupported === 'true',
         },
+        isGraphQLEnabled: response.features?.isGraphQLEnabled === 'true',
       };
     } catch (err) {
       throw new Error(`Failed to load metadata: ${err.message}`);
