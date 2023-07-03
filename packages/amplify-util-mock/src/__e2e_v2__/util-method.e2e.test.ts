@@ -1,7 +1,6 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { deploy, launchDDBLocal, terminateDDB, logDebug, reDeploy, GraphQLClient } from '../__e2e__/utils';
 
 let GRAPHQL_ENDPOINT: string;
@@ -15,9 +14,6 @@ jest.setTimeout(2000000);
 const runTransformer = async (validSchema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer()],
-    featureFlags: {
-      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
-    } as FeatureFlagProvider,
     sandboxModeEnabled: true,
   });
   const out = await transformer.transform(validSchema);
