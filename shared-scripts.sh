@@ -536,6 +536,6 @@ function _waitForJobs {
     cd ./scripts
     npm install -g ts-node
     npm install aws-sdk
-    ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path AmplifyCLI-E2E-Testing
+    ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME
     cd ..
 }
