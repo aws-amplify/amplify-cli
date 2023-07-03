@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - source shared-scripts.sh && _waitForJobs build_linux
       - source ./shared-scripts.sh && _publishToLocalRegistry
 
 artifacts:

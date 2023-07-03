@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - source shared-scripts.sh && _waitForJobs $CODEBUILD_SRC_DIR/codebuild_specs/wait_upb.json
       - source ./shared-scripts.sh && _uploadPkgBinaries
 
 artifacts:
