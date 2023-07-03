@@ -47,8 +47,6 @@ This section should get you running with **Amplify CLI** and get you familiar wi
    npm install --global yarn
    ```
 
-   > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
-
    > Ensure that `.bin` directory is added to your PATH. For example, add `export PATH="<amplify-cli/.bin>:$PATH"` to your shell profile file on Linux or macOS.
 
 2. Ensure you have [Java](https://aws.amazon.com/corretto/) installed and `java` command is available in your system. This is required for DynamoDB emulator.
@@ -172,17 +170,7 @@ Valid commit types are as follows:
 
 ### Git Hooks
 
-You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/main) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/f2ac2b27b6b0dbf0c52edbc696c35b71f539c944/package.json#L61) file):
-
-```json
-"husky": {
-    "hooks": {
-        "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-        "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
-        "pre-commit": "yarn verify-commit"
-    }
-}
-```
+You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/main) (you can see them in [.husky](.husky) file):
 
 > NOTE: To ensure those git hooks properly execute, run `yarn` or `npm install` at the root of this monorepo to install the necessary dev dependency packages.
 

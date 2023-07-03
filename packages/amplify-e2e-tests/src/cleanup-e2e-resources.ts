@@ -282,9 +282,6 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
-  if (region === 'us-east-1' && account.parent) {
-    return []; // temporarily disabled until us-east-1 is re-enabled for this account
-  }
   const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
   try {
     const amplifyApps = await amplifyClient.listApps({ maxResults: 25 }).promise(); // keeping it to 25 as max supported is 25

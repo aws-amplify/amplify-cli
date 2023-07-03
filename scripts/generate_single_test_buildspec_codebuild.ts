@@ -71,7 +71,6 @@ const main = () => {
   if (os === 'w') {
     jobBuildSpec.env.type = 'WINDOWS_SERVER_2019_CONTAINER';
     jobBuildSpec.env.image = '$WINDOWS_IMAGE_2019';
-    jobBuildSpec.env.variables.USE_PARENT_ACCOUNT = 'false';
     jobBuildSpec['depend-on'].push('build_windows');
     necessaryIds.push('build_windows');
   }
