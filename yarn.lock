@@ -1590,17 +1590,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-cdk/asset-awscli-v1@npm:^2.2.177":
+"@aws-cdk/asset-awscli-v1@npm:^2.2.177, @aws-cdk/asset-awscli-v1@npm:^2.2.97":
   version: 2.2.197
   resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.197"
   checksum: f1641c78b721fa5d760b5462992a8d6c3378a53abc6ea7422d37ab6681ca5584f827867e7c28f6e133617e595e33745b78d5620720ae9b33a2a9ae8e02b102f5
-  languageName: node
-  linkType: hard
-
-"@aws-cdk/asset-awscli-v1@npm:^2.2.97":
-  version: 2.2.106
-  resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.106"
-  checksum: 3e442ce0b67d45c84666ff6e66dbfca24ccf65164afb901d2a7c5928cdd35203597a6b11cec67704b0955bf060d4ad2ababf759175e608aad1dd6104b3a7a8db
   languageName: node
   linkType: hard
 
@@ -1611,17 +1604,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.148":
+"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.148, @aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.77":
   version: 2.0.165
   resolution: "@aws-cdk/asset-node-proxy-agent-v5@npm:2.0.165"
   checksum: 437a532238e3dba3258f44746c50eb8dd4480272a13d15382b8d1d8a2a7d5e5de3635394877322ac26bfe6d5977246e867ad9deceb04dc2bde6f169e83d9c156
-  languageName: node
-  linkType: hard
-
-"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.77":
-  version: 2.0.85
-  resolution: "@aws-cdk/asset-node-proxy-agent-v5@npm:2.0.85"
-  checksum: 6ee209de6ebd3d7b518eb297285985543c48701e20488678503f2f888285662ad77b91f7c0bdd21e70252c7789040d27d242cbea59214ed7e164c3d631499aae
   languageName: node
   linkType: hard
 
@@ -27121,7 +27107,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"semver@npm:7.5.0, semver@npm:7.x, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.0":
+"semver@npm:7.5.0":
   version: 7.5.0
   resolution: "semver@npm:7.5.0"
   dependencies:
@@ -27132,16 +27118,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"semver@npm:^6.0.0, semver@npm:^6.1.1, semver@npm:^6.1.2, semver@npm:^6.2.0, semver@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "semver@npm:6.3.0"
-  bin:
-    semver: ./bin/semver.js
-  checksum: 1f4959e15bcfbaf727e964a4920f9260141bb8805b399793160da4e7de128e42a7d1f79c1b7d5cd21a6073fba0d55feb9966f5fef3e5ccb8e1d7ead3d7527458
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.5.1":
+"semver@npm:7.x, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.0, semver@npm:^7.5.1":
   version: 7.5.2
   resolution: "semver@npm:7.5.2"
   dependencies:
@@ -27149,6 +27126,15 @@ node-pty@beta:
   bin:
     semver: bin/semver.js
   checksum: d151207ab762a8067f6302076edc04e5b8da2362eb9e3f21c2567ceadfd415064936d215b4aae7791da118c230649d29089be979ffa49c5b56a6bcf82147efdd
+  languageName: node
+  linkType: hard
+
+"semver@npm:^6.0.0, semver@npm:^6.1.1, semver@npm:^6.1.2, semver@npm:^6.2.0, semver@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "semver@npm:6.3.0"
+  bin:
+    semver: ./bin/semver.js
+  checksum: 1f4959e15bcfbaf727e964a4920f9260141bb8805b399793160da4e7de128e42a7d1f79c1b7d5cd21a6073fba0d55feb9966f5fef3e5ccb8e1d7ead3d7527458
   languageName: node
   linkType: hard
 
