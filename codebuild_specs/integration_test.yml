@@ -9,6 +9,7 @@ phases:
   build:
     commands:
       - echo "integration testing"
+      - source shared-scripts.sh && _waitForJobs build_linux
       - source ./shared-scripts.sh && _integrationTest
 artifacts:
   files:

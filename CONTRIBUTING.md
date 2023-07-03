@@ -170,17 +170,7 @@ Valid commit types are as follows:
 
 ### Git Hooks
 
-You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/main) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/f2ac2b27b6b0dbf0c52edbc696c35b71f539c944/package.json#L61) file):
-
-```json
-"husky": {
-    "hooks": {
-        "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-        "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
-        "pre-commit": "yarn verify-commit"
-    }
-}
-```
+You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/main) (you can see them in [.husky](.husky) file):
 
 > NOTE: To ensure those git hooks properly execute, run `yarn` or `npm install` at the root of this monorepo to install the necessary dev dependency packages.
 
