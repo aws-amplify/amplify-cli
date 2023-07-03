@@ -9,6 +9,7 @@
     "build-tests-changed": "lerna run build-tests --since dev",
     "build-tests": "lerna run build-tests",
     "build": "lerna run build",
+    "sample": "do nothing",
     "check-version-conflicts:beta": "yarn ts-node ./scripts/check-version.ts beta",
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "clean": "lerna run clean && yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
