@@ -1,11 +1,12 @@
 version: 0.2
 env:
   shell: bash
-  compute-type: BUILD_GENERAL1_SMALL
   variables:
+    E2E_TEST_COVERAGE_DIR: node_v8_coverage
     CI: true
     CIRCLECI: true
     IS_AMPLIFY_CI: true
+    CLI_REGION: us-east-1
     # mock values to test artifact scanning
     ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
     MOCK_ENV_VAR_FOR_SCANNING_SECRETS: 'abc123xyz'
@@ -25,22 +26,18 @@ env:
 phases:
   build:
     commands:
-      # you can provide a codebuild source version to use old cache and skip all other jobs :)
-      - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
-      - export AMPLIFY_PATH=$HOME/.npm-global/bin/amplify
-      - echo $AMPLIFY_DIR
-      - echo $AMPLIFY_PATH
-      - source ./shared-scripts.sh && _runMigrationV8Test
+      - source ./shared-scripts.sh && _amplifyConsoleIntegrationTests
   post_build:
     commands:
       - source ./shared-scripts.sh && _scanArtifacts
-      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-migration-tests
+
+artifacts:
+  files:
+    - console-integration-reports/*
+  base-directory: packages/amplify-console-integration-tests/
 reports:
   e2e-reports:
     files:
       - '*.xml'
     file-format: 'JUNITXML'
-    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-migration-tests/reports/junit'
-artifacts:
-  files:
-    - $CODEBUILD_SRC_DIR/packages/amplify-migration-tests/amplify-migration-reports/*
+    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-console-integration-tests/reports/junit'
