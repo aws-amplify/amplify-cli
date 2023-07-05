@@ -549,6 +549,6 @@ function _amplifyGeneralConfigTests {
 
     source .circleci/local_publish_helpers.sh
     cd packages/amplify-e2e-tests
-    echo TEST_SUITE $TEST_SUITE
+    alias amplify="amplify-dev"
     retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
 }
