@@ -539,3 +539,16 @@ function _waitForJobs {
     ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME
     cd ..
 }
+
+function _amplifyGeneralConfigTests {
+    echo "Restoring Cache"
+    loadCache repo $CODEBUILD_SRC_DIR
+
+    echo "Loading test account credentials"
+    _loadTestAccountCredentials
+
+    source .circleci/local_publish_helpers.sh
+    cd packages/amplify-e2e-tests
+    echo TEST_SUITE $TEST_SUITE
+    retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+}
