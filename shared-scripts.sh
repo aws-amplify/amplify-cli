@@ -539,3 +539,7 @@ function _waitForJobs {
     ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME
     cd ..
 }
+
+function _callMetricCollectionAPI {
+    echo "Calling CodeBuild APIs"
+}
