@@ -1,8 +1,11 @@
 version: 0.2
 env:
   shell: bash
+  variables:
+    E2E_TEST_COVERAGE_DIR: node_v8_coverage
+    CI: true
+    CIRCLECI: true
 phases:
   build:
     commands:
-      # - source shared-scripts.sh && _waitForJobs build_linux
       - source ./shared-scripts.sh && _amplifyGeneralConfigTests
