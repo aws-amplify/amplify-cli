@@ -98,6 +98,10 @@ export class ResourceExport extends ResourcePackager {
         default: {},
         throwIfNotExist: false,
       });
+      if (resource.serviceType === 'imported') {
+        // 'imported' services do not have stacks
+        continue;
+      }
       const nestedStackName = resource.category + resource.resourceName;
       const usedParameters = nestedStack[nestedStackName].parameters;
       Object.keys(usedParameters).forEach((paramKey) => {
