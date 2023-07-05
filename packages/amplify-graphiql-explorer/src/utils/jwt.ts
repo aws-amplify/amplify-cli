@@ -1,12 +1,16 @@
-import { decode, sign, verify } from 'jsonwebtoken';
+import { KJUR, b64utoutf8 } from 'jsrsasign';
 
 export function generateToken(decodedToken: string | object): string {
   try {
     if (typeof decodedToken === 'string') {
       decodedToken = JSON.parse(decodedToken);
     }
-    const token = sign(decodedToken, 'open-secrete');
-    verify(token, 'open-secrete');
+    const header = { alg: 'HS256', typ: 'JWT' };
+    const token = KJUR.jws.JWS.sign('HS256', JSON.stringify(header), decodedToken, 'open-secrete');
+    const isValid = KJUR.jws.JWS.verify(token, 'open-secrete');
+    if (!isValid) {
+      throw new Error('Invalid token.');
+    }
     return token;
   } catch (e) {
     const err = new Error('Error when generating OIDC token: ' + e.message);
@@ -15,7 +19,7 @@ export function generateToken(decodedToken: string | object): string {
 }
 
 export function parse(token): object {
-  const decodedToken = decode(token);
+  const decodedToken = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(token.split('.')[1]));
   return decodedToken as object;
 }
 
