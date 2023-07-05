@@ -17,5 +17,5 @@ region=us-west-2
 
 `;
 
-fs.writeFileSync(join('root', '.aws', 'credentials'), credentials_file_contents);
-fs.writeFileSync(join('root', '.aws', 'config'), config_file_contents);
+fs.writeFileSync(join('/', 'root', '.aws', 'credentials'), credentials_file_contents);
+fs.writeFileSync(join('/', 'root', '.aws', 'config'), config_file_contents);
