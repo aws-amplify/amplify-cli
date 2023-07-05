@@ -74,3 +74,7 @@ batch:
       buildspec: codebuild_specs/amplify_general_config_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          CLI_REGION: us-east-1
+      depend-on:
+        - upb

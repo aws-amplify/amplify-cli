@@ -18,7 +18,35 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: build_pkg_binaries_arm
+      buildspec: codebuild_specs/build_pkg_binaries_arm.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: build_pkg_binaries_linux
+      buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: build_pkg_binaries_macos
+      buildspec: codebuild_specs/build_pkg_binaries_macos.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    # - identifier: build_pkg_binaries_win
+    #   buildspec: codebuild_specs/build_pkg_binaries_win.yml
+    #   env:
+    #     compute-type: BUILD_GENERAL1_LARGE
+    - identifier: upb
+      buildspec: codebuild_specs/upload_pkg_binaries.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: amplify_general_config_tests
       buildspec: codebuild_specs/amplify_general_config_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          CLI_REGION: us-east-1
+      depend-on:
+        - upb
