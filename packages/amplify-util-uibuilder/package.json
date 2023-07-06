@@ -20,8 +20,9 @@
     "@aws-amplify/codegen-ui": "2.14.2",
     "@aws-amplify/codegen-ui-react": "2.14.2",
     "amplify-codegen": "^4.1.2",
-    "aws-sdk": "^2.1354.0",
+    "aws-sdk": "^2.1405.0",
     "fs-extra": "^8.1.0",
+    "node-fetch": "^2.6.7",
     "ora": "^4.0.3",
     "tiny-async-pool": "^2.1.0"
   },

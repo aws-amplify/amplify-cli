@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should sync amplify ui builder components can map generic data schema to start codegen job request 1`] = `
+{
+  "dataSourceType": "DataStore",
+  "enums": {
+    "Status": {
+      "values": [
+        "ENABLED",
+        "DISABLED",
+        "HIDDEN",
+      ],
+    },
+  },
+  "models": {
+    "Blog": {
+      "fields": {
+        "id": {
+          "dataType": "ID",
+          "dataTypeValue": "ID",
+          "isArray": false,
+          "readOnly": false,
+          "required": true,
+        },
+      },
+      "isJoinTable": undefined,
+      "primaryKeys": [
+        "id",
+      ],
+    },
+  },
+  "nonModels": {
+    "Metadata": {
+      "fields": {
+        "name": {
+          "dataType": "String",
+          "dataTypeValue": "String",
+          "isArray": false,
+          "readOnly": false,
+          "required": false,
+        },
+      },
+    },
+  },
+}
+`;
