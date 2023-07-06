@@ -19,6 +19,9 @@ export function generateToken(decodedToken: string | object): string {
 }
 
 export function parse(token): object {
+  if (!token) {
+    return {};
+  }
   const decodedToken = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(token.split('.')[1]));
   return decodedToken as object;
 }
