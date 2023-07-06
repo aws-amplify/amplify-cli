@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-migration-tests",
-  "version": "2.4.9",
+  "version": "2.4.10-aws-cdk-lib-2-28.0",
   "description": "Tests migration from v1 to v2 of the Amplify GraphQL transformer",
   "main": "lib/index.js",
   "private": true,

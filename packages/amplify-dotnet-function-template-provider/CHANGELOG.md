@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.10-aws-cdk-lib-2-28.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.5.9...@aws-amplify/amplify-dotnet-function-template-provider@2.5.10-aws-cdk-lib-2-28.0) (2023-07-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [2.5.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.5.8...@aws-amplify/amplify-dotnet-function-template-provider@2.5.9) (2023-06-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-dotnet-function-template-provider

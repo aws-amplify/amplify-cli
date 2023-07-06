@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.13-aws-cdk-lib-2-28.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.12...@aws-amplify/amplify-category-hosting@3.5.13-aws-cdk-lib-2-28.0) (2023-07-06)
+
+
+### Bug Fixes
+
+* s3 upload index.html at last ([#12852](https://github.com/aws-amplify/amplify-cli/issues/12852)) ([99aff47](https://github.com/aws-amplify/amplify-cli/commit/99aff47cc1623f845c63914233148fa30e0ddfdf))
+
+
+
+
+
 ## [3.5.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.11...@aws-amplify/amplify-category-hosting@3.5.12) (2023-06-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-hosting

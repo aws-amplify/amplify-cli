@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-aws-cdk-lib-2-28.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.3.1...@aws-amplify/amplify-util-mock@5.4.0-aws-cdk-lib-2-28.0) (2023-07-06)
+
+
+### Features
+
+* **amplify-util-mock:** import custom port from mock.json ([#10978](https://github.com/aws-amplify/amplify-cli/issues/10978)) ([31f250c](https://github.com/aws-amplify/amplify-cli/commit/31f250c03b6aa8423f1c574142a663840c566cec))
+
+
+
+
+
 ## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.3.0...@aws-amplify/amplify-util-mock@5.3.1) (2023-06-16)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock
