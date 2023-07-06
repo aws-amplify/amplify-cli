@@ -9,3 +9,12 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _amplifyGeneralConfigTests
+  post_build:
+    commands:
+      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-e2e-tests
+reports:
+  e2e-reports:
+    files:
+      - '*.xml'
+    file-format: 'JUNITXML'
+    base-directory: '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/reports/junit'
