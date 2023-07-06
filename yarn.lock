@@ -1590,7 +1590,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-cdk/asset-awscli-v1@npm:^2.2.177, @aws-cdk/asset-awscli-v1@npm:^2.2.97":
+"@aws-cdk/asset-awscli-v1@npm:^2.2.177":
   version: 2.2.197
   resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.197"
   checksum: f1641c78b721fa5d760b5462992a8d6c3378a53abc6ea7422d37ab6681ca5584f827867e7c28f6e133617e595e33745b78d5620720ae9b33a2a9ae8e02b102f5
@@ -1604,7 +1604,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.148, @aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.77":
+"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.148":
   version: 2.0.165
   resolution: "@aws-cdk/asset-node-proxy-agent-v5@npm:2.0.165"
   checksum: 437a532238e3dba3258f44746c50eb8dd4480272a13d15382b8d1d8a2a7d5e5de3635394877322ac26bfe6d5977246e867ad9deceb04dc2bde6f169e83d9c156
@@ -12269,28 +12269,6 @@ __metadata:
   peerDependencies:
     graphql: 0.13.0 || 14.x || 15.x
   checksum: 7ca528a8dd408b8305f413156eb2b295ed896446e426f597906185442d0eb76f679e47b3ef4ae5155b330901b350a839dc5a3dea71a559cc94b92a8e6f3f49cc
-  languageName: node
-  linkType: hard
-
-"aws-cdk-lib@npm:~2.68.0":
-  version: 2.68.0
-  resolution: "aws-cdk-lib@npm:2.68.0"
-  dependencies:
-    "@aws-cdk/asset-awscli-v1": ^2.2.97
-    "@aws-cdk/asset-kubectl-v20": ^2.1.1
-    "@aws-cdk/asset-node-proxy-agent-v5": ^2.0.77
-    "@balena/dockerignore": ^1.0.2
-    case: 1.6.3
-    fs-extra: ^9.1.0
-    ignore: ^5.2.4
-    jsonschema: ^1.4.1
-    minimatch: ^3.1.2
-    punycode: ^2.3.0
-    semver: ^7.3.8
-    yaml: 1.10.2
-  peerDependencies:
-    constructs: ^10.0.0
-  checksum: cb1f3beb5c1aa9132b3dc792b724f03873c138e6623325002f13223adb490901589f0abd50098fe4ffd2d7872ce4ab4dcd0ea1cb0a79d19eb1223aafd3851832
   languageName: node
   linkType: hard
 
