@@ -6,6 +6,7 @@ env:
     CI: true
     CIRCLECI: true
     IS_AMPLIFY_CI: true
+    CLI_REGION: us-east-1
     # mock values to test artifact scanning
     ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
     MOCK_ENV_VAR_FOR_SCANNING_SECRETS: 'abc123xyz'
@@ -26,11 +27,12 @@ phases:
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
+      - export NODE_OPTIONS=--max-old-space-size=8096
       - export AMPLIFY_DIR=$CODEBUILD_SRC_DIR/out
-      - export AMPLIFY_PATH=$HOME/.npm-global/bin/amplify
+      - export AMPLIFY_PATH=$HOME/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
-      - source ./shared-scripts.sh && _runMigrationV8Test
+      - source ./shared-scripts.sh && _runMigrationMultiEnvLayersTest
   post_build:
     commands:
       - source ./shared-scripts.sh && _scanArtifacts

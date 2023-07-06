@@ -202,8 +202,8 @@ function _uploadPkgBinaries {
     echo Done loading binaries
     ls $CODEBUILD_SRC_DIR/out
 
-    # source .circleci/local_publish_helpers.sh
-    # uploadPkgCli
+    source .circleci/local_publish_helpers.sh
+    uploadPkgCliForE2E
 
     storeCache $CODEBUILD_SRC_DIR/out all-binaries
 }
@@ -266,6 +266,7 @@ function _uploadCoverageLinux {
         ./codecov -t ${CODECOV_TOKEN}
     fi
 }
+
 # END COVERAGE FUNCTIONS
 function _loadE2ECache {
     loadCache repo $CODEBUILD_SRC_DIR
@@ -295,6 +296,24 @@ function _unassumeTestAccountCredentials {
     unset AWS_ACCESS_KEY_ID
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
+}
+function _runMigrationMultiEnvLayersTest {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationNonMultiEnvLayersTest {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
 }
 function _runMigrationV8Test {
     echo RUN E2E Tests Linux
@@ -390,6 +409,47 @@ function _runIntegApiTests {
     yarn cypress run --spec $(find . -type f -name 'api_spec*')
 }
 
+function _amplifySudoInstallTestSetup {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setSudoNpmRegistryUrlToLocal
+    changeSudoNpmGlobalPath
+    # sudo npm install -g @aws-amplify/cli
+    # unsetSudoNpmRegistryUrl
+    # amplify version
+}
+function _amplifyInstallTestSetup {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    # limit memory for new processes to 1GB
+    # this is to make sure that install can work on small VMs
+    # i.e. not buffer content in memory while installing binary
+    # ulimit -Sv 1000000
+    # npm install -g @aws-amplify/cli
+    # unsetNpmRegistryUrl
+    # amplify version
+}
+function _amplifyConsoleIntegrationTests {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    npm install -g @aws-amplify/cli
+    npm install -g amplify-app
+    unsetNpmRegistryUrl
+    export PATH=$CODEBUILD_SRC_DIR/../.npm-global/bin:$PATH
+    amplify -v
+    cd packages/amplify-console-integration-tests
+    _loadTestAccountCredentials
+    retry yarn console-integration --no-cache --maxWorkers=4 --forceExit
+}
 function _integrationTest {
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR

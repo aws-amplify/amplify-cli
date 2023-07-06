@@ -23,6 +23,14 @@ function startLocalRegistry {
     done
 }
 
+# Codebuild only
+function uploadPkgCliForE2E {
+    cd out/
+    export hash=$(git rev-parse HEAD | cut -c 1-12)
+    export version=$(./amplify-pkg-linux-x64 --version)
+    aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
+    cd ..
+}
 function uploadPkgCli {
     aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
