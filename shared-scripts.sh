@@ -541,16 +541,14 @@ function _waitForJobs {
 }
 
 function _amplifyGeneralConfigTests {
-    echo "Restoring Cache"
-    loadCache repo $CODEBUILD_SRC_DIR
-
-    echo "Loading test account credentials"
-    _loadTestAccountCredentials
-
-    source .circleci/local_publish_helpers.sh
+    _loadE2ECache
+    _install_packaged_cli_linux
+    amplify version
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    amplify version
     cd packages/amplify-e2e-tests
-    
-    echo AMPLIFY_PATH $AMPLIFY_PATH
-
+    _loadTestAccountCredentials
     retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
 }
