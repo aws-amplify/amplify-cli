@@ -76,6 +76,8 @@ const main = async () => {
     if (accountForFailures) {
       const failedJobsInBatch = await getFailedJobIdsFromBatchId(cb, batchId);
       const intersectingFailedJobs = failedJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
+      console.log(`failedJobsInBatch: ${JSON.stringify(failedJobsInBatch)}`);
+      console.log(`intersectingFailedJobs: ${JSON.stringify(intersectingFailedJobs)}`);
       if (intersectingFailedJobs.length > 0) {
         console.log(`${jobsDependedOn[0]} failed. Exiting.`);
         process.exit(1);
