@@ -600,3 +600,16 @@ function _waitForJobs {
     ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME $account_for_failures
     cd ..
 }
+
+function _amplifyGeneralConfigTests {
+    _loadE2ECache
+    _install_packaged_cli_linux
+    amplify version
+    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    amplify version
+    cd packages/amplify-e2e-tests
+    _loadTestAccountCredentials
+    retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+}
