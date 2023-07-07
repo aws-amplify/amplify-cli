@@ -32,7 +32,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1354.0",
+    "aws-sdk": "^2.1405.0",
     "mkdirp": "^1.0.4",
     "ts-json-schema-generator": "~1.1.2"
   },

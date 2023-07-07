@@ -60,7 +60,7 @@ batch:
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: upload_pkg_binaries
+    - identifier: upb
       buildspec: codebuild_specs/upload_pkg_binaries.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
@@ -75,7 +75,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts
       debug-session: true
       depend-on:
-        - upload_pkg_binaries
+        - upb
     - identifier: run_e2e_tests_linux_2
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
@@ -85,7 +85,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_2f.test.ts
       debug-session: true
       depend-on:
-        - upload_pkg_binaries
+        - upb
     - identifier: run_coverage_linux
       buildspec: codebuild_specs/run_coverage_linux.yml
       env:
@@ -105,14 +105,41 @@ batch:
           TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts|src/__tests__/auth_2f.test.ts
       depend-on:
         - build_windows
-        - upload_pkg_binaries
+        - upb
     - identifier: integration_test
       buildspec: codebuild_specs/integration_test.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-      debug-session: true
+    - identifier: amplify_sudo_install_test
+      buildspec: codebuild_specs/amplify_sudo_install_test.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
-        - build_linux
+        - upb
+    - identifier: amplify_install_test
+      buildspec: codebuild_specs/amplify_install_test.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - upb
+    - identifier: amplify_console_integration_tests
+      buildspec: codebuild_specs/amplify_console_integration_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - upb
+    - identifier: amplify_migration_tests_non_multi_env_layers
+      buildspec: codebuild_specs/amplify_migration_tests_non_multi_env_layers.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - upb
+    - identifier: amplify_migration_tests_multi_env_layers
+      buildspec: codebuild_specs/amplify_migration_tests_multi_env_layers.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - upb
     - identifier: aggregate_e2e_reports
       buildspec: codebuild_specs/aggregate_e2e_reports.yml
       env:
@@ -121,4 +148,4 @@ batch:
           WAIT_FOR_IDS_FILE_PATH: ./codebuild_specs/wait_for_ids_local.json
       debug-session: true
       depend-on:
-        - upload_pkg_binaries
+        - upb

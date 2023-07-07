@@ -8,7 +8,6 @@ import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PA
 import { migrationFromV10Tests, migrationFromV8Tests } from './split-e2e-test-filters';
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated');
-const DISABLE_COVERAGE = ['src/__tests__/datastore-modelgen.test.ts', 'src/__tests__/amplify-app.test.ts'];
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
   'src/__tests__/auth_2e.test.ts',
@@ -43,6 +42,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-connection-1.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
 ];
+const DISABLE_COVERAGE = ['src/__tests__/datastore-modelgen.test.ts', 'src/__tests__/amplify-app.test.ts'];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
@@ -338,7 +338,7 @@ function main(): void {
   );
   let allBuilds = [...splitE2ETests, ...splitMigrationV8Tests, ...splitMigrationV10Tests];
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
-  const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
+  const dependeeIdentifiersFileContents = `${JSON.stringify(dependeeIdentifiers, null, 2)}\n`;
   const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
   fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
   const reportsAggregator = {
