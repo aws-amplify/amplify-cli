@@ -76,6 +76,7 @@ const main = async () => {
     if (singleJob) {
       const failedJobsInBatch = await getFailedJobIdsFromBatchId(cb, batchId);
       if (failedJobsInBatch.includes(jobsDependedOn[0])) {
+        console.log(`${jobsDependedOn[0]} failed. Exiting.`);
         process.exit(1);
       }
     }
