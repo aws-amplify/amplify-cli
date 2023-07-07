@@ -8,7 +8,7 @@ env:
 phases:
   build:
     commands:
-      - source shared-scripts.sh && _waitForJobs build_linux
+      - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
       - source ./shared-scripts.sh && _integrationTest
 artifacts:
   files:

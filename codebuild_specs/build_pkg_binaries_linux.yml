@@ -4,7 +4,7 @@ env:
 phases:
   build:
     commands:
-      - source shared-scripts.sh && _waitForJobs publish_to_local_registry
+      - source shared-scripts.sh && _waitForJobs publish_to_local_registry requirePrevJobsToSucceed
       - source ./shared-scripts.sh && _buildBinaries linux
 
 artifacts:

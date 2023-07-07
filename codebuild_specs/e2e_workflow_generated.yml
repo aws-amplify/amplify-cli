@@ -104,12 +104,18 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - upb
+    - identifier: amplify_general_config_tests
+      buildspec: codebuild_specs/amplify_general_config_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - upb
     - identifier: l_diagnose_hooks_a_mock_api
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
           TEST_SUITE: src/__tests__/diagnose.test.ts|src/__tests__/hooks-a.test.ts|src/__tests__/mock-api.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_analytics_kinesis_analytics_pinpoint_flutter_analytics_pinpoint_js
@@ -117,7 +123,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/analytics-kinesis.test.ts|src/__tests__/analytics-pinpoint-flutter.test.ts|src/__tests__/analytics-pinpoint-js.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_auth_2a_auth_2b_auth_2d
@@ -125,7 +131,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_auth_2f_notifications_lifecycle_uibuilder
@@ -141,7 +147,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts|src/__tests__/notifications-analytics-compatibility-sms-2.test.ts|src/__tests__/analytics-2.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_global_sandbox_c_hooks_b_notifications_analytics_compatibility_sms_1
@@ -149,7 +155,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/global_sandbox-c.test.ts|src/__tests__/hooks-b.test.ts|src/__tests__/notifications-analytics-compatibility-sms-1.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_plugin_studio_modelgen_custom_transformers
@@ -165,7 +171,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-in-app-messaging-env-1.test.ts|src/__tests__/notifications-sms-pull.test.ts|src/__tests__/pull.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_auth_10_container_hosting_init_b
@@ -173,7 +179,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_10.test.ts|src/__tests__/container-hosting.test.ts|src/__tests__/init_b.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_notifications_apns_notifications_fcm_notifications_in_app_messaging_env_2
@@ -181,7 +187,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-apns.test.ts|src/__tests__/notifications-fcm.test.ts|src/__tests__/notifications-in-app-messaging-env-2.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_with_babel_config_amplify_configure_env_2
@@ -189,7 +195,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/with-babel-config.test.ts|src/__tests__/amplify-configure.test.ts|src/__tests__/env-2.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_init_d_init_f_auth_5d
@@ -197,7 +203,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/init_d.test.ts|src/__tests__/init_f.test.ts|src/__tests__/auth_5d.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_configure_project_git_clone_attach_init_c
@@ -205,7 +211,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/configure-project.test.ts|src/__tests__/git-clone-attach.test.ts|src/__tests__/init_c.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_layer_4_function_2c_function_3b
@@ -213,7 +219,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/layer-4.test.ts|src/__tests__/function_2c.test.ts|src/__tests__/function_3b.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_function_4_interactions_schema_model_a
@@ -229,7 +235,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/tags.test.ts|src/__tests__/auth_1a.test.ts|src/__tests__/auth-trigger.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_custom_policies_function_function_6_storage_2
@@ -237,7 +243,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/custom_policies_function.test.ts|src/__tests__/function_6.test.ts|src/__tests__/storage-2.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_export_iam_permissions_boundary_node_function
@@ -253,7 +259,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-sms.test.ts|src/__tests__/schema-auth-4b.test.ts|src/__tests__/schema-model-e.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_schema_versioned_auth_1c_auth_5e
@@ -261,7 +267,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-versioned.test.ts|src/__tests__/auth_1c.test.ts|src/__tests__/auth_5e.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_auth_8b_geo_add_b_s3_sse
@@ -269,7 +275,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_8b.test.ts|src/__tests__/geo-add-b.test.ts|src/__tests__/s3-sse.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_schema_auth_4a_schema_model_b_schema_model_d
@@ -277,7 +283,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-4a.test.ts|src/__tests__/schema-model-b.test.ts|src/__tests__/schema-model-d.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_auth_5f_env_4_frontend_config_drift
@@ -285,7 +291,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_5f.test.ts|src/__tests__/env-4.test.ts|src/__tests__/frontend_config_drift.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_schema_auth_4d_schema_auth_6a_schema_data_access_patterns
@@ -293,7 +299,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-4d.test.ts|src/__tests__/schema-auth-6a.test.ts|src/__tests__/schema-data-access-patterns.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_schema_model_c_schema_predictions_model_migration
@@ -301,7 +307,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-model-c.test.ts|src/__tests__/schema-predictions.test.ts|src/__tests__/transformer-migrations/model-migration.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_auth_3c_auth_4c_auth_5a
@@ -309,7 +315,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_3c.test.ts|src/__tests__/auth_4c.test.ts|src/__tests__/auth_5a.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_auth_5c_env_1_geo_add_a
@@ -317,7 +323,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_5c.test.ts|src/__tests__/env-1.test.ts|src/__tests__/geo-add-a.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_init_a_schema_auth_4c_schema_auth_5c
@@ -333,7 +339,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_5b.test.ts|src/__tests__/auth_9.test.ts|src/__tests__/custom_resources.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_env_5_function_10_function_9c
@@ -341,7 +347,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/env-5.test.ts|src/__tests__/function_10.test.ts|src/__tests__/function_9c.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_function_permissions_geo_import_1a_geo_import_2
@@ -357,7 +363,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/global_sandbox-b.test.ts|src/__tests__/schema-auth-5d.test.ts|src/__tests__/schema-auth-6b.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_schema_auth_8c_auth_3a_auth_3b
@@ -365,7 +371,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-8c.test.ts|src/__tests__/auth_3a.test.ts|src/__tests__/auth_3b.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_auth_4a_auth_7a_auth_8c
@@ -373,7 +379,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_4a.test.ts|src/__tests__/auth_7a.test.ts|src/__tests__/auth_8c.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_feature_flags_geo_import_1b_global_sandbox_a
@@ -381,7 +387,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/feature-flags.test.ts|src/__tests__/geo-import-1b.test.ts|src/__tests__/global_sandbox-a.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_init_e_notifications_analytics_compatibility_in_app_2_schema_auth_11_c
@@ -389,7 +395,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/init_e.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-2.test.ts|src/__tests__/schema-auth-11-c.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_schema_auth_2b_schema_auth_6c_schema_auth_6d
@@ -397,7 +403,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-2b.test.ts|src/__tests__/schema-auth-6c.test.ts|src/__tests__/schema-auth-6d.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_schema_auth_7c_schema_auth_8a_function_migration
@@ -405,7 +411,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-7c.test.ts|src/__tests__/schema-auth-8a.test.ts|src/__tests__/transformer-migrations/function-migration.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_api_10_api_7_export_pull_a
@@ -421,7 +427,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/function_9a.test.ts|src/__tests__/geo-headless.test.ts|src/__tests__/migration/api.key.migration5.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_schema_auth_1a_schema_auth_5b_schema_auth_8b
@@ -437,7 +443,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-9-a.test.ts|src/__tests__/schema-auth-9-c.test.ts|src/__tests__/storage-3.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_auth_11_auth_1b_delete
@@ -445,7 +451,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_11.test.ts|src/__tests__/auth_1b.test.ts|src/__tests__/delete.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_geo_add_c_geo_add_d_geo_import_3
@@ -453,7 +459,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/geo-add-c.test.ts|src/__tests__/geo-add-d.test.ts|src/__tests__/geo-import-3.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_hosting_layer_3_api_connection_migration
@@ -469,7 +475,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/migration/api.key.migration3.test.ts|src/__tests__/predictions.test.ts|src/__tests__/schema-auth-11-b.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_schema_auth_1b_schema_auth_2a_schema_auth_7a
@@ -477,7 +483,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-1b.test.ts|src/__tests__/schema-auth-2a.test.ts|src/__tests__/schema-auth-7a.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_schema_auth_7b_schema_auth_9_b_schema_iterative_rollback_1
@@ -485,7 +491,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-7b.test.ts|src/__tests__/schema-auth-9-b.test.ts|src/__tests__/schema-iterative-rollback-1.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_predictions_migration_api_6a_auth_7b
@@ -493,7 +499,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/predictions-migration.test.ts|src/__tests__/api_6a.test.ts|src/__tests__/auth_7b.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_export_pull_b_function_3a_init_special_case
@@ -501,7 +507,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/export-pull-b.test.ts|src/__tests__/function_3a.test.ts|src/__tests__/init-special-case.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_http_migration_schema_auth_12_schema_auth_3
@@ -509,7 +515,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/http-migration.test.ts|src/__tests__/schema-auth-12.test.ts|src/__tests__/schema-auth-3.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_schema_function_2_auth_4b_auth_8a
@@ -517,7 +523,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-function-2.test.ts|src/__tests__/auth_4b.test.ts|src/__tests__/auth_8a.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_export_pull_d_schema_auth_5a_schema_iterative_rollback_2
@@ -525,7 +531,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/export-pull-d.test.ts|src/__tests__/schema-auth-5a.test.ts|src/__tests__/schema-iterative-rollback-2.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_schema_iterative_update_3_auth_migration_api_2a
@@ -541,7 +547,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/api_2b.test.ts|src/__tests__/api_6c.test.ts|src/__tests__/api_9a.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_auth_12_auth_2g_build_function
@@ -549,7 +555,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/auth_12.test.ts|src/__tests__/auth_2g.test.ts|src/__tests__/build-function.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_custom_resource_with_storage_dynamodb_simulator_export_pull_c
@@ -565,7 +571,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/function_12.test.ts|src/__tests__/function_13.test.ts|src/__tests__/function_14.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_function_15_function_2d_general_config_headless_init
@@ -573,7 +579,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/function_15.test.ts|src/__tests__/function_2d.test.ts|src/__tests__/general-config/general-config-headless-init.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_help_hooks_c_init_force_push
@@ -581,7 +587,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/help.test.ts|src/__tests__/hooks-c.test.ts|src/__tests__/init-force-push.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_interactions_1_interactions_2_minify_cloudformation
@@ -597,7 +603,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/notifications-multi-env.test.ts|src/__tests__/notifications-sms-update.test.ts|src/__tests__/opensearch-simulator/opensearch-simulator.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_parameter_store_1_parameter_store_2_android_analytics_pinpoint_config
@@ -605,7 +611,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/parameter-store-1.test.ts|src/__tests__/parameter-store-2.test.ts|src/__tests__/pinpoint/android-analytics-pinpoint-config.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_android_notifications_pinpoint_config_flutter_analytics_pinpoint_config_flutter_notifications_pinpoint_config
@@ -613,7 +619,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/pinpoint/android-notifications-pinpoint-config.test.ts|src/__tests__/pinpoint/flutter-analytics-pinpoint-config.test.ts|src/__tests__/pinpoint/flutter-notifications-pinpoint-config.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_ios_analytics_pinpoint_config_ios_notifications_pinpoint_config_javascript_analytics_pinpoint_config
@@ -621,7 +627,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/pinpoint/ios-analytics-pinpoint-config.test.ts|src/__tests__/pinpoint/ios-notifications-pinpoint-config.test.ts|src/__tests__/pinpoint/javascript-analytics-pinpoint-config.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_javascript_notifications_pinpoint_config_pr_previews_multi_env_1_pull_2
@@ -629,7 +635,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/pinpoint/javascript-notifications-pinpoint-config.test.ts|src/__tests__/pr-previews-multi-env-1.test.ts|src/__tests__/pull-2.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_push_smoketest_S3server
@@ -637,7 +643,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/push.test.ts|src/__tests__/smoketest.test.ts|src/__tests__/storage-simulator/S3server.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_api_8_function_8_schema_iterative_update_locking
@@ -645,7 +651,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/api_8.test.ts|src/__tests__/function_8.test.ts|src/__tests__/schema-iterative-update-locking.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_api_lambda_auth_2_layer_2_schema_auth_13
@@ -661,7 +667,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/function_5.test.ts|src/__tests__/schema-iterative-update-1.test.ts|src/__tests__/auth_6.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_function_2a_schema_connection_2_schema_function_1
@@ -669,7 +675,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/function_2a.test.ts|src/__tests__/schema-connection-2.test.ts|src/__tests__/schema-function-1.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_api_9b_custom_policies_container_function_9b
@@ -677,7 +683,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/api_9b.test.ts|src/__tests__/custom_policies_container.test.ts|src/__tests__/function_9b.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_schema_iterative_update_2_storage_1a_storage_1b
@@ -685,7 +691,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-2.test.ts|src/__tests__/storage-1a.test.ts|src/__tests__/storage-1b.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_function_11_function_2b_function_7
@@ -693,7 +699,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/function_11.test.ts|src/__tests__/function_2b.test.ts|src/__tests__/function_7.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_api_connection_migration2_api_4_containers_api_secrets
@@ -701,7 +707,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/migration/api.connection.migration2.test.ts|src/__tests__/api_4.test.ts|src/__tests__/containers-api-secrets.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_storage_4_schema_auth_10_geo_multi_env
@@ -709,7 +715,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/storage-4.test.ts|src/__tests__/schema-auth-10.test.ts|src/__tests__/geo-multi-env.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_searchable_datastore_resolvers_schema_key
@@ -717,7 +723,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/schema-key.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_api_5_apigw_api_lambda_auth_1
@@ -725,7 +731,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/api_5.test.ts|src/__tests__/apigw.test.ts|src/__tests__/graphql-v2/api_lambda_auth_1.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_api_key_migration2_schema_searchable_api_key_migration1
@@ -733,7 +739,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts|src/__tests__/schema-searchable.test.ts|src/__tests__/migration/api.key.migration1.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_schema_auth_14_api_3_api_6b
@@ -741,7 +747,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-auth-14.test.ts|src/__tests__/api_3.test.ts|src/__tests__/api_6b.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_api_1_layer_1_api_key_migration4
@@ -749,7 +755,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/api_1.test.ts|src/__tests__/layer-1.test.ts|src/__tests__/migration/api.key.migration4.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_schema_iterative_update_4_function_1_storage_5
@@ -757,7 +763,7 @@ batch:
       env:
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts|src/__tests__/function_1.test.ts|src/__tests__/storage-5.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_datastore_modelgen
@@ -766,7 +772,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/datastore-modelgen.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-southeast-1
           DISABLE_COVERAGE: 1
       depend-on:
         - upb
@@ -795,7 +801,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/auth_2e.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_geo_remove_3
@@ -804,7 +810,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/geo-remove-3.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_geo_add_f
@@ -813,7 +819,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/geo-add-f.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_geo_add_e
@@ -822,7 +828,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/geo-add-e.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_import_dynamodb_2c
@@ -831,7 +837,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_dynamodb_2c.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_env_3
@@ -840,7 +846,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/env-3.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_geo_remove_2
@@ -849,7 +855,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/geo-remove-2.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_notifications_in_app_messaging
@@ -858,7 +864,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/notifications-in-app-messaging.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_import_auth_2a
@@ -876,7 +882,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_auth_1a.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_import_auth_2b
@@ -885,7 +891,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_auth_2b.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_import_s3_2a
@@ -894,7 +900,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_s3_2a.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_import_s3_2c
@@ -903,7 +909,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_s3_2c.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_import_auth_1b
@@ -912,7 +918,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_auth_1b.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_schema_auth_11_a
@@ -921,7 +927,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/schema-auth-11-a.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_geo_update_1
@@ -930,7 +936,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/geo-update-1.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_geo_update_2
@@ -939,7 +945,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/geo-update-2.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_import_s3_3
@@ -948,7 +954,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_s3_3.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_import_dynamodb_2b
@@ -957,7 +963,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_dynamodb_2b.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_hostingPROD
@@ -975,7 +981,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_s3_2b.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_containers_api_1
@@ -984,7 +990,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/containers-api-1.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_schema_auth_15
@@ -993,7 +999,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/schema-auth-15.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_schema_connection_1
@@ -1002,7 +1008,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/schema-connection-1.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_import_auth_3
@@ -1011,7 +1017,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_auth_3.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_import_dynamodb_2a
@@ -1020,7 +1026,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_dynamodb_2a.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_containers_api_2
@@ -1029,7 +1035,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/containers-api-2.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_import_s3_1
@@ -1038,7 +1044,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_s3_1.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-northeast-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - upb
@@ -1048,7 +1054,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - upb
@@ -1058,7 +1064,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/geo-remove-1.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-east-1
       depend-on:
         - upb
     - identifier: l_import_dynamodb_1
@@ -1067,7 +1073,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/import_dynamodb_1.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-southeast-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - upb
@@ -1078,7 +1084,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/analytics-kinesis.test.ts|src/__tests__/analytics-pinpoint-flutter.test.ts|src/__tests__/analytics-pinpoint-js.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - build_windows
         - upb
@@ -1089,7 +1095,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1100,7 +1106,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/auth_2f.test.ts|src/__tests__/notifications-lifecycle.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - build_windows
         - upb
@@ -1111,7 +1117,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-analytics-compatibility-sms-2.test.ts|src/__tests__/analytics-2.test.ts|src/__tests__/global_sandbox-c.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1122,7 +1128,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/hooks-b.test.ts|src/__tests__/notifications-analytics-compatibility-sms-1.test.ts|src/__tests__/plugin.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1133,7 +1139,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/studio-modelgen.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts|src/__tests__/notifications-in-app-messaging-env-1.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - build_windows
         - upb
@@ -1155,7 +1161,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/init_b.test.ts|src/__tests__/notifications-apns.test.ts|src/__tests__/notifications-fcm.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1166,7 +1172,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-in-app-messaging-env-2.test.ts|src/__tests__/with-babel-config.test.ts|src/__tests__/amplify-configure.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1177,7 +1183,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/init_d.test.ts|src/__tests__/init_f.test.ts|src/__tests__/auth_5d.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - build_windows
         - upb
@@ -1188,7 +1194,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/configure-project.test.ts|src/__tests__/init_c.test.ts|src/__tests__/layer-4.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1210,7 +1216,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/tags.test.ts|src/__tests__/auth_1a.test.ts|src/__tests__/auth-trigger.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - build_windows
         - upb
@@ -1232,7 +1238,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/migration/node.function.test.ts|src/__tests__/notifications-sms.test.ts|src/__tests__/schema-auth-4b.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1243,7 +1249,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-model-e.test.ts|src/__tests__/schema-versioned.test.ts|src/__tests__/auth_1c.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1254,7 +1260,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/auth_5e.test.ts|src/__tests__/auth_8b.test.ts|src/__tests__/geo-add-b.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1265,7 +1271,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/s3-sse.test.ts|src/__tests__/schema-auth-4a.test.ts|src/__tests__/schema-model-b.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - build_windows
         - upb
@@ -1276,7 +1282,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-model-d.test.ts|src/__tests__/auth_5f.test.ts|src/__tests__/env-4.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - build_windows
         - upb
@@ -1298,7 +1304,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-data-access-patterns.test.ts|src/__tests__/schema-model-c.test.ts|src/__tests__/schema-predictions.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - build_windows
         - upb
@@ -1309,7 +1315,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/model-migration.test.ts|src/__tests__/auth_3c.test.ts|src/__tests__/auth_4c.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1320,7 +1326,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/auth_5a.test.ts|src/__tests__/auth_5c.test.ts|src/__tests__/env-1.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1331,7 +1337,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/geo-add-a.test.ts|src/__tests__/init_a.test.ts|src/__tests__/schema-auth-4c.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1342,7 +1348,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-5c.test.ts|src/__tests__/auth_5b.test.ts|src/__tests__/auth_9.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1353,7 +1359,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/custom_resources.test.ts|src/__tests__/env-5.test.ts|src/__tests__/function_10.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1364,7 +1370,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/function_9c.test.ts|src/__tests__/function-permissions.test.ts|src/__tests__/geo-import-1a.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1375,7 +1381,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/geo-import-2.test.ts|src/__tests__/global_sandbox-b.test.ts|src/__tests__/schema-auth-5d.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1386,7 +1392,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-6b.test.ts|src/__tests__/schema-auth-8c.test.ts|src/__tests__/auth_3a.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - build_windows
         - upb
@@ -1397,7 +1403,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/auth_3b.test.ts|src/__tests__/auth_4a.test.ts|src/__tests__/auth_7a.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1419,7 +1425,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/global_sandbox-a.test.ts|src/__tests__/init_e.test.ts|src/__tests__/notifications-analytics-compatibility-in-app-2.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - build_windows
         - upb
@@ -1430,7 +1436,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-11-c.test.ts|src/__tests__/schema-auth-2b.test.ts|src/__tests__/schema-auth-6c.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1441,7 +1447,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-6d.test.ts|src/__tests__/schema-auth-7c.test.ts|src/__tests__/schema-auth-8a.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1463,7 +1469,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/export-pull-a.test.ts|src/__tests__/function_9a.test.ts|src/__tests__/geo-headless.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1474,7 +1480,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/migration/api.key.migration5.test.ts|src/__tests__/schema-auth-1a.test.ts|src/__tests__/schema-auth-5b.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - build_windows
         - upb
@@ -1485,7 +1491,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-8b.test.ts|src/__tests__/schema-auth-9-a.test.ts|src/__tests__/schema-auth-9-c.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - build_windows
         - upb
@@ -1496,7 +1502,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/storage-3.test.ts|src/__tests__/auth_11.test.ts|src/__tests__/auth_1b.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1507,7 +1513,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/delete.test.ts|src/__tests__/geo-add-c.test.ts|src/__tests__/geo-add-d.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1518,7 +1524,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/geo-import-3.test.ts|src/__tests__/hosting.test.ts|src/__tests__/layer-3.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - build_windows
         - upb
@@ -1529,7 +1535,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts|src/__tests__/migration/api.key.migration3.test.ts|src/__tests__/predictions.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1540,7 +1546,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-11-b.test.ts|src/__tests__/schema-auth-1b.test.ts|src/__tests__/schema-auth-2a.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-west-2
       depend-on:
         - build_windows
         - upb
@@ -1551,7 +1557,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-7a.test.ts|src/__tests__/schema-auth-7b.test.ts|src/__tests__/schema-auth-9-b.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1562,7 +1568,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/predictions-migration.test.ts|src/__tests__/api_6a.test.ts|src/__tests__/auth_7b.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1573,7 +1579,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/export-pull-b.test.ts|src/__tests__/init-special-case.test.ts|src/__tests__/transformer-migrations/http-migration.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1584,7 +1590,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-12.test.ts|src/__tests__/schema-auth-3.test.ts|src/__tests__/schema-function-2.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1595,7 +1601,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/auth_4b.test.ts|src/__tests__/auth_8a.test.ts|src/__tests__/export-pull-d.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1606,7 +1612,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-5a.test.ts|src/__tests__/schema-iterative-update-3.test.ts|src/__tests__/transformer-migrations/auth-migration.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - build_windows
         - upb
@@ -1639,7 +1645,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/dynamodb-simulator/dynamodb-simulator.test.ts|src/__tests__/export-pull-c.test.ts|src/__tests__/function_12.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - build_windows
         - upb
@@ -1683,7 +1689,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/notifications-multi-env.test.ts|src/__tests__/notifications-sms-update.test.ts|src/__tests__/parameter-store-1.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - build_windows
         - upb
@@ -1694,7 +1700,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/parameter-store-2.test.ts|src/__tests__/push.test.ts|src/__tests__/api_8.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1705,7 +1711,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts|src/__tests__/graphql-v2/api_lambda_auth_2.test.ts|src/__tests__/schema-auth-13.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - build_windows
         - upb
@@ -1716,7 +1722,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/function_5.test.ts|src/__tests__/schema-iterative-update-1.test.ts|src/__tests__/auth_6.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - build_windows
         - upb
@@ -1727,7 +1733,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/function_2a.test.ts|src/__tests__/schema-connection-2.test.ts|src/__tests__/schema-function-1.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - build_windows
         - upb
@@ -1738,7 +1744,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/api_9b.test.ts|src/__tests__/custom_policies_container.test.ts|src/__tests__/function_9b.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1749,7 +1755,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-2.test.ts|src/__tests__/storage-1a.test.ts|src/__tests__/storage-1b.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - build_windows
         - upb
@@ -1760,7 +1766,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/function_11.test.ts|src/__tests__/function_2b.test.ts|src/__tests__/migration/api.connection.migration2.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-west-2
       depend-on:
         - build_windows
         - upb
@@ -1771,7 +1777,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/api_4.test.ts|src/__tests__/containers-api-secrets.test.ts|src/__tests__/storage-4.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1782,7 +1788,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-10.test.ts|src/__tests__/geo-multi-env.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - build_windows
         - upb
@@ -1793,7 +1799,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/resolvers.test.ts|src/__tests__/schema-key.test.ts|src/__tests__/api_5.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - build_windows
         - upb
@@ -1804,7 +1810,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/apigw.test.ts|src/__tests__/graphql-v2/api_lambda_auth_1.test.ts|src/__tests__/migration/api.key.migration2.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - build_windows
         - upb
@@ -1815,7 +1821,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts|src/__tests__/migration/api.key.migration1.test.ts|src/__tests__/schema-auth-14.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - build_windows
         - upb
@@ -1826,7 +1832,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/api_3.test.ts|src/__tests__/api_6b.test.ts|src/__tests__/api_1.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - build_windows
         - upb
@@ -1848,7 +1854,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/function_1.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1859,7 +1865,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/auth_2c.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1870,7 +1876,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/auth_2e.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1881,7 +1887,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/env-3.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1903,7 +1909,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-11-a.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1914,7 +1920,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/import_s3_3.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -1925,7 +1931,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/hostingPROD.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - build_windows
         - upb
@@ -1936,7 +1942,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/containers-api-1.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-east-2
       depend-on:
         - build_windows
         - upb
@@ -1947,7 +1953,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-auth-15.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - build_windows
         - upb
@@ -1958,7 +1964,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/schema-connection-1.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1969,7 +1975,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/containers-api-2.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-central-1
       depend-on:
         - build_windows
         - upb
@@ -1980,7 +1986,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/import_s3_1.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - build_windows
@@ -1992,7 +1998,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - build_windows
@@ -2004,7 +2010,7 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/geo-remove-1.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: us-east-1
       depend-on:
         - build_windows
         - upb
@@ -2026,7 +2032,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests/notifications-migration/notifications-migration-4.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - upb
     - identifier: l_api_key_migration_v8
@@ -2035,7 +2041,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests/transformer_migration/api.key.migration.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_notifications_migration_v8
@@ -2044,7 +2050,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests/notifications-migration/notifications-migration.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_api_key_migration_2_v8
@@ -2053,7 +2059,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests/transformer_migration/api.key.migration-2.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_notifications_migration_2_v8
@@ -2062,7 +2068,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests/notifications-migration/notifications-migration-2.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_function_migration_update_v8
@@ -2071,7 +2077,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/update_tests/function_migration_update.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_notifications_migration_3_v8
@@ -2080,7 +2086,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests/notifications-migration/notifications-migration-3.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_scaffold_v10
@@ -2098,7 +2104,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests_v10/api-graphql-v2.migration.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_api_rest_basic_migration_v10
@@ -2116,7 +2122,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests_v10/api-rest-lambda.migration.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - upb
     - identifier: l_api_rest_serverless_migration_v10
@@ -2134,7 +2140,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests_v10/auth-add-all.migration.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: l_auth_override_migration_v10
@@ -2143,7 +2149,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests_v10/auth-override.migration.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: eu-central-1
       depend-on:
         - upb
     - identifier: l_custom_stack_migration_v10
@@ -2152,7 +2158,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests_v10/custom-stack.migration.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: us-west-2
       depend-on:
         - upb
     - identifier: l_geo_migration_v10
@@ -2161,7 +2167,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests_v10/geo.migration.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - upb
     - identifier: l_git_clone_migration_tests_v10
@@ -2170,7 +2176,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests_v10/git-clone-migration-tests.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-west-2
       depend-on:
         - upb
     - identifier: l_pinpoint_region_migration_v10
@@ -2188,7 +2194,7 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/migration_tests_v10/storage.migration.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - upb
     - identifier: aggregate_e2e_reports
