@@ -2,46 +2,24 @@ version: 0.2
 env:
   shell: bash
   compute-type: BUILD_GENERAL1_MEDIUM
+  git-credential-helper: yes
   variables:
     AWS_DEFAULT_REGION: us-east-1
     AWS_REGION: us-east-1
     CDK_DEFAULT_REGION: us-east-1
     CLI_REGION: us-east-1
-    TEST_SUITE: src/__tests__/auth_2b.test.ts
     AMPLIFY_DIR: '$CODEBUILD_SRC_DIR/out'
     AMPLIFY_PATH: '$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64'
 
 batch:
   fast-fail: false
   build-graph:
-    - identifier: build_tests_standalone
-      buildspec: codebuild_specs/build_tests_standalone.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_linux
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: build_windows
-      buildspec: codebuild_specs/build_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-    - identifier: test
-      buildspec: codebuild_specs/test.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-    - identifier: mock_e2e_tests
-      buildspec: codebuild_specs/mock_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
     - identifier: validate_cdk_version
       buildspec: codebuild_specs/validate_cdk_version.yml
-    - identifier: verify_api_extract
-      buildspec: codebuild_specs/verify_api_extract.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_yarn_lock
       buildspec: codebuild_specs/verify_yarn_lock.yml
     - identifier: publish_to_local_registry
@@ -68,43 +46,39 @@ batch:
       buildspec: codebuild_specs/upload_pkg_binaries.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: verify_versions_match
-      buildspec: codebuild_specs/verify_versions_match.yml
     - identifier: verify_pkg_cli
       buildspec: codebuild_specs/verify_pkg_cli.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: integration_test
-      buildspec: codebuild_specs/integration_test.yml
+    - identifier: verify_versions_match
+      buildspec: codebuild_specs/verify_versions_match.yml
+    - identifier: github_prerelease
+      buildspec: codebuild_specs/github_prerelease.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: amplify_sudo_install_test
-      buildspec: codebuild_specs/amplify_sudo_install_test.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
+      debug-session: true
       depend-on:
         - upb
-    - identifier: amplify_install_test
-      buildspec: codebuild_specs/amplify_install_test.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - upb
-    - identifier: amplify_console_integration_tests
-      buildspec: codebuild_specs/amplify_console_integration_tests.yml
+    - identifier: github_prerelease_install_sanity_check
+      buildspec: codebuild_specs/github_prerelease_install_sanity_check.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
       depend-on:
-        - upb
-    - identifier: amplify_migration_tests_non_multi_env_layers
-      buildspec: codebuild_specs/amplify_migration_tests_non_multi_env_layers.yml
+        - github_prerelease
+    - identifier: deploy
+      buildspec: codebuild_specs/deploy.yml
       env:
-        compute-type: BUILD_GENERAL1_MEDIUM
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
       depend-on:
         - upb
-    - identifier: amplify_migration_tests_multi_env_layers
-      buildspec: codebuild_specs/amplify_migration_tests_multi_env_layers.yml
+        - verify_versions_match
+        - github_prerelease_install_sanity_check
+    - identifier: github_release
+      buildspec: codebuild_specs/github_release.yml
       env:
-        compute-type: BUILD_GENERAL1_MEDIUM
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
       depend-on:
-        - upb
+        - deploy

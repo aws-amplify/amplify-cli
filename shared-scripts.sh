@@ -141,7 +141,7 @@ function _verifyVersionsMatch {
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     checkPackageVersionsInLocalNpmRegistry
@@ -151,7 +151,7 @@ function _mockE2ETests {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     cd packages/amplify-util-mock/
     yarn e2e
 }
@@ -161,7 +161,7 @@ function _publishToLocalRegistry {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
-    source ./.circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source ./.circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     export LOCAL_PUBLISH_TO_LATEST=true
     ./.circleci/publish-codebuild.sh
@@ -202,8 +202,8 @@ function _uploadPkgBinaries {
     echo Done loading binaries
     ls $CODEBUILD_SRC_DIR/out
 
-    source .circleci/local_publish_helpers.sh
-    uploadPkgCliForE2E
+    source .circleci/local_publish_helpers_codebuild.sh
+    uploadPkgCliCodeBuild
 
     storeCache $CODEBUILD_SRC_DIR/out all-binaries
 }
@@ -218,7 +218,7 @@ function _buildBinaries {
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     generatePkgCli $binaryType
@@ -238,7 +238,7 @@ function _install_packaged_cli_linux {
 function _convertCoverage {
     echo Convert Coverage
 
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
 
@@ -283,7 +283,7 @@ function _runE2ETestsLinux {
     _install_packaged_cli_linux
     # verify installation
     amplify version
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
@@ -300,7 +300,7 @@ function _unassumeTestAccountCredentials {
 function _runMigrationMultiEnvLayersTest {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     _loadTestAccountCredentials
@@ -309,7 +309,7 @@ function _runMigrationMultiEnvLayersTest {
 function _runMigrationNonMultiEnvLayersTest {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     _loadTestAccountCredentials
@@ -318,7 +318,7 @@ function _runMigrationNonMultiEnvLayersTest {
 function _runMigrationV8Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
@@ -329,7 +329,7 @@ function _runMigrationV8Test {
 function _runMigrationV10Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
@@ -413,7 +413,7 @@ function _amplifySudoInstallTestSetup {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setSudoNpmRegistryUrlToLocal
     changeSudoNpmGlobalPath
     # sudo npm install -g @aws-amplify/cli
@@ -424,7 +424,7 @@ function _amplifyInstallTestSetup {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     # limit memory for new processes to 1GB
@@ -438,7 +438,7 @@ function _amplifyInstallTestSetup {
 function _amplifyConsoleIntegrationTests {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     npm install -g @aws-amplify/cli
@@ -598,4 +598,61 @@ function _waitForJobs {
     npm install aws-sdk
     ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME
     cd ..
+}
+function _verifyPkgCLI {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache repo-out-arm $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-linux $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-macos $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-win $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers_codebuild.sh && verifyPkgCli
+}
+function _githubPrerelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
+    cd out
+    mv amplify-pkg-macos-x64 amplify-pkg-macos
+    mv amplify-pkg-linux-x64 amplify-pkg-linux
+    mv amplify-pkg-win-x64.exe amplify-pkg-win.exe
+    tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
+    tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
+    tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
+    cd $CODEBUILD_SRC_DIR
+    echo Publish Amplify CLI GitHub prerelease
+    commit=$(git rev-parse HEAD)
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/github-prerelease.ts $version $commit
+}
+function _githubPrereleaseInstallSanityCheck {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Install packaged Amplify CLI
+    version=$(cat .amplify-pkg-version)
+    curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash
+    echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
+    echo Sanity check install
+    amplify version
+}
+function _deploy {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+
+    _uploadPkgBinaries
+
+    ./out/amplify-pkg-linux-x64 --version
+    echo Authenticate with npm
+    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
+
+    source ./.circleci/publish-codebuild.sh
+}
+function _githubRelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Publish Amplify CLI GitHub release
+    commit=$(git rev-parse HEAD)
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/github-release.ts $version $commit
 }

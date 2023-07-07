@@ -1,8 +1,14 @@
 #!/bin/bash -e
-export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+
+# check if branch name was submitted with the job, otherwise extract it manually
 if [ "$BRANCH_NAME" = "" ] ; then
-  BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+  export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+  # if we can't get branch name from there, try to extract it another way
+  if [ "$BRANCH_NAME" = ""] ; then
+    BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+  fi
 fi
+
 git checkout $BRANCH_NAME
 echo "fetching tags"
 git fetch --tags https://github.com/aws-amplify/amplify-cli
@@ -35,10 +41,17 @@ function verifyPkgIsAvailable {
   # check binaries
   # send HEAD requests to check for binary presence
   # curl --fail exits with non-zero code and makes this script fail
-  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-linux-x64.tgz
-  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-linux-arm64.tgz
-  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-macos-x64.tgz
-  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-win-x64.tgz
+  if [ $IS_AMPLIFY_CI ]; then
+    curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-linux-x64.tgz
+    curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-linux-arm64.tgz
+    curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-macos-x64.tgz
+    curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-win-x64.tgz
+  else
+    curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-linux-x64.tgz
+    curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-linux-arm64.tgz
+    curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-macos-x64.tgz
+    curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-win-x64.tgz
+  fi
 }
 
 if [ -z "$GITHUB_EMAIL" ]; then
