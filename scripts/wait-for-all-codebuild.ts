@@ -44,7 +44,6 @@ const main = async () => {
   const jobsDependedOnFilepathOrId = process.argv[3];
   const codeBuildProjectName = process.argv[4];
   let accountForFailures: boolean = process.argv.length >= 6 && process.argv[5] === 'true';
-  console.log(`accountForFailures: ${accountForFailures}`);
   let jobsDependedOn: string[];
   if (fs.existsSync(jobsDependedOnFilepathOrId)) {
     const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepathOrId, 'utf8');
@@ -52,6 +51,7 @@ const main = async () => {
   } else {
     jobsDependedOn = [jobsDependedOnFilepathOrId];
   }
+  console.log(`accountForFailures: ${accountForFailures}`);
   console.log(`Depending on these jobs: ${JSON.stringify(jobsDependedOn)}`);
   console.log(`Number of jobs depended on: ${jobsDependedOn.length}`);
   const allBatchBuildIds = await getBatchesInProject(cb, codeBuildProjectName);
