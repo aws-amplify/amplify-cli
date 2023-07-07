@@ -22,3 +22,9 @@ export const migrationFromV10Tests = [
   'src/__tests__/migration_tests_v10/storage.migration.test.ts',
   'src/__tests__/migration_tests_v10/pinpoint-region.migration.test.ts',
 ];
+export const migrationFromV12Tests = [
+  'src/__tests__/migration_tests_v12/auth-app-client-secret-migration.test.ts',
+  'src/__tests__/migration_tests_v12/auth-lambda-callout-migration.test.ts',
+  'src/__tests__/migration_tests_v12/auth-oauth-lambda-migration.test.ts',
+  'src/__tests__/migration_tests_v12/auth-resource-deletion-migration.test.ts',
+];
