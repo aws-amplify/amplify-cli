@@ -43,7 +43,7 @@ const main = async () => {
   const expectedSourceVersion = process.argv[2];
   const jobsDependedOnFilepathOrId = process.argv[3];
   const codeBuildProjectName = process.argv[4];
-  let accountForFailures: boolean = process.argv.length >= 6 && process.argv[5] === 'true';
+  let accountForFailures: boolean = process.argv.length >= 6 && process.argv[5] === 'requirePrevJobsToSucceed';
   let jobsDependedOn: string[];
   if (fs.existsSync(jobsDependedOnFilepathOrId)) {
     const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepathOrId, 'utf8');
