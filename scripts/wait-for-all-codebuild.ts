@@ -43,14 +43,14 @@ const main = async () => {
   const expectedSourceVersion = process.argv[2];
   const jobsDependedOnFilepathOrId = process.argv[3];
   const codeBuildProjectName = process.argv[4];
+  let accountForFailures: boolean = process.argv.length >= 6 && process.argv[5] === 'true';
+  console.log(`accountForFailures: ${accountForFailures}`);
   let jobsDependedOn: string[];
-  let singleJob = false;
   if (fs.existsSync(jobsDependedOnFilepathOrId)) {
     const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepathOrId, 'utf8');
     jobsDependedOn = JSON.parse(jobsDependedOnRaw);
   } else {
     jobsDependedOn = [jobsDependedOnFilepathOrId];
-    singleJob = true;
   }
   console.log(`Depending on these jobs: ${JSON.stringify(jobsDependedOn)}`);
   console.log(`Number of jobs depended on: ${jobsDependedOn.length}`);
@@ -73,9 +73,10 @@ const main = async () => {
   let intersectingIncompleteJobs: string[];
   do {
     await new Promise((resolve) => setTimeout(resolve, 180 * 1000)); // sleep for 180 seconds
-    if (singleJob) {
+    if (accountForFailures) {
       const failedJobsInBatch = await getFailedJobIdsFromBatchId(cb, batchId);
-      if (failedJobsInBatch.includes(jobsDependedOn[0])) {
+      const intersectingFailedJobs = failedJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
+      if (intersectingFailedJobs.length > 0) {
         console.log(`${jobsDependedOn[0]} failed. Exiting.`);
         process.exit(1);
       }
