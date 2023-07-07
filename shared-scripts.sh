@@ -592,10 +592,11 @@ function _buildTestsStandalone {
 
 function _waitForJobs {
     file_path=$1
+    account_for_failures=$2
     echo "file_path" $file_path
     cd ./scripts
     npm install -g ts-node
     npm install aws-sdk
-    ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME
+    ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME $account_for_failures
     cd ..
 }
