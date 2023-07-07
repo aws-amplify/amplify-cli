@@ -349,7 +349,7 @@ function _scanArtifacts {
 function _putCredsInProfile {
     mkdir -p ~/.aws
     touch ~/.aws/config ~/.aws/credentials
-    python3 codebuild_specs/sh-files/aws-configure-credentials.py
+    ts-node scripts/aws-configure-credentials.ts
 }
 
 function _installIntegTestsDependencies {
