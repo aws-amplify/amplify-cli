@@ -24,17 +24,33 @@ const getIncompleteJobIdsFromBatchId = async (cb: CodeBuild, batchId: string): P
   return ids ?? [];
 };
 
+const getFailedJobIdsFromBatchId = async (cb: CodeBuild, batchId: string): Promise<string[]> => {
+  const retrievedBatchInfo = await cb.batchGetBuildBatches({ ids: [batchId] }).promise();
+  const ids = retrievedBatchInfo.buildBatches?.[0].buildGroups
+    ?.filter(
+      (group) =>
+        group.currentBuildSummary?.buildStatus === 'FAILED' ||
+        group.currentBuildSummary?.buildStatus === 'FAULT' ||
+        group.currentBuildSummary?.buildStatus === 'STOPPED' ||
+        group.currentBuildSummary?.buildStatus === 'TIMED_OUT',
+    )
+    .map((group) => group.identifier ?? '');
+  return ids ?? [];
+};
+
 const main = async () => {
   const cb = new CodeBuild({ region: 'us-east-1' });
   const expectedSourceVersion = process.argv[2];
   const jobsDependedOnFilepathOrId = process.argv[3];
   const codeBuildProjectName = process.argv[4];
   let jobsDependedOn: string[];
+  let singleJob = false;
   if (fs.existsSync(jobsDependedOnFilepathOrId)) {
     const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepathOrId, 'utf8');
     jobsDependedOn = JSON.parse(jobsDependedOnRaw);
   } else {
     jobsDependedOn = [jobsDependedOnFilepathOrId];
+    singleJob = true;
   }
   console.log(`Depending on these jobs: ${JSON.stringify(jobsDependedOn)}`);
   console.log(`Number of jobs depended on: ${jobsDependedOn.length}`);
@@ -57,6 +73,12 @@ const main = async () => {
   let intersectingIncompleteJobs: string[];
   do {
     await new Promise((resolve) => setTimeout(resolve, 180 * 1000)); // sleep for 180 seconds
+    if (singleJob) {
+      const failedJobsInBatch = await getFailedJobIdsFromBatchId(cb, batchId);
+      if (failedJobsInBatch.includes(jobsDependedOn[0])) {
+        process.exit(1);
+      }
+    }
     const incompleteJobsInBatch = await getIncompleteJobIdsFromBatchId(cb, batchId);
     console.log(`These are all of the incomplete jobs in the batch: ${JSON.stringify(incompleteJobsInBatch)}`);
     intersectingIncompleteJobs = incompleteJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
