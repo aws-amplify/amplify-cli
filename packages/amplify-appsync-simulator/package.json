@@ -35,7 +35,7 @@
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
     "amplify-velocity-template": "1.4.12",
-    "aws-sdk": "^2.1354.0",
+    "aws-sdk": "^2.1405.0",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
