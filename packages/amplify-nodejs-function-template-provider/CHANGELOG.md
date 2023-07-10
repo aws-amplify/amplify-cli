@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.5-rc.d399855bf8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.8.4...@aws-amplify/amplify-nodejs-function-template-provider@2.8.5-rc.d399855bf8.0) (2023-07-10)
+
+
+### Bug Fixes
+
+* update lambda-auth mock event.json with the correct request authorization event payload ([#11428](https://github.com/aws-amplify/amplify-cli/issues/11428)) ([9980330](https://github.com/aws-amplify/amplify-cli/commit/9980330a64ffd937f4f226ac38116afb43a61128))
+
+
+
+
+
 ## [2.8.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.8.3...@aws-amplify/amplify-nodejs-function-template-provider@2.8.4) (2023-06-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider
