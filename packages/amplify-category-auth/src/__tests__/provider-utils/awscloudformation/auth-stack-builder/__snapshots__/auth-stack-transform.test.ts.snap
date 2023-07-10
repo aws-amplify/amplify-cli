@@ -12,14 +12,6 @@ exports[`Check Auth Template Generated authstack template in default flow 1`] = 
         "NONE",
       ],
     },
-    "ShouldOutputAppClientSecrets": {
-      "Fn::Equals": [
-        {
-          "Ref": "userpoolClientGenerateSecret",
-        },
-        true,
-      ],
-    },
   },
   "Description": "Amplify Cognito Stack for AWS Amplify CLI",
   "Outputs": {
@@ -33,15 +25,6 @@ exports[`Check Auth Template Generated authstack template in default flow 1`] = 
       "Description": "The user pool app client id for web",
       "Value": {
         "Ref": "UserPoolClientWeb",
-      },
-    },
-    "AppClientSecret": {
-      "Condition": "ShouldOutputAppClientSecrets",
-      "Value": {
-        "Fn::GetAtt": [
-          "UserPoolClientInputs",
-          "appSecret",
-        ],
       },
     },
     "IdentityPoolId": {
@@ -359,9 +342,6 @@ exports[`Check Auth Template Generated authstack template in default flow 1`] = 
       "Type": "AWS::Cognito::UserPoolClient",
     },
     "UserPoolClientRole": {
-      "DependsOn": [
-        "UserPoolClient",
-      ],
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -445,14 +425,6 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
         "NONE",
       ],
     },
-    "ShouldOutputAppClientSecrets": {
-      "Fn::Equals": [
-        {
-          "Ref": "userpoolClientGenerateSecret",
-        },
-        true,
-      ],
-    },
   },
   "Description": "Amplify Cognito Stack for AWS Amplify CLI",
   "Outputs": {
@@ -471,15 +443,6 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
       "Description": "The user pool app client id for web",
       "Value": {
         "Ref": "UserPoolClientWeb",
-      },
-    },
-    "AppClientSecret": {
-      "Condition": "ShouldOutputAppClientSecrets",
-      "Value": {
-        "Fn::GetAtt": [
-          "UserPoolClientInputs",
-          "appSecret",
-        ],
       },
     },
     "AppleWebClient": {
@@ -1702,9 +1665,6 @@ exports.handler = (event, context, callback) => {
       "Type": "AWS::Cognito::UserPoolClient",
     },
     "UserPoolClientRole": {
-      "DependsOn": [
-        "UserPoolClient",
-      ],
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
