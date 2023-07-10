@@ -4,6 +4,7 @@ import {
   config,
   DynamoDB,
   S3,
+  CognitoIdentity,
   CognitoIdentityServiceProvider,
   Lambda,
   LexModelBuildingService,
@@ -144,6 +145,51 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
+export const deleteUserPoolDomain = async (domain: string, userpoolId: string, region: string) => {
+  config.update({ region });
+  let res;
+  try {
+    res = await new CognitoIdentityServiceProvider().deleteUserPoolDomain({ Domain: domain, UserPoolId: userpoolId }).promise();
+  } catch (e) {
+    console.log(e);
+  }
+  return res;
+};
+
+export const deleteSocialIdpProviders = async (providers: string[], userpoolId: string, region: string) => {
+  config.update({ region });
+  for (const provider of providers) {
+    try {
+      await new CognitoIdentityServiceProvider().deleteIdentityProvider({ ProviderName: provider, UserPoolId: userpoolId }).promise();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+};
+
+export const listSocialIdpProviders = async (userpoolId: string, region: string) => {
+  let res;
+  config.update({ region });
+  try {
+    res = await new CognitoIdentityServiceProvider().listIdentityProviders({ UserPoolId: userpoolId }).promise();
+  } catch (err) {
+    console.log(err);
+  }
+  return res;
+};
+
+export const getIdentityPoolRoles = async (identityPoolId: string, region: string) => {
+  let res;
+
+  try {
+    res = await new CognitoIdentity({ region }).getIdentityPoolRoles({ IdentityPoolId: identityPoolId }).promise();
+  } catch (e) {
+    console.log(e);
+  }
+
+  return res;
+};
+
 export const listUserPools = async (region, maxResults = 5) => {
   config.update({ region });
   let res;
@@ -202,6 +248,18 @@ export const addUserToUserPool = async (userPoolId: string, region: string) => {
     TemporaryPassword: 'password',
   };
   await provider.adminCreateUser(params).promise();
+};
+
+/**
+ * list all users in a Cognito user pool
+ */
+export const listUsersInUserPool = async (userPoolId: string, region: string): Promise<string[]> => {
+  const provider = new CognitoIdentityServiceProvider({ region });
+  const params = {
+    UserPoolId: userPoolId /* required */,
+  };
+  const { Users } = await provider.listUsers(params).promise();
+  return Users.map((u) => u.Username);
 };
 
 /**

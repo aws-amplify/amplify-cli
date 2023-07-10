@@ -9,7 +9,7 @@ import {
   signInUser,
   getConfiguredAppsyncClientIAMAuth,
   getConfiguredAppsyncClientOIDCAuth,
-} from '../authHelper';
+} from '@aws-amplify/amplify-e2e-core';
 
 import { updateSchemaInTestProject, testMutation } from '../common';
 

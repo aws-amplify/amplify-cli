@@ -11,7 +11,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { JSONUtilities, $TSAny } from '@aws-amplify/amplify-cli-core';
 import { getAmplifyFlutterConfig } from '@aws-amplify/amplify-e2e-core';
-import { getAWSExports } from '../../schema-api-directives/authHelper';
+import { getAWSExports } from '@aws-amplify/amplify-e2e-core';
 
 export const runPinpointConfigTest = async (
   projectRoot: string,

@@ -1,5 +1,5 @@
 import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema } from '@aws-amplify/amplify-e2e-core';
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
+import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '@aws-amplify/amplify-e2e-core';
 import { testQueries, testMutations } from '../common';
 
 //schema

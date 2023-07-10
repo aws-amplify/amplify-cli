@@ -13,7 +13,7 @@ import {
   signInUser,
   getConfiguredAppsyncClientAPIKeyAuth,
   getConfiguredAppsyncClientCognitoAuth,
-} from './authHelper';
+} from '@aws-amplify/amplify-e2e-core';
 
 const GROUPNAME = 'Admin';
 const USERNAME = 'user1';

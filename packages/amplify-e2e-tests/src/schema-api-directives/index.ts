@@ -53,5 +53,3 @@ export async function testSchema(projectDir: string, directive: string, section:
     return false;
   }
 }
-
-export * from './authHelper';

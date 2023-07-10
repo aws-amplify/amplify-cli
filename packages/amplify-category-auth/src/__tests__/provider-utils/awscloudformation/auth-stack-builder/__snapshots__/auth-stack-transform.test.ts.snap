@@ -1554,197 +1554,6 @@ exports.handler = (event, context, callback) => {
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
-    "OAuthCustomResource": {
-      "DependsOn": [
-        "HostedUICustomResourceInputs",
-        "HostedUIProvidersCustomResourceInputs",
-      ],
-      "Properties": {
-        "Code": {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    let webClientId = event.ResourceProperties.webClientId;
-    let nativeClientId = event.ResourceProperties.nativeClientId;
-    let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    let oAuthMetadata = JSON.parse(event.ResourceProperties.oAuthMetadata);
-    let providerList = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-    providerList.push('COGNITO');
-    if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      let params = {
-        UserPoolId: userPoolId,
-        AllowedOAuthFlows: oAuthMetadata.AllowedOAuthFlows,
-        AllowedOAuthFlowsUserPoolClient: true,
-        AllowedOAuthScopes: oAuthMetadata.AllowedOAuthScopes,
-        CallbackURLs: oAuthMetadata.CallbackURLs,
-        LogoutURLs: oAuthMetadata.LogoutURLs,
-        SupportedIdentityProviders: providerList,
-      };
-      console.log(params);
-      let updateUserPoolClientPromises = [];
-      params.ClientId = webClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      params.ClientId = nativeClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      Promise.all(updateUserPoolClientPromises)
-        .then(() => {
-          response.send(event, context, response.SUCCESS, {});
-        })
-        .catch((err) => {
-          console.log(err.stack);
-          response.send(event, context, response.FAILED, { err });
-        });
-    }
-  } catch (err) {
-    console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "UserPoolClientRole",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs16.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "OAuthCustomResourceInputs": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "OAuthCustomResourceLogPolicy",
-      ],
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "OAuthCustomResource",
-            "Arn",
-          ],
-        },
-        "hostedUIProviderMeta": {
-          "Ref": "hostedUIProviderMeta",
-        },
-        "nativeClientId": {
-          "Ref": "UserPoolClient",
-        },
-        "oAuthMetadata": {
-          "Ref": "oAuthMetadata",
-        },
-        "userPoolId": {
-          "Ref": "UserPool",
-        },
-        "webClientId": {
-          "Ref": "UserPoolClientWeb",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "OAuthCustomResourceLogPolicy": {
-      "DependsOn": [
-        "OAuthCustomResourcePolicy",
-      ],
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Sub": [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  {
-                    "account": {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": {
-                      "Ref": "OAuthCustomResource",
-                    },
-                    "region": {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": {
-          "Fn::Join": [
-            "-",
-            [
-              {
-                "Ref": "UserPool",
-              },
-              "OAuthLogPolicy",
-            ],
-          ],
-        },
-        "Roles": [
-          {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "OAuthCustomResourcePolicy": {
-      "DependsOn": [
-        "OAuthCustomResource",
-      ],
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "cognito-idp:UpdateUserPoolClient",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": {
-          "Fn::Join": [
-            "-",
-            [
-              {
-                "Ref": "UserPool",
-              },
-              "OAuth",
-            ],
-          ],
-        },
-        "Roles": [
-          {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "SNSRole": {
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1987,19 +1796,44 @@ exports.handler = (event, context, callback) => {
     },
     "UserPoolClient": {
       "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": {
+        "AllowedOAuthFlows": [
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": [
+          "https://localhost:3000/",
+        ],
         "ClientName": "extaut87063394_app_client",
         "GenerateSecret": {
           "Ref": "userpoolClientGenerateSecret",
         },
+        "LogoutURLs": [
+          "https://localhost:3000/",
+        ],
         "ReadAttributes": {
           "Ref": "userpoolClientReadAttributes",
         },
         "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
+        "SupportedIdentityProviders": [
+          "Facebook",
+          "Google",
+          "LoginWithAmazon",
+          "SignInWithApple",
+          "COGNITO",
+        ],
         "TokenValidityUnits": {
           "RefreshToken": "days",
         },
@@ -2206,16 +2040,41 @@ exports.handler = (event, context, callback) => {
     },
     "UserPoolClientWeb": {
       "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": {
+        "AllowedOAuthFlows": [
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": [
+          "https://localhost:3000/",
+        ],
         "ClientName": "extaut87063394_app_clientWeb",
+        "LogoutURLs": [
+          "https://localhost:3000/",
+        ],
         "ReadAttributes": {
           "Ref": "userpoolClientReadAttributes",
         },
         "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
+        "SupportedIdentityProviders": [
+          "Facebook",
+          "Google",
+          "LoginWithAmazon",
+          "SignInWithApple",
+          "COGNITO",
+        ],
         "TokenValidityUnits": {
           "RefreshToken": "days",
         },

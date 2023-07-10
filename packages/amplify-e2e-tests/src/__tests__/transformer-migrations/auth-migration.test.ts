@@ -26,7 +26,7 @@ import {
   getConfiguredAppsyncClientIAMAuth,
   setupUser,
   signInUser,
-} from '../../schema-api-directives';
+} from '@aws-amplify/amplify-e2e-core';
 
 (global as any).fetch = require('node-fetch');
 

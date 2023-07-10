@@ -18,7 +18,7 @@ import {
   setupUser,
   signInUser,
   getConfiguredAppsyncClientCognitoAuth,
-} from '../authHelper';
+} from '@aws-amplify/amplify-e2e-core';
 
 import { updateSchemaInTestProject, testQueries } from '../common';
 

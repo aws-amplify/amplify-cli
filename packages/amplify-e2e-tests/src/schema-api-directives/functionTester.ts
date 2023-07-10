@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import fs from 'fs-extra';
 import { amplifyPush, addFunction, addApi } from '@aws-amplify/amplify-e2e-core';
 
-import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from './authHelper';
+import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from '@aws-amplify/amplify-e2e-core';
 
 import { updateSchemaInTestProject, testQueries } from './common';
 

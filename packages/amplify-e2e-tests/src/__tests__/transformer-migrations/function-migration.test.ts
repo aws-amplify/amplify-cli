@@ -10,7 +10,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { addSimpleFunction, updateFunctionNameInSchema } from '../../schema-api-directives/functionTester';
 import { updateSchemaInTestProject, testQueries } from '../../schema-api-directives/common';
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../../schema-api-directives/authHelper';
+import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '@aws-amplify/amplify-e2e-core';
 
 describe('api directives @function v1 to v2 migration', () => {
   let projectDir: string;

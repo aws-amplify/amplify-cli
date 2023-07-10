@@ -1,6 +1,6 @@
 import { addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
 
-import { configureAmplify, getConfiguredAppsyncClientIAMAuth } from '../authHelper';
+import { configureAmplify, getConfiguredAppsyncClientIAMAuth } from '@aws-amplify/amplify-e2e-core';
 
 import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
 

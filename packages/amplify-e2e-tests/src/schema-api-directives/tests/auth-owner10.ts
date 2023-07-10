@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { addApi, amplifyPush, updateAuthAddUserGroups, getAwsIOSConfig } from '@aws-amplify/amplify-e2e-core';
 import Amplify from 'aws-amplify';
-import { signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId } from '../authHelper';
+import { signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId } from '@aws-amplify/amplify-e2e-core';
 import { updateSchemaInTestProject, testMutations, testQueries, testSubscriptions } from '../common';
 
 const GROUPNAME = 'Admin';
