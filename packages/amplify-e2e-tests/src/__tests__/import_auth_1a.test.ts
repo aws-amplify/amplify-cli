@@ -10,6 +10,7 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  getCognitoResourceName,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
@@ -29,7 +30,6 @@ import {
   readRootStack,
   removeImportedAuthWithDefault,
 } from '../import-helpers';
-import { getCognitoResourceName } from '@aws-amplify/amplify-e2e-core';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('auth import userpool only', () => {

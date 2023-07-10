@@ -8,6 +8,7 @@ import {
   deleteProject,
   deleteProjectDir,
   getAppId,
+  getCognitoResourceName,
   getEnvVars,
   getTeamProviderInfo,
   initJSProjectWithProfile,
@@ -30,7 +31,6 @@ import {
   getShortId,
   importUserPoolOnly,
 } from '../import-helpers';
-import { getCognitoResourceName } from '@aws-amplify/amplify-e2e-core';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('auth import userpool only', () => {
