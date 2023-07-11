@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0-rc.a3b139fb36.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.2.4...@aws-amplify/amplify-category-storage@5.3.0-rc.a3b139fb36.0) (2023-07-11)
+
+
+### Features
+
+* **amplify-category-storage:** add CRUD PartiQL permissions for DynamoDB ([#11002](https://github.com/aws-amplify/amplify-cli/issues/11002)) ([19ed508](https://github.com/aws-amplify/amplify-cli/commit/19ed5083fe24264070490c52ac9e182d98571bdb))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
 ## [5.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.2.3...@aws-amplify/amplify-category-storage@5.2.4) (2023-06-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

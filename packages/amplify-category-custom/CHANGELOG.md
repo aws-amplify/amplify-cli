@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-rc.a3b139fb36.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.9...@aws-amplify/amplify-category-custom@3.1.0-rc.a3b139fb36.0) (2023-07-11)
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+
+
+
+
+
 ## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.8...@aws-amplify/amplify-category-custom@3.0.9) (2023-06-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

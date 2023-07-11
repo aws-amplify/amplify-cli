@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.2.0-rc.a3b139fb36.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.1.1...@aws-amplify/cli@12.2.0-rc.a3b139fb36.0) (2023-07-11)
+
+
+### Bug Fixes
+
+* add check for codebuild when updating url ([#12924](https://github.com/aws-amplify/amplify-cli/issues/12924)) ([d399855](https://github.com/aws-amplify/amplify-cli/commit/d399855bf8004c9ce88a6ba7c00dd42476ac748b))
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
 ## [12.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.1.0...@aws-amplify/cli@12.1.1) (2023-06-16)
 
 **Note:** Version bump only for package @aws-amplify/cli
