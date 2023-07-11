@@ -87,7 +87,7 @@ describe('lambda callouts', () => {
 
     const username = 'testUser';
     const password = 'Password12#';
-    await setupUser(UserPoolId, username, 'Password12#', 'userPoolGroup1');
+    await setupUser(UserPoolId, username, 'Password12#', 'userPoolGroup1', region);
 
     await signInUser(username, password);
     await signOutUser();
@@ -119,7 +119,7 @@ describe('lambda callouts', () => {
 
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
-    const { HostedUIDomain, UserPoolId } = Object.keys(meta.auth)
+    const { UserPoolId } = Object.keys(meta.auth)
       .map((key) => meta.auth[key])
       .find((auth) => auth.service === 'Cognito').output;
     const userPoolRes1 = await getUserPool(UserPoolId, region);

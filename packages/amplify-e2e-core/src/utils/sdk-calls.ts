@@ -135,10 +135,9 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
 };
 
 export const getUserPool = async (userpoolId, region) => {
-  config.update({ region });
   let res;
   try {
-    res = await new CognitoIdentityServiceProvider().describeUserPool({ UserPoolId: userpoolId }).promise();
+    res = await new CognitoIdentityServiceProvider({ region }).describeUserPool({ UserPoolId: userpoolId }).promise();
   } catch (e) {
     console.log(e);
   }
@@ -146,10 +145,9 @@ export const getUserPool = async (userpoolId, region) => {
 };
 
 export const deleteUserPoolDomain = async (domain: string, userpoolId: string, region: string) => {
-  config.update({ region });
   let res;
   try {
-    res = await new CognitoIdentityServiceProvider().deleteUserPoolDomain({ Domain: domain, UserPoolId: userpoolId }).promise();
+    res = await new CognitoIdentityServiceProvider({ region }).deleteUserPoolDomain({ Domain: domain, UserPoolId: userpoolId }).promise();
   } catch (e) {
     console.log(e);
   }
@@ -157,10 +155,11 @@ export const deleteUserPoolDomain = async (domain: string, userpoolId: string, r
 };
 
 export const deleteSocialIdpProviders = async (providers: string[], userpoolId: string, region: string) => {
-  config.update({ region });
   for (const provider of providers) {
     try {
-      await new CognitoIdentityServiceProvider().deleteIdentityProvider({ ProviderName: provider, UserPoolId: userpoolId }).promise();
+      await new CognitoIdentityServiceProvider({ region })
+        .deleteIdentityProvider({ ProviderName: provider, UserPoolId: userpoolId })
+        .promise();
     } catch (err) {
       console.log(err);
     }
@@ -169,9 +168,8 @@ export const deleteSocialIdpProviders = async (providers: string[], userpoolId: 
 
 export const listSocialIdpProviders = async (userpoolId: string, region: string) => {
   let res;
-  config.update({ region });
   try {
-    res = await new CognitoIdentityServiceProvider().listIdentityProviders({ UserPoolId: userpoolId }).promise();
+    res = await new CognitoIdentityServiceProvider({ region }).listIdentityProviders({ UserPoolId: userpoolId }).promise();
   } catch (err) {
     console.log(err);
   }
@@ -191,10 +189,9 @@ export const getIdentityPoolRoles = async (identityPoolId: string, region: strin
 };
 
 export const listUserPools = async (region, maxResults = 5) => {
-  config.update({ region });
   let res;
   try {
-    res = await new CognitoIdentityServiceProvider().listUserPools({ MaxResults: maxResults }).promise();
+    res = await new CognitoIdentityServiceProvider({ region }).listUserPools({ MaxResults: maxResults }).promise();
   } catch (e) {
     console.log(e);
   }
@@ -205,8 +202,7 @@ export const getMFAConfiguration = async (
   userPoolId: string,
   region: string,
 ): Promise<CognitoIdentityServiceProvider.GetUserPoolMfaConfigResponse> => {
-  config.update({ region });
-  return await new CognitoIdentityServiceProvider().getUserPoolMfaConfig({ UserPoolId: userPoolId }).promise();
+  return await new CognitoIdentityServiceProvider({ region }).getUserPoolMfaConfig({ UserPoolId: userPoolId }).promise();
 };
 
 export const getLambdaFunction = async (functionName: string, region: string) => {
@@ -411,8 +407,7 @@ export const putKinesisRecords = async (data: string, partitionKey: string, stre
 };
 
 export const getCloudWatchEventRule = async (targetName: string, region: string) => {
-  config.update({ region });
-  const service = new CloudWatchEvents();
+  const service = new CloudWatchEvents({ region });
   const params = {
     TargetArn: targetName /* required */,
   };
