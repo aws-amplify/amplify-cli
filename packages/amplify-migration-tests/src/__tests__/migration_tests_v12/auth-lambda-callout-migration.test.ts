@@ -14,9 +14,9 @@ import {
   setupUser,
   signInUser,
   signOutUser,
-  updateHeadlessAuth,
+  getUserPool,
+  listSocialIdpProviders,
 } from '@aws-amplify/amplify-e2e-core';
-import { UpdateAuthRequest } from 'amplify-headless-interface';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
 import { expectLambdasInCfnTemplate, migratedLambdas, nonMigratedLambdas } from '../../migration-helpers-v12/auth-helpers/utilities';
 import { initJSProjectWithProfileV12 } from '../../migration-helpers-v12/init';
@@ -58,7 +58,7 @@ describe('lambda callouts', () => {
     await amplifyPushForce(projRoot, true);
 
     const postMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectLambdasInCfnTemplate(preMigrationTemplate, nonMigratedLambdas, migratedLambdas);
+    expectLambdasInCfnTemplate(postMigrationTemplate, nonMigratedLambdas, migratedLambdas);
 
     // revert to previous CLI version
     await amplifyPushForce(projRoot, false);
@@ -109,38 +109,31 @@ describe('lambda callouts', () => {
     await signOutUser();
   });
 
-  it('should be migrated when set up using headless commands', async () => {
+  it('should keep identity providers and domain during migration', async () => {
     await initJSProjectWithProfileV12(projRoot, defaultsSettings);
+
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName });
+
     await amplifyPushAuth(projRoot, false);
 
-    const updateAuthRequest: UpdateAuthRequest = {
-      version: 2,
-      serviceModification: {
-        serviceName: 'Cognito',
-        userPoolModification: {
-          userPoolGroups: [
-            {
-              groupName: 'group1',
-            },
-            {
-              groupName: 'group2',
-            },
-          ],
-        },
-        includeIdentityPool: true,
-        identityPoolModification: {
-          identitySocialFederation: [{ provider: 'GOOGLE', clientId: 'fakeClientId' }],
-        },
-      },
-    };
+    const meta = getProjectMeta(projRoot);
+    const region = meta.providers.awscloudformation.Region;
+    const { HostedUIDomain, UserPoolId } = Object.keys(meta.auth)
+      .map((key) => meta.auth[key])
+      .find((auth) => auth.service === 'Cognito').output;
+    const userPoolRes1 = await getUserPool(UserPoolId, region);
+    const userPoolDomainV12 = userPoolRes1.UserPool.Domain;
+    const socialIdpProvidersV12 = await listSocialIdpProviders(UserPoolId, region);
 
-    await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
-    await amplifyPushAuth(projRoot, true);
     await amplifyPushForce(projRoot, true);
 
-    const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectLambdasInCfnTemplate(template, nonMigratedLambdas, migratedLambdas);
+    const userPoolRes2 = await getUserPool(UserPoolId, region);
+    const userPoolDomainLatest = userPoolRes2.UserPool.Domain;
+    const socialIdpProvidersLatest = await listSocialIdpProviders(UserPoolId, region);
+    // check same domain should exist
+    expect(userPoolDomainV12).toEqual(userPoolDomainLatest);
+    // check the Social Idp Provider exists
+    expect(socialIdpProvidersV12).toEqual(socialIdpProvidersLatest);
   });
 });
