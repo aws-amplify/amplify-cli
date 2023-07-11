@@ -25,7 +25,7 @@ describe('amplify migration test auth', () => {
     await versionCheck(process.cwd(), false, migrateFromVersion);
     await versionCheck(process.cwd(), true, migrateToVersion);
     console.log(`Test migration from: ${migrateFromVersion.v} to ${migrateToVersion.v}`);
-    // expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
+    expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
     expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
   });
 

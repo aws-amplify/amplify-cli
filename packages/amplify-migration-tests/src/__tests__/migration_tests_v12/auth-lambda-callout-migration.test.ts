@@ -18,7 +18,7 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
-import { expectLambdasInCfnTemplate, expectNoLambdasInCfnTemplate } from '../../migration-helpers-v12/auth-helpers/utilities';
+import { expectLambdasInCfnTemplate, migratedLambdas, nonMigratedLambdas } from '../../migration-helpers-v12/auth-helpers/utilities';
 import { initJSProjectWithProfileV12 } from '../../migration-helpers-v12/init';
 
 const defaultsSettings = {
@@ -49,7 +49,7 @@ describe('lambda callouts', () => {
     await addAuthWithMaxOptions(projRoot, { name: resourceName });
 
     const preMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectLambdasInCfnTemplate(preMigrationTemplate);
+    expectLambdasInCfnTemplate(preMigrationTemplate, migratedLambdas.concat(nonMigratedLambdas), []);
 
     // push with latest should regenerate auth stack and start migrating lambda callouts
     await amplifyPushAuth(projRoot, true);
@@ -58,23 +58,20 @@ describe('lambda callouts', () => {
     await amplifyPushForce(projRoot, true);
 
     const postMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectNoLambdasInCfnTemplate(postMigrationTemplate);
+    expectLambdasInCfnTemplate(preMigrationTemplate, nonMigratedLambdas, migratedLambdas);
 
-    // revert back to previous CLI version
+    // revert to previous CLI version
     await amplifyPushForce(projRoot, false);
 
     const revertTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectLambdasInCfnTemplate(revertTemplate);
+    expectLambdasInCfnTemplate(revertTemplate, migratedLambdas.concat(nonMigratedLambdas), []);
   });
 
-  it('should migrate when force pushing without affecting userpool functionality', async () => {
+  it('should migrate when force pushing without affecting user pool functionality', async () => {
     await initJSProjectWithProfileV12(projRoot, defaultsSettings);
 
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName });
-
-    const preMigrationTemplate = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectLambdasInCfnTemplate(preMigrationTemplate);
 
     await amplifyPushAuth(projRoot, false);
 
@@ -97,13 +94,16 @@ describe('lambda callouts', () => {
 
     await amplifyPushForce(projRoot, true);
 
-    const users = await listUsersInUserPool(UserPoolId, region);
+    let users = await listUsersInUserPool(UserPoolId, region);
     expect(users).toEqual([username.toLowerCase()]);
 
     await signInUser(username, password);
     await signOutUser();
 
     await amplifyPushForce(projRoot, true);
+
+    users = await listUsersInUserPool(UserPoolId, region);
+    expect(users).toEqual([username.toLowerCase()]);
 
     await signInUser(username, password);
     await signOutUser();
@@ -141,6 +141,6 @@ describe('lambda callouts', () => {
     await amplifyPushForce(projRoot, true);
 
     const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
-    expectNoLambdasInCfnTemplate(template);
+    expectLambdasInCfnTemplate(template, nonMigratedLambdas, migratedLambdas);
   });
 });

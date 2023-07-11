@@ -42,18 +42,27 @@ const createUserPoolWithOAuthSettings = (projectPrefix: string, shortId: string)
 
 const lambdaCalloutFilter = (r: $TSObject) => r?.Type === 'AWS::Lambda::Function' || r?.Type === 'Custom::LambdaCallout';
 
-const getLambdasInCfnTemplate = (template: $TSObject): $TSObject[] => {
-  const lambdaResources = Object.values(template.Resources).filter(lambdaCalloutFilter);
-  return lambdaResources;
+export const migratedLambdas = ['UserPoolClientLambda', 'UserPoolClientInputs', 'OAuthCustomResource', 'OAuthCustomResourceInputs'];
+export const nonMigratedLambdas = [
+  'HostedUICustomResource',
+  'HostedUICustomResourceInputs',
+  'HostedUIProvidersCustomResource',
+  'HostedUIProvidersCustomResourceInputs',
+];
+
+const getLambdaNamesInCfnTemplate = (template: $TSObject): Array<string> => {
+  return Object.entries(template.Resources)
+    .filter((entry) => lambdaCalloutFilter(entry[1]))
+    .map((entry) => entry[0]);
 };
 
-export const expectLambdasInCfnTemplate = (template: $TSObject): void => {
+export const expectLambdasInCfnTemplate = (template: $TSObject, namesPresent: Array<string>, namesAbsent: Array<string>): void => {
   expect(template?.Resources).toBeDefined();
-  const lambdaResources = getLambdasInCfnTemplate(template);
-  expect(lambdaResources.length).not.toBe(0);
-};
-
-export const expectNoLambdasInCfnTemplate = (template: $TSObject): void => {
-  expect(template?.Resources).toBeDefined();
-  expect(Object.values(template.Resources).filter(lambdaCalloutFilter).length).toBe(0);
+  const lambdasInCfnTemplate = getLambdaNamesInCfnTemplate(template);
+  for (const name of namesPresent) {
+    expect(lambdasInCfnTemplate).toContain(name);
+  }
+  for (const name of namesAbsent) {
+    expect(lambdasInCfnTemplate).not.toContain(name);
+  }
 };
