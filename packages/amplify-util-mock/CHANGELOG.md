@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-cdk228withdata.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.3.1...@aws-amplify/amplify-util-mock@5.4.0-cdk228withdata.0) (2023-07-12)
+
+
+### Features
+
+* **amplify-util-mock:** import custom port from mock.json ([#10978](https://github.com/aws-amplify/amplify-cli/issues/10978)) ([31f250c](https://github.com/aws-amplify/amplify-cli/commit/31f250c03b6aa8423f1c574142a663840c566cec))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
 ## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.3.0...@aws-amplify/amplify-util-mock@5.3.1) (2023-06-16)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

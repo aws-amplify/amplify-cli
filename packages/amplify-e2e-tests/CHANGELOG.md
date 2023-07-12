@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-cdk228withdata.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.5...amplify-e2e-tests@4.3.0-cdk228withdata.0) (2023-07-12)
+
+
+### Bug Fixes
+
+* added Prepush after init and before deploy ([#12674](https://github.com/aws-amplify/amplify-cli/issues/12674)) ([a54f837](https://github.com/aws-amplify/amplify-cli/commit/a54f83743b5995317170c9b4f5a140e5a1aa57f3))
+* ensure AWS_REGION matches CLI_REGION in all tests ([#12837](https://github.com/aws-amplify/amplify-cli/issues/12837)) ([7be43e4](https://github.com/aws-amplify/amplify-cli/commit/7be43e41ded3bf09fd20cd9d9b95467491344cbe))
+* fetch deployment key from current-cloud-backend ([#12687](https://github.com/aws-amplify/amplify-cli/issues/12687)) ([af0bf82](https://github.com/aws-amplify/amplify-cli/commit/af0bf82d18b3a30d4cdac2cdd14b8534e0ffff1d))
+* fix yarn path ([#12769](https://github.com/aws-amplify/amplify-cli/issues/12769)) ([dca98aa](https://github.com/aws-amplify/amplify-cli/commit/dca98aa35e544dce4cf0ac9f340919b87041e65f))
+* smoke test flakynes ([#12760](https://github.com/aws-amplify/amplify-cli/issues/12760)) ([5654640](https://github.com/aws-amplify/amplify-cli/commit/56546401274820207bc2e64fb682bbe2ed1981f2))
+* update notification channel name lookup ([#12763](https://github.com/aws-amplify/amplify-cli/issues/12763)) ([92ca721](https://github.com/aws-amplify/amplify-cli/commit/92ca721134d59b68e85d4f92f4814d6717a3be3a))
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+### Reverts
+
+* Revert "chore: cleanup stale resources in CodeBuild (#12779)" (#12853) ([d19d17e](https://github.com/aws-amplify/amplify-cli/commit/d19d17ebcace24c9db56331c0c2bd053f8ec0966)), closes [#12779](https://github.com/aws-amplify/amplify-cli/issues/12779) [#12853](https://github.com/aws-amplify/amplify-cli/issues/12853)
+* Revert "test: make test teardown resilient to failures (#12799)" (#12823) ([ec098ca](https://github.com/aws-amplify/amplify-cli/commit/ec098caa57174b928cf6b024a1bc419a65dd8aff)), closes [#12799](https://github.com/aws-amplify/amplify-cli/issues/12799) [#12823](https://github.com/aws-amplify/amplify-cli/issues/12823)
+
+
+
+
+
 ## [4.2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.4...amplify-e2e-tests@4.2.5) (2023-06-16)
 
 **Note:** Version bump only for package amplify-e2e-tests

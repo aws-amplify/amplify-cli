@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.4-cdk228withdata.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-flutter@1.4.3...@aws-amplify/amplify-frontend-flutter@1.4.4-cdk228withdata.0) (2023-07-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-flutter
+
+
+
+
+
 ## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-flutter@1.4.2...@aws-amplify/amplify-frontend-flutter@1.4.3) (2023-06-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-flutter
