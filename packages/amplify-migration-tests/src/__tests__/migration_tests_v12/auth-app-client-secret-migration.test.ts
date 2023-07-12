@@ -10,10 +10,11 @@ import {
   getCLIInputs,
   getProjectMeta,
   setCLIInputs,
+  assertAppClientSecretInFiles,
 } from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
 import { initAndroidProjectWithProfileV12 } from '../../migration-helpers-v12/init';
-import { assertAppClientSecretInFiles, pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
+import { pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -54,7 +55,7 @@ describe('amplify add auth...', () => {
 
   it('...should init an Android project and add default auth', async () => {
     // assert client secret in projRoot
-    await assertAppClientSecretInFiles(projRoot);
+    await assertAppClientSecretInFiles(projRoot, 'android');
     const projRoot2 = await createNewProjectDir(`${projectName}2`);
     const projRoot3 = await createNewProjectDir(`${projectName}3`);
     // using amplify push force here as changes are only related to build files
@@ -75,7 +76,7 @@ describe('amplify add auth...', () => {
         envName,
       });
       await amplifyPushForce(projRoot3, true);
-      await assertAppClientSecretInFiles(projRoot3);
+      await assertAppClientSecretInFiles(projRoot3, 'android');
     } finally {
       deleteProjectDir(projRoot3);
     }

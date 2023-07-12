@@ -3,7 +3,8 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
-import { getBackendAmplifyMeta, getProjectMeta } from './projectMeta';
+import { getAwsAndroidConfig, getAwsIOSConfig, getBackendAmplifyMeta, getProjectMeta } from './projectMeta';
+import { getUserPoolClients } from './sdk-calls';
 
 const tempPassword = 'tempPassword1@';
 
@@ -196,3 +197,32 @@ export function getAppClientIDWeb(projectDir: string) {
 
   return cognitoResource.output.AppClientIDWeb;
 }
+
+/**
+ * asserts app client secret in projects files and on cloud
+ */
+export const assertAppClientSecretInFiles = async (projRoot: string, frontend: 'android' | 'ios'): Promise<void> => {
+  let config;
+  switch (frontend) {
+    case 'android':
+      config = await getAwsAndroidConfig(projRoot);
+      break;
+    case 'ios':
+      config = await getAwsIOSConfig(projRoot);
+      break;
+  }
+  const clientSecretInAwsConfig = config.CognitoUserPool.Default.AppClientSecret;
+  expect(clientSecretInAwsConfig).toBeDefined();
+  const meta = getProjectMeta(projRoot);
+  const id = Object.keys(meta.auth)[0];
+  const authMeta = meta.auth[id];
+  const clientIds = [authMeta.output.AppClientID];
+  const clientSecretInMetaFile = authMeta.output.AppClientSecret;
+  // compare client secret in meta file and ios config file
+  expect(clientSecretInMetaFile).toBeDefined();
+  expect(clientSecretInAwsConfig).toEqual(clientSecretInMetaFile);
+  const clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
+  expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
+  // compare client secret in meta file with cloud value
+  expect(clients[0].UserPoolClient.ClientSecret).toEqual(clientSecretInMetaFile);
+};
