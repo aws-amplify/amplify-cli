@@ -31,15 +31,17 @@
     "ajv": "^6.12.6",
     "amplify-headless-interface": "1.17.4",
     "amplify-util-headless-input": "1.9.13",
-    "aws-cdk-lib": "~2.68.0",
     "aws-sdk": "^2.1405.0",
-    "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@aws-sdk/client-location": "^3.303.0"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.68.0",
+    "constructs": "^10.0.5"
   },
   "jest": {
     "collectCoverage": true,

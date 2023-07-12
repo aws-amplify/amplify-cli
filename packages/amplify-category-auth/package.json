@@ -36,12 +36,10 @@
     "@aws-amplify/cli-extensibility-helper": "3.0.9",
     "amplify-headless-interface": "1.17.4",
     "amplify-util-headless-input": "1.9.13",
-    "aws-cdk-lib": "~2.68.0",
     "aws-sdk": "^2.1405.0",
     "axios": "^0.26.0",
     "chalk": "^4.1.1",
     "change-case": "^4.1.1",
-    "constructs": "^10.0.5",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
@@ -51,6 +49,10 @@
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2",
     "vm2": "^3.9.19"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.68.0",
+    "constructs": "^10.0.5"
   },
   "devDependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.303.0",

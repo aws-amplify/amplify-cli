@@ -34,7 +34,6 @@
     "@aws-amplify/graphql-transformer-interfaces": "^2.2.2",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
-    "aws-cdk-lib": "~2.68.0",
     "chalk": "^4.1.1",
     "ci-info": "^3.8.0",
     "cli-table3": "^0.6.0",
@@ -74,6 +73,9 @@
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",
     "uuid": "^8.3.2"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.68.0"
   },
   "jest": {
     "transform": {

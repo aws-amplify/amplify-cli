@@ -209,13 +209,11 @@ __metadata:
     "@types/mime-types": ^2.1.1
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1405.0
     axios: ^0.26.0
     chalk: ^4.1.1
     change-case: ^4.1.1
     cloudform-types: ^4.2.0
-    constructs: ^10.0.5
     enquirer: ^2.3.6
     fs-extra: ^8.1.0
     inquirer: ^7.3.3
@@ -227,6 +225,9 @@ __metadata:
     rimraf: ^3.0.2
     uuid: ^8.3.2
     vm2: ^3.9.19
+  peerDependencies:
+    aws-cdk-lib: ^2.68.0
+    constructs: ^10.0.5
   languageName: unknown
   linkType: soft
 
@@ -237,7 +238,6 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.1.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@types/lodash": ^4.14.149
-    aws-cdk-lib: ~2.68.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
     glob: ^7.2.0
@@ -245,6 +245,8 @@ __metadata:
     ora: ^4.0.3
     rimraf: ^3.0.2
     uuid: ^8.3.2
+  peerDependencies:
+    aws-cdk-lib: ^2.68.0
   languageName: unknown
   linkType: soft
 
@@ -286,12 +288,13 @@ __metadata:
     ajv: ^6.12.6
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1405.0
-    constructs: ^10.0.5
     fs-extra: ^8.1.0
     lodash: ^4.17.21
     uuid: ^8.3.2
+  peerDependencies:
+    aws-cdk-lib: ^2.68.0
+    constructs: ^10.0.5
   languageName: unknown
   linkType: soft
 
@@ -366,11 +369,9 @@ __metadata:
     "@aws-amplify/cli-extensibility-helper": 3.0.9
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1405.0
     chalk: ^4.1.1
     cloudform-types: ^4.2.0
-    constructs: ^10.0.5
     enquirer: ^2.3.6
     fs-extra: ^8.1.0
     lodash: ^4.17.21
@@ -378,6 +379,9 @@ __metadata:
     rimraf: ^3.0.2
     uuid: ^8.3.2
     vm2: ^3.9.19
+  peerDependencies:
+    aws-cdk-lib: ^2.68.0
+    constructs: ^10.0.5
   languageName: unknown
   linkType: soft
 
@@ -400,7 +404,6 @@ __metadata:
     "@types/yarnpkg__lockfile": ^1.1.5
     "@yarnpkg/lockfile": ^1.1.0
     ajv: ^6.12.6
-    aws-cdk-lib: ~2.68.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -428,6 +431,8 @@ __metadata:
     uuid: ^8.3.2
     which: ^2.0.2
     yaml: ^2.2.2
+  peerDependencies:
+    aws-cdk-lib: ^2.68.0
   languageName: unknown
   linkType: soft
 
@@ -787,13 +792,11 @@ __metadata:
     "@types/uuid": ^8.0.0
     amplify-codegen: ^4.1.2
     archiver: ^5.3.0
-    aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1405.0
     bottleneck: 2.19.5
     chalk: ^4.1.1
     cloudform-types: ^4.2.0
     columnify: ^1.5.4
-    constructs: ^10.0.5
     cors: ^2.8.5
     deep-diff: ^1.0.2
     extract-zip: ^2.0.1
@@ -820,6 +823,9 @@ __metadata:
     typescript: ^4.9.5
     vm2: ^3.9.19
     xstate: ^4.14.0
+  peerDependencies:
+    aws-cdk-lib: ^2.68.0
+    constructs: ^10.0.5
   languageName: unknown
   linkType: soft
 
@@ -1034,7 +1040,8 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-category-custom": 3.0.9
     "@aws-amplify/amplify-cli-core": 4.1.0
-    aws-cdk-lib: ~2.68.0
+  peerDependencies:
+    aws-cdk-lib: ^2.68.0
   languageName: unknown
   linkType: soft
 
