@@ -986,7 +986,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/appsync-modelgen-plugin@npm:2.5.0":
+"@aws-amplify/appsync-modelgen-plugin@npm:2.5.0, @aws-amplify/appsync-modelgen-plugin@npm:^2.4.4":
   version: 2.5.0
   resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.5.0"
   dependencies:
@@ -1004,27 +1004,6 @@ __metadata:
   peerDependencies:
     graphql: ^15.5.0
   checksum: d4b982e1c29f35746256b1f5fc33d5132c1c2d132ba4b962088addc315ee6cc78bf8ce2ae3a03d0dcb88e782c65b3afadd8313d89f1402e5af7b7293f39e42ee
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/appsync-modelgen-plugin@npm:^2.4.4":
-  version: 2.4.5
-  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.4.5"
-  dependencies:
-    "@graphql-codegen/plugin-helpers": ^1.18.8
-    "@graphql-codegen/visitor-plugin-common": ^1.22.0
-    "@graphql-tools/utils": ^6.0.18
-    "@types/node": ^12.12.6
-    "@types/pluralize": 0.0.29
-    chalk: ^3.0.0
-    change-case: ^4.1.1
-    lower-case-first: ^2.0.1
-    pluralize: ^8.0.0
-    strip-indent: ^3.0.0
-    ts-dedent: ^1.1.0
-  peerDependencies:
-    graphql: ^15.5.0
-  checksum: 96378a9d72468eabc4bbb1b09c5eafc2c58ef1b7f7b6fae679b66b8710ab05431906b15d26a4fde153851766b5007e30f6fbc7afbbe29818c955a728ba9a6f49
   languageName: node
   linkType: hard
 
