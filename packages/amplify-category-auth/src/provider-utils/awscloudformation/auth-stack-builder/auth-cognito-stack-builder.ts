@@ -62,7 +62,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   identityPoolRoleMap: cognito.CfnIdentityPoolRoleAttachment | undefined;
   lambdaConfigPermissions?: Record<string, lambda.CfnPermission>;
   lambdaTriggerPermissions?: Record<string, iam.CfnPolicy>;
-  // provides base role for deleting lambdas
+  // provides base role for deleting custom resource lambdas that are no longer needed after the migration
   userPoolClientRole?: iam.CfnRole;
   // custom resources HostedUI
   hostedUICustomResource?: lambda.CfnFunction;
