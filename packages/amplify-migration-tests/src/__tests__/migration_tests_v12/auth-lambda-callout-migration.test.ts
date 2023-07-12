@@ -16,10 +16,13 @@ import {
   signOutUser,
   getUserPool,
   listSocialIdpProviders,
+  updateHeadlessAuth,
+  addAuthWithDefault,
 } from '@aws-amplify/amplify-e2e-core';
 import { validateVersionsForMigrationTest } from '../../migration-helpers';
 import { expectLambdasInCfnTemplate, migratedLambdas, nonMigratedLambdas } from '../../migration-helpers-v12/auth-helpers/utilities';
 import { initJSProjectWithProfileV12 } from '../../migration-helpers-v12/init';
+import { UpdateAuthRequest } from 'amplify-headless-interface';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -135,5 +138,58 @@ describe('lambda callouts', () => {
     expect(userPoolDomainV12).toEqual(userPoolDomainLatest);
     // check the Social Idp Provider exists
     expect(socialIdpProvidersV12).toEqual(socialIdpProvidersLatest);
+  });
+
+  it('should be migrated when updating using headless commands', async () => {
+    await initJSProjectWithProfileV12(projRoot, defaultsSettings);
+    await addAuthWithDefault(projRoot, false);
+    await amplifyPushAuth(projRoot, false);
+
+    const updateAuthRequest: UpdateAuthRequest = {
+      version: 2,
+      serviceModification: {
+        serviceName: 'Cognito',
+        userPoolModification: {
+          autoVerifiedAttributes: [
+            {
+              type: 'EMAIL',
+            },
+          ],
+          userPoolGroups: [
+            {
+              groupName: 'group1',
+            },
+            {
+              groupName: 'group2',
+            },
+          ],
+          oAuth: {
+            domainPrefix: generateRandomShortId(),
+            redirectSigninURIs: ['http://localhost/'],
+            redirectSignoutURIs: ['http://localhost/'],
+            socialProviderConfigurations: [
+              {
+                provider: 'FACEBOOK',
+                clientId: '1234',
+                clientSecret: '5678',
+              },
+            ],
+          },
+        },
+        includeIdentityPool: true,
+        identityPoolModification: {
+          identitySocialFederation: [{ provider: 'GOOGLE', clientId: 'fakeClientId' }],
+        },
+      },
+    };
+
+    await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
+    await amplifyPushAuth(projRoot, true);
+    await amplifyPushForce(projRoot, true);
+
+    const meta = getProjectMeta(projRoot);
+    const resourceName = Object.keys(meta.auth)[0];
+    const template = await getCloudFormationTemplate(projRoot, 'auth', resourceName);
+    expectLambdasInCfnTemplate(template, nonMigratedLambdas, migratedLambdas);
   });
 });
