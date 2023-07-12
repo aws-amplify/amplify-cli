@@ -6,7 +6,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   getAppId,
-  getAwsIOSConfig,
+  getAwsAndroidConfig,
   getBackendConfig,
   getCLIInputs,
   getCloudFormationTemplate,
@@ -197,7 +197,7 @@ export const pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift = async
  * asserts app client secret in projects files and on cloud
  */
 export const assertAppClientSecretInFiles = async (projRoot: string): Promise<void> => {
-  const config = await getAwsIOSConfig(projRoot);
+  const config = await getAwsAndroidConfig(projRoot);
   const clientSecretInAwsIOSConfig = config.CognitoUserPool.Default.AppClientSecret;
   expect(clientSecretInAwsIOSConfig).toBeDefined();
   const meta = getProjectMeta(projRoot);
