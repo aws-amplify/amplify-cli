@@ -62,7 +62,7 @@ describe('lambda callouts rollback', () => {
 
     const username = 'testUser';
     const password = 'Password12#';
-    await setupUser(UserPoolId, username, 'Password12#', 'userPoolGroup1');
+    await setupUser(UserPoolId, username, 'Password12#', 'userPoolGroup1', region);
 
     await signInUser(username, password);
     await signOutUser();
