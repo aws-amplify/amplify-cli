@@ -88,15 +88,6 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
   if (!context.parameters.options?.app) {
     printWelcomeMessage(context);
   }
-
-  const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
-
-  if (!appId) {
-    printer.warn('The maximum number of apps that you can create with Amplify in this region has likely been reached:');
-    printer.info('For more information on Amplify Service Quotas, see:');
-    printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify');
-    printer.blankLine();
-  }
 };
 
 const generateLocalRuntimeFiles = (context: $TSContext): void => {
