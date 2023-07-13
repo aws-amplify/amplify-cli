@@ -4,12 +4,11 @@ import {
   getAwsIOSConfig,
   getUserPoolClients,
   initIosProjectWithProfile,
-  getCLIInputs,
-  setCLIInputs,
   addAuthWithDefault,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
+  updateCLIParametersToGenerateUserPoolClientSecret,
 } from '@aws-amplify/amplify-e2e-core';
 
 const defaultsSettings = {
@@ -40,10 +39,7 @@ describe('amplify add auth...', () => {
     let clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
     expect(clients[0].UserPoolClient.ClientSecret).toBeUndefined();
 
-    // update parameter to generate client Secret
-    const parameters = getCLIInputs(projRoot, 'auth', id);
-    parameters.cognitoConfig.userpoolClientGenerateSecret = true;
-    setCLIInputs(projRoot, 'auth', id, parameters);
+    updateCLIParametersToGenerateUserPoolClientSecret(projRoot);
 
     await amplifyPushAuth(projRoot);
 

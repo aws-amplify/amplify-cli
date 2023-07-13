@@ -6,8 +6,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   initAndroidProjectWithProfile,
-  getCLIInputs,
-  setCLIInputs,
+  updateCLIParametersToGenerateUserPoolClientSecret,
 } from '@aws-amplify/amplify-e2e-core';
 import {
   // eslint-disable-next-line spellcheck/spell-checker
@@ -51,10 +50,7 @@ describe('headless auth g', () => {
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
     await addHeadlessAuth(projRoot, addAuthRequest);
 
-    // update parameter to generate client Secret
-    const parameters = getCLIInputs(projRoot, 'auth', addAuthRequest.resourceName);
-    parameters.cognitoConfig.userpoolClientGenerateSecret = true;
-    setCLIInputs(projRoot, 'auth', addAuthRequest.resourceName, parameters);
+    updateCLIParametersToGenerateUserPoolClientSecret(projRoot, addAuthRequest.resourceName);
 
     await amplifyPushNonInteractive(projRoot);
 

@@ -3,7 +3,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
-import { getAwsAndroidConfig, getAwsIOSConfig, getBackendAmplifyMeta, getProjectMeta } from './projectMeta';
+import { getAwsAndroidConfig, getAwsIOSConfig, getBackendAmplifyMeta, getCLIInputs, getProjectMeta, setCLIInputs } from './projectMeta';
 import { getUserPoolClients } from './sdk-calls';
 
 const tempPassword = 'tempPassword1@';
@@ -225,4 +225,15 @@ export const assertAppClientSecretInFiles = async (projRoot: string, frontend: '
   expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
   // compare client secret in meta file with cloud value
   expect(clients[0].UserPoolClient.ClientSecret).toEqual(clientSecretInMetaFile);
+};
+
+export const updateCLIParametersToGenerateUserPoolClientSecret = (projRoot: string, resourceName?: string) => {
+  if (!resourceName) {
+    const meta = getProjectMeta(projRoot);
+    resourceName = Object.keys(meta.auth)[0];
+  }
+  // update parameter to generate client Secret
+  const parameters = getCLIInputs(projRoot, 'auth', resourceName);
+  parameters.cognitoConfig.userpoolClientGenerateSecret = true;
+  setCLIInputs(projRoot, 'auth', resourceName, parameters);
 };
