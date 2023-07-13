@@ -176,6 +176,25 @@ export const listSocialIdpProviders = async (userpoolId: string, region: string)
   return res;
 };
 
+export const getSocialIdpProvider = async (
+  userpoolId: string,
+  providerName: 'Facebook' | 'Google' | 'LoginWithAmazon' | 'SignInWithApple',
+  region: string,
+) => {
+  let res;
+  try {
+    res = await new CognitoIdentityServiceProvider({ region })
+      .describeIdentityProvider({
+        UserPoolId: userpoolId,
+        ProviderName: providerName,
+      })
+      .promise();
+  } catch (err) {
+    console.log(err);
+  }
+  return res;
+};
+
 export const getIdentityPoolRoles = async (identityPoolId: string, region: string) => {
   let res;
 
