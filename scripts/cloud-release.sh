@@ -8,11 +8,11 @@ export RELEASE_PROJECT_NAME=Release
 ############################## RC ##############################
 function RCLocal {
     echo Running Local RC
-    if [[ -z ${1+x} ]]; then
+    if [[ $0 == 'bash' || -z $0 ]]; then
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    rc_sha=$(git rev-parse --short "$1")
+    rc_sha=$(git rev-parse --short "$0")
     branch_name="release_rc/$rc_sha"
     git checkout -B "$branch_name" "$rc_sha"
     git push "origin" "$branch_name"
@@ -21,11 +21,11 @@ function RCLocal {
 function RCBeta {
     echo Running Beta RC
     echo You must be on the Beta repository to perform this action, or build will fail.
-    if [[ -z ${1+x} ]]; then
+    if [[ $0 == 'bash' || -z $0 ]]; then
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    rc_sha=$(git rev-parse --short "$1")
+    rc_sha=$(git rev-parse --short "$0")
     branch_name="release_rc/$rc_sha"
     git checkout -B "$branch_name" "$rc_sha"
     git push "origin" "$branch_name"
@@ -33,22 +33,22 @@ function RCBeta {
 }
 function RCProd {
     echo Running Prod RC
-    if [[ -z ${1+x} ]]; then
+    if [[ $0 == 'bash' || -z $0 ]]; then
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    source ./scripts/release-rc.sh $1
+    source ./scripts/release-rc.sh $0
     branch_name=$(git branch --show-current)
     triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RC_PROJECT_NAME $branch_name
 }
 ############################## RELEASE ##############################
 function ReleaseLocal {
     echo Running Local Release
-    if [[ -z ${1+x} ]]; then
+    if [[ $0 == 'bash' || -z $0 ]]; then
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    rc_sha=$(git rev-parse --short "$1")
+    rc_sha=$(git rev-parse --short "$0")
     rc_branch="release_rc/$rc_sha"
     git checkout "$rc_branch"
     git push "origin" "$rc_branch"~1:refs/heads/release
@@ -58,11 +58,11 @@ function ReleaseLocal {
 function ReleaseBeta {
     echo Running Beta Release
     echo You must be on the Beta repository to perform this action, or build will fail.
-    if [[ -z ${1+x} ]]; then
+    if [[ $0 == 'bash' || -z $0 ]]; then
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    rc_sha=$(git rev-parse --short "$1")
+    rc_sha=$(git rev-parse --short "$0")
     rc_branch="release_rc/$rc_sha"
     git checkout "$rc_branch"
     git push "origin" "$rc_branch"~1:refs/heads/release
@@ -71,11 +71,11 @@ function ReleaseBeta {
 }
 function ReleaseProd {
     echo Running Prod Release
-    if [[ -z ${1+x} ]]; then
+    if [[ $0 == 'bash' || -z $0 ]]; then
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    source ./scripts/promote-rc.sh $1
+    source ./scripts/promote-rc.sh $0
     branch_name=release
     triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME $branch_name
 }
