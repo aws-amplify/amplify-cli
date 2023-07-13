@@ -1,16 +1,17 @@
 import {
   AddAuthUserPoolOnlyWithOAuthSettings,
   amplifyPushForce,
+  amplifyPushNonInteractive,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getProjectMeta,
-  getSocialIdpProvider,
+  updateHeadlessAuth,
 } from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
 import { expectCorrectOAuthSettings, setupOgProjectWithAuth } from '../../migration-helpers-v12/auth-helpers/utilities';
 import { initJSProjectWithProfileV12 } from '../../migration-helpers-v12/init';
 import { pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
+import { UpdateAuthRequest } from 'amplify-headless-interface';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -51,6 +52,35 @@ describe('amplify add auth...', () => {
 
   it('...should preserve Oauth settings on force push with new', async () => {
     await amplifyPushForce(projRoot, true);
+    await expectCorrectOAuthSettings(projRoot, oAuthSettings);
+  });
+
+  it('...should update auth headless and push with new', async () => {
+    const updateAuthRequest: UpdateAuthRequest = {
+      version: 2,
+      serviceModification: {
+        serviceName: 'Cognito',
+        userPoolModification: {
+          autoVerifiedAttributes: [
+            {
+              type: 'EMAIL',
+            },
+          ],
+          userPoolGroups: [
+            {
+              groupName: 'group1',
+            },
+            {
+              groupName: 'group2',
+            },
+          ],
+        },
+        includeIdentityPool: false,
+      },
+    };
+
+    await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
+    await amplifyPushNonInteractive(projRoot, true);
     await expectCorrectOAuthSettings(projRoot, oAuthSettings);
   });
 });
