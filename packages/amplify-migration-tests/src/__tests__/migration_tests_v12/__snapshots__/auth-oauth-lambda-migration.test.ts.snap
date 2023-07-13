@@ -41,14 +41,8 @@ Resources
  │   └─ ["https://sin1/","https://sin2/"]
  ├─ [+] LogoutURLs
  │   └─ ["https://sout1/","https://sout2/"]
- ├─ [+] SupportedIdentityProviders
- │   └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
- └─ [~] DependsOn
-     └─ @@ -1,3 +1,4 @@
-        [ ] [
-        [+]   "HostedUIProvidersCustomResourceInputs",
-        [ ]   "UserPool"
-        [ ] ]
+ └─ [+] SupportedIdentityProviders
+     └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
 [~] AWS::Cognito::UserPoolClient UserPoolClient 
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
@@ -60,14 +54,8 @@ Resources
  │   └─ ["https://sin1/","https://sin2/"]
  ├─ [+] LogoutURLs
  │   └─ ["https://sout1/","https://sout2/"]
- ├─ [+] SupportedIdentityProviders
- │   └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
- └─ [~] DependsOn
-     └─ @@ -1,3 +1,4 @@
-        [ ] [
-        [+]   "HostedUIProvidersCustomResourceInputs",
-        [ ]   "UserPool"
-        [ ] ]
+ └─ [+] SupportedIdentityProviders
+     └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
 [~] AWS::IAM::Role UserPoolClientRole 
  └─ [-] DependsOn
      └─ ["UserPoolClient"]
@@ -119,14 +107,8 @@ Resources
  │   └─ ["https://sin1/","https://sin2/"]
  ├─ [+] LogoutURLs
  │   └─ ["https://sout1/","https://sout2/"]
- ├─ [+] SupportedIdentityProviders
- │   └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
- └─ [~] DependsOn
-     └─ @@ -1,3 +1,4 @@
-        [ ] [
-        [+]   "HostedUIProvidersCustomResourceInputs",
-        [ ]   "UserPool"
-        [ ] ]
+ └─ [+] SupportedIdentityProviders
+     └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
 [~] AWS::Cognito::UserPoolClient UserPoolClient 
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
@@ -138,14 +120,8 @@ Resources
  │   └─ ["https://sin1/","https://sin2/"]
  ├─ [+] LogoutURLs
  │   └─ ["https://sout1/","https://sout2/"]
- ├─ [+] SupportedIdentityProviders
- │   └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
- └─ [~] DependsOn
-     └─ @@ -1,3 +1,4 @@
-        [ ] [
-        [+]   "HostedUIProvidersCustomResourceInputs",
-        [ ]   "UserPool"
-        [ ] ]
+ └─ [+] SupportedIdentityProviders
+     └─ ["Facebook","Google","LoginWithAmazon","SignInWithApple","COGNITO"]
 [~] AWS::IAM::Role UserPoolClientRole 
  └─ [-] DependsOn
      └─ ["UserPoolClient"]

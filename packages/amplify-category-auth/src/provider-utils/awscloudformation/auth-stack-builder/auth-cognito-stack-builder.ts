@@ -787,9 +787,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
     });
     this.hostedUIProvidersCustomResourceInputs.node.addDependency(this.hostedUIProvidersCustomResourceLogPolicy);
-    // this can be removed when hostedUI Custom resource is removed
-    this.userPoolClient?.node.addDependency(this.hostedUIProvidersCustomResourceInputs);
-    this.userPoolClientWeb?.node.addDependency(this.hostedUIProvidersCustomResourceInputs);
   }
 
   /**
