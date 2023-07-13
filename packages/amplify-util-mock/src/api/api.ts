@@ -97,8 +97,6 @@ export class APITest {
       });
       const overrideConfig = {
         overrideFlag: isOverride,
-        overrideDir,
-        resourceName: this.apiName,
       };
 
       const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters, overrideConfig);
