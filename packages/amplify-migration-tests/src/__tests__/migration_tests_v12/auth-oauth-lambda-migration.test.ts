@@ -1,6 +1,14 @@
-import { createNewProjectDir, deleteProject, deleteProjectDir } from '@aws-amplify/amplify-e2e-core';
+import {
+  AddAuthUserPoolOnlyWithOAuthSettings,
+  amplifyPushForce,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getProjectMeta,
+  getSocialIdpProvider,
+} from '@aws-amplify/amplify-e2e-core';
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
-import { setupOgProjectWithAuth } from '../../migration-helpers-v12/auth-helpers/utilities';
+import { expectCorrectOAuthSettings, setupOgProjectWithAuth } from '../../migration-helpers-v12/auth-helpers/utilities';
 import { initJSProjectWithProfileV12 } from '../../migration-helpers-v12/init';
 import { pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift } from '../../migration-helpers/utils';
 
@@ -11,6 +19,7 @@ const defaultsSettings = {
 
 describe('amplify add auth...', () => {
   let projRoot: string;
+  let oAuthSettings: AddAuthUserPoolOnlyWithOAuthSettings;
   const projectName: string = 'oauthlambdaRemove';
 
   beforeAll(async () => {
@@ -26,7 +35,7 @@ describe('amplify add auth...', () => {
     projRoot = await createNewProjectDir(projectName);
     await initJSProjectWithProfileV12(projRoot, defaultsSettings);
     // creates a userPool only with OauthSetting and pushes Auth
-    await setupOgProjectWithAuth(projRoot, { name: 'ogauimphea' });
+    oAuthSettings = await setupOgProjectWithAuth(projRoot, { name: 'ogauimphea' });
   });
 
   afterEach(async () => {
@@ -38,5 +47,10 @@ describe('amplify add auth...', () => {
     const projRoot2 = await createNewProjectDir(`${projectName}2`);
     // using amplify push force here as changes are only related to build files
     await pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift(projRoot, projRoot2);
+  });
+
+  it('...should preserve Oauth settings on force push with new', async () => {
+    await amplifyPushForce(projRoot, true);
+    await expectCorrectOAuthSettings(projRoot, oAuthSettings);
   });
 });

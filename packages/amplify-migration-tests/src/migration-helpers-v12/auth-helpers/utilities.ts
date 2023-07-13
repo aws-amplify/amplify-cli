@@ -4,15 +4,22 @@ import {
   AddAuthUserPoolOnlyWithOAuthSettings,
   amplifyPushAuth,
   generateRandomShortId,
+  getProjectMeta,
+  getSocialIdpProvider,
 } from '@aws-amplify/amplify-e2e-core';
 
 /**
  * sets up a project with auth (UserPool only or UserPool & IdentityPool)
  */
-export const setupOgProjectWithAuth = async (ogProjectRoot: string, ogProjectSettings: { name: string }): Promise<void> => {
+export const setupOgProjectWithAuth = async (
+  ogProjectRoot: string,
+  ogProjectSettings: { name: string },
+): Promise<AddAuthUserPoolOnlyWithOAuthSettings> => {
   const ogShortId = generateRandomShortId();
+  const oauthSettings = createUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId);
   await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, createUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId));
   await amplifyPushAuth(ogProjectRoot);
+  return oauthSettings;
 };
 
 const createUserPoolWithOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyWithOAuthSettings => {
@@ -65,4 +72,22 @@ export const expectLambdasInCfnTemplate = (template: $TSObject, namesPresent: Ar
   for (const name of namesAbsent) {
     expect(lambdasInCfnTemplate).not.toContain(name);
   }
+};
+
+export const expectCorrectOAuthSettings = async (projRoot: string, oAuthSettings: AddAuthUserPoolOnlyWithOAuthSettings): Promise<void> => {
+  const meta = getProjectMeta(projRoot);
+  const authMeta = Object.keys(meta.auth).map((key) => meta.auth[key])[0];
+  const id = authMeta.output.UserPoolId;
+  const idpFacebook = await getSocialIdpProvider(id, 'Facebook', meta.providers.awscloudformation.Region);
+  const idpGoogle = await getSocialIdpProvider(id, 'Google', meta.providers.awscloudformation.Region);
+  const idpAmazon = await getSocialIdpProvider(id, 'LoginWithAmazon', meta.providers.awscloudformation.Region);
+  const idpApple = await getSocialIdpProvider(id, 'SignInWithApple', meta.providers.awscloudformation.Region);
+  expect(idpFacebook.IdentityProvider.ProviderDetails.client_id).toEqual(oAuthSettings.facebookAppId);
+  expect(idpFacebook.IdentityProvider.ProviderDetails.client_secret).toEqual(oAuthSettings.facebookAppSecret);
+  expect(idpGoogle.IdentityProvider.ProviderDetails.client_id).toEqual(oAuthSettings.googleAppId);
+  expect(idpGoogle.IdentityProvider.ProviderDetails.client_secret).toEqual(oAuthSettings.googleAppSecret);
+  expect(idpAmazon.IdentityProvider.ProviderDetails.client_id).toEqual(oAuthSettings.amazonAppId);
+  expect(idpAmazon.IdentityProvider.ProviderDetails.client_secret).toEqual(oAuthSettings.amazonAppSecret);
+  expect(idpApple.IdentityProvider.ProviderDetails.client_id).toEqual(oAuthSettings.appleAppClientId);
+  expect(idpApple.IdentityProvider.ProviderDetails.key_id).toEqual(oAuthSettings.appleAppKeyID);
 };
