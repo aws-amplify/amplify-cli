@@ -1614,6 +1614,7 @@ exports.handler = (event, context, callback) => {
     },
     "UserPoolClient": {
       "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": {
@@ -1715,6 +1716,7 @@ exports.handler = (event, context, callback) => {
     },
     "UserPoolClientWeb": {
       "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": {
