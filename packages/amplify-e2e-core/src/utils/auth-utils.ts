@@ -3,14 +3,21 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
-import { getBackendAmplifyMeta, getProjectMeta } from './projectMeta';
+import { getAwsAndroidConfig, getAwsIOSConfig, getBackendAmplifyMeta, getCLIInputs, getProjectMeta, setCLIInputs } from './projectMeta';
+import { getUserPoolClients } from './sdk-calls';
 
 const tempPassword = 'tempPassword1@';
 
 //setupUser will add user to a cognito group and make its status to be "CONFIRMED",
 //if groupName is specified, add the user to the group.
-export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string): Promise<void> {
-  const cognitoClient = getConfiguredCognitoClient();
+export async function setupUser(
+  userPoolId: string,
+  username: string,
+  password: string,
+  groupName?: string,
+  region?: string,
+): Promise<void> {
+  const cognitoClient = getConfiguredCognitoClient(region);
   await cognitoClient
     .adminCreateUser({
       UserPoolId: userPoolId,
@@ -49,14 +56,14 @@ export async function addUserToGroup(
     .promise();
 }
 
-export function getConfiguredCognitoClient(): CognitoIdentityServiceProvider {
-  const cognitoClient = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region: process.env.CLI_REGION });
+export function getConfiguredCognitoClient(region = process.env.CLI_REGION): CognitoIdentityServiceProvider {
+  const cognitoClient = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region });
 
   const awsconfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: process.env.AWS_SESSION_TOKEN,
-    region: process.env.CLI_REGION,
+    region,
   };
 
   cognitoClient.config.update(awsconfig);
@@ -190,3 +197,43 @@ export function getAppClientIDWeb(projectDir: string) {
 
   return cognitoResource.output.AppClientIDWeb;
 }
+
+/**
+ * asserts app client secret in projects files and on cloud
+ */
+export const assertAppClientSecretInFiles = async (projRoot: string, frontend: 'android' | 'ios'): Promise<void> => {
+  let config;
+  switch (frontend) {
+    case 'android':
+      config = await getAwsAndroidConfig(projRoot);
+      break;
+    case 'ios':
+      config = await getAwsIOSConfig(projRoot);
+      break;
+  }
+  const clientSecretInAwsConfig = config.CognitoUserPool.Default.AppClientSecret;
+  expect(clientSecretInAwsConfig).toBeDefined();
+  const meta = getProjectMeta(projRoot);
+  const id = Object.keys(meta.auth)[0];
+  const authMeta = meta.auth[id];
+  const clientIds = [authMeta.output.AppClientID];
+  const clientSecretInMetaFile = authMeta.output.AppClientSecret;
+  // compare client secret in meta file and ios config file
+  expect(clientSecretInMetaFile).toBeDefined();
+  expect(clientSecretInAwsConfig).toEqual(clientSecretInMetaFile);
+  const clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
+  expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
+  // compare client secret in meta file with cloud value
+  expect(clients[0].UserPoolClient.ClientSecret).toEqual(clientSecretInMetaFile);
+};
+
+export const updateCLIParametersToGenerateUserPoolClientSecret = (projRoot: string, resourceName?: string) => {
+  if (!resourceName) {
+    const meta = getProjectMeta(projRoot);
+    resourceName = Object.keys(meta.auth)[0];
+  }
+  // update parameter to generate client Secret
+  const parameters = getCLIInputs(projRoot, 'auth', resourceName);
+  parameters.cognitoConfig.userpoolClientGenerateSecret = true;
+  setCLIInputs(projRoot, 'auth', resourceName, parameters);
+};

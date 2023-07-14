@@ -598,7 +598,7 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
 
-  amplify_migration_tests_v11:
+  amplify_migration_tests_v12:
     parameters:
       os:
         type: executor
@@ -614,14 +614,14 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Run tests migrating from CLI v11.0.0
+          name: Run tests migrating from CLI v12.0.3
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             unset IS_AMPLIFY_CI
             echo $IS_AMPLIFY_CI
-            retry yarn migration_v11.0.0 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+            retry yarn migration_v12.0.3 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
           no_output_timeout: 65m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -936,6 +936,8 @@ jobs:
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Verify Release Deployment
           command: |
@@ -946,6 +948,8 @@ jobs:
     steps:
       - restore_cache:
           key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Verify Tagged or RC Deployment
           command: |
@@ -1216,7 +1220,7 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
-      - amplify_migration_tests_v11:
+      - amplify_migration_tests_v12:
           context:
             - e2e-auth-credentials
             - cleanup-resources
@@ -1355,7 +1359,7 @@ workflows:
             - amplify_sudo_install_test
             - amplify_install_test
             - amplify_console_integration_tests
-            - amplify_migration_tests_v11
+            - amplify_migration_tests_v12
             - amplify_migration_tests_v10
             - amplify_migration_tests_v8
             - amplify_migration_tests_non_multi_env_layers

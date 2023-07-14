@@ -21,7 +21,7 @@
     "migration_v4.28.2_nonmultienv_layers": "yarn setup-profile 4.28.2 && jest src/__tests__/migration_tests/lambda-layer-migration/layer-migration.test.ts --verbose --config=jest.config.js",
     "migration_v4.52.0_multienv_layers": "yarn setup-profile 4.52.0 && jest src/__tests__/migration_tests/lambda-layer-migration/layer-migration.test.ts --verbose --config=jest.config.js",
     "migration_v10.5.1": "yarn setup-profile 10.5.1 && jest --verbose --config=jest.config.js",
-    "migration_v11.0.0": "yarn setup-profile 11.0.0 && jest --verbose --config=jest.config.js",
+    "migration_v12.0.3": "yarn setup-profile 12.0.3 && jest --verbose --config=jest.config.js",
     "migration_v8.2.0": "yarn setup-profile 8.2.0 && jest --verbose --config=jest.config.js",
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },

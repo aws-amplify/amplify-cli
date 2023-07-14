@@ -37,6 +37,7 @@
     "pkg-all-local": "yarn verdaccio-clean && yarn verdaccio-start && yarn verdaccio-connect && yarn publish-to-verdaccio && yarn pkg-all && yarn verdaccio-disconnect",
     "pkg-all": "bash -c 'source .circleci/local_publish_helpers.sh && generatePkgCli'",
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",
+    "postinstall": "husky install",
     "prettier-changes": "git diff --name-only --diff-filter MRA dev | xargs yarn prettier --write",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
@@ -80,13 +81,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn build-tests-changed && yarn split-e2e-tests",
-      "pre-commit": "yarn prettier-changes && yarn lint-fix && ./scripts/package-json-check.sh && yarn verify-commit"
-    }
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -164,7 +158,7 @@
   },
   "packageManager": "yarn@3.5.0",
   "resolutions": {
-    "aws-sdk": "^2.1354.0",
+    "aws-sdk": "^2.1405.0",
     "cross-fetch": "^2.2.6",
     "glob-parent": "^6.0.2",
     "got": "^11.8.5",
