@@ -149,3 +149,11 @@ batch:
       debug-session: true
       depend-on:
         - upb
+    - identifier: send_e2e_metrics
+      buildspec: codebuild_specs/send_e2e_metrics.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
+      depend-on:
+        - aggregate_e2e_reports
+
