@@ -72,9 +72,10 @@ const getCompressedBinaryUrl = (): string => {
   const compressedBinaryName = getPlatformCompressedBinaryName();
   let url = `${BINARY_LOCATION}/${version}/${compressedBinaryName}`;
 
-  if (process.env.IS_AMPLIFY_CI) {
+  if (process.env.IS_AMPLIFY_CI && process.env.CODEBUILD_SRC_DIR) {
     // use cloudfront distribution for e2e
     url = `https://${process.env.PKG_CLI_CLOUDFRONT_URL}/${version}/${compressedBinaryName}`;
+  } else if (process.env.IS_AMPLIFY_CI) {
     url = url.replace('.tgz', `-${getCommitHash()}.tgz`);
   }
 

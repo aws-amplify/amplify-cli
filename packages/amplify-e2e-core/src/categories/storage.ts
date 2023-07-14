@@ -610,9 +610,9 @@ export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, s
   });
 }
 
-export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
+export function addS3StorageWithIdpAuth(projectDir: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
     chain.wait('Select from one of the below mentioned services:').sendCarriageReturn(); //select - Content (Images, audio, video, etc.)
 
@@ -647,9 +647,9 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   });
 }
 
-export function addS3Storage(projectDir: string): Promise<void> {
+export function addS3Storage(projectDir: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'storage'], { cwd: projectDir, stripColors: true });
     chain
       .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
       .sendCarriageReturn()
@@ -677,9 +677,9 @@ export function addS3Storage(projectDir: string): Promise<void> {
   });
 }
 
-export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
+export function addS3StorageWithAuthOnly(projectDir: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'storage'], { cwd: projectDir, stripColors: true });
     chain
       .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
       .sendCarriageReturn()

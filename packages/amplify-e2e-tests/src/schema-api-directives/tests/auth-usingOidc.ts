@@ -1,17 +1,20 @@
-import { addAuthWithDefault, amplifyPushWithoutCodegen, addApi, updateAuthAddUserGroups, amplifyPush } from '@aws-amplify/amplify-e2e-core';
-
 import {
-  getAppClientIDWeb,
-  getUserPoolId,
+  addApi,
+  addAuthWithDefault,
+  amplifyPush,
+  amplifyPushWithoutCodegen,
   configureAmplify,
+  getAppClientIDWeb,
+  getConfiguredAppsyncClientIAMAuth,
+  getConfiguredAppsyncClientOIDCAuth,
+  getUserPoolId,
   getUserPoolIssUrl,
   setupUser,
   signInUser,
-  getConfiguredAppsyncClientIAMAuth,
-  getConfiguredAppsyncClientOIDCAuth,
-} from '../authHelper';
+  updateAuthAddUserGroups,
+} from '@aws-amplify/amplify-e2e-core';
 
-import { updateSchemaInTestProject, testMutation } from '../common';
+import { testMutation, updateSchemaInTestProject } from '../common';
 
 const GROUPNAME = 'Admin';
 const USERNAME = 'user1';

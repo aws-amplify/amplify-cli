@@ -520,6 +520,8 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.1.0
     "@types/glob": ^7.1.1
     amplify-headless-interface: 1.17.4
+    aws-amplify: ^4.2.8
+    aws-appsync: ^4.1.1
     aws-sdk: ^2.1405.0
     chalk: ^4.1.1
     dotenv: ^8.2.0
