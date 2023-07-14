@@ -10,6 +10,12 @@ phases:
       - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH $PROJECT_NAME
       - cd ..
       - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
+  post_build:
+    commands:
+      - touch artifacts.txt
+artifacts:
+  files:
+    - artifacts.txt
 reports:
   e2e-reports:
     files:
