@@ -1551,19 +1551,17 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
     return undefined;
   }
   const testingWithLatestCodebase = settings && settings.testingWithLatestCodebase ? settings.testingWithLatestCodebase : false;
+  const updateUserPoolGroupsPosition = settings?.updateUserPoolGroupsPosition ?? 2;
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
       chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
     }
-    chain
-      .wait('What do you want to do?')
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
-      .wait('Provide a name for your user pool group')
-      .send(groupNames[0])
-      .sendCarriageReturn();
+    chain.wait('What do you want to do?');
+    for (let i = 0; i < updateUserPoolGroupsPosition; i++) {
+      chain.send(KEY_DOWN_ARROW);
+    }
+    chain.sendCarriageReturn().wait('Provide a name for your user pool group').send(groupNames[0]).sendCarriageReturn();
 
     if (groupNames.length > 1) {
       let index = 1;
