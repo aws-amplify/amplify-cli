@@ -598,6 +598,38 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
 
+  amplify_migration_tests_v12:
+    parameters:
+      os:
+        type: executor
+        default: l_large
+    executor: << parameters.os >>
+    environment:
+      AMPLIFY_PATH: /home/circleci/.amplify/bin/amplify
+    steps:
+      - restore_cache:
+          key: amplify-cli-repo-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Run tests migrating from CLI v12.0.3
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            unset IS_AMPLIFY_CI
+            echo $IS_AMPLIFY_CI
+            retry yarn migration_v12.0.3 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+          no_output_timeout: 65m
+      - run: *scan_e2e_test_artifacts
+      - store_test_results:
+          path: ~/repo/packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
   amplify_migration_tests_non_multi_env_layers:
     parameters:
       os:
@@ -1188,6 +1220,20 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - upload_pkg_binaries
+      - amplify_migration_tests_v12:
+          context:
+            - e2e-auth-credentials
+            - cleanup-resources
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - dev
+                - /run-e2e-with-rc\/.*/
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - upload_pkg_binaries
       - amplify_migration_tests_v8:
           context:
             - e2e-auth-credentials
@@ -1313,6 +1359,7 @@ workflows:
             - amplify_sudo_install_test
             - amplify_install_test
             - amplify_console_integration_tests
+            - amplify_migration_tests_v12
             - amplify_migration_tests_v10
             - amplify_migration_tests_v8
             - amplify_migration_tests_non_multi_env_layers

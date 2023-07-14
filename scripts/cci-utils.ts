@@ -181,6 +181,7 @@ function getTestNameFromOldJobName(jobName: string) {
   let name = jobName.split('_pkg-')[0];
 
   // remove migration suffixes
+  name = name.split('_v12-')[0];
   name = name.split('_v10-')[0];
   name = name.split('_v5-')[0];
   name = name.split('_v6-')[0];

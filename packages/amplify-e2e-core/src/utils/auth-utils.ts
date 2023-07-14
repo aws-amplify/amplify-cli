@@ -1,16 +1,23 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { getProjectMeta, getBackendAmplifyMeta } from '@aws-amplify/amplify-e2e-core';
 import Amplify, { Auth } from 'aws-amplify';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { getAwsAndroidConfig, getAwsIOSConfig, getBackendAmplifyMeta, getCLIInputs, getProjectMeta, setCLIInputs } from './projectMeta';
+import { getUserPoolClients } from './sdk-calls';
 
-const tempPassword = 'tempPassword';
+const tempPassword = 'tempPassword1@';
 
 //setupUser will add user to a cognito group and make its status to be "CONFIRMED",
 //if groupName is specified, add the user to the group.
-export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string) {
-  const cognitoClient = getConfiguredCognitoClient();
+export async function setupUser(
+  userPoolId: string,
+  username: string,
+  password: string,
+  groupName?: string,
+  region?: string,
+): Promise<void> {
+  const cognitoClient = getConfiguredCognitoClient(region);
   await cognitoClient
     .adminCreateUser({
       UserPoolId: userPoolId,
@@ -39,7 +46,7 @@ export async function addUserToGroup(
   userPoolId: string,
   username: string,
   groupName?: string,
-) {
+): Promise<void> {
   await cognitoClient
     .adminAddUserToGroup({
       UserPoolId: userPoolId,
@@ -49,14 +56,14 @@ export async function addUserToGroup(
     .promise();
 }
 
-export function getConfiguredCognitoClient(): CognitoIdentityServiceProvider {
-  const cognitoClient = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region: process.env.CLI_REGION });
+export function getConfiguredCognitoClient(region = process.env.CLI_REGION): CognitoIdentityServiceProvider {
+  const cognitoClient = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region });
 
   const awsconfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: process.env.AWS_SESSION_TOKEN,
-    region: process.env.CLI_REGION,
+    region,
   };
 
   cognitoClient.config.update(awsconfig);
@@ -64,7 +71,7 @@ export function getConfiguredCognitoClient(): CognitoIdentityServiceProvider {
   return cognitoClient;
 }
 
-export function getConfiguredAppsyncClientCognitoAuth(url: string, region: string, user: any): any {
+export function getConfiguredAppsyncClientCognitoAuth(url: string, region: string, user: any) {
   return new AWSAppSyncClient({
     url,
     region,
@@ -76,7 +83,7 @@ export function getConfiguredAppsyncClientCognitoAuth(url: string, region: strin
   });
 }
 
-export function getConfiguredAppsyncClientOIDCAuth(url: string, region: string, user: any): any {
+export function getConfiguredAppsyncClientOIDCAuth(url: string, region: string, user: any) {
   return new AWSAppSyncClient({
     url,
     region,
@@ -100,7 +107,7 @@ export function getConfiguredAppsyncClientAPIKeyAuth(url: string, region: string
   });
 }
 
-export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): any {
+export function getConfiguredAppsyncClientIAMAuth(url: string, region: string) {
   return new AWSAppSyncClient({
     url,
     region,
@@ -121,6 +128,10 @@ export async function signInUser(username: string, password: string) {
   return user;
 }
 
+export async function signOutUser(): Promise<void> {
+  await Auth.signOut({ global: true });
+}
+
 export function configureAmplify(projectDir: string) {
   const awsconfig = getAWSExports(projectDir);
   Amplify.configure(awsconfig);
@@ -136,25 +147,25 @@ export function getAWSExports(projectDir: string) {
 
 export function getUserPoolId(projectDir: string): string {
   const amplifyMeta = getProjectMeta(projectDir);
-  const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
+  const cognitoResource = Object.values<{ service: string; output: { UserPoolId: string } }>(amplifyMeta.auth).find((res) => {
     return res.service === 'Cognito';
-  }) as any;
+  });
   return cognitoResource.output.UserPoolId;
 }
 
 export function getCognitoResourceName(projectDir: string): string {
   const amplifyMeta = getBackendAmplifyMeta(projectDir);
-  const cognitoResourceName = Object.keys(amplifyMeta.auth).find((key: any) => {
+  const cognitoResourceName = Object.keys(amplifyMeta.auth).find((key: string) => {
     return amplifyMeta.auth[key].service === 'Cognito';
-  }) as any;
+  });
   return cognitoResourceName;
 }
 
 export function getApiKey(projectDir: string): string {
   const amplifyMeta = getProjectMeta(projectDir);
-  const appsyncResource = Object.values(amplifyMeta.api).find((res: any) => {
+  const appsyncResource = Object.values<{ service: string; output: { GraphQLAPIKeyOutput: string } }>(amplifyMeta.api).find((res) => {
     return res.service === 'AppSync';
-  }) as any;
+  });
   return appsyncResource.output.GraphQLAPIKeyOutput;
 }
 
@@ -166,11 +177,11 @@ export async function authenticateUser(username: string, tempPassword: string, p
   }
 }
 
-export function getUserPoolIssUrl(projectDir: string) {
+export function getUserPoolIssUrl(projectDir: string): string {
   const amplifyMeta = getProjectMeta(projectDir);
-  const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
+  const cognitoResource = Object.values<{ service: string; output: { UserPoolId: string } }>(amplifyMeta.auth).find((res) => {
     return res.service === 'Cognito';
-  }) as any;
+  });
 
   const userPoolId = cognitoResource.output.UserPoolId;
   const region = amplifyMeta.providers.awscloudformation.Region;
@@ -180,9 +191,49 @@ export function getUserPoolIssUrl(projectDir: string) {
 
 export function getAppClientIDWeb(projectDir: string) {
   const amplifyMeta = getProjectMeta(projectDir);
-  const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
+  const cognitoResource = Object.values<{ service: string; output: { AppClientIDWeb: string } }>(amplifyMeta.auth).find((res) => {
     return res.service === 'Cognito';
-  }) as any;
+  });
 
   return cognitoResource.output.AppClientIDWeb;
 }
+
+/**
+ * asserts app client secret in projects files and on cloud
+ */
+export const assertAppClientSecretInFiles = async (projRoot: string, frontend: 'android' | 'ios'): Promise<void> => {
+  let config;
+  switch (frontend) {
+    case 'android':
+      config = await getAwsAndroidConfig(projRoot);
+      break;
+    case 'ios':
+      config = await getAwsIOSConfig(projRoot);
+      break;
+  }
+  const clientSecretInAwsConfig = config.CognitoUserPool.Default.AppClientSecret;
+  expect(clientSecretInAwsConfig).toBeDefined();
+  const meta = getProjectMeta(projRoot);
+  const id = Object.keys(meta.auth)[0];
+  const authMeta = meta.auth[id];
+  const clientIds = [authMeta.output.AppClientID];
+  const clientSecretInMetaFile = authMeta.output.AppClientSecret;
+  // compare client secret in meta file and ios config file
+  expect(clientSecretInMetaFile).toBeDefined();
+  expect(clientSecretInAwsConfig).toEqual(clientSecretInMetaFile);
+  const clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
+  expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
+  // compare client secret in meta file with cloud value
+  expect(clients[0].UserPoolClient.ClientSecret).toEqual(clientSecretInMetaFile);
+};
+
+export const updateCLIParametersToGenerateUserPoolClientSecret = (projRoot: string, resourceName?: string) => {
+  if (!resourceName) {
+    const meta = getProjectMeta(projRoot);
+    resourceName = Object.keys(meta.auth)[0];
+  }
+  // update parameter to generate client Secret
+  const parameters = getCLIInputs(projRoot, 'auth', resourceName);
+  parameters.cognitoConfig.userpoolClientGenerateSecret = true;
+  setCLIInputs(projRoot, 'auth', resourceName, parameters);
+};

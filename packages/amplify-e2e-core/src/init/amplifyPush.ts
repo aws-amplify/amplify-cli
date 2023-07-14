@@ -69,6 +69,17 @@ export const amplifyPushLegacy = async (cwd: string): Promise<void> => {
 };
 
 /**
+ * Function to test amplify push with --yes
+ */
+export const amplifyPushNonInteractive = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
+  await spawn(getCLIPath(testingWithLatestCodebase), ['push', '--yes'], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: pushTimeoutMS,
+  }).runAsync();
+};
+
+/**
  * Function to test amplify push with codegen for graphql API
  */
 export const amplifyPushGraphQlWithCognitoPrompt = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {

@@ -399,14 +399,6 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         'AppClientID',
       );
 
-      this._authTemplateObj.addCfnOutput(
-        {
-          value: cdk.Fn.getAtt('UserPoolClientInputs', 'appSecret').toString(),
-          condition: this._authTemplateObj.getCfnCondition('ShouldOutputAppClientSecrets'),
-        },
-        'AppClientSecret',
-      );
-
       if (!props.useEnabledMfas || configureSMS) {
         this._authTemplateObj.addCfnOutput(
           {
@@ -576,14 +568,5 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       },
       'ShouldNotCreateEnvResources',
     );
-
-    if (props.authSelections !== 'identityPoolOnly') {
-      this._authTemplateObj.addCfnCondition(
-        {
-          expression: cdk.Fn.conditionEquals(cdk.Fn.ref('userpoolClientGenerateSecret'), true),
-        },
-        'ShouldOutputAppClientSecrets',
-      );
-    }
   };
 }
