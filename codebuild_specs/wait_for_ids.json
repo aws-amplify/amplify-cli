@@ -32,6 +32,8 @@
   "l_auth_6_function_2a_schema_connection_2",
   "l_auth_8b_geo_add_b_s3_sse",
   "l_auth_add_all_migration_v10",
+  "l_auth_app_client_secret_migration_v12",
+  "l_auth_hosted_ui_lambda_migration_v12",
   "l_auth_lambda_callout_migration_rollback_v12",
   "l_auth_lambda_callout_migration_v12",
   "l_auth_migration_v12",
