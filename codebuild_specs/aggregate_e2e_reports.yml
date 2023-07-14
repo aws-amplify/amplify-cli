@@ -12,10 +12,11 @@ phases:
       - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
   post_build:
     commands:
-      - touch artifacts.txt
+      - mdkir artifacts
+      - touch artifacts/artifacts.txt
 artifacts:
   files:
-    - artifacts.txt
+    - artifacts/*
 reports:
   e2e-reports:
     files:
