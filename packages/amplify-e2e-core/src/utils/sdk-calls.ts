@@ -195,6 +195,20 @@ export const getSocialIdpProvider = async (
   return res;
 };
 
+export const getUserPoolDomain = async (domain: string, region: string) => {
+  let res;
+  try {
+    res = await new CognitoIdentityServiceProvider({ region })
+      .describeUserPoolDomain({
+        Domain: domain,
+      })
+      .promise();
+  } catch (err) {
+    console.log(err);
+  }
+  return res;
+};
+
 export const getIdentityPoolRoles = async (identityPoolId: string, region: string) => {
   let res;
 
