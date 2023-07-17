@@ -307,7 +307,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: "'[send] Y <CR>",
+        description: "'[send] N <CR>",
         requiresInput: false,
       };
       context.queue.push(_send);
