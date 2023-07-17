@@ -156,4 +156,3 @@ batch:
       debug-session: true
       depend-on:
         - aggregate_e2e_reports
-

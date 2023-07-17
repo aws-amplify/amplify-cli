@@ -627,6 +627,6 @@ function _amplifyGeneralConfigTests {
 
 function _sendE2EMetricsToDDB {
     echo "Calling CodeBuild APIs"
-    ts-node ./scripts/send-e2e-metrics.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $PROJECT_NAME $BATCH_METRICS_TABLE_NAME $BUILD_METRICS_TABLE_NAME $E2E_COST_TABLE_NAME
+    ts-node ./scripts/send-e2e-metrics.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $PROJECT_NAME $BATCH_METRICS_TABLE_NAME $E2E_COST_TABLE_NAME
     echo "Ended CodeBuild APIs"
 }

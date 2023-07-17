@@ -1,43 +1,13 @@
 import { CodeBuild } from 'aws-sdk';
-import { BuildBatch } from 'aws-sdk/clients/codebuild';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { PutCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { getBatchesInProject, getBatchSourceVersionFromBatchId } from './collect-batch-id';
 import {
-  CostExplorerClient,
-  GetCostAndUsageCommand,
-  GetCostAndUsageCommandInput,
-  GetCostAndUsageCommandOutput,
-} from '@aws-sdk/client-cost-explorer';
-
-const getBatchBuildDetails = async (cb: CodeBuild, batchId: string[]): Promise<BuildBatch[]> => {
-  const retrieveBatchDetails = await cb
-    .batchGetBuildBatches({
-      ids: batchId,
-    })
-    .promise();
-  return retrieveBatchDetails.buildBatches ?? [];
-};
-
-const storeDataToDDB = async (ddbClient: DynamoDBClient, key: string, tableName: string, data: any): Promise<string> => {
-  const docClient = DynamoDBDocumentClient.from(ddbClient);
-  const command = new PutCommand({
-    TableName: tableName,
-    Item: {
-      id: key,
-      metrics: JSON.stringify(data),
-    },
-  });
-
-  const response = await docClient.send(command);
-  return JSON.stringify(response);
-};
-
-const getCostAndUsage = async (ce: CostExplorerClient, params: GetCostAndUsageCommandInput): Promise<GetCostAndUsageCommandOutput> => {
-  const costExplorerClient = ce;
-  const costAndUsage: GetCostAndUsageCommandOutput = await costExplorerClient.send(new GetCostAndUsageCommand(params));
-  return costAndUsage;
-};
+  getBatchesInProject,
+  getBatchSourceVersionFromBatchId,
+  getBatchBuildDetails,
+  getCostAndUsage,
+  storeDataToDDB,
+} from './codebuild-sdk-helpers';
+import { CostExplorerClient, GetCostAndUsageCommandInput, GetCostAndUsageCommandOutput } from '@aws-sdk/client-cost-explorer';
 
 const main = async () => {
   const cb = new CodeBuild({ region: 'us-east-1' });
@@ -47,8 +17,7 @@ const main = async () => {
   const expectedSourceVersion = process.argv[2];
   const codeBuildProjectName = process.argv[3];
   const ddbBatchMetricsTable = process.argv[4];
-  const ddbBuildMetricsTable = process.argv[5];
-  const ddbE2ECostTable = process.argv[6];
+  const ddbE2ECostTable = process.argv[5];
 
   const currentDateJSON = new Date().toJSON().slice(0, 10);
   const prevDate = new Date();
@@ -72,31 +41,56 @@ const main = async () => {
     process.exit(1);
   }
 
+  console.log(`Getting batch details for batchId: ${batchId}`);
+  let batchDetails: CodeBuild.BuildBatch[] = [];
+  let retrievedBatchDetails = false;
   try {
-    console.log(`Getting batch details for batchId: ${batchId}`);
-    const batchDetails = await getBatchBuildDetails(cb, [batchId]);
-
-    const batchDDBresponse = await storeDataToDDB(ddb, batchId, ddbBatchMetricsTable, batchDetails);
-    console.log(batchDDBresponse);
-
-    const hourlyCostAndUsageParam: GetCostAndUsageCommandInput = {
-      Metrics: ['UnblendedCost'],
-      TimePeriod: {
-        // DateInterval
-        Start: prevDateJSON, // required
-        End: currentDateJSON, // required
-      },
-      Granularity: 'DAILY',
-    };
-    const costAndUsage: GetCostAndUsageCommandOutput = await getCostAndUsage(ce, hourlyCostAndUsageParam);
-    console.log(costAndUsage);
-
-    const costDDBresponse = await storeDataToDDB(ddb, batchId, ddbE2ECostTable, costAndUsage);
-    console.log(costDDBresponse);
+    batchDetails = await getBatchBuildDetails(cb, [batchId]);
+    retrievedBatchDetails = true;
   } catch (err) {
     console.error(`Error: ${err}`);
-    console.error('Failed to get batch build and cost details and store to DynamoDB.');
-    process.exit(1);
+    console.error('Failed to get batch build details');
+  }
+  if (retrievedBatchDetails) {
+    console.log('Storing batch details to DynamoDB Table');
+    try {
+      const batchDDBresponse = await storeDataToDDB(ddb, batchId, ddbBatchMetricsTable, batchDetails);
+      console.log(batchDDBresponse);
+    } catch (err) {
+      console.error(`Error: ${err}`);
+      console.error('Failed to store batch build details to DynamoDB');
+    }
+  }
+
+  const hourlyCostAndUsageParam: GetCostAndUsageCommandInput = {
+    Metrics: ['UnblendedCost'],
+    TimePeriod: {
+      // DateInterval
+      Start: prevDateJSON, // required
+      End: currentDateJSON, // required
+    },
+    Granularity: 'DAILY',
+  };
+  console.log('Getting account cost and usage');
+  let retrievedCostAndUsage = false;
+  let costAndUsage = null;
+  try {
+    costAndUsage = await getCostAndUsage(ce, hourlyCostAndUsageParam);
+    console.log(costAndUsage);
+    retrievedCostAndUsage = true;
+  } catch (err) {
+    console.error(`Error: ${err}`);
+    console.error('Failed to get account cost and usage');
+  }
+  if (retrievedCostAndUsage) {
+    console.log('Storing cost and usage to DynamoDB');
+    try {
+      const costDDBresponse = await storeDataToDDB(ddb, batchId, ddbE2ECostTable, costAndUsage);
+      console.log(costDDBresponse);
+    } catch (err) {
+      console.error(`Error: ${err}`);
+      console.error('Failed to store cost and usage to DynamoDB');
+    }
   }
 };
 
