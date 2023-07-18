@@ -30,7 +30,7 @@ Resources
 [-] AWS::IAM::Policy OAuthCustomResourcePolicy destroy
 [-] AWS::IAM::Policy OAuthCustomResourceLogPolicy destroy
 [-] Custom::LambdaCallout OAuthCustomResourceInputs destroy
-[~] AWS::Cognito::UserPoolClient UserPoolClientWeb 
+[~] AWS::Cognito::UserPoolClient UserPoolClientWeb
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
  ├─ [+] AllowedOAuthFlowsUserPoolClient
@@ -49,7 +49,7 @@ Resources
         [+]   "HostedUIProvidersCustomResourceInputs",
         [ ]   "UserPool"
         [ ] ]
-[~] AWS::Cognito::UserPoolClient UserPoolClient 
+[~] AWS::Cognito::UserPoolClient UserPoolClient
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
  ├─ [+] AllowedOAuthFlowsUserPoolClient
@@ -68,10 +68,10 @@ Resources
         [+]   "HostedUIProvidersCustomResourceInputs",
         [ ]   "UserPool"
         [ ] ]
-[~] AWS::IAM::Role UserPoolClientRole 
+[~] AWS::IAM::Role UserPoolClientRole
  └─ [-] DependsOn
      └─ ["UserPoolClient"]
-[~] AWS::Lambda::Function HostedUICustomResource 
+[~] AWS::Lambda::Function HostedUICustomResource
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -119,9 +119,7 @@ exports.handler = (event, context, callback) => {
       .promise()
       .then((result) => {
         if (inputDomainName) {
-          if (result.UserPool.Domain === inputDomainName) {
-            return;
-          } else {
+          if (result.UserPool.Domain !== inputDomainName) {
             if (!result.UserPool.Domain) {
               return checkDomainAvailability(inputDomainName).then((isDomainAvailable) => {
                 if (isDomainAvailable) {
@@ -200,9 +198,7 @@ async function handleEvent(event, context) {
     } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
       const result = await identity.describeUserPool({ UserPoolId: userPoolId }).promise();
       if (inputDomainName) {
-        if (result.UserPool.Domain === inputDomainName) {
-          return;
-        } else {
+        if (result.UserPool.Domain !== inputDomainName) {
           if (!result.UserPool.Domain) {
             const isDomainAvailable = await checkDomainAvailability(inputDomainName);
             if (isDomainAvailable) {
@@ -273,7 +269,7 @@ Resources
 [-] AWS::IAM::Policy OAuthCustomResourcePolicy destroy
 [-] AWS::IAM::Policy OAuthCustomResourceLogPolicy destroy
 [-] Custom::LambdaCallout OAuthCustomResourceInputs destroy
-[~] AWS::Cognito::UserPoolClient UserPoolClientWeb 
+[~] AWS::Cognito::UserPoolClient UserPoolClientWeb
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
  ├─ [+] AllowedOAuthFlowsUserPoolClient
@@ -292,7 +288,7 @@ Resources
         [+]   "HostedUIProvidersCustomResourceInputs",
         [ ]   "UserPool"
         [ ] ]
-[~] AWS::Cognito::UserPoolClient UserPoolClient 
+[~] AWS::Cognito::UserPoolClient UserPoolClient
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
  ├─ [+] AllowedOAuthFlowsUserPoolClient
@@ -311,10 +307,10 @@ Resources
         [+]   "HostedUIProvidersCustomResourceInputs",
         [ ]   "UserPool"
         [ ] ]
-[~] AWS::IAM::Role UserPoolClientRole 
+[~] AWS::IAM::Role UserPoolClientRole
  └─ [-] DependsOn
      └─ ["UserPoolClient"]
-[~] AWS::Lambda::Function HostedUICustomResource 
+[~] AWS::Lambda::Function HostedUICustomResource
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -362,9 +358,7 @@ exports.handler = (event, context, callback) => {
       .promise()
       .then((result) => {
         if (inputDomainName) {
-          if (result.UserPool.Domain === inputDomainName) {
-            return;
-          } else {
+          if (result.UserPool.Domain !== inputDomainName) {
             if (!result.UserPool.Domain) {
               return checkDomainAvailability(inputDomainName).then((isDomainAvailable) => {
                 if (isDomainAvailable) {
@@ -443,9 +437,7 @@ async function handleEvent(event, context) {
     } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
       const result = await identity.describeUserPool({ UserPoolId: userPoolId }).promise();
       if (inputDomainName) {
-        if (result.UserPool.Domain === inputDomainName) {
-          return;
-        } else {
+        if (result.UserPool.Domain !== inputDomainName) {
           if (!result.UserPool.Domain) {
             const isDomainAvailable = await checkDomainAvailability(inputDomainName);
             if (isDomainAvailable) {

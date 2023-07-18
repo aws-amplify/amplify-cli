@@ -42,9 +42,7 @@ async function handleEvent(event, context) {
     } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
       const result = await identity.describeUserPool({ UserPoolId: userPoolId }).promise();
       if (inputDomainName) {
-        if (result.UserPool.Domain === inputDomainName) {
-          return;
-        } else {
+        if (result.UserPool.Domain !== inputDomainName) {
           if (!result.UserPool.Domain) {
             const isDomainAvailable = await checkDomainAvailability(inputDomainName);
             if (isDomainAvailable) {
