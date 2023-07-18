@@ -2,7 +2,7 @@
 
 exports[`amplify migration test auth ...should add auth with max options and work on the latest version 1`] = `
 "Resources
-[~] AWS::Lambda::Function RoleMapFunction
+[~] AWS::Lambda::Function RoleMapFunction 
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
@@ -43,7 +43,7 @@ Resources
 [-] AWS::IAM::Policy OAuthCustomResourcePolicy destroy
 [-] AWS::IAM::Policy OAuthCustomResourceLogPolicy destroy
 [-] Custom::LambdaCallout OAuthCustomResourceInputs destroy
-[~] AWS::Cognito::UserPoolClient UserPoolClientWeb
+[~] AWS::Cognito::UserPoolClient UserPoolClientWeb 
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
  ├─ [+] AllowedOAuthFlowsUserPoolClient
@@ -62,7 +62,7 @@ Resources
         [+]   "HostedUIProvidersCustomResourceInputs",
         [ ]   "UserPool"
         [ ] ]
-[~] AWS::Cognito::UserPoolClient UserPoolClient
+[~] AWS::Cognito::UserPoolClient UserPoolClient 
  ├─ [+] AllowedOAuthFlows
  │   └─ ["code"]
  ├─ [+] AllowedOAuthFlowsUserPoolClient
@@ -81,10 +81,10 @@ Resources
         [+]   "HostedUIProvidersCustomResourceInputs",
         [ ]   "UserPool"
         [ ] ]
-[~] AWS::IAM::Role UserPoolClientRole
+[~] AWS::IAM::Role UserPoolClientRole 
  └─ [-] DependsOn
      └─ ["UserPoolClient"]
-[~] AWS::Lambda::Function HostedUICustomResource
+[~] AWS::Lambda::Function HostedUICustomResource 
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -132,7 +132,9 @@ exports.handler = (event, context, callback) => {
       .promise()
       .then(result => {
         if (inputDomainName) {
-          if (result.UserPool.Domain !== inputDomainName) {
+          if (result.UserPool.Domain === inputDomainName) {
+            return;
+          } else {
             if (!result.UserPool.Domain) {
               return checkDomainAvailability(inputDomainName).then(isDomainAvailable => {
                 if (isDomainAvailable) {
@@ -244,8 +246,8 @@ async function handleEvent(event, context) {
 
  └─ [~] Runtime
      ├─ [-] nodejs14.x
-     └─ [+] nodejs18.x
-[~] AWS::Lambda::Function HostedUIProvidersCustomResource
+     └─ [+] nodejs16.x
+[~] AWS::Lambda::Function HostedUIProvidersCustomResource 
  ├─ [~] Code
  │   └─ [~] .ZipFile:
  │       ├─ [-] const response = require('cfn-response');
@@ -461,7 +463,7 @@ exports.handler = (event, context, callback) => {
  └─ [~] Runtime
      ├─ [-] nodejs14.x
      └─ [+] nodejs16.x
-[~] AWS::Cognito::IdentityPool IdentityPool
+[~] AWS::Cognito::IdentityPool IdentityPool 
  └─ [-] DependsOn
      └─ ["UserPoolClientInputs"]
 
