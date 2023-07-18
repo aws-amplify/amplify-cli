@@ -220,6 +220,9 @@ export const startOpensearchEmulator = async (
   } catch (err) {
     // retry starting the Simulator after a small "back off" time
     // if we have a premature exit or the port is bound in a different process.
+
+    console.log(`ERROR ON 224: ${JSON.stringify(err)}`);
+
     if (err.code === 'premature' || err.code === 'port_taken') {
       if (givenOptions.port) {
         throw new Error(`${givenOptions.port} is bound and unavailable`);
