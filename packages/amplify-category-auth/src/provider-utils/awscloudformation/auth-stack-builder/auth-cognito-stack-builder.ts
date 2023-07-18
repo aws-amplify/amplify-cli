@@ -630,7 +630,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs18.x',
+      runtime: 'nodejs16.x',
       timeout: 300,
     });
 
