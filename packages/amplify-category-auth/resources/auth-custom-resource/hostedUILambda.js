@@ -1,6 +1,12 @@
 const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
+const {
+  CognitoIdentityProviderClient,
+  DescribeUserPoolCommand,
+  CreateUserPoolDomainCommand,
+  DeleteUserPoolDomainCommand,
+  DescribeUserPoolDomainCommand,
+} = require('@aws-sdk/client-cognito-identity-provider');
+const identity = new CognitoIdentityProviderClient({});
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
@@ -10,7 +16,7 @@ exports.handler = (event, context) => {
 async function checkDomainAvailability(domainName) {
   const params = { Domain: domainName };
   try {
-    const res = await identity.describeUserPoolDomain(params).promise();
+    const res = await identity.send(new DescribeUserPoolDomainCommand(params));
     if (res.DomainDescription && res.DomainDescription.UserPool) {
       return false;
     }
@@ -22,7 +28,7 @@ async function checkDomainAvailability(domainName) {
 
 async function deleteUserPoolDomain(domainName, userPoolId) {
   const params = { Domain: domainName, UserPoolId: userPoolId };
-  await identity.deleteUserPoolDomain(params).promise();
+  await identity.send(new DeleteUserPoolDomainCommand(params));
 }
 
 async function createUserPoolDomain(domainName, userPoolId) {
@@ -30,7 +36,7 @@ async function createUserPoolDomain(domainName, userPoolId) {
     Domain: domainName,
     UserPoolId: userPoolId,
   };
-  await identity.createUserPoolDomain(params).promise();
+  await identity.send(new CreateUserPoolDomainCommand(params));
 }
 
 async function handleEvent(event, context) {
@@ -40,7 +46,7 @@ async function handleEvent(event, context) {
     if (event.RequestType === 'Delete') {
       await deleteUserPoolDomain(inputDomainName, userPoolId);
     } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
-      const result = await identity.describeUserPool({ UserPoolId: userPoolId }).promise();
+      const result = await identity.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
       if (inputDomainName) {
         if (result.UserPool.Domain === inputDomainName) {
           return;
