@@ -8,5 +8,5 @@ phases:
   build:
     commands:
       - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
-      # - codebuild-breakpoint
-      - source ./shared-scripts.sh && _mockE2ETests
+      - codebuild-breakpoint
+      # - source ./shared-scripts.sh && _mockE2ETests
