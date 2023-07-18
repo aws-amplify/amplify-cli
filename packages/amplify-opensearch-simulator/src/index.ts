@@ -244,7 +244,7 @@ export const startingEmulatorPromise = (opts: Required<OpenSearchEmulatorOptions
   return new Promise((accept, reject) => {
     let stdout = '';
     let stderr = '';
-
+    console.log('startingEmulatorPromise 1');
     function readStderrBuffer(buffer: { toString: () => string }) {
       stderr += buffer.toString();
 
@@ -273,7 +273,9 @@ export const startingEmulatorPromise = (opts: Required<OpenSearchEmulatorOptions
         );
       }
     }
+    console.log('startingEmulatorPromise 2');
     proc?.stderr?.on('data', readStderrBuffer);
+    console.log('startingEmulatorPromise 3');
     proc?.stdout?.on('data', readStdoutBuffer);
   });
 };
