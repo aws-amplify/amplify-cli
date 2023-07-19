@@ -5,7 +5,7 @@ env:
     JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
     NODE_OPTIONS: --max-old-space-size=4096
 phases:
-  pre-build:
+  pre_build:
     commands:
       - codebuild-breakpoint
   build:
