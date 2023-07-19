@@ -605,18 +605,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
     this.userPoolClientRole.addDependency(this.userPoolClient!);
 
-    // lambda function
-    this.userPoolClientLambda = new lambda.CfnFunction(this, 'UserPoolClientLambda', {
-      code: {
-        zipFile: fs.readFileSync(userPoolClientLambdaFilePath, 'utf-8'),
-      },
-      handler: 'index.handler',
-      role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
-      timeout: 300,
-    });
-    this.userPoolClientLambda.addDependency(this.userPoolClientRole);
-
     // userPool client lambda policy
     /**
      *   # Sets userpool policy for the role that executes the Userpool Client Lambda
@@ -638,7 +626,20 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       roles: [cdk.Fn.ref('UserPoolClientRole')],
     });
-    this.userPoolClientLambdaPolicy.addDependency(this.userPoolClientLambda);
+    this.userPoolClientLambdaPolicy.addDependency(this.userPoolClientRole);
+
+    // lambda function
+    this.userPoolClientLambda = new lambda.CfnFunction(this, 'UserPoolClientLambda', {
+      code: {
+        zipFile: fs.readFileSync(userPoolClientLambdaFilePath, 'utf-8'),
+      },
+      handler: 'index.handler',
+      role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
+      runtime: 'nodejs16.x',
+      timeout: 300,
+    });
+    this.userPoolClientLambda.addDependency(this.userPoolClientRole);
+    this.userPoolClientLambda.addDependency(this.userPoolClientLambdaPolicy);
 
     // userPool Client Log policy
 
