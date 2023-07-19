@@ -41,6 +41,7 @@ describe('@searchable transformer', () => {
   };
 
   beforeAll(async () => {
+    process.env.ES_JAVA_OPTS = '-Des.insecure.allow.root=true';
     const validSchema = `
     type Todo @model @searchable {
       id: ID!
