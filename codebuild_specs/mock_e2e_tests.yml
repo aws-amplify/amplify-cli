@@ -7,6 +7,7 @@ env:
 phases:
   build:
     commands:
-      - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
+      - export CODEBUILD_SOURCE_VERSION=649a8f4e798af1021f69f806bfe4029ef3e9710e
+      # - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
       # - source ./shared-scripts.sh && _mockE2ETests
       - codebuild-breakpoint
