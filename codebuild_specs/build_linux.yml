@@ -4,10 +4,7 @@ env:
 phases:
   build:
     commands:
-      - sudo su codebuild-user
-      - whoami
-      - su root
-      - whoami
+      - sudo cat /etc/sudoers
       - source ./shared-scripts.sh && _buildLinux
 
 artifacts:
