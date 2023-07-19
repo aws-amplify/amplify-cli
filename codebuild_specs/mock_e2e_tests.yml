@@ -5,9 +5,14 @@ env:
     JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
     NODE_OPTIONS: --max-old-space-size=4096
 phases:
+  pre-build:
+    commands:
+      - codebuild-breakpoint
   build:
+    run-as: codebuild-user
     commands:
       - export CODEBUILD_SOURCE_VERSION=649a8f4e798af1021f69f806bfe4029ef3e9710e
       # - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
       # - source ./shared-scripts.sh && _mockE2ETests
+      - export SECOND_BREAKPOINT=1
       - codebuild-breakpoint
