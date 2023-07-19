@@ -1,0 +1,11 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - cd ./scripts
+      - npm install -g ts-node
+      - npm install aws-sdk
+      - cd ..
+      - source ./shared-scripts.sh && _sendE2EMetricsToDDB

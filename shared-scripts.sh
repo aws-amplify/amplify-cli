@@ -624,3 +624,9 @@ function _amplifyGeneralConfigTests {
     _loadTestAccountCredentials
     retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
 }
+
+function _sendE2EMetricsToDDB {
+    echo "Calling CodeBuild APIs"
+    ts-node ./scripts/send-e2e-metrics.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $PROJECT_NAME $BATCH_METRICS_TABLE_NAME $E2E_COST_TABLE_NAME
+    echo "Ended CodeBuild APIs"
+}
