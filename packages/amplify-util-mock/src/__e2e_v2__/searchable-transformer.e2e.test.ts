@@ -101,27 +101,27 @@ describe('@searchable transformer', () => {
     }
   });
 
-  afterAll(async () => {
-    try {
-      if (server) {
-        await server.stop();
-      }
+  // afterAll(async () => {
+  //   try {
+  //     if (server) {
+  //       await server.stop();
+  //     }
 
-      await terminateDDB(ddbEmulator, dbPath);
+  //     await terminateDDB(ddbEmulator, dbPath);
 
-      if (openSearchSimulator) {
-        await openSearchSimulator.terminate();
-        openSearchSimulator = null;
-      }
+  //     if (openSearchSimulator) {
+  //       await openSearchSimulator.terminate();
+  //       openSearchSimulator = null;
+  //     }
 
-      if (pathToSearchableMockResources) {
-        fs.emptyDirSync(pathToSearchableMockResources);
-      }
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
-  });
+  //     if (pathToSearchableMockResources) {
+  //       fs.emptyDirSync(pathToSearchableMockResources);
+  //     }
+  //   } catch (e) {
+  //     console.error(e);
+  //     throw e;
+  //   }
+  // });
 
   /**
    * Test queries below

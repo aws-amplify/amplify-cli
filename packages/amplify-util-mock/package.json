@@ -20,7 +20,7 @@
   },
   "scripts": {
     "e2e": "yarn e2e_v2",
-    "e2e_v2": "jest --runInBand --forceExit /searchable-transformer.e2e.test.ts",
+    "e2e_v2": "jest --runInBand --forceExit ./src/__e2e_v2__/searchable-transformer.e2e.test.ts",
     "e2e_v1": "jest --runInBand --forceExit ./src/__e2e__/*.test.ts",
     "test": "jest --logHeapUsage src/__tests__/**/*.test.ts",
     "test-watch": "jest --watch",
