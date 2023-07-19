@@ -3,7 +3,7 @@ env:
   shell: bash
 phases:
   build:
-    run-as: test-user-1
+    run-as: codebuild-user
     commands:
       - whoami
       - source ./shared-scripts.sh && _buildLinux
