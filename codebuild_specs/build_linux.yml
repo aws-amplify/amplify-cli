@@ -3,8 +3,10 @@ env:
   shell: bash
 phases:
   build:
-    run-as: codebuild-user
     commands:
+      - su codebuild-user
+      - whoami
+      - su root
       - whoami
       - source ./shared-scripts.sh && _buildLinux
 
