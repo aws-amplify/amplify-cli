@@ -50,7 +50,7 @@
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
-    "semver": "^7.3.5",
+    "semver": "^7.5.4",
     "which": "^2.0.2"
   },
   "devDependencies": {

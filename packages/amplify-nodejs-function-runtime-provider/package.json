@@ -38,7 +38,7 @@
     "@types/exit": "^0.1.31",
     "@types/node": "^12.12.6",
     "@types/semver": "^7",
-    "semver": "^7.5.0"
+    "semver": "^7.5.4"
   },
   "jest": {
     "transform": {
