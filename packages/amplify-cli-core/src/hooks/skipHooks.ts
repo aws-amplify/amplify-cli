@@ -3,9 +3,9 @@ import { skipHooksFilePath } from './hooksConstants';
 
 export function skipHooks(): boolean {
   // DO NOT CHANGE: used to skip hooks on Admin UI
-  try {
-    return fs.existsSync(skipHooksFilePath);
-  } catch (err) {
+  if (process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES) {
+    return true;
+  } else {
     return false;
   }
 }
