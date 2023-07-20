@@ -8,6 +8,6 @@ phases:
       - cd ./scripts
       - npm install -g ts-node
       - npm install aws-sdk
-      - npm install
       # - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH $PROJECT_NAME
-      - ts-node ./cleanup-codebuild-resources.ts
+      - cd ..
+      - source ./shared-scripts.sh && _cleanUpResources
