@@ -21,7 +21,7 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
 # @latest release
 elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   # create release commit and release tags
-  npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]" --force-publish '@aws-amplify/cli-internal'
+  npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 
 # release candidate or local publish for testing / building binary
 else
