@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.2.5...@aws-amplify/amplify-provider-awscloudformation@8.3.0) (2023-07-20)
+
+
+### Bug Fixes
+
+* avoid empty and string rejects ([#12818](https://github.com/aws-amplify/amplify-cli/issues/12818)) ([911faa7](https://github.com/aws-amplify/amplify-cli/commit/911faa767db594c516d1c3b65ee4369ad207f4f4))
+* fetch deployment key from current-cloud-backend ([#12687](https://github.com/aws-amplify/amplify-cli/issues/12687)) ([af0bf82](https://github.com/aws-amplify/amplify-cli/commit/af0bf82d18b3a30d4cdac2cdd14b8534e0ffff1d))
+* return login token error to studio ([#12726](https://github.com/aws-amplify/amplify-cli/issues/12726)) ([8e8f4a2](https://github.com/aws-amplify/amplify-cli/commit/8e8f4a283f11ee615fc021975c9f3db91ab0db66))
+* warn about multiple schema files in admin modelgen task ([#12673](https://github.com/aws-amplify/amplify-cli/issues/12673)) ([4bc01ea](https://github.com/aws-amplify/amplify-cli/commit/4bc01eaa650826985ced1e8830eb216f64b630df))
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
 ## [8.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.2.4...@aws-amplify/amplify-provider-awscloudformation@8.2.5) (2023-06-16)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
