@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { getAwsAndroidConfig, getAwsIOSConfig, getBackendAmplifyMeta, getCLIInputs, getProjectMeta, setCLIInputs } from './projectMeta';
 import { getUserPoolClients } from './sdk-calls';
+import { AddAuthUserPoolOnlyWithOAuthSettings } from '../categories';
 
 const tempPassword = 'tempPassword1@';
 
@@ -153,6 +154,14 @@ export function getUserPoolId(projectDir: string): string {
   return cognitoResource.output.UserPoolId;
 }
 
+export function getHostedUIDomain(projectDir: string): string {
+  const amplifyMeta = getProjectMeta(projectDir);
+  const cognitoResource = Object.values<{ service: string; output: { HostedUIDomain: string } }>(amplifyMeta.auth).find((res) => {
+    return res.service === 'Cognito';
+  });
+  return cognitoResource.output.HostedUIDomain;
+}
+
 export function getCognitoResourceName(projectDir: string): string {
   const amplifyMeta = getBackendAmplifyMeta(projectDir);
   const cognitoResourceName = Object.keys(amplifyMeta.auth).find((key: string) => {
@@ -236,4 +245,27 @@ export const updateCLIParametersToGenerateUserPoolClientSecret = (projRoot: stri
   const parameters = getCLIInputs(projRoot, 'auth', resourceName);
   parameters.cognitoConfig.userpoolClientGenerateSecret = true;
   setCLIInputs(projRoot, 'auth', resourceName, parameters);
+};
+
+export const createUserPoolOnlyWithOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyWithOAuthSettings => {
+  return {
+    resourceName: `${projectPrefix}oares${shortId}`,
+    userPoolName: `${projectPrefix}oaup${shortId}`,
+    domainPrefix: `${projectPrefix}oadom${shortId}`,
+    signInUrl1: 'https://sin1/',
+    signInUrl2: 'https://sin2/',
+    signOutUrl1: 'https://sout1/',
+    signOutUrl2: 'https://sout2/',
+    facebookAppId: 'facebookAppId',
+    facebookAppSecret: 'facebookAppSecret',
+    googleAppId: 'googleAppId',
+    googleAppSecret: 'googleAppSecret',
+    amazonAppId: 'amazonAppId',
+    amazonAppSecret: 'amazonAppSecret',
+    appleAppClientId: 'com.fake.app',
+    appleAppTeamId: '2QLEWNDK6K',
+    appleAppKeyID: '2QLZXKYJ8J',
+    appleAppPrivateKey:
+      '----BEGIN PRIVATE KEY----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----',
+  };
 };
