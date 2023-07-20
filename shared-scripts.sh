@@ -631,7 +631,7 @@ function _cleanUpResources {
     _buildLinux
 
     cd scripts
-    yarn install
+    npm install
     _loadTestAccountCredentials
     echo "Executing resource cleanup"
     ts-node cleanup-codebuild-resources.ts
