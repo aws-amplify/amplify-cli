@@ -878,7 +878,7 @@ jobs:
       - run:
           name: Publish Amplify CLI GitHub prerelease
           command: |
-            commit=$(git rev-parse HEAD)
+            commit=$(git rev-parse HEAD~1)
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-prerelease.ts $version $commit
 
@@ -935,7 +935,7 @@ jobs:
       - run:
           name: Publish Amplify CLI GitHub release
           command: |
-            commit=$(git rev-parse HEAD)
+            commit=$(git rev-parse HEAD~1)
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version $commit
   npm_rollback_access:
