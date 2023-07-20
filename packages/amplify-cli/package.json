@@ -97,7 +97,7 @@
     "ora": "^4.0.3",
     "progress": "^2.0.3",
     "promise-sequential": "^1.1.1",
-    "semver": "^7.3.5",
+    "semver": "^7.5.4",
     "tar-fs": "^2.1.1",
     "treeify": "^1.1.0",
     "update-notifier": "^5.1.0",

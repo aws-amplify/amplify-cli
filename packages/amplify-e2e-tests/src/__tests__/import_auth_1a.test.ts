@@ -8,6 +8,7 @@ import {
   amplifyPushAuth,
   amplifyStatus,
   createNewProjectDir,
+  createUserPoolOnlyWithOAuthSettings,
   deleteProject,
   deleteProjectDir,
   getCognitoResourceName,
@@ -17,7 +18,6 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   AuthProjectDetails,
-  createUserPoolOnlyWithOAuthSettings,
   expectApiHasCorrectAuthConfig,
   expectAuthProjectDetailsMatch,
   expectLocalAndCloudMetaFilesMatching,

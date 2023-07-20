@@ -7,6 +7,7 @@ import {
   amplifyPushAuth,
   amplifyStatus,
   createNewProjectDir,
+  createUserPoolOnlyWithOAuthSettings,
   deleteProject,
   deleteProjectDir,
   getRootStackTemplate,
@@ -16,7 +17,6 @@ import {
 import {
   addS3WithAuthConfigurationMismatchErrorExit,
   AuthProjectDetails,
-  createUserPoolOnlyWithOAuthSettings,
   expectAuthParametersMatch,
   expectLocalAndCloudMetaFilesMatching,
   getAuthProjectDetails,

@@ -1,13 +1,21 @@
 import {
+  addAuthUserPoolOnlyWithOAuth,
   addAuthWithDefault,
   addAuthWithSignInSignOutUrl,
   amplifyPushAuth,
   createNewProjectDir,
+  createUserPoolOnlyWithOAuthSettings,
   deleteProject,
   deleteProjectDir,
+  deleteUserPoolDomain,
+  generateRandomShortId,
+  getHostedUIDomain,
   getProjectMeta,
   getUserPool,
+  getUserPoolDomain,
+  getUserPoolId,
   initJSProjectWithProfile,
+  updateAuthDomainPrefixWithAllProvidersConfigured,
   updateAuthSignInSignOutUrlWithAll,
 } from '@aws-amplify/amplify-e2e-core';
 
@@ -93,6 +101,45 @@ describe('hosted ui tests', () => {
 
         expect(HostedUIDomain).toBeDefined();
         expect(HostedUIDomain).toEqual(userPoolRes.UserPool.Domain);
+      });
+    });
+
+    describe('...updating to change domain prefix', () => {
+      it('...updates a user pool domain', async () => {
+        await initJSProjectWithProfile(projRoot, defaultsSettings);
+        const oauthSettings = createUserPoolOnlyWithOAuthSettings('hui', generateRandomShortId());
+        await addAuthUserPoolOnlyWithOAuth(projRoot, oauthSettings);
+        await amplifyPushAuth(projRoot);
+        const originalUserPoolId = getUserPoolId(projRoot);
+        const originalHostedUIDomain = getHostedUIDomain(projRoot);
+        const meta = getProjectMeta(projRoot);
+        const region = meta.providers.awscloudformation.Region;
+        expect(originalHostedUIDomain).toMatch(oauthSettings.domainPrefix);
+        const originalUserPoolRes = await getUserPool(originalUserPoolId, region);
+        expect(originalHostedUIDomain).toEqual(originalUserPoolRes.UserPool.Domain);
+
+        const updatedDomainPrefix = `new-prefix-${generateRandomShortId()}`;
+        await updateAuthDomainPrefixWithAllProvidersConfigured(projRoot, {
+          domainPrefix: updatedDomainPrefix,
+        });
+        await amplifyPushAuth(projRoot);
+
+        const userPoolId = getUserPoolId(projRoot);
+        const hostedUIDomain = getHostedUIDomain(projRoot);
+        expect(userPoolId).toEqual(originalUserPoolId);
+        const userPoolRes = await getUserPool(userPoolId, region);
+        expect(hostedUIDomain).not.toEqual(originalHostedUIDomain);
+        expect(hostedUIDomain).toMatch(updatedDomainPrefix);
+        expect(hostedUIDomain).toEqual(userPoolRes.UserPool.Domain);
+
+        const updatedDomainRes = await getUserPoolDomain(hostedUIDomain, region);
+        expect(updatedDomainRes).toBeDefined();
+        const originalDomainRes = await getUserPoolDomain(originalHostedUIDomain, region);
+        expect(originalDomainRes).toEqual({ DomainDescription: {} });
+
+        const deleteOriginalDomainRes = await deleteUserPoolDomain(originalHostedUIDomain, userPoolId, region);
+        // undefined response as it throws InvalidParameterException: No such domain or user pool exists.
+        expect(deleteOriginalDomainRes).toBeUndefined();
       });
     });
   });
