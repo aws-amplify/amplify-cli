@@ -628,6 +628,8 @@ function _amplifyGeneralConfigTests {
 function _cleanUpResources {
     # loadCache repo $CODEBUILD_SRC_DIR
     # loadCache .cache $HOME/.cache
+    _buildLinux
+
     cd scripts
     yarn install
     _loadTestAccountCredentials
