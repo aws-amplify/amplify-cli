@@ -13,7 +13,6 @@ import {
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
-import yargs from 'yargs';
 import { AWS_REGIONS_TO_RUN_TESTS } from './cci-utils';
 
 const AWS_REGIONS_TO_RUN_TESTS_PINPOINT = AWS_REGIONS_TO_RUN_TESTS.filter((region) => region !== 'eu-west-3');
