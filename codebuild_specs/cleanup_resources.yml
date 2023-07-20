@@ -1,13 +1,11 @@
 version: 0.2
 env:
   shell: bash
-  compute-type: BUILD_GENERAL1_LARGE
 phases:
   build:
     commands:
       - cd ./scripts
       - npm install -g ts-node
       - npm install aws-sdk
-      # - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH $PROJECT_NAME
       - cd ..
       - source ./shared-scripts.sh && _cleanUpResources
