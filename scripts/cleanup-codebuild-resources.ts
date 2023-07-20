@@ -574,7 +574,7 @@ const mergeResourcesByCIJob = (
   _.mergeWith(
     result,
     _.pickBy(amplifyAppByJobId, (__: unknown, key: string) => key !== MULTI_JOB_APP),
-    (val, src: AmplifyAppInfo, key: string) => ({
+    (val: any, src: AmplifyAppInfo, key: string) => ({
       ...val,
       ...extractCIJobInfo(src),
       jobId: key,
