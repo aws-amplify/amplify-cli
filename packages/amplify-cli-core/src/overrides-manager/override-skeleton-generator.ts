@@ -2,7 +2,7 @@ import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, AmplifyError, getPackageManager, pathManager, skipHooks } from '../index';
+import { $TSContext, AmplifyError, getPackageManager, pathManager } from '../index';
 import { JSONUtilities } from '../jsonUtilities';
 
 /**
@@ -46,11 +46,6 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
   if (!fs.existsSync(overrideFileName)) {
     // return when no override file found
     return false;
-  }
-  if (skipHooks()) {
-    throw new AmplifyError('DeploymentError', {
-      message: 'A flag to disable overrides has been detected, please deploy from a different environment.',
-    });
   }
   const overrideBackendPackageJson = path.join(pathManager.getBackendDirPath(), 'package.json');
   if (!fs.existsSync(overrideBackendPackageJson)) {
