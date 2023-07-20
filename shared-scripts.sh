@@ -626,9 +626,9 @@ function _amplifyGeneralConfigTests {
 }
 
 function _cleanUpResources {
-    # loadCache repo $CODEBUILD_SRC_DIR
-    # loadCache .cache $HOME/.cache
-    _buildLinux
+    export CODEBUILD_SOURCE_VERSION=70fb640dbbc44e086dc3226ad4c1499431297b93
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
 
     cd scripts
     npm install
