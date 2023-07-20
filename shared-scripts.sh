@@ -626,7 +626,7 @@ function _amplifyGeneralConfigTests {
 }
 
 function _cleanUpResources {
-    export CODEBUILD_SOURCE_VERSION=70fb640dbbc44e086dc3226ad4c1499431297b93
+    export CODEBUILD_SOURCE_VERSION=b414e28e7f09f4294a42bde6aa000a1e5352c49f
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
