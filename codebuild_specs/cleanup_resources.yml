@@ -4,4 +4,8 @@ env:
 phases:
   build:
     commands:
-      - echo cleanup running
+      - cd ./scripts
+      - npm install -g ts-node
+      - npm install aws-sdk
+      - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH $PROJECT_NAME
+      - ts-node ./cleanup-codebuild-resources.ts
