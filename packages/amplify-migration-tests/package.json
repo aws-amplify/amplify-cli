@@ -29,6 +29,7 @@
     "@aws-amplify/amplify-cli-core": "4.1.0",
     "@aws-amplify/amplify-e2e-core": "5.0.4",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
+    "@aws-sdk/client-s3": "^3.303.0",
     "aws-cdk-lib": "~2.68.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",

@@ -1648,7 +1648,18 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
   });
 }
 
-export function updateAuthAddUserGroups(projectDir: string, groupNames: string[], settings?: any): Promise<void> {
+export function updateAuthAddUserGroups(
+  projectDir: string,
+  groupNames: string[],
+  settings?: {
+    testingWithLatestCodebase?: boolean;
+    updateUserPoolGroupsPosition?: number;
+    hasExistingUserPoolGroups?: boolean;
+    overrides?: {
+      category: string;
+    };
+  },
+): Promise<void> {
   if (groupNames.length == 0) {
     return undefined;
   }
@@ -1663,7 +1674,18 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
     for (let i = 0; i < updateUserPoolGroupsPosition; i++) {
       chain.send(KEY_DOWN_ARROW);
     }
-    chain.sendCarriageReturn().wait('Provide a name for your user pool group').send(groupNames[0]).sendCarriageReturn();
+    chain.sendCarriageReturn();
+
+    if (settings?.hasExistingUserPoolGroups) {
+      chain
+        .wait('Select any user pool groups you want to delete')
+        .sendCarriageReturn()
+        .wait('Do you want to add another User Pool Group')
+        .sendYes()
+        .sendCarriageReturn();
+    }
+
+    chain.wait('Provide a name for your user pool group').send(groupNames[0]).sendCarriageReturn();
 
     if (groupNames.length > 1) {
       let index = 1;
