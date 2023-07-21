@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.11-rc.06e15aa08a.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.9.10...@aws-amplify/amplify-frontend-javascript@3.9.11-rc.06e15aa08a.0) (2023-07-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript
+
+
+
+
+
 ## [3.9.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.9.9...@aws-amplify/amplify-frontend-javascript@3.9.10) (2023-07-20)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript
