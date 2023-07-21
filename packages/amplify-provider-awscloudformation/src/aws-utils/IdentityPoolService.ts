@@ -102,9 +102,8 @@ export class IdentityPoolService implements IIdentityPoolService {
 
     if (arn) {
       const parts = arn.split('/');
-
-      if (parts.length === 2) {
-        resourceName = parts[1];
+      if (parts?.length >= 2) {
+        resourceName = parts.at(-1);
       }
     }
 
