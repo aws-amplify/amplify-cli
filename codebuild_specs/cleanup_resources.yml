@@ -5,5 +5,4 @@ phases:
   build:
     commands:
       - npm install -g ts-node
-      - source ./shared-scripts.sh && _waitForJobs aggregate_e2e_reports
       - source ./shared-scripts.sh && _cleanUpResources
