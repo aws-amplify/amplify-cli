@@ -60,9 +60,15 @@ describe('amplify init e', () => {
     fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
     await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
 
-    // test happy path
+    // test with valid file
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
     replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
+    process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES = 'true';
+    await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
+    // unset
+    delete process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES;
+    // should succeed now
     await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toContain('mockRole');
