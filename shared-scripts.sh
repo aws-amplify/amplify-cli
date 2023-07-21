@@ -629,7 +629,7 @@ function _cleanUpResources {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     cd scripts
-    npm install
+    yarn install
     _loadTestAccountCredentials
     echo "Executing resource cleanup"
     ts-node cleanup-codebuild-resources.ts
