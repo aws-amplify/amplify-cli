@@ -490,7 +490,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.4.2
+    "@aws-amplify/amplify-category-api": ^5.4.7
     "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-environment-parameters": 1.7.0
     fs-extra: ^8.1.0
@@ -786,8 +786,8 @@ __metadata:
     "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-amplify/amplify-util-import": 2.7.0
     "@aws-amplify/cli-extensibility-helper": 3.0.10
-    "@aws-amplify/graphql-transformer-core": ^1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": ^2.2.2
+    "@aws-amplify/graphql-transformer-core": ^1.3.8
+    "@aws-amplify/graphql-transformer-interfaces": ^2.2.5
     "@types/columnify": ^1.5.0
     "@types/deep-diff": ^1.0.0
     "@types/folder-hash": ^4.0.1
@@ -863,19 +863,19 @@ __metadata:
     "@aws-amplify/amplify-opensearch-simulator": 1.5.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-amplify/amplify-provider-awscloudformation": 8.3.0
-    "@aws-amplify/graphql-auth-transformer": ^2.1.7
-    "@aws-amplify/graphql-default-value-transformer": ^1.1.7
-    "@aws-amplify/graphql-function-transformer": ^1.2.5
-    "@aws-amplify/graphql-http-transformer": 1.2.5
-    "@aws-amplify/graphql-index-transformer": ^1.2.3
-    "@aws-amplify/graphql-maps-to-transformer": ^2.1.7
-    "@aws-amplify/graphql-model-transformer": ^1.3.3
-    "@aws-amplify/graphql-predictions-transformer": ^1.2.5
-    "@aws-amplify/graphql-relational-transformer": ^1.2.3
-    "@aws-amplify/graphql-searchable-transformer": ^1.2.5
-    "@aws-amplify/graphql-transformer-core": ^1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": ^2.2.2
-    "@aws-amplify/graphql-transformer-migrator": ^2.1.7
+    "@aws-amplify/graphql-auth-transformer": ^2.1.12
+    "@aws-amplify/graphql-default-value-transformer": ^1.1.12
+    "@aws-amplify/graphql-function-transformer": ^1.2.10
+    "@aws-amplify/graphql-http-transformer": 1.2.10
+    "@aws-amplify/graphql-index-transformer": ^1.2.8
+    "@aws-amplify/graphql-maps-to-transformer": ^2.1.12
+    "@aws-amplify/graphql-model-transformer": ^1.3.8
+    "@aws-amplify/graphql-predictions-transformer": ^1.2.10
+    "@aws-amplify/graphql-relational-transformer": ^1.2.8
+    "@aws-amplify/graphql-searchable-transformer": ^1.2.10
+    "@aws-amplify/graphql-transformer-core": ^1.3.8
+    "@aws-amplify/graphql-transformer-interfaces": ^2.2.5
+    "@aws-amplify/graphql-transformer-migrator": ^2.1.12
     "@hapi/topo": ^5.0.0
     "@types/detect-port": ^1.3.0
     "@types/jest": ^29.0.0
@@ -922,7 +922,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.4.2
+    "@aws-amplify/amplify-category-api": ^5.4.7
     "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-amplify/appsync-modelgen-plugin": ^2.4.4
@@ -1043,7 +1043,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-category-custom": 3.1.0
     "@aws-amplify/amplify-cli-core": 4.2.0
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
   languageName: unknown
   linkType: soft
 
@@ -1053,7 +1053,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-app": 5.0.10
     "@aws-amplify/amplify-category-analytics": 5.0.12
-    "@aws-amplify/amplify-category-api": ^5.4.2
+    "@aws-amplify/amplify-category-api": ^5.4.7
     "@aws-amplify/amplify-category-auth": 3.4.0
     "@aws-amplify/amplify-category-custom": 3.1.0
     "@aws-amplify/amplify-category-function": 5.4.0
@@ -1097,14 +1097,14 @@ __metadata:
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
-    amplify-codegen: ^4.1.2
+    amplify-codegen: ^4.1.4
     amplify-dotnet-function-runtime-provider: 2.0.5
     amplify-go-function-runtime-provider: 2.3.23
     amplify-java-function-runtime-provider: 2.3.23
     amplify-java-function-template-provider: 1.5.22
     amplify-nodejs-function-runtime-provider: 2.5.0
     amplify-python-function-runtime-provider: 2.4.23
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1405.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
@@ -11291,7 +11291,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-codegen@npm:^4.1.4":
+"amplify-codegen@npm:^4.1.2, amplify-codegen@npm:^4.1.4":
   version: 4.1.4
   resolution: "amplify-codegen@npm:4.1.4"
   dependencies:
@@ -11363,7 +11363,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-e2e-core": 5.1.0
     "@aws-amplify/amplify-opensearch-simulator": 1.5.0
-    "@aws-amplify/graphql-transformer-core": ^1.3.3
+    "@aws-amplify/graphql-transformer-core": ^1.3.8
     "@aws-sdk/client-appsync": ^3.303.0
     "@aws-sdk/client-dynamodb": ^3.303.0
     "@aws-sdk/client-ssm": ^3.303.0
