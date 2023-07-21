@@ -112,5 +112,3 @@ batch:
         - upb
     - identifier: cleanup_resources
       buildspec: codebuild_specs/cleanup_resources.yml
-      depend-on:
-        - aggregate_e2e_reports

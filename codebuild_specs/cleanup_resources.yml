@@ -8,4 +8,5 @@ phases:
       - npm install -g ts-node
       - npm install aws-sdk
       - cd ..
+      - source ./shared-scripts.sh && _waitForJobs aggregate_e2e_reports
       - source ./shared-scripts.sh && _cleanUpResources
