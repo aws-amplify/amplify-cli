@@ -627,8 +627,6 @@ function _amplifyGeneralConfigTests {
 
 
 function _cleanUpResources {
-    loadCache repo $CODEBUILD_SRC_DIR
-    loadCache .cache $HOME/.cache
     _loadTestAccountCredentials
     echo "Executing resource cleanup"
     cd packages/amplify-e2e-tests/src
