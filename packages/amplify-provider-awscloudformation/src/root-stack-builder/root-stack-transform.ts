@@ -13,7 +13,6 @@ import {
 import { formatter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSynthesizer } from './stack-synthesizer';
 
@@ -65,23 +64,13 @@ export class AmplifyRootStackTransform {
 
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const overrideCode: string = await fs.readFile(path.join(overrideFilePath, 'build', 'override.js'), 'utf-8').catch(() => {
-        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
-        return '';
-      });
-      const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
-        timeout: 5000,
-        sandbox: {},
-        require: {
-          context: 'sandbox',
-          builtin: ['path'],
-          external: true,
-        },
-      });
+      const overrideJSFilePath = path.join(overrideFilePath, 'build', 'override.js');
       const projectInfo = getProjectInfo();
       try {
-        await sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate, projectInfo);
+        const overrideImport = await import(overrideJSFilePath);
+        if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
+          overrideImport.override(this._rootTemplateObj, projectInfo);
+        }
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',

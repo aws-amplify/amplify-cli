@@ -14,7 +14,6 @@ import {
 import { formatter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { S3PermissionType, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
 // eslint-disable-next-line import/no-cycle
 import { canResourceBeTransformed, S3CFNDependsOn, S3CFNPermissionType, S3InputState } from '../service-walkthroughs/s3-user-input-state';
@@ -207,26 +206,9 @@ export class AmplifyS3ResourceStackTransform {
       });
       // Pass stack object
       if (override && typeof override === 'function') {
-        const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
-          return '';
-        });
-
-        const sandboxNode = new vm.NodeVM({
-          console: 'inherit',
-          timeout: 5000,
-          sandbox: {},
-          require: {
-            context: 'sandbox',
-            builtin: ['path'],
-            external: true,
-          },
-        });
         try {
           const projectInfo = getProjectInfo();
-          await sandboxNode
-            .run(overrideCode, overrideJSFilePath)
-            .override(this.resourceTemplateObj as AmplifyS3ResourceTemplate, projectInfo);
+          override(this.resourceTemplateObj as AmplifyS3ResourceTemplate, projectInfo);
         } catch (err: $TSAny) {
           throw new AmplifyError(
             'InvalidOverrideError',

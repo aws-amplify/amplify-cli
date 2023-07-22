@@ -4,7 +4,6 @@ import { formatter } from '@aws-amplify/amplify-prompts';
 import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { getDdbAttrType } from '../cfn-template-utils';
 import { DynamoDBCLIInputs } from '../service-walkthrough-types/dynamoDB-user-input-types';
 import { DynamoDBInputState } from '../service-walkthroughs/dynamoDB-input-state';
@@ -199,26 +198,9 @@ export class DDBStackTransform {
       });
 
       if (typeof override === 'function' && override) {
-        const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
-          formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
-          return '';
-        });
-
-        const sandboxNode = new vm.NodeVM({
-          console: 'inherit',
-          timeout: 5000,
-          sandbox: {},
-          require: {
-            context: 'sandbox',
-            builtin: ['path'],
-            external: true,
-          },
-        });
         const projectInfo = getProjectInfo();
         try {
-          await sandboxNode
-            .run(overrideCode, overrideJSFilePath)
-            .override(this._resourceTemplateObj as AmplifyDDBResourceTemplate, projectInfo);
+          override(this._resourceTemplateObj as AmplifyDDBResourceTemplate, projectInfo);
         } catch (err) {
           throw new AmplifyError(
             'InvalidOverrideError',

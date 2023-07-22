@@ -15,7 +15,6 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import * as vm from 'vm2';
 
 import fs from 'fs-extra';
 import moment from 'moment';
@@ -101,21 +100,11 @@ export const run = async (context: $TSContext): Promise<void> => {
       // project not initialized
     }
     if (projectInitialized && fs.existsSync(overrideFilePath)) {
+      const projectInfo = getProjectInfo();
       try {
-        const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
-        if (overrideCode) {
-          const sandboxNode = new vm.NodeVM({
-            console: 'inherit',
-            timeout: 5000,
-            sandbox: {},
-            require: {
-              context: 'sandbox',
-              builtin: ['path'],
-              external: true,
-            },
-          });
-          const projectInfo = getProjectInfo();
-          await sandboxNode.run(overrideCode).override(configuration, projectInfo);
+        const overrideImport = await import(overrideFilePath);
+        if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
+          overrideImport.override(configuration, projectInfo);
         }
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
