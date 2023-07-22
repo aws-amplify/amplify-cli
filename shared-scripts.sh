@@ -629,7 +629,8 @@ function _amplifyGeneralConfigTests {
 function _cleanUpResources {
     _loadTestAccountCredentials
     echo "Executing resource cleanup"
-    cd packages/amplify-e2e-tests/src
-    ts-node cleanup-codebuild-resources.ts
+    cd packages/amplify-e2e-tests
+    yarn install
+    ts-node ./src/cleanup-codebuild-resources.ts
     _unassumeTestAccountCredentials
 }
