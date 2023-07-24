@@ -14,7 +14,9 @@ jest.setTimeout(2000000);
 const runTransformer = async (validSchema: string) => {
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer()],
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
   const out = await transformer.transform(validSchema);
   return out;

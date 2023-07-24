@@ -3,7 +3,6 @@ import { join } from 'path';
 import sequential from 'promise-sequential';
 import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext, $TSAny } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
-import { printer } from '@aws-amplify/amplify-prompts';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
@@ -83,15 +82,6 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
 
   if (!context.parameters.options?.app) {
     printWelcomeMessage(context);
-  }
-
-  const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
-
-  if (!appId) {
-    printer.warn('The maximum number of apps that you can create with Amplify in this region has likely been reached:');
-    printer.info('For more information on Amplify Service Quotas, see:');
-    printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify');
-    printer.blankLine();
   }
 };
 

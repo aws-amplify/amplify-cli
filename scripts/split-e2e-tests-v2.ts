@@ -29,6 +29,7 @@ const RUN_SOLO = [
   'src/__tests__/import_s3_2b.test.ts',
   'src/__tests__/import_s3_2c.test.ts',
   'src/__tests__/import_s3_3.test.ts',
+  'src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts',
   'src/__tests__/notifications-in-app-messaging.test.ts',
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
@@ -101,6 +102,10 @@ const WINDOWS_SMOKE_TESTS = [
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    /* TEMPORARY-PR12830: Remove after we ship PR12830 */
+    'src/__tests__/custom_resources.test.ts',
+    'src/__tests__/custom-resource-with-storage.test.ts',
+    /* END TEMPORARY */
     'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',

@@ -5,9 +5,11 @@ import {
   amplifyPull,
   amplifyPushAuth,
   createNewProjectDir,
+  createUserPoolOnlyWithOAuthSettings,
   deleteProject,
   deleteProjectDir,
   getAppId,
+  getCognitoResourceName,
   getEnvVars,
   getTeamProviderInfo,
   initJSProjectWithProfile,
@@ -19,7 +21,6 @@ import {
   addAppClientWithSecret,
   AppClientSettings,
   AuthProjectDetails,
-  createUserPoolOnlyWithOAuthSettings,
   deleteAppClient,
   expectAuthLocalAndOGMetaFilesOutputMatching,
   expectAuthProjectDetailsMatch,
@@ -30,7 +31,6 @@ import {
   getShortId,
   importUserPoolOnly,
 } from '../import-helpers';
-import { getCognitoResourceName } from '../schema-api-directives/authHelper';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('auth import userpool only', () => {

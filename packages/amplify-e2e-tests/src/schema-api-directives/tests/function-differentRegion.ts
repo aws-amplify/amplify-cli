@@ -1,21 +1,22 @@
 //special handling needed becasue we need to set up the function in a differnt region
-import path from 'path';
 import fs from 'fs-extra';
+import path from 'path';
 
 import {
-  getProjectMeta,
-  deleteProject,
-  deleteProjectDir,
   addApi,
+  addFunction,
   amplifyPush,
   amplifyPushWithoutCodegen,
-  addFunction,
+  configureAmplify,
+  deleteProject,
+  deleteProjectDir,
+  getApiKey,
+  getConfiguredAppsyncClientAPIKeyAuth,
+  getProjectMeta,
   initProjectWithAccessKey,
 } from '@aws-amplify/amplify-e2e-core';
 
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
-
-import { updateSchemaInTestProject, testQueries } from '../common';
+import { testQueries, updateSchemaInTestProject } from '../common';
 
 import { randomizedFunctionName } from '../functionTester';
 

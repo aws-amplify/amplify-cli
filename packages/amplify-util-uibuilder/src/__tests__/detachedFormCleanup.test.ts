@@ -1,12 +1,13 @@
-// @aws-amplify/codegen-ui is in project dependencies
-import { StudioSchema } from '@aws-amplify/codegen-ui'; // eslint-disable-line import/no-extraneous-dependencies
 import { AmplifyStudioClient } from '../clients'; // eslint-disable-line import/no-extraneous-dependencies
 import { isFormDetachedFromModel, isFormSchemaCustomized, isStudioForm, deleteDetachedForms } from '../commands/utils';
+import { Form } from 'aws-sdk/clients/amplifyuibuilder';
 
 const amplifyStudioClientMock = AmplifyStudioClient as any;
 
-const formWithNoCustomization: StudioSchema = {
+const formWithNoCustomization: Form = {
   id: 'f-123456',
+  appId: 'd1234',
+  environmentName: 'staging',
   name: 'BlogCreateForm',
   formActionType: 'create',
   dataType: {
@@ -17,9 +18,10 @@ const formWithNoCustomization: StudioSchema = {
   sectionalElements: {},
   style: {},
   cta: {},
+  schemaVersion: '1.0',
 };
 
-const formWithStyle: StudioSchema = {
+const formWithStyle: Form = {
   ...formWithNoCustomization,
   dataType: { dataSourceType: 'Custom', dataTypeName: 'Blog' },
   style: {
@@ -27,7 +29,7 @@ const formWithStyle: StudioSchema = {
   },
 };
 
-const formWithFields: StudioSchema = {
+const formWithFields: Form = {
   ...formWithNoCustomization,
   dataType: { dataSourceType: 'Custom', dataTypeName: 'Blog' },
   fields: {

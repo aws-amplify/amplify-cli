@@ -22,6 +22,11 @@ const getTransformerVersionMocked = jest.mocked(getTransformerVersion);
 utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
 utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
 utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue({});
+utilsMock.isFormDetachedFromModel = jest.fn().mockReturnValue(false);
+utilsMock.extractUIComponents = jest.fn().mockReturnValue(undefined);
+utilsMock.waitForSucceededJob = jest
+  .fn()
+  .mockReturnValue({ asset: { downloadUrl: 'amazon.com' }, statusMessage: `{\"codegenErrors\": [{\"schemaName\": \"BlogUpdateForm\"}]}` });
 
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
@@ -41,6 +46,12 @@ describe('can generate components', () => {
       },
     },
   });
+  const startCodegenJobPromise = jest.fn().mockReturnValue({
+    entity: { id: 'jobId123' },
+  });
+  const mockStartCodegenJob = jest.fn().mockReturnValue({
+    promise: startCodegenJobPromise,
+  });
   beforeEach(() => {
     isDataStoreEnabledMocked.mockResolvedValue(true);
     getTransformerVersionMocked.mockResolvedValue(2);
@@ -58,13 +69,11 @@ describe('can generate components', () => {
     schemas = {
       entities: [
         {
-          resultType: 'SUCCESS',
           schemaName: 'testSchema',
           name: 'testSchema',
           schemaVersion: '1.0',
         },
         {
-          resultType: 'FAILURE',
           schemaName: 'testSchema',
           name: 'testSchema',
           schemaVersion: '1.0',
@@ -91,6 +100,10 @@ describe('can generate components', () => {
       getMetadata: jest.fn().mockReturnValue({
         promise: getMetadataPromise,
       }),
+      startCodegenJob: mockStartCodegenJob,
+      getCodegenJob: jest.fn().mockReturnValue({
+        promise: jest.fn().mockReturnValue({ status: 'succeeded' }),
+      }),
     });
     utilsMock.generateUiBuilderComponents = jest.fn().mockReturnValue(schemas.entities);
     utilsMock.generateUiBuilderThemes = jest.fn().mockReturnValue(schemas.entities);
@@ -102,11 +115,13 @@ describe('can generate components', () => {
   });
 
   it('runs generateComponents', async () => {
+    utilsMock.isFormDetachedFromModel = jest.fn().mockReturnValueOnce(true);
     await run(context, 'PostPull');
     expect(mockedExport).toBeCalledTimes(3);
-    expect(utilsMock.generateUiBuilderComponents).toBeCalledTimes(1);
-    expect(utilsMock.generateUiBuilderThemes).toBeCalledTimes(1);
-    expect(utilsMock.generateUiBuilderForms).toBeCalledTimes(1);
+    expect(startCodegenJobPromise).toBeCalledTimes(1);
+    expect(utilsMock.waitForSucceededJob).toBeCalledTimes(1);
+    expect(utilsMock.getUiBuilderComponentsPath).toBeCalledTimes(1);
+    expect(utilsMock.extractUIComponents).toBeCalledTimes(1);
     expect(utilsMock.deleteDetachedForms).toBeCalledTimes(1);
   });
 
@@ -124,7 +139,26 @@ describe('can generate components', () => {
       },
     });
     await run(context, 'PostPull');
-    expect(utilsMock.generateUiBuilderForms).toHaveBeenCalledWith(expect.anything(), expect.anything(), undefined, true, expect.anything());
+    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+      appId: 'testAppId',
+      environmentName: 'testEnvName',
+      codegenJobToCreate: {
+        renderConfig: {
+          react: {
+            module: 'es2020',
+            target: 'es2020',
+            script: 'jsx',
+            renderTypeDeclarations: true,
+          },
+        },
+        genericDataSchema: undefined,
+        autoGenerateForms: true,
+        features: {
+          isNonModelSupported: false,
+          isRelationshipSupported: false,
+        },
+      },
+    });
   });
 
   it('should not autogenerate forms if transformer v1', async () => {
@@ -141,13 +175,26 @@ describe('can generate components', () => {
       },
     });
     await run(context, 'PostPull');
-    expect(utilsMock.generateUiBuilderForms).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      undefined,
-      false,
-      expect.anything(),
-    );
+    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+      appId: 'testAppId',
+      environmentName: 'testEnvName',
+      codegenJobToCreate: {
+        renderConfig: {
+          react: {
+            module: 'es2020',
+            target: 'es2020',
+            script: 'jsx',
+            renderTypeDeclarations: true,
+          },
+        },
+        genericDataSchema: undefined,
+        autoGenerateForms: false,
+        features: {
+          isNonModelSupported: false,
+          isRelationshipSupported: false,
+        },
+      },
+    });
   });
 
   it('should not autogenerate forms if datastore is not enabled', async () => {
@@ -163,16 +210,29 @@ describe('can generate components', () => {
       },
     });
     await run(context, 'PostPull');
-    expect(utilsMock.generateUiBuilderForms).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      undefined,
-      false,
-      expect.anything(),
-    );
+    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+      appId: 'testAppId',
+      environmentName: 'testEnvName',
+      codegenJobToCreate: {
+        renderConfig: {
+          react: {
+            module: 'es2020',
+            target: 'es2020',
+            script: 'jsx',
+            renderTypeDeclarations: true,
+          },
+        },
+        genericDataSchema: undefined,
+        autoGenerateForms: false,
+        features: {
+          isNonModelSupported: false,
+          isRelationshipSupported: false,
+        },
+      },
+    });
   });
 
-  it('should not autogenerate forms if feature flag  isnot enabled', async () => {
+  it('should not autogenerate forms if feature flag  is not enabled', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(true);
     getMetadataPromise.mockReturnValue({
       features: {
@@ -185,12 +245,25 @@ describe('can generate components', () => {
       },
     });
     await run(context, 'PostPull');
-    expect(utilsMock.generateUiBuilderForms).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      undefined,
-      false,
-      expect.anything(),
-    );
+    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+      appId: 'testAppId',
+      environmentName: 'testEnvName',
+      codegenJobToCreate: {
+        renderConfig: {
+          react: {
+            module: 'es2020',
+            target: 'es2020',
+            script: 'jsx',
+            renderTypeDeclarations: true,
+          },
+        },
+        genericDataSchema: undefined,
+        autoGenerateForms: false,
+        features: {
+          isNonModelSupported: false,
+          isRelationshipSupported: false,
+        },
+      },
+    });
   });
 });

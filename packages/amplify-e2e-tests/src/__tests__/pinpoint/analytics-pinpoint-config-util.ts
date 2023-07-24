@@ -6,12 +6,12 @@ import {
   amplifyPushAuth,
   createNewProjectDir,
   deleteProjectDir,
+  getAmplifyFlutterConfig,
   getAppId,
+  getAWSExports,
   removeAnalytics,
 } from '@aws-amplify/amplify-e2e-core';
 import { JSONUtilities, $TSAny } from '@aws-amplify/amplify-cli-core';
-import { getAmplifyFlutterConfig } from '@aws-amplify/amplify-e2e-core';
-import { getAWSExports } from '../../schema-api-directives/authHelper';
 
 export const runPinpointConfigTest = async (
   projectRoot: string,
