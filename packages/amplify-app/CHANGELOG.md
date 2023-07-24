@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.11-swift-codegen.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.10...@aws-amplify/amplify-app@5.0.11-swift-codegen.0) (2023-07-24)
+
+
+### Bug Fixes
+
+* Dependabot alerts for semver, tough-cookie ([#12962](https://github.com/aws-amplify/amplify-cli/issues/12962)) ([175a86b](https://github.com/aws-amplify/amplify-cli/commit/175a86b89a54c65bb6e68c0609be503d61e39d63))
+
+
+
+
+
 ## [5.0.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.9...@aws-amplify/amplify-app@5.0.10) (2023-07-20)
 
 **Note:** Version bump only for package @aws-amplify/amplify-app

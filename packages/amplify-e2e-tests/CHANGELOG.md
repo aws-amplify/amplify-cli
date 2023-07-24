@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-swift-codegen.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.3.0...amplify-e2e-tests@4.4.0-swift-codegen.0) (2023-07-24)
+
+
+### Features
+
+* replace oauth and userpoolclient lambdas with cfn and sdk calls ([#12935](https://github.com/aws-amplify/amplify-cli/issues/12935)) ([b3ab512](https://github.com/aws-amplify/amplify-cli/commit/b3ab5125f2ec405afd1af9d2f77b8683d5914010))
+
+
+
+
+
 # [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.5...amplify-e2e-tests@4.3.0) (2023-07-20)
 
 

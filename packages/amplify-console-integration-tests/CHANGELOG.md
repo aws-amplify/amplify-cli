@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1-swift-codegen.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.9.0...@aws-amplify/amplify-console-integration-tests@2.9.1-swift-codegen.0) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
 # [2.9.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.8.4...@aws-amplify/amplify-console-integration-tests@2.9.0) (2023-07-20)
 
 

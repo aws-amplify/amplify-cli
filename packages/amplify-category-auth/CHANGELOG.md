@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0-swift-codegen.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.4.0...@aws-amplify/amplify-category-auth@3.5.0-swift-codegen.0) (2023-07-24)
+
+
+### Bug Fixes
+
+* add permissions boundary for IAM Role created for auth trigger ([#12914](https://github.com/aws-amplify/amplify-cli/issues/12914)) ([47990a9](https://github.com/aws-amplify/amplify-cli/commit/47990a9e8f3703fff84ec17fa3c7e33865f676f4))
+
+
+### Features
+
+* replace oauth and userpoolclient lambdas with cfn and sdk calls ([#12935](https://github.com/aws-amplify/amplify-cli/issues/12935)) ([b3ab512](https://github.com/aws-amplify/amplify-cli/commit/b3ab5125f2ec405afd1af9d2f77b8683d5914010))
+
+
+
+
+
 # [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.3.0...@aws-amplify/amplify-category-auth@3.4.0) (2023-07-20)
 
 
