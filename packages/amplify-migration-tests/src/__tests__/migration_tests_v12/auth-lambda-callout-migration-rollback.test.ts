@@ -48,7 +48,7 @@ describe('lambda callouts rollback', () => {
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName, testingWithLatestCodebase: true });
 
-    await amplifyPushAuth(projRoot, true);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: true });
 
     const meta = getProjectMeta(projRoot);
     expect(meta?.providers?.awscloudformation?.Region).toBeDefined();
@@ -82,7 +82,7 @@ describe('lambda callouts rollback', () => {
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName, testingWithLatestCodebase: true });
 
-    await amplifyPushAuth(projRoot, true);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: true });
 
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
@@ -111,10 +111,10 @@ describe('lambda callouts rollback', () => {
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName, testingWithLatestCodebase: true });
 
-    await amplifyPushAuth(projRoot, true);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: true });
 
     await addS3StorageWithIdpAuth(projRoot, false);
 
-    await amplifyPushAuth(projRoot, false);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: false });
   });
 });

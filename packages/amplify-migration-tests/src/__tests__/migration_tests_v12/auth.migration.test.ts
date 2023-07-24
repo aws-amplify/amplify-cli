@@ -63,7 +63,7 @@ describe('v12: amplify migration test auth', () => {
       try {
         await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
         await updateAuthAddUserGroupsAfterPull(projRoot2, ['SuperUsers'], { testingWithLatestCodebase: true });
-        await amplifyPushAuth(projRoot2, true);
+        await amplifyPushAuth(projRoot2, { testingWithLatestCodebase: true });
 
         const identityPoolRolesAfter = await getIdentityPoolRoles(IdentityPoolId, region);
 

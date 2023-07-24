@@ -75,7 +75,7 @@ describe('amplify auth hosted ui', () => {
 
     it('keeps hosted ui domain after update and push with new version', async () => {
       await updateAuthAddUserGroups(projRoot, ['group1', 'group2'], { testingWithLatestCodebase: true, updateUserPoolGroupsPosition: 5 });
-      await amplifyPushAuth(projRoot, true);
+      await amplifyPushAuth(projRoot, { testingWithLatestCodebase: true });
       const userPoolId = getUserPoolId(projRoot);
       const hostedUIDomain = getHostedUIDomain(projRoot);
 
@@ -176,7 +176,7 @@ describe('amplify auth hosted ui', () => {
         domainPrefix: updatedDomainPrefix,
         testingWithLatestCodebase: true,
       });
-      await amplifyPushAuth(projRoot, true);
+      await amplifyPushAuth(projRoot, { testingWithLatestCodebase: true });
 
       const userPoolId = getUserPoolId(projRoot);
       const hostedUIDomain = getHostedUIDomain(projRoot);

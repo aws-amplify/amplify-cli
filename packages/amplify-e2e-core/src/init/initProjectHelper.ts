@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, singleSelect } from '..';
 import { KEY_DOWN_ARROW, addCircleCITags, errorReportingTestHandler } from '../utils';
 import { amplifyRegions } from '../configure';
+import { mergeDeploymentSecrets } from '@aws-amplify/amplify-cli-core';
 
 const defaultSettings = {
   name: EOL,
@@ -56,7 +57,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   if (mergedSettings?.name?.length > 20)
     console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
-  const chain = spawn(getCLIPath(s.testingWithLatestCodebase), cliArgs, {
+  const chain = spawn(getCLIPath(mergedSettings.testingWithLatestCodebase), cliArgs, {
     cwd,
     stripColors: true,
     env,
