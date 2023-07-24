@@ -1,7 +1,7 @@
 import { allowedVersionsToMigrateFrom, versionCheck } from '../../migration-helpers';
 import {
   addAuthWithDefault,
-  addS3WithGroupAccess,
+  addS3WithFirstGroupAccess,
   amplifyPushAuth,
   amplifyPushForce,
   amplifyPushNonInteractive,
@@ -132,7 +132,7 @@ describe('amplify auth group mapping', () => {
       await initJSProjectWithProfileV12(projRoot, defaultsSettings);
       await addAuthWithDefault(projRoot);
       await updateAuthAddUserGroups(projRoot, ['group1', 'group2']);
-      await addS3WithGroupAccess(projRoot, ['group1', 'group2'], ['group1']);
+      await addS3WithFirstGroupAccess(projRoot);
       await amplifyPushNonInteractive(projRoot);
       await setupUsers();
       await verifyUserAccess();

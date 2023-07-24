@@ -1,6 +1,6 @@
 import {
   addAuthWithDefault,
-  addS3WithGroupAccess,
+  addS3WithFirstGroupAccess,
   amplifyPushNonInteractive,
   configureAmplify,
   createNewProjectDir,
@@ -38,7 +38,7 @@ describe('user group tests', () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot);
     await updateAuthAddUserGroups(projRoot, ['group1', 'group2']);
-    await addS3WithGroupAccess(projRoot, ['group1', 'group2'], ['group1']);
+    await addS3WithFirstGroupAccess(projRoot);
     await amplifyPushNonInteractive(projRoot);
 
     const meta = getProjectMeta(projRoot);
