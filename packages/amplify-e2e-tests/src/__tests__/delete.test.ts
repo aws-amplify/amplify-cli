@@ -123,8 +123,8 @@ async function testDeletion(projRoot: string, settings: { ios?: boolean; android
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(false);
   expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
   expect(await bucketNotExists(deploymentBucketName2)).toBe(true);
-  expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
-  expect(UnauthRoleName).not.toBeIAMRoleWithArn(UnauthRoleName);
+  await expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
+  await expect(UnauthRoleName).not.toBeIAMRoleWithArn(UnauthRoleName);
   // check that config/exports file was deleted
   if (settings.ios) {
     expect(fs.existsSync(getAWSConfigIOSPath(projRoot))).toBe(false);
