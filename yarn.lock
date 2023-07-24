@@ -66,14 +66,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-app@5.0.9, @aws-amplify/amplify-app@workspace:packages/amplify-app":
+"@aws-amplify/amplify-app@5.0.10, @aws-amplify/amplify-app@workspace:packages/amplify-app":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-app@workspace:packages/amplify-app"
   dependencies:
     "@aws-amplify/amplify-frontend-android": 3.5.5
-    "@aws-amplify/amplify-frontend-flutter": 1.4.3
-    "@aws-amplify/amplify-frontend-ios": 3.6.11
-    "@aws-amplify/amplify-frontend-javascript": 3.9.9
+    "@aws-amplify/amplify-frontend-flutter": 1.4.4
+    "@aws-amplify/amplify-frontend-ios": 3.6.12
+    "@aws-amplify/amplify-frontend-javascript": 3.9.10
     "@types/glob": ^7.1.1
     chalk: ^4.1.1
     execa: ^5.1.1
@@ -83,7 +83,7 @@ __metadata:
     node-emoji: ^1.10.0
     ora: ^4.0.3
     rimraf: ^3.0.0
-    semver: ^7.3.5
+    semver: ^7.5.4
     xcode: ^2.1.0
     yargs: ^15.1.0
   bin:
@@ -91,11 +91,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-appsync-simulator@2.12.4, @aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator":
+"@aws-amplify/amplify-appsync-simulator@2.13.0, @aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-graphiql-explorer": 2.5.8
     "@aws-amplify/amplify-prompts": 2.8.0
     "@graphql-tools/schema": ^8.3.1
@@ -131,59 +131,59 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-analytics@5.0.11, @aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics":
+"@aws-amplify/amplify-category-analytics@5.0.12, @aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
     "@aws-amplify/amplify-prompts": 2.8.0
     fs-extra: ^8.1.0
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.4.2":
-  version: 5.4.2
-  resolution: "@aws-amplify/amplify-category-api@npm:5.4.2"
+"@aws-amplify/amplify-category-api@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "@aws-amplify/amplify-category-api@npm:5.5.0"
   dependencies:
-    "@aws-amplify/graphql-auth-transformer": 2.1.7
-    "@aws-amplify/graphql-schema-generator": 0.1.3
-    "@aws-amplify/graphql-transformer": 0.0.2
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    "@aws-amplify/graphql-transformer-migrator": 2.1.7
-    "@aws-cdk/aws-apigatewayv2-alpha": ~2.68.0-alpha.0
+    "@aws-amplify/graphql-auth-transformer": 2.1.13
+    "@aws-amplify/graphql-schema-generator": 0.3.0
+    "@aws-amplify/graphql-transformer": 0.1.0
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
+    "@aws-amplify/graphql-transformer-migrator": 2.1.13
+    "@aws-cdk/aws-apigatewayv2-alpha": ~2.80.0-alpha.0
+    "@aws-sdk/client-iam": 3.338.0
+    "@aws-sdk/client-lambda": 3.338.0
     "@graphql-tools/merge": ^6.0.18
     "@octokit/rest": ^18.0.9
-    aws-cdk-lib: ~2.68.0
     aws-sdk: ^2.1113.0
     chalk: ^4.1.1
     cloudform-types: ^4.2.0
-    constructs: ^10.0.5
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-auth-transformer: 7.2.57
-    graphql-connection-transformer: 5.2.56
-    graphql-dynamodb-transformer: 7.2.56
-    graphql-elasticsearch-transformer: 5.2.57
-    graphql-function-transformer: 3.3.47
-    graphql-http-transformer: 5.2.56
-    graphql-key-transformer: 3.2.56
-    graphql-predictions-transformer: 3.2.56
-    graphql-relational-schema-transformer: 2.21.18
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
-    graphql-versioned-transformer: 5.2.56
+    graphql-auth-transformer: 7.2.63
+    graphql-connection-transformer: 5.2.62
+    graphql-dynamodb-transformer: 7.2.62
+    graphql-elasticsearch-transformer: 5.2.63
+    graphql-function-transformer: 3.3.53
+    graphql-http-transformer: 5.2.62
+    graphql-key-transformer: 3.2.62
+    graphql-predictions-transformer: 3.2.62
+    graphql-relational-schema-transformer: 2.21.21
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
+    graphql-versioned-transformer: 5.2.62
     import-from: ^3.0.0
     import-global: ^0.1.0
     inquirer: ^7.3.3
     js-yaml: ^4.0.0
     lodash: ^4.17.21
+    node-fetch: ^2.6.7
     ora: ^4.0.3
     rimraf: ^3.0.0
     uuid: ^8.3.2
-    vm2: ^3.9.8
   peerDependencies:
     "@aws-amplify/amplify-cli-core": 4.0.4
     "@aws-amplify/amplify-environment-parameters": ^1.5.0
@@ -191,25 +191,27 @@ __metadata:
     "@aws-amplify/amplify-provider-awscloudformation": ^8.1.0
     amplify-headless-interface: ^1.17.3
     amplify-util-headless-input: ^1.9.12
-  checksum: 2bfcb94dde87a1fd97caa7173cd5b3fc6893cf0c0840a63c13740840e9348de37e9d8f63e9977bd392f9413a390d2efa45a1f14c1598cf7ea22a6eb04cc530de
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 0da5325ee0580cdf3d1ad69bc29ca9baac08af7e60f49ca64ca42d5d5c20635f138c4f5965b66906867d3bcf2760f5e3a51d5e692b2c55c3875a7a6907b07741
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-category-auth@3.3.0, @aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth":
+"@aws-amplify/amplify-category-auth@3.4.0, @aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-util-import": 2.6.1
-    "@aws-amplify/cli-extensibility-helper": 3.0.9
+    "@aws-amplify/amplify-util-import": 2.7.0
+    "@aws-amplify/cli-extensibility-helper": 3.0.10
     "@aws-sdk/client-cognito-identity-provider": ^3.303.0
     "@types/mime-types": ^2.1.1
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1405.0
     axios: ^0.26.0
     chalk: ^4.1.1
@@ -230,14 +232,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-custom@3.0.9, @aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom":
+"@aws-amplify/amplify-category-custom@3.1.0, @aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@types/lodash": ^4.14.149
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
     glob: ^7.2.0
@@ -248,13 +250,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-function@5.3.4, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
+"@aws-amplify/amplify-category-function@5.4.0, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-function@workspace:packages/amplify-category-function"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@types/folder-hash": ^4.0.1
     archiver: ^5.3.0
@@ -265,7 +267,7 @@ __metadata:
     folder-hash: ^4.0.2
     fs-extra: ^8.1.0
     globby: ^11.0.3
-    graphql-transformer-core: ^8.1.3
+    graphql-transformer-core: ^8.1.9
     inquirer: ^7.3.3
     inquirer-datepicker: ^2.0.0
     jest: ^29.5.0
@@ -276,17 +278,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-geo@3.2.4, @aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo":
+"@aws-amplify/amplify-category-geo@3.3.0, @aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-sdk/client-location": ^3.303.0
     ajv: ^6.12.6
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1405.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
@@ -295,11 +297,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-hosting@3.5.12, @aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting":
+"@aws-amplify/amplify-category-hosting@3.5.13, @aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-prompts": 2.8.0
     chalk: ^4.1.1
     fs-extra: ^8.1.0
@@ -311,11 +313,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-interactions@5.1.4, @aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions":
+"@aws-amplify/amplify-category-interactions@5.1.5, @aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-prompts": 2.8.0
     fs-extra: ^8.1.0
     fuzzy: ^0.1.3
@@ -323,14 +325,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.24.12, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@2.25.0, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.5
+    "@aws-amplify/amplify-provider-awscloudformation": 8.3.0
     aws-sdk: ^2.1405.0
     chalk: ^4.1.1
     fs-extra: ^8.1.0
@@ -341,11 +343,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-predictions@5.2.4, @aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions":
+"@aws-amplify/amplify-category-predictions@5.3.0, @aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-sdk/client-rekognition": ^3.303.0
     aws-sdk: ^2.1405.0
@@ -355,18 +357,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-storage@5.2.4, @aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage":
+"@aws-amplify/amplify-category-storage@5.3.0, @aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-util-import": 2.6.1
-    "@aws-amplify/cli-extensibility-helper": 3.0.9
+    "@aws-amplify/amplify-util-import": 2.7.0
+    "@aws-amplify/cli-extensibility-helper": 3.0.10
     amplify-headless-interface: 1.17.4
     amplify-util-headless-input: 1.9.13
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1405.0
     chalk: ^4.1.1
     cloudform-types: ^4.2.0
@@ -381,14 +383,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-cli-core@4.1.0, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
+"@aws-amplify/amplify-cli-core@4.2.0, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core"
   dependencies:
     "@aws-amplify/amplify-cli-logger": 1.3.3
     "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/graphql-transformer-interfaces": ^2.2.2
+    "@aws-amplify/graphql-transformer-interfaces": ^2.3.0
     "@types/ejs": ^3.1.1
     "@types/fs-extra": ^8.0.1
     "@types/hjson": ^2.4.2
@@ -400,7 +402,7 @@ __metadata:
     "@types/yarnpkg__lockfile": ^1.1.5
     "@yarnpkg/lockfile": ^1.1.0
     ajv: ^6.12.6
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -422,7 +424,7 @@ __metadata:
     ora: ^4.0.3
     proxy-agent: ^5.0.0
     rimraf: ^3.0.0
-    semver: ^7.3.5
+    semver: ^7.5.4
     strip-ansi: ^6.0.0
     typescript-json-schema: ~0.52.0
     uuid: ^8.3.2
@@ -448,12 +450,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-console-hosting@2.5.9, @aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting":
+"@aws-amplify/amplify-console-hosting@2.5.10, @aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
     archiver: ^5.3.0
     chalk: ^4.1.1
     cli-table3: ^0.6.0
@@ -470,8 +472,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-console-integration-tests@workspace:packages/amplify-console-integration-tests"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-e2e-core": 5.0.4
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-e2e-core": 5.1.0
     "@types/ini": ^1.3.30
     aws-sdk: ^2.1405.0
     dotenv: ^8.2.0
@@ -486,13 +488,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-container-hosting@2.6.9, @aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting":
+"@aws-amplify/amplify-container-hosting@2.6.10, @aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.4.2
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-category-api": ^5.5.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
     fs-extra: ^8.1.0
     inquirer: ^7.3.3
     mime-types: ^2.1.26
@@ -500,24 +502,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-dotnet-function-template-provider@2.5.9, @aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider":
+"@aws-amplify/amplify-dotnet-function-template-provider@2.5.10, @aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@types/inquirer": ^6.5.0
     "@types/lodash": ^4.14.149
     "@types/node": ^12.12.6
-    graphql-transformer-core: ^8.1.3
+    graphql-transformer-core: ^8.1.9
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-e2e-core@5.0.4, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
+"@aws-amplify/amplify-e2e-core@5.1.0, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@types/glob": ^7.1.1
     amplify-headless-interface: 1.17.4
     aws-amplify: ^4.2.8
@@ -527,7 +529,7 @@ __metadata:
     dotenv: ^8.2.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
-    graphql-transformer-core: ^8.1.3
+    graphql-transformer-core: ^8.1.9
     ini: ^1.3.5
     jest-circus: ^27.0.0
     jest-environment-node: ^26.6.2
@@ -536,18 +538,18 @@ __metadata:
     node-pty: beta
     retimer: 2.0.0
     rimraf: ^3.0.0
-    semver: ^7.3.5
+    semver: ^7.5.4
     strip-ansi: ^6.0.0
     throat: ^5.0.0
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-environment-parameters@1.6.4, @aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters":
+"@aws-amplify/amplify-environment-parameters@1.7.0, @aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     ajv: ^6.12.6
     aws-sdk: ^2.1405.0
     lodash: ^4.17.21
@@ -566,7 +568,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-flutter@1.4.3, @aws-amplify/amplify-frontend-flutter@workspace:packages/amplify-frontend-flutter":
+"@aws-amplify/amplify-frontend-flutter@1.4.4, @aws-amplify/amplify-frontend-flutter@workspace:packages/amplify-frontend-flutter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-flutter@workspace:packages/amplify-frontend-flutter"
   dependencies:
@@ -576,11 +578,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-ios@3.6.11, @aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios":
+"@aws-amplify/amplify-frontend-ios@3.6.12, @aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
     graphql-config: ^2.2.1
@@ -588,11 +590,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-javascript@3.9.9, @aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript":
+"@aws-amplify/amplify-frontend-javascript@3.9.10, @aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@babel/core": ^7.10.5
     "@babel/plugin-transform-modules-commonjs": 7.10.4
     chalk: ^4.1.1
@@ -604,17 +606,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-function-plugin-interface@1.10.3, @aws-amplify/amplify-function-plugin-interface@workspace:packages/amplify-function-plugin-interface":
+"@aws-amplify/amplify-function-plugin-interface@1.11.0, @aws-amplify/amplify-function-plugin-interface@workspace:packages/amplify-function-plugin-interface":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-function-plugin-interface@workspace:packages/amplify-function-plugin-interface"
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-go-function-template-provider@1.4.4, @aws-amplify/amplify-go-function-template-provider@workspace:packages/amplify-go-function-template-provider":
+"@aws-amplify/amplify-function-plugin-interface@npm:1.10.3":
+  version: 1.10.3
+  resolution: "@aws-amplify/amplify-function-plugin-interface@npm:1.10.3"
+  checksum: 2448984fd2bfd92ab6cee844730f5393ec7c641d5ee06eb7a30d7de77a0095e8dde8389aa931120767041ed4ceb01d9819b95b7cdf918552c53cfd2eec1bb0d5
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/amplify-go-function-template-provider@1.4.5, @aws-amplify/amplify-go-function-template-provider@workspace:packages/amplify-go-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-go-function-template-provider@workspace:packages/amplify-go-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@types/fs-extra": ^8.0.1
     "@types/lodash": ^4.14.149
     "@types/node": ^12.12.6
@@ -683,7 +692,7 @@ __metadata:
     sass-loader: ^12.3.0
     semantic-ui-css: ^2.5.0
     semantic-ui-react: ^2.1.3
-    semver: ^7.3.5
+    semver: ^7.5.4
     source-map-loader: ^3.0.0
     stream-browserify: ^3.0.0
     style-loader: ^3.3.1
@@ -703,43 +712,43 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-migration-tests@workspace:packages/amplify-migration-tests"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-e2e-core": 5.0.4
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-e2e-core": 5.1.0
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@aws-sdk/client-s3": ^3.303.0
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
-    graphql-transformer-core: ^8.1.3
+    graphql-transformer-core: ^8.1.9
     jest: ^29.5.0
     lodash: ^4.17.21
-    semver: ^7.3.5
+    semver: ^7.5.4
     strip-ansi: ^6.0.0
     ts-node: ^10.9.1
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-nodejs-function-template-provider@2.8.4, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
+"@aws-amplify/amplify-nodejs-function-template-provider@2.8.5, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@types/fs-extra": ^8.0.1
     "@types/inquirer": ^6.5.0
     "@types/node": ^12.12.6
-    graphql-transformer-core: ^8.1.3
+    graphql-transformer-core: ^8.1.9
     lodash: ^4.17.21
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-opensearch-simulator@1.4.4, @aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator":
+"@aws-amplify/amplify-opensearch-simulator@1.5.0, @aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@types/node": ^12.12.6
     "@types/openpgp": ^4.4.18
@@ -769,28 +778,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-provider-awscloudformation@8.2.5, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
+"@aws-amplify/amplify-provider-awscloudformation@8.3.0, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation"
   dependencies:
-    "@aws-amplify/amplify-category-custom": 3.0.9
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-category-custom": 3.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-cli-logger": 1.3.3
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-util-import": 2.6.1
-    "@aws-amplify/cli-extensibility-helper": 3.0.9
-    "@aws-amplify/graphql-transformer-core": ^1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": ^2.2.2
+    "@aws-amplify/amplify-util-import": 2.7.0
+    "@aws-amplify/cli-extensibility-helper": 3.0.10
+    "@aws-amplify/graphql-transformer-core": ^1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": ^2.3.0
     "@types/columnify": ^1.5.0
     "@types/deep-diff": ^1.0.0
     "@types/folder-hash": ^4.0.1
     "@types/lodash.throttle": ^4.1.6
     "@types/node": ^12.12.6
     "@types/uuid": ^8.0.0
-    amplify-codegen: ^4.1.2
+    amplify-codegen: ^4.1.4
     archiver: ^5.3.0
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1405.0
     bottleneck: 2.19.5
     chalk: ^4.1.1
@@ -804,7 +813,7 @@ __metadata:
     fs-extra: ^8.1.0
     glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-core: ^8.1.3
+    graphql-transformer-core: ^8.1.9
     ignore: ^5.2.0
     ini: ^1.3.5
     inquirer: ^7.3.3
@@ -826,17 +835,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-python-function-template-provider@1.4.4, @aws-amplify/amplify-python-function-template-provider@workspace:packages/amplify-python-function-template-provider":
+"@aws-amplify/amplify-python-function-template-provider@1.4.5, @aws-amplify/amplify-python-function-template-provider@workspace:packages/amplify-python-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-python-function-template-provider@workspace:packages/amplify-python-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@types/fs-extra": ^8.0.1
     "@types/node": ^12.12.6
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-import@2.6.1, @aws-amplify/amplify-util-import@workspace:packages/amplify-util-import":
+"@aws-amplify/amplify-util-import@2.7.0, @aws-amplify/amplify-util-import@workspace:packages/amplify-util-import":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-import@workspace:packages/amplify-util-import"
   dependencies:
@@ -845,31 +854,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-mock@5.3.1, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
+"@aws-amplify/amplify-util-mock@5.4.0, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock"
   dependencies:
-    "@aws-amplify/amplify-appsync-simulator": 2.12.4
-    "@aws-amplify/amplify-category-function": 5.3.4
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
-    "@aws-amplify/amplify-opensearch-simulator": 1.4.4
+    "@aws-amplify/amplify-appsync-simulator": 2.13.0
+    "@aws-amplify/amplify-category-function": 5.4.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
+    "@aws-amplify/amplify-opensearch-simulator": 1.5.0
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.5
-    "@aws-amplify/graphql-auth-transformer": ^2.1.7
-    "@aws-amplify/graphql-default-value-transformer": ^1.1.7
-    "@aws-amplify/graphql-function-transformer": ^1.2.5
-    "@aws-amplify/graphql-http-transformer": 1.2.5
-    "@aws-amplify/graphql-index-transformer": ^1.2.3
-    "@aws-amplify/graphql-maps-to-transformer": ^2.1.7
-    "@aws-amplify/graphql-model-transformer": ^1.3.3
-    "@aws-amplify/graphql-predictions-transformer": ^1.2.5
-    "@aws-amplify/graphql-relational-transformer": ^1.2.3
-    "@aws-amplify/graphql-searchable-transformer": ^1.2.5
-    "@aws-amplify/graphql-transformer-core": ^1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": ^2.2.2
-    "@aws-amplify/graphql-transformer-migrator": ^2.1.7
+    "@aws-amplify/amplify-provider-awscloudformation": 8.3.0
+    "@aws-amplify/graphql-auth-transformer": ^2.1.13
+    "@aws-amplify/graphql-default-value-transformer": ^1.1.13
+    "@aws-amplify/graphql-function-transformer": ^1.2.11
+    "@aws-amplify/graphql-http-transformer": 1.2.11
+    "@aws-amplify/graphql-index-transformer": ^1.2.9
+    "@aws-amplify/graphql-maps-to-transformer": ^2.1.13
+    "@aws-amplify/graphql-model-transformer": ^1.4.0
+    "@aws-amplify/graphql-predictions-transformer": ^1.2.11
+    "@aws-amplify/graphql-relational-transformer": ^1.2.9
+    "@aws-amplify/graphql-searchable-transformer": ^1.2.11
+    "@aws-amplify/graphql-transformer-core": ^1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": ^2.3.0
+    "@aws-amplify/graphql-transformer-migrator": ^2.1.13
     "@hapi/topo": ^5.0.0
     "@types/detect-port": ^1.3.0
     "@types/jest": ^29.0.0
@@ -877,10 +886,10 @@ __metadata:
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
-    amplify-codegen: ^4.1.2
-    amplify-dynamodb-simulator: 2.7.4
-    amplify-nodejs-function-runtime-provider: 2.4.4
-    amplify-storage-simulator: 1.9.1
+    amplify-codegen: ^4.1.4
+    amplify-dynamodb-simulator: 2.8.0
+    amplify-nodejs-function-runtime-provider: 2.5.0
+    amplify-storage-simulator: 1.10.0
     aws-appsync: ^4.1.4
     aws-sdk: ^2.1405.0
     aws-sdk-mock: ^5.8.0
@@ -891,33 +900,33 @@ __metadata:
     execa: ^5.1.1
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-auth-transformer: ^7.2.57
-    graphql-connection-transformer: ^5.2.56
-    graphql-dynamodb-transformer: ^7.2.56
-    graphql-function-transformer: ^3.3.47
-    graphql-key-transformer: ^3.2.56
+    graphql-auth-transformer: ^7.2.63
+    graphql-connection-transformer: ^5.2.62
+    graphql-dynamodb-transformer: ^7.2.62
+    graphql-function-transformer: ^3.3.53
+    graphql-key-transformer: ^3.2.62
     graphql-tag: ^2.10.1
-    graphql-transformer-core: ^8.1.3
-    graphql-versioned-transformer: ^5.2.56
+    graphql-transformer-core: ^8.1.9
+    graphql-versioned-transformer: ^5.2.62
     inquirer: ^7.3.3
     isomorphic-fetch: ^3.0.0
     jest: ^29.0.0
     jsonwebtoken: ^9.0.0
     lodash: ^4.17.21
     node-fetch: ^2.6.7
-    semver: ^7.3.5
+    semver: ^7.5.4
     uuid: ^8.3.2
     which: ^2.0.2
     ws: ^7.5.7
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-uibuilder@1.8.4, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
+"@aws-amplify/amplify-util-uibuilder@1.9.0, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.4.2
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-category-api": ^5.5.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-amplify/appsync-modelgen-plugin": ^2.4.4
     "@aws-amplify/codegen-ui": 2.14.2
@@ -926,7 +935,7 @@ __metadata:
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
     "@types/tiny-async-pool": ^2.0.0
-    amplify-codegen: ^4.1.2
+    amplify-codegen: ^4.1.4
     aws-sdk: ^2.1405.0
     fs-extra: ^8.1.0
     node-fetch: ^2.6.7
@@ -989,9 +998,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/appsync-modelgen-plugin@npm:2.4.5, @aws-amplify/appsync-modelgen-plugin@npm:^2.4.4":
-  version: 2.4.5
-  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.4.5"
+"@aws-amplify/appsync-modelgen-plugin@npm:2.5.1, @aws-amplify/appsync-modelgen-plugin@npm:^2.4.4":
+  version: 2.5.1
+  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.5.1"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^1.18.8
     "@graphql-codegen/visitor-plugin-common": ^1.22.0
@@ -1006,7 +1015,7 @@ __metadata:
     ts-dedent: ^1.1.0
   peerDependencies:
     graphql: ^15.5.0
-  checksum: 96378a9d72468eabc4bbb1b09c5eafc2c58ef1b7f7b6fae679b66b8710ab05431906b15d26a4fde153851766b5007e30f6fbc7afbbe29818c955a728ba9a6f49
+  checksum: 07fb5825ad89d95650f832a52cef82bc54a1cae3a421e3b0ccca29a75b7c859df8624c68c50aa66d30217f73a731e9d1651be403039bac8c5ddda01fe395d142
   languageName: node
   linkType: hard
 
@@ -1031,52 +1040,52 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/cli-extensibility-helper@3.0.9, @aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper":
+"@aws-amplify/cli-extensibility-helper@3.0.10, @aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper"
   dependencies:
-    "@aws-amplify/amplify-category-custom": 3.0.9
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    aws-cdk-lib: ~2.68.0
+    "@aws-amplify/amplify-category-custom": 3.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    aws-cdk-lib: ~2.80.0
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.1.1, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.2.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
-    "@aws-amplify/amplify-app": 5.0.9
-    "@aws-amplify/amplify-category-analytics": 5.0.11
-    "@aws-amplify/amplify-category-api": ^5.4.2
-    "@aws-amplify/amplify-category-auth": 3.3.0
-    "@aws-amplify/amplify-category-custom": 3.0.9
-    "@aws-amplify/amplify-category-function": 5.3.4
-    "@aws-amplify/amplify-category-geo": 3.2.4
-    "@aws-amplify/amplify-category-hosting": 3.5.12
-    "@aws-amplify/amplify-category-interactions": 5.1.4
-    "@aws-amplify/amplify-category-notifications": 2.24.12
-    "@aws-amplify/amplify-category-predictions": 5.2.4
-    "@aws-amplify/amplify-category-storage": 5.2.4
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-app": 5.0.10
+    "@aws-amplify/amplify-category-analytics": 5.0.12
+    "@aws-amplify/amplify-category-api": ^5.5.0
+    "@aws-amplify/amplify-category-auth": 3.4.0
+    "@aws-amplify/amplify-category-custom": 3.1.0
+    "@aws-amplify/amplify-category-function": 5.4.0
+    "@aws-amplify/amplify-category-geo": 3.3.0
+    "@aws-amplify/amplify-category-hosting": 3.5.13
+    "@aws-amplify/amplify-category-interactions": 5.1.5
+    "@aws-amplify/amplify-category-notifications": 2.25.0
+    "@aws-amplify/amplify-category-predictions": 5.3.0
+    "@aws-amplify/amplify-category-storage": 5.3.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     "@aws-amplify/amplify-cli-logger": 1.3.3
     "@aws-amplify/amplify-cli-shared-interfaces": 1.2.3
-    "@aws-amplify/amplify-console-hosting": 2.5.9
-    "@aws-amplify/amplify-container-hosting": 2.6.9
-    "@aws-amplify/amplify-dotnet-function-template-provider": 2.5.9
-    "@aws-amplify/amplify-environment-parameters": 1.6.4
+    "@aws-amplify/amplify-console-hosting": 2.5.10
+    "@aws-amplify/amplify-container-hosting": 2.6.10
+    "@aws-amplify/amplify-dotnet-function-template-provider": 2.5.10
+    "@aws-amplify/amplify-environment-parameters": 1.7.0
     "@aws-amplify/amplify-frontend-android": 3.5.5
-    "@aws-amplify/amplify-frontend-flutter": 1.4.3
-    "@aws-amplify/amplify-frontend-ios": 3.6.11
-    "@aws-amplify/amplify-frontend-javascript": 3.9.9
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
-    "@aws-amplify/amplify-go-function-template-provider": 1.4.4
-    "@aws-amplify/amplify-nodejs-function-template-provider": 2.8.4
+    "@aws-amplify/amplify-frontend-flutter": 1.4.4
+    "@aws-amplify/amplify-frontend-ios": 3.6.12
+    "@aws-amplify/amplify-frontend-javascript": 3.9.10
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
+    "@aws-amplify/amplify-go-function-template-provider": 1.4.5
+    "@aws-amplify/amplify-nodejs-function-template-provider": 2.8.5
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/amplify-provider-awscloudformation": 8.2.5
-    "@aws-amplify/amplify-python-function-template-provider": 1.4.4
-    "@aws-amplify/amplify-util-import": 2.6.1
-    "@aws-amplify/amplify-util-mock": 5.3.1
-    "@aws-amplify/amplify-util-uibuilder": 1.8.4
+    "@aws-amplify/amplify-provider-awscloudformation": 8.3.0
+    "@aws-amplify/amplify-python-function-template-provider": 1.4.5
+    "@aws-amplify/amplify-util-import": 2.7.0
+    "@aws-amplify/amplify-util-mock": 5.4.0
+    "@aws-amplify/amplify-util-uibuilder": 1.9.0
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@types/archiver": ^5.3.1
     "@types/columnify": ^1.5.1
@@ -1091,14 +1100,14 @@ __metadata:
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
-    amplify-codegen: ^4.1.2
-    amplify-dotnet-function-runtime-provider: 2.0.4
-    amplify-go-function-runtime-provider: 2.3.22
-    amplify-java-function-runtime-provider: 2.3.22
-    amplify-java-function-template-provider: 1.5.21
-    amplify-nodejs-function-runtime-provider: 2.4.4
-    amplify-python-function-runtime-provider: 2.4.22
-    aws-cdk-lib: ~2.68.0
+    amplify-codegen: ^4.1.4
+    amplify-dotnet-function-runtime-provider: 2.0.5
+    amplify-go-function-runtime-provider: 2.3.23
+    amplify-java-function-runtime-provider: 2.3.23
+    amplify-java-function-template-provider: 1.5.22
+    amplify-nodejs-function-runtime-provider: 2.5.0
+    amplify-python-function-runtime-provider: 2.4.23
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1405.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
@@ -1112,7 +1121,7 @@ __metadata:
     fs-extra: ^8.1.0
     glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-core: ^8.1.3
+    graphql-transformer-core: ^8.1.9
     gunzip-maybe: ^1.4.2
     hidefile: ^3.0.0
     ini: ^1.3.5
@@ -1124,7 +1133,7 @@ __metadata:
     ora: ^4.0.3
     progress: ^2.0.3
     promise-sequential: ^1.1.1
-    semver: ^7.3.5
+    semver: ^7.5.4
     tar-fs: ^2.1.1
     treeify: ^1.1.0
     typescript: ^4.9.5
@@ -1140,7 +1149,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.1.1
+    "@aws-amplify/cli-internal": 12.2.0
     "@types/tar": ^6.1.1
     axios: ^0.26.0
     rimraf: ^3.0.2
@@ -1224,262 +1233,277 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-auth-transformer@npm:2.1.7, @aws-amplify/graphql-auth-transformer@npm:^2.1.7":
-  version: 2.1.7
-  resolution: "@aws-amplify/graphql-auth-transformer@npm:2.1.7"
+"@aws-amplify/graphql-auth-transformer@npm:2.1.13, @aws-amplify/graphql-auth-transformer@npm:^2.1.13":
+  version: 2.1.13
+  resolution: "@aws-amplify/graphql-auth-transformer@npm:2.1.13"
   dependencies:
-    "@aws-amplify/graphql-model-transformer": 1.3.3
-    "@aws-amplify/graphql-relational-transformer": 1.2.3
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-model-transformer": 1.4.0
+    "@aws-amplify/graphql-relational-transformer": 1.2.9
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
     lodash: ^4.17.21
     md5: ^2.3.0
-  checksum: 6a902a3da44c1586724c525368a86095a9ffc90a5c678cd8660f007e5edd91add42c7b31ba3f8173782c6815d2aa57359a6a8846abe9988fa34893e4ab9155ac
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 17f842ce579c2b25700ba4a1228d03c1946a5654e868ad6bd2fa226784b58286419139391ed0676de27c84f2fc2e48d31e7563cbf9179d4f9ffcd2c446f20eca
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-default-value-transformer@npm:1.1.7, @aws-amplify/graphql-default-value-transformer@npm:^1.1.7":
-  version: 1.1.7
-  resolution: "@aws-amplify/graphql-default-value-transformer@npm:1.1.7"
+"@aws-amplify/graphql-default-value-transformer@npm:1.1.13, @aws-amplify/graphql-default-value-transformer@npm:^1.1.13":
+  version: 1.1.13
+  resolution: "@aws-amplify/graphql-default-value-transformer@npm:1.1.13"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
     libphonenumber-js: 1.9.47
-  checksum: b6e26495c6b40bf3c8cc542d0a793352c4f530b08ade5381f3103604ed2583642d7d9a47d9b940cd8ea18862bd103aa13cc974244468fb848d9f7048a70eefc6
+  checksum: 9a180601a8e3299e62fc719087bb402b4c69b572a4b8628d1e43898ca3a564c46074e8c8b737f6ef6f573f6efc029f2e72e07e2dd1acd3bf20f9f6b3331a729f
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-docs-generator@npm:4.0.2":
-  version: 4.0.2
-  resolution: "@aws-amplify/graphql-docs-generator@npm:4.0.2"
+"@aws-amplify/graphql-docs-generator@npm:4.0.3":
+  version: 4.0.3
+  resolution: "@aws-amplify/graphql-docs-generator@npm:4.0.3"
   dependencies:
     graphql: ^15.5.0
     handlebars: 4.7.7
     yargs: ^15.1.0
   bin:
     graphql-docs-generator: bin/cli
-  checksum: 7da943001200254ff04ee12cf263768293348a90b96735226dbeea3ddef6f29cd07129e54dad2d9b845c5bed3e7a147528dabbe69db6221b5fca8151b6548495
+  checksum: 5486426ecc726b69820ecc610c36a61a8ee37477c05e2ef073264431ecb783e4ac63714fda000ae2c3e8568f0e3e00534b317c05698b31430c13d709f1cd8e09
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-function-transformer@npm:1.2.5, @aws-amplify/graphql-function-transformer@npm:^1.2.5":
-  version: 1.2.5
-  resolution: "@aws-amplify/graphql-function-transformer@npm:1.2.5"
+"@aws-amplify/graphql-function-transformer@npm:1.2.11, @aws-amplify/graphql-function-transformer@npm:^1.2.11":
+  version: 1.2.11
+  resolution: "@aws-amplify/graphql-function-transformer@npm:1.2.11"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-  checksum: 8461f811ebf13df696ecb99d6f165927d83bce46bfe359fe8be73d46261d3bf88c59993fc13247fc0d44d7145611c1ab22ebf73a85cab06165f9b644851eeee6
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: c648795cf69e653178c730ae6d10e8285e0a4cbf35c04a58facc9db7da018399c5c1c86645b53a50ce042b68a549b1e09265d0f4d92b7f4fa1a0759514d1a229
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-http-transformer@npm:1.2.5, @aws-amplify/graphql-http-transformer@npm:^1.2.5":
-  version: 1.2.5
-  resolution: "@aws-amplify/graphql-http-transformer@npm:1.2.5"
+"@aws-amplify/graphql-http-transformer@npm:1.2.11, @aws-amplify/graphql-http-transformer@npm:^1.2.11":
+  version: 1.2.11
+  resolution: "@aws-amplify/graphql-http-transformer@npm:1.2.11"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-  checksum: e2ad387f17cda3ff14b0f7eedd2ad77ecd3b957790c61c7c964efab462abb4824c00f81552cec3dc6d2abedf1ae8d37644f17a57dc56e10035729ecee00c919e
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 6793f67d8b55d0a89f7ad7693c5509d84c82b2cd7da84e68122667bb0ddc1959d56d7c2482f816ddfa797e2f6154659ce3fbdeae5ba518602320d8c7b7db65e2
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-index-transformer@npm:1.2.3, @aws-amplify/graphql-index-transformer@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "@aws-amplify/graphql-index-transformer@npm:1.2.3"
+"@aws-amplify/graphql-index-transformer@npm:1.2.9, @aws-amplify/graphql-index-transformer@npm:^1.2.9":
+  version: 1.2.9
+  resolution: "@aws-amplify/graphql-index-transformer@npm:1.2.9"
   dependencies:
-    "@aws-amplify/graphql-model-transformer": 1.3.3
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    "@aws-cdk/assert": ~2.68.0
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-model-transformer": 1.4.0
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-  checksum: a32f13ffde51966d00ee3305778585563d4cecec987603b73133b1b4e687ed16975dfa98751b4a5b4c2d0290fef81e3bba1f705b4f07683c750d0df87841ae98
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: a342017efdbf565642da32e1d76f89b7e858caa5dc33d7f9ac648012510e4c1450b85efe87cf63bb9b08bed7a507bea2a9e75ed74cbe78ac82323fc49dabbb02
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-maps-to-transformer@npm:2.1.7, @aws-amplify/graphql-maps-to-transformer@npm:^2.1.7":
-  version: 2.1.7
-  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:2.1.7"
+"@aws-amplify/graphql-maps-to-transformer@npm:2.1.13, @aws-amplify/graphql-maps-to-transformer@npm:^2.1.13":
+  version: 2.1.13
+  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:2.1.13"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
     constructs: ^10.0.5
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-  checksum: 0e66c01951094211ede1fcc023ea99edd93074f6dcfb1b6d9f84cee4e1510e9321434bca7e9a30f9da03363c712e31d64ef65f39da92b404679113bc652873ac
+  checksum: 091fa7fb05b016d56bfe397424bc2153847d1ea1ebdb63351bba812c8096ddc1b214baa543430a0059ed2a823e8570aa75ad8494d058554cc7f22db82e523d3d
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-model-transformer@npm:1.3.3, @aws-amplify/graphql-model-transformer@npm:^1.3.3":
-  version: 1.3.3
-  resolution: "@aws-amplify/graphql-model-transformer@npm:1.3.3"
+"@aws-amplify/graphql-model-transformer@npm:1.4.0, @aws-amplify/graphql-model-transformer@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@aws-amplify/graphql-model-transformer@npm:1.4.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-  checksum: 460faf1ad1c41133f98b7354d2305f520f4e46af83e7e206c66d3e963f5e7405986a4a4483df0019e0f607691151c520a9c087ccaff390eb8c94ef9a538e6593
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: e97727ba3280a0bdab92dcf912c3db8930481bb95c712a496a1652266e59b0849d2d6b2eb05acf618138c5ecb4f84bc459220e3a68836408d4aa38e30823d81b
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-predictions-transformer@npm:1.2.5, @aws-amplify/graphql-predictions-transformer@npm:^1.2.5":
-  version: 1.2.5
-  resolution: "@aws-amplify/graphql-predictions-transformer@npm:1.2.5"
+"@aws-amplify/graphql-predictions-transformer@npm:1.2.11, @aws-amplify/graphql-predictions-transformer@npm:^1.2.11":
+  version: 1.2.11
+  resolution: "@aws-amplify/graphql-predictions-transformer@npm:1.2.11"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-  checksum: 78804259dd2f4e10dda18242e0079b1046860b8f173f463d2de007c68d5ad43f35eec7a4b77f17c34f0c5384d3591f10b56d4cb341dedb75719a47357d65d96e
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: bae738f4804f9dd09855180d6a3b3039b3a83d0ea91b680f03cb515f3d3b2acf048b0ec1b82ffef035c92b458b25152fc78618080a15ccf1aff6d727b7e85935
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-relational-transformer@npm:1.2.3, @aws-amplify/graphql-relational-transformer@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "@aws-amplify/graphql-relational-transformer@npm:1.2.3"
+"@aws-amplify/graphql-relational-transformer@npm:1.2.9, @aws-amplify/graphql-relational-transformer@npm:^1.2.9":
+  version: 1.2.9
+  resolution: "@aws-amplify/graphql-relational-transformer@npm:1.2.9"
   dependencies:
-    "@aws-amplify/graphql-index-transformer": 1.2.3
-    "@aws-amplify/graphql-model-transformer": 1.3.3
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-index-transformer": 1.2.9
+    "@aws-amplify/graphql-model-transformer": 1.4.0
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
     immer: ^9.0.12
-  checksum: dece07679854792a317c34368da4175faa798a7bc608c0acfda32e90c5a77323dda8eb907eb7217e1c6ce340456aafea60778ffcccae520c51f0083ad59a9854
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: ca05de1ba427a7af6e8210428f73764f7c026327ff99248a150f491cc11316c86e0c8c26186f6c66f115f2b7a2a82a2f3ac8463c59f582f6e411d7775d409d77
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-schema-generator@npm:0.1.3":
-  version: 0.1.3
-  resolution: "@aws-amplify/graphql-schema-generator@npm:0.1.3"
+"@aws-amplify/graphql-schema-generator@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@aws-amplify/graphql-schema-generator@npm:0.3.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-sdk/client-iam": 3.338.0
+    "@aws-sdk/client-lambda": 3.338.0
+    "@aws-sdk/client-rds": 3.338.0
+    fs-extra: 11.1.1
     graphql: ^15.5.0
     knex: ~2.4.0
     mysql2: ~2.3.3
+    ora: ^4.0.3
   peerDependencies:
     "@aws-amplify/amplify-prompts": ^2.6.8
-  checksum: ae75414644ee28f7257f40038971c4553f9c177764fd33b11b7ed088e65e3574eacb9da7bda39637ed929d7e0e0490f18e135f40f9868475e8e4dcf87277efcc
+  checksum: 733204fe8b920b67bb6a03dafcc583d3fb74b0191311265cdbfdfceb92ded5e80e07c882f467e5cdbce7cbd645bcf799335e3a8a536ba47849185050e082a2c6
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-searchable-transformer@npm:1.2.5, @aws-amplify/graphql-searchable-transformer@npm:^1.2.5":
-  version: 1.2.5
-  resolution: "@aws-amplify/graphql-searchable-transformer@npm:1.2.5"
+"@aws-amplify/graphql-searchable-transformer@npm:1.2.11, @aws-amplify/graphql-searchable-transformer@npm:^1.2.11":
+  version: 1.2.11
+  resolution: "@aws-amplify/graphql-searchable-transformer@npm:1.2.11"
   dependencies:
-    "@aws-amplify/graphql-model-transformer": 1.3.3
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-model-transformer": 1.4.0
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-  checksum: ee2ed0c482326b4f053eff2d3047212c64648a204526ee23a300b3a6564097d89b35f7e66d618512837d372eaed3f8b176f6c80d7dc11c815c240be9f9cd0471
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: c2aa249b3dbb7e0dbfde5f64a5ab3ce59ccb3a7b3dfc46ea726d4d972b8cd0ae0392e9bf17d35b5308b17e31aa76ce2a3b93ba9fbe3c22f118a38d246c407ee8
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-core@npm:1.3.3, @aws-amplify/graphql-transformer-core@npm:^1.3.3":
-  version: 1.3.3
-  resolution: "@aws-amplify/graphql-transformer-core@npm:1.3.3"
+"@aws-amplify/graphql-transformer-core@npm:1.4.0, @aws-amplify/graphql-transformer-core@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@aws-amplify/graphql-transformer-core@npm:1.4.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    aws-cdk-lib: ~2.68.0
-    constructs: ^10.0.5
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-transformer-common: 4.24.6
+    graphql-transformer-common: 4.25.0
     hjson: ^3.2.2
     lodash: ^4.17.21
     md5: ^2.3.0
     object-hash: ^3.0.0
     ts-dedent: ^2.0.0
-  checksum: 410de74040fc2cb554cf6c3b86854f26c9556a796c0d455b7e47aac3020f8cb9accca2090a231178999fd3d21bc07698b1ba4edba56329b1fc1696b788cdcbd8
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/graphql-transformer-interfaces@npm:2.2.2, @aws-amplify/graphql-transformer-interfaces@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "@aws-amplify/graphql-transformer-interfaces@npm:2.2.2"
-  dependencies:
-    aws-cdk-lib: ~2.68.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
     constructs: ^10.0.5
-    graphql: ^15.5.0
-  checksum: 3fecc61db7dc6185f7e3d782357cd8e8134b76fd1a3e414fe219a385da4acc9b956e08e355b88add582991fa500eff14345c136da349d98007cdd2a3393f8da7
+  checksum: 715e497d580c0aad959b6858e30ece8511d96fede02ca50657f910bc50120fe38654b4068f887a228e56e9a141a541e1fbde59e9821e9c5d08dcb9bd26132d35
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-migrator@npm:2.1.7, @aws-amplify/graphql-transformer-migrator@npm:^2.1.7":
-  version: 2.1.7
-  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.1.7"
+"@aws-amplify/graphql-transformer-interfaces@npm:2.3.0, @aws-amplify/graphql-transformer-interfaces@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@aws-amplify/graphql-transformer-interfaces@npm:2.3.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
+    graphql: ^15.5.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: c0505cb76b38454e798210e51d9f466fa9538b77e224ca132a3f21d011cbb7416c75d0d00047b1734ecaeec37841a3f1531362a85e9ddd13eb77b85ee39041df
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer-migrator@npm:2.1.13, @aws-amplify/graphql-transformer-migrator@npm:^2.1.13":
+  version: 2.1.13
+  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.1.13"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 1.4.0
     fs-extra: ^8.1.0
     glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-common: 4.24.6
+    graphql-transformer-common: 4.25.0
     lodash: ^4.17.21
   peerDependencies:
     "@aws-amplify/amplify-cli-core": 4.0.4
     "@aws-amplify/amplify-environment-parameters": ^1.5.0
     "@aws-amplify/amplify-prompts": ^2.6.8
-  checksum: d33ee227fafa8ddc5bcf636dd5535b1025bcfe2ad731971c08b2272ac0ef758b30e37a0a47c9439f7759261d09ae9a85b976375335e854fb34e84d10fee692f5
+  checksum: e511d6e1ccc0b0c50467626a62d7358e2fd1262afb249b9c56f4e9ca77c6ca0c9cfecd81bec9c7bc3d201b0ab897a965cd4eb24effe7c39e27789fe96a9f9e9b
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@aws-amplify/graphql-transformer@npm:0.0.2"
+"@aws-amplify/graphql-transformer@npm:0.1.0":
+  version: 0.1.0
+  resolution: "@aws-amplify/graphql-transformer@npm:0.1.0"
   dependencies:
-    "@aws-amplify/graphql-auth-transformer": 2.1.7
-    "@aws-amplify/graphql-default-value-transformer": 1.1.7
-    "@aws-amplify/graphql-function-transformer": 1.2.5
-    "@aws-amplify/graphql-http-transformer": 1.2.5
-    "@aws-amplify/graphql-index-transformer": 1.2.3
-    "@aws-amplify/graphql-maps-to-transformer": 2.1.7
-    "@aws-amplify/graphql-model-transformer": 1.3.3
-    "@aws-amplify/graphql-predictions-transformer": 1.2.5
-    "@aws-amplify/graphql-relational-transformer": 1.2.3
-    "@aws-amplify/graphql-searchable-transformer": 1.2.5
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-  checksum: 6306009fd0db0e75a2de5846f5a290bbf5f6798eb05aa7c124e6799c79e6774ebafda2dc41c7dbbfa7102dc014c8778dff1d8dde7238d661afa558e2ee3c3a42
+    "@aws-amplify/graphql-auth-transformer": 2.1.13
+    "@aws-amplify/graphql-default-value-transformer": 1.1.13
+    "@aws-amplify/graphql-function-transformer": 1.2.11
+    "@aws-amplify/graphql-http-transformer": 1.2.11
+    "@aws-amplify/graphql-index-transformer": 1.2.9
+    "@aws-amplify/graphql-maps-to-transformer": 2.1.13
+    "@aws-amplify/graphql-model-transformer": 1.4.0
+    "@aws-amplify/graphql-predictions-transformer": 1.2.11
+    "@aws-amplify/graphql-relational-transformer": 1.2.9
+    "@aws-amplify/graphql-searchable-transformer": 1.2.11
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
+  checksum: 9e2a56dbea3a6107c212c2e88c2956de7782b78242d6dbe06791636bfd45580c8e7dc48a0deb1070128c38385f779c2ac176677326b77a1c8696fa2556f8b234
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-types-generator@npm:3.0.2":
-  version: 3.0.2
-  resolution: "@aws-amplify/graphql-types-generator@npm:3.0.2"
+"@aws-amplify/graphql-types-generator@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@aws-amplify/graphql-types-generator@npm:3.0.3"
   dependencies:
     "@babel/generator": 7.0.0-beta.4
     "@babel/types": 7.0.0-beta.4
@@ -1502,7 +1526,7 @@ __metadata:
     yargs: ^15.1.0
   bin:
     graphql-types-generator: lib/cli.js
-  checksum: fb1cbf6f02ea6ba1198ce78fcfbc16839203edbd9a51cee4cff0674d2edb95c29bac5d94600ff523109e2d9d755d305169007b2040da1e45ae9610adf731175c
+  checksum: 513e648bf98e27803bc0b1a9807cdf8db98b5c81f9b3ee8f822aaa02f8320fe043ee43b5de2a2a1f9a6bf91a2fbb211b0f0efb7dd1942288ef360139654d9936
   languageName: node
   linkType: hard
 
@@ -1581,23 +1605,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-cdk/assert@npm:~2.68.0":
-  version: 2.68.0
-  resolution: "@aws-cdk/assert@npm:2.68.0"
-  dependencies:
-    "@aws-cdk/cloudformation-diff": 2.68.0
-  peerDependencies:
-    aws-cdk-lib: ^2.68.0
-    constructs: ^10.0.0
-    jest: ">=26.6.3"
-  checksum: 4f5ed8b4ab45e32e014f698faf8298e3a1e73a7ad1ac19395efa7379b9c6f9bdb4bf6f747136341c420c870763ff1a566c4b08f72be49e9c3231778672bd0a85
-  languageName: node
-  linkType: hard
-
-"@aws-cdk/asset-awscli-v1@npm:^2.2.97":
-  version: 2.2.106
-  resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.106"
-  checksum: 3e442ce0b67d45c84666ff6e66dbfca24ccf65164afb901d2a7c5928cdd35203597a6b11cec67704b0955bf060d4ad2ababf759175e608aad1dd6104b3a7a8db
+"@aws-cdk/asset-awscli-v1@npm:^2.2.177":
+  version: 2.2.200
+  resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.200"
+  checksum: c0415247cdf2bb317ca36a0fae93934d49a0c5d72e8229bfc30ea4450cfedb10c69d2e499875d752384f3ab44cbffeb4b06fa05f8cb07328c199cc3b59523b97
   languageName: node
   linkType: hard
 
@@ -1608,20 +1619,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.77":
-  version: 2.0.85
-  resolution: "@aws-cdk/asset-node-proxy-agent-v5@npm:2.0.85"
-  checksum: 6ee209de6ebd3d7b518eb297285985543c48701e20488678503f2f888285662ad77b91f7c0bdd21e70252c7789040d27d242cbea59214ed7e164c3d631499aae
+"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.148":
+  version: 2.0.166
+  resolution: "@aws-cdk/asset-node-proxy-agent-v5@npm:2.0.166"
+  checksum: 7385d48e25f199cdaac4e961ec6a95a031a60bb9a93d78ababaf3b91122593dc965fa764de6aeca2af9e12113dcbd18535aa031c67a1846e534294f2cf051558
   languageName: node
   linkType: hard
 
-"@aws-cdk/aws-apigatewayv2-alpha@npm:~2.68.0-alpha.0":
-  version: 2.68.0-alpha.0
-  resolution: "@aws-cdk/aws-apigatewayv2-alpha@npm:2.68.0-alpha.0"
+"@aws-cdk/aws-apigatewayv2-alpha@npm:~2.80.0-alpha.0":
+  version: 2.80.0-alpha.0
+  resolution: "@aws-cdk/aws-apigatewayv2-alpha@npm:2.80.0-alpha.0"
   peerDependencies:
-    aws-cdk-lib: ^2.68.0
+    aws-cdk-lib: 2.80.0
     constructs: ^10.0.0
-  checksum: f6b2fb8b6c3c9af257a7e4dd7b7ac9cf35c417fcbc3af778636265feb0de0818916ba033ea0c80933f9d2a7775b24a29662bb835b3fcd5afa4ba87afc8b7d4b7
+  checksum: 11fd9e26caa1ee1697381e7d1ed4aab7884f57d71c16a9e83461d7b45a0d8161aac8e309bdb92e1c3c8012916b0d3bbd5c835949d9836c7932cf9e0efc05b22f
   languageName: node
   linkType: hard
 
@@ -1635,7 +1646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-cdk/cloudformation-diff@npm:2.68.0, @aws-cdk/cloudformation-diff@npm:~2.68.0":
+"@aws-cdk/cloudformation-diff@npm:~2.68.0":
   version: 2.68.0
   resolution: "@aws-cdk/cloudformation-diff@npm:2.68.0"
   dependencies:
@@ -1646,17 +1657,6 @@ __metadata:
     string-width: ^4.2.3
     table: ^6.8.1
   checksum: 535d58adf4e16872b3f6c7335757d58852e990995c74815a2ee738f32393423457f0ac2492e3e408ef99b8592fa04d73b2c765c246e6603ca61821d9855d749f
-  languageName: node
-  linkType: hard
-
-"@aws-crypto/crc32@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@aws-crypto/crc32@npm:2.0.0"
-  dependencies:
-    "@aws-crypto/util": ^2.0.0
-    "@aws-sdk/types": ^3.1.0
-    tslib: ^1.11.1
-  checksum: 3ac30d7d25f3cc5eac55e141d260571d22ad36370e66f71ca2397c5e91b0a2566dde2063ff45b882fe4b096369e078bea342a0eb5518387fcf10239ca6be76fb
   languageName: node
   linkType: hard
 
@@ -1919,6 +1919,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/abort-controller@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/abort-controller@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 6d0c0d4911f67bbb4f98831b7664565f6cc880cc5d26cbc73e39abacc248fabfdcc3096b4a440255ff4fa26221ddb16f70ea0cc24ceb438187d45827409e635c
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/abort-controller@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/abort-controller@npm:3.40.0"
@@ -1939,16 +1949,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/chunked-blob-reader-native@npm:3.37.0":
-  version: 3.37.0
-  resolution: "@aws-sdk/chunked-blob-reader-native@npm:3.37.0"
-  dependencies:
-    "@aws-sdk/util-base64-browser": 3.37.0
-    tslib: ^2.3.0
-  checksum: 9b7e51206dc4d4574326460cf46acf862add8285bc0de2d086a3c611cd040461f9b9641d0c5f490bbc9ca0ca3c26bdf405e048d3718f33dc58bdd6cc9e657e67
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/chunked-blob-reader-native@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/chunked-blob-reader-native@npm:3.6.1"
@@ -1956,15 +1956,6 @@ __metadata:
     "@aws-sdk/util-base64-browser": 3.6.1
     tslib: ^1.8.0
   checksum: 3675cb16d43f82cadb709ff1b7cf0610d4ef645887789b29cec7a0c17a100e89fb375843358532f17e7ca86c0fa6dffb6347a07e5d67cbf184cffd9a75636119
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/chunked-blob-reader@npm:3.37.0":
-  version: 3.37.0
-  resolution: "@aws-sdk/chunked-blob-reader@npm:3.37.0"
-  dependencies:
-    tslib: ^2.3.0
-  checksum: 0c2209d4a92532798768f0e52f4d10ce5d62b91fb060685313470165b9c06804761496034803ccee179991eac681df7f588e89c00a81749706d0eb2592df7db6
   languageName: node
   linkType: hard
 
@@ -2266,6 +2257,52 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-iam@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/client-iam@npm:3.338.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 3.0.0
+    "@aws-crypto/sha256-js": 3.0.0
+    "@aws-sdk/client-sts": 3.338.0
+    "@aws-sdk/config-resolver": 3.338.0
+    "@aws-sdk/credential-provider-node": 3.338.0
+    "@aws-sdk/fetch-http-handler": 3.338.0
+    "@aws-sdk/hash-node": 3.338.0
+    "@aws-sdk/invalid-dependency": 3.338.0
+    "@aws-sdk/middleware-content-length": 3.338.0
+    "@aws-sdk/middleware-endpoint": 3.338.0
+    "@aws-sdk/middleware-host-header": 3.338.0
+    "@aws-sdk/middleware-logger": 3.338.0
+    "@aws-sdk/middleware-recursion-detection": 3.338.0
+    "@aws-sdk/middleware-retry": 3.338.0
+    "@aws-sdk/middleware-serde": 3.338.0
+    "@aws-sdk/middleware-signing": 3.338.0
+    "@aws-sdk/middleware-stack": 3.338.0
+    "@aws-sdk/middleware-user-agent": 3.338.0
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/node-http-handler": 3.338.0
+    "@aws-sdk/smithy-client": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/url-parser": 3.338.0
+    "@aws-sdk/util-base64": 3.310.0
+    "@aws-sdk/util-body-length-browser": 3.310.0
+    "@aws-sdk/util-body-length-node": 3.310.0
+    "@aws-sdk/util-defaults-mode-browser": 3.338.0
+    "@aws-sdk/util-defaults-mode-node": 3.338.0
+    "@aws-sdk/util-endpoints": 3.338.0
+    "@aws-sdk/util-retry": 3.338.0
+    "@aws-sdk/util-user-agent-browser": 3.338.0
+    "@aws-sdk/util-user-agent-node": 3.338.0
+    "@aws-sdk/util-utf8": 3.310.0
+    "@aws-sdk/util-waiter": 3.338.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
+    fast-xml-parser: 4.1.2
+    tslib: ^2.5.0
+  checksum: 8a218409f784c7de713b1f8b64b0d2b98d49b69000a3e7f33374c14b47e522de927a9c90ced29c23f32681e0b44ae9ae021b299c8763926821679cdac3c130a0
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-kinesis@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/client-kinesis@npm:3.6.1"
@@ -2306,6 +2343,54 @@ __metadata:
     "@aws-sdk/util-waiter": 3.6.1
     tslib: ^2.0.0
   checksum: 10d30fe93951551aefd886ed220583925f0ffe4213fc560ba4e3618c2964a1571efa52a540bd71e7cba40412525c6c541d8bff947c4b39ff020253d3f8eedf89
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-lambda@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/client-lambda@npm:3.338.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 3.0.0
+    "@aws-crypto/sha256-js": 3.0.0
+    "@aws-sdk/client-sts": 3.338.0
+    "@aws-sdk/config-resolver": 3.338.0
+    "@aws-sdk/credential-provider-node": 3.338.0
+    "@aws-sdk/eventstream-serde-browser": 3.338.0
+    "@aws-sdk/eventstream-serde-config-resolver": 3.338.0
+    "@aws-sdk/eventstream-serde-node": 3.338.0
+    "@aws-sdk/fetch-http-handler": 3.338.0
+    "@aws-sdk/hash-node": 3.338.0
+    "@aws-sdk/invalid-dependency": 3.338.0
+    "@aws-sdk/middleware-content-length": 3.338.0
+    "@aws-sdk/middleware-endpoint": 3.338.0
+    "@aws-sdk/middleware-host-header": 3.338.0
+    "@aws-sdk/middleware-logger": 3.338.0
+    "@aws-sdk/middleware-recursion-detection": 3.338.0
+    "@aws-sdk/middleware-retry": 3.338.0
+    "@aws-sdk/middleware-serde": 3.338.0
+    "@aws-sdk/middleware-signing": 3.338.0
+    "@aws-sdk/middleware-stack": 3.338.0
+    "@aws-sdk/middleware-user-agent": 3.338.0
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/node-http-handler": 3.338.0
+    "@aws-sdk/smithy-client": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/url-parser": 3.338.0
+    "@aws-sdk/util-base64": 3.310.0
+    "@aws-sdk/util-body-length-browser": 3.310.0
+    "@aws-sdk/util-body-length-node": 3.310.0
+    "@aws-sdk/util-defaults-mode-browser": 3.338.0
+    "@aws-sdk/util-defaults-mode-node": 3.338.0
+    "@aws-sdk/util-endpoints": 3.338.0
+    "@aws-sdk/util-retry": 3.338.0
+    "@aws-sdk/util-user-agent-browser": 3.338.0
+    "@aws-sdk/util-user-agent-node": 3.338.0
+    "@aws-sdk/util-utf8": 3.310.0
+    "@aws-sdk/util-waiter": 3.338.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
+    tslib: ^2.5.0
+  checksum: a34bae9397727b9900796bd230be9ef28de20d9b714ef02c4355c2353488355db8b1e72a1b989158e94c9cb7579850c693255a22e2f8b80fad9bc70105f39ac6
   languageName: node
   linkType: hard
 
@@ -2547,6 +2632,53 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-rds@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/client-rds@npm:3.338.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 3.0.0
+    "@aws-crypto/sha256-js": 3.0.0
+    "@aws-sdk/client-sts": 3.338.0
+    "@aws-sdk/config-resolver": 3.338.0
+    "@aws-sdk/credential-provider-node": 3.338.0
+    "@aws-sdk/fetch-http-handler": 3.338.0
+    "@aws-sdk/hash-node": 3.338.0
+    "@aws-sdk/invalid-dependency": 3.338.0
+    "@aws-sdk/middleware-content-length": 3.338.0
+    "@aws-sdk/middleware-endpoint": 3.338.0
+    "@aws-sdk/middleware-host-header": 3.338.0
+    "@aws-sdk/middleware-logger": 3.338.0
+    "@aws-sdk/middleware-recursion-detection": 3.338.0
+    "@aws-sdk/middleware-retry": 3.338.0
+    "@aws-sdk/middleware-sdk-rds": 3.338.0
+    "@aws-sdk/middleware-serde": 3.338.0
+    "@aws-sdk/middleware-signing": 3.338.0
+    "@aws-sdk/middleware-stack": 3.338.0
+    "@aws-sdk/middleware-user-agent": 3.338.0
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/node-http-handler": 3.338.0
+    "@aws-sdk/smithy-client": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/url-parser": 3.338.0
+    "@aws-sdk/util-base64": 3.310.0
+    "@aws-sdk/util-body-length-browser": 3.310.0
+    "@aws-sdk/util-body-length-node": 3.310.0
+    "@aws-sdk/util-defaults-mode-browser": 3.338.0
+    "@aws-sdk/util-defaults-mode-node": 3.338.0
+    "@aws-sdk/util-endpoints": 3.338.0
+    "@aws-sdk/util-retry": 3.338.0
+    "@aws-sdk/util-user-agent-browser": 3.338.0
+    "@aws-sdk/util-user-agent-node": 3.338.0
+    "@aws-sdk/util-utf8": 3.310.0
+    "@aws-sdk/util-waiter": 3.338.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
+    fast-xml-parser: 4.1.2
+    tslib: ^2.5.0
+  checksum: 89cb2d23a515bdfac0a3bddde255755ad14b72da3197016d1e64e741407386d461aeace4b1a0f1f22153ba1b4f2d305a713de814e9160d9da8be371ffbc4b01f
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-rekognition@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/client-rekognition@npm:3.6.1"
@@ -2685,62 +2817,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.25.0":
-  version: 3.44.0
-  resolution: "@aws-sdk/client-s3@npm:3.44.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": 2.0.0
-    "@aws-crypto/sha256-js": 2.0.0
-    "@aws-sdk/client-sts": 3.43.0
-    "@aws-sdk/config-resolver": 3.40.0
-    "@aws-sdk/credential-provider-node": 3.41.0
-    "@aws-sdk/eventstream-serde-browser": 3.40.0
-    "@aws-sdk/eventstream-serde-config-resolver": 3.40.0
-    "@aws-sdk/eventstream-serde-node": 3.40.0
-    "@aws-sdk/fetch-http-handler": 3.40.0
-    "@aws-sdk/hash-blob-browser": 3.40.0
-    "@aws-sdk/hash-node": 3.40.0
-    "@aws-sdk/hash-stream-node": 3.40.0
-    "@aws-sdk/invalid-dependency": 3.40.0
-    "@aws-sdk/md5-js": 3.40.0
-    "@aws-sdk/middleware-apply-body-checksum": 3.40.0
-    "@aws-sdk/middleware-bucket-endpoint": 3.41.0
-    "@aws-sdk/middleware-content-length": 3.40.0
-    "@aws-sdk/middleware-expect-continue": 3.40.0
-    "@aws-sdk/middleware-host-header": 3.40.0
-    "@aws-sdk/middleware-location-constraint": 3.40.0
-    "@aws-sdk/middleware-logger": 3.40.0
-    "@aws-sdk/middleware-retry": 3.40.0
-    "@aws-sdk/middleware-sdk-s3": 3.41.0
-    "@aws-sdk/middleware-serde": 3.40.0
-    "@aws-sdk/middleware-signing": 3.40.0
-    "@aws-sdk/middleware-ssec": 3.40.0
-    "@aws-sdk/middleware-stack": 3.40.0
-    "@aws-sdk/middleware-user-agent": 3.40.0
-    "@aws-sdk/node-config-provider": 3.40.0
-    "@aws-sdk/node-http-handler": 3.40.0
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/smithy-client": 3.41.0
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/url-parser": 3.40.0
-    "@aws-sdk/util-base64-browser": 3.37.0
-    "@aws-sdk/util-base64-node": 3.37.0
-    "@aws-sdk/util-body-length-browser": 3.37.0
-    "@aws-sdk/util-body-length-node": 3.37.0
-    "@aws-sdk/util-user-agent-browser": 3.40.0
-    "@aws-sdk/util-user-agent-node": 3.40.0
-    "@aws-sdk/util-utf8-browser": 3.37.0
-    "@aws-sdk/util-utf8-node": 3.37.0
-    "@aws-sdk/util-waiter": 3.40.0
-    "@aws-sdk/xml-builder": 3.37.0
-    entities: 2.2.0
-    fast-xml-parser: 3.19.0
-    tslib: ^2.3.0
-  checksum: 268681108a7c6b22faef80303742dbab61f584af4abc532c12ce55f3d555c54f68395f23d60f32514499b838447e2f5f6410a9d850730fb80409def4dd8cdca3
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/client-s3@npm:^3.303.0":
+"@aws-sdk/client-s3@npm:^3.25.0, @aws-sdk/client-s3@npm:^3.303.0":
   version: 3.373.0
   resolution: "@aws-sdk/client-s3@npm:3.373.0"
   dependencies:
@@ -2887,6 +2964,47 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-sso-oidc@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/client-sso-oidc@npm:3.338.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 3.0.0
+    "@aws-crypto/sha256-js": 3.0.0
+    "@aws-sdk/config-resolver": 3.338.0
+    "@aws-sdk/fetch-http-handler": 3.338.0
+    "@aws-sdk/hash-node": 3.338.0
+    "@aws-sdk/invalid-dependency": 3.338.0
+    "@aws-sdk/middleware-content-length": 3.338.0
+    "@aws-sdk/middleware-endpoint": 3.338.0
+    "@aws-sdk/middleware-host-header": 3.338.0
+    "@aws-sdk/middleware-logger": 3.338.0
+    "@aws-sdk/middleware-recursion-detection": 3.338.0
+    "@aws-sdk/middleware-retry": 3.338.0
+    "@aws-sdk/middleware-serde": 3.338.0
+    "@aws-sdk/middleware-stack": 3.338.0
+    "@aws-sdk/middleware-user-agent": 3.338.0
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/node-http-handler": 3.338.0
+    "@aws-sdk/smithy-client": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/url-parser": 3.338.0
+    "@aws-sdk/util-base64": 3.310.0
+    "@aws-sdk/util-body-length-browser": 3.310.0
+    "@aws-sdk/util-body-length-node": 3.310.0
+    "@aws-sdk/util-defaults-mode-browser": 3.338.0
+    "@aws-sdk/util-defaults-mode-node": 3.338.0
+    "@aws-sdk/util-endpoints": 3.338.0
+    "@aws-sdk/util-retry": 3.338.0
+    "@aws-sdk/util-user-agent-browser": 3.338.0
+    "@aws-sdk/util-user-agent-node": 3.338.0
+    "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
+    tslib: ^2.5.0
+  checksum: 3cb6a05c696e5557c41fb570e9f71a2ab3c4c8572a6bc6ea9ec8d2f40afe96be6d5cf7500e87a78e3df0a9cf06002b9857513d310dfa1c54b160f0dc4ea885a2
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sso-oidc@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/client-sso-oidc@npm:3.370.0"
@@ -2965,6 +3083,47 @@ __metadata:
     "@aws-sdk/util-utf8": 3.310.0
     tslib: ^2.5.0
   checksum: 80049d13f474910471a3667a4dcf6507495d2c0c392b1140e9e4b6e9092ca24dbf39c76b407c2ce9e45911f60494acc14fc8b954960bed7f4ce47325ce1b7c23
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-sso@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/client-sso@npm:3.338.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 3.0.0
+    "@aws-crypto/sha256-js": 3.0.0
+    "@aws-sdk/config-resolver": 3.338.0
+    "@aws-sdk/fetch-http-handler": 3.338.0
+    "@aws-sdk/hash-node": 3.338.0
+    "@aws-sdk/invalid-dependency": 3.338.0
+    "@aws-sdk/middleware-content-length": 3.338.0
+    "@aws-sdk/middleware-endpoint": 3.338.0
+    "@aws-sdk/middleware-host-header": 3.338.0
+    "@aws-sdk/middleware-logger": 3.338.0
+    "@aws-sdk/middleware-recursion-detection": 3.338.0
+    "@aws-sdk/middleware-retry": 3.338.0
+    "@aws-sdk/middleware-serde": 3.338.0
+    "@aws-sdk/middleware-stack": 3.338.0
+    "@aws-sdk/middleware-user-agent": 3.338.0
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/node-http-handler": 3.338.0
+    "@aws-sdk/smithy-client": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/url-parser": 3.338.0
+    "@aws-sdk/util-base64": 3.310.0
+    "@aws-sdk/util-body-length-browser": 3.310.0
+    "@aws-sdk/util-body-length-node": 3.310.0
+    "@aws-sdk/util-defaults-mode-browser": 3.338.0
+    "@aws-sdk/util-defaults-mode-node": 3.338.0
+    "@aws-sdk/util-endpoints": 3.338.0
+    "@aws-sdk/util-retry": 3.338.0
+    "@aws-sdk/util-user-agent-browser": 3.338.0
+    "@aws-sdk/util-user-agent-node": 3.338.0
+    "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
+    tslib: ^2.5.0
+  checksum: 453a178c81eda38253102120465eb8b0ba17a46c3dbdaba56871d10e82eed9c8cbf88c3d09ba6b4d9b1d51b5f718e1b757bbccae899eb392ae50ae6b3e0ae367
   languageName: node
   linkType: hard
 
@@ -3089,6 +3248,51 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-sts@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/client-sts@npm:3.338.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 3.0.0
+    "@aws-crypto/sha256-js": 3.0.0
+    "@aws-sdk/config-resolver": 3.338.0
+    "@aws-sdk/credential-provider-node": 3.338.0
+    "@aws-sdk/fetch-http-handler": 3.338.0
+    "@aws-sdk/hash-node": 3.338.0
+    "@aws-sdk/invalid-dependency": 3.338.0
+    "@aws-sdk/middleware-content-length": 3.338.0
+    "@aws-sdk/middleware-endpoint": 3.338.0
+    "@aws-sdk/middleware-host-header": 3.338.0
+    "@aws-sdk/middleware-logger": 3.338.0
+    "@aws-sdk/middleware-recursion-detection": 3.338.0
+    "@aws-sdk/middleware-retry": 3.338.0
+    "@aws-sdk/middleware-sdk-sts": 3.338.0
+    "@aws-sdk/middleware-serde": 3.338.0
+    "@aws-sdk/middleware-signing": 3.338.0
+    "@aws-sdk/middleware-stack": 3.338.0
+    "@aws-sdk/middleware-user-agent": 3.338.0
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/node-http-handler": 3.338.0
+    "@aws-sdk/smithy-client": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/url-parser": 3.338.0
+    "@aws-sdk/util-base64": 3.310.0
+    "@aws-sdk/util-body-length-browser": 3.310.0
+    "@aws-sdk/util-body-length-node": 3.310.0
+    "@aws-sdk/util-defaults-mode-browser": 3.338.0
+    "@aws-sdk/util-defaults-mode-node": 3.338.0
+    "@aws-sdk/util-endpoints": 3.338.0
+    "@aws-sdk/util-retry": 3.338.0
+    "@aws-sdk/util-user-agent-browser": 3.338.0
+    "@aws-sdk/util-user-agent-node": 3.338.0
+    "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
+    fast-xml-parser: 4.1.2
+    tslib: ^2.5.0
+  checksum: 8fe6b73684c485f00bc4b3e7c7ca29a16ae705aedaaa44004e7fdbedc462685082323fccb39a0d2e8bcc99ad10138e901d794a1c3b1f0e8c55cea0c3b382896a
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sts@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/client-sts@npm:3.370.0"
@@ -3172,47 +3376,6 @@ __metadata:
     fast-xml-parser: 3.19.0
     tslib: ^2.3.0
   checksum: 7b969e9067b09dffe2ed286af586faaa36fb25d3387e0c134b970c8f6a214e44bbb1167f17f9c5ec723e83e2540addc6a5e09313d27f8ddf283b6f4d34396814
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/client-sts@npm:3.43.0":
-  version: 3.43.0
-  resolution: "@aws-sdk/client-sts@npm:3.43.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": 2.0.0
-    "@aws-crypto/sha256-js": 2.0.0
-    "@aws-sdk/config-resolver": 3.40.0
-    "@aws-sdk/credential-provider-node": 3.41.0
-    "@aws-sdk/fetch-http-handler": 3.40.0
-    "@aws-sdk/hash-node": 3.40.0
-    "@aws-sdk/invalid-dependency": 3.40.0
-    "@aws-sdk/middleware-content-length": 3.40.0
-    "@aws-sdk/middleware-host-header": 3.40.0
-    "@aws-sdk/middleware-logger": 3.40.0
-    "@aws-sdk/middleware-retry": 3.40.0
-    "@aws-sdk/middleware-sdk-sts": 3.40.0
-    "@aws-sdk/middleware-serde": 3.40.0
-    "@aws-sdk/middleware-signing": 3.40.0
-    "@aws-sdk/middleware-stack": 3.40.0
-    "@aws-sdk/middleware-user-agent": 3.40.0
-    "@aws-sdk/node-config-provider": 3.40.0
-    "@aws-sdk/node-http-handler": 3.40.0
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/smithy-client": 3.41.0
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/url-parser": 3.40.0
-    "@aws-sdk/util-base64-browser": 3.37.0
-    "@aws-sdk/util-base64-node": 3.37.0
-    "@aws-sdk/util-body-length-browser": 3.37.0
-    "@aws-sdk/util-body-length-node": 3.37.0
-    "@aws-sdk/util-user-agent-browser": 3.40.0
-    "@aws-sdk/util-user-agent-node": 3.40.0
-    "@aws-sdk/util-utf8-browser": 3.37.0
-    "@aws-sdk/util-utf8-node": 3.37.0
-    entities: 2.2.0
-    fast-xml-parser: 3.19.0
-    tslib: ^2.3.0
-  checksum: 8a409596a5a2e7d88fb45ae3034924f398a7f54ae328c4681a7b03a364b392b64ae407a94b4b651df9a094b68692cb184f898bc2908fa22f507c71d589443da0
   languageName: node
   linkType: hard
 
@@ -3307,6 +3470,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/config-resolver@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/config-resolver@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-config-provider": 3.310.0
+    "@aws-sdk/util-middleware": 3.338.0
+    tslib: ^2.5.0
+  checksum: a8acdbeb57abc413c5e65a299dde78c80d8640169cf7d859afe07085d16121aa9210635ac80f7ec169f38e2378adc58b35ab2fb7e009d89639a29610d62d0471
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/config-resolver@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/config-resolver@npm:3.40.0"
@@ -3350,6 +3525,17 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 724b357bef7f48288a0f4013507f0e752eeb1bde785c36821b2a59388682286d3adaa64933fdac9edf694616d330d3ec33204b801f20167a8eaf8aa499c5aded
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-env@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/credential-provider-env@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 573603d3eb76949872a5bb2d3b72b9ec2ee5e805f8f5bee327025d674dacf7c6c3a93dbdeb9b219c93620fcb3057e5db0ea36ebe00077253567eafc32ab767bc
   languageName: node
   linkType: hard
 
@@ -3400,6 +3586,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-imds@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/credential-provider-imds@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/url-parser": 3.338.0
+    tslib: ^2.5.0
+  checksum: 2438f66d4e2b158c9094654752c60b12590f48a71d52bb68095a6b97f610922501e6ea732c1ab533da51eaa56d9685cce91ed1da9518c94600dad38ff6edb8f2
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-imds@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/credential-provider-imds@npm:3.40.0"
@@ -3438,6 +3637,23 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 2d7a9f93444d0fab515e6282e80c9219c314a5bd5509436dce0be7579b74279b8b8e53b782897941f1990c17294fb93664c70ba6c8a0dd4c7e2edc7e601a5566
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-ini@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/credential-provider-env": 3.338.0
+    "@aws-sdk/credential-provider-imds": 3.338.0
+    "@aws-sdk/credential-provider-process": 3.338.0
+    "@aws-sdk/credential-provider-sso": 3.338.0
+    "@aws-sdk/credential-provider-web-identity": 3.338.0
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/shared-ini-file-loader": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: f1abe37e2e3eaecbd3986116f55113eb39f04b5ab9d4f326877a1617b28e3ccaaa8775a5e14cb72645dabcda7abf18996a7b7b86aa73b8fec1f4d1d559fac0c1
   languageName: node
   linkType: hard
 
@@ -3503,6 +3719,24 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 5ca2e62d8b0b36de8b6300654a3c8115368ee8bfc98d5ce3625e71ee0c5c0a6cd528f998d14ee515135c46f1a7aa5c488636a2eab1feecf200243cab64b6f3be
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-node@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/credential-provider-node@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/credential-provider-env": 3.338.0
+    "@aws-sdk/credential-provider-imds": 3.338.0
+    "@aws-sdk/credential-provider-ini": 3.338.0
+    "@aws-sdk/credential-provider-process": 3.338.0
+    "@aws-sdk/credential-provider-sso": 3.338.0
+    "@aws-sdk/credential-provider-web-identity": 3.338.0
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/shared-ini-file-loader": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 31d9292f5c2f8d090c1e94884baaf7598dfd763f42da9aee1c8d39c6ee0b65463c11909843399259a1a42e192d1b19e3812bcadb3ded3b2c1be4398dcfdc4bae
   languageName: node
   linkType: hard
 
@@ -3572,6 +3806,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-process@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/credential-provider-process@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/shared-ini-file-loader": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: cbb47050cb4b3d5f7ae87892e57392e2b8bf96ada913129beb4d4452fb79600d37bbaba1594936e1b946b962b5d5871036d490953a607c08c9bbdd5b7365194e
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-process@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/credential-provider-process@npm:3.370.0"
@@ -3625,6 +3871,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-sso@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/client-sso": 3.338.0
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/shared-ini-file-loader": 3.338.0
+    "@aws-sdk/token-providers": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 290aab6d4dab5291a71956d598c40961da6ddba351c20a8b64d106c6977edf49ce94add613ed84311ccd6e5fc29fe7c410542424fbe2ba5e1bae7af4a89bc7ab
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-sso@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/credential-provider-sso@npm:3.370.0"
@@ -3665,6 +3925,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-web-identity@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/credential-provider-web-identity@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 1af53b31c633f6dfaf186089f59bd0b5d8a78920cb9d2c4eabd2262d38b5d9babee393d21081fe9d305181185ca73f30bb23497425d3ec316d3e01e6a3b20da7
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-web-identity@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/credential-provider-web-identity@npm:3.370.0"
@@ -3698,15 +3969,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/eventstream-marshaller@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/eventstream-marshaller@npm:3.40.0"
+"@aws-sdk/eventstream-codec@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/eventstream-codec@npm:3.338.0"
   dependencies:
-    "@aws-crypto/crc32": 2.0.0
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/util-hex-encoding": 3.37.0
-    tslib: ^2.3.0
-  checksum: 0a77cbbdf015df252121922f70d71833c462ad0f6569636dc104846eb44fc8b5f279cf281b60e77385a9bdbcbbc6735fcf021af3c8de72ed0861037a610f39c0
+    "@aws-crypto/crc32": 3.0.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-hex-encoding": 3.310.0
+    tslib: ^2.5.0
+  checksum: c6fa0f153f3c35a4ffb6eff4142ade0864ad47ba1a5e62ec6b2cdd1a495b0bf6626b96354329b2f2e12900055b28baf59dc0f5b1e4e7c5ef913ae8f76ff43df9
   languageName: node
   linkType: hard
 
@@ -3722,15 +3993,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/eventstream-serde-browser@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/eventstream-serde-browser@npm:3.40.0"
+"@aws-sdk/eventstream-serde-browser@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/eventstream-serde-browser@npm:3.338.0"
   dependencies:
-    "@aws-sdk/eventstream-marshaller": 3.40.0
-    "@aws-sdk/eventstream-serde-universal": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: fa9271e19e4477e84769481ce2d6f6405fbe087c16394b7b73ccb56e4bf06c3ac8e380811cc358426a4710656263f304e524fedd281f94ece6e50b87bf198a85
+    "@aws-sdk/eventstream-serde-universal": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: cd7d45194c4327cbba61d18697ca4ab857741805d9be6019023952fc4beedf4c42a8bcc080864db5a6363e7bdb08daf7daf1549edf1442dd30a93ad5e38c265d
   languageName: node
   linkType: hard
 
@@ -3746,13 +4016,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/eventstream-serde-config-resolver@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/eventstream-serde-config-resolver@npm:3.40.0"
+"@aws-sdk/eventstream-serde-config-resolver@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/eventstream-serde-config-resolver@npm:3.338.0"
   dependencies:
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: ccb4029e727a40f5b38f10c58662f0c54bd512886035527954d74ebca95c549385c8504c2a2b59737b97e7e49706966613687ea9a82e9d39314233a60670f58d
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: d0d421eba93b62fecac5ffb5f9b23e373533e3e71b9e3cac1669ebcf911294138ce7e5c5e7f9cec355eee4ddc7d77577d0d50224c8f2708cdd46920e8f2166d6
   languageName: node
   linkType: hard
 
@@ -3766,15 +4036,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/eventstream-serde-node@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/eventstream-serde-node@npm:3.40.0"
+"@aws-sdk/eventstream-serde-node@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/eventstream-serde-node@npm:3.338.0"
   dependencies:
-    "@aws-sdk/eventstream-marshaller": 3.40.0
-    "@aws-sdk/eventstream-serde-universal": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: e7cebb58bd6a3ceecf92b08204ca561231a1fcdd6924dd1b28e4a22505b113d0ccc263b4c38427e2b03a34d9f5a74fa6cfd5278ad2518ff14dbb9e5375f1e1eb
+    "@aws-sdk/eventstream-serde-universal": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 95c204983ffe23371f932b91b345ef927fc33a27c3021310ac41e6c1198772a85fc26982ffb9d66f4fa25d832dd7af49da98d05d899077f95e64dfca3fd74f2d
   languageName: node
   linkType: hard
 
@@ -3790,14 +4059,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/eventstream-serde-universal@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/eventstream-serde-universal@npm:3.40.0"
+"@aws-sdk/eventstream-serde-universal@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/eventstream-serde-universal@npm:3.338.0"
   dependencies:
-    "@aws-sdk/eventstream-marshaller": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: d3b96286f1cea9dc3d1e9057a474ee14172f96850794ae785316dfa6f193e8ee4997c0cd0318095547e378c5b645f54de02ce549c14e14f9113342e4b2fb739a
+    "@aws-sdk/eventstream-codec": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: e3da52538f877562567557f9d8e1c219620d2bc86798f1e8c95b558628a3494e3dc6fd66cae37e3808febd517b2400fc68d47e7e9fc05c9d975c3787416986cd
   languageName: node
   linkType: hard
 
@@ -3822,6 +4091,19 @@ __metadata:
     "@aws-sdk/util-base64": 3.310.0
     tslib: ^2.5.0
   checksum: b9c89793123717a546ae89b3df37dcc5606673787020f7510c7f4215c8b7bbb3fcd7dcbdb94e903f5b51e1396911883fec81300e728984c64602b1d860df762f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/fetch-http-handler@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/fetch-http-handler@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/querystring-builder": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-base64": 3.310.0
+    tslib: ^2.5.0
+  checksum: effaad1e1e1da7baa048641ba37f825e649fee4240ffe2af477a91af1d1e4474277606877b8100b4639e4feb312b22ff4cf7c9e0b2b13c4343ed47044b0080af
   languageName: node
   linkType: hard
 
@@ -3851,18 +4133,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/hash-blob-browser@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/hash-blob-browser@npm:3.40.0"
-  dependencies:
-    "@aws-sdk/chunked-blob-reader": 3.37.0
-    "@aws-sdk/chunked-blob-reader-native": 3.37.0
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: 9d0516737cc493aeb243a98dd64d262dc004762931d7821b71da8be1166dd379cb1af37c2d5bc8d973802b805cb4451689e560c5f5ba4ea34d10574aee8ddc7d
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/hash-blob-browser@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/hash-blob-browser@npm:3.6.1"
@@ -3875,7 +4145,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/hash-node@npm:3.310.0, @aws-sdk/hash-node@npm:^3.0.0":
+"@aws-sdk/hash-node@npm:3.310.0":
   version: 3.310.0
   resolution: "@aws-sdk/hash-node@npm:3.310.0"
   dependencies:
@@ -3884,6 +4154,18 @@ __metadata:
     "@aws-sdk/util-utf8": 3.310.0
     tslib: ^2.5.0
   checksum: aa5f0553448cf0af2ca982a04f616ec063a679ff0ed3a7c7d15f4b8efda835f9b35c202e42af3d1774b79fb351fdb460641e83407bd8908f0c3e804f306fc3d7
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/hash-node@npm:3.338.0, @aws-sdk/hash-node@npm:^3.0.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/hash-node@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-buffer-from": 3.310.0
+    "@aws-sdk/util-utf8": 3.310.0
+    tslib: ^2.5.0
+  checksum: c73efa2e7fe5958e0cd439e5589cc496229c2db9268c7651d300c4ec65c06607784fee26ad7d7b01c80937fff4378c836542cca04bbac347b5c5a12516f57970
   languageName: node
   linkType: hard
 
@@ -3920,16 +4202,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/hash-stream-node@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/hash-stream-node@npm:3.40.0"
-  dependencies:
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: 8f73457e533879afb804c2485ace35db39bf921ee1c262616d33767c1cf77097f32dc85a1079673453da309dee5585455c67d6c680d36eb7148c0e1b45ca3086
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/hash-stream-node@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/hash-stream-node@npm:3.6.1"
@@ -3947,6 +4219,16 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 7aed5ef782a69fbbdc1d73ebe9f3ad265d2d87ecd3c75cf4cc502847cad201512de90d6896ade8964dc630a08f07af6a149b10218a6415516bf7d06f45753025
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/invalid-dependency@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/invalid-dependency@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 9b5e1149dca316744adff4d9c0c2ad47fbc47d7017f21e49c31972fcae92f50b94a1038dea1182ce4f479b31dc2c83a3d51d8de8f362e7edb740debf23487b65
   languageName: node
   linkType: hard
 
@@ -4012,18 +4294,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/md5-js@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/md5-js@npm:3.40.0"
-  dependencies:
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/util-utf8-browser": 3.37.0
-    "@aws-sdk/util-utf8-node": 3.37.0
-    tslib: ^2.3.0
-  checksum: e0ed51340358f7cbc8d1902345437dd06b77b43ae867bb13d924a6ae9c768333bab153e42fe6c77b9ea62531a06a665901e6deefe481468f22b54b707d10b4c6
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/md5-js@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/md5-js@npm:3.6.1"
@@ -4032,18 +4302,6 @@ __metadata:
     "@aws-sdk/util-utf8-browser": 3.6.1
     tslib: ^1.8.0
   checksum: 8fe9c0f3d80ae755ce03c77a89ac534fd77431ebe0dc69cf964e4b3781d2adc7ed897f1393ecf6a55572d311d3551ecc866a00d7362a1ddf68f111285690d07f
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/middleware-apply-body-checksum@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/middleware-apply-body-checksum@npm:3.40.0"
-  dependencies:
-    "@aws-sdk/is-array-buffer": 3.37.0
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: cd71018c70bcab0a1fcef27c04b86550d4861511bf9c385a3a99805f724af6c0515894dc459d3ee0e76c89f4474409f5da0ebd2b9106f11d478bd5722a7c1d96
   languageName: node
   linkType: hard
 
@@ -4073,19 +4331,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-bucket-endpoint@npm:3.41.0":
-  version: 3.41.0
-  resolution: "@aws-sdk/middleware-bucket-endpoint@npm:3.41.0"
-  dependencies:
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/util-arn-parser": 3.37.0
-    "@aws-sdk/util-config-provider": 3.40.0
-    tslib: ^2.3.0
-  checksum: f43802f2ae5a02afcc07a0c7bf5307817da84f329993bd7e8e72ec180c0f376c34755cb62a1707c79bd76f85533b4fb9db1c679f5f1c8eda20a8aa31ca3b68ea
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/middleware-bucket-endpoint@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/middleware-bucket-endpoint@npm:3.6.1"
@@ -4106,6 +4351,17 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: fad0ba4172a66ec3add40e8eeb023830c7d4a60fce5cb9310bb20d974fe7c1d2e8d3022a65a2caefa5c42a954484605a7b3407e22d57858eb0ad865c9352d493
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-content-length@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-content-length@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 4856a6b73e70bc96a1a5cc2683d2f8776fcddf5f65513e270ddc1ed5a0d22dd51754bc849674c712b856e5a3fe8e1aac5c936b3d85b1f56c2317a9b4765a2bc5
   languageName: node
   linkType: hard
 
@@ -4156,6 +4412,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/middleware-endpoint@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-endpoint@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/middleware-serde": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/url-parser": 3.338.0
+    "@aws-sdk/util-middleware": 3.338.0
+    tslib: ^2.5.0
+  checksum: 09b0ba445e7c5e8c5fa0fc8c7a34b7a9c56c3c64b934f9a537a2715e2090bed35732d1b95ee2e96f83face191789573e1aa9c546339b8d3a96c176ec0027ebee
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/middleware-expect-continue@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/middleware-expect-continue@npm:3.370.0"
@@ -4165,18 +4434,6 @@ __metadata:
     "@smithy/types": ^1.1.0
     tslib: ^2.5.0
   checksum: 5ec746f839f18c9e9ce7e42e4f0d1459f3c866726645cd09850861fb9f501a454d478e553e90d4e6062b8a67e11408c0d66046a49833b0699d944df3e4ceefbd
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/middleware-expect-continue@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/middleware-expect-continue@npm:3.40.0"
-  dependencies:
-    "@aws-sdk/middleware-header-default": 3.40.0
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: 19f86018acd3da8b3d888da52fa325de130824f4029d63e210c1e27a7b630f8055f95ee361bc48608f927730cda669f1e07d81921f4293350d8ccc7863ade01c
   languageName: node
   linkType: hard
 
@@ -4208,17 +4465,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-header-default@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/middleware-header-default@npm:3.40.0"
-  dependencies:
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: 1eb25feb7d9289c1966f3b81e43b38d1bc5078e0538f0188a9e16b58b6abe038c4229e6a59efd31583d1cf9229a0f92fa320921b843880946e9cd6dd1e4c4a85
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/middleware-header-default@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/middleware-header-default@npm:3.6.1"
@@ -4238,6 +4484,17 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 5339cec94f5cd1610107985e1d9190d258ee0a46650d06d781213f2d4089e838efe9cccde80915c0c6b81e118f53a1e99ce618f80cc65db4b10fdf3069c44008
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-host-header@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-host-header@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: eb4c606be557fac95ca495434e4cf80d88a11ab810e6b3b0bf12730dde1561351028d850529446e5ac13e704df3e84ca502ad7f835f031173ba61625e7305d39
   languageName: node
   linkType: hard
 
@@ -4286,16 +4543,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-location-constraint@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/middleware-location-constraint@npm:3.40.0"
-  dependencies:
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: 12dd01ec5ee376ebc946a677d190c7d2fd7f3148291b3d2538c835585ec561d57be9758bd8c76fe1c531e7a01b6cbb3573b2746e12d6a11f41d036f67b4318e6
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/middleware-location-constraint@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/middleware-location-constraint@npm:3.6.1"
@@ -4313,6 +4560,16 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 745c5c4b44e2a00ecf2f39593a41549531ece9485c7320121b083cc3d3623af5f7588d21392e1608736c06a64f11e06375d2b809c086c794a0b65656ddb0942d
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-logger@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-logger@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: fac823ca571253ce650a795509e86eb4a5e1c3d1efd0c0518eac5d2539492f2c3db82058b14597a2059b2fb7a6d78258222ce6ae8fa0f3c81f01452b5e9c3203
   languageName: node
   linkType: hard
 
@@ -4358,6 +4615,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/middleware-recursion-detection@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-recursion-detection@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: a7206cf4afe3edcf55eac4a7cd7d93cfa84176afad9d8d566c36f778d3b0d087262b70d84e96003f7a390fd6695a9b62e562246dc90c765418587975e0bee0b7
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/middleware-recursion-detection@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/middleware-recursion-detection@npm:3.370.0"
@@ -4382,6 +4650,21 @@ __metadata:
     tslib: ^2.5.0
     uuid: ^8.3.2
   checksum: 5e98bd32978681a49acbb365f3b7a5c872c14a519701e07f9073d2e569e79128c9dad98ecbb428d2aacf3f0dfaa7c46542facfd15e38a4215e2971aaba661c02
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-retry@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-retry@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/service-error-classification": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-middleware": 3.338.0
+    "@aws-sdk/util-retry": 3.338.0
+    tslib: ^2.5.0
+    uuid: ^8.3.2
+  checksum: a2f1d6acdbf28d060b67cbbc9cb661492dc8f651475c0133e7eb55c949c865416647a1932b316e1e2d8987205def1efb9c1f529ea858ec452c63ff897fa6af2a
   languageName: node
   linkType: hard
 
@@ -4412,6 +4695,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/middleware-sdk-rds@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-sdk-rds@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/middleware-endpoint": 3.338.0
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/signature-v4": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-format-url": 3.338.0
+    tslib: ^2.5.0
+  checksum: 0f1897b0d7b62276c25f1e06cf20af12530b5cdf42ac4b43e3324fa49d6c53ac8d49581725c703f9b2682db95abef1a49320b1d5a62736788bc097a95bfb6f13
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/middleware-sdk-s3@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/middleware-sdk-s3@npm:3.370.0"
@@ -4422,21 +4719,6 @@ __metadata:
     "@smithy/types": ^1.1.0
     tslib: ^2.5.0
   checksum: 91d907b7815d3863fbf3865c8b0b87b382fcba16f6b97d347b9fb391bf11dec1c0d952468d8bcfacc917d39ccecc6b0d04e4f6a89fc856da2da7574d58470e5d
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/middleware-sdk-s3@npm:3.41.0":
-  version: 3.41.0
-  resolution: "@aws-sdk/middleware-sdk-s3@npm:3.41.0"
-  dependencies:
-    "@aws-sdk/protocol-http": 3.40.0
-    "@aws-sdk/signature-v4": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    "@aws-sdk/util-arn-parser": 3.37.0
-    tslib: ^2.3.0
-  peerDependencies:
-    "@aws-sdk/signature-v4-crt": ^3.31.0
-  checksum: 2a69e1844b1ef42ba21943910c33984834f52fea4b9795100c273a50cb080e14ac9d3a886c7415b5415af6f56b465a937857ec6410542120542a71dacd35e67c
   languageName: node
   linkType: hard
 
@@ -4460,6 +4742,17 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 38f50626aaba06ef33b9200339d1eb1e2fa32d7f962307cdf60fc9b64a73d41404a1131b55f7c2efcc8942152ca8577a6a9926245f12fec8852edaea817cafae
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-sdk-sts@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-sdk-sts@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/middleware-signing": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 716674506bc5aba73b6b513f6ebe5f6d7d0ec56e91c8a1af2ddbb1861f9b1e2fba03b872db0aa9a3d50d830b4c3ef080dc0088da0ce338579697f62e42aa5f03
   languageName: node
   linkType: hard
 
@@ -4499,6 +4792,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/middleware-serde@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-serde@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 77e46b14cefa1f69779113400103f98746fc83a45ff48f2a1ffd20d96fe85a51266300d9d09d216fb9bb1f732a96c755582560ea8406fcde037574a85b8b11a4
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/middleware-serde@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/middleware-serde@npm:3.40.0"
@@ -4530,6 +4833,20 @@ __metadata:
     "@aws-sdk/util-middleware": 3.310.0
     tslib: ^2.5.0
   checksum: ad7e16200f8d615bfae772360f94887d28297397af64f87da46bd5fc4c42e85d6bf1fb067d4096a26e377a96dcce17c4a66d9873d78d9a9476e3afda8df73f4f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-signing@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-signing@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/signature-v4": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-middleware": 3.338.0
+    tslib: ^2.5.0
+  checksum: 002f6467f73c317c4d8326ab1ba2095c1b332b6c16843ad560992f151d0615a51182ae4989c29e4e03f98b340c928ab0c72039d667ccddb158902dd27592b5d4
   languageName: node
   linkType: hard
 
@@ -4584,16 +4901,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-ssec@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/middleware-ssec@npm:3.40.0"
-  dependencies:
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: bbdde0a415c41ff0dd74268808bd185ff74435441ab806aac017aa743937803a8de7e783ba22b86b8f7d98c621731a866dbe782d699eead985259ef6aa57a250
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/middleware-ssec@npm:3.6.1":
   version: 3.6.1
   resolution: "@aws-sdk/middleware-ssec@npm:3.6.1"
@@ -4610,6 +4917,15 @@ __metadata:
   dependencies:
     tslib: ^2.5.0
   checksum: 863e314ba36ec4f719d50454d0f747eaa4063fefe78ff2d0c84013afdd77c01ec356f5808c05bb0dc473145550b85829af6826fc13c75758bd6dff6c131e33f8
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-stack@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-stack@npm:3.338.0"
+  dependencies:
+    tslib: ^2.5.0
+  checksum: 40e1a2447adc29a671056dc9dd0bbc9e24f7fb8ca08ccf0569b96c285f65c7e4ae5bc56a3939d7a9ef20cf8c1a7fb6b948ab8c9421a3353259291953c95bb6c0
   languageName: node
   linkType: hard
 
@@ -4640,6 +4956,18 @@ __metadata:
     "@aws-sdk/util-endpoints": 3.319.0
     tslib: ^2.5.0
   checksum: 7f3b146f1e9f1c375a4c7cbd662eec95439cad87cf5da59765a40c8feb8eea080feecf17173479b2c0dff0bf7ae684b7f2c77cb7cc030673e4b0a1111fd6538e
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/middleware-user-agent@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/middleware-user-agent@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-endpoints": 3.338.0
+    tslib: ^2.5.0
+  checksum: fb7b71795867a81a4bc648535efeea10f98c32cdd1840cee07aa76d9eb461348e6da5a256d996c27a9713b157bf38b5d60e9f93e8cb591b3d16d63981551eea4
   languageName: node
   linkType: hard
 
@@ -4690,6 +5018,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/node-config-provider@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/node-config-provider@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/shared-ini-file-loader": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 1c7d49bee4266b00b653c41b590fde95f7c30c0c4272c492104fc3629118ec194fc59aa5d63b59b8b63e86430289abb9c6538e7c3d8b1339b0167bac113ea7c6
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/node-config-provider@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/node-config-provider@npm:3.40.0"
@@ -4724,6 +5064,19 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: caeda616b1bb865a3829eeb29c72526a0a6a3f1fdb7730480854ab5ec540944b54736d879ef089ae1707f779584c24bb7d7e7e946ee431815ad0a0a98e6d9ab0
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/node-http-handler@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/node-http-handler@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/abort-controller": 3.338.0
+    "@aws-sdk/protocol-http": 3.338.0
+    "@aws-sdk/querystring-builder": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 9306d49dd5e99735b90987d5997b7c7a21c626b51b3d91db7164d1d7c05415012862e759b3a56894d2b3ad2ae1a33b7a9a3f9b1e0518be2930f81dd85736f05e
   languageName: node
   linkType: hard
 
@@ -4763,6 +5116,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/property-provider@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/property-provider@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: af8cdef2f49d87325bca5372bfaa66d2a6ddba454e0654ef124b45a1a740b3ff61ca554941725698c2c11d43467993416942af10c123f5a96fd7221c3d85743f
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/property-provider@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/property-provider@npm:3.40.0"
@@ -4790,6 +5153,16 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: b67e980321b29408664df4db628eabf67432661882419b26aa060aeee2e00516c9c2ee6b38fd0aadfa191035f1f92ee132c338cf26109e6ebb083825c348398f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/protocol-http@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/protocol-http@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 82a4c5c1ea0856c34e3a7ab01bddf2e4d69bd4d54e9feaa22ada342553f58979ff0a204bd4813fa4aa1246c91cc6afb4a6fd14006a0a754991af9263416935aa
   languageName: node
   linkType: hard
 
@@ -4824,6 +5197,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/querystring-builder@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/querystring-builder@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-uri-escape": 3.310.0
+    tslib: ^2.5.0
+  checksum: b17a3390c64a7dd2c4649bf66e515e78e243c50460ff6d8a72efc452af0b836d8ed9c81da46d9817f00df49d49ac9fc3b6ab1fe2fdc3e89d53326c74f3889406
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/querystring-builder@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/querystring-builder@npm:3.40.0"
@@ -4853,6 +5237,16 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 2a165262eb174e4fb61047d8d8021f39c141dc1405f216802bab0c8696d6511eef3d7ea54d0416de137798d4bde510c1b162c91b08aa0174e88efd1cd4378a96
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/querystring-parser@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/querystring-parser@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: ed153e914dbcabcbfa2bb3c2ccd8ecc4dfa7646acb6898022278649ab2c321ffb7f0e69d8b646ca7afbd1dc69eb1e1a3994a25033f7faab6ba9495aa565f0c65
   languageName: node
   linkType: hard
 
@@ -4898,6 +5292,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/service-error-classification@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/service-error-classification@npm:3.338.0"
+  checksum: 323dea99468a19bc662ac9565168774de98376d6548baf37527f56a9c2cf5d42ac148b4f629ea65e014588b2f8460737025ead11f8f9b54c99c4c123724fe438
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/service-error-classification@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/service-error-classification@npm:3.40.0"
@@ -4919,6 +5320,16 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: ab9a5d7518d51525c00ef86cee669a69c579e4a7d17f8f3ed1db83dcb33d2f7f706778eaf07f15f03b4f7ab52dc7eed716a6a0a25fcd5625c3e751ff95718d91
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/shared-ini-file-loader@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/shared-ini-file-loader@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 014576d3f4a31782ef33feae30852fbe30f3eb599f1d823f5b25a430a5a3b6e94f52cf827a1e8d6dde3505d113188b3451b61618d5697c11011842ce0dd126ec
   languageName: node
   linkType: hard
 
@@ -4973,6 +5384,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/signature-v4@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/signature-v4@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/is-array-buffer": 3.310.0
+    "@aws-sdk/types": 3.338.0
+    "@aws-sdk/util-hex-encoding": 3.310.0
+    "@aws-sdk/util-middleware": 3.338.0
+    "@aws-sdk/util-uri-escape": 3.310.0
+    "@aws-sdk/util-utf8": 3.310.0
+    tslib: ^2.5.0
+  checksum: 2556b022ac9fe50d060b4618b79a776ec6d1209db8ddf77c055380f92e82663fa6f08daf17374da63c0aceb0a7042ed4b192d77101b663dd53459b928ec52923
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/signature-v4@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/signature-v4@npm:3.40.0"
@@ -5007,6 +5433,17 @@ __metadata:
     "@aws-sdk/types": 3.310.0
     tslib: ^2.5.0
   checksum: 713ad6232e38b94723874cd6c9eaec4e20bdc6cea3435fa5fb9af7a1dae6321ece780d59985574d00d8eb8290ae03a8de15257be537b816a598494bddf66f517
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/smithy-client@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/smithy-client@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/middleware-stack": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: f09153f1b7cf54f207e9f2e84974970c630565a9f0d70ea57bf1e6681acf1e281395ceaf4f22b69c203867bcd1eb206fa4a219a31f2bc9354224fe3fe0ebf13d
   languageName: node
   linkType: hard
 
@@ -5045,6 +5482,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/token-providers@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/token-providers@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/client-sso-oidc": 3.338.0
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/shared-ini-file-loader": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 67ca2466e27a3cdb7dd3c8b4a78a291b510e422c029242512fcd7a95375e85f6a2407e7962c61a68027dcf0bbd54b674f399c26c7b24d995f288af0d8206c2e2
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/token-providers@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/token-providers@npm:3.370.0"
@@ -5059,7 +5509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/types@npm:3.310.0, @aws-sdk/types@npm:^3.1.0, @aws-sdk/types@npm:^3.222.0, @aws-sdk/types@npm:^3.25.0":
+"@aws-sdk/types@npm:3.310.0":
   version: 3.310.0
   resolution: "@aws-sdk/types@npm:3.310.0"
   dependencies:
@@ -5068,7 +5518,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/types@npm:3.370.0":
+"@aws-sdk/types@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/types@npm:3.338.0"
+  dependencies:
+    tslib: ^2.5.0
+  checksum: bd151ca80101c31f9b88d4ebb76c4080299fbf8ac9ff20ce3fb9f859f7b20eb5cd8a8dcce547c956ef8469c478b81fa6f786c2eb25c887232c3cff9884842b1d
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/types@npm:3.370.0, @aws-sdk/types@npm:^3.1.0, @aws-sdk/types@npm:^3.222.0, @aws-sdk/types@npm:^3.25.0":
   version: 3.370.0
   resolution: "@aws-sdk/types@npm:3.370.0"
   dependencies:
@@ -5122,6 +5581,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/url-parser@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/url-parser@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/querystring-parser": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 98b8f695e542f1e6464d8b6bd42087664e4c3bb751bba34a968966eae222696cf97cc9a51fbef2b373ef7a4c2621e6a6f76164b68f82f536ce0c7e864c3b1901
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/url-parser@npm:3.40.0":
   version: 3.40.0
   resolution: "@aws-sdk/url-parser@npm:3.40.0"
@@ -5150,15 +5620,6 @@ __metadata:
   dependencies:
     tslib: ^2.5.0
   checksum: 7214c1291748751976d2d5125d79d49dcb40a0f2276b6da41403c2fd4ecdeb611a604afe06d35c74f66231af78234367698c472b18b671f6e1685890d2508563
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/util-arn-parser@npm:3.37.0":
-  version: 3.37.0
-  resolution: "@aws-sdk/util-arn-parser@npm:3.37.0"
-  dependencies:
-    tslib: ^2.3.0
-  checksum: 1797d346a6e20982ec56ef5e5c058f829f90d0da46504522bb436a87625631e0b3460ba7223e2dd7f3734eaa0fc1ed02d033132f6b6b5405898240212b8c1b3e
   languageName: node
   linkType: hard
 
@@ -5355,6 +5816,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/util-defaults-mode-browser@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-defaults-mode-browser@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    bowser: ^2.11.0
+    tslib: ^2.5.0
+  checksum: b1660f65eff8da6c573f3d4f33d9e5b8d6cc3a9f815661e3084f0379f8a4d1d282a5863d764fa24d3088a25337382dae8d1df6ec6978e16019aeb958f081ee56
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/util-defaults-mode-node@npm:3.316.0":
   version: 3.316.0
   resolution: "@aws-sdk/util-defaults-mode-node@npm:3.316.0"
@@ -5369,6 +5842,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/util-defaults-mode-node@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-defaults-mode-node@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/config-resolver": 3.338.0
+    "@aws-sdk/credential-provider-imds": 3.338.0
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/property-provider": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 4dddfb82688e8f23be82ef46ede1d6092cb7f7240192a3a5e854ccf401bbcfd1c7c2b15abdf33ee402d512a337e02c7bcb7184e0147a568b5bd1fb20256fe863
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/util-endpoints@npm:3.319.0":
   version: 3.319.0
   resolution: "@aws-sdk/util-endpoints@npm:3.319.0"
@@ -5379,6 +5866,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/util-endpoints@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-endpoints@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 7db888d8cdbe3a5d34029872517558c9e48eb3767f82b7bfd6ccc68cc1bde09dd8328c151d56198df9f215a7ddc80891e81e1555b501cbffbeebaf57f6d34d34
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/util-endpoints@npm:3.370.0":
   version: 3.370.0
   resolution: "@aws-sdk/util-endpoints@npm:3.370.0"
@@ -5386,6 +5883,17 @@ __metadata:
     "@aws-sdk/types": 3.370.0
     tslib: ^2.5.0
   checksum: 210da785cadcaaa7f0d40a28ee80c805db5ab2aa828835ebe17e370a56974c62effb52a55156d50ef818bea0793981047746d82dbeb64d5322a7a03f49f541d1
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-format-url@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-format-url@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/querystring-builder": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: 869e340d27d6c57af4258c2f0849946cdb940c48520728f5cf492a8f0955babbf61733ef50526834da051a90924257e60de809539a20939c5dc9b0a63e4407a1
   languageName: node
   linkType: hard
 
@@ -5445,6 +5953,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/util-middleware@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-middleware@npm:3.338.0"
+  dependencies:
+    tslib: ^2.5.0
+  checksum: ff88b9650ec69127ff7ef24b3799924b2f34f5bf26f5f29d163f8d87725c92c1fa790873c55d9c124672f5ca2125c7e2e1f97f8d5437d02db5c404a1a5c3bec3
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/util-retry@npm:3.310.0":
   version: 3.310.0
   resolution: "@aws-sdk/util-retry@npm:3.310.0"
@@ -5452,6 +5969,16 @@ __metadata:
     "@aws-sdk/service-error-classification": 3.310.0
     tslib: ^2.5.0
   checksum: d8b1ece9a05d15d484401acf89b7835791dba70c18fa36284ce1877ed575ecd9e2bb24c1ff2f7d0ced8a2f804d075ab4b2f29bb2a5e6ad71401f67afc156db0f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-retry@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-retry@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/service-error-classification": 3.338.0
+    tslib: ^2.5.0
+  checksum: 3349bee349b42837eb1f7fca69ee160c3c1f86b63a3667b41e665862fc865e57dc7dd43328b01bc55d7e683beeba7d951a185074c6707b1d73b379d1eab4fa15
   languageName: node
   linkType: hard
 
@@ -5490,6 +6017,17 @@ __metadata:
     bowser: ^2.11.0
     tslib: ^2.5.0
   checksum: 8ec37d7b242734fd481cea58cd7696b95fdd71bc080147b1acbe3c0658dfaf057432f9f178498e469515e1d0b0c84fd082a6b4d15194cb09b2def7a18a9ec1b5
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-user-agent-browser@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-user-agent-browser@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/types": 3.338.0
+    bowser: ^2.11.0
+    tslib: ^2.5.0
+  checksum: 50a4e000675896f8fc06cc22ab4a76deccd95c862d24abe9f248895ecfa7a81c2cd26c780d716029ebd70557f5f4f80566785d9b1da91851731a906ff5d99f56
   languageName: node
   linkType: hard
 
@@ -5540,6 +6078,22 @@ __metadata:
     aws-crt:
       optional: true
   checksum: 90e791398d666581ca81b735157a96dac1dd39046c0b880bcdb01ab644cd41be627be7ea3130103fe76b678cfaa1e1114c7055f897deb6bb9b40b4f88840b127
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-user-agent-node@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-user-agent-node@npm:3.338.0"
+  dependencies:
+    "@aws-sdk/node-config-provider": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  peerDependencies:
+    aws-crt: ">=1.0.0"
+  peerDependenciesMeta:
+    aws-crt:
+      optional: true
+  checksum: 7eefb8ea927654371ad2ab39756d488390aa1d92ee1c636877f106d8c4c18872efadb84461f3505172aa6760725430a3aa0f7cfac4ec8e0bddea6f2a1fe55ac5
   languageName: node
   linkType: hard
 
@@ -5650,14 +6204,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-waiter@npm:3.40.0":
-  version: 3.40.0
-  resolution: "@aws-sdk/util-waiter@npm:3.40.0"
+"@aws-sdk/util-waiter@npm:3.338.0":
+  version: 3.338.0
+  resolution: "@aws-sdk/util-waiter@npm:3.338.0"
   dependencies:
-    "@aws-sdk/abort-controller": 3.40.0
-    "@aws-sdk/types": 3.40.0
-    tslib: ^2.3.0
-  checksum: cece94f95ac30ae00ff8a9a8f8f5e78b9cb1e5f9a2e8a57b5ae16dcdc326917482f148e4be76149b763bce2aaa358246a8df53d6af0e70d639503381a7f9d659
+    "@aws-sdk/abort-controller": 3.338.0
+    "@aws-sdk/types": 3.338.0
+    tslib: ^2.5.0
+  checksum: e91dd2d4a3ce8a12291f83bbd7a7939d98b1a3d5e417c83de4c9a0a94d69020f4490ef46fcba0cd9c9d07e48bf16398084216b75f5dd5f5d84a52b2a0b7af716
   languageName: node
   linkType: hard
 
@@ -5678,15 +6232,6 @@ __metadata:
   dependencies:
     tslib: ^2.5.0
   checksum: cb9a18c6331f92e2e92c5a1d4022bab13470424d55d991527ddc024a5cf4fab31074b352cea413ee7aed211f3202edd28039c32954200cf94e5b8bced012a486
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/xml-builder@npm:3.37.0":
-  version: 3.37.0
-  resolution: "@aws-sdk/xml-builder@npm:3.37.0"
-  dependencies:
-    tslib: ^2.3.0
-  checksum: 2a48c2efb4b3caa256ec3aa2a4a1f2c93974f9509f9f746b87d56d945a0bb8675dfc582bf289bf5f058b80bb1471193ec62aadd9416d00d668e738ab87b173f3
   languageName: node
   linkType: hard
 
@@ -10214,7 +10759,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/protocol-http@npm:^1.1.0, @smithy/protocol-http@npm:^1.1.1":
+"@smithy/protocol-http@npm:^1.0.1, @smithy/protocol-http@npm:^1.1.0, @smithy/protocol-http@npm:^1.1.1":
   version: 1.1.1
   resolution: "@smithy/protocol-http@npm:1.1.1"
   dependencies:
@@ -10290,7 +10835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/types@npm:^1.1.0, @smithy/types@npm:^1.1.1":
+"@smithy/types@npm:^1.0.0, @smithy/types@npm:^1.1.0, @smithy/types@npm:^1.1.1":
   version: 1.1.1
   resolution: "@smithy/types@npm:1.1.1"
   dependencies:
@@ -12377,13 +12922,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-codegen@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "amplify-codegen@npm:4.1.2"
+"amplify-codegen@npm:^4.1.4":
+  version: 4.1.4
+  resolution: "amplify-codegen@npm:4.1.4"
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin": 2.4.5
-    "@aws-amplify/graphql-docs-generator": 4.0.2
-    "@aws-amplify/graphql-types-generator": 3.0.2
+    "@aws-amplify/appsync-modelgen-plugin": 2.5.1
+    "@aws-amplify/graphql-docs-generator": 4.0.3
+    "@aws-amplify/graphql-types-generator": 3.0.3
     "@graphql-codegen/core": 2.6.6
     chalk: ^3.0.0
     fs-extra: ^8.1.0
@@ -12398,18 +12943,18 @@ __metadata:
     semver: ^7.3.5
     slash: ^3.0.0
   peerDependencies:
-    "@aws-amplify/amplify-cli-core": ^4.0.0
+    "@aws-amplify/amplify-cli-core": "*"
     graphql-transformer-core: ^8.0.0
-  checksum: 0a8625613b1cc5619091742230909466b124ce42cceb0be58b3dd743402dd8a012a8430e1c5cce76868a032f1a5781248222d0f38a33d73cae6ebc74e39f9371
+  checksum: 7f47747ae825817401f331f4f135b7c1ea01e9d1e2f2fed68436ce0292b9d990af29711fd4ff87ce70d20ab66c49b7b10e3c73419907408e0708bcb2a54091f3
   languageName: node
   linkType: hard
 
-"amplify-dotnet-function-runtime-provider@2.0.4, amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider":
+"amplify-dotnet-function-runtime-provider@2.0.5, amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@aws-amplify/amplify-prompts": 2.8.0
     "@types/node": ^12.12.6
     "@types/which": ^1.3.2
@@ -12420,11 +12965,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-dynamodb-simulator@2.7.4, amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator":
+"amplify-dynamodb-simulator@2.8.0, amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator":
   version: 0.0.0-use.local
   resolution: "amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
     aws-sdk: ^2.1405.0
     detect-port: ^1.3.0
     execa: ^5.1.1
@@ -12445,11 +12990,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "amplify-e2e-tests@workspace:packages/amplify-e2e-tests"
   dependencies:
-    "@aws-amplify/amplify-category-auth": 3.3.0
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-e2e-core": 5.0.4
-    "@aws-amplify/amplify-opensearch-simulator": 1.4.4
-    "@aws-amplify/graphql-transformer-core": ^1.3.3
+    "@aws-amplify/amplify-category-auth": 3.4.0
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-e2e-core": 5.1.0
+    "@aws-amplify/amplify-opensearch-simulator": 1.5.0
+    "@aws-amplify/graphql-transformer-core": ^1.4.0
     "@aws-sdk/client-appsync": ^3.303.0
     "@aws-sdk/client-dynamodb": ^3.303.0
     "@aws-sdk/client-s3": ^3.303.0
@@ -12459,12 +13004,12 @@ __metadata:
     "@types/lodash": ^4.14.149
     "@types/node": ^18.16.1
     "@types/ws": ^7.4.4
-    amplify-dynamodb-simulator: 2.7.4
+    amplify-dynamodb-simulator: 2.8.0
     amplify-headless-interface: 1.17.4
-    amplify-storage-simulator: 1.9.1
+    amplify-storage-simulator: 1.10.0
     aws-amplify: ^4.2.8
     aws-appsync: ^4.1.1
-    aws-cdk-lib: ~2.68.0
+    aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1405.0
     axios: ^0.26.0
     circleci-api: ^4.1.4
@@ -12476,7 +13021,7 @@ __metadata:
     fs-extra: ^8.1.0
     glob: ^8.0.3
     graphql-tag: ^2.10.1
-    graphql-transformer-core: ^8.1.3
+    graphql-transformer-core: ^8.1.9
     isomorphic-fetch: ^3.0.0
     jest: ^29.5.0
     lodash: ^4.17.21
@@ -12492,12 +13037,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-go-function-runtime-provider@2.3.22, amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider":
+"amplify-go-function-runtime-provider@2.3.23, amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@types/archiver": ^5.1.1
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
@@ -12507,7 +13052,7 @@ __metadata:
     fs-extra: ^8.1.0
     get-port: ^5.1.1
     glob: ^7.2.0
-    semver: ^7.3.5
+    semver: ^7.5.4
     which: ^2.0.2
   languageName: unknown
   linkType: soft
@@ -12517,30 +13062,30 @@ __metadata:
   resolution: "amplify-graphql-migration-tests@workspace:packages/amplify-graphql-migration-tests"
   dependencies:
     "@aws-amplify/amplify-prompts": 2.8.0
-    "@aws-amplify/graphql-auth-transformer": ^2.1.7
-    "@aws-amplify/graphql-default-value-transformer": ^1.1.7
-    "@aws-amplify/graphql-function-transformer": ^1.2.5
-    "@aws-amplify/graphql-http-transformer": ^1.2.5
-    "@aws-amplify/graphql-index-transformer": ^1.2.3
-    "@aws-amplify/graphql-model-transformer": ^1.3.3
-    "@aws-amplify/graphql-predictions-transformer": ^1.2.5
-    "@aws-amplify/graphql-relational-transformer": ^1.2.3
-    "@aws-amplify/graphql-searchable-transformer": ^1.2.5
-    "@aws-amplify/graphql-transformer-core": ^1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
-    "@aws-amplify/graphql-transformer-migrator": ^2.1.7
+    "@aws-amplify/graphql-auth-transformer": ^2.1.13
+    "@aws-amplify/graphql-default-value-transformer": ^1.1.13
+    "@aws-amplify/graphql-function-transformer": ^1.2.11
+    "@aws-amplify/graphql-http-transformer": ^1.2.11
+    "@aws-amplify/graphql-index-transformer": ^1.2.9
+    "@aws-amplify/graphql-model-transformer": ^1.4.0
+    "@aws-amplify/graphql-predictions-transformer": ^1.2.11
+    "@aws-amplify/graphql-relational-transformer": ^1.2.9
+    "@aws-amplify/graphql-searchable-transformer": ^1.2.11
+    "@aws-amplify/graphql-transformer-core": ^1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
+    "@aws-amplify/graphql-transformer-migrator": ^2.1.13
     "@aws-cdk/cloudformation-diff": ~2.68.0
     fs-extra: ^8.1.0
-    graphql-auth-transformer: ^7.2.57
-    graphql-connection-transformer: ^5.2.56
-    graphql-dynamodb-transformer: ^7.2.56
-    graphql-elasticsearch-transformer: ^5.2.57
-    graphql-function-transformer: ^3.3.47
-    graphql-http-transformer: ^5.2.56
-    graphql-key-transformer: ^3.2.56
-    graphql-predictions-transformer: ^3.2.56
-    graphql-transformer-core: ^8.1.3
-    graphql-versioned-transformer: ^5.2.56
+    graphql-auth-transformer: ^7.2.63
+    graphql-connection-transformer: ^5.2.62
+    graphql-dynamodb-transformer: ^7.2.62
+    graphql-elasticsearch-transformer: ^5.2.63
+    graphql-function-transformer: ^3.3.53
+    graphql-http-transformer: ^5.2.62
+    graphql-key-transformer: ^3.2.62
+    graphql-predictions-transformer: ^3.2.62
+    graphql-transformer-core: ^8.1.9
+    graphql-versioned-transformer: ^5.2.62
   languageName: unknown
   linkType: soft
 
@@ -12554,37 +13099,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-java-function-runtime-provider@2.3.22, amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider":
+"amplify-java-function-runtime-provider@2.3.23, amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
     execa: ^5.1.1
     fs-extra: ^8.1.0
     glob: ^7.2.0
-    semver: ^7.3.5
+    semver: ^7.5.4
     which: ^2.0.2
   languageName: unknown
   linkType: soft
 
-"amplify-java-function-template-provider@1.5.21, amplify-java-function-template-provider@workspace:packages/amplify-java-function-template-provider":
+"amplify-java-function-template-provider@1.5.22, amplify-java-function-template-provider@workspace:packages/amplify-java-function-template-provider":
   version: 0.0.0-use.local
   resolution: "amplify-java-function-template-provider@workspace:packages/amplify-java-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
   languageName: unknown
   linkType: soft
 
-"amplify-nodejs-function-runtime-provider@2.4.4, amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider":
+"amplify-nodejs-function-runtime-provider@2.5.0, amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@types/exit": ^0.1.31
     "@types/node": ^12.12.6
     "@types/semver": ^7
@@ -12592,28 +13137,28 @@ __metadata:
     exit: ^0.1.2
     fs-extra: ^8.1.0
     glob: ^7.2.0
-    semver: ^7.5.0
+    semver: ^7.5.4
   languageName: unknown
   linkType: soft
 
-"amplify-python-function-runtime-provider@2.4.22, amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider":
+"amplify-python-function-runtime-provider@2.4.23, amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.1.0
-    "@aws-amplify/amplify-function-plugin-interface": 1.10.3
+    "@aws-amplify/amplify-cli-core": 4.2.0
+    "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@types/fs-extra": ^8.0.1
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     execa: ^5.1.1
     glob: ^7.2.0
     ini: ^1.3.5
-    semver: ^7.3.5
+    semver: ^7.5.4
     which: ^2.0.2
   languageName: unknown
   linkType: soft
 
-"amplify-storage-simulator@1.9.1, amplify-storage-simulator@workspace:packages/amplify-storage-simulator":
+"amplify-storage-simulator@1.10.0, amplify-storage-simulator@workspace:packages/amplify-storage-simulator":
   version: 0.0.0-use.local
   resolution: "amplify-storage-simulator@workspace:packages/amplify-storage-simulator"
   dependencies:
@@ -13366,25 +13911,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-cdk-lib@npm:~2.68.0":
-  version: 2.68.0
-  resolution: "aws-cdk-lib@npm:2.68.0"
+"aws-cdk-lib@npm:~2.80.0":
+  version: 2.80.0
+  resolution: "aws-cdk-lib@npm:2.80.0"
   dependencies:
-    "@aws-cdk/asset-awscli-v1": ^2.2.97
+    "@aws-cdk/asset-awscli-v1": ^2.2.177
     "@aws-cdk/asset-kubectl-v20": ^2.1.1
-    "@aws-cdk/asset-node-proxy-agent-v5": ^2.0.77
+    "@aws-cdk/asset-node-proxy-agent-v5": ^2.0.148
     "@balena/dockerignore": ^1.0.2
     case: 1.6.3
-    fs-extra: ^9.1.0
+    fs-extra: ^11.1.1
     ignore: ^5.2.4
     jsonschema: ^1.4.1
     minimatch: ^3.1.2
     punycode: ^2.3.0
-    semver: ^7.3.8
+    semver: ^7.5.1
+    table: ^6.8.1
     yaml: 1.10.2
   peerDependencies:
     constructs: ^10.0.0
-  checksum: cb1f3beb5c1aa9132b3dc792b724f03873c138e6623325002f13223adb490901589f0abd50098fe4ffd2d7872ce4ab4dcd0ea1cb0a79d19eb1223aafd3851832
+  checksum: 5ab3972e3cd5101ec95f5c8ec9e7dfae6c402d9d34892df71aff44a74d17454a8ea8de3b7283786220b3a2f066b68883182a35364264da2468bdc3261afebf59
   languageName: node
   linkType: hard
 
@@ -18483,6 +19029,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fs-extra@npm:11.1.1, fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0, fs-extra@npm:^11.1.1":
+  version: 11.1.1
+  resolution: "fs-extra@npm:11.1.1"
+  dependencies:
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^2.0.0
+  checksum: a2480243d7dcfa7d723c5f5b24cf4eba02a6ccece208f1524a2fbde1c629492cfb9a59e4b6d04faff6fbdf71db9fdc8ef7f396417a02884195a625f5d8dc9427
+  languageName: node
+  linkType: hard
+
 "fs-extra@npm:9.1.0, fs-extra@npm:^9.0.0, fs-extra@npm:^9.0.1, fs-extra@npm:^9.1.0":
   version: 9.1.0
   resolution: "fs-extra@npm:9.1.0"
@@ -18503,17 +19060,6 @@ __metadata:
     jsonfile: ^6.0.1
     universalify: ^2.0.0
   checksum: 85802f3d9e49d197744a8372f0d78d5a1faa3df73f4c5375d6366a4b9f745197d3da1f095841443d50f29a9f81cdc01363eb6d17bef2ba70c268559368211040
-  languageName: node
-  linkType: hard
-
-"fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0":
-  version: 11.1.1
-  resolution: "fs-extra@npm:11.1.1"
-  dependencies:
-    graceful-fs: ^4.2.0
-    jsonfile: ^6.0.1
-    universalify: ^2.0.0
-  checksum: a2480243d7dcfa7d723c5f5b24cf4eba02a6ccece208f1524a2fbde1c629492cfb9a59e4b6d04faff6fbdf71db9fdc8ef7f396417a02884195a625f5d8dc9427
   languageName: node
   linkType: hard
 
@@ -19180,16 +19726,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-auth-transformer@npm:7.2.57, graphql-auth-transformer@npm:^7.2.57":
-  version: 7.2.57
-  resolution: "graphql-auth-transformer@npm:7.2.57"
+"graphql-auth-transformer@npm:7.2.63, graphql-auth-transformer@npm:^7.2.63":
+  version: 7.2.63
+  resolution: "graphql-auth-transformer@npm:7.2.63"
   dependencies:
     graphql: ^15.5.0
-    graphql-connection-transformer: 5.2.56
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
-  checksum: 906a89014cf52074d3825f9a066918ee863f42dcc6d5518a15febc10ecbd624f03c09cac81b6eab8461168f30ada2f27509860172ad177883a10ad194b5c9b20
+    graphql-connection-transformer: 5.2.62
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
+  checksum: 9071db6c17f3bc4da969af59d437acd4dc4bc91cda5c6536cb46facb6c2fa6ed0629d3577d8132834bd208947b5001b7ea446a057d1d0a00ce4e4c8988aae5bb
   languageName: node
   linkType: hard
 
@@ -19229,73 +19775,73 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-connection-transformer@npm:5.2.56, graphql-connection-transformer@npm:^5.2.56":
-  version: 5.2.56
-  resolution: "graphql-connection-transformer@npm:5.2.56"
+"graphql-connection-transformer@npm:5.2.62, graphql-connection-transformer@npm:^5.2.62":
+  version: 5.2.62
+  resolution: "graphql-connection-transformer@npm:5.2.62"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-dynamodb-transformer: 7.2.56
-    graphql-key-transformer: 3.2.56
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
-  checksum: d4aaf994586ef7d1d79a885ab7a10cc6c8a78f848a8a7601313f9326bb14005d52ca4767955f3f4aa7ac3473e4fa34c6fcb7c37e6f6cd6958b5b182ff85932eb
+    graphql-dynamodb-transformer: 7.2.62
+    graphql-key-transformer: 3.2.62
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
+  checksum: 58a132f1df3ba949ceb29aaa54708f0cd03fa42a6c376987b3c54452e91730b0425435742cf447cc16ba879f91b81fc5e1567d4f9102e873ce520e21f5b6cfba
   languageName: node
   linkType: hard
 
-"graphql-dynamodb-transformer@npm:7.2.56, graphql-dynamodb-transformer@npm:^7.2.56":
-  version: 7.2.56
-  resolution: "graphql-dynamodb-transformer@npm:7.2.56"
+"graphql-dynamodb-transformer@npm:7.2.62, graphql-dynamodb-transformer@npm:^7.2.62":
+  version: 7.2.62
+  resolution: "graphql-dynamodb-transformer@npm:7.2.62"
   dependencies:
     "@types/pluralize": ^0.0.29
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
     md5: ^2.2.1
     pluralize: ^8.0.0
-  checksum: 7f78faff70e09764d1556c84fb16460d2cca9c94f605af5ab7c62dde299bb3b8bb2df2944e2cd973b22413dd7c08b3dc0bedef3147d12b6f5c27f0f151e6ca1b
+  checksum: d04c89084c045b6937befcb3d65d74844db07bf1e212c7584a2ef2cc19c6e68b2339bbb072d7701801379751c60c35e62953f291863c2b90e3c3d1e2eeb69046
   languageName: node
   linkType: hard
 
-"graphql-elasticsearch-transformer@npm:5.2.57, graphql-elasticsearch-transformer@npm:^5.2.57":
-  version: 5.2.57
-  resolution: "graphql-elasticsearch-transformer@npm:5.2.57"
+"graphql-elasticsearch-transformer@npm:5.2.63, graphql-elasticsearch-transformer@npm:^5.2.63":
+  version: 5.2.63
+  resolution: "graphql-elasticsearch-transformer@npm:5.2.63"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
-  checksum: 23deebb7252bd9281a9088dc1302059a9a3330815ee7e33c922d557023f47a5929d5c5f469c42e0010225f074463c2b5a3aff7c5feedbce09ab5b312940eacdf
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
+  checksum: fce781b5a3101295e89c5a4e6b65f280b6e81e1e838d1c60b7589849e6fd70136d59fa002b1f5aa21b6435a05e271fda6c4d6c8f278228a9b091c9699cd49e17
   languageName: node
   linkType: hard
 
-"graphql-function-transformer@npm:3.3.47, graphql-function-transformer@npm:^3.3.47":
-  version: 3.3.47
-  resolution: "graphql-function-transformer@npm:3.3.47"
+"graphql-function-transformer@npm:3.3.53, graphql-function-transformer@npm:^3.3.53":
+  version: 3.3.53
+  resolution: "graphql-function-transformer@npm:3.3.53"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
-  checksum: 1baf72b8261fa7e5cc21e3839bb5edb9f34db136f14dd0332d6971a8b7eb12c5fdf71266ace71474e5ab62817d0a9391bf34c1e1b1f78fd1a6ee2e9e48b9b938
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
+  checksum: 3fcb2c1c25e52610c65c3570488eeb9cf64428f648c95cce113d162f18d867c85cc9626420fde210165eead014b8ac03ead6dce7892646efa52012ef9d19447f
   languageName: node
   linkType: hard
 
-"graphql-http-transformer@npm:5.2.56, graphql-http-transformer@npm:^5.2.56":
-  version: 5.2.56
-  resolution: "graphql-http-transformer@npm:5.2.56"
+"graphql-http-transformer@npm:5.2.62, graphql-http-transformer@npm:^5.2.62":
+  version: 5.2.62
+  resolution: "graphql-http-transformer@npm:5.2.62"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
-  checksum: fa88bcb2c684ef4ca45825cc9ff5c094f384aa337c995eaa26cd4f2e2cc795488fa23aa8a15125e710bf8fdf62b4b1341da4465fe90dde8b356a48caab6021b2
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
+  checksum: 9479584779c3aff95cc814dbe4b9c724484b7a6c2de96a157d53af2a47ef2b56aa3c7f6aa90acea3dbabcb859c1ffa0d352fb4dac75ddc4d665b82cd29be4375
   languageName: node
   linkType: hard
 
@@ -19320,18 +19866,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-key-transformer@npm:3.2.56, graphql-key-transformer@npm:^3.2.56":
-  version: 3.2.56
-  resolution: "graphql-key-transformer@npm:3.2.56"
+"graphql-key-transformer@npm:3.2.62, graphql-key-transformer@npm:^3.2.62":
+  version: 3.2.62
+  resolution: "graphql-key-transformer@npm:3.2.62"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-dynamodb-transformer: 7.2.56
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
+    graphql-dynamodb-transformer: 7.2.62
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
     lodash: ^4.17.21
-  checksum: a184daefc69edc13663d39ff9ded3701baa569f915e5cdb1f67926b073f5dc49397840c6aa55c64cd0fce2a3d298cc5e5d2513b5c16111da2694417377d00d4c
+  checksum: 82c25795e98d21222b6b6d7fcb69301fdab5383ffe0a0676b3ebe2d3cbc2ac7f288e3353cab69cfcd53aace9cef36f07c1989489f4155d41c03db19d9a1f7b7c
   languageName: node
   linkType: hard
 
@@ -19402,36 +19948,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-mapping-template@npm:4.20.8":
-  version: 4.20.8
-  resolution: "graphql-mapping-template@npm:4.20.8"
-  checksum: 348da7e4b1a8996af124a23a66e6a4f6e6b07e9b6d7259df8deae6f05888ff2aab5534bd230d37d60bb6dc7e53b20f6305f319ecfd474c2c22a98dc0fcfc607a
+"graphql-mapping-template@npm:4.20.11":
+  version: 4.20.11
+  resolution: "graphql-mapping-template@npm:4.20.11"
+  checksum: 81f258f054ef17f38dee2cc33d969584a9d50c846bd2d12a874d4c46934fc307ebd804ca629d179e28a947f881372756f540b03362919d14fc9037f1b33da6e4
   languageName: node
   linkType: hard
 
-"graphql-predictions-transformer@npm:3.2.56, graphql-predictions-transformer@npm:^3.2.56":
-  version: 3.2.56
-  resolution: "graphql-predictions-transformer@npm:3.2.56"
+"graphql-predictions-transformer@npm:3.2.62, graphql-predictions-transformer@npm:^3.2.62":
+  version: 3.2.62
+  resolution: "graphql-predictions-transformer@npm:3.2.62"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
-  checksum: 59a925b5bd59530da5536750271f618c6774f463da9e743c92ffc6031832d584ee7cb5d84a2996f359bd40e47d73fa391eb5e99e0a6abf52b46193c1808cc5f9
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
+  checksum: 567ce323916156fcf5f220012616a4efae8cba464b467c4e0d66fa614e993692ceea5a2b7a06d7399d88124590b3ed61daeaf7d0ffcb39f744259fb25a0034a9
   languageName: node
   linkType: hard
 
-"graphql-relational-schema-transformer@npm:2.21.18":
-  version: 2.21.18
-  resolution: "graphql-relational-schema-transformer@npm:2.21.18"
+"graphql-relational-schema-transformer@npm:2.21.21":
+  version: 2.21.21
+  resolution: "graphql-relational-schema-transformer@npm:2.21.21"
   dependencies:
     cloudform-types: ^4.2.0
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-  checksum: ac6e0e465215ac250cae3369aa96e09b10d5d710d46f25bba5c2f2a7aa3bc0c64a41d9d03741be51876854e34cca4ac02e1147748b4d5484f2cde14db0e1c9b4
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+  checksum: 895d5408df446f96e778b641d7d6dabe9e54f948f74e53be79104225e347dc30cdb852322ae9e14cd265ef86298975e9c6f7b2af338ca80a73b664091b6870e2
   languageName: node
   linkType: hard
 
@@ -19475,44 +20021,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-transformer-common@npm:4.24.6":
-  version: 4.24.6
-  resolution: "graphql-transformer-common@npm:4.24.6"
+"graphql-transformer-common@npm:4.25.0":
+  version: 4.25.0
+  resolution: "graphql-transformer-common@npm:4.25.0"
   dependencies:
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
+    graphql-mapping-template: 4.20.11
     md5: ^2.2.1
     pluralize: 8.0.0
-  checksum: a72f47dbac63bad5fe1c448b5629a3fb91f287edff9340a9666c2165cdf28f0385552be3f78153da454ef20add99d5b0bcea971b73e01af2af5fcf6ab423ceae
+  checksum: 64739c56c0d4282857cff8f944da3d173de66ac267996b3f71c7ecca91eec057a59dc53da70835390cffb9004f8e806e1f01ddb818f7b837d4f4e8d1c6eb40ea
   languageName: node
   linkType: hard
 
-"graphql-transformer-core@npm:8.1.3, graphql-transformer-core@npm:^8.1.3":
-  version: 8.1.3
-  resolution: "graphql-transformer-core@npm:8.1.3"
+"graphql-transformer-core@npm:8.1.9, graphql-transformer-core@npm:^8.1.9":
+  version: 8.1.9
+  resolution: "graphql-transformer-core@npm:8.1.9"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 1.3.3
-    "@aws-amplify/graphql-transformer-interfaces": 2.2.2
+    "@aws-amplify/graphql-transformer-core": 1.4.0
+    "@aws-amplify/graphql-transformer-interfaces": 2.3.0
     cloudform-types: ^4.2.0
     deep-diff: ^1.0.2
     fs-extra: ^8.1.0
     glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-common: 4.24.6
+    graphql-transformer-common: 4.25.0
     lodash: ^4.17.21
-  checksum: 68953e071ab1971a6867ae2fbebe5a779c7a154321d5c5c6e1f4fff23d27eef2e12ca93a524affd6164f28e2380272daf6161ccc441266883c3f8a3aee9d4109
+  checksum: fd382d4b54fdcce5db923dc5118675150acd3f76ea9163ca4227684d1e7422b1db000ebfb937a3469088f97044a14a83f0ad71d21ec27f6753f1ecb62cf8d5c0
   languageName: node
   linkType: hard
 
-"graphql-versioned-transformer@npm:5.2.56, graphql-versioned-transformer@npm:^5.2.56":
-  version: 5.2.56
-  resolution: "graphql-versioned-transformer@npm:5.2.56"
+"graphql-versioned-transformer@npm:5.2.62, graphql-versioned-transformer@npm:^5.2.62":
+  version: 5.2.62
+  resolution: "graphql-versioned-transformer@npm:5.2.62"
   dependencies:
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.8
-    graphql-transformer-common: 4.24.6
-    graphql-transformer-core: 8.1.3
-  checksum: 7257587c9a6bcd8ab14754ff54edf4a29ce7022158d0fcd52fecb19e4352a855b004edd0730f52649329131a220a94ed7369487e614b5ebe272f921de936aad2
+    graphql-mapping-template: 4.20.11
+    graphql-transformer-common: 4.25.0
+    graphql-transformer-core: 8.1.9
+  checksum: 8cc76acd9dbbf1564688440c2de83e03997872a56a79a645003db6d1176c74555d91391c19b707aec4fc3d774c3a08001bf8509bd36895a006c566a4cbe8ef8d
   languageName: node
   linkType: hard
 
@@ -26748,10 +27294,10 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"psl@npm:^1.1.28":
-  version: 1.8.0
-  resolution: "psl@npm:1.8.0"
-  checksum: b5f1956f7530860e1918e7238291689fdc3cab9c2c0cdbc47cde21addcc7f62495d794692cc1e43e54728d273f78037e8e73ac43009509a1a7f823341f4039c8
+"psl@npm:^1.1.33":
+  version: 1.9.0
+  resolution: "psl@npm:1.9.0"
+  checksum: 6a3f805fdab9442f44de4ba23880c4eba26b20c8e8e0830eff1cb31007f6825dace61d17203c58bfe36946842140c97a1ba7f67bc63ca2d88a7ee052b65d97ab
   languageName: node
   linkType: hard
 
@@ -26871,6 +27417,13 @@ node-pty@beta:
   version: 0.2.0
   resolution: "querystring@npm:0.2.0"
   checksum: 2036c9424beaacd3978bac9e4ba514331cc73163bea7bf3ad7e2c7355e55501938ec195312c607753f9c6e70b1bf9dfcda38db6241bd299c034e27ac639d64ed
+  languageName: node
+  linkType: hard
+
+"querystringify@npm:^2.1.1":
+  version: 2.2.0
+  resolution: "querystringify@npm:2.2.0"
+  checksum: 3258bc3dbdf322ff2663619afe5947c7926a6ef5fb78ad7d384602974c467fadfc8272af44f5eb8cddd0d011aae8fabf3a929a8eee4b86edcc0a21e6bd10f9aa
   languageName: node
   linkType: hard
 
@@ -28189,7 +28742,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"semver@npm:7.5.0, semver@npm:7.x, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.0":
+"semver@npm:7.5.0":
   version: 7.5.0
   resolution: "semver@npm:7.5.0"
   dependencies:
@@ -28197,6 +28750,17 @@ node-pty@beta:
   bin:
     semver: bin/semver.js
   checksum: 203a556d7189c277b9774a325fd2695187b2822069094e0dbfcc56dfd10a1fd646a94e73812f249802a661f6437b2370ccb8ee330e7b9888b38e53c5a8216222
+  languageName: node
+  linkType: hard
+
+"semver@npm:7.x, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.1, semver@npm:^7.5.4":
+  version: 7.5.4
+  resolution: "semver@npm:7.5.4"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 5160b06975a38b11c1ab55950cb5b8a23db78df88275d3d8a42ccf1f29e55112ac995b3a26a522c36e3b5f76b0445f1eef70d696b8c7862a2b4303d7b0e7609e
   languageName: node
   linkType: hard
 
@@ -29814,13 +30378,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"tough-cookie@npm:~2.5.0":
-  version: 2.5.0
-  resolution: "tough-cookie@npm:2.5.0"
+"tough-cookie@npm:^4.1.3":
+  version: 4.1.3
+  resolution: "tough-cookie@npm:4.1.3"
   dependencies:
-    psl: ^1.1.28
+    psl: ^1.1.33
     punycode: ^2.1.1
-  checksum: e1cadfb24d40d64ca16de05fa8192bc097b66aeeb2704199b055ff12f450e4f30c927ce250f53d01f39baad18e1c11d66f65e545c5c6269de4c366fafa4c0543
+    universalify: ^0.2.0
+    url-parse: ^1.5.3
+  checksum: 4fc0433a0cba370d57c4b240f30440c848906dee3180bb6e85033143c2726d322e7e4614abb51d42d111ebec119c4876ed8d7247d4113563033eebbc1739c831
   languageName: node
   linkType: hard
 
@@ -30510,6 +31076,13 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
+"universalify@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "universalify@npm:0.2.0"
+  checksum: cedbe4d4ca3967edf24c0800cfc161c5a15e240dac28e3ce575c689abc11f2c81ccc6532c8752af3b40f9120fb5e454abecd359e164f4f6aa44c29cd37e194fe
+  languageName: node
+  linkType: hard
+
 "universalify@npm:^2.0.0":
   version: 2.0.0
   resolution: "universalify@npm:2.0.0"
@@ -30643,6 +31216,16 @@ node-pty@beta:
   dependencies:
     punycode: ^2.1.0
   checksum: 4ef57b45aa820d7ac6496e9208559986c665e49447cb072744c13b66925a362d96dd5a46c4530a6b8e203e5db5fe849369444440cb22ecfc26c679359e5dfa3c
+  languageName: node
+  linkType: hard
+
+"url-parse@npm:^1.5.3":
+  version: 1.5.10
+  resolution: "url-parse@npm:1.5.10"
+  dependencies:
+    querystringify: ^2.1.1
+    requires-port: ^1.0.0
+  checksum: bd5aa9389f896974beb851c112f63b466505a04b4807cea2e5a3b7092f6fbb75316f0491ea84e44f66fed55f1b440df5195d7e3a8203f64fcefa19d182f5be87
   languageName: node
   linkType: hard
 
@@ -30875,7 +31458,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.9.19, vm2@npm:^3.9.3, vm2@npm:^3.9.8":
+"vm2@npm:^3.9.19, vm2@npm:^3.9.3":
   version: 3.9.19
   resolution: "vm2@npm:3.9.19"
   dependencies:

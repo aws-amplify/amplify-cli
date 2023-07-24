@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.1.1...@aws-amplify/cli-internal@12.2.0) (2023-07-20)
+
+
+### Bug Fixes
+
+* added Prepush after init and before deploy ([#12674](https://github.com/aws-amplify/amplify-cli/issues/12674)) ([a54f837](https://github.com/aws-amplify/amplify-cli/commit/a54f83743b5995317170c9b4f5a140e5a1aa57f3))
+* beta reporter endpoints urls ([#12806](https://github.com/aws-amplify/amplify-cli/issues/12806)) ([88b5f90](https://github.com/aws-amplify/amplify-cli/commit/88b5f907c5f599dbef988de4476a26daf80466d0))
+* usage data should not throw errors ([#12839](https://github.com/aws-amplify/amplify-cli/issues/12839)) ([fbea273](https://github.com/aws-amplify/amplify-cli/commit/fbea273f9b65cd21e8d02ddfe4a803a843c2afe4))
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
 ## [12.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.1.0...@aws-amplify/cli-internal@12.1.1) (2023-06-16)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

@@ -26,7 +26,6 @@ jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
 }));
 jest.mock('@aws-amplify/amplify-category-api', () => ({
-  ...jest.requireActual('@aws-amplify/amplify-category-api'),
   isDataStoreEnabled: jest.fn(),
 }));
 jest.mock('fs');
