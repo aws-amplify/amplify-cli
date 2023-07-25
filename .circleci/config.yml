@@ -58,13 +58,13 @@ jobs:
 
 workflows:
   trigger_nightly_console_integration_tests:
-    triggers:
-      - schedule:
-          cron: 0 14 * * *
-          filters:
-            branches:
-              only:
-                - nightly-jobs
+#    triggers:
+#      - schedule:
+#          cron: 0 14 * * *
+#          filters:
+#            branches:
+#              only:
+#                - nightly-jobs
     jobs:
       - run-nightly_console_integration_tests
   trigger_e2e_resource_cleanup:
@@ -78,21 +78,17 @@ workflows:
     jobs:
       - run-e2e_resource_cleanup
   trigger_nightly_e2e_tests:
-    triggers:
-      - schedule:
-          cron: 0 6 * * *
-          filters:
-            branches:
-              only:
-                - nightly-jobs
+#    triggers:
+#      - schedule:
+#          cron: 0 6 * * *
+#          filters:
+#            branches:
+#              only:
+#                - nightly-jobs
     jobs:
       - run-nightly_e2e_tests
   run_on_push:
     jobs:
-      - run-nightly_console_integration_tests:
-          filters:
-            branches:
-              only: nightly-jobs
       - run-e2e_resource_cleanup:
           filters:
             branches:
