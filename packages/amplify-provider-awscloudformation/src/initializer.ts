@@ -105,7 +105,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     if (projectInitialized && fs.existsSync(overrideFilePath)) {
       const projectInfo = getProjectInfo();
       try {
-        runOverride(overrideDir, configuration, projectInfo);
+        await runOverride(overrideDir, configuration, projectInfo);
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
         throw new AmplifyError(

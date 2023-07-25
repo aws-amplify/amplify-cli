@@ -66,7 +66,7 @@ export class AmplifyRootStackTransform {
     if (isBuild) {
       const projectInfo = getProjectInfo();
       try {
-        runOverride(overrideDir, this._rootTemplateObj, projectInfo);
+        await runOverride(overrideDir, this._rootTemplateObj, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',

@@ -201,7 +201,7 @@ export class AmplifyS3ResourceStackTransform {
     if (isBuild) {
       const projectInfo = getProjectInfo();
       try {
-        runOverride(overrideDir, this.resourceTemplateObj, projectInfo);
+        await runOverride(overrideDir, this.resourceTemplateObj, projectInfo);
       } catch (err: $TSAny) {
         throw new AmplifyError(
           'InvalidOverrideError',

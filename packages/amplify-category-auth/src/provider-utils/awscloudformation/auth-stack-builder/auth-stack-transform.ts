@@ -111,7 +111,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     if (isBuild) {
       const projectInfo = getProjectInfo();
       try {
-        runOverride(overrideDir, this._authTemplateObj, projectInfo);
+        await runOverride(overrideDir, this._authTemplateObj, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',

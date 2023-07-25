@@ -188,7 +188,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     if (isBuild) {
       const projectInfo = getProjectInfo();
       try {
-        runOverride(overrideDir, this._userPoolGroupTemplateObj, projectInfo);
+        await runOverride(overrideDir, this._userPoolGroupTemplateObj, projectInfo);
       } catch (err: $TSAny) {
         throw new AmplifyError(
           'InvalidOverrideError',

@@ -192,7 +192,7 @@ export class DDBStackTransform {
     if (isBuild) {
       const projectInfo = getProjectInfo();
       try {
-        runOverride(resourceDirPath, this._resourceTemplateObj, projectInfo);
+        await runOverride(resourceDirPath, this._resourceTemplateObj, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',
