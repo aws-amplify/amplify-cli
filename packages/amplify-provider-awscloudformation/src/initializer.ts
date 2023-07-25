@@ -9,6 +9,7 @@ import {
   JSONUtilities,
   LocalEnvInfo,
   pathManager,
+  runOverride,
   stateManager,
   Tag,
   Template,
@@ -91,9 +92,11 @@ export const run = async (context: $TSContext): Promise<void> => {
     };
 
     let projectInitialized = false;
+    let overrideDir = '';
     let overrideFilePath = '';
     try {
       const backendDir = pathManager.getBackendDirPath();
+      overrideDir = path.join(backendDir, 'awscloudformation');
       overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
       projectInitialized = true;
     } catch (e) {
@@ -102,10 +105,7 @@ export const run = async (context: $TSContext): Promise<void> => {
     if (projectInitialized && fs.existsSync(overrideFilePath)) {
       const projectInfo = getProjectInfo();
       try {
-        const overrideImport = await import(overrideFilePath);
-        if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
-          overrideImport.override(configuration, projectInfo);
-        }
+        runOverride(overrideDir, configuration, projectInfo);
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
         throw new AmplifyError(

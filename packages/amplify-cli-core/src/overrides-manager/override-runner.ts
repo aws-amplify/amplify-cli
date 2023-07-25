@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyError, pathManager } from '../index';
+import { $TSAny } from '../index';
 import * as path from 'path';
 
 export const runOverride = (overrideDir: string, templateObject: $TSAny, projectInfo: $TSAny): void => {
