@@ -38,6 +38,7 @@ describe('amplify add api', () => {
       amplifyPushUpdate(
         projRoot,
         /Attempting to delete more than 1 global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
+        { failureExpected: true },
       ),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
@@ -46,7 +47,6 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey2';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_update_delete_gsi.graphql';
-
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
@@ -58,6 +58,7 @@ describe('amplify add api', () => {
       amplifyPushUpdate(
         projRoot,
         /Attempting to add and delete a global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
+        { failureExpected: true },
       ),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });

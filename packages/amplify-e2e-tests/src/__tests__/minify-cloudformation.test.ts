@@ -60,22 +60,12 @@ describe('minify behavior', () => {
 
     // Tweak schema file and push with minification
     updateApiSchema(projRoot, projName, 'simple_model.graphql', true);
-    const pushParams = {
-      projRoot,
-      waitForText: undefined,
-      useLatestCodebase: false,
-      destructivePush: false,
-      overrideTimeout: 0,
+    await amplifyPushUpdate(projRoot, undefined, {
+      testingWithLatestCodebase: true,
+      allowDestructiveUpdates: false,
+      overridePushTimeoutMS: 0,
       minify: true,
-    };
-    await amplifyPushUpdate(
-      pushParams.projRoot,
-      pushParams.waitForText,
-      pushParams.waitForText,
-      pushParams.destructivePush,
-      pushParams.overrideTimeout,
-      pushParams.minify,
-    );
+    });
 
     // Read Cfn file sizes for both nested API stacks and top-level stacks, verify files are smaller than initial push.
     const minifiedNestedApiStackDefinition = fs.readFileSync(nestedApiStackPath, 'utf-8');

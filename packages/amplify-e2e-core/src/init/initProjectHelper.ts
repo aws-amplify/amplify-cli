@@ -3,9 +3,10 @@
 /* eslint-disable func-style */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
-import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
-import { KEY_DOWN_ARROW } from '../utils';
+import { nspawn as spawn, getCLIPath, singleSelect } from '..';
+import { KEY_DOWN_ARROW, addCircleCITags, errorReportingTestHandler } from '../utils';
 import { amplifyRegions } from '../configure';
+import { mergeDeploymentSecrets } from '@aws-amplify/amplify-cli-core';
 
 const defaultSettings = {
   name: EOL,
@@ -27,14 +28,15 @@ const defaultSettings = {
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
   includeUsageDataPrompt: true,
+  failureExpected: false,
   testingWithLatestCodebase: false,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
   let env;
 
-  if (s.disableAmplifyAppCreation === true) {
+  if (mergedSettings.disableAmplifyAppCreation === true) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -43,41 +45,42 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   addCircleCITags(cwd);
 
   const cliArgs = ['init'];
-  const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
+  const providerConfigSpecified = !!mergedSettings.providerConfig && typeof mergedSettings.providerConfig === 'object';
   if (providerConfigSpecified) {
-    cliArgs.push('--providers', JSON.stringify(s.providerConfig));
+    cliArgs.push('--providers', JSON.stringify(mergedSettings.providerConfig));
   }
 
-  if (s.permissionsBoundaryArn) {
-    cliArgs.push('--permissions-boundary', s.permissionsBoundaryArn);
+  if (mergedSettings.permissionsBoundaryArn) {
+    cliArgs.push('--permissions-boundary', mergedSettings.permissionsBoundaryArn);
   }
 
-  if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
+  if (mergedSettings?.name?.length > 20)
+    console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
-  const chain = spawn(getCLIPath(s.testingWithLatestCodebase), cliArgs, {
+  const chain = spawn(getCLIPath(mergedSettings.testingWithLatestCodebase), cliArgs, {
     cwd,
     stripColors: true,
     env,
-    disableCIDetection: s.disableCIDetection,
+    disableCIDetection: mergedSettings.disableCIDetection,
   })
     .wait('Enter a name for the project')
-    .sendLine(s.name)
+    .sendLine(mergedSettings.name)
     .wait('Initialize the project with the above configuration?')
     .sendConfirmNo()
     .wait('Enter a name for the environment')
-    .sendLine(s.envName)
+    .sendLine(mergedSettings.envName)
     .wait('Choose your default editor:')
-    .sendLine(s.editor)
+    .sendLine(mergedSettings.editor)
     .wait("Choose the type of app that you're building")
     .sendCarriageReturn()
     .wait('What javascript framework are you using')
-    .sendLine(s.framework)
+    .sendLine(mergedSettings.framework)
     .wait('Source Directory Path:')
-    .sendLine(s.srcDir)
+    .sendLine(mergedSettings.srcDir)
     .wait('Distribution Directory Path:')
-    .sendLine(s.distDir)
+    .sendLine(mergedSettings.distDir)
     .wait('Build Command:')
-    .sendLine(s.buildCmd)
+    .sendLine(mergedSettings.buildCmd)
     .wait('Start Command:')
     .sendCarriageReturn();
 
@@ -87,23 +90,24 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName);
+      .sendLine(mergedSettings.profileName);
   }
 
-  if (s.includeUsageDataPrompt) {
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+  if (mergedSettings.failureExpected) {
+    errorReportingTestHandler(chain);
   }
+
   return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
 export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
 
   let env;
 
-  if (s.disableAmplifyAppCreation) {
+  if (mergedSettings.disableAmplifyAppCreation) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -116,13 +120,13 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       env,
     })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Initialize the project with the above configuration?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .sendLine('android')
       .wait('Where is your Res directory')
@@ -130,9 +134,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
+      .sendLine(mergedSettings.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -153,13 +155,13 @@ export function createRandomName(): string {
 }
 
 export function initIosProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
 
   let env;
 
-  if (s.disableAmplifyAppCreation === true) {
+  if (mergedSettings.disableAmplifyAppCreation === true) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -172,21 +174,19 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       env,
     })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Initialize the project with the above configuration?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .sendLine('ios')
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
+      .sendLine(mergedSettings.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -201,20 +201,20 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
 }
 
 export function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Initialize the project with the above configuration?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .sendLine('flutter')
       .wait('Where do you want to store your configuration file')
@@ -223,20 +223,16 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName);
+      .sendLine(mergedSettings.profileName);
 
-    singleSelect(chain, s.region, amplifyRegions);
-    chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    singleSelect(chain, mergedSettings.region, amplifyRegions);
+    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -244,7 +240,7 @@ export function initProjectWithAccessKey(
   cwd: string,
   settings: { accessKeyId: string; secretAccessKey: string; region?: string },
 ): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
 
@@ -257,23 +253,23 @@ export function initProjectWithAccessKey(
       },
     })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Initialize the project with the above configuration?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .sendLine('javascript')
       .wait('What javascript framework are you using')
-      .sendLine(s.framework)
+      .sendLine(mergedSettings.framework)
       .wait('Source Directory Path:')
-      .sendLine(s.srcDir)
+      .sendLine(mergedSettings.srcDir)
       .wait('Distribution Directory Path:')
-      .sendLine(s.distDir)
+      .sendLine(mergedSettings.distDir)
       .wait('Build Command:')
-      .sendLine(s.buildCmd)
+      .sendLine(mergedSettings.buildCmd)
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
@@ -282,30 +278,27 @@ export function initProjectWithAccessKey(
       .sendCarriageReturn()
       .pauseRecording()
       .wait('accessKeyId')
-      .sendLine(s.accessKeyId)
+      .sendLine(mergedSettings.accessKeyId)
       .wait('secretAccessKey')
-      .sendLine(s.secretAccessKey)
+      .sendLine(mergedSettings.secretAccessKey)
       .resumeRecording()
       .wait('region');
 
-    singleSelect(chain, s.region, amplifyRegions);
-    chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    singleSelect(chain, mergedSettings.region, amplifyRegions);
+    chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
-export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
-  addCircleCITags(cwd);
-
+export function initNewEnvWithAccessKey(
+  cwd: string,
+  settings: { envName: string; accessKeyId: string; secretAccessKey: string },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], {
       cwd,
@@ -317,16 +310,16 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .wait('Do you want to use an existing environment?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(settings.envName)
       .wait('Using default provider  awscloudformation')
       .wait('Select the authentication method you want to use:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .pauseRecording()
       .wait('accessKeyId')
-      .sendLine(s.accessKeyId)
+      .sendLine(settings.accessKeyId)
       .wait('secretAccessKey')
-      .sendLine(s.secretAccessKey)
+      .sendLine(settings.secretAccessKey)
       .resumeRecording()
       .wait('region');
 
@@ -341,9 +334,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
   });
 }
 
-export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  addCircleCITags(cwd);
-
+export function initNewEnvWithProfile(cwd: string, settings: { envName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
@@ -355,7 +346,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
       .wait('Do you want to use an existing environment?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(settings.envName)
       .wait('Using default provider  awscloudformation')
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
@@ -372,16 +363,14 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
   });
 }
 
-export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
-  addCircleCITags(cwd);
-
+export function updatedInitNewEnvWithProfile(cwd: string, settings: { envName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
     })
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(settings.envName)
       .wait('Choose your default editor:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
@@ -401,10 +390,10 @@ export function updatedInitNewEnvWithProfile(cwd: string, s: { envName: string }
 }
 
 export function amplifyInitSandbox(cwd: string, settings: Record<string, unknown>): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
   let env;
 
-  if (s.disableAmplifyAppCreation === true) {
+  if (mergedSettings.disableAmplifyAppCreation === true) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -415,14 +404,14 @@ export function amplifyInitSandbox(cwd: string, settings: Record<string, unknown
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait('Using default provider  awscloudformation')
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
+      .sendLine(mergedSettings.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {

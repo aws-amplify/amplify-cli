@@ -36,7 +36,7 @@ describe('amplify add notifications', () => {
     const settings = { resourceName: `notification${getShortId()}` };
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
 
-    await amplifyPushAuth(projectRoot, true);
+    await amplifyPushAuth(projectRoot, { testingWithLatestCodebase: true });
   });
 
   it('should add in app notifications if analytics added and pushed with an older version', async () => {
@@ -49,6 +49,6 @@ describe('amplify add notifications', () => {
     const settings = { resourceName: `notification${getShortId()}` };
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
 
-    await amplifyPushAuth(projectRoot, true);
+    await amplifyPushAuth(projectRoot, { testingWithLatestCodebase: true });
   });
 });

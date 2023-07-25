@@ -72,7 +72,7 @@ describe('amplify add hosting', () => {
     const currentBuildCommand = resetBuildCommand(projRoot, '');
     let error;
     try {
-      await amplifyPublishWithoutUpdate(projRoot);
+      await amplifyPublishWithoutUpdate(projRoot, true);
     } catch (err) {
       error = err;
     }

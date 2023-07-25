@@ -87,7 +87,7 @@ describe('amplify add auth...', () => {
     it('update auth and push with latest interactively, write secret', async () => {
       await updateAuthAddUserGroups(projRoot, ['group1', 'group2'], { testingWithLatestCodebase: true });
       updateCLIParametersToGenerateUserPoolClientSecret(projRoot);
-      await amplifyPushAuth(projRoot, true);
+      await amplifyPushAuth(projRoot, { testingWithLatestCodebase: true });
       await assertAppClientSecretInFiles(projRoot, 'android');
     });
   });

@@ -55,7 +55,7 @@ describe('lambda callouts', () => {
     expectLambdasInCfnTemplate(preMigrationTemplate, migratedLambdas.concat(nonMigratedLambdas), []);
 
     // push with latest should regenerate auth stack and start migrating lambda callouts
-    await amplifyPushAuth(projRoot, true);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: true });
 
     // a second push with latest should finish migrating the lambda callouts
     await amplifyPushForce(projRoot, true);
@@ -76,7 +76,7 @@ describe('lambda callouts', () => {
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName });
 
-    await amplifyPushAuth(projRoot, false);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: false });
 
     const meta = getProjectMeta(projRoot);
     expect(meta?.providers?.awscloudformation?.Region).toBeDefined();
@@ -118,7 +118,7 @@ describe('lambda callouts', () => {
     const resourceName = `test${generateRandomShortId()}`;
     await addAuthWithMaxOptions(projRoot, { name: resourceName });
 
-    await amplifyPushAuth(projRoot, false);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: false });
 
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
@@ -143,7 +143,7 @@ describe('lambda callouts', () => {
   it('should be migrated when updating using headless commands', async () => {
     await initJSProjectWithProfileV12(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, false);
-    await amplifyPushAuth(projRoot, false);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: false });
 
     const updateAuthRequest: UpdateAuthRequest = {
       version: 2,
@@ -184,7 +184,7 @@ describe('lambda callouts', () => {
     };
 
     await updateHeadlessAuth(projRoot, updateAuthRequest, { testingWithLatestCodebase: true });
-    await amplifyPushAuth(projRoot, true);
+    await amplifyPushAuth(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushForce(projRoot, true);
 
     const meta = getProjectMeta(projRoot);

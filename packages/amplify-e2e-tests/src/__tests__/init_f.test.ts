@@ -23,12 +23,14 @@ describe('amplify init f', () => {
   });
 
   it('should fail if init is not executed in project root', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { failureExpected: true });
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
 
     const nestedRoot = path.join(projRoot, 'foo');
     await fs.ensureDir(nestedRoot);
-    await expect(initJSProjectWithProfile(nestedRoot, {})).rejects.toThrowError('Process exited with non zero exit code 1');
+    await expect(initJSProjectWithProfile(nestedRoot, { failureExpected: true })).rejects.toThrowError(
+      'Process exited with non zero exit code 1',
+    );
   });
 });

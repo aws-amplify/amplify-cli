@@ -36,6 +36,6 @@ describe('pinpoint region migration from v10 to latest', () => {
     const settings = { resourceName: `notification${getShortId()}` };
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
     await addNotificationChannel(projectRoot, settings, 'SMS', true, true, true);
-    await amplifyPushAuth(projectRoot, true);
+    await amplifyPushAuth(projectRoot, { testingWithLatestCodebase: true });
   });
 });

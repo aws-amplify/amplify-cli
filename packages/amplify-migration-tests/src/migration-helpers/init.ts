@@ -23,10 +23,10 @@ export function initJSProjectWithProfileV4_28_2(
   settings: Record<string, unknown>,
   testingWithLatestCodebase = false,
 ): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
   let env;
 
-  if (s.disableAmplifyAppCreation === true) {
+  if (mergedSettings.disableAmplifyAppCreation === true) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -37,28 +37,28 @@ export function initJSProjectWithProfileV4_28_2(
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
-      .sendLine(s.framework)
+      .sendLine(mergedSettings.framework)
       .wait('Source Directory Path:')
-      .sendLine(s.srcDir)
+      .sendLine(mergedSettings.srcDir)
       .wait('Distribution Directory Path:')
-      .sendLine(s.distDir)
+      .sendLine(mergedSettings.distDir)
       .wait('Build Command:')
-      .sendLine(s.buildCmd)
+      .sendLine(mergedSettings.buildCmd)
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
       .wait(/(Select the authentication method you want to use|Do you want to use an AWS profile)/)
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
+      .sendLine(mergedSettings.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -75,10 +75,10 @@ export function initJSProjectWithProfileV4_52_0(
   settings: Record<string, unknown>,
   testingWithLatestCodebase = false,
 ): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
   let env;
 
-  if (s.disableAmplifyAppCreation === true) {
+  if (mergedSettings.disableAmplifyAppCreation === true) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -89,30 +89,30 @@ export function initJSProjectWithProfileV4_52_0(
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Initialize the project with the above configuration?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
-      .sendLine(s.framework)
+      .sendLine(mergedSettings.framework)
       .wait('Source Directory Path:')
-      .sendLine(s.srcDir)
+      .sendLine(mergedSettings.srcDir)
       .wait('Distribution Directory Path:')
-      .sendLine(s.distDir)
+      .sendLine(mergedSettings.distDir)
       .wait('Build Command:')
-      .sendLine(s.buildCmd)
+      .sendLine(mergedSettings.buildCmd)
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
       .wait(/(Select the authentication method you want to use|Do you want to use an AWS profile)/)
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
+      .sendLine(mergedSettings.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -125,7 +125,7 @@ export function initJSProjectWithProfileV4_52_0(
 }
 
 export function initAndroidProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
 
@@ -138,13 +138,13 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Record<stri
       },
     })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Initialize the project with the above configuration?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .sendLine('android')
       .wait('Where is your Res directory')
@@ -152,7 +152,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Record<stri
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
+      .sendLine(mergedSettings.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {
@@ -167,7 +167,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Record<stri
 }
 
 export function initAndroidProjectWithProfileInquirer(cwd: string, settings: Record<string, unknown>): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
 
@@ -180,13 +180,13 @@ export function initAndroidProjectWithProfileInquirer(cwd: string, settings: Rec
       },
     })
       .wait('Enter a name for the project')
-      .sendLine(s.name)
+      .sendLine(mergedSettings.name)
       .wait('Initialize the project with the above configuration?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
-      .sendLine(s.envName)
+      .sendLine(mergedSettings.envName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .send('j')
       .sendCarriageReturn()
@@ -195,7 +195,7 @@ export function initAndroidProjectWithProfileInquirer(cwd: string, settings: Rec
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
+      .sendLine(mergedSettings.profileName)
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
         if (!err) {

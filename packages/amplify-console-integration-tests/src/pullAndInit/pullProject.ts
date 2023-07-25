@@ -63,27 +63,27 @@ export function authConfigPull(
   Object.keys(params).forEach((key) => {
     if (params[key]) pullCommand.push(...[`--${key}`, JSON.stringify(params[key])]);
   });
-  const s = { ...defaultSettings, ...settings };
+  const mergedSettings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     spawn(util.getCLIPath(), pullCommand, { cwd: projectRootDirPath, stripColors: true })
       .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
+      .sendLine(mergedSettings.profileName)
       .wait('Choose your default editor:')
-      .sendLine(s.editor)
+      .sendLine(mergedSettings.editor)
       .wait("Choose the type of app that you're building")
       .sendLine('javascript')
       .wait('What javascript framework are you using')
-      .sendLine(s.framework)
+      .sendLine(mergedSettings.framework)
       .wait('Source Directory Path:')
-      .sendLine(s.srcDir)
+      .sendLine(mergedSettings.srcDir)
       .wait('Distribution Directory Path:')
-      .sendLine(s.distDir)
+      .sendLine(mergedSettings.distDir)
       .wait('Build Command:')
-      .sendLine(s.buildCmd)
+      .sendLine(mergedSettings.buildCmd)
       .wait('Start Command:')
-      .sendLine(s.startCmd)
+      .sendLine(mergedSettings.startCmd)
       .wait('Do you plan on modifying this backend?')
       .sendConfirmYes()
       .wait('Successfully pulled backend environment dev from the cloud.')

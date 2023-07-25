@@ -25,28 +25,31 @@ const defaultSettings = {
  * Executes amplify pull
  */
 export const pullProject = (cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> => {
-  const s = { ...defaultSettings, ...settings };
-  const chain = spawn(getCLIPath(), ['pull', '--appId', s.appId, '--envName', s.envName], { cwd, stripColors: true })
+  const mergedSettings = { ...defaultSettings, ...settings };
+  const chain = spawn(getCLIPath(), ['pull', '--appId', mergedSettings.appId, '--envName', mergedSettings.envName], {
+    cwd,
+    stripColors: true,
+  })
     .wait('Select the authentication method you want to use:')
-    .sendLine(s.useProfile)
+    .sendLine(mergedSettings.useProfile)
     .wait('Please choose the profile you want to use')
-    .sendLine(s.profileName)
+    .sendLine(mergedSettings.profileName)
     .wait('Choose your default editor:')
-    .sendLine(s.editor)
+    .sendLine(mergedSettings.editor)
     .wait("Choose the type of app that you're building")
-    .sendLine(s.appType);
+    .sendLine(mergedSettings.appType);
 
-  switch (s.appType) {
+  switch (mergedSettings.appType) {
     case AmplifyFrontend.javascript:
       chain
         .wait('What javascript framework are you using')
-        .sendLine(s.framework)
+        .sendLine(mergedSettings.framework)
         .wait('Source Directory Path:')
-        .sendLine(s.srcDir)
+        .sendLine(mergedSettings.srcDir)
         .wait('Distribution Directory Path:')
-        .sendLine(s.distDir)
+        .sendLine(mergedSettings.distDir)
         .wait('Build Command:')
-        .sendLine(s.buildCmd)
+        .sendLine(mergedSettings.buildCmd)
         .wait('Start Command:')
         .sendCarriageReturn();
       break;
@@ -54,7 +57,7 @@ export const pullProject = (cwd: string, settings: Partial<typeof defaultSetting
       chain.wait('Where do you want to store your configuration file?').sendCarriageReturn();
       break;
     default:
-      throw new Error(`Unsupported app type: ${s.appType}`);
+      throw new Error(`Unsupported app type: ${mergedSettings.appType}`);
   }
 
   return chain

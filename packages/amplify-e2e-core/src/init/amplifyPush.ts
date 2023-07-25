@@ -15,7 +15,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 
-import { getCLIPath, nspawn as spawn } from '..';
+import { errorReportingTestHandler, getCLIPath, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
@@ -165,30 +165,45 @@ export function amplifyPushSecretsWithoutCodegen(cwd: string, testingWithLatestC
 /**
  * Function to test amplify push with allowDestructiveUpdates flag option
  */
+
 export function amplifyPushUpdate(
   cwd: string,
   waitForText?: RegExp,
-  testingWithLatestCodebase = false,
-  allowDestructiveUpdates = false,
-  overridePushTimeoutMS = 0,
-  minify?,
+  settings: {
+    testingWithLatestCodebase?: boolean;
+    allowDestructiveUpdates?: boolean;
+    overridePushTimeoutMS?: number;
+    minify?: boolean;
+    failureExpected?: boolean;
+  } = {},
 ): Promise<void> {
+  const defaultSettings = {
+    testingWithLatestCodebase: false,
+    allowDestructiveUpdates: false,
+    overridePushTimeoutMS: 0,
+    minify: false,
+    failureExpected: false,
+  };
+
+  const mergedSettings = { ...defaultSettings, ...settings };
   const args = ['push'];
-  if (allowDestructiveUpdates) {
+  if (mergedSettings.allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
-  if (minify) {
+  if (mergedSettings.minify) {
     args.push('--minify');
   }
-  return spawn(getCLIPath(testingWithLatestCodebase), args, {
+  const chain = spawn(getCLIPath(mergedSettings.testingWithLatestCodebase), args, {
     cwd,
     stripColors: true,
-    noOutputTimeout: overridePushTimeoutMS || pushTimeoutMS,
-  })
-    .wait('Are you sure you want to continue?')
-    .sendYes()
-    .wait(waitForText || /.*/)
-    .runAsync();
+    noOutputTimeout: mergedSettings.overridePushTimeoutMS || pushTimeoutMS,
+  });
+
+  chain.wait('Are you sure you want to continue?').sendYes();
+  if (mergedSettings.failureExpected) {
+    errorReportingTestHandler(chain);
+  }
+  return chain.wait(waitForText || /.*/).runAsync();
 }
 
 /**
@@ -214,13 +229,24 @@ export function amplifyPushUpdateLegacy(
 /**
  * Function to test amplify push
  */
-export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false): Promise<void> =>
-  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-    .wait('Are you sure you want to continue?')
-    .sendYes()
-    .wait(/.*/)
-    .runAsync();
-
+export const amplifyPushAuth = (
+  cwd: string,
+  defaultSettings: { testingWithLatestCodebase?: boolean; failureExpected?: boolean } = {
+    testingWithLatestCodebase: false,
+    failureExpected: false,
+  },
+): Promise<void> => {
+  const chain = spawn(getCLIPath(defaultSettings.testingWithLatestCodebase), ['push'], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: pushTimeoutMS,
+  });
+  chain.wait('Are you sure you want to continue?').sendYes();
+  if (defaultSettings.failureExpected) {
+    errorReportingTestHandler(chain);
+  }
+  return chain.wait(/.*/).runAsync();
+};
 /**
  * Function to test amplify push
  */

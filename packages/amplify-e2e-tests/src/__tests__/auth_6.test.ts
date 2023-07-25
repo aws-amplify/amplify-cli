@@ -21,6 +21,7 @@ const PROJECT_NAME = 'authTest';
 const defaultSettings = {
   name: PROJECT_NAME,
 };
+
 describe('zero config auth', () => {
   let projRoot: string;
   beforeEach(async () => {

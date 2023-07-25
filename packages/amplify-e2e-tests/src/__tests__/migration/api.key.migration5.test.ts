@@ -38,6 +38,7 @@ describe('amplify add api', () => {
       amplifyPushUpdate(
         projRoot,
         /Attempting to add more than 1 global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
+        { failureExpected: true },
       ),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
@@ -60,6 +61,7 @@ describe('amplify add api', () => {
       amplifyPushUpdate(
         projRoot,
         /Attempting to mutate more than 1 global secondary index at the same time on the TodoTable table in the Todo stack.*/,
+        { failureExpected: true },
       ),
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });

@@ -34,7 +34,7 @@ describe('amplify add notifications', () => {
     await initJSProjectWithProfile(projectRoot, { includeUsageDataPrompt: false });
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
-    await amplifyPushAuth(projectRoot, true);
+    await amplifyPushAuth(projectRoot, { testingWithLatestCodebase: true });
   });
 
   it('should add in app notifications if another notification channel added and pushed with an older version', async () => {
@@ -45,6 +45,6 @@ describe('amplify add notifications', () => {
     await addLegacySmsNotificationChannel(projectRoot, settings.resourceName);
     await amplifyPushAuthV5V6(projectRoot);
     await addNotificationChannel(projectRoot, settings, 'In-App Messaging', true, true, true);
-    await amplifyPushAuth(projectRoot, true);
+    await amplifyPushAuth(projectRoot, { testingWithLatestCodebase: true });
   });
 });

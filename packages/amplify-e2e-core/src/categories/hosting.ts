@@ -92,19 +92,18 @@ export const amplifyPublishWithUpdate = async (cwd: string): Promise<void> => {
     .runAsync();
 };
 
-export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
-      .wait('Do you still want to publish the frontend')
-      .sendConfirmYes()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+export function amplifyPublishWithoutUpdate(cwd: string, failureExpected = false): Promise<void> {
+  const chain = spawn(getCLIPath(), ['publish'], { cwd, stripColors: true });
+  return failureExpected
+    ? chain
+        .wait('Do you still want to publish the frontend')
+        .sendYes()
+        .wait(
+          'An unexpected error has occurred, opt in to send an error report to AWS Amplify with non-sensitive project configuration files. Confirm ',
+        )
+        .sendYes()
+        .runAsync()
+    : chain.wait('Do you still want to publish the frontend').sendYes().runAsync();
 }
 
 /**

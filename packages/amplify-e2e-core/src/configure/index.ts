@@ -42,8 +42,8 @@ const authenticationOptions = ['AWS profile', 'AWS access keys'];
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
 
 export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
-  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
+  const mergedSettings = { ...defaultSettings, ...settings };
+  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(mergedSettings).includes(p));
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }
@@ -55,19 +55,19 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
       .sendCarriageReturn()
       .wait('Specify the AWS Region');
 
-    singleSelect(chain, s.region, amplifyRegions);
+    singleSelect(chain, mergedSettings.region, amplifyRegions);
 
     chain
       .wait('Press Enter to continue')
       .sendCarriageReturn()
       .wait('accessKeyId')
       .pauseRecording()
-      .sendLine(s.accessKeyId)
+      .sendLine(mergedSettings.accessKeyId)
       .wait('secretAccessKey')
-      .sendLine(s.secretAccessKey)
+      .sendLine(mergedSettings.secretAccessKey)
       .resumeRecording()
       .wait('Profile Name:')
-      .sendLine(s.profileName)
+      .sendLine(mergedSettings.profileName)
       .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {
@@ -80,8 +80,8 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
 }
 
 export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration): Promise<void> => {
-  const s = { ...defaultSettings, ...settings };
-  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
+  const mergedSettings = { ...defaultSettings, ...settings };
+  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(mergedSettings).includes(p));
   if (missingParam.length) {
     throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
   }
@@ -93,7 +93,7 @@ export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration):
       .sendCarriageReturn()
       .wait('Specify the AWS Region');
 
-    singleSelect(chain, s.region, amplifyRegions);
+    singleSelect(chain, mergedSettings.region, amplifyRegions);
 
     chain
       .wait('user name:')
@@ -102,12 +102,12 @@ export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration):
       .sendCarriageReturn()
       .wait('accessKeyId')
       .pauseRecording()
-      .sendLine(s.accessKeyId)
+      .sendLine(mergedSettings.accessKeyId)
       .wait('secretAccessKey')
-      .sendLine(s.secretAccessKey)
+      .sendLine(mergedSettings.secretAccessKey)
       .resumeRecording()
       .wait('Profile Name:')
-      .sendLine(s.profileName)
+      .sendLine(mergedSettings.profileName)
       .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {
