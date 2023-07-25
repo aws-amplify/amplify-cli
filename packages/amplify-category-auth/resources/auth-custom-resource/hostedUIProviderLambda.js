@@ -3,6 +3,7 @@ const {
   CognitoIdentityProviderClient,
   CreateIdentityProviderCommand,
   DeleteIdentityProviderCommand,
+  ListIdentityProvidersCommand,
   UpdateIdentityProviderCommand,
 } = require('@aws-sdk/client-cognito-identity-provider');
 const identity = new CognitoIdentityProviderClient({});
@@ -75,28 +76,27 @@ async function handleEvent(event, context) {
     const userPoolId = event.ResourceProperties.userPoolId;
     const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
     const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
-    if (hostedUIProviderCreds.length !== 0) {
-      if (event.RequestType === 'Update' || event.RequestType === 'Create') {
-        const listIdentityProvidersResponse = await identity
-          .listIdentityProviders({
-            UserPoolId: userPoolId,
-            MaxResults: 60,
-          })
-          .promise();
-        console.log(listIdentityProvidersResponse);
-        const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);
-        const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-        for (const providerMetadata of hostedUIProviderMeta) {
-          if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
-            await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
-          } else {
-            await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
-          }
+    const hasHostedUIProviderCreds = hostedUIProviderCreds.length && hostedUIProviderCreds.length > 0;
+    if (hasHostedUIProviderCreds && (event.RequestType === 'Update' || event.RequestType === 'Create')) {
+      const listIdentityProvidersResponse = await identity.send(
+        new ListIdentityProvidersCommand({
+          UserPoolId: userPoolId,
+          MaxResults: 60,
+        }),
+      );
+      console.log(listIdentityProvidersResponse);
+      const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);
+      const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
+      for (const providerMetadata of hostedUIProviderMeta) {
+        if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
+          await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+        } else {
+          await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
         }
-        for (const provider of providerList) {
-          if (providerListInParameters.indexOf(provider) < 0) {
-            await deleteIdentityProvider(provider, userPoolId);
-          }
+      }
+      for (const provider of providerList) {
+        if (providerListInParameters.indexOf(provider) < 0) {
+          await deleteIdentityProvider(provider, userPoolId);
         }
       }
     }
