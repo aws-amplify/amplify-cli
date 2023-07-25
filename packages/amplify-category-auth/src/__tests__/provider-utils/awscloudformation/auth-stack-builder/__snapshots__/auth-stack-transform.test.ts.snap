@@ -784,8 +784,14 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
       "Properties": {
         "Code": {
           "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
+const {
+  CognitoIdentityProviderClient,
+  CreateUserPoolDomainCommand,
+  DeleteUserPoolDomainCommand,
+  DescribeUserPoolCommand,
+  DescribeUserPoolDomainCommand,
+} = require('@aws-sdk/client-cognito-identity-provider');
+const identity = new CognitoIdentityProviderClient({});
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
@@ -795,11 +801,8 @@ exports.handler = (event, context) => {
 async function checkDomainAvailability(domainName) {
   const params = { Domain: domainName };
   try {
-    const res = await identity.describeUserPoolDomain(params).promise();
-    if (res.DomainDescription && res.DomainDescription.UserPool) {
-      return false;
-    }
-    return true;
+    const res = await identity.send(new DescribeUserPoolDomainCommand(params));
+    return !(res.DomainDescription && res.DomainDescription.UserPoolId);
   } catch (err) {
     return false;
   }
@@ -807,7 +810,7 @@ async function checkDomainAvailability(domainName) {
 
 async function deleteUserPoolDomain(domainName, userPoolId) {
   const params = { Domain: domainName, UserPoolId: userPoolId };
-  await identity.deleteUserPoolDomain(params).promise();
+  await identity.send(new DeleteUserPoolDomainCommand(params));
 }
 
 async function createUserPoolDomain(domainName, userPoolId) {
@@ -815,11 +818,11 @@ async function createUserPoolDomain(domainName, userPoolId) {
     Domain: domainName,
     UserPoolId: userPoolId,
   };
-  await identity.createUserPoolDomain(params).promise();
+  await identity.send(new CreateUserPoolDomainCommand(params));
 }
 
 async function createOrUpdateDomain(inputDomainName, userPoolId) {
-  const result = await identity.describeUserPool({ UserPoolId: userPoolId }).promise();
+  const result = await identity.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
   if (result.UserPool.Domain === inputDomainName) {
     // if existing domain is same as input domain do nothing.
     return;
@@ -865,7 +868,7 @@ async function handleEvent(event, context) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
@@ -1022,109 +1025,113 @@ async function handleEvent(event, context) {
       "Properties": {
         "Code": {
           "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
+const {
+  CognitoIdentityProviderClient,
+  CreateIdentityProviderCommand,
+  DeleteIdentityProviderCommand,
+  UpdateIdentityProviderCommand,
+} = require('@aws-sdk/client-cognito-identity-provider');
+const identity = new CognitoIdentityProviderClient({});
+
+exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  const ignoredPromise = handleEvent(event, context);
+};
+
+function getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {
+  const providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);
+  const providerMeta = hostedUIProviderMeta[providerMetaIndex];
+  const providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);
+  const providerCreds = hostedUIProviderCreds[providerCredsIndex];
+  let requestParams = {
+    ProviderName: providerMeta.ProviderName,
+    UserPoolId: userPoolId,
+    AttributeMapping: providerMeta.AttributeMapping,
+  };
+  if (providerMeta.ProviderName === 'SignInWithApple') {
+    if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
+      requestParams.ProviderDetails = {
+        client_id: providerCreds.client_id,
+        team_id: providerCreds.team_id,
+        key_id: providerCreds.key_id,
+        private_key: providerCreds.private_key,
+        authorize_scopes: providerMeta.authorize_scopes,
+      };
+    } else {
+      requestParams = null;
+    }
+  } else {
+    if (providerCreds.client_id && providerCreds.client_secret) {
+      requestParams.ProviderDetails = {
+        client_id: providerCreds.client_id,
+        client_secret: providerCreds.client_secret,
+        authorize_scopes: providerMeta.authorize_scopes,
+      };
+    } else {
+      requestParams = null;
+    }
+  }
+  return requestParams;
+}
+
+async function createIdentityProvider(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {
+  const requestParams = getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+  if (!requestParams) {
+    return;
+  }
+  requestParams.ProviderType = requestParams.ProviderName;
+  await identity.send(new CreateIdentityProviderCommand(requestParams));
+}
+
+async function updateIdentityProvider(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {
+  const requestParams = getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+  if (!requestParams) {
+    return;
+  }
+  await identity.send(new UpdateIdentityProviderCommand(requestParams));
+}
+
+async function deleteIdentityProvider(providerName, userPoolId) {
+  const params = { ProviderName: providerName, UserPoolId: userPoolId };
+  await identity.send(new DeleteIdentityProviderCommand(params));
+}
+
+async function handleEvent(event, context) {
   try {
     const userPoolId = event.ResourceProperties.userPoolId;
-    let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    let hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
-    if (hostedUIProviderCreds.length === 0) {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      let getRequestParams = (providerName) => {
-        let providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);
-        let providerMeta = hostedUIProviderMeta[providerMetaIndex];
-        let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);
-        let providerCreds = hostedUIProviderCreds[providerCredsIndex];
-        let requestParams = {
-          ProviderName: providerMeta.ProviderName,
-          UserPoolId: userPoolId,
-          AttributeMapping: providerMeta.AttributeMapping,
-        };
-        if (providerMeta.ProviderName === 'SignInWithApple') {
-          if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
-            requestParams.ProviderDetails = {
-              client_id: providerCreds.client_id,
-              team_id: providerCreds.team_id,
-              key_id: providerCreds.key_id,
-              private_key: providerCreds.private_key,
-              authorize_scopes: providerMeta.authorize_scopes,
-            };
+    const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
+    const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
+    if (hostedUIProviderCreds.length !== 0) {
+      if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+        const listIdentityProvidersResponse = await identity
+          .listIdentityProviders({
+            UserPoolId: userPoolId,
+            MaxResults: 60,
+          })
+          .promise();
+        console.log(listIdentityProvidersResponse);
+        const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);
+        const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
+        for (const providerMetadata of hostedUIProviderMeta) {
+          if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
+            await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
           } else {
-            requestParams = null;
-          }
-        } else {
-          if (providerCreds.client_id && providerCreds.client_secret) {
-            requestParams.ProviderDetails = {
-              client_id: providerCreds.client_id,
-              client_secret: providerCreds.client_secret,
-              authorize_scopes: providerMeta.authorize_scopes,
-            };
-          } else {
-            requestParams = null;
+            await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
           }
         }
-        return requestParams;
-      };
-      let createIdentityProvider = (providerName) => {
-        let requestParams = getRequestParams(providerName);
-        if (!requestParams) {
-          return Promise.resolve();
+        for (const provider of providerList) {
+          if (providerListInParameters.indexOf(provider) < 0) {
+            await deleteIdentityProvider(provider, userPoolId);
+          }
         }
-        requestParams.ProviderType = requestParams.ProviderName;
-        return identity.createIdentityProvider(requestParams).promise();
-      };
-      let updateIdentityProvider = (providerName) => {
-        let requestParams = getRequestParams(providerName);
-        if (!requestParams) {
-          return Promise.resolve();
-        }
-        return identity.updateIdentityProvider(requestParams).promise();
-      };
-      let deleteIdentityProvider = (providerName) => {
-        let params = { ProviderName: providerName, UserPoolId: userPoolId };
-        return identity.deleteIdentityProvider(params).promise();
-      };
-      let providerPromises = [];
-      identity
-        .listIdentityProviders({ UserPoolId: userPoolId, MaxResults: 60 })
-        .promise()
-        .then((result) => {
-          console.log(result);
-          let providerList = result.Providers.map((provider) => provider.ProviderName);
-          let providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-          hostedUIProviderMeta.forEach((providerMetadata) => {
-            if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
-              providerPromises.push(updateIdentityProvider(providerMetadata.ProviderName));
-            } else {
-              providerPromises.push(createIdentityProvider(providerMetadata.ProviderName));
-            }
-          });
-          providerList.forEach((provider) => {
-            if (providerListInParameters.indexOf(provider) < 0) {
-              providerPromises.push(deleteIdentityProvider(provider));
-            }
-          });
-          return Promise.all(providerPromises);
-        })
-        .then(() => {
-          response.send(event, context, response.SUCCESS, {});
-        })
-        .catch((err) => {
-          console.log(err.stack);
-          response.send(event, context, response.FAILED, { err });
-        });
+      }
     }
+    response.send(event, context, response.SUCCESS, {});
   } catch (err) {
     console.log(err.stack);
     response.send(event, context, response.FAILED, { err });
   }
-};
+}
 ",
         },
         "Handler": "index.handler",
@@ -1134,7 +1141,7 @@ exports.handler = (event, context, callback) => {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",

@@ -1,14 +1,16 @@
 const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    let totpParams = {};
-    try {
-      totpParams = {
+const { CognitoIdentityProviderClient, SetUserPoolMfaConfigCommand } = require('@aws-sdk/client-cognito-identity-provider');
+const identity = new CognitoIdentityProviderClient({});
+
+exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  const ignoredPromise = handleEvent(event, context);
+};
+
+async function handleEvent(event, context) {
+  try {
+    if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+      const totpParams = {
         UserPoolId: event.ResourceProperties.userPoolId,
         MfaConfiguration: event.ResourceProperties.mfaConfiguration,
         SmsMfaConfiguration: {
@@ -18,20 +20,14 @@ exports.handler = (event, context, callback) => {
             ExternalId: event.ResourceProperties.smsConfigExternalId,
           },
         },
-        SoftwareTokenMfaConfiguration: { Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === true ? true : false },
+        SoftwareTokenMfaConfiguration: { Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === 'true' },
       };
       console.log(totpParams);
-    } catch (e) {
-      response.send(event, context, response.FAILED, { e });
+
+      await identity.send(new SetUserPoolMfaConfigCommand(totpParams));
     }
-    identity
-      .setUserPoolMfaConfig(totpParams)
-      .promise()
-      .then((res) => {
-        response.send(event, context, response.SUCCESS, { res });
-      })
-      .catch((err) => {
-        response.send(event, context, response.FAILED, { err });
-      });
+    response.send(event, context, response.SUCCESS, {});
+  } catch (e) {
+    response.send(event, context, response.FAILED, { e });
   }
-};
+}

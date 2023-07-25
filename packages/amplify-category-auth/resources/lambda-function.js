@@ -1,7 +1,16 @@
 const response = require('cfn-response');
-const aws = require('aws-sdk');
+const {
+  CognitoIdentityProviderClient,
+  DescribeUserPoolCommand,
+  UpdateUserPoolCommand,
+} = require('@aws-sdk/client-cognito-identity-provider');
 
-exports.handler = async function (event, context) {
+exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  const ignoredPromise = handleEvent(event, context);
+};
+
+async function handleEvent(event, context) {
   const physicalResourceId =
     event.RequestType === 'Update' ? event.PhysicalResourceId : `${event.LogicalResourceId}-${event.ResourceProperties.userpoolId}`;
 
@@ -9,8 +18,8 @@ exports.handler = async function (event, context) {
     const userPoolId = event.ResourceProperties.userpoolId;
     const { lambdaConfig } = event.ResourceProperties;
     const config = {};
-    const cognitoClient = new aws.CognitoIdentityServiceProvider();
-    const userPoolConfig = await cognitoClient.describeUserPool({ UserPoolId: userPoolId }).promise();
+    const cognitoClient = new CognitoIdentityProviderClient({});
+    const userPoolConfig = await cognitoClient.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
     const userPoolParams = userPoolConfig.UserPool;
     // update userPool params
 
@@ -44,30 +53,18 @@ exports.handler = async function (event, context) {
     }
     lambdaConfig.forEach((lambda) => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     if (event.RequestType === 'Delete') {
-      try {
-        updateUserPoolConfig.LambdaConfig = {};
-        console.log(`${event.RequestType}:`, JSON.stringify(updateUserPoolConfig));
-        const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
-        console.log(`delete response data ${JSON.stringify(result)}`);
-        await response.send(event, context, response.SUCCESS, {}, physicalResourceId);
-      } catch (err) {
-        console.log(err.stack);
-        await response.send(event, context, response.FAILED, { err }, physicalResourceId);
-      }
-    }
-    if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+      updateUserPoolConfig.LambdaConfig = {};
+      console.log(`${event.RequestType}:`, JSON.stringify(updateUserPoolConfig));
+      const result = await cognitoClient.send(new UpdateUserPoolCommand(updateUserPoolConfig));
+      console.log(`delete response data ${JSON.stringify(result)}`);
+    } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
       updateUserPoolConfig.LambdaConfig = config;
-      try {
-        const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
-        console.log(`createOrUpdate response data ${JSON.stringify(result)}`);
-        await response.send(event, context, response.SUCCESS, {}, physicalResourceId);
-      } catch (err) {
-        console.log(err.stack);
-        await response.send(event, context, response.FAILED, { err }, physicalResourceId);
-      }
+      const result = await cognitoClient.send(new UpdateUserPoolCommand(updateUserPoolConfig));
+      console.log(`createOrUpdate response data ${JSON.stringify(result)}`);
     }
+    response.send(event, context, response.SUCCESS, {}, physicalResourceId);
   } catch (err) {
     console.log(err.stack);
-    await response.send(event, context, response.FAILED, { err }, physicalResourceId);
+    response.send(event, context, response.FAILED, { err }, physicalResourceId);
   }
-};
+}
