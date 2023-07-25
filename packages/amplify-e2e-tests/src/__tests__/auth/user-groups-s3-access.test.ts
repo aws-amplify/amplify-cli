@@ -93,7 +93,7 @@ describe('user group tests', () => {
       region,
       credentials: Auth.essentialCredentials(user2Credentials),
     });
-    expect(
+    await expect(
       s3Client2.send(
         new GetObjectCommand({
           Bucket: bucketName,
@@ -101,7 +101,7 @@ describe('user group tests', () => {
         }),
       ),
     ).rejects.toThrow('Access Denied');
-    expect(
+    await expect(
       s3Client2.send(
         new PutObjectCommand({
           Bucket: bucketName,
