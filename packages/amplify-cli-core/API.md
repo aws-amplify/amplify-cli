@@ -1920,6 +1920,9 @@ export interface ResourceTuple {
 export function runHelp(context: $TSContext, commandsInfo: Array<CommandInfo>): void;
 
 // @public (undocumented)
+export const runOverride: (overrideDir: string, templateObject: $TSAny, projectInfo: $TSAny) => Promise<void>;
+
+// @public (undocumented)
 export type Runtime = {
     plugins: Plugin_2[];
 };
