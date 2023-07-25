@@ -1,4 +1,4 @@
-import { multiSelect, singleSelect } from '../utils/selectors';
+import { singleSelect } from '../utils/selectors';
 import { getCLIPath, nspawn as spawn, RETURN } from '..';
 
 export type AddStorageSettings = {
