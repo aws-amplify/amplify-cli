@@ -11,6 +11,7 @@ import {
   FeatureFlags,
   JSONUtilities,
   pathManager,
+  runOverride,
   stateManager,
   Template,
   writeCFNTemplate,
@@ -108,13 +109,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     const overrideDir = path.join(backendDir, this._category, this.resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir);
     if (isBuild) {
-      const overrideJSFilePath = path.join(overrideDir, 'build', 'override.js');
       const projectInfo = getProjectInfo();
       try {
-        const overrideImport = await import(overrideJSFilePath);
-        if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
-          overrideImport.override(this._authTemplateObj, projectInfo);
-        }
+        runOverride(overrideDir, this._authTemplateObj, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',

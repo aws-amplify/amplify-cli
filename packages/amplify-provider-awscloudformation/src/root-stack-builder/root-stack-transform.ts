@@ -7,6 +7,7 @@ import {
   buildOverrideDir,
   CFNTemplateFormat,
   pathManager,
+  runOverride,
   Template,
   writeCFNTemplate,
 } from '@aws-amplify/amplify-cli-core';
@@ -59,18 +60,13 @@ export class AmplifyRootStackTransform {
 
   private applyOverride = async (): Promise<void> => {
     const backendDir = pathManager.getBackendDirPath();
-    const overrideFilePath = path.join(backendDir, this._resourceName);
-    const isBuild = await buildOverrideDir(backendDir, overrideFilePath);
-
+    const overrideDir = path.join(backendDir, this._resourceName);
+    const isBuild = await buildOverrideDir(backendDir, overrideDir);
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const overrideJSFilePath = path.join(overrideFilePath, 'build', 'override.js');
       const projectInfo = getProjectInfo();
       try {
-        const overrideImport = await import(overrideJSFilePath);
-        if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
-          overrideImport.override(this._rootTemplateObj, projectInfo);
-        }
+        runOverride(overrideDir, this._rootTemplateObj, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',

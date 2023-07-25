@@ -10,6 +10,7 @@ import {
   CFNTemplateFormat,
   JSONUtilities,
   pathManager,
+  runOverride,
   Template,
   writeCFNTemplate,
 } from '@aws-amplify/amplify-cli-core';
@@ -185,13 +186,9 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     const overrideDir = path.join(backendDir, this._category, this._resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir);
     if (isBuild) {
-      const overrideJSFilePath = path.join(overrideDir, 'build', 'override.js');
       const projectInfo = getProjectInfo();
       try {
-        const overrideImport = await import(overrideJSFilePath);
-        if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
-          overrideImport.override(this._userPoolGroupTemplateObj, projectInfo);
-        }
+        runOverride(overrideDir, this._userPoolGroupTemplateObj, projectInfo);
       } catch (err: $TSAny) {
         throw new AmplifyError(
           'InvalidOverrideError',

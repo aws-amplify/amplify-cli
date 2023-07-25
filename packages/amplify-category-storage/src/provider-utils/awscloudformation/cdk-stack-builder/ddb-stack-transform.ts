@@ -1,5 +1,5 @@
 import { AmplifyDDBResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
-import { $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, buildOverrideDir, JSONUtilities, pathManager, runOverride } from '@aws-amplify/amplify-cli-core';
 import { formatter } from '@aws-amplify/amplify-prompts';
 import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
@@ -187,31 +187,22 @@ export class DDBStackTransform {
   async applyOverrides(): Promise<void> {
     const backendDir = pathManager.getBackendDirPath();
     const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
-    const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
-
     const isBuild = await buildOverrideDir(backendDir, resourceDirPath);
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const { override } = await import(overrideJSFilePath).catch(() => {
-        formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
-        return undefined;
-      });
-
-      if (typeof override === 'function' && override) {
-        const projectInfo = getProjectInfo();
-        try {
-          override(this._resourceTemplateObj as AmplifyDDBResourceTemplate, projectInfo);
-        } catch (err) {
-          throw new AmplifyError(
-            'InvalidOverrideError',
-            {
-              message: `Executing overrides failed.`,
-              details: err.message,
-              resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-            },
-            err,
-          );
-        }
+      const projectInfo = getProjectInfo();
+      try {
+        runOverride(resourceDirPath, this._resourceTemplateObj, projectInfo);
+      } catch (err) {
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: `Executing overrides failed.`,
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
+          },
+          err,
+        );
       }
     }
   }
