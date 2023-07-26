@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.0...@aws-amplify/amplify-category-custom@3.1.1) (2023-07-24)
+
+
+### Bug Fixes
+
+* skip hooks if flag detected ([a58e13c](https://github.com/aws-amplify/amplify-cli/commit/a58e13c55fb7dfd9e4f4a945e96d429cbecd2f9a))
+
+
+
+
+
 # [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.9...@aws-amplify/amplify-category-custom@3.1.0) (2023-07-20)
 
 
