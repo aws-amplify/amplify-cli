@@ -8,6 +8,7 @@
 
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { ARN } from '@aws-sdk/util-arn-parser';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
@@ -1504,6 +1505,9 @@ export const packageManagers: Record<PackageManagerType, PackageManager>;
 
 // @public (undocumented)
 export type PackageManagerType = 'yarn' | 'npm' | 'pnpm' | 'custom';
+
+// @public (undocumented)
+export const parseArn: (arn: string) => ARN;
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
