@@ -389,6 +389,7 @@ __metadata:
     "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@aws-amplify/amplify-prompts": 2.8.0
     "@aws-amplify/graphql-transformer-interfaces": ^2.2.2
+    "@aws-sdk/util-arn-parser": ^3.310.0
     "@types/ejs": ^3.1.1
     "@types/fs-extra": ^8.0.1
     "@types/hjson": ^2.4.2
@@ -4643,6 +4644,15 @@ __metadata:
   dependencies:
     tslib: ^1.8.0
   checksum: 94a2c489490b336761c1e8268a87b0bc5d390e32cf70d805a0984d3fe0800bad789909c3ca837427354ec5694ca68fa031804fdb5101dd3873460200b520110e
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-arn-parser@npm:^3.310.0":
+  version: 3.310.0
+  resolution: "@aws-sdk/util-arn-parser@npm:3.310.0"
+  dependencies:
+    tslib: ^2.5.0
+  checksum: 7214c1291748751976d2d5125d79d49dcb40a0f2276b6da41403c2fd4ecdeb611a604afe06d35c74f66231af78234367698c472b18b671f6e1685890d2508563
   languageName: node
   linkType: hard
 
