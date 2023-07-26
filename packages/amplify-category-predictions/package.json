@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-predictions",
-  "version": "5.3.1",
+  "version": "5.3.2-rest-api-july-temp.0",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.1",
+    "@aws-amplify/amplify-cli-core": "4.2.2-rest-api-july-temp.0",
     "@aws-amplify/amplify-prompts": "2.8.0",
     "aws-sdk": "^2.1405.0",
     "chalk": "^4.1.1",

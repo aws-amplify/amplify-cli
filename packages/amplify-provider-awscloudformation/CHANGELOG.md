@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.4.0-rest-api-july-temp.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.3.1...@aws-amplify/amplify-provider-awscloudformation@8.4.0-rest-api-july-temp.0) (2023-07-26)
+
+
+### Features
+
+* replace oauth and userpoolclient lambdas with cfn and sdk calls ([#12935](https://github.com/aws-amplify/amplify-cli/issues/12935)) ([b3ab512](https://github.com/aws-amplify/amplify-cli/commit/b3ab5125f2ec405afd1af9d2f77b8683d5914010))
+
+
+
+
+
 ## [8.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.3.0...@aws-amplify/amplify-provider-awscloudformation@8.3.1) (2023-07-24)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
