@@ -52,7 +52,7 @@
     "node-fetch": "^2.6.7",
     "open": "^8.4.0",
     "ora": "^4.0.3",
-    "proxy-agent": "^5.0.0",
+    "proxy-agent": "^6.3.0",
     "semver": "^7.5.4",
     "typescript-json-schema": "~0.52.0",
     "which": "^2.0.2",

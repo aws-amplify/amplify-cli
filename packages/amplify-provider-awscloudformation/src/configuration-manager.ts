@@ -13,7 +13,7 @@ import chalk from 'chalk';
 import { prompt } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import proxyAgent from 'proxy-agent';
+import { ProxyAgent } from 'proxy-agent';
 import { STS } from 'aws-sdk';
 import awsRegions from './aws-regions';
 import constants from './constants';
@@ -841,7 +841,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
   if (httpProxy) {
     resultAWSConfigInfo = {
       ...resultAWSConfigInfo,
-      httpOptions: { agent: proxyAgent(httpProxy) },
+      httpOptions: { agent: new ProxyAgent() },
     };
   }
 
