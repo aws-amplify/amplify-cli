@@ -125,6 +125,7 @@ function _verifyAPIExtract {
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
+    unset IS_AMPLIFY_CI
     yarn verify-api-extract
 }
 function _verifyYarnLock {
