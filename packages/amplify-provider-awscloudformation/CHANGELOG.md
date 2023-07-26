@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.2-rc.455c514fd9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.3.1...@aws-amplify/amplify-provider-awscloudformation@8.3.2-rc.455c514fd9.0) (2023-07-26)
+
+
+### Bug Fixes
+
+* parsing arn with multiple slashes when importing auth ([#13009](https://github.com/aws-amplify/amplify-cli/issues/13009)) ([455c514](https://github.com/aws-amplify/amplify-cli/commit/455c514fd9d29fcec37bc9a4de9c96fef80883b5))
+
+
+
+
+
 ## [8.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.3.0...@aws-amplify/amplify-provider-awscloudformation@8.3.1) (2023-07-24)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
