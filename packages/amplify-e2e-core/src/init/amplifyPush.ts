@@ -44,7 +44,7 @@ export const amplifyPush = async (cwd: string, testingWithLatestCodebase = false
   const pushArgs = ['push', ...(opts?.minify ? ['--minify'] : [])];
   // Test amplify push
   await spawn(getCLIPath(testingWithLatestCodebase), pushArgs, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-    .wait('Are you sure you want to continue "amplify push"?')
+    .wait('Are you sure you want to continue?')
     .sendYes()
     .sendCarriageReturn()
     .wait('Do you want to generate code for your newly created GraphQL API')
