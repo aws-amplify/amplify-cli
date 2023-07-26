@@ -14,7 +14,6 @@ export const hostedUILambdaFilePath = path.join(resourcesRoot, 'auth-custom-reso
 export const hostedUIProviderLambdaFilePath = path.join(resourcesRoot, 'auth-custom-resource', 'hostedUIProviderLambda.js');
 export const mfaLambdaFilePath = path.join(resourcesRoot, 'auth-custom-resource', 'mfaLambda.js');
 export const openIdLambdaFilePath = path.join(resourcesRoot, 'auth-custom-resource', 'openIdLambda.js');
-export const roleMapLambdaFilePath = path.join(resourcesRoot, 'auth-custom-resource', 'role-map-lambda-function.js');
 export const ENV_SPECIFIC_PARAMS = [
   'facebookAppId',
   'facebookAppIdUserPool',

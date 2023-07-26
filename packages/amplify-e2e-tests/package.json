@@ -32,6 +32,7 @@
     "@aws-amplify/graphql-transformer-core": "^1.4.0",
     "@aws-sdk/client-appsync": "^3.303.0",
     "@aws-sdk/client-dynamodb": "^3.303.0",
+    "@aws-sdk/client-s3": "^3.303.0",
     "@aws-sdk/client-ssm": "^3.303.0",
     "amplify-dynamodb-simulator": "2.8.1",
     "amplify-headless-interface": "1.17.4",

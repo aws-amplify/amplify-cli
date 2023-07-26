@@ -458,35 +458,49 @@ export function addS3WithGuestAccess(cwd: string): Promise<void> {
 }
 
 // Expects 2 existing user pool groups
-export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services')
-      .sendCarriageReturn() // Content
-      .wait('Provide a friendly name for your resource')
-      .sendCarriageReturn() // Default name
-      .wait('Provide bucket name')
-      .sendCarriageReturn() // Default name
-      .wait('Restrict access by')
-      .sendKeyDown()
-      .sendCarriageReturn() // Individual groups
-      .wait('Select groups')
-      .selectAll() // select all groups
-      .wait(`What kind of access do you want for ${settings?.userGroup1 ?? 'Admins'} users`) // for <UserGroup1> users?
-      .selectAll() // Select all permissions
-      .wait(`What kind of access do you want for ${settings?.userGroup2 ?? 'Users'} users`) // for <UserGroup2> users?
-      .selectAll() // Select all permissions
-      .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendConfirmNo()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
+export function addS3WithGroupAccess(cwd: string, settings?: { userGroup1?: string; userGroup2?: string }): Promise<void> {
+  return spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    .wait('Select from one of the below mentioned services')
+    .sendCarriageReturn() // Content
+    .wait('Provide a friendly name for your resource')
+    .sendCarriageReturn() // Default name
+    .wait('Provide bucket name')
+    .sendCarriageReturn() // Default name
+    .wait('Restrict access by')
+    .sendKeyDown()
+    .sendCarriageReturn() // Individual groups
+    .wait('Select groups')
+    .selectAll() // select all groups
+    .wait(`What kind of access do you want for ${settings?.userGroup1 ?? 'Admins'} users`) // for <UserGroup1> users?
+    .selectAll() // Select all permissions
+    .wait(`What kind of access do you want for ${settings?.userGroup2 ?? 'Users'} users`) // for <UserGroup2> users?
+    .selectAll() // Select all permissions
+    .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
+    .sendConfirmNo()
+    .sendEof()
+    .runAsync();
+}
+
+export function addS3WithFirstGroupAccess(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    .wait('Select from one of the below mentioned services')
+    .sendCarriageReturn() // Content
+    .wait('Provide a friendly name for your resource')
+    .sendCarriageReturn() // Default name
+    .wait('Provide bucket name')
+    .sendCarriageReturn() // Default name
+    .wait('Restrict access by')
+    .sendKeyDown()
+    .sendCarriageReturn() // Individual groups
+    .wait('Select groups')
+    .send(' ') // select first group
+    .sendCarriageReturn()
+    .wait(`What kind of access do you want for`)
+    .selectAll() // Select all permissions
+    .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
+    .sendNo()
+    .sendCarriageReturn()
+    .runAsync();
 }
 
 export function addS3WithTrigger(cwd: string): Promise<void> {

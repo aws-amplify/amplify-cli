@@ -1348,10 +1348,54 @@ exports.handler = (event, context, callback) => {
     "IdentityPoolRoleMap": {
       "DependsOn": [
         "IdentityPool",
+        "UserPoolClient",
+        "UserPoolClientWeb",
       ],
       "Properties": {
         "IdentityPoolId": {
           "Ref": "IdentityPool",
+        },
+        "RoleMappings": {
+          "UserPoolClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Sub": [
+                "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${client}",
+                {
+                  "client": {
+                    "Ref": "UserPoolClient",
+                  },
+                  "region": {
+                    "Ref": "AWS::Region",
+                  },
+                  "userPool": {
+                    "Ref": "UserPool",
+                  },
+                },
+              ],
+            },
+            "Type": "Token",
+          },
+          "UserPoolWebClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Sub": [
+                "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${webClient}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region",
+                  },
+                  "userPool": {
+                    "Ref": "UserPool",
+                  },
+                  "webClient": {
+                    "Ref": "UserPoolClientWeb",
+                  },
+                },
+              ],
+            },
+            "Type": "Token",
+          },
         },
         "Roles": {
           "authenticated": {
