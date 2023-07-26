@@ -278,7 +278,7 @@ export function overrideDDB(cwd: string) {
   });
 }
 
-export function buildOverrideStorage(cwd: string, env: Record<string, string> = {}) {
+export function buildOverrideStorage(cwd: string, env?: Record<string, string>) {
   return new Promise((resolve, reject) => {
     // Add 'storage' as a category param once implemented
     const args = ['build'];
