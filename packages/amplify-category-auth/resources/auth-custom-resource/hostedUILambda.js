@@ -1,20 +1,43 @@
 const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
+const {
+  CognitoIdentityProviderClient,
+  CreateUserPoolDomainCommand,
+  DeleteUserPoolDomainCommand,
+  DescribeUserPoolCommand,
+  DescribeUserPoolDomainCommand,
+} = require('@aws-sdk/client-cognito-identity-provider');
+const identity = new CognitoIdentityProviderClient({});
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
-  const ignoredPromise = handleEvent(event, context);
+  void tryHandleEvent(event, context);
 };
+
+async function tryHandleEvent(event, context) {
+  try {
+    await handleEvent(event);
+    response.send(event, context, response.SUCCESS, {});
+  } catch (err) {
+    console.log(err);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+
+async function handleEvent(event) {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const inputDomainName = event.ResourceProperties.hostedUIDomainName;
+  if (event.RequestType === 'Delete') {
+    await deleteUserPoolDomain(inputDomainName, userPoolId);
+  } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+    await createOrUpdateDomain(inputDomainName, userPoolId);
+  }
+}
 
 async function checkDomainAvailability(domainName) {
   const params = { Domain: domainName };
   try {
-    const res = await identity.describeUserPoolDomain(params).promise();
-    if (res.DomainDescription && res.DomainDescription.UserPool) {
-      return false;
-    }
-    return true;
+    const res = await identity.send(new DescribeUserPoolDomainCommand(params));
+    return !(res.DomainDescription && res.DomainDescription.UserPoolId);
   } catch (err) {
     return false;
   }
@@ -22,7 +45,7 @@ async function checkDomainAvailability(domainName) {
 
 async function deleteUserPoolDomain(domainName, userPoolId) {
   const params = { Domain: domainName, UserPoolId: userPoolId };
-  await identity.deleteUserPoolDomain(params).promise();
+  await identity.send(new DeleteUserPoolDomainCommand(params));
 }
 
 async function createUserPoolDomain(domainName, userPoolId) {
@@ -30,11 +53,11 @@ async function createUserPoolDomain(domainName, userPoolId) {
     Domain: domainName,
     UserPoolId: userPoolId,
   };
-  await identity.createUserPoolDomain(params).promise();
+  await identity.send(new CreateUserPoolDomainCommand(params));
 }
 
 async function createOrUpdateDomain(inputDomainName, userPoolId) {
-  const result = await identity.describeUserPool({ UserPoolId: userPoolId }).promise();
+  const result = await identity.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
   if (result.UserPool.Domain === inputDomainName) {
     // if existing domain is same as input domain do nothing.
     return;
@@ -53,21 +76,5 @@ async function createOrUpdateDomain(inputDomainName, userPoolId) {
   } else if (result.UserPool.Domain) {
     // if input domain is undefined delete existing domain if exists.
     await deleteUserPoolDomain(result.UserPool.Domain, userPoolId);
-  }
-}
-
-async function handleEvent(event, context) {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    const inputDomainName = event.ResourceProperties.hostedUIDomainName;
-    if (event.RequestType === 'Delete') {
-      await deleteUserPoolDomain(inputDomainName, userPoolId);
-    } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
-      await createOrUpdateDomain(inputDomainName, userPoolId);
-    }
-    response.send(event, context, response.SUCCESS, {});
-  } catch (err) {
-    console.log(err);
-    response.send(event, context, response.FAILED, { err });
   }
 }

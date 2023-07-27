@@ -152,7 +152,7 @@ const createCustomResource = (
 ): void => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: lambda.Runtime.NODEJS_18_X,
     code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });
