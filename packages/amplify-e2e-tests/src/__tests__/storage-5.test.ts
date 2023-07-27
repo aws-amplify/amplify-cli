@@ -209,10 +209,7 @@ describe('ddb override tests', () => {
 
     replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
-    process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES = 'true';
-    await expect(buildOverrideStorage(projRoot)).rejects.toThrowError();
-    // unset
-    delete process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES;
+    await expect(buildOverrideStorage(projRoot, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
     // should succeed now
     await buildOverrideStorage(projRoot);
     let ddbCFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);

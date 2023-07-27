@@ -39,7 +39,7 @@ describe('amplify init', () => {
   });
 
   it('test init on a git pulled project', async () => {
-    const envName = 'dev';
+    const envName = 'devtest';
     const resourceName = 'authConsoleTest';
     await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
     await addAuthWithDefault(projectRoot);
