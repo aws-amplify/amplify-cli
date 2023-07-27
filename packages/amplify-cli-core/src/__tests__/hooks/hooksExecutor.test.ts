@@ -81,6 +81,7 @@ describe('hooksExecutioner tests', () => {
   });
   afterEach(() => {
     HooksMeta.releaseInstance();
+    delete process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES;
   });
 
   test('skip Hooks test', async () => {
