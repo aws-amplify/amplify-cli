@@ -168,8 +168,28 @@ const identity = new CognitoIdentityProviderClient({});
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
-  const ignoredPromise = handleEvent(event, context);
+  void tryHandleEvent(event, context);
 };
+
+async function tryHandleEvent(event, context) {
+  try {
+    await handleEvent(event);
+    response.send(event, context, response.SUCCESS, {});
+  } catch (err) {
+    console.log(err);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+
+async function handleEvent(event) {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const inputDomainName = event.ResourceProperties.hostedUIDomainName;
+  if (event.RequestType === 'Delete') {
+    await deleteUserPoolDomain(inputDomainName, userPoolId);
+  } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+    await createOrUpdateDomain(inputDomainName, userPoolId);
+  }
+}
 
 async function checkDomainAvailability(domainName) {
   const params = { Domain: domainName };
@@ -214,22 +234,6 @@ async function createOrUpdateDomain(inputDomainName, userPoolId) {
   } else if (result.UserPool.Domain) {
     // if input domain is undefined delete existing domain if exists.
     await deleteUserPoolDomain(result.UserPool.Domain, userPoolId);
-  }
-}
-
-async function handleEvent(event, context) {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    const inputDomainName = event.ResourceProperties.hostedUIDomainName;
-    if (event.RequestType === 'Delete') {
-      await deleteUserPoolDomain(inputDomainName, userPoolId);
-    } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
-      await createOrUpdateDomain(inputDomainName, userPoolId);
-    }
-    response.send(event, context, response.SUCCESS, {});
-  } catch (err) {
-    console.log(err);
-    response.send(event, context, response.FAILED, { err });
   }
 }
 
@@ -356,14 +360,52 @@ const identity = new CognitoIdentityProviderClient({});
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
-  const ignoredPromise = handleEvent(event, context);
+  void tryHandleEvent(event, context);
 };
 
+async function tryHandleEvent(event, context) {
+  try {
+    await handleEvent(event);
+    response.send(event, context, response.SUCCESS, {});
+  } catch (err) {
+    console.log(err.stack);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+
+async function handleEvent(event) {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
+  const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
+  const hasHostedUIProviderCreds = hostedUIProviderCreds.length && hostedUIProviderCreds.length > 0;
+  if (hasHostedUIProviderCreds && (event.RequestType === 'Update' || event.RequestType === 'Create')) {
+    const listIdentityProvidersResponse = await identity.send(
+      new ListIdentityProvidersCommand({
+        UserPoolId: userPoolId,
+        MaxResults: 60,
+      }),
+    );
+    console.log(listIdentityProvidersResponse);
+    const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);
+    const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
+    for (const providerMetadata of hostedUIProviderMeta) {
+      if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
+        await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+      } else {
+        await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+      }
+    }
+    for (const provider of providerList) {
+      if (providerListInParameters.indexOf(provider) < 0) {
+        await deleteIdentityProvider(provider, userPoolId);
+      }
+    }
+  }
+}
+
 function getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {
-  const providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);
-  const providerMeta = hostedUIProviderMeta[providerMetaIndex];
-  const providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);
-  const providerCreds = hostedUIProviderCreds[providerCredsIndex];
+  const providerMeta = hostedUIProviderMeta.find((provider) => provider.ProviderName === providerName);
+  const providerCreds = hostedUIProviderCreds.find((provider) => provider.ProviderName === providerName);
   let requestParams = {
     ProviderName: providerMeta.ProviderName,
     UserPoolId: userPoolId,
@@ -415,42 +457,6 @@ async function updateIdentityProvider(providerName, hostedUIProviderMeta, hosted
 async function deleteIdentityProvider(providerName, userPoolId) {
   const params = { ProviderName: providerName, UserPoolId: userPoolId };
   await identity.send(new DeleteIdentityProviderCommand(params));
-}
-
-async function handleEvent(event, context) {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
-    const hasHostedUIProviderCreds = hostedUIProviderCreds.length && hostedUIProviderCreds.length > 0;
-    if (hasHostedUIProviderCreds && (event.RequestType === 'Update' || event.RequestType === 'Create')) {
-      const listIdentityProvidersResponse = await identity.send(
-        new ListIdentityProvidersCommand({
-          UserPoolId: userPoolId,
-          MaxResults: 60,
-        }),
-      );
-      console.log(listIdentityProvidersResponse);
-      const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);
-      const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-      for (const providerMetadata of hostedUIProviderMeta) {
-        if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
-          await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
-        } else {
-          await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
-        }
-      }
-      for (const provider of providerList) {
-        if (providerListInParameters.indexOf(provider) < 0) {
-          await deleteIdentityProvider(provider, userPoolId);
-        }
-      }
-    }
-    response.send(event, context, response.SUCCESS, {});
-  } catch (err) {
-    console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
-  }
 }
 
  └─ [~] Runtime
@@ -631,8 +637,28 @@ const identity = new CognitoIdentityProviderClient({});
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
-  const ignoredPromise = handleEvent(event, context);
+  void tryHandleEvent(event, context);
 };
+
+async function tryHandleEvent(event, context) {
+  try {
+    await handleEvent(event);
+    response.send(event, context, response.SUCCESS, {});
+  } catch (err) {
+    console.log(err);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+
+async function handleEvent(event) {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const inputDomainName = event.ResourceProperties.hostedUIDomainName;
+  if (event.RequestType === 'Delete') {
+    await deleteUserPoolDomain(inputDomainName, userPoolId);
+  } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+    await createOrUpdateDomain(inputDomainName, userPoolId);
+  }
+}
 
 async function checkDomainAvailability(domainName) {
   const params = { Domain: domainName };
@@ -677,22 +703,6 @@ async function createOrUpdateDomain(inputDomainName, userPoolId) {
   } else if (result.UserPool.Domain) {
     // if input domain is undefined delete existing domain if exists.
     await deleteUserPoolDomain(result.UserPool.Domain, userPoolId);
-  }
-}
-
-async function handleEvent(event, context) {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    const inputDomainName = event.ResourceProperties.hostedUIDomainName;
-    if (event.RequestType === 'Delete') {
-      await deleteUserPoolDomain(inputDomainName, userPoolId);
-    } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
-      await createOrUpdateDomain(inputDomainName, userPoolId);
-    }
-    response.send(event, context, response.SUCCESS, {});
-  } catch (err) {
-    console.log(err);
-    response.send(event, context, response.FAILED, { err });
   }
 }
 
@@ -819,14 +829,52 @@ const identity = new CognitoIdentityProviderClient({});
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
-  const ignoredPromise = handleEvent(event, context);
+  void tryHandleEvent(event, context);
 };
 
+async function tryHandleEvent(event, context) {
+  try {
+    await handleEvent(event);
+    response.send(event, context, response.SUCCESS, {});
+  } catch (err) {
+    console.log(err.stack);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+
+async function handleEvent(event) {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
+  const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
+  const hasHostedUIProviderCreds = hostedUIProviderCreds.length && hostedUIProviderCreds.length > 0;
+  if (hasHostedUIProviderCreds && (event.RequestType === 'Update' || event.RequestType === 'Create')) {
+    const listIdentityProvidersResponse = await identity.send(
+      new ListIdentityProvidersCommand({
+        UserPoolId: userPoolId,
+        MaxResults: 60,
+      }),
+    );
+    console.log(listIdentityProvidersResponse);
+    const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);
+    const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
+    for (const providerMetadata of hostedUIProviderMeta) {
+      if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
+        await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+      } else {
+        await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+      }
+    }
+    for (const provider of providerList) {
+      if (providerListInParameters.indexOf(provider) < 0) {
+        await deleteIdentityProvider(provider, userPoolId);
+      }
+    }
+  }
+}
+
 function getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {
-  const providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);
-  const providerMeta = hostedUIProviderMeta[providerMetaIndex];
-  const providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);
-  const providerCreds = hostedUIProviderCreds[providerCredsIndex];
+  const providerMeta = hostedUIProviderMeta.find((provider) => provider.ProviderName === providerName);
+  const providerCreds = hostedUIProviderCreds.find((provider) => provider.ProviderName === providerName);
   let requestParams = {
     ProviderName: providerMeta.ProviderName,
     UserPoolId: userPoolId,
@@ -878,42 +926,6 @@ async function updateIdentityProvider(providerName, hostedUIProviderMeta, hosted
 async function deleteIdentityProvider(providerName, userPoolId) {
   const params = { ProviderName: providerName, UserPoolId: userPoolId };
   await identity.send(new DeleteIdentityProviderCommand(params));
-}
-
-async function handleEvent(event, context) {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
-    const hasHostedUIProviderCreds = hostedUIProviderCreds.length && hostedUIProviderCreds.length > 0;
-    if (hasHostedUIProviderCreds && (event.RequestType === 'Update' || event.RequestType === 'Create')) {
-      const listIdentityProvidersResponse = await identity.send(
-        new ListIdentityProvidersCommand({
-          UserPoolId: userPoolId,
-          MaxResults: 60,
-        }),
-      );
-      console.log(listIdentityProvidersResponse);
-      const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);
-      const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-      for (const providerMetadata of hostedUIProviderMeta) {
-        if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
-          await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
-        } else {
-          await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
-        }
-      }
-      for (const provider of providerList) {
-        if (providerListInParameters.indexOf(provider) < 0) {
-          await deleteIdentityProvider(provider, userPoolId);
-        }
-      }
-    }
-    response.send(event, context, response.SUCCESS, {});
-  } catch (err) {
-    console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
-  }
 }
 
  └─ [~] Runtime
