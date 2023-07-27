@@ -9,13 +9,13 @@ import {
   JSONUtilities,
   LocalEnvInfo,
   pathManager,
+  runOverride,
   stateManager,
   Tag,
   Template,
 } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import * as vm from 'vm2';
 
 import fs from 'fs-extra';
 import moment from 'moment';
@@ -92,31 +92,20 @@ export const run = async (context: $TSContext): Promise<void> => {
     };
 
     let projectInitialized = false;
+    let overrideDir = '';
     let overrideFilePath = '';
     try {
       const backendDir = pathManager.getBackendDirPath();
+      overrideDir = path.join(backendDir, 'awscloudformation');
       overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
       projectInitialized = true;
     } catch (e) {
       // project not initialized
     }
     if (projectInitialized && fs.existsSync(overrideFilePath)) {
+      const projectInfo = getProjectInfo();
       try {
-        const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
-        if (overrideCode) {
-          const sandboxNode = new vm.NodeVM({
-            console: 'inherit',
-            timeout: 5000,
-            sandbox: {},
-            require: {
-              context: 'sandbox',
-              builtin: ['path'],
-              external: true,
-            },
-          });
-          const projectInfo = getProjectInfo();
-          await sandboxNode.run(overrideCode).override(configuration, projectInfo);
-        }
+        await runOverride(overrideDir, configuration, projectInfo);
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
         throw new AmplifyError(

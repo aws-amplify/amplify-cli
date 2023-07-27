@@ -27,6 +27,7 @@ const defaultSettings = {
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
   includeUsageDataPrompt: true,
+  testingWithLatestCodebase: false,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
@@ -53,7 +54,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
-  const chain = spawn(getCLIPath(), cliArgs, {
+  const chain = spawn(getCLIPath(s.testingWithLatestCodebase), cliArgs, {
     cwd,
     stripColors: true,
     env,

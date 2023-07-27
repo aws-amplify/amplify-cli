@@ -125,6 +125,7 @@ function _verifyAPIExtract {
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
+    unset IS_AMPLIFY_CI
     yarn verify-api-extract
 }
 function _verifyYarnLock {
@@ -336,6 +337,17 @@ function _runMigrationV10Test {
     echo $IS_AMPLIFY_CI
     _loadTestAccountCredentials
     retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationV12Test {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    unset IS_AMPLIFY_CI
+    echo $IS_AMPLIFY_CI
+    _loadTestAccountCredentials
+    retry yarn run migration_v12.0.3 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
 }
 
 function _scanArtifacts {

@@ -360,6 +360,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     }
 
     await postPushGraphQLCodegen(context);
+    await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.AUTH,
+      AmplifySupportedService.COGNITO,
+      'updateAppClientWithGeneratedSecret',
+      [context],
+    );
     await postPushCheck(context);
 
     if (resources.concat(resourcesToBeDeleted).length > 0) {

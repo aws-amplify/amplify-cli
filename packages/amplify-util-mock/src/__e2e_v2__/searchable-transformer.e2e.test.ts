@@ -59,7 +59,9 @@ describe('@searchable transformer', () => {
     try {
       const transformer = new GraphQLTransform({
         transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-        sandboxModeEnabled: true,
+        transformParameters: {
+          sandboxModeEnabled: true,
+        },
       });
       const out = await transformer.transform(validSchema);
       let ddbClient;

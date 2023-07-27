@@ -10,6 +10,7 @@ import { getLayerDirectoryName, LayerDirectoryType } from '..';
 export * from './add-circleci-tags';
 export * from './api';
 export * from './appsync';
+export * from './auth-utils';
 export * from './envVars';
 export * from './getAppId';
 export * from './headless';

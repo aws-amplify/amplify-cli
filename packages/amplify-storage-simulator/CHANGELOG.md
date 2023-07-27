@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.9.1...amplify-storage-simulator@1.10.0) (2023-07-20)
+
+
+### Features
+
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
 ## [1.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.9.0...amplify-storage-simulator@1.9.1) (2023-06-13)
 
 **Note:** Version bump only for package amplify-storage-simulator

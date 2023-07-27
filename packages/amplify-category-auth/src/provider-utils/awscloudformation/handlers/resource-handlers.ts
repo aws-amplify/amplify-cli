@@ -99,9 +99,9 @@ export const getUpdateAuthHandler = (context: AuthContext) => async (request: Se
   )(request);
   const resources = stateManager.getMeta();
   if (resources.auth.userPoolGroups) {
-    await updateUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
+    await updateUserPoolGroups(context, requestWithDefaults.resourceName, requestWithDefaults.userPoolGroupList);
   } else {
-    await createUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
+    await createUserPoolGroups(context, requestWithDefaults.resourceName, requestWithDefaults.userPoolGroupList);
   }
   if (
     (!requestWithDefaults.updateFlow && !requestWithDefaults.thirdPartyAuth) ||
@@ -165,7 +165,7 @@ export const getUpdateAuthHandler = (context: AuthContext) => async (request: Se
     // saving cli-inputs except secrets
     await cliState.saveCLIInputPayload(cognitoCLIInputs);
     // remove this when api and functions transform are done
-    if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
+    if (request.updateFlow !== 'updateAdminQueries') {
       await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
     }
 

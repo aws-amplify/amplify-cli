@@ -62,7 +62,7 @@
     "test-changed": "lerna run test --since dev",
     "test-ci": "lerna run test --concurrency 4 -- --ci -i",
     "test": "lerna run test --concurrency 1",
-    "update-data-packages": "./scripts/update-data-dependencies.sh && yarn",
+    "update-data-packages": "./scripts/update-data-dependencies.sh && yarn && yarn dedupe",
     "update-test-timing-data": "ts-node ./scripts/cci-get-job-metrics.ts && ts-node ./scripts/cci-extract-test-timings-from-job-metrics.ts",
     "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
     "verdaccio-clean": "rimraf ../verdaccio-cache",
@@ -171,6 +171,7 @@
     "json5": "^2.2.3",
     "nth-check": "^2.0.1",
     "undici": "^5.8.0",
-    "pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff"
+    "pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff",
+    "tough-cookie": "^4.1.3"
   }
 }

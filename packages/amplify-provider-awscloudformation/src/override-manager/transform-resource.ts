@@ -72,6 +72,7 @@ export const transformResourceWithOverrides = async (context: $TSContext, resour
       'MissingOverridesInstallationRequirementsError',
       'InvalidOverrideError',
       'InvalidCustomResourceError',
+      'ScriptingFeaturesDisabledError',
     ];
     if (
       (err instanceof AmplifyException && overrideOrCustomStackErrorsList.find((v) => v === err.name)) ||

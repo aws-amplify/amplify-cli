@@ -103,6 +103,9 @@ describe('zero config auth', () => {
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-auth.ts');
     replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', PROJECT_NAME);
+    // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
+    await expect(amplifyPushOverride(projRoot, false, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
+    // should succeed now
     await amplifyPushOverride(projRoot);
 
     // check overwritten config

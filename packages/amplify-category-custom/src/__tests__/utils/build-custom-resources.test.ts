@@ -1,4 +1,4 @@
-import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import execa from 'execa';
 import { buildCustomResources } from '../../utils/build-custom-resources';
 
@@ -43,6 +43,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     readJson: jest.fn(),
     stringify: jest.fn(),
   },
+  skipHooks: jest.fn().mockReturnValue(false),
 }));
 
 describe('build custom resources scenarios', () => {

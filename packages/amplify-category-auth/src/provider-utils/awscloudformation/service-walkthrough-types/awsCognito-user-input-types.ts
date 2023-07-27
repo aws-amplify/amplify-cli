@@ -1,3 +1,5 @@
+import { $TSAny } from '@aws-amplify/amplify-cli-core';
+
 export interface CognitoCLIInputs {
   version?: string;
   cognitoConfig: CognitoConfiguration;
@@ -41,13 +43,13 @@ export interface ServiceQuestionsBaseResult {
 export interface OAuthResult {
   hostedUI?: boolean;
   hostedUIDomainName?: string;
-  hostedUIProviderMeta?: any;
-  hostedUIProviderCreds?: any;
+  hostedUIProviderMeta?: $TSAny;
+  hostedUIProviderCreds?: $TSAny;
   AllowedOAuthFlows?: 'code' | 'implicit';
   AllowedOAuthScopes?: string[];
   newCallbackURLs?: string[];
   newLogoutURLs?: string[];
-  oAuthMetadata?: any;
+  oAuthMetadata?: $TSAny;
 }
 
 export interface SocialProviderResult {

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.4.0...@aws-amplify/amplify-category-function@5.4.1) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.3.4...@aws-amplify/amplify-category-function@5.4.0) (2023-07-20)
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
 ## [5.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.3.3...@aws-amplify/amplify-category-function@5.3.4) (2023-06-13)
 
 

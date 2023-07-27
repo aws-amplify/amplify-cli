@@ -22,7 +22,7 @@ try {
   aws = require('aws-sdk');
 }
 
-const proxyAgent = require('proxy-agent');
+const { ProxyAgent } = require('proxy-agent');
 const configurationManager = require('../configuration-manager');
 
 aws.configureWithCreds = async (context) => {
@@ -35,7 +35,7 @@ aws.configureWithCreds = async (context) => {
   if (httpProxy) {
     aws.config.update({
       httpOptions: {
-        agent: proxyAgent(httpProxy),
+        agent: new ProxyAgent(httpProxy),
       },
     });
   }

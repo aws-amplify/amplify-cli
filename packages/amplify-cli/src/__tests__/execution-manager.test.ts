@@ -74,6 +74,7 @@ describe('execution manager', () => {
     ['pull', { event: AmplifyEvent.PrePull, data: {} }],
     ['models', { event: AmplifyEvent.PreCodegenModels, data: {} }],
   ])('executeCommand raise pre %s event', async (command, args) => {
+    mockFs.readdirSync.mockReturnValue([]);
     mockFs.existsSync.mockReturnValue(true);
     mockContext.input.command = command;
     await executeCommand(mockContext);
@@ -86,6 +87,7 @@ describe('execution manager', () => {
     ['pull', { event: AmplifyEvent.PostPull, data: {} }],
     ['models', { event: AmplifyEvent.PostCodegenModels, data: {} }],
   ])('executeCommand raise post %s event', async (command, args) => {
+    mockFs.readdirSync.mockReturnValue([]);
     mockFs.existsSync.mockReturnValue(true);
     mockContext.input.command = command;
     await executeCommand(mockContext);
