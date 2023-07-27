@@ -139,8 +139,7 @@ type AWSAccountInfo = {
 
 const PINPOINT_TEST_REGEX = /integtest/;
 const APPSYNC_TEST_REGEX = /integtest/;
-const BUCKET_TEST_REGEX =
-  /test|cusres.*-dev|-enva|sss-headless-import|devtag|nolayerenv|amplify-specialinit|withbabelconfig|amplify-hooks.*-deployment/;
+const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
 const USER_POOL_TEST_REGEX = /integtest|amplify_backend_manager/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
