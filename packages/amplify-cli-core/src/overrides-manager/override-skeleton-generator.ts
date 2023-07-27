@@ -48,7 +48,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
     return false;
   }
   if (skipHooks()) {
-    throw new AmplifyError('DeploymentError', {
+    throw new AmplifyError('ScriptingFeaturesDisabledError', {
       message: 'A flag to disable overrides has been detected, please deploy from a different environment.',
     });
   }
