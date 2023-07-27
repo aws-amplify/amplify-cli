@@ -838,6 +838,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
     }
   }
 
+  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   if (httpProxy) {
     resultAWSConfigInfo = {
       ...resultAWSConfigInfo,

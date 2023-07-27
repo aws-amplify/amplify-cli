@@ -43,6 +43,7 @@ export class BannerMessage {
     try {
       logger.info(`fetch banner messages from ${url}`);
       const proxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+      // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
       const fetchOptions = proxy ? { agent: new ProxyAgent() } : {};
       const result = await fetch(url, fetchOptions);
       const body = await result.json();

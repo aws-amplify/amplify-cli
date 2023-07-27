@@ -89,6 +89,7 @@ type AppStateResponse = {
 async function getAdminAppState(appId: string, region: string): Promise<AppStateResponse> {
   // environment variable AMPLIFY_CLI_APPSTATE_BASE_URL useful for development against beta/gamma appstate endpoints
   const appStateBaseUrl = process.env.AMPLIFY_CLI_APPSTATE_BASE_URL ?? adminBackendMap[region].appStateUrl;
+  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const fetchOptions = httpProxy ? { agent: new ProxyAgent() } : {};
   const res = await fetch(`${appStateBaseUrl}/AppState/?appId=${appId}`, fetchOptions);
