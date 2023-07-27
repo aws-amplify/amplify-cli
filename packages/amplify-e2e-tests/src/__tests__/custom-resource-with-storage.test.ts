@@ -23,7 +23,7 @@ import { v4 as uuid } from 'uuid';
 describe('adding custom resources test', () => {
   const projectName = 'cusres';
   let projRoot: string;
-  const envName = 'dev';
+  const envName = 'devtest';
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projectName);
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
