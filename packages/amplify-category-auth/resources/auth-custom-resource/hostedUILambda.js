@@ -10,8 +10,28 @@ const identity = new CognitoIdentityProviderClient({});
 
 exports.handler = (event, context) => {
   // Don't return promise, response.send() marks context as done internally
-  const ignoredPromise = handleEvent(event, context);
+  void tryHandleEvent(event, context);
 };
+
+async function tryHandleEvent(event, context) {
+  try {
+    await handleEvent(event);
+    response.send(event, context, response.SUCCESS, {});
+  } catch (err) {
+    console.log(err);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+
+async function handleEvent(event) {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const inputDomainName = event.ResourceProperties.hostedUIDomainName;
+  if (event.RequestType === 'Delete') {
+    await deleteUserPoolDomain(inputDomainName, userPoolId);
+  } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+    await createOrUpdateDomain(inputDomainName, userPoolId);
+  }
+}
 
 async function checkDomainAvailability(domainName) {
   const params = { Domain: domainName };
@@ -56,21 +76,5 @@ async function createOrUpdateDomain(inputDomainName, userPoolId) {
   } else if (result.UserPool.Domain) {
     // if input domain is undefined delete existing domain if exists.
     await deleteUserPoolDomain(result.UserPool.Domain, userPoolId);
-  }
-}
-
-async function handleEvent(event, context) {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    const inputDomainName = event.ResourceProperties.hostedUIDomainName;
-    if (event.RequestType === 'Delete') {
-      await deleteUserPoolDomain(inputDomainName, userPoolId);
-    } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
-      await createOrUpdateDomain(inputDomainName, userPoolId);
-    }
-    response.send(event, context, response.SUCCESS, {});
-  } catch (err) {
-    console.log(err);
-    response.send(event, context, response.FAILED, { err });
   }
 }
