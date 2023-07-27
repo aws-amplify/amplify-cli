@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.1...@aws-amplify/amplify-cli-core@4.2.2) (2023-07-27)
+
+
+### Bug Fixes
+
+* parsing arn with multiple slashes when importing auth ([#13009](https://github.com/aws-amplify/amplify-cli/issues/13009)) ([455c514](https://github.com/aws-amplify/amplify-cli/commit/455c514fd9d29fcec37bc9a4de9c96fef80883b5))
+
+
+
+
+
 ## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.0...@aws-amplify/amplify-cli-core@4.2.1) (2023-07-24)
 
 
