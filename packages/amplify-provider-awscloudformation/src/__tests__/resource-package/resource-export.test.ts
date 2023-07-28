@@ -52,6 +52,7 @@ JSONUtilitiesMock.readJson.mockImplementation((pathToJson: string) => {
       Parameters: {},
     } as unknown as Template;
   }
+  return undefined;
 });
 const readCFNTemplate_mock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;
 readCFNTemplate_mock.mockImplementation((path) => {
@@ -259,6 +260,7 @@ const invokePluginMethod = jest.fn((_context, _category, _service, functionName,
       exposedContainer: 'mockExposedContainer',
     };
   }
+  return undefined;
 });
 jest.mock('../../resourceParams', () => ({
   loadResourceParameters: jest.fn().mockReturnValue({}),

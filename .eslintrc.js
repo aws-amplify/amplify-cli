@@ -114,7 +114,7 @@ module.exports = {
         '@typescript-eslint/no-inferrable-types': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
-        'consistent-return': 'off',
+        'consistent-return': 'error',
         'import/no-extraneous-dependencies': 'off',
         'no-constant-condition': 'off',
         'no-restricted-syntax': 'off',
