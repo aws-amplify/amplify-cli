@@ -341,7 +341,7 @@ function _runMigrationV10Test {
 function _runMigrationV12Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
@@ -679,7 +679,7 @@ function _amplifyGeneralConfigTests {
     _loadE2ECache
     _install_packaged_cli_linux
     amplify version
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
