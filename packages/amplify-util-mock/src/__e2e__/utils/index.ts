@@ -74,7 +74,7 @@ export async function reDeploy(
     await createAndUpdateTable(client, config);
     config = configureDDBDataSource(config, client.config);
   }
-  configureLambdaDataSource(config);
+  await configureLambdaDataSource(config);
   simulator?.reload(config);
   return { simulator, config };
 }

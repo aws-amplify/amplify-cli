@@ -259,7 +259,7 @@ describe('auth import userpool only', () => {
     } finally {
       // delete the app client
       if (appClientId) {
-        deleteAppClient(profileName, ogProjectRoot, appClientId);
+        await deleteAppClient(profileName, ogProjectRoot, appClientId);
       }
     }
   });
@@ -295,7 +295,7 @@ describe('auth import userpool only', () => {
     } finally {
       // delete the app client
       if (appClientId) {
-        deleteAppClient(profileName, ogProjectRoot, appClientId);
+        await deleteAppClient(profileName, ogProjectRoot, appClientId);
       }
     }
   });

@@ -31,6 +31,7 @@ let ensureEnvParamManager: () => Promise<{ instance: IEnvironmentParameterManage
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   jest.isolateModules(async () => {
     ({ ensureEnvParamManager } = await import('../environment-parameter-manager'));
   });

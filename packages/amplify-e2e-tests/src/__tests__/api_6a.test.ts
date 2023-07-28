@@ -46,8 +46,12 @@ describe('amplify rebuild api', () => {
     expect(region).toBeDefined();
 
     const modelNames = ['Todo', 'Task', 'Worker'];
-    modelNames.forEach(async (modelName) => await testTableBeforeRebuildApi(apiId, region, modelName));
+    for (const modelName of modelNames) {
+      await testTableBeforeRebuildApi(apiId, region, modelName);
+    }
     await rebuildApi(projRoot, projName);
-    modelNames.forEach(async (modelName) => await testTableAfterRebuildApi(apiId, region, modelName));
+    for (const modelName of modelNames) {
+      await testTableAfterRebuildApi(apiId, region, modelName);
+    }
   });
 });

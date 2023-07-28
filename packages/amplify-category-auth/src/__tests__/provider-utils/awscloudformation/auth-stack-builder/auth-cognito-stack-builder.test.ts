@@ -70,24 +70,24 @@ describe('generateCognitoStackResources', () => {
     authProviders: [],
   };
 
-  it('adds correct preSignUp  lambda config and permissions', () => {
+  it('adds correct preSignUp  lambda config and permissions', async () => {
     const testApp = new cdk.App();
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoPreSignUpTriggerTest', { synthesizer: new AuthStackSynthesizer() });
-    cognitoStack.generateCognitoStackResources(props);
+    await cognitoStack.generateCognitoStackResources(props);
     expect(cognitoStack.userPool?.lambdaConfig).toHaveProperty('preSignUp');
     expect(cognitoStack.lambdaConfigPermissions).toHaveProperty('UserPoolPreSignupLambdaInvokePermission');
   });
 
-  it('disables updateAttributeSetting when autoVerified attributes not present', () => {
+  it('disables updateAttributeSetting when autoVerified attributes not present', async () => {
     const testApp = new cdk.App();
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoPreSignUpTriggerTest', { synthesizer: new AuthStackSynthesizer() });
     const updatedProps = { ...props };
     delete updatedProps.autoVerifiedAttributes;
-    cognitoStack.generateCognitoStackResources(updatedProps);
+    await cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toBeUndefined();
   });
 
-  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is TOTP', () => {
+  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is TOTP', async () => {
     const testApp = new cdk.App();
     // eslint-disable-next-line spellcheck/spell-checker
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTest', {
@@ -97,7 +97,7 @@ describe('generateCognitoStackResources', () => {
       ...props,
       userAutoVerifiedAttributeUpdateSettings: [AttributeType.PHONE_NUMBER],
     };
-    cognitoStack.generateCognitoStackResources(updatedProps);
+    await cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
 {
   "attributesRequireVerificationBeforeUpdate": [
@@ -107,7 +107,7 @@ describe('generateCognitoStackResources', () => {
 `);
   });
 
-  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', () => {
+  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', async () => {
     const testApp = new cdk.App();
     // eslint-disable-next-line spellcheck/spell-checker
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTesting1', {
@@ -117,7 +117,7 @@ describe('generateCognitoStackResources', () => {
       ...props,
       userAutoVerifiedAttributeUpdateSettings: [AttributeType.EMAIL],
     };
-    cognitoStack.generateCognitoStackResources(updatedProps);
+    await cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
 {
   "attributesRequireVerificationBeforeUpdate": [
@@ -131,7 +131,7 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.lambdaConfigPermissions).toHaveProperty('UserPoolPreSignupLambdaInvokePermission');
   });
 
-  it('correctly adds oauth properties on userpool client when oauthMetaData is defined', () => {
+  it('correctly adds oauth properties on userpool client when oauthMetaData is defined', async () => {
     const testApp = new cdk.App();
     // eslint-disable-next-line spellcheck/spell-checker
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTesting1', {
@@ -142,7 +142,7 @@ describe('generateCognitoStackResources', () => {
       oAuthMetadata:
         '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"]}',
     };
-    cognitoStack.generateCognitoStackResources(updatedProps);
+    await cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPoolClientWeb).toHaveProperty('allowedOAuthFlows');
     expect(cognitoStack.userPoolClientWeb).toHaveProperty('allowedOAuthScopes');
     expect(cognitoStack.userPoolClientWeb).toHaveProperty('callbackUrLs');

@@ -464,12 +464,12 @@ The following feature flags have validation errors:
       process.env = { ...realProcessEnv };
     });
 
-    test('initialization does not fail when process.env is not available', () => {
+    test('initialization does not fail when process.env is not available', async () => {
       process.env = {};
 
       expect(process.env).toEqual({});
 
-      provider.load();
+      await provider.load();
     });
 
     test('successfully parse every form of variables', async () => {
