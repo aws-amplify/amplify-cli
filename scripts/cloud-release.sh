@@ -3,6 +3,7 @@ source ./scripts/cloud-cli-utils.sh
 export RELEASE_ROLE_NAME=CodebuildRelease
 export RELEASE_PROFILE_NAME=AmplifyCLIRelease
 export RC_PROJECT_NAME=RC
+export TAGGED_RC_PROJECT_NAME=TaggedReleaseWithoutE2E
 export RELEASE_PROJECT_NAME=Release
 
 ############################## RC ##############################
@@ -40,6 +41,25 @@ function RCProd {
     source ./scripts/release-rc.sh $0
     branch_name=$(git branch --show-current)
     triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RC_PROJECT_NAME $branch_name
+}
+############################## Tagged RC ##############################
+# Follow the steps here https://quip-amazon.com/RX9eASbegQzo/Tagged-release-steps
+# and create an upstream branch (not in your fork, but in parent)
+# with the name tagged-release-without-e2e-tests/<tag-name>
+function TaggedRCLocal {
+    echo Running Local Tagged RC
+    branch_name=$(git branch --show-current)
+    triggerProjectBatch $RELEASE_ACCOUNT_LOCAL $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Local" $TAGGED_RC_PROJECT_NAME $branch_name
+}
+function TaggedRCBeta {
+    echo Running Beta Tagged RC
+    branch_name=$(git branch --show-current)
+    triggerProjectBatch $RELEASE_ACCOUNT_BETA $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Beta" $TAGGED_RC_PROJECT_NAME $branch_name
+}
+function TaggedRCProd {
+    echo Running Prod Tagged RC
+    branch_name=$(git branch --show-current)
+    triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $TAGGED_RC_PROJECT_NAME $branch_name
 }
 ############################## RELEASE ##############################
 function ReleaseLocal {
