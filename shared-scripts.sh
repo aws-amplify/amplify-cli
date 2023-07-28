@@ -625,3 +625,13 @@ function _amplifyGeneralConfigTests {
     _loadTestAccountCredentials
     retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
 }
+
+
+function _cleanUpResources {
+    _loadTestAccountCredentials
+    echo "Executing resource cleanup"
+    cd packages/amplify-e2e-tests
+    yarn install
+    ts-node ./src/cleanup-codebuild-resources.ts
+    _unassumeTestAccountCredentials
+}
