@@ -61,12 +61,9 @@ describe('adding custom resources test', () => {
     await addSimpleDDB(projRoot, { name: ddbName });
 
     // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
-    process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES = 'true';
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
     fs.copyFileSync(srcRuntimeErrorTest, destCustomResourceFilePath);
-    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
-    // unset
-    delete process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES;
+    await expect(amplifyPushAuth(projRoot, false, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
 
     // happy path test (this custom stack compiles and runs successfully)
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
