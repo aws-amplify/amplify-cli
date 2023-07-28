@@ -120,7 +120,7 @@ module.exports = {
         'no-restricted-syntax': 'off',
         'no-useless-catch': 'off',
         'no-useless-escape': 'off',
-        'no-var': 'off',
+        'no-var': 'error',
         'prefer-const': 'off',
         'spellcheck/spell-checker': 'off',
       },
