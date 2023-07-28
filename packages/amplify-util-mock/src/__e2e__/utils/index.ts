@@ -85,7 +85,7 @@ async function configureLambdaDataSource(config) {
     .forEach((d) => {
       const arn = d.LambdaFunctionArn;
       const arnParts = arn.split(':');
-      let functionName = arnParts[arnParts.length - 1];
+      const functionName = arnParts[arnParts.length - 1];
       const lambdaConfig = getFunctionDetails(functionName);
       d.invoke = (payload) => {
         logDebug('Invoking lambda with config', lambdaConfig);

@@ -32,8 +32,8 @@ describe('index', () => {
   const ANOTHERSERVICE = 'AnotherHostingService';
 
   const mockAvailableServices = [];
-  let mockDisabledServices = [];
-  let mockEnabledServices = [];
+  const mockDisabledServices = [];
+  const mockEnabledServices = [];
 
   const mockAnswers = {
     selectedServices: [],

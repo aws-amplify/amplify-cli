@@ -119,7 +119,7 @@ describe('websocket subscription', () => {
 
   describe('onSubscribe', () => {
     let subsServer: AppSyncSimulatorSubscriptionServer;
-    let asyncIterator = new PubSub().asyncIterator('onMessage');
+    const asyncIterator = new PubSub().asyncIterator('onMessage');
     const tokenString = 'token-here';
     const jwt = { iss: 'some issuer' };
     const doc = parse(/* GraphQL */ `

@@ -13,7 +13,7 @@ execa_mock.command.mockResolvedValue({} as any);
 jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
 
-let userConfirmation = true;
+const userConfirmation = true;
 const context_stub = {
   amplify: {
     confirmPrompt: async () => userConfirmation,

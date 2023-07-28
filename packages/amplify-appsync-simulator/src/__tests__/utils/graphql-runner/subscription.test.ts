@@ -18,8 +18,8 @@ describe('runSubscription', () => {
   `);
   let schema: GraphQLSchema;
 
-  let subscriptionResolver = jest.fn();
-  let subscriptionSubscribe = jest.fn();
+  const subscriptionResolver = jest.fn();
+  const subscriptionSubscribe = jest.fn();
 
   const executionContext: AppSyncGraphQLExecutionContext = {
     headers: { 'x-api-key': 'da-fake-key' },
