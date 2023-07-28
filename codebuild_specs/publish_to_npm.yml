@@ -5,4 +5,4 @@ env:
 phases:
   build:
     commands:
-      - source ./shared-scripts.sh && _deploy
+      - source ./shared-scripts.sh && _publishToNpm

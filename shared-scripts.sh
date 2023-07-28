@@ -90,6 +90,7 @@ function _buildLinux {
     yarn --immutable
     yarn production-build
     yarn build-tests
+    ./.circleci/publish-step-1-set-versions.sh
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
@@ -164,15 +165,14 @@ function _publishToLocalRegistry {
 
     source ./.circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
-    export LOCAL_PUBLISH_TO_LATEST=true
-    ./.circleci/publish-codebuild.sh
+    ./.circleci/publish-step-2-verdaccio.sh
     unsetNpmRegistryUrl
 
     echo Generate Change Log
     # Leaving this breadcrumb here "git reset --soft HEAD~1"
-    # we commented this out because the publish script is now checking out the current branch, and this started to fail as a result
+    # we commented this out previously because the publish script is now checking out the current branch, and this started to fail as a result
     # if we run into problems in the future, we should revisit this
-    # git reset --soft HEAD~1
+    git reset --soft HEAD~1
     yarn ts-node scripts/unified-changelog.ts
     cat UNIFIED_CHANGELOG.md
 
@@ -634,7 +634,7 @@ function _githubPrerelease {
     tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
     cd $CODEBUILD_SRC_DIR
     echo Publish Amplify CLI GitHub prerelease
-    commit=$(git rev-parse HEAD)
+    commit=$(git rev-parse HEAD~1)
     version=$(cat .amplify-pkg-version)
     yarn ts-node scripts/github-prerelease.ts $version $commit
 }
@@ -648,7 +648,7 @@ function _githubPrereleaseInstallSanityCheck {
     echo Sanity check install
     amplify version
 }
-function _deploy {
+function _publishToNpm {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
 
@@ -658,14 +658,20 @@ function _deploy {
     echo Authenticate with npm
     echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
 
-    source ./.circleci/publish-codebuild.sh
+    source ./.circleci/publish-step-3-npm.sh
+}
+function _postPublishPushToGit {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    echo Push release commit and tags
+    source ./.circleci/publish-step-4-push-to-git.sh
 }
 function _githubRelease {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     echo Publish Amplify CLI GitHub release
-    commit=$(git rev-parse HEAD)
+    commit=$(git rev-parse HEAD~1)
     version=$(cat .amplify-pkg-version)
     yarn ts-node scripts/github-release.ts $version $commit
 }

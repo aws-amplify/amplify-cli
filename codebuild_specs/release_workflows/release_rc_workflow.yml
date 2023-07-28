@@ -52,12 +52,16 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
-    - identifier: deploy
-      buildspec: codebuild_specs/deploy.yml
+    - identifier: publish_to_npm
+      buildspec: codebuild_specs/publish_to_npm.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         git-credential-helper: yes
       debug-session: true
       depend-on:
         - upb
+        - publish_to_local_registry
+        - verify_versions_match
+        - validate_cdk_version
+        - verify_yarn_lock
         - verify_pkg_cli
