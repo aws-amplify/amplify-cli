@@ -687,3 +687,17 @@ function _amplifyGeneralConfigTests {
     _loadTestAccountCredentials
     retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
 }
+function _deploymentVerificationPostRelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Verify Release Deployment
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/verify-deployment.ts -v $version
+}
+function _deploymentVerificationRCOrTagged {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Verify Tagged or RC Deployment
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/verify-deployment.ts --version $version --exclude-github
+}

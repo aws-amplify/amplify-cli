@@ -65,3 +65,19 @@ batch:
         - validate_cdk_version
         - verify_yarn_lock
         - verify_pkg_cli
+    - identifier: deployment_verification_rc_or_tagged
+      buildspec: codebuild_specs/deployment_verification_rc_or_tagged.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        git-credential-helper: yes
+      debug-session: true
+      depend-on:
+        - publish_to_npm
+    - identifier: post_publish_push_to_git
+      buildspec: codebuild_specs/post_publish_push_to_git.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        git-credential-helper: yes
+      debug-session: true
+      depend-on:
+        - publish_to_npm

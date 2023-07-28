@@ -90,3 +90,11 @@ batch:
       debug-session: true
       depend-on:
         - post_publish_push_to_git
+    - identifier: deployment_verification_post_release
+      buildspec: codebuild_specs/deployment_verification_post_release.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        git-credential-helper: yes
+      debug-session: true
+      depend-on:
+        - github_release
