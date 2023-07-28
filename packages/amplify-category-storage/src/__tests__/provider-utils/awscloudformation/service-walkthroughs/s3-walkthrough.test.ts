@@ -94,7 +94,7 @@ describe('add s3 walkthrough tests', () => {
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
-    let options = {};
+    const options = {};
     const returnedResourcename = await addWalkthrough(mockContext, S3MockDataBuilder.mockFilePath, mockContext, options);
 
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);
@@ -126,7 +126,7 @@ describe('add s3 walkthrough tests', () => {
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
-    let options = {};
+    const options = {};
     const returnedResourcename = await addWalkthrough(mockContext, S3MockDataBuilder.mockFilePath, mockContext, options);
 
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);
@@ -160,7 +160,7 @@ describe('add s3 walkthrough tests', () => {
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
-    let options = {};
+    const options = {};
     const returnedResourcename = await addWalkthrough(mockContext, S3MockDataBuilder.mockFilePath, mockContext, options);
 
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);
@@ -202,7 +202,7 @@ describe('add s3 walkthrough tests', () => {
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
-    let options = {};
+    const options = {};
     const returnedResourcename = await addWalkthrough(mockContext, S3MockDataBuilder.mockFilePath, mockContext, options);
 
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);

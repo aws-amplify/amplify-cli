@@ -121,7 +121,7 @@ module.exports = {
         'no-useless-catch': 'error',
         'no-useless-escape': 'off',
         'no-var': 'error',
-        'prefer-const': 'off',
+        'prefer-const': 'error',
         'spellcheck/spell-checker': 'off',
       },
     },
