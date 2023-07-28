@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.8.6...@aws-amplify/amplify-nodejs-function-template-provider@2.8.7) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [2.8.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.8.5...@aws-amplify/amplify-nodejs-function-template-provider@2.8.6) (2023-07-24)
 
 **Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider
