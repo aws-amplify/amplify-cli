@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-console-integration-tests",
-  "version": "2.9.2",
+  "version": "2.9.3-rc.9e998008c6.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
     "setup-profile": "ts-node ./src/setup-profile.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.2",
-    "@aws-amplify/amplify-e2e-core": "5.1.2",
+    "@aws-amplify/amplify-cli-core": "4.2.3-rc.9e998008c6.0",
+    "@aws-amplify/amplify-e2e-core": "5.1.3-rc.9e998008c6.0",
     "@types/ini": "^1.3.30",
     "aws-sdk": "^2.1405.0",
     "dotenv": "^8.2.0",

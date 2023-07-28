@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.3-rc.9e998008c6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.3.2...@aws-amplify/amplify-provider-awscloudformation@8.3.3-rc.9e998008c6.0) (2023-07-28)
+
+
+### Bug Fixes
+
+* surface override build error if scripting features are disabled ([#13013](https://github.com/aws-amplify/amplify-cli/issues/13013)) ([#13023](https://github.com/aws-amplify/amplify-cli/issues/13023)) ([9e99800](https://github.com/aws-amplify/amplify-cli/commit/9e998008c6aef13ee50e6ce88cc78d8e9367b66a))
+
+
+
+
+
 ## [8.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.3.1...@aws-amplify/amplify-provider-awscloudformation@8.3.2) (2023-07-27)
 
 
