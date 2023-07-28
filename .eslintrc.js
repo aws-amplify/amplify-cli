@@ -118,7 +118,7 @@ module.exports = {
         'import/no-extraneous-dependencies': 'off',
         'no-constant-condition': 'off',
         'no-restricted-syntax': 'off',
-        'no-useless-catch': 'off',
+        'no-useless-catch': 'error',
         'no-useless-escape': 'off',
         'no-var': 'error',
         'prefer-const': 'off',

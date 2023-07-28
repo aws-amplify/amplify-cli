@@ -42,18 +42,14 @@ describe('amplify console add hosting', () => {
 
   // Manual tests
   it('add / publish / configure/ serve /remove hosting for manual deployment should succeed', async () => {
-    try {
-      await addManualHosting(projRoot);
-      expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(true);
-      const type = loadTypeFromTeamProviderInfo(projRoot, ORIGINAL_ENV);
-      expect(type).toBe(TYPE_MANUAL);
-      npmInstall(projRoot);
-      await amplifyPublish(projRoot);
-      await removeHosting(projRoot);
-      await amplifyPush(projRoot);
-    } catch (err) {
-      throw err;
-    }
+    await addManualHosting(projRoot);
+    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'amplifyhosting'))).toBe(true);
+    const type = loadTypeFromTeamProviderInfo(projRoot, ORIGINAL_ENV);
+    expect(type).toBe(TYPE_MANUAL);
+    npmInstall(projRoot);
+    await amplifyPublish(projRoot);
+    await removeHosting(projRoot);
+    await amplifyPush(projRoot);
   });
 
   it('when hosting is enabled, add new env should be able to deploy frontend successfully', async () => {
