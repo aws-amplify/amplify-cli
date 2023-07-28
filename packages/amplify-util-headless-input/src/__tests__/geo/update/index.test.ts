@@ -13,6 +13,6 @@ describe('validate update geo request', () => {
 
   it('rejects promise when invalid payload', async () => {
     const resultPromise = validateUpdateGeoRequest('garbage');
-    expect(resultPromise).rejects.toBeTruthy();
+    await expect(resultPromise).rejects.toBeTruthy();
   });
 });

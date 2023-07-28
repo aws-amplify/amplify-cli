@@ -73,10 +73,10 @@ describe('websocket subscription', () => {
     expect(startSpy).toHaveBeenCalled();
   });
 
-  it('should call websocket servers stop method when stop is called', () => {
+  it('should call websocket servers stop method when stop is called', async () => {
     const stopSpy = jest.spyOn(WebsocketSubscriptionServer.prototype, 'stop');
     const subs = new AppSyncSimulatorSubscriptionServer(simulatorContext, server, subscriptionPath);
-    subs.stop();
+    await subs.stop();
     expect(stopSpy).toHaveBeenCalled();
   });
 

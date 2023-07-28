@@ -5,7 +5,6 @@ import * as fs from 'fs-extra';
 import { hideSync } from 'hidefile';
 import { setRegPendingDelete } from '../../utils/win-utils';
 import { windowsPathSerializer } from '../testUtils/snapshot-serializer';
-import * as path from 'path';
 
 jest.mock('execa');
 const execa_mock = execa as jest.Mocked<typeof execa>;
@@ -72,7 +71,7 @@ describe('uninstall packaged CLI on mac / linux', () => {
   });
 
   it('throws if it cannot remove the .amplify dir', async () => {
-    fs_mock.remove.mockImplementationOnce(async () => {
+    fs_mock.remove.mockImplementationOnce(() => {
       throw new Error('fs remove did not work!');
     });
 

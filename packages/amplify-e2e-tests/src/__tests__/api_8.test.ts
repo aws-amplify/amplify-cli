@@ -34,7 +34,7 @@ describe('amplify add api (REST and GRAPHQL)', () => {
     await addRestApi(projRoot, { existingLambda: true });
     await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true, path: '/newpath' });
     await amplifyPushUpdate(projRoot);
-    validateRestApiMeta(projRoot);
+    await validateRestApiMeta(projRoot);
 
     const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
     const apis = readdirSync(apisDirectory);
@@ -69,6 +69,6 @@ describe('amplify add api (REST and GRAPHQL)', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-    validateRestApiMeta(projRoot, meta);
+    await validateRestApiMeta(projRoot, meta);
   });
 });

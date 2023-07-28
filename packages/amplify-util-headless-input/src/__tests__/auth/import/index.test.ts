@@ -16,7 +16,7 @@ describe('validates import auth headless request', () => {
 
   it('with a rejected promise when an invalid payload is supplied', async () => {
     const resultPromise = validateImportAuthRequest('garbage');
-    expect(resultPromise).rejects.toBeTruthy();
+    await expect(resultPromise).rejects.toBeTruthy();
   });
 
   test.each([

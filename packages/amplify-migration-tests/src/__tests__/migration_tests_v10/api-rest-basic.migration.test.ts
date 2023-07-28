@@ -37,7 +37,7 @@ describe('api REST migration tests', () => {
     await amplifyPushUpdateLegacy(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    validateRestApiMeta(projRoot, meta);
+    await validateRestApiMeta(projRoot, meta);
 
     // pull down with vlatest
     const appId = getAppId(projRoot);
@@ -53,7 +53,7 @@ describe('api REST migration tests', () => {
 
       // validate metadata
       const meta2 = getProjectMeta(projRoot2);
-      validateRestApiMeta(projRoot2, meta2);
+      await validateRestApiMeta(projRoot2, meta2);
     } finally {
       deleteProjectDir(projRoot2);
     }
