@@ -6,3 +6,6 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _publishToNpm
+artifacts:
+  files:
+    - 'shared-scripts.sh'

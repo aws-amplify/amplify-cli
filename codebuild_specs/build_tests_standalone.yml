@@ -6,3 +6,6 @@ phases:
     commands:
       - echo "Build Tests Standalone"
       - source ./shared-scripts.sh && _buildTestsStandalone
+artifacts:
+  files:
+    - 'shared-scripts.sh'

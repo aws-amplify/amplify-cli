@@ -17,3 +17,6 @@ phases:
       - npm install -g @aws-amplify/cli
       - source .circleci/local_publish_helpers_codebuild.sh && unsetNpmRegistryUrl
       - amplify version
+artifacts:
+  files:
+    - 'shared-scripts.sh'

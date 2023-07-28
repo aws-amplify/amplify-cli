@@ -5,3 +5,6 @@ phases:
   build:
     commands:
       - echo cleanup running
+artifacts:
+  files:
+    - 'shared-scripts.sh'
