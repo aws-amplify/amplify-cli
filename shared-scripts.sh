@@ -151,18 +151,10 @@ function _mockE2ETests {
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
-    useradd -u 8877 osuser
-    chown -R osuser .
-    #chmod -R a+r /root/
+    chown -R codebuild-user .
     source .circleci/local_publish_helpers.sh
     cd packages/amplify-util-mock/
-    sudo -u osuser bash -c 'export NODE_OPTIONS=--max-old-space-size=4096; yarn e2e;'
-    # yarn e2e
-}
-function _mockE2ETestsStep2 {
-    source .circleci/local_publish_helpers.sh
-    cd packages/amplify-util-mock/
-    yarn e2e
+    sudo -u codebuild-user bash -c 'export NODE_OPTIONS=--max-old-space-size=4096 && yarn e2e'
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
