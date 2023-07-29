@@ -73,6 +73,5 @@ test('Model with original name specified points to original table', async () => 
   logDebug(JSON.stringify(response, null, 2));
   expect(response?.data?.createTodo?.id).toBeDefined();
   expect(response?.data?.createTodo?.title).toEqual('Test Todo');
-  expect(response?.data?.createTodo?.title).toEqual('Inject Failure');
   // successful response means that it was able to write to the original table correctly
 });
