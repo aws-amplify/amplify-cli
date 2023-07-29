@@ -11,7 +11,7 @@ const serviceRegionMap = {
   'cn-north-1': 'us-west-2',
   'cn-northwest-1': 'us-west-2',
   'ap-south-1': 'us-west-2',
-  'ap-northeast-3': 'us-west-2',
+  'ap-northeast-3': 'ap-northeast-1',
   'ap-northeast-2': 'us-west-2',
   'ap-southeast-1': 'ap-southeast-1',
   'ap-southeast-2': 'ap-southeast-2',
