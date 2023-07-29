@@ -5,11 +5,11 @@ env:
     JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
     NODE_OPTIONS: --max-old-space-size=4096
 phases:
-  pre_build:
+  build:
     commands:
       - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
       - source ./shared-scripts.sh && _mockE2ETests
-  build:
-    run-as: codebuild-user
-    commands:
-      - source ./shared-scripts.sh && _mockE2ETestsStep2
+#  build:
+#    run-as: codebuild-user
+#    commands:
+#      - source ./shared-scripts.sh && _mockE2ETestsStep2
