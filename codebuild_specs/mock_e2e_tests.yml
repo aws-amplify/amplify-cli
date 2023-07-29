@@ -9,7 +9,7 @@ phases:
     commands:
       - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
       - source ./shared-scripts.sh && _mockE2ETests
-  install:
+  build:
     run-as: codebuild-user
     commands:
       - source ./shared-scripts.sh && _mockE2ETestsStep2
