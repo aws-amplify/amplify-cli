@@ -6,6 +6,20 @@ set -e
 # We have custom caching for our CodeBuild pipelines
 # which allows us to share caches with jobs in the same batch
 
+function _mockE2ETestsDebugInternal {
+  echo "In _mockE2ETestsDebugInternal"
+  echo $NODE_OPTIONS
+  yarn e2e
+}
+
+function _mockE2ETestsDebug {
+    # download [repo, .cache from s3]
+    chown -R osuser .
+    source .circleci/local_publish_helpers.sh
+    cd packages/amplify-util-mock/
+    sudo -u osuser _mockE2ETestsDebugInternal
+}
+
 # storeCache <local path> <cache location>
 function storeCache {
     localPath="$1"
