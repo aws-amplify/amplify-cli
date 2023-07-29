@@ -170,10 +170,6 @@ export const launch = async (
     cwd: getOpensearchLocalDirectory(),
   });
 
-  console.log('openSearchBinPath: ' + openSearchBinPath);
-  console.log('args: ' + JSON.stringify(args));
-  console.log('cwd: ' + getOpensearchLocalDirectory());
-
   const emulator = await startOpensearchEmulator(opts, proc, port, startTime, givenOptions, getOpensearchLocalDirectory(), retry);
   if (!emulator) {
     throw new AmplifyError('SearchableMockProcessError', {
