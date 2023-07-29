@@ -153,10 +153,9 @@ function _mockE2ETests {
     loadCache .cache $HOME/.cache
 
     useradd -u 8877 osuser
-
+    chown -R osuser .
     source .circleci/local_publish_helpers.sh
     cd packages/amplify-util-mock/
-    chown -R osuser .
     sudo -u osuser yarn e2e
 }
 function _publishToLocalRegistry {
