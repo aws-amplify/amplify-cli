@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-source ./.circleci/codebuild-checkout.sh
-
 # lerna has a bug (https://github.com/lerna/lerna/issues/1066) where failed publishes do not set the exit code properly
 # this causes the script to keep running even after failed publishes
 # this function forces failed publishes to exit on failure

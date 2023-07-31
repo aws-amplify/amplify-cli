@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-source ./.circleci/codebuild-checkout.sh
-
 git config --global user.name aws-amplify-bot
 git config --global user.email aws@amazon.com
 
