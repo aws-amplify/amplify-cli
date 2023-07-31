@@ -16,6 +16,7 @@ fi
 # Codebuild doesn't checkout the branch by default
 if [[ "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION_REF" =~ ^refs/pull/ ]]; then
   # if we're in PR workflow create temporary local branch.
+  # we detect if we're in PR by looking at CODEBUILD_WEBHOOK_TRIGGER or by checking if commit is matching refs/pull/<number>/head
   echo "Creating temporary local branch for PR build"
   TEMP_BRANCH_NAME=$(cat /proc/sys/kernel/random/uuid)
   git checkout -b $TEMP_BRANCH_NAME
