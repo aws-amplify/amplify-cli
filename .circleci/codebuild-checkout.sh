@@ -2,6 +2,8 @@
 
 # This script checks out a branch & loads git tags.
 
+git status
+
 echo "CODEBUILD_SOURCE_VERSION=$CODEBUILD_SOURCE_VERSION"
 echo "BRANCH_NAME=$BRANCH_NAME"
 echo "CODEBUILD_WEBHOOK_TRIGGER=$CODEBUILD_WEBHOOK_TRIGGER"
@@ -9,7 +11,7 @@ echo "CODEBUILD_WEBHOOK_TRIGGER=$CODEBUILD_WEBHOOK_TRIGGER"
 printenv
 
 # Codebuild doesn't checkout the branch by default
-if [[ "$BRANCH_NAME" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr/ || "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ ||  ]]; then
+if [[ "$BRANCH_NAME" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr/ || "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ ]]; then
   echo "Creating temporary local branch for PR build"
   git checkout -b "abcd"
 elif [ "$BRANCH_NAME" == "" ]; then
