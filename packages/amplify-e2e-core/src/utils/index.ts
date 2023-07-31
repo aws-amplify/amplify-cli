@@ -28,7 +28,6 @@ export * from './admin-ui';
 export * from './hooks';
 export * from './git-operations';
 export * from './help';
-export * from './proxy';
 
 /**
  * Whether the current environment is CircleCI or not

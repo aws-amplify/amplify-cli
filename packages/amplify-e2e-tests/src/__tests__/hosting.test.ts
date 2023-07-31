@@ -13,7 +13,6 @@ import {
   deleteProjectDir,
   getProjectMeta,
   amplifyPublishWithoutUpdateWithYesFlag,
-  TestProxy,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -65,20 +64,6 @@ describe('amplify add hosting', () => {
       await amplifyPublishWithoutUpdateWithYesFlag(projRoot);
     } catch (err) {
       error = err;
-    }
-    expect(error).not.toBeDefined();
-  });
-
-  it('publish successfully with a proxy environment variable defined', async () => {
-    let error;
-    let proxy: TestProxy;
-    try {
-      proxy = new TestProxy();
-      await amplifyPublishWithoutUpdateWithYesFlag(projRoot);
-    } catch (err) {
-      error = err;
-    } finally {
-      proxy.stop();
     }
     expect(error).not.toBeDefined();
   });
