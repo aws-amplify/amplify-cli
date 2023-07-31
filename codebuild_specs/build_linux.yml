@@ -4,9 +4,10 @@ env:
 phases:
   build:
     commands:
-      - codebuild-breakpoint
       - ./.circleci/codebuild-checkout.sh
+      - codebuild-breakpoint
       - source ./shared-scripts.sh && _buildLinux
+      - codebuild-breakpoint
 
 artifacts:
   files:

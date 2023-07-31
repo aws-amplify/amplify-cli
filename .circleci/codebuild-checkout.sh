@@ -16,7 +16,7 @@ if [[ "$BRANCH_NAME" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr/ || "$CODEBUI
   git checkout -b "abcd"
 elif [ "$BRANCH_NAME" == "" ]; then
   echo "BRANCH_NAME must be defined for non-PR builds"
-  exit 1
+  # exit 1
 else
   echo "Checking out $BRANCH_NAME"
   git checkout $BRANCH_NAME
