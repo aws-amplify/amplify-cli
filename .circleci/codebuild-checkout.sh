@@ -2,6 +2,11 @@
 
 # This script checks out the current branch & loads git tags.
 
+echo "CODEBUILD_SOURCE_VERSION"
+echo $CODEBUILD_SOURCE_VERSION
+echo "BRANCH_NAME"
+echo $BRANCH_NAME
+
 # check if branch name was submitted with the job, otherwise extract it manually
 if [ "$BRANCH_NAME" == "" ] ; then
   export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
