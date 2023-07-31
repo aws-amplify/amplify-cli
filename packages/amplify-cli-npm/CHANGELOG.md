@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.2.2...@aws-amplify/cli@12.2.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [12.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.2.1...@aws-amplify/cli@12.2.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [12.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.2.0...@aws-amplify/cli@12.2.1) (2023-07-24)
 
 **Note:** Version bump only for package @aws-amplify/cli

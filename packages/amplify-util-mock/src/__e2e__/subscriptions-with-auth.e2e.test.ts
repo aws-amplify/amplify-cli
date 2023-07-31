@@ -238,7 +238,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   });
 
   const subscriptionPromise = new Promise((resolve, _) => {
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onCreateStudent;
       subscription.unsubscribe();
       expect(student.name).toEqual('student1');
@@ -275,7 +275,7 @@ test('Test a subscription on update', async () => {
         }
       `,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onUpdateStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student3ID);
@@ -323,7 +323,7 @@ test('Test a subscription on delete', async () => {
         }
       `,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onDeleteStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student4ID);
@@ -470,7 +470,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
           }
       }`,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const post = event.data.onCreatePost;
       subscription.unsubscribe();
       expect(post.title).toEqual('someTitle');

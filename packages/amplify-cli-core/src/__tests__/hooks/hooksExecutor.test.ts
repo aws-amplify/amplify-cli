@@ -43,6 +43,7 @@ jest.mock('which', () => ({
     if (runtimeName === 'python3') return pathToPython3Runtime;
     if (runtimeName === 'python') return pathToPythonRuntime;
     if (runtimeName === 'node') return pathToNodeRuntime;
+    throw new Error('unknown runtime');
   }),
 }));
 jest.mock('fs-extra', () => {

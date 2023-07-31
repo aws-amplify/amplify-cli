@@ -66,15 +66,15 @@ describe('lambda arn to config', () => {
   });
 
   it('throws on malformed arn refs', async () => {
-    expect(lambdaArnToConfig(context_stub, { 'Fn::Sub': { key: 'cant interpret this' } })).rejects.toThrowError();
+    await expect(lambdaArnToConfig(context_stub, { 'Fn::Sub': { key: 'cant interpret this' } })).rejects.toThrowError();
   });
 
   it('throws on unknown arn formats', async () => {
-    expect(lambdaArnToConfig(context_stub, ['dont know', 'what this is'])).rejects.toThrowError();
+    await expect(lambdaArnToConfig(context_stub, ['dont know', 'what this is'])).rejects.toThrowError();
   });
 
   it('throws when arn is valid but no matching lambda found in the project', async () => {
-    expect(lambdaArnToConfig(context_stub, 'validformat::but::no::matchinglambda')).rejects.toThrowError(
+    await expect(lambdaArnToConfig(context_stub, 'validformat::but::no::matchinglambda')).rejects.toThrowError(
       new AmplifyError('MockProcessError', {
         message: `Did not find a Lambda matching ARN [\"validformat::but::no::matchinglambda\"] in the project. Local mocking only supports Lambdas that are configured in the project.`,
         resolution: `Use 'amplify add function' in the root of your app directory to create a new Lambda Function. To connect an AWS Lambda resolver to the GraphQL API, add the @function directive to a field in your schema.`,

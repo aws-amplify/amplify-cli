@@ -105,7 +105,7 @@ describe('auth import identity pool and userpool', () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
-    let projectDetails = getAuthProjectDetails(projectRoot);
+    const projectDetails = getAuthProjectDetails(projectRoot);
 
     expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 

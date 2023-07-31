@@ -1,5 +1,3 @@
-/* eslint-disable jest/no-conditional-expect */
-
 import { MultiProgressBar as MultiBar } from '../progressbars/multibar';
 import { BarOptions, ItemPayload, ProgressPayload } from '../progressbars/progressbar';
 

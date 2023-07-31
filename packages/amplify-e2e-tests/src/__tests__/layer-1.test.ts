@@ -175,7 +175,7 @@ describe('amplify add lambda layer', () => {
       projName,
     };
 
-    const noLayerEnv = 'nolayertest';
+    const noLayerEnv = 'nolyrtest';
 
     await addEnvironment(projRoot, { envName: noLayerEnv });
     await checkoutEnvironment(projRoot, { envName });

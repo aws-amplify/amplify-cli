@@ -19,7 +19,7 @@ jest.mock('fs-extra', () => ({
 
 pathManager.getBackendDirPath = jest.fn().mockReturnValue('mockTargetDir');
 
-let customResourceNameQuestion_mock = customResourceNameQuestion as jest.MockedFunction<typeof customResourceNameQuestion>;
+const customResourceNameQuestion_mock = customResourceNameQuestion as jest.MockedFunction<typeof customResourceNameQuestion>;
 customResourceNameQuestion_mock.mockResolvedValue('customresoourcename');
 
 describe('addCFNWalkthrough scenarios', () => {

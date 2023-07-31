@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.2...@aws-amplify/amplify-cli-core@4.2.3) (2023-07-28)
+
+
+### Bug Fixes
+
+* surface override build error if scripting features are disabled ([#13013](https://github.com/aws-amplify/amplify-cli/issues/13013)) ([#13023](https://github.com/aws-amplify/amplify-cli/issues/13023)) ([9e99800](https://github.com/aws-amplify/amplify-cli/commit/9e998008c6aef13ee50e6ce88cc78d8e9367b66a))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.1...@aws-amplify/amplify-cli-core@4.2.2) (2023-07-27)
+
+
+### Bug Fixes
+
+* parsing arn with multiple slashes when importing auth ([#13009](https://github.com/aws-amplify/amplify-cli/issues/13009)) ([455c514](https://github.com/aws-amplify/amplify-cli/commit/455c514fd9d29fcec37bc9a4de9c96fef80883b5))
+
+
+
+
+
 ## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.0...@aws-amplify/amplify-cli-core@4.2.1) (2023-07-24)
 
 

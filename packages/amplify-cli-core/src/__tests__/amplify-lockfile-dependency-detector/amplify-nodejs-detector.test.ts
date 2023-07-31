@@ -13,7 +13,7 @@ describe('no package Manager cases', () => {
   it('error thrown when no package manager found', async () => {
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(new Promise((resolve) => resolve(null)));
     const projectRoot = path.join(__dirname, 'resources');
-    expect(
+    await expect(
       async () =>
         await AmplifyNodePkgDetector.getInstance({
           projectRoot,
@@ -31,7 +31,7 @@ describe('parsing yarn lock files', () => {
 
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(yarnPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
-    expect(
+    await expect(
       async () =>
         await AmplifyNodePkgDetector.getInstance({
           projectRoot,
@@ -46,7 +46,7 @@ describe('parsing yarn lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(async () =>
+    await expect(async () =>
       (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies('@aws-cdk/core'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"yarn.lock parsing failed with an error: Invalid value type 1:16 in lockfile"`);
   });
@@ -201,7 +201,7 @@ describe('parsing package lock files', () => {
     (npmPackageManager as $TSAny).lockFile = 'package-lock-not-found.json';
     (getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(npmPackageManager);
     const projectRoot = path.join(__dirname, 'resources');
-    expect(
+    await expect(
       async () =>
         await AmplifyNodePkgDetector.getInstance({
           projectRoot,
@@ -216,7 +216,7 @@ describe('parsing package lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(async () =>
+    await expect(async () =>
       (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies('@aws-cdk/core'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"package-lock.json parsing failed with an error: 'jsonString' argument missing or empty"`,
@@ -395,7 +395,7 @@ describe('parsing yarn2 lock files', () => {
     const amplifyDetectorProps: AmplifyNodePkgDetectorProps = {
       projectRoot,
     };
-    expect(async () =>
+    await expect(async () =>
       (await AmplifyNodePkgDetector.getInstance(amplifyDetectorProps)).detectAffectedDirectDependencies('@aws-cdk/core'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"yarn.lock parsing failed with an error: Unknown token: { line: 3, col: 2, type: 'INVALID', value: undefined } 3:2 in lockfile"`,

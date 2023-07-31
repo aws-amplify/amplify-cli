@@ -58,7 +58,7 @@ describe('generated tags test', () => {
 function checkEquality(localTags: {}[], generatedTags: {}[]) {
   localTags.forEach((tagObj) => {
     const rootTag = generatedTags.find((obj) => obj['Key'] === tagObj['Key']);
-    if (tagObj['Key'] !== rootTag['Key']) return false;
+    return tagObj['Key'] === rootTag['Key'];
   });
 
   return true;

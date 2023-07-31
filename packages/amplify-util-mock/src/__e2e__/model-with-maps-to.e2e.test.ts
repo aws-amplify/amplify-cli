@@ -53,7 +53,6 @@ afterAll(async () => {
     await terminateDDB(ddbEmulator, dbPath);
   } catch (e) {
     console.error(e);
-    // eslint-disable-next-line jest/no-standalone-expect
     expect(true).toEqual(false);
   }
 });

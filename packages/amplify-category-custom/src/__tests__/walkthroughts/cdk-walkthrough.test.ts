@@ -22,7 +22,7 @@ pathManager.getBackendDirPath = jest.fn().mockReturnValue('mockTargetDir');
 (JSONUtilities.writeJson = jest.fn()), (JSONUtilities.readJson = jest.fn());
 
 const buildCustomResources_mock = buildCustomResources as jest.MockedFunction<typeof buildCustomResources>;
-let customResourceNameQuestion_mock = customResourceNameQuestion as jest.MockedFunction<typeof customResourceNameQuestion>;
+const customResourceNameQuestion_mock = customResourceNameQuestion as jest.MockedFunction<typeof customResourceNameQuestion>;
 customResourceNameQuestion_mock.mockResolvedValue('customresoourcename');
 
 describe('addCDKWalkthrough scenarios', () => {

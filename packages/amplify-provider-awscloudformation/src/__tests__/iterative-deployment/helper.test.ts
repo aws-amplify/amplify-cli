@@ -75,56 +75,56 @@ describe('deployment helpers', () => {
       deployFn = jest.fn();
     });
     describe('deploy', () => {
-      it('should extract deploy section when the deploying', () => {
+      it('should extract deploy section when the deploying', async () => {
         const context: DeployMachineContext = {
           ...deploymentContext,
           currentIndex: 0,
         };
-        helper.getDeploymentOperationHandler(deployFn)(context);
+        await helper.getDeploymentOperationHandler(deployFn)(context);
         expect(deployFn).toHaveBeenCalledWith(context.stacks[0].deployment);
       });
-      it('should be an no-op if the current index is greater than the number of stacks', () => {
+      it('should be an no-op if the current index is greater than the number of stacks', async () => {
         const context: DeployMachineContext = {
           ...deploymentContext,
           currentIndex: 2,
         };
-        helper.getDeploymentOperationHandler(deployFn)(context);
+        await helper.getDeploymentOperationHandler(deployFn)(context);
         expect(deployFn).not.toHaveBeenCalled();
       });
 
-      it('should be an no-op if the current index is less than 0', () => {
+      it('should be an no-op if the current index is less than 0', async () => {
         const context: DeployMachineContext = {
           ...deploymentContext,
           currentIndex: -1,
         };
-        helper.getDeploymentOperationHandler(deployFn)(context);
+        await helper.getDeploymentOperationHandler(deployFn)(context);
         expect(deployFn).not.toHaveBeenCalled();
       });
     });
     describe('rollback', () => {
-      it('should extract deploy section when the deploying', () => {
+      it('should extract deploy section when the deploying', async () => {
         const context: DeployMachineContext = {
           ...deploymentContext,
           currentIndex: 0,
         };
-        helper.getRollbackOperationHandler(deployFn)(context);
+        await helper.getRollbackOperationHandler(deployFn)(context);
         expect(deployFn).toHaveBeenCalledWith(context.stacks[0].rollback);
       });
-      it('should be an no-op if the current index is greater than the number of stacks', () => {
+      it('should be an no-op if the current index is greater than the number of stacks', async () => {
         const context: DeployMachineContext = {
           ...deploymentContext,
           currentIndex: 2,
         };
-        helper.getRollbackOperationHandler(deployFn)(context);
+        await helper.getRollbackOperationHandler(deployFn)(context);
         expect(deployFn).not.toHaveBeenCalled();
       });
 
-      it('should be an no-op if the current index is less than 0', () => {
+      it('should be an no-op if the current index is less than 0', async () => {
         const context: DeployMachineContext = {
           ...deploymentContext,
           currentIndex: -1,
         };
-        helper.getRollbackOperationHandler(deployFn)(context);
+        await helper.getRollbackOperationHandler(deployFn)(context);
         expect(deployFn).not.toHaveBeenCalled();
       });
     });
