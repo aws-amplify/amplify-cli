@@ -31,6 +31,7 @@ function getServiceMeta(projectRoot: string, category: string, service: string):
       return meta.storage[storageResourceName];
     }
   }
+  return undefined;
 }
 
 describe('s3 override tests', () => {

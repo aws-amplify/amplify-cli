@@ -94,7 +94,7 @@ export async function appSyncClient<ResponseDataType = unknown, VarsType = Recor
             if (body.errors?.length) {
               return reject(new Error(`GraphQL request error(s): ${JSON.stringify(body.errors)}`));
             }
-            resolve(body.data);
+            return resolve(body.data);
           })
           .once('error', (err) => reject(err));
       },

@@ -112,7 +112,7 @@ describe('auth import identity pool and userpool', () => {
 
     await amplifyPushAuth(projectRoot);
 
-    let projectDetails = getAuthProjectDetails(projectRoot);
+    const projectDetails = getAuthProjectDetails(projectRoot);
 
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();

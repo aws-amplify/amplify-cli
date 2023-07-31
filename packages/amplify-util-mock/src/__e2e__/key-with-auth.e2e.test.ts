@@ -28,7 +28,7 @@ let GRAPHQL_CLIENT_2 = undefined;
  */
 let GRAPHQL_CLIENT_3 = undefined;
 
-let USER_POOL_ID = 'fake_user_pool';
+const USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';

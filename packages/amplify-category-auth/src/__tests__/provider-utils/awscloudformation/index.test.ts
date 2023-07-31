@@ -29,7 +29,7 @@ const pluginInstance = {
 const getOAuthObjectFromCognitoMock = getOAuthObjectFromCognito as jest.MockedFunction<typeof getOAuthObjectFromCognito>;
 
 // mock context
-let mockContext = {
+const mockContext = {
   amplify: {
     getProjectConfig: jest.fn().mockReturnValue({
       projectName: 'authHeadless',
