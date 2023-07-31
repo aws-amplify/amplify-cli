@@ -29,5 +29,5 @@ else
 fi
 
 echo "Fetching tags"
-git fetch --tags https://github.com/aws-amplify/amplify-cli
+git fetch --all --tags https://github.com/aws-amplify/amplify-cli
 
