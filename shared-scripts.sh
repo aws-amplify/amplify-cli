@@ -151,9 +151,12 @@ function _mockE2ETests {
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
+
+    # make repo directory accessible to codebuild-user
     chown -R codebuild-user .
     source .circleci/local_publish_helpers.sh
     cd packages/amplify-util-mock/
+    # run mock e2e tests as codebuild-user, root can't run open search
     sudo -u codebuild-user bash -c 'export NODE_OPTIONS=--max-old-space-size=4096 && yarn e2e'
 }
 function _publishToLocalRegistry {
