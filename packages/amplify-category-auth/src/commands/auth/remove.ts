@@ -27,20 +27,13 @@ export const run = async (context: $TSContext): Promise<void> => {
     (resourceKey) => meta.auth[resourceKey].service === AmplifySupportedService.COGNITO,
   );
 
-  try {
-    const resource = await amplify.removeResource(context, category, resourceName);
-    if (resource?.service === AmplifySupportedService.COGNITOUSERPOOLGROUPS) {
-      // update cli input here
-      const cliState = new AuthInputState(context, authResourceName[0]);
-      const cliInputPayload = cliState.getCLIInputPayload();
-      cliInputPayload.cognitoConfig.userPoolGroupList = [];
-      await cliState.saveCLIInputPayload(cliInputPayload);
-    }
-  } catch (err) {
-    printer.info(err.stack);
-    printer.error('There was an error removing the auth resource');
-    void context.usageData.emitError(err);
-    process.exitCode = 1;
+  const resource = await amplify.removeResource(context, category, resourceName);
+  if (resource?.service === AmplifySupportedService.COGNITOUSERPOOLGROUPS) {
+    // update cli input here
+    const cliState = new AuthInputState(context, authResourceName[0]);
+    const cliInputPayload = cliState.getCLIInputPayload();
+    cliInputPayload.cognitoConfig.userPoolGroupList = [];
+    await cliState.saveCLIInputPayload(cliInputPayload);
   }
 };
 

@@ -156,7 +156,7 @@ describe('remove-resource', () => {
           },
           serviceSuffix: { Lambda: '(function)', LambdaLayer: '(layer)' },
         }),
-      ).rejects.toThrowError('An error occurred when removing the resources from the local directory');
+      ).rejects.toThrowError('Resource cannot be removed because it has a dependency on another resource');
 
       expect(prompterMock.pick).toBeCalledWith('Choose the resource you would want to remove', [
         {
@@ -211,7 +211,7 @@ describe('remove-resource', () => {
 
     it('throw an error when the dependent resources has a specified resource', async () => {
       await expect(removeResource(context as any, 'function', 'lambdaLayer1')).rejects.toThrowError(
-        'An error occurred when removing the resources from the local directory',
+        'Resource cannot be removed because it has a dependency on another resource',
       );
     });
 

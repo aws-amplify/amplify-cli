@@ -1,6 +1,7 @@
 import {
   $TSContext,
   AmplifyError,
+  AmplifyException,
   AmplifyFault,
   exitOnNextTick,
   pathManager,
@@ -97,8 +98,11 @@ export async function removeResource(
   }
 
   try {
-    return await deleteResourceFiles(context, category, resourceName, resourceDir);
+    return deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
+    if (err instanceof AmplifyException) {
+      throw err;
+    }
     throw new AmplifyFault(
       'ResourceRemoveFault',
       { message: 'An error occurred when removing the resources from the local directory' },
