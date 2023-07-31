@@ -68,7 +68,7 @@ describe('test amplify remove function', () => {
     });
     arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     arns.splice(0, 3);
-    validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
+    await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
   });
 
   it('init a project, add layer, push 2 layer versions, add 2 dependent functions, check that removal is blocked', async () => {
@@ -135,13 +135,13 @@ describe('test amplify remove function', () => {
     );
 
     await removeLayerVersion(projRoot, { removeNoLayerVersions: true, multipleResources: true }, [1, 2], [1, 2]);
-    validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
+    await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
 
     await removeFunction(projRoot, fnName1);
     await removeFunction(projRoot, fnName2);
 
     await removeLayerVersion(projRoot, {}, [1], [1, 2]);
     await amplifyPushAuth(projRoot);
-    validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns.splice(1));
+    await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns.splice(1));
   });
 });

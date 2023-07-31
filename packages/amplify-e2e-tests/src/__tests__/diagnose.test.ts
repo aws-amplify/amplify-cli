@@ -97,7 +97,7 @@ describe('amplify diagnose --send-report', () => {
     // delete the file and send report again
     const backendFConfigFilePath: string = path.join(projectRoot, 'amplify', 'backend', 'backend-config.json');
     fs.unlinkSync(backendFConfigFilePath);
-    diagnoseSendReport_ZipFailed(projectRoot);
+    await diagnoseSendReport_ZipFailed(projectRoot);
   });
 });
 const unzipAndReturnFiles = async (zipPath: string, unzippedDir: string): Promise<string[]> => {

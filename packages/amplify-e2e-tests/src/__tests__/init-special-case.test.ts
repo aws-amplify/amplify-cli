@@ -33,13 +33,13 @@ describe('amplify init', () => {
     const meta = getBackendAmplifyMeta(projectRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
-    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
-    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
-    expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
+    await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    await expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
   });
 
   it('test init on a git pulled project', async () => {
-    const envName = 'dev';
+    const envName = 'devtest';
     const resourceName = 'authConsoleTest';
     await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
     await addAuthWithDefault(projectRoot);

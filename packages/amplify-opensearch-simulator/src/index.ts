@@ -202,7 +202,7 @@ export const startOpensearchEmulator = async (
   let prematureExit: $TSAny;
   let waiter: $TSAny;
   /*
-   This is a fairly complex set of logic, similar to the DynamoDB emulator, 
+   This is a fairly complex set of logic, similar to the DynamoDB emulator,
    to retry starting the emulator if it fails to start. We need this logic due
    to possible race conditions between when we find an open
    port and bind to it. This situation is particularly common

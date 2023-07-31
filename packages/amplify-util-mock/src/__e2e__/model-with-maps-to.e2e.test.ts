@@ -23,15 +23,8 @@ beforeAll(async () => {
   try {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer(), new AuthTransformer(), new MapsToTransformer()],
-      featureFlags: {
-        getBoolean: (value: string, defaultValue?: boolean): boolean => {
-          if (value === 'userSubUsernameForDefaultIdentityClaim') {
-            return false;
-          }
-          return defaultValue;
-        },
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
       },
     });
     const out = transformer.transform(validSchema);
@@ -60,7 +53,6 @@ afterAll(async () => {
     await terminateDDB(ddbEmulator, dbPath);
   } catch (e) {
     console.error(e);
-    // eslint-disable-next-line jest/no-standalone-expect
     expect(true).toEqual(false);
   }
 });

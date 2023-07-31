@@ -307,7 +307,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: "'[send] Y <CR>",
+        description: '[send] N',
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -771,14 +771,9 @@ export function nspawn(command: string | string[], params: string[] = [], option
     };
 
     // Undo ci-info detection, required for some tests
+    // see https://github.com/watson/ci-info/blob/master/index.js#L57
     if (options.disableCIDetection === true) {
-      delete childEnv.CI;
-      delete childEnv.CONTINUOUS_INTEGRATION;
-      delete childEnv.BUILD_NUMBER;
-      delete childEnv.TRAVIS;
-      delete childEnv.GITHUB_ACTIONS;
-      delete childEnv.CIRCLECI;
-      delete childEnv.CIRCLE_PULL_REQUEST;
+      childEnv.CI = false;
     }
   }
 

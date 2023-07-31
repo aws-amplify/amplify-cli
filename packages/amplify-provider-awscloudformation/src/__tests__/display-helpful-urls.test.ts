@@ -99,6 +99,7 @@ describe('showSMSSandBoxWarning', () => {
           case 'COGNITO_SMS_SANDBOX_UPDATE_WARNING':
             return 'enabled';
         }
+        return undefined;
       });
 
       await showSMSSandboxWarning(context);

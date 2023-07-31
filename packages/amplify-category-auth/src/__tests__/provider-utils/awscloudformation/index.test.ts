@@ -29,7 +29,7 @@ const pluginInstance = {
 const getOAuthObjectFromCognitoMock = getOAuthObjectFromCognito as jest.MockedFunction<typeof getOAuthObjectFromCognito>;
 
 // mock context
-let mockContext = {
+const mockContext = {
   amplify: {
     getProjectConfig: jest.fn().mockReturnValue({
       projectName: 'authHeadless',
@@ -67,7 +67,7 @@ let mockContext = {
 
 describe('import checks', () => {
   test('throws amplify error when auth headless params are missing during pull', async () => {
-    expect(() => updateConfigOnEnvInit(mockContext, 'auth', 'Cognito')).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(() => updateConfigOnEnvInit(mockContext, 'auth', 'Cognito')).rejects.toThrowErrorMatchingInlineSnapshot(
       `"auth headless is missing the following inputParameters facebookAppIdUserPool, facebookAppSecretUserPool, loginwithamazonAppIdUserPool, loginwithamazonAppSecretUserPool, googleAppIdUserPool, googleAppSecretUserPool"`,
     );
   });
@@ -77,7 +77,7 @@ describe('update config when amplify pull headless command', () => {
   test('throws amplify error when auth headless params are missing during pull', async () => {
     mockContext.input.command = 'pull';
     getOAuthObjectFromCognitoMock.mockResolvedValue(undefined);
-    expect(() => updateConfigOnEnvInit(mockContext, 'auth', 'Cognito')).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(() => updateConfigOnEnvInit(mockContext, 'auth', 'Cognito')).rejects.toThrowErrorMatchingInlineSnapshot(
       `"auth headless is missing the following inputParameters facebookAppIdUserPool, facebookAppSecretUserPool, loginwithamazonAppIdUserPool, loginwithamazonAppSecretUserPool, googleAppIdUserPool, googleAppSecretUserPool"`,
     );
   });

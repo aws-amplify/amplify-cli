@@ -1,5 +1,4 @@
 import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { AmplifyAuthCognitoStack } from '../../../../provider-utils/awscloudformation/auth-stack-builder/auth-cognito-stack-builder';
 import { AuthStackSynthesizer } from '../../../../provider-utils/awscloudformation/auth-stack-builder/stack-synthesizer';
 import {
@@ -71,46 +70,24 @@ describe('generateCognitoStackResources', () => {
     authProviders: [],
   };
 
-  it('adds correct custom oauth lambda dependencies', () => {
-    const testApp = new cdk.App();
-    const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'testCognitoStack', { synthesizer: new AuthStackSynthesizer() });
-    cognitoStack.userPoolClientRole = new iam.CfnRole(cognitoStack, 'testRole', {
-      assumeRolePolicyDocument: 'test policy document',
-    });
-    cognitoStack.createHostedUICustomResource();
-    cognitoStack.createHostedUIProviderCustomResource();
-    cognitoStack.createOAuthCustomResource();
-    expect(cognitoStack.oAuthCustomResource).toBeDefined();
-    expect(
-      cognitoStack
-        .oAuthCustomResource!.node!.dependencies!.map((dep: any) => dep.logicalId)
-        .map((logicalIdToken) => /testCognitoStack\.([^.]+)\.Default/.exec(logicalIdToken)![1]),
-    ).toMatchInlineSnapshot(`
-[
-  "HostedUICustomResourceInputs",
-  "HostedUIProvidersCustomResourceInputs",
-]
-`);
-  });
-
-  it('adds correct preSignUp  lambda config and permissions', () => {
+  it('adds correct preSignUp  lambda config and permissions', async () => {
     const testApp = new cdk.App();
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoPreSignUpTriggerTest', { synthesizer: new AuthStackSynthesizer() });
-    cognitoStack.generateCognitoStackResources(props);
+    await cognitoStack.generateCognitoStackResources(props);
     expect(cognitoStack.userPool?.lambdaConfig).toHaveProperty('preSignUp');
     expect(cognitoStack.lambdaConfigPermissions).toHaveProperty('UserPoolPreSignupLambdaInvokePermission');
   });
 
-  it('disables updateAttributeSetting when autoVerified attributes not present', () => {
+  it('disables updateAttributeSetting when autoVerified attributes not present', async () => {
     const testApp = new cdk.App();
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoPreSignUpTriggerTest', { synthesizer: new AuthStackSynthesizer() });
     const updatedProps = { ...props };
     delete updatedProps.autoVerifiedAttributes;
-    cognitoStack.generateCognitoStackResources(updatedProps);
+    await cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toBeUndefined();
   });
 
-  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is TOTP', () => {
+  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is TOTP', async () => {
     const testApp = new cdk.App();
     // eslint-disable-next-line spellcheck/spell-checker
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTest', {
@@ -120,7 +97,7 @@ describe('generateCognitoStackResources', () => {
       ...props,
       userAutoVerifiedAttributeUpdateSettings: [AttributeType.PHONE_NUMBER],
     };
-    cognitoStack.generateCognitoStackResources(updatedProps);
+    await cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
 {
   "attributesRequireVerificationBeforeUpdate": [
@@ -130,7 +107,7 @@ describe('generateCognitoStackResources', () => {
 `);
   });
 
-  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', () => {
+  it('correctly adds updateAttributeSetting when autoVerifiedAttributes attributes is email', async () => {
     const testApp = new cdk.App();
     // eslint-disable-next-line spellcheck/spell-checker
     const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTesting1', {
@@ -140,7 +117,7 @@ describe('generateCognitoStackResources', () => {
       ...props,
       userAutoVerifiedAttributeUpdateSettings: [AttributeType.EMAIL],
     };
-    cognitoStack.generateCognitoStackResources(updatedProps);
+    await cognitoStack.generateCognitoStackResources(updatedProps);
     expect(cognitoStack.userPool?.userAttributeUpdateSettings).toMatchInlineSnapshot(`
 {
   "attributesRequireVerificationBeforeUpdate": [
@@ -152,5 +129,28 @@ describe('generateCognitoStackResources', () => {
     expect(cognitoStack.userPoolClientWeb!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.userPoolClient!.tokenValidityUnits).toHaveProperty('refreshToken');
     expect(cognitoStack.lambdaConfigPermissions).toHaveProperty('UserPoolPreSignupLambdaInvokePermission');
+  });
+
+  it('correctly adds oauth properties on userpool client when oauthMetaData is defined', async () => {
+    const testApp = new cdk.App();
+    // eslint-disable-next-line spellcheck/spell-checker
+    const cognitoStack = new AmplifyAuthCognitoStack(testApp, 'CognitoUpdateAttributesettingTesting1', {
+      synthesizer: new AuthStackSynthesizer(),
+    });
+    const updatedProps: CognitoStackOptions = {
+      ...props,
+      oAuthMetadata:
+        '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"]}',
+    };
+    await cognitoStack.generateCognitoStackResources(updatedProps);
+    expect(cognitoStack.userPoolClientWeb).toHaveProperty('allowedOAuthFlows');
+    expect(cognitoStack.userPoolClientWeb).toHaveProperty('allowedOAuthScopes');
+    expect(cognitoStack.userPoolClientWeb).toHaveProperty('callbackUrLs');
+    expect(cognitoStack.userPoolClientWeb).toHaveProperty('logoutUrLs');
+
+    expect(cognitoStack.userPoolClient).toHaveProperty('allowedOAuthFlows');
+    expect(cognitoStack.userPoolClient).toHaveProperty('allowedOAuthScopes');
+    expect(cognitoStack.userPoolClient).toHaveProperty('callbackUrLs');
+    expect(cognitoStack.userPoolClient).toHaveProperty('logoutUrLs');
   });
 });

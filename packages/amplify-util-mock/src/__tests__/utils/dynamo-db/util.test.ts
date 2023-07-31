@@ -219,6 +219,7 @@ describe('DynamoDB Utils', () => {
         };
         if (typeof callback === 'function') {
           callback(null, response);
+          return undefined;
         } else {
           return {
             promise: jest.fn().mockResolvedValue(response),

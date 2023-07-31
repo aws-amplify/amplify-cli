@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.4.2...@aws-amplify/amplify-util-mock@5.4.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-mock
+
+
+
+
+
+## [5.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.4.1...@aws-amplify/amplify-util-mock@5.4.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-mock
+
+
+
+
+
+## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.4.0...@aws-amplify/amplify-util-mock@5.4.1) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-mock
+
+
+
+
+
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.3.1...@aws-amplify/amplify-util-mock@5.4.0) (2023-07-20)
+
+
+### Features
+
+* **amplify-util-mock:** import custom port from mock.json ([#10978](https://github.com/aws-amplify/amplify-cli/issues/10978)) ([31f250c](https://github.com/aws-amplify/amplify-cli/commit/31f250c03b6aa8423f1c574142a663840c566cec))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
+## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.3.0...@aws-amplify/amplify-util-mock@5.3.1) (2023-06-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-mock
+
+
+
+
+
+# [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.2.3...@aws-amplify/amplify-util-mock@5.3.0) (2023-06-13)
+
+
+### Bug Fixes
+
+* lint warnings ([#12738](https://github.com/aws-amplify/amplify-cli/issues/12738)) ([99026e1](https://github.com/aws-amplify/amplify-cli/commit/99026e1a0282bd621eb579fdca8ec3653e8daff2))
+
+
+### Features
+
+* display error message instead of object ([#12636](https://github.com/aws-amplify/amplify-cli/issues/12636)) ([811e8fc](https://github.com/aws-amplify/amplify-cli/commit/811e8fcd48f15b37401643b9b13f628acb4708bd))
+
+
+
+
+
 ## [5.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.2.1...@aws-amplify/amplify-util-mock@5.2.3) (2023-05-25)
 
 

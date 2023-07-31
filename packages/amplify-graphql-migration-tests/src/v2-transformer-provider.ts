@@ -12,14 +12,12 @@ import {
 } from '@aws-amplify/graphql-relational-transformer';
 import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { TransformerPluginProvider, AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { featureFlagProviderStub } from './feature-flag-stub';
 import { V2TransformerTestConfig } from './test-case-types';
 
 export const v2transformerProvider = (config: Partial<V2TransformerTestConfig> = {}): GraphQLTransform => {
   const transform = new GraphQLTransform({
     transformers: config.transformers ?? getDefaultTransformers(),
     authConfig: defaultAuthConfig,
-    featureFlags: featureFlagProviderStub,
     sandboxModeEnabled: true,
   });
 

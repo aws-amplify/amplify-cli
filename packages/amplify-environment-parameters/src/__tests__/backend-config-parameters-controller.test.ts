@@ -29,7 +29,7 @@ describe('BackendConfigParameterMapController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.isolateModules(async () => {
+    jest.isolateModules(() => {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
       const { getParametersControllerInstance } = require('../backend-config-parameters-controller');
       backendParamsController = getParametersControllerInstance();
@@ -136,7 +136,7 @@ describe('BackendConfigParameterMapController', () => {
 
   describe('save', () => {
     it('writes current parameter state to backend config', async () => {
-      backendParamsController.save();
+      await backendParamsController.save();
       expect(stateManagerMock.setBackendConfig.mock.calls[0][1]).toMatchInlineSnapshot(`
 {
   "parameters": {

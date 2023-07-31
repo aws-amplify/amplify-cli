@@ -78,7 +78,9 @@ describe('emulator operations', () => {
 
   it('should fail to launch on windows OS', async () => {
     jest.spyOn(cliCore, 'isWindowsPlatform').mockReturnValueOnce(true);
-    expect(() => openSearchEmulator.launch(mockSearchableResourcePath)).rejects.toThrow('Cannot launch OpenSearch simulator on windows OS');
+    await expect(() => openSearchEmulator.launch(mockSearchableResourcePath)).rejects.toThrow(
+      'Cannot launch OpenSearch simulator on windows OS',
+    );
   });
   it('correctly resolves the path to local opensearch binary', async () => {
     const relativePathFromMockSearchableResourceDir = await openSearchEmulator.getPathToOpenSearchBinary();

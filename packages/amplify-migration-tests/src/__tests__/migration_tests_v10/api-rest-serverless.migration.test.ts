@@ -1,5 +1,4 @@
 import {
-  addRestApi,
   amplifyPull,
   amplifyPushAuth,
   amplifyPushUpdateLegacy,
@@ -10,6 +9,7 @@ import {
   getProjectMeta,
   validateRestApiMeta,
 } from '@aws-amplify/amplify-e2e-core';
+import { addRestApiOldDx } from '../../migration-helpers';
 import { cfnDiffExclusions } from '../../migration-helpers-v10/cfn-diff-exclusions';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';
@@ -28,11 +28,11 @@ describe('api serverless migration tests', () => {
     projRoot = await createNewProjectDir(projectName);
 
     await initJSProjectWithProfileV10(projRoot, { name: 'restApiTest', disableAmplifyAppCreation: false });
-    await addRestApi(projRoot, { isCrud: false });
+    await addRestApiOldDx(projRoot, { isCrud: false });
     await amplifyPushUpdateLegacy(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    validateRestApiMeta(projRoot, meta);
+    await validateRestApiMeta(projRoot, meta);
 
     // pull down with vlatest
     const appId = getAppId(projRoot);
@@ -48,7 +48,7 @@ describe('api serverless migration tests', () => {
 
       // validate metadata
       const meta2 = getProjectMeta(projRoot2);
-      validateRestApiMeta(projRoot2, meta2);
+      await validateRestApiMeta(projRoot2, meta2);
     } finally {
       deleteProjectDir(projRoot2);
     }

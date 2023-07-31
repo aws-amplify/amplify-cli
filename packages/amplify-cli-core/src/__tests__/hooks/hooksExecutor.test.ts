@@ -43,6 +43,7 @@ jest.mock('which', () => ({
     if (runtimeName === 'python3') return pathToPython3Runtime;
     if (runtimeName === 'python') return pathToPythonRuntime;
     if (runtimeName === 'node') return pathToNodeRuntime;
+    throw new Error('unknown runtime');
   }),
 }));
 jest.mock('fs-extra', () => {
@@ -81,26 +82,22 @@ describe('hooksExecutioner tests', () => {
   });
   afterEach(() => {
     HooksMeta.releaseInstance();
+    delete process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES;
   });
 
   test('skip Hooks test', async () => {
     mockSkipHooks.mockRestore();
 
-    const orgSkipHooksExist = fs.existsSync(skipHooksFilePath);
-
-    fs.ensureFileSync(skipHooksFilePath);
-    // skip hooks file exists so no execa calls should be made
+    process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES = 'true';
+    // skip hooks flag exists so no execa calls should be made
     await executeHooks(HooksMeta.getInstance({ command: 'push', plugin: 'core' } as CommandLineInput, 'pre'));
     expect(execa).toHaveBeenCalledTimes(0);
 
-    fs.removeSync(skipHooksFilePath);
-    // skip hooks file does not exists so execa calls should be made
+    delete process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES;
+    // skip hooks flag does not exist so execa calls should be made
     await executeHooks(HooksMeta.getInstance({ command: 'push', plugin: 'core' } as CommandLineInput, 'pre'));
     expect(execa).not.toHaveBeenCalledTimes(0);
 
-    // restoring the original state of skip hooks file
-    if (!orgSkipHooksExist) fs.removeSync(skipHooksFilePath);
-    else fs.ensureFileSync(skipHooksFilePath);
     mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
   });
 

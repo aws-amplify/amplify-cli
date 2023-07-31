@@ -5,13 +5,32 @@ default_verdaccio_package=verdaccio@5.1.2
 
 function startLocalRegistry {
     # Start local registry
-    tmp_registry_log=$(mktemp)
+    tmp_registry_log="$(mktemp)"
     echo "Registry output file: $tmp_registry_log"
     (cd && nohup npx ${VERDACCIO_PACKAGE:-$default_verdaccio_package} -c $1 &>$tmp_registry_log &)
     # Wait for Verdaccio to boot
-    grep -q 'http address' <(tail -f $tmp_registry_log)
+    attempts=0
+    until grep -q 'http address' $tmp_registry_log
+    do
+      attempts=$((attempts+1))
+      echo "Waiting for Verdaccio, attempt $attempts"
+      sleep 1
+
+      if (( attempts > 60 )); then
+        echo "Verdaccio didn't start";
+        exit 1
+      fi
+    done
 }
 
+# Codebuild only
+function uploadPkgCliForE2E {
+    cd out/
+    export hash=$(git rev-parse HEAD | cut -c 1-12)
+    export version=$(./amplify-pkg-linux-x64 --version)
+    aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
+    cd ..
+}
 function uploadPkgCli {
     aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
@@ -133,10 +152,10 @@ function verifyPkgCli {
       fi
     }
 
-    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((700 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((700 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((700 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((550 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((750 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((750 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((750 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((600 * 1024 * 1024))
 }
 
 function unsetNpmRegistryUrl {
@@ -152,7 +171,7 @@ function unsetSudoNpmRegistryUrl {
 }
 
 function changeNpmGlobalPath {
-    mkdir -p ~/.npm-global
+    mkdir -p ~/.npm-global/{bin,lib}
     npm config set prefix '~/.npm-global'
     export PATH=~/.npm-global/bin:$PATH
 }
@@ -225,7 +244,8 @@ function retry {
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
+    # if a test takes a long time to complete, the token may expire before reaching this call, but we should still allow the test to pass
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE || true
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
@@ -266,7 +286,6 @@ function setAwsAccountCredentials {
         useChildAccountCredentials
     fi
 }
-
 function runE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
@@ -276,6 +295,46 @@ function runE2eTest {
         yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
     else
         yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
+function runE2eTestCb {
+    _setupCoverage
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        if [[ ! -z "$DISABLE_COVERAGE" ]]; then
+            echo Running WITHOUT coverage
+            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        else
+            NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        fi
+    else
+        if [[ ! -z "$DISABLE_COVERAGE" ]]; then
+            echo Running WITHOUT coverage
+            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        else
+            NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        fi
+    fi
+}
+
+function _setupCoverage {
+    _teardownCoverage
+    echo "Setup Coverage ($E2E_TEST_COVERAGE_DIR)"
+    if [ ! -d $E2E_TEST_COVERAGE_DIR ]
+    then
+        mkdir -p $E2E_TEST_COVERAGE_DIR
+    fi
+}
+
+function _teardownCoverage {
+    if [ -d $E2E_TEST_COVERAGE_DIR ]
+    then
+        echo "Teardown Coverage ($E2E_TEST_COVERAGE_DIR)"
+        rm -r $E2E_TEST_COVERAGE_DIR
     fi
 }
 

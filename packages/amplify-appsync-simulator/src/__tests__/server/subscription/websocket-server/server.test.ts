@@ -78,8 +78,8 @@ describe('WebsocketSubscriptionServer', () => {
     server.start();
   });
 
-  afterEach(() => {
-    server?.stop();
+  afterEach(async () => {
+    await server?.stop();
     httpServer?.close();
   });
 
@@ -390,7 +390,7 @@ describe('WebsocketSubscriptionServer', () => {
       const data = {
         onMessage: 'hello from iterator',
       };
-      pubsub.publish('onMessage', data);
+      void pubsub.publish('onMessage', data);
       const msg = await waitForMessage(client, MESSAGE_TYPES.GQL_DATA);
       expect(msg).toEqual({
         type: MESSAGE_TYPES.GQL_DATA,

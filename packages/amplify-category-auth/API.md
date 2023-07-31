@@ -127,6 +127,9 @@ export function prePushAuthHook(context: any): Promise<void>;
 export function transformCategoryStack(context: any, resource: any): Promise<void>;
 
 // @public (undocumented)
+export const updateAppClientWithGeneratedSecret: (context: $TSContext) => Promise<void>;
+
+// @public (undocumented)
 export const uploadFiles: (context: $TSContext) => Promise<void>;
 
 // (No @packageDocumentation comment for this package)

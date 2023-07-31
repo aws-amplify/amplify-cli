@@ -22,6 +22,7 @@ function getServiceMeta(projectRoot: string, category: string, service: string):
       return meta.storage[storageResourceName];
     }
   }
+  return undefined;
 }
 
 describe('amplify add/update storage(S3)', () => {

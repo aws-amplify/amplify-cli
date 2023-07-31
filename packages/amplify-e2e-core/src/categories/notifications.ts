@@ -43,7 +43,7 @@ export const addNotificationChannel = async (
   channel: string,
   hasAnalytics = false,
   hasAuth = false,
-  testingWithLatestCodebase = true,
+  testingWithLatestCodebase = false,
 ): Promise<void> => {
   const chain = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'notification'], { cwd, stripColors: true });
 
@@ -76,4 +76,28 @@ export const addNotificationChannel = async (
   }
 
   return chain.wait(`The ${channel} channel has been successfully enabled`).sendEof().runAsync();
+};
+
+/**
+ * Update notification resource for a given channel
+ *
+ * @param cwd the current working directory to run CLI in
+ * @param settings settings required to add a notification channel
+ * @param settings.resourceName the name to give to the created pinpoint resource
+ * @param channel the channel to add
+ */
+export const updateNotificationChannel = async (
+  cwd: string,
+  channel: string,
+  enable = true,
+  testingWithLatestCodebase = false,
+): Promise<void> => {
+  const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'notification'], { cwd, stripColors: true });
+  chain.wait('Choose the notification channel to configure').sendLine(channel);
+  chain.wait(`Do you want to ${enable ? 'enable' : 'disable'} the ${channel} channel`).sendYes();
+
+  return chain
+    .wait(`The ${channel} channel has been ${enable ? 'enabled' : 'disabled'}`)
+    .sendEof()
+    .runAsync();
 };

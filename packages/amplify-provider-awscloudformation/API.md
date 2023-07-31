@@ -23,6 +23,11 @@ export type DownloadHandler = (keys: string[]) => Promise<PrimitiveRecord>;
 // @public (undocumented)
 export function formUserAgentParam(context: any, userAgentAction: any): string;
 
+// Warning: (ae-forgotten-export) The symbol "CognitoUserPoolClientProvider" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function getConfiguredCognitoIdentityProviderClient(context: any): Promise<CognitoUserPoolClientProvider>;
+
 // Warning: (ae-forgotten-export) The symbol "LocationService" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)

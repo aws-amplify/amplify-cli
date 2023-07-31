@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.1.2...@aws-amplify/amplify-migration-tests@6.1.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.1.1...@aws-amplify/amplify-migration-tests@6.1.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.1.0...@aws-amplify/amplify-migration-tests@6.1.1) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+# [6.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.0.4...@aws-amplify/amplify-migration-tests@6.1.0) (2023-07-20)
+
+
+### Bug Fixes
+
+* ensure AWS_REGION matches CLI_REGION in all tests ([#12837](https://github.com/aws-amplify/amplify-cli/issues/12837)) ([7be43e4](https://github.com/aws-amplify/amplify-cli/commit/7be43e41ded3bf09fd20cd9d9b95467491344cbe))
+* fix yarn path ([#12769](https://github.com/aws-amplify/amplify-cli/issues/12769)) ([dca98aa](https://github.com/aws-amplify/amplify-cli/commit/dca98aa35e544dce4cf0ac9f340919b87041e65f))
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+
+
+### Reverts
+
+* Revert "chore: cleanup stale resources in CodeBuild (#12779)" (#12853) ([d19d17e](https://github.com/aws-amplify/amplify-cli/commit/d19d17ebcace24c9db56331c0c2bd053f8ec0966)), closes [#12779](https://github.com/aws-amplify/amplify-cli/issues/12779) [#12853](https://github.com/aws-amplify/amplify-cli/issues/12853)
+
+
+
+
+
+## [6.0.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.0.3...@aws-amplify/amplify-migration-tests@6.0.4) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
 ## [6.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.0.1...@aws-amplify/amplify-migration-tests@6.0.3) (2023-05-25)
 
 
