@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0-apiplugin550.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.10...amplify-graphql-migration-tests@2.5.0-apiplugin550.0) (2023-07-31)
+
+
+### Features
+
+* replace oauth and userpoolclient lambdas with cfn and sdk calls ([#12935](https://github.com/aws-amplify/amplify-cli/issues/12935)) ([b3ab512](https://github.com/aws-amplify/amplify-cli/commit/b3ab5125f2ec405afd1af9d2f77b8683d5914010))
+
+
+
+
+
 ## [2.4.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.9...amplify-graphql-migration-tests@2.4.10) (2023-07-20)
 
 **Note:** Version bump only for package amplify-graphql-migration-tests
