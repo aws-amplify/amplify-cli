@@ -1,7 +1,5 @@
 #!/bin/bash
 
-git checkout $BRANCH_NAME
-
 custom_registry_url=http://localhost:4873
 default_verdaccio_package=verdaccio@5.1.2
 
