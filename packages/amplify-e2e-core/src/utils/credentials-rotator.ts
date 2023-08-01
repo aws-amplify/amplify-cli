@@ -39,7 +39,7 @@ const refreshCredentials = async () => {
 
 export const tryScheduleCredentialRefresh = () => {
   // Early return outside of CI
-  if (process.env.IS_AMPLIFY_CI) {
+  if (!process.env.IS_AMPLIFY_CI) {
     return false;
   }
 
