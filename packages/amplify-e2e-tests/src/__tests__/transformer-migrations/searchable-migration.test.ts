@@ -11,9 +11,11 @@ import {
   getProjectMeta,
   createNewProjectDir,
   deleteProjectDir,
+  tryScheduleCredentialRefresh,
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { beforeAll } from 'jest-circus';
 
 (global as any).fetch = require('node-fetch');
 
@@ -23,6 +25,10 @@ describe('transformer model searchable migration test', () => {
   let projRoot: string;
   let projectName: string;
   let appSyncClient;
+
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
 
   beforeEach(async () => {
     projectName = createRandomName();

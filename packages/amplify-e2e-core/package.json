@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.2.3",
+    "@aws-sdk/client-sts": "^3.303.0",
     "amplify-headless-interface": "1.17.4",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
