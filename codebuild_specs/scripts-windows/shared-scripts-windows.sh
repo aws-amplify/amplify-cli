@@ -82,7 +82,7 @@ function loadCacheFile {
 function _loadTestAccountCredentials {
     echo ASSUMING PARENT TEST ACCOUNT credentials
     session_id=$((1 + $RANDOM % 10000))
-    creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 3600)
+    creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 7200)
     if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
         echo "Unable to assume parent e2e account role."
         return
