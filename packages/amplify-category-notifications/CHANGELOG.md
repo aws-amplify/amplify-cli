@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.25.4-rc.43f73ab268.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.25.3...@aws-amplify/amplify-category-notifications@2.25.4-rc.43f73ab268.0) (2023-08-01)
+
+
+### Bug Fixes
+
+* upgrade proxy-agent to ^6.3.0 to remove vm2 deps ([#13012](https://github.com/aws-amplify/amplify-cli/issues/13012)) ([989ec35](https://github.com/aws-amplify/amplify-cli/commit/989ec35be4dfd2bea19ea82bbe317f212729950f))
+
+
+
+
+
 ## [2.25.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.25.2...@aws-amplify/amplify-category-notifications@2.25.3) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-notifications
