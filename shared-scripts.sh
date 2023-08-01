@@ -655,8 +655,6 @@ function _publishToNpm {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
 
-    _uploadPkgBinaries
-
     ./out/amplify-pkg-linux-x64 --version
     echo Authenticate with npm
     echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
