@@ -38,11 +38,12 @@ const refreshCredentials = async () => {
 };
 
 export const tryScheduleCredentialRefresh = () => {
-  // Early return if CI environment is not Codebuild
-  if (!process.env.CI || !process.env.CODEBUILD) {
+  // Early return outside of CI
+  if (process.env.IS_AMPLIFY_CI) {
     return false;
   }
 
+  console.log('Test profile credentials refresh was scheduled');
   setInterval(() => {
     void refreshCredentials();
   }, 10 * 60 * 1000);
