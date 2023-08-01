@@ -85,6 +85,7 @@ function waitJobToSucceed(job, amplifyClient) {
 }
 
 async function httpPutFile(filePath, url) {
+  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   const proxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const proxyOption = proxy ? { agent: new ProxyAgent() } : {};
   await fetch(url, {
