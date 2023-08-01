@@ -15,7 +15,6 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { beforeAll } from 'jest-circus';
 
 (global as any).fetch = require('node-fetch');
 
