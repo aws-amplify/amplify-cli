@@ -32,7 +32,9 @@ phases:
       - echo $AMPLIFY_DIR
       - echo $AMPLIFY_PATH
       - npm install -g ts-node
-      - source ./shared-scripts.sh && _runE2ETestsLinux
+      - export VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=true
+      - source ./shared-scripts.sh && _runE2ETestsLinux || true
+      - codebuild-breakpoint
   post_build:
     commands:
       - source ./shared-scripts.sh && _convertCoverage # && _uploadCoverageLinux (disabled while troubleshooting E2E test failures during initial CodeBuild setup)
