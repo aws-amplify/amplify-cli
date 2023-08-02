@@ -39,12 +39,12 @@ const refreshCredentials = async (roleArn: string) => {
 let isRotationScheduled = false;
 
 export const tryScheduleCredentialRefresh = () => {
-  if (!process.env.USE_PARENT_ACCOUNT) {
-    throw new Error('Credentials rotator supports only tests running in parent account at this time');
-  }
-
   if (!process.env.IS_AMPLIFY_CI || !process.env.TEST_ACCOUNT_ROLE || isRotationScheduled) {
     return;
+  }
+
+  if (!process.env.USE_PARENT_ACCOUNT) {
+    throw new Error('Credentials rotator supports only tests running in parent account at this time');
   }
 
   setInterval(() => {
