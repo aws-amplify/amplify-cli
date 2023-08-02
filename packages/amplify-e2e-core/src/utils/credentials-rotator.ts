@@ -40,7 +40,7 @@ const tryRefreshCredentials = async (roleArn: string) => {
   }
 };
 
-let isRotationBackgroundTaskIsAlreadyScheduled = false;
+let isRotationBackgroundTaskAlreadyScheduled = false;
 
 /**
  * Schedules a background task that attempts to refresh test account credentials
@@ -51,7 +51,7 @@ let isRotationBackgroundTaskIsAlreadyScheduled = false;
  * No-op if a background task has already been scheduled.
  */
 export const tryScheduleCredentialRefresh = () => {
-  if (!process.env.IS_AMPLIFY_CI || !process.env.TEST_ACCOUNT_ROLE || isRotationBackgroundTaskIsAlreadyScheduled) {
+  if (!process.env.IS_AMPLIFY_CI || !process.env.TEST_ACCOUNT_ROLE || isRotationBackgroundTaskAlreadyScheduled) {
     return;
   }
 
@@ -64,7 +64,7 @@ export const tryScheduleCredentialRefresh = () => {
     void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
   }, 15 * 60 * 1000);
 
-  isRotationBackgroundTaskIsAlreadyScheduled = true;
+  isRotationBackgroundTaskAlreadyScheduled = true;
 
   console.log('Test profile credentials refresh was scheduled');
 };
