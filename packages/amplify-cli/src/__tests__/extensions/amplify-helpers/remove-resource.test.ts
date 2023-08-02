@@ -160,9 +160,10 @@ describe('remove-resource', () => {
         });
       } catch (e) {
         error = e;
-        expect(e instanceof AmplifyError);
-        expect(e?.message).toBe('Resource cannot be removed because it has a dependency on another resource');
       }
+      expect(error).toBeDefined();
+      expect(error instanceof AmplifyError).toBe(true);
+      expect(error.message).toBe('Resource cannot be removed because it has a dependency on another resource');
 
       expect(prompterMock.pick).toBeCalledWith('Choose the resource you would want to remove', [
         {
@@ -221,9 +222,10 @@ describe('remove-resource', () => {
         await removeResource(context as any, 'function', 'lambdaLayer1');
       } catch (e) {
         error = e;
-        expect(e instanceof AmplifyError);
-        expect(e?.message).toBe('Resource cannot be removed because it has a dependency on another resource');
       }
+      expect(error).toBeDefined();
+      expect(error instanceof AmplifyError).toBe(true);
+      expect(error.message).toBe('Resource cannot be removed because it has a dependency on another resource');
     });
 
     it('print message to unlink the imported resource on confirm prompt when the specified service is imported resource', async () => {
