@@ -5,13 +5,12 @@ import * as ini from 'ini';
 import * as fs from 'fs-extra';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 
-const refreshCredentials = async () => {
+const refreshCredentials = async (roleArn: string) => {
   try {
     const client = new STSClient({
       // Use CodeBuild role to assume test account role. I.e. don't read credentials from process.env
       credentials: fromContainerMetadata(),
     });
-    const roleArn = process.env.TEST_ACCOUNT_ROLE;
     const sessionName = `testSession${generateRandomShortId()}`;
     const command = new AssumeRoleCommand({
       RoleArn: roleArn,
@@ -37,16 +36,22 @@ const refreshCredentials = async () => {
   }
 };
 
+let isRotationScheduled = false;
+
 export const tryScheduleCredentialRefresh = () => {
-  // Early return outside of CI
-  if (!process.env.IS_AMPLIFY_CI) {
-    return false;
+  if (!process.env.USE_PARENT_ACCOUNT) {
+    throw new Error('Credentials rotator supports only tests running in parent account at this time');
   }
 
-  console.log('Test profile credentials refresh was scheduled');
-  setInterval(() => {
-    void refreshCredentials();
-  }, 10 * 60 * 1000);
+  if (!process.env.IS_AMPLIFY_CI || !process.env.TEST_ACCOUNT_ROLE || isRotationScheduled) {
+    return;
+  }
 
-  return true;
+  setInterval(() => {
+    void refreshCredentials(process.env.TEST_ACCOUNT_ROLE);
+  }, 15 * 60 * 1000);
+
+  isRotationScheduled = true;
+
+  console.log('Test profile credentials refresh was scheduled');
 };
