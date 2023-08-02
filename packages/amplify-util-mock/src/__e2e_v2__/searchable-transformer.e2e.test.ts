@@ -63,7 +63,9 @@ describe('@searchable transformer', () => {
           sandboxModeEnabled: true,
         },
       });
+      console.log('transformer', transformer);
       const out = await transformer.transform(validSchema);
+      console.log('out', out);
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
 
