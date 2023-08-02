@@ -1,4 +1,4 @@
-import { AmplifyError, stateManager, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
+import { stateManager, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as inquirer from 'inquirer';
 import * as path from 'path';
@@ -162,8 +162,8 @@ describe('remove-resource', () => {
         error = e;
       }
       expect(error).toBeDefined();
-      expect(error instanceof AmplifyError).toBe(true);
       expect(error.message).toBe('Resource cannot be removed because it has a dependency on another resource');
+      expect(error.details).toBe('Dependency: Lambda - lambda1. Remove the dependency first.');
 
       expect(prompterMock.pick).toBeCalledWith('Choose the resource you would want to remove', [
         {
@@ -224,8 +224,8 @@ describe('remove-resource', () => {
         error = e;
       }
       expect(error).toBeDefined();
-      expect(error instanceof AmplifyError).toBe(true);
       expect(error.message).toBe('Resource cannot be removed because it has a dependency on another resource');
+      expect(error.details).toBe('Dependency: Lambda - lambda1. Remove the dependency first.');
     });
 
     it('print message to unlink the imported resource on confirm prompt when the specified service is imported resource', async () => {
