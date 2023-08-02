@@ -38,7 +38,7 @@ function RCProd {
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    source ./scripts/release-rc.sh $0
+    source ./scripts/release-rc-codebuild.sh $0
     branch_name=$(git branch --show-current)
     triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RC_PROJECT_NAME $branch_name
 }
@@ -95,7 +95,7 @@ function ReleaseProd {
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    source ./scripts/promote-rc.sh $0
+    source ./scripts/promote-rc-codebuild.sh $0
     branch_name=release
     triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME $branch_name
 }

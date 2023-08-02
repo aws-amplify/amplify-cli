@@ -90,7 +90,7 @@ function _buildLinux {
     yarn --immutable
     yarn production-build
     yarn build-tests
-    ./.circleci/publish-step-1-set-versions.sh
+    ./.circleci/cb-publish-step-1-set-versions.sh
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
@@ -168,7 +168,7 @@ function _publishToLocalRegistry {
 
     source ./.circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
-    ./.circleci/publish-step-2-verdaccio.sh
+    ./.circleci/cb-publish-step-2-verdaccio.sh
     unsetNpmRegistryUrl
 
     echo Generate Change Log
@@ -659,13 +659,13 @@ function _publishToNpm {
     echo Authenticate with npm
     echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
 
-    source ./.circleci/publish-step-3-npm.sh
+    source ./.circleci/cb-publish-step-3-npm.sh
 }
 function _postPublishPushToGit {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
     echo Push release commit and tags
-    source ./.circleci/publish-step-4-push-to-git.sh
+    source ./.circleci/cb-publish-step-4-push-to-git.sh
 }
 function _githubRelease {
     loadCache repo $CODEBUILD_SRC_DIR

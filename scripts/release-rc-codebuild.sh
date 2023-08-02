@@ -1,15 +1,6 @@
 #!/bin/bash
 set -e
 
-# this script should be run locally when starting the CLI release process
-# Usage: ./scripts/release-rc.sh <hash> where <hash> is the commit sha of the commit on dev to be released
-#
-# It will
-# 1. Checkout a new branch release_rc/<hash> pointing to the specified commit
-# 2. Merge main into the rc branch (you may have to resolve merge conflicts)
-# 3. Push the rc branch to the CLI repo
-# This will then kick off a CCI workflow to publish the release candidate
-
 repo_name="aws-amplify/amplify-cli"
 
 git remote update
@@ -42,5 +33,3 @@ if [[ $merge_exit_code -gt 0 ]]; then
   kill -TSTP $$
 fi
 git push "$remote_name" "$branch_name"
-echo "CircleCI is publishing the release candidate. Check progress at"
-echo "https://app.circleci.com/pipelines/github/$repo_name?branch=$branch_name"

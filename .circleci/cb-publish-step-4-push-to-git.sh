@@ -3,17 +3,17 @@
 git config --global user.name aws-amplify-bot
 git config --global user.email aws@amazon.com
 
-if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]]; then
+if [[ "$BRANCH_NAME" =~ ^tagged-release ]] || [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^release_rc\/.* ]]; then
   # push release commit
-  git push origin "$CIRCLE_BRANCH"
+  git push origin "$BRANCH_NAME"
 
   # push release tags
   git tag --points-at HEAD | xargs git push origin
 
 # @latest release
-elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
+elif [[ "$BRANCH_NAME" == "release" ]]; then
   # push release commit
-  git push origin "$CIRCLE_BRANCH"
+  git push origin "$BRANCH_NAME"
 
   # push release tags
   git tag --points-at HEAD | xargs git push origin
@@ -30,6 +30,6 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   git merge release --ff-only
   git push origin hotfix
 else
-  echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules."
+  echo "branch name" "$BRANCH_NAME" "did not match any branch publish rules."
   exit 1
 fi

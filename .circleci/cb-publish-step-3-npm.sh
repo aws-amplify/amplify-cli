@@ -23,19 +23,19 @@ function verifyPkgIsAvailable {
   # check binaries
   # send HEAD requests to check for binary presence
   # curl --fail exits with non-zero code and makes this script fail
-  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-linux-x64.tgz
-  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-linux-arm64.tgz
-  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-macos-x64.tgz
-  curl -I --fail  https://package.cli.amplify.aws/$desiredPkgVersion/amplify-pkg-win-x64.tgz
+  curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-linux-x64.tgz
+  curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-linux-arm64.tgz
+  curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-macos-x64.tgz
+  curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-win-x64.tgz
 }
 
-if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-  if [[ "$CIRCLE_BRANCH" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
+if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
+  if [[ "$BRANCH_NAME" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
     # Remove tagged-release-without-e2e-tests/
-    export NPM_TAG="${CIRCLE_BRANCH/tagged-release-without-e2e-tests\//}"
-  elif [[ "$CIRCLE_BRANCH" =~ ^tagged-release\/.* ]]; then
+    export NPM_TAG="${BRANCH_NAME/tagged-release-without-e2e-tests\//}"
+  elif [[ "$BRANCH_NAME" =~ ^tagged-release\/.* ]]; then
     # Remove tagged-release/
-    export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
+    export NPM_TAG="${BRANCH_NAME/tagged-release\//}"
   fi
   if [ -z "$NPM_TAG" ]; then
     echo "Tag name is missing. Name your branch with either tagged-release/<tag-name> or tagged-release-without-e2e-tests/<tag-name>"
@@ -49,7 +49,7 @@ if [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
   lernaPublishExitOnFailure from-git --yes --no-push --dist-tag=$NPM_TAG
 
 # @latest release
-elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
+elif [[ "$BRANCH_NAME" == "release" ]]; then
   # verify that binary has been uploaded
   verifyPkgIsAvailable
 
@@ -57,7 +57,7 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   lernaPublishExitOnFailure from-git --yes --no-push
 
 # release candidate or local publish for testing / building binary
-elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]]; then
+elif [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^release_rc\/.* ]]; then
 
   # verify that binary has been uploaded
   verifyPkgIsAvailable
@@ -65,6 +65,6 @@ elif [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^r
   # publish versions that were just computed
   lernaPublishExitOnFailure from-git --yes --no-push --dist-tag rc
 else
-  echo "branch name" "$CIRCLE_BRANCH" "did not match any branch publish rules."
+  echo "branch name" "$BRANCH_NAME" "did not match any branch publish rules."
   exit 1
 fi
