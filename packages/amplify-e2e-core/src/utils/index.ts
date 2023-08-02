@@ -31,9 +31,11 @@ export * from './git-operations';
 export * from './help';
 
 /**
- * Whether the current environment is CircleCI or not
+ * Whether the current environment is Amplify CLI CI or not
  */
-export const isCI = (): boolean => JSON.parse(process.env.CI || 'false') && JSON.parse(process.env.CIRCLECI || 'false');
+export const isCI = (): boolean =>
+  (JSON.parse(process.env.CI || 'false') && JSON.parse(process.env.CIRCLECI || 'false')) ||
+  JSON.parse(process.env.IS_AMPLIFY_CI || 'false');
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
