@@ -194,6 +194,10 @@ export const adminBackendMap: {
     amplifyAdminUrl: 'https://ap-northeast-2.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ap-northeast-2.appstate.amplifyapp.com',
   },
+  'ap-northeast-3': {
+    amplifyAdminUrl: 'https://ap-northeast-3.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.ap-northeast-3.appstate.amplifyapp.com',
+  },
   'ap-south-1': {
     amplifyAdminUrl: 'https://ap-south-1.admin.amplifyapp.com',
     appStateUrl: 'https://prod.ap-south-1.appstate.amplifyapp.com',
