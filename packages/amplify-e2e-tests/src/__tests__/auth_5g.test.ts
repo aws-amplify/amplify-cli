@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
+  assertAppClientSecretInFiles,
   deleteProject,
   amplifyPushNonInteractive,
   addHeadlessAuth,
@@ -14,7 +15,6 @@ import {
   CognitoUserPoolSigninMethod,
   CognitoUserProperty,
 } from 'amplify-headless-interface';
-import { assertAppClientSecretInFiles } from '@aws-amplify/amplify-e2e-core/src/utils/auth-utils';
 
 const PROJECT_NAME = 'authTest';
 const defaultsSettings = {

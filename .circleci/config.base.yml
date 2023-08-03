@@ -1469,7 +1469,9 @@ commands:
                   source $BASH_ENV
             - run:
                 name: Confirm Amplify CLI is installed and available in PATH
-                command: amplify version
+                command: |
+                  which amplify
+                  amplify version
 
   rename_binary_for_windows:
     description: 'Rename binary for windows'
