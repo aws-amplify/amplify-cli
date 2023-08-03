@@ -22,6 +22,7 @@ if [[ "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr
   TEMP_BRANCH_NAME=$(cat /proc/sys/kernel/random/uuid)
   git checkout -b $TEMP_BRANCH_NAME
 elif [[  "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/dev" ]]; then
+  # We're in E2E workflow triggered after pushing to dev.
   echo "Checking out dev"
   git checkout dev
 elif [[ "$BRANCH_NAME" == "" ]]; then
