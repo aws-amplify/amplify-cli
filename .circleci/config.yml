@@ -241,7 +241,6 @@ workflows:
           filters:
             branches:
               only:
-                - dev
                 - /run-e2e\/.*/
                 - /pull\/.*
   nightly_console_integration_tests:
