@@ -1,4 +1,4 @@
-#!/bin/bash -ev
+#!/bin/bash -e
 
 # This script checks out a branch & loads git tags.
 
