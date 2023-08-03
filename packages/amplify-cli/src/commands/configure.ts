@@ -7,6 +7,7 @@ import { onFailure } from '../config-steps/c9-onFailure';
 import { onSuccess } from '../config-steps/c9-onSuccess';
 import { normalizeInputParams } from '../input-params-manager';
 import { write } from '../app-config';
+import { DebugConfig } from '../app-config/debug-config';
 import { Context } from '../domain/context';
 
 export const run = async (context: Context) => {
@@ -15,9 +16,22 @@ export const run = async (context: Context) => {
     context.print.success('Usage Data has been turned off');
     return;
   }
-  if (context.parameters.options['usage-data-on']) {
+
+  if (context.parameters.options['usage-data-on ']) {
     write(context, { usageDataConfig: { isUsageTrackingEnabled: true } });
     context.print.success('Usage Data has been turned on');
+    return;
+  }
+
+  if (context.parameters.options['share-project-config-off']) {
+    DebugConfig.Instance.setAndWriteShareProject(false);
+    context.print.success('Share Project Config has been turned off');
+    return;
+  }
+
+  if (context.parameters.options['share-project-config-on']) {
+    DebugConfig.Instance.setAndWriteShareProject(true);
+    context.print.success('Share Project Config has been turned on');
     return;
   }
 
