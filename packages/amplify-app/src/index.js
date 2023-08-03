@@ -112,7 +112,7 @@ async function installAmplifyCLI() {
 async function amplifyCLIVersionCheck() {
   try {
     const amplifyCLIVersionRaw = await callAmplify(['-v'], { inheritIO: false });
-    const amplifyCLIVersionMatch = amplifyCLIVersionRaw.match(/\d+\.\d+\.\d+(-[a-z]+\.[0-9]+)?/g);
+    const amplifyCLIVersionMatch = amplifyCLIVersionRaw.match(/^\d+\.\d+\.\d+/g);
     const amplifyCLIVersion =
       Array.isArray(amplifyCLIVersionMatch) && amplifyCLIVersionMatch.length > 0 ? amplifyCLIVersionMatch[0] : undefined;
     const minCLIVersion = engines['@aws-amplify/cli'];

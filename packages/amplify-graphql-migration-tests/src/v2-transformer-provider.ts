@@ -18,7 +18,9 @@ export const v2transformerProvider = (config: Partial<V2TransformerTestConfig> =
   const transform = new GraphQLTransform({
     transformers: config.transformers ?? getDefaultTransformers(),
     authConfig: defaultAuthConfig,
-    sandboxModeEnabled: true,
+    transformParameters: {
+      sandboxModeEnabled: true,
+    },
   });
 
   return transform;

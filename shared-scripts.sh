@@ -286,6 +286,7 @@ function _runE2ETestsLinux {
     _loadE2ECache
     _install_packaged_cli_linux
     # verify installation
+    which amplify
     amplify version
     source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal

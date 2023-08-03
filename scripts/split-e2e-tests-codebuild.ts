@@ -46,6 +46,10 @@ const DISABLE_COVERAGE = ['src/__tests__/datastore-modelgen.test.ts', 'src/__tes
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    /* TEMPORARY-PR12830: Remove after we ship PR12830 */
+    'src/__tests__/custom_resources.test.ts',
+    'src/__tests__/custom-resource-with-storage.test.ts',
+    /* END TEMPORARY */
     'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
