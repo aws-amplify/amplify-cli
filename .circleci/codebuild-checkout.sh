@@ -33,5 +33,7 @@ else
   git checkout $BRANCH_NAME
 fi
 
+git show --summary
+
 echo "Fetching tags"
 git fetch --all --tags
