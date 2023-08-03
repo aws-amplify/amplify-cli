@@ -17,6 +17,7 @@
     "cloud-e2e-circleci": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "cloud-e2e-local": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2ELocal'",
     "cloud-e2e": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2E'",
+    "cloud-pr": "./scripts/cloud-pr.sh",
     "commit": "git-cz",
     "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",
     "coverage": "codecov || exit 0",
