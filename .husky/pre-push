@@ -7,5 +7,5 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No color
 
 echo "${GREEN}Running pre-push hook${NC}"
-echo "${CYAN}Running yarn build-tests-changed && yarn split-e2e-tests${NC}"
-yarn build-tests-changed && yarn split-e2e-tests
+echo "${CYAN}Running yarn build-tests-changed"
+yarn build-tests-changed
