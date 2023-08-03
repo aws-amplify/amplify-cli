@@ -62,8 +62,12 @@ export const commandsInfo: Array<CommandInfo> = [
     commandFlags: [
       { short: '', long: 'usage-data-on', flagDescription: 'Turn on usage data sharing.' },
       { short: '', long: 'usage-data-off', flagDescription: 'Turn off usage data sharing.' },
-      { short: '', long: 'share-project-config-on', flagDescription: 'Turn on non-sensitive configurations sharing on failures.' },
-      { short: '', long: 'share-project-config-off', flagDescription: 'Turn off non-sensitive configurations sharing on failures.' },
+      { short: '', long: 'share-project-config-on', flagDescription: 'Turn on non-sensitive project configurations sharing on failures.' },
+      {
+        short: '',
+        long: 'share-project-config-off',
+        flagDescription: 'Turn off non-sensitive project configurations sharing on failures.',
+      },
     ],
     subCommands: [
       {
@@ -702,7 +706,7 @@ export const commandsInfo: Array<CommandInfo> = [
       {
         short: '',
         long: 'send-report',
-        flagDescription: 'Share non-sensitive configurations of your Amplify backend with the Amplify team',
+        flagDescription: 'Share non-sensitive project configurations of your Amplify backend with the Amplify team',
       },
       {
         short: '',
