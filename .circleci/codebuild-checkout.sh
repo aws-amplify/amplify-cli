@@ -14,7 +14,7 @@ if [[ "$CODEBUILD_SOURCE_VERSION" != "" ]]; then
 fi
 
 # Codebuild doesn't checkout the branch by default
-if [[ "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION_REF" =~ refs/pull/[0-9]+/head$ ]]; then
+if [[ "$AMPLIFY_CI_MANUAL_PR_BUILD" == "true" || "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION_REF" =~ refs/pull/[0-9]+/head$ ]]; then
   # If we're in PR workflow create temporary local branch.
   # We detect if we're in PR by looking for pr/<number> pattern in code build env variables
   # or by checking if commit is matching refs/pull/<number>/head.
