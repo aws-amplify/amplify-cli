@@ -21,6 +21,10 @@ if [[ "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr
   echo "Creating temporary local branch for PR build"
   TEMP_BRANCH_NAME=$(cat /proc/sys/kernel/random/uuid)
   git checkout -b $TEMP_BRANCH_NAME
+elif [[  "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/dev" ]]; then
+  # We're in E2E workflow triggered after pushing to dev.
+  echo "Checking out dev"
+  git checkout dev
 elif [[ "$BRANCH_NAME" == "" ]]; then
   echo "BRANCH_NAME must be defined for non-PR builds"
   exit 1
@@ -28,6 +32,8 @@ else
   echo "Checking out $BRANCH_NAME"
   git checkout $BRANCH_NAME
 fi
+
+git show --summary
 
 echo "Fetching tags"
 git fetch --all --tags
