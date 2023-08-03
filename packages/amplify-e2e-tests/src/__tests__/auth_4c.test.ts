@@ -1,28 +1,13 @@
-import * as fs from 'fs-extra';
 import {
-  initJSProjectWithProfile,
-  initAndroidProjectWithProfile,
   initIosProjectWithProfile,
   deleteProject,
   amplifyPushAuth,
-  addFeatureFlag,
   addAuthWithRecaptchaTrigger,
-  addAuthWithCustomTrigger,
-  addAuthWithSignInSignOutUrl,
-  updateAuthWithoutCustomTrigger,
   updateAuthRemoveRecaptchaTrigger,
-  updateAuthSignInSignOutUrl,
   createNewProjectDir,
   deleteProjectDir,
-  getProjectMeta,
-  getAwsAndroidConfig,
   getAwsIOSConfig,
-  getUserPool,
-  getUserPoolClients,
-  getLambdaFunction,
-  getFunction,
 } from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
 
 const defaultsSettings = {
   name: 'authTest',
