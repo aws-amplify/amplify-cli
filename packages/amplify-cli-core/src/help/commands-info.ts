@@ -60,8 +60,10 @@ export const commandsInfo: Array<CommandInfo> = [
     commandDescription: 'Configure the CLI to work with your AWS profile',
     commandUsage: 'amplify configure [subcommand]',
     commandFlags: [
-      { short: '', long: 'share-project-config-on', flagDescription: 'Share non-sensitive configurations on failures.' },
-      { short: '', long: 'share-project-config-off', flagDescription: 'Not share non-sensitive configurations on failures.' },
+      { short: '', long: 'usage-data-on', flagDescription: 'Turn on usage data sharing.' },
+      { short: '', long: 'usage-data-off', flagDescription: 'Turn off usage data sharing.' },
+      { short: '', long: 'share-project-config-on', flagDescription: 'Turn on non-sensitive configurations sharing on failures.' },
+      { short: '', long: 'share-project-config-off', flagDescription: 'Turn off non-sensitive configurations sharing on failures.' },
     ],
     subCommands: [
       {
