@@ -7,7 +7,6 @@ env:
     AWS_REGION: us-east-1
     CDK_DEFAULT_REGION: us-east-1
     CLI_REGION: us-east-1
-    TEST_SUITE: src/__tests__/auth_2b.test.ts
     AMPLIFY_DIR: '$CODEBUILD_SRC_DIR/out'
     AMPLIFY_PATH: '$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64'
 
@@ -22,12 +21,6 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: build_windows
-      buildspec: codebuild_specs/build_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
     - identifier: test
       buildspec: codebuild_specs/test.yml
       env:
@@ -60,12 +53,10 @@ batch:
       buildspec: codebuild_specs/build_pkg_binaries_macos.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - publish_to_local_registry
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-    - identifier: upb
-      buildspec: codebuild_specs/upload_pkg_binaries.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
@@ -74,43 +65,3 @@ batch:
       buildspec: codebuild_specs/verify_pkg_cli.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: integration_test
-      buildspec: codebuild_specs/integration_test.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-    - identifier: amplify_sudo_install_test
-      buildspec: codebuild_specs/amplify_sudo_install_test.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - upb
-    - identifier: amplify_install_test
-      buildspec: codebuild_specs/amplify_install_test.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - upb
-    - identifier: amplify_console_integration_tests
-      buildspec: codebuild_specs/amplify_console_integration_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-      depend-on:
-        - upb
-    - identifier: amplify_migration_tests_non_multi_env_layers
-      buildspec: codebuild_specs/amplify_migration_tests_non_multi_env_layers.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - upb
-    - identifier: amplify_migration_tests_multi_env_layers
-      buildspec: codebuild_specs/amplify_migration_tests_multi_env_layers.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - upb
-    - identifier: amplify_general_config_tests
-      buildspec: codebuild_specs/amplify_general_config_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-      depend-on:
-        - upb

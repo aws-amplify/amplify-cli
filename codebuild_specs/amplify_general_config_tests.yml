@@ -10,3 +10,6 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _amplifyGeneralConfigTests
+artifacts:
+  files:
+    - 'shared-scripts.sh'
