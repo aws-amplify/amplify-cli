@@ -14,13 +14,16 @@ if [[ "$CODEBUILD_SOURCE_VERSION" != "" ]]; then
 fi
 
 # Codebuild doesn't checkout the branch by default
-if [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/dev" || "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION_REF" =~ refs/pull/[0-9]+/head$ ]]; then
-  # If we're in PR workflow or E2E workflow on dev branch create temporary local branch.
+if [[ "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION" =~ ^pr/ || "$CODEBUILD_SOURCE_VERSION_REF" =~ refs/pull/[0-9]+/head$ ]]; then
+  # If we're in PR workflow create temporary local branch.
   # We detect if we're in PR by looking for pr/<number> pattern in code build env variables
   # or by checking if commit is matching refs/pull/<number>/head.
   echo "Creating temporary local branch for PR build"
   TEMP_BRANCH_NAME=$(cat /proc/sys/kernel/random/uuid)
   git checkout -b $TEMP_BRANCH_NAME
+elif [[  "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/dev" ]]; then
+  echo "Checking out dev"
+  git checkout dev
 elif [[ "$BRANCH_NAME" == "" ]]; then
   echo "BRANCH_NAME must be defined for non-PR builds"
   exit 1
