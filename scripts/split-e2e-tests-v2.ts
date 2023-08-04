@@ -173,7 +173,7 @@ type CandidateJob = {
   tests: string[];
   useParentAccount: boolean;
   // intentially leaving this here - accounts are randomly assigned to jobs
-  // by a via local_publish_helpers.sh script
+  // by a via local_publish_helpers_codebuild.sh script
   // account: string,
 };
 

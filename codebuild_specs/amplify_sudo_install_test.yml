@@ -11,5 +11,8 @@ phases:
     commands:
       - source ./shared-scripts.sh && _amplifySudoInstallTestSetup
       - sudo npm install -g @aws-amplify/cli
-      - source .circleci/local_publish_helpers.sh && unsetSudoNpmRegistryUrl
+      - source .circleci/local_publish_helpers_codebuild.sh && unsetSudoNpmRegistryUrl
       # - amplify version
+artifacts:
+  files:
+    - 'shared-scripts.sh'

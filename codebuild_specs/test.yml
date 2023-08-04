@@ -8,3 +8,6 @@ phases:
     commands:
       - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
       - source ./shared-scripts.sh && _testLinux
+artifacts:
+  files:
+    - 'shared-scripts.sh'

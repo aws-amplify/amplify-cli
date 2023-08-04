@@ -23,42 +23,32 @@ function startLocalRegistry {
     done
 }
 
-# Codebuild only
-function uploadPkgCliForE2E {
-    cd out/
-    export version=$(./amplify-pkg-linux-x64 --version)
-    aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
-    cd ..
-}
-function uploadPkgCli {
-    aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
-    aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
+function uploadPkgCliCodeBuild {
     cd out/
     export version=$(./amplify-pkg-linux-x64 --version)
 
-    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
+    if [[ "$BRANCH_NAME" == "release" ]] || [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^release_rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
 
-        ALREADY_EXISTING_FILES="$(set -o pipefail && aws --profile=s3-uploader s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | ( egrep -v "amplify-pkg-linux-x64-.*" || true ) | wc -l | xargs)"
+        ALREADY_EXISTING_FILES="$(set -o pipefail && aws s3 ls s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64 | ( egrep -v "amplify-pkg-linux-x64-.*" || true ) | wc -l | xargs)"
         INCORRECT_PERMISSIONS=$?
 
         if [ INCORRECT_PERMISSIONS -ne "0" ]; then
-            echo "Insufficient permissions to list s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
+            echo "Insufficient permissions to list s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64"
             exit 1
         fi
 
         if [ ALREADY_EXISTING_FILES -ne "0" ]; then
-            echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz"
+            echo "Cannot overwrite existing file at s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz"
             exit 1
         fi
 
-        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-x64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-x64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
+        aws s3 cp amplify-pkg-win-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-win-x64.tgz
+        aws s3 cp amplify-pkg-macos-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-x64.tgz
+        aws s3 cp amplify-pkg-linux-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-arm64.tgz
+        aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
 
     else
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
+        aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
     fi
 
     cd ..
@@ -278,17 +268,6 @@ function setAwsAccountCredentials {
         unzip -o awscliv2.zip >/dev/null
         export PATH=$PATH:$(pwd)/aws/dist
         useChildAccountCredentials
-    fi
-}
-function runE2eTest {
-    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
-
-    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
-        # read the content of failed tests
-        failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
-    else
-        yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
     fi
 }
 

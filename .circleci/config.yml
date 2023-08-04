@@ -237,7 +237,12 @@ workflows:
   setup:
     when: << pipeline.parameters.setup >>
     jobs:
-      - setup
+      - setup:
+          filters:
+            branches:
+              only:
+                - /run-e2e\/.*/
+                - /pull\/.*
   nightly_console_integration_tests:
     when: << pipeline.parameters.nightly_console_integration_tests >>
     jobs:
