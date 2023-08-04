@@ -53,7 +53,7 @@ describe('Invoke local lambda function', () => {
     expect(printer.info).toBeCalledWith(JSON.stringify(echoInput, undefined, 2));
     expect(printer.error).toBeCalledTimes(0);
     expect(printer.info).toBeCalledWith('Finished execution.');
-    expect(isBuilt).toBeTruthy();
+    expect(isBuilt).toBe(true);
   });
 
   it('invoke the local lambda using trigger config with given data', async () => {
