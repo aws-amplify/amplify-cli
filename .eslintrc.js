@@ -115,7 +115,7 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
         'consistent-return': 'error',
-        'import/no-extraneous-dependencies': 'off',
+        'import/no-extraneous-dependencies': 'error',
         'no-constant-condition': 'off',
         'no-restricted-syntax': 'off',
         'no-useless-catch': 'error',
