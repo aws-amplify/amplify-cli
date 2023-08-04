@@ -160,7 +160,7 @@ function chain(context: Context): ExecutionContext {
 
     wait(
       expectation: string | RegExp,
-      callback = (data: string) => {
+      callback: (data: string) => void = () => {
         // empty
       },
     ): ExecutionContext {

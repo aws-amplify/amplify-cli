@@ -215,8 +215,6 @@ const getGeoHeadlessTestInput = () => {
   return headlessPayload;
 };
 
-const getAPIHeadlessTestInput = () => {};
-
 const getGraphQLHeadlessTestInput = () => {
   const headlessPayload: AddApiRequest = {
     version: 1,

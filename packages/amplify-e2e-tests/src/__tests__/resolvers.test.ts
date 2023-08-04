@@ -15,7 +15,6 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { join } from 'path';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 
 describe('user created resolvers', () => {
   let projectDir: string;

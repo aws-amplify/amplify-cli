@@ -4,7 +4,7 @@ import { showApiAuthAcm } from '@aws-amplify/amplify-category-api';
 jest.mock('@aws-amplify/amplify-category-hosting');
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-category-api', () => ({
-  showApiAuthAcm: jest.fn(async (_: any, __: string) => ''),
+  showApiAuthAcm: jest.fn(async () => ''),
 }));
 
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;

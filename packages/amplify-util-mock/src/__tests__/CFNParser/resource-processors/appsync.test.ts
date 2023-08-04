@@ -46,12 +46,6 @@ describe('dynamoDBResourceHandler', () => {
         ],
       },
     };
-    const cfnContext: CloudFormationParseContext = {
-      params: {},
-      conditions: {},
-      resources: {},
-      exports: {},
-    };
     const processedResource = dynamoDBResourceHandler(resource.Properties.TableName, resource);
     expect(processedResource.Properties.AttributeDefinitions).toEqual(resource.Properties.AttributeDefinitions);
     expect(processedResource.Properties.KeySchema).toEqual(resource.Properties.KeySchema);

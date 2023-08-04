@@ -1,9 +1,6 @@
 import {
   addFunction,
-  addLayer,
-  addOptData,
   amplifyPushAuth,
-  amplifyPushLayer,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,

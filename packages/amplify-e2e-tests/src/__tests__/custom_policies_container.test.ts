@@ -10,7 +10,6 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import AWS from 'aws-sdk';
 import path from 'path';

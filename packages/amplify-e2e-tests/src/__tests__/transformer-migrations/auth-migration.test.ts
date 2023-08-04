@@ -21,8 +21,6 @@ import {
   updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
-import moment from 'moment';
-import { IAM } from 'aws-sdk';
 
 (global as any).fetch = require('node-fetch');
 
@@ -30,12 +28,9 @@ describe('transformer @auth migration test', () => {
   let projRoot: string;
   let projectName: string;
 
-  const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
   const GROUPNAME = 'Admin';
   const PASSWORD = 'user1Password';
-  const NEW_PASSWORD = 'user1Password!!!**@@@';
   const EMAIL = 'username@amazon.com';
-  const UNAUTH_ROLE_NAME = `unauthRole${BUILD_TIMESTAMP}`;
 
   const modelSchemaV1 = 'transformer_migration/auth-model-v1.graphql';
   const modelSchemaV2 = 'transformer_migration/auth-model-v2.graphql';
@@ -58,7 +53,6 @@ describe('transformer @auth migration test', () => {
   });
 
   it('migration of queries with different auth methods should succeed', async () => {
-    const iamHelper = new IAM({ region: 'us-east-2' });
     const awsconfig = configureAmplify(projRoot);
     const userPoolId = getUserPoolId(projRoot);
 

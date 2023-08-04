@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as execa from 'execa';
-import * as fs from 'fs-extra';
-import { executeHooks, HooksMeta, skipHooksFilePath } from '../../hooks';
+import { executeHooks, HooksMeta } from '../../hooks';
 import * as skipHooksModule from '../../hooks/skipHooks';
 import { pathManager, stateManager } from '../../state-manager';
 import { CommandLineInput } from '../../types';
