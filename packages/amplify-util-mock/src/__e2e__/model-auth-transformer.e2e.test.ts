@@ -157,8 +157,6 @@ beforeAll(async () => {
     GRAPHQL_ENDPOINT = server.url + '/graphql';
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-    const apiKey = result.config.appSync.apiKey;
-
     const idToken = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [
       ADMIN_GROUP_NAME,
       PARTICIPANT_GROUP_NAME,
@@ -540,7 +538,7 @@ test('Test listPosts query when authorized', async () => {
   expect(firstPost.data.createPost.createdAt).toBeDefined();
   expect(firstPost.data.createPost.updatedAt).toBeDefined();
   expect(firstPost.data.createPost.owner).toEqual(USERNAME1);
-  const secondPost = await GRAPHQL_CLIENT_2.query(
+  await GRAPHQL_CLIENT_2.query(
     `mutation {
         createPost(input: { title: "testing list" }) {
             id

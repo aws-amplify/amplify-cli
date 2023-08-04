@@ -20,7 +20,6 @@ import {
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
 import path from 'path';
-import _ from 'lodash';
 
 const GraphQLTransformerLatestVersion = 2;
 

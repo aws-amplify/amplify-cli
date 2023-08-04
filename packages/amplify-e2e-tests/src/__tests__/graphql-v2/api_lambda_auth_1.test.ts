@@ -126,7 +126,6 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
 
     const url = GraphQLAPIEndpointOutput as string;
-    const apiKey = GraphQLAPIKeyOutput as string;
 
     const appSyncClient = new AWSAppSyncClient({
       url,

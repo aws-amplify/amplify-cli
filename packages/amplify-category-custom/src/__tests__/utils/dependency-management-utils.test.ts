@@ -26,29 +26,8 @@ pathManager.getBackendDirPath = jest.fn().mockReturnValue('mockTargetDir');
 pathManager.getResourceDirectoryPath = jest.fn().mockReturnValue('mockResourceDir');
 
 describe('getResourceCfnOutputAttributes() scenarios', () => {
-  let mockContext: $TSContext;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = {
-      amplify: {
-        openEditor: jest.fn(),
-        updateamplifyMetaAfterResourceAdd: jest.fn(),
-        copyBatch: jest.fn(),
-        getResourceStatus: jest.fn().mockResolvedValue({
-          allResources: [
-            {
-              resourceName: 'mockresource1',
-              service: 'customCDK',
-            },
-            {
-              resourceName: 'mockresource2',
-              service: 'customCDK',
-            },
-          ],
-        }),
-      },
-    } as unknown as $TSContext;
   });
 
   it('get resource attr for resources with build folder with one cfn file', async () => {
@@ -109,29 +88,8 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
 });
 
 describe('getAllResources() scenarios', () => {
-  let mockContext: $TSContext;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = {
-      amplify: {
-        openEditor: jest.fn(),
-        updateamplifyMetaAfterResourceAdd: jest.fn(),
-        copyBatch: jest.fn(),
-        getResourceStatus: jest.fn().mockResolvedValue({
-          allResources: [
-            {
-              resourceName: 'mockresource1',
-              service: 'customCDK',
-            },
-            {
-              resourceName: 'mockresource2',
-              service: 'customCDK',
-            },
-          ],
-        }),
-      },
-    } as unknown as $TSContext;
   });
 
   it('get all resource types', async () => {
@@ -161,29 +119,8 @@ describe('getAllResources() scenarios', () => {
 });
 
 describe('addCDKResourceDependency() scenarios', () => {
-  let mockContext: $TSContext;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockContext = {
-      amplify: {
-        openEditor: jest.fn(),
-        updateamplifyMetaAfterResourceAdd: jest.fn(),
-        copyBatch: jest.fn(),
-        getResourceStatus: jest.fn().mockResolvedValue({
-          allResources: [
-            {
-              resourceName: 'mockresource1',
-              service: 'customCDK',
-            },
-            {
-              resourceName: 'mockresource2',
-              service: 'customCDK',
-            },
-          ],
-        }),
-      },
-    } as unknown as $TSContext;
   });
 
   it('get depenencies for a custom CDK stack', async () => {

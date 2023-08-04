@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import execa from 'execa';
 import { buildCustomResources } from '../../utils/build-custom-resources';
 

@@ -25,7 +25,6 @@ import {
   pushToCloud,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import { addCodegen } from '../codegen/add';
 import { getAWSExportsPath } from '../aws-exports/awsExports';
@@ -174,7 +173,7 @@ async function appExists(appId: string, region: string) {
 }
 
 async function timeout(timeout: number) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
 }

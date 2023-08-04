@@ -1,6 +1,6 @@
 import { migrateResourceToSupportOverride } from '../../../../provider-utils/awscloudformation/utils/migrate-override-resource';
 import { generateAuthStackTemplate } from '../../../../provider-utils/awscloudformation/utils/generate-auth-stack-template';
-import { $TSContext, generateOverrideSkeleton } from '@aws-amplify/amplify-cli-core';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AuthInputState } from '../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 import { checkAuthResourceMigration } from '../../../../provider-utils/awscloudformation/utils/check-for-auth-migration';
 

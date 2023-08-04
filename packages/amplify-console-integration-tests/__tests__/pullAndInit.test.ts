@@ -246,7 +246,7 @@ describe('amplify app console tests', () => {
     expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     // with frontend
-    const frontendConfig = deleteAmplifyDir(projRoot);
+    deleteAmplifyDir(projRoot);
     await headlessPull(
       projRoot,
       { envName, appId },

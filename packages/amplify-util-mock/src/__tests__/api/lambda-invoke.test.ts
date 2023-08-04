@@ -53,6 +53,7 @@ describe('Invoke local lambda function', () => {
     expect(printer.info).toBeCalledWith(JSON.stringify(echoInput, undefined, 2));
     expect(printer.error).toBeCalledTimes(0);
     expect(printer.info).toBeCalledWith('Finished execution.');
+    expect(isBuilt).toBe(true);
   });
 
   it('invoke the local lambda using trigger config with given data', async () => {
@@ -69,11 +70,7 @@ describe('Invoke local lambda function', () => {
       }),
     } as $TSAny;
 
-    let isBuilt = false;
     getInvokerMock.mockResolvedValueOnce(() => new Promise((resolve) => setTimeout(() => resolve('lambda value'), 11000)));
-    getBuilderMock.mockReturnValueOnce(async () => {
-      isBuilt = true;
-    });
     const echoInput = { key: 'value' };
     timeConstrainedInvokerMock.mockResolvedValue(echoInput);
     const mockTriggerConfig = {

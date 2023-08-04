@@ -36,7 +36,7 @@ pathManager_mock.findProjectRoot = jest.fn().mockReturnValue('projectpath');
 pathManager_mock.getBackendDirPath = jest.fn().mockReturnValue('backend');
 
 const JSONUtilitiesMock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
-JSONUtilitiesMock.stringify.mockImplementation((data, __) => JSON.stringify(data, null, 2));
+JSONUtilitiesMock.stringify.mockImplementation((data) => JSON.stringify(data, null, 2));
 JSONUtilitiesMock.parse.mockImplementation((data) => JSON.parse(data));
 JSONUtilitiesMock.readJson.mockImplementation((pathToJson: string) => {
   if (pathToJson.includes('function') && pathToJson.includes('amplifyexportestlayer5f16d693')) {
@@ -76,12 +76,12 @@ readCFNTemplate_mock.mockImplementation((path) => {
 });
 const buildOverrideDir_mock = buildOverrideDir as jest.MockedFunction<typeof buildOverrideDir>;
 
-buildOverrideDir_mock.mockImplementation(async (cwd: string, dest: string) => false);
+buildOverrideDir_mock.mockImplementation(async () => false);
 
 jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
 fs_mock.existsSync.mockReturnValue(true);
-fs_mock.lstatSync.mockImplementation((_path, _options) => {
+fs_mock.lstatSync.mockImplementation(() => {
   return {
     isDirectory: jest.fn().mockReturnValue(true),
   } as unknown as fs.Stats;
@@ -244,7 +244,7 @@ const lambdaTemplate = {
   },
 };
 
-const invokePluginMethod = jest.fn((_context, _category, _service, functionName, _others) => {
+const invokePluginMethod = jest.fn((_context, _category, _service, functionName) => {
   if (functionName === 'buildResource') {
     return 'mockbuildTimeStamp';
   }
