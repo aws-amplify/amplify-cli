@@ -123,7 +123,7 @@ If the change is a breaking change ([as defined by semantic versioning](https://
    - Use slashes to separate parts of branch names
 1. Once your work is committed and you're ready to share, run `yarn test`. Manually test your changes in a sample app with different edge cases and also test across different platforms if possible.
 1. Run `yarn lint-fix` to find and fix any linting errors
-1. Run `yarn prettify:changes` to fix styling issues
+1. Run `yarn prettier-changes` to fix styling issues
 1. Then, push your branch: `git push origin HEAD` (pushes the current branch to origin remote)
 1. Open GitHub to create a PR from your newly published branch. Fill out the PR template and submit a PR.
 1. Finally, the Amplify CLI team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners. _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
