@@ -2,10 +2,10 @@ import { recursiveOmit } from '../../utils';
 import { $TSObject } from '../..';
 
 describe('recursiveOmit', () => {
-  let sourceObject: $TSObject;
+  let testObject: $TSObject;
 
   beforeEach(() => {
-    sourceObject = {
+    testObject = {
       prop1: {
         prop2: {
           prop3: 'val3',
@@ -31,8 +31,8 @@ describe('recursiveOmit', () => {
       },
     };
 
-    recursiveOmit(sourceObject, []);
-    expect(sourceObject).toEqual(result);
+    recursiveOmit(testObject, []);
+    expect(testObject).toEqual(result);
   });
 
   test('wrong path does not mutate object', () => {
@@ -48,15 +48,15 @@ describe('recursiveOmit', () => {
       },
     };
 
-    recursiveOmit(sourceObject, ['prop1', 'prop7']);
-    expect(sourceObject).toEqual(result);
+    recursiveOmit(testObject, ['prop1', 'prop7']);
+    expect(testObject).toEqual(result);
   });
 
   test('deleting a key with subkeys removes them all', () => {
     const result = {};
 
-    recursiveOmit(sourceObject, ['prop1']);
-    expect(sourceObject).toEqual(result);
+    recursiveOmit(testObject, ['prop1']);
+    expect(testObject).toEqual(result);
   });
 
   test('deleting a key with subkeys does not mutate sibling keys and subkeys', () => {
@@ -68,8 +68,8 @@ describe('recursiveOmit', () => {
       },
     };
 
-    recursiveOmit(sourceObject, ['prop1', 'prop2']);
-    expect(sourceObject).toEqual(result);
+    recursiveOmit(testObject, ['prop1', 'prop2']);
+    expect(testObject).toEqual(result);
   });
 
   test('deleting a key in a specific path does not affect sibling keys if there are any', () => {
@@ -84,8 +84,8 @@ describe('recursiveOmit', () => {
       },
     };
 
-    recursiveOmit(sourceObject, ['prop1', 'prop2', 'prop3']);
-    expect(sourceObject).toEqual(result);
+    recursiveOmit(testObject, ['prop1', 'prop2', 'prop3']);
+    expect(testObject).toEqual(result);
   });
 
   test('deleting a key in a specific path results in deleting keys that no longer have child keys', () => {
@@ -98,7 +98,7 @@ describe('recursiveOmit', () => {
       },
     };
 
-    recursiveOmit(sourceObject, ['prop1', 'prop5', 'prop6']);
-    expect(sourceObject).toEqual(result);
+    recursiveOmit(testObject, ['prop1', 'prop5', 'prop6']);
+    expect(testObject).toEqual(result);
   });
 });
