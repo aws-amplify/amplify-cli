@@ -121,7 +121,7 @@ If the change is a breaking change ([as defined by semantic versioning](https://
 1. Within your local fork, create a new branch based on the issue you're addressing - e.g. `git checkout -b category-auth/admin-auth-support`
    - Use grouping tokens at the beginning of the branch names. For e.g, if you are working on changes specific to `amplify-category-auth`, then you could start the branch name as `category-auth/...`
    - Use slashes to separate parts of branch names
-1. Before your first commit, install [git-secrets plugin] (https://github.com/awslabs/git-secrets#installing-git-secrets)
+1. Before your first commit, install [git-secrets plugin](https://github.com/awslabs/git-secrets#installing-git-secrets)
 1. Once your work is committed and you're ready to share, run `yarn test`. Manually test your changes in a sample app with different edge cases and also test across different platforms if possible.
 1. Run `yarn lint-fix` to find and fix any linting errors
 1. Run `yarn prettier-changes` to fix styling issues
