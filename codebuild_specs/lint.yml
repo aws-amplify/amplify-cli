@@ -1,8 +1,6 @@
 version: 0.2
 env:
   shell: bash
-  variables:
-    NODE_OPTIONS: --max-old-space-size=5120
 phases:
   build:
     commands:
