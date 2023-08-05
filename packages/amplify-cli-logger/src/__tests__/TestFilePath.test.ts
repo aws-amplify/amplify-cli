@@ -1,4 +1,3 @@
-import os from 'os';
 import path from 'path';
 import { constants } from '../constants';
 

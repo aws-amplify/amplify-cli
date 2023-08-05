@@ -17,7 +17,6 @@ import {
   createRandomName,
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
 
 describe('nodejs', () => {
   describe('amplify add function with additional permissions', () => {
@@ -68,11 +67,7 @@ describe('nodejs', () => {
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
       const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map((key) => meta.api[key])[0].output;
-      const {
-        Arn: functionArn,
-        Name: functionName,
-        Region: region,
-      } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
+      const { Name: functionName, Region: region } = Object.keys(meta.function).map((key) => meta.function[key])[0].output;
       expect(appsyncId).toBeDefined();
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();

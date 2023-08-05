@@ -15,5 +15,8 @@ phases:
       # i.e. not buffer content in memory while installing binary
       - ulimit -Sv 1000000
       - npm install -g @aws-amplify/cli
-      - source .circleci/local_publish_helpers.sh && unsetNpmRegistryUrl
+      - source .circleci/local_publish_helpers_codebuild.sh && unsetNpmRegistryUrl
       - amplify version
+artifacts:
+  files:
+    - 'shared-scripts.sh'

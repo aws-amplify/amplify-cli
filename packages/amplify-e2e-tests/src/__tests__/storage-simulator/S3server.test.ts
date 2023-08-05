@@ -6,7 +6,6 @@ const port = 20005; // for testing
 const route = '/mock-testing';
 const bucket = 'mock-testing';
 const localDirS3 = __dirname + '/test-data/';
-const actual_file = __dirname + '/test-data/2.png';
 
 let s3client;
 let simulator;
@@ -56,7 +55,6 @@ describe('test server running', () => {
 });
 
 describe('Test get api', () => {
-  const actual_file = __dirname + '/test-data/2.png';
   test('get image work ', async () => {
     const data = await s3client.getObject({ Bucket: bucket, Key: '2.png' }).promise();
     expect(data).toBeDefined();
@@ -124,7 +122,7 @@ describe('Test delete api', () => {
     fs.copySync(__dirname + '/test-data/normal/', dirPathOne + '/');
   });
   test('test one delete ', async () => {
-    const data = await s3client.deleteObject({ Bucket: bucket, Key: 'deleteOne/2.png' }).promise();
+    await s3client.deleteObject({ Bucket: bucket, Key: 'deleteOne/2.png' }).promise();
     expect(fs.rmdirSync(dirPathOne)).toBeUndefined;
   });
 });

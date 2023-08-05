@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-return-await */
 import {
-  config,
   DynamoDB,
   S3,
   CognitoIdentity,

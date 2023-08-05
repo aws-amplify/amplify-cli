@@ -209,40 +209,6 @@ async function createOrder(client: GraphQLClient, customerEmail: string, orderId
   return result;
 }
 
-async function updateOrder(client: GraphQLClient, customerEmail: string, orderId: string) {
-  const result = await client.query(
-    `mutation UpdateOrder($input: UpdateOrderInput!) {
-        updateOrder(input: $input) {
-            customerEmail
-            orderId
-            createdAt
-        }
-    }`,
-    {
-      input: { customerEmail, orderId },
-    },
-  );
-  logDebug(JSON.stringify(result, null, 4));
-  return result;
-}
-
-async function deleteOrder(client: GraphQLClient, customerEmail: string, orderId: string) {
-  const result = await client.query(
-    `mutation DeleteOrder($input: DeleteOrderInput!) {
-        deleteOrder(input: $input) {
-            customerEmail
-            orderId
-            createdAt
-        }
-    }`,
-    {
-      input: { customerEmail, orderId },
-    },
-  );
-  logDebug(JSON.stringify(result, null, 4));
-  return result;
-}
-
 async function getOrder(client: GraphQLClient, customerEmail: string, orderId: string) {
   const result = await client.query(
     `query GetOrder($customerEmail: String!, $orderId: String!) {

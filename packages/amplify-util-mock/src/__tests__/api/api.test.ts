@@ -27,12 +27,6 @@ jest.mock('amplify-dynamodb-simulator', () => jest.fn());
 jest.mock('fs-extra');
 
 const mockProjectRoot = 'mock-app';
-const mockContext = {
-  amplify: {
-    getEnvInfo: jest.fn().mockReturnValue({ projectPath: mockProjectRoot }),
-    loadRuntimePlugin: jest.fn().mockReturnValue({}),
-  },
-} as unknown as $TSContext;
 
 describe('Test Mock API methods', () => {
   beforeEach(() => {
