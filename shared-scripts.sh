@@ -117,7 +117,7 @@ function _lint {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
-    export NODE_OPTIONS=--max-old-space-size=5120
+    export NODE_OPTIONS=--max-old-space-size=8096
 
     yarn lint-check
     yarn lint-check-package-json
