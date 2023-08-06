@@ -1,6 +1,6 @@
-import * as path from 'path';
+import path from 'path';
 import { constants } from './constants';
-import * as os from 'os';
+import os from 'os';
 
 function getFolder() {
   let folder = constants.LOG_DIRECTORY;
