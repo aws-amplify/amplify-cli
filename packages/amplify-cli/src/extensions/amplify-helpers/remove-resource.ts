@@ -10,7 +10,6 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import * as inquirer from 'inquirer';
 import _ from 'lodash';
 import { removeResourceParameters } from './envResourceParams';
 import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
@@ -98,7 +97,7 @@ export async function removeResource(
   }
 
   try {
-    return deleteResourceFiles(context, category, resourceName, resourceDir);
+    return await deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
     if (err instanceof AmplifyException) {
       throw err;
