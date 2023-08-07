@@ -10,7 +10,7 @@ export AMPLIFY_DIR=$CODEBUILD_SRC_DIR\\out
 export AMPLIFY_PATH=$CODEBUILD_SRC_DIR\\out\\amplify.exe
 export NODE_OPTIONS=--max-old-space-size=5120
 
-source .circleci/local_publish_helpers.sh
+source .circleci/local_publish_helpers_codebuild.sh
 source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
 
 # source $BASH_ENV

@@ -40,14 +40,14 @@ class NpmPackageManager implements PackageManager {
 class YarnPackageManager implements PackageManager {
   readonly packageManager: PackageManagerType = 'yarn';
   readonly displayValue = 'Yarn';
-  readonly executable = isWindows ? 'yarn.cmd' : 'yarn';
+  readonly executable = 'yarn'; // Windows does not require `.cmd` extension to invoke yarn
   readonly lockFile = 'yarn.lock';
   version?: SemVer;
 
   getRunScriptArgs = (scriptName: string) => [scriptName];
   getInstallArgs = (buildType = BuildType.PROD) => {
     const useYarnModern = this.version?.major && this.version?.major > 1;
-    return useYarnModern ? ['install'] : ['--no-bin-links'].concat(buildType === 'PROD' ? ['--production'] : []);
+    return (useYarnModern ? ['install'] : ['--no-bin-links']).concat(buildType === 'PROD' ? ['--production'] : []);
   };
 }
 

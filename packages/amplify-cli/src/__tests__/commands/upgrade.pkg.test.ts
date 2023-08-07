@@ -2,7 +2,6 @@ import * as fs from 'fs-extra';
 import fetch, { Response } from 'node-fetch';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as core from '@aws-amplify/amplify-cli-core';
-import * as path from 'path';
 import execa from 'execa';
 import { run } from '../../commands/upgrade';
 import { windowsPathSerializer } from '../testUtils/snapshot-serializer';

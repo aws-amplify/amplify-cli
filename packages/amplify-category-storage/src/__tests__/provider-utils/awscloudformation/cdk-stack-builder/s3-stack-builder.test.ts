@@ -165,7 +165,7 @@ export class S3MockDataBuilder {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(__startCliInputState: S3UserInputs | undefined) {
+  constructor() {
     /* noop */
   }
 

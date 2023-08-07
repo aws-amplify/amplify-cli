@@ -8,7 +8,6 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
 
 const defaultsSettings = {
   name: 'authTest',

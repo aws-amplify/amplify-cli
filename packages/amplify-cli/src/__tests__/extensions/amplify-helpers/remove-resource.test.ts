@@ -1,6 +1,5 @@
 import { stateManager, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import * as inquirer from 'inquirer';
 import * as path from 'path';
 import { removeResourceParameters } from '../../../extensions/amplify-helpers/envResourceParams';
 import { removeResource, forceRemoveResource } from '../../../extensions/amplify-helpers/remove-resource';
@@ -31,7 +30,6 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 }));
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
 
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;

@@ -4,4 +4,8 @@ env:
 phases:
   build:
     commands:
+      - source ./shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
       - source ./shared-scripts.sh && _lint
+artifacts:
+  files:
+    - 'shared-scripts.sh'
