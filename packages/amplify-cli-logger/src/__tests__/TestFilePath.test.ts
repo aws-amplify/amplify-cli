@@ -3,12 +3,12 @@ import os from 'os';
 import { constants as c } from '../constants';
 import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath, getLocalAuditLogFile } from '../getLogFilePath';
 
-jest.spyOn(os, 'homedir').mockReturnValue('home');
-
 describe('test log file path creation', () => {
   const slash = path.sep;
   const localPath = 'myProj';
   const homeDir = 'home';
+
+  jest.spyOn(os, 'homedir').mockReturnValue(homeDir);
 
   afterAll(() => {
     jest.restoreAllMocks();
