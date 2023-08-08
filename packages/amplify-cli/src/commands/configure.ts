@@ -17,7 +17,7 @@ export const run = async (context: Context) => {
     return;
   }
 
-  if (context.parameters.options['usage-data-on ']) {
+  if (context.parameters.options['usage-data-on']) {
     write(context, { usageDataConfig: { isUsageTrackingEnabled: true } });
     context.print.success('Usage Data has been turned on');
     return;
