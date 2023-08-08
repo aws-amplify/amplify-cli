@@ -1,5 +1,4 @@
 import { Pinpoint } from 'aws-sdk';
-import _ from 'lodash';
 import { EOL } from 'os';
 import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 

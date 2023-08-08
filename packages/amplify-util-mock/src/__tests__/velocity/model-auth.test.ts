@@ -724,7 +724,6 @@ describe('@model field auth', () => {
 });
 
 describe('@model @primaryIndex @index auth', () => {
-  let vtlTemplate: VelocityTemplateSimulator;
   let transformer: GraphQLTransform;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -746,8 +745,8 @@ describe('@model @primaryIndex @index auth', () => {
       authConfig,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    vtlTemplate = new VelocityTemplateSimulator({ authConfig });
+
+    new VelocityTemplateSimulator({ authConfig });
   });
 
   test('listX operations', () => {

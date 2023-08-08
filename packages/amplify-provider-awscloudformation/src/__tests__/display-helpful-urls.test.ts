@@ -41,7 +41,6 @@ describe('showSMSSandBoxWarning', () => {
     isInSandboxMode: jest.fn(),
   };
 
-  let mockedSNSClass;
   const context = {
     print: {
       warning: jest.fn(),
@@ -50,7 +49,7 @@ describe('showSMSSandBoxWarning', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    mockedSNSClass = jest.spyOn(SNS, 'getInstance').mockResolvedValue(mockedSNSClientInstance as unknown as SNS);
+    jest.spyOn(SNS, 'getInstance').mockResolvedValue(mockedSNSClientInstance as unknown as SNS);
   });
 
   describe('when API is missing in SDK', () => {

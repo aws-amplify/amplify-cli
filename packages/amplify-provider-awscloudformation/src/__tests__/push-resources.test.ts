@@ -30,7 +30,7 @@ glob_mock.sync.mockImplementation((pattern) => {
 });
 
 const fs_mock = jest.mocked(fs);
-fs_mock.lstatSync.mockImplementation((_path, _options) => {
+fs_mock.lstatSync.mockImplementation(() => {
   return {
     isDirectory: jest.fn().mockReturnValue(true),
   } as unknown as fs.Stats;

@@ -128,8 +128,6 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
     GRAPHQL_ENDPOINT = server.url + '/graphql';
     logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-    const apiKey = result.config.appSync.apiKey;
-
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
 

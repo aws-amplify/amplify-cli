@@ -34,11 +34,9 @@ const AWS_REGION = 'my-local-2';
 
 let APPSYNC_CLIENT_1: AWSAppSyncClient<any> = undefined;
 let APPSYNC_CLIENT_2: AWSAppSyncClient<any> = undefined;
-let APPSYNC_CLIENT_3: AWSAppSyncClient<any> = undefined;
 
 let GRAPHQL_CLIENT_1: GraphQLClient = undefined;
 let GRAPHQL_CLIENT_2: GraphQLClient = undefined;
-let GRAPHQL_CLIENT_3: GraphQLClient = undefined;
 
 const USER_POOL_ID = 'fake_user_pool';
 
@@ -181,7 +179,7 @@ beforeAll(async () => {
       Authorization: idToken2,
     });
     const idToken3 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME3, USERNAME3, []);
-    APPSYNC_CLIENT_3 = new AWSAppSyncClient({
+    new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
       disableOffline: true,
@@ -193,7 +191,7 @@ beforeAll(async () => {
         jwtToken: idToken3,
       },
     });
-    GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, {
+    new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken3,
     });
 
@@ -237,7 +235,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     `,
   });
 
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const subscription = observer.subscribe((event: any) => {
       const student = event.data.onCreateStudent;
       subscription.unsubscribe();
@@ -261,7 +259,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
 
 test('Test a subscription on update', async () => {
   // susbcribe to update students as user 2
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnUpdateStudent {
@@ -309,7 +307,7 @@ test('Test a subscription on update', async () => {
 
 test('Test a subscription on delete', async () => {
   // subscribe to onDelete as user 2
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnDeleteStudent {
@@ -359,7 +357,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
   expect(result.errors[0].message === 'Unauthorized');
 
   // though they should see when a new member is created
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnCreateMember {
@@ -393,7 +391,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
   const memberID = '001';
   const memberName = 'newUsername';
 
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnUpdateMember {
@@ -427,7 +425,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
   const memberID = '001';
   const memberName = 'newUsername';
 
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnDeleteMember {
@@ -459,7 +457,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
 
 // ownerField Tests
 test('Test subscription onCreatePost with ownerField', async () => {
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_1.subscribe({
       query: gql`
       subscription OnCreatePost {

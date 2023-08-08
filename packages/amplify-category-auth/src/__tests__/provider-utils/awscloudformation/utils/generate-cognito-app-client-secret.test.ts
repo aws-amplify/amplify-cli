@@ -1,4 +1,4 @@
-import { $TSContext, stateManager, pathManager, AmplifyFault } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { updateAppClientWithGeneratedSecret } from '../../../../provider-utils/awscloudformation/utils/generate-cognito-app-client-secret';
 import { projectHasAuth } from '../../../../provider-utils/awscloudformation/utils/project-has-auth';
 import { getAuthResourceName } from '../../../../utils/getAuthResourceName';
@@ -11,7 +11,6 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/get-app-client-sec
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const pathManagerMock = pathManager as jest.Mocked<typeof pathManager>;
-const AmplifyFaultMock = AmplifyFault as jest.MockedClass<typeof AmplifyFault>;
 const projectHasAuthMock = projectHasAuth as jest.MockedFunction<typeof projectHasAuth>;
 const getAuthResourceNameMock = getAuthResourceName as jest.MockedFunction<typeof getAuthResourceName>;
 const getAppClientSecretMock = getAppClientSecret as jest.MockedFunction<typeof getAppClientSecret>;

@@ -3,7 +3,6 @@
 jest.mock('columnify');
 
 const columnify = require('columnify');
-const { times } = require('lodash');
 const { initializeProgressBars } = require('../../aws-utils/aws-cfn-progress-formatter');
 const CloudFormation = require('../../aws-utils/aws-cfn');
 
