@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.4-rds.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.5.3...@aws-amplify/amplify-opensearch-simulator@1.5.4-rds.0) (2023-08-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-opensearch-simulator
+
+
+
+
+
 ## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.5.2...@aws-amplify/amplify-opensearch-simulator@1.5.3) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-opensearch-simulator
