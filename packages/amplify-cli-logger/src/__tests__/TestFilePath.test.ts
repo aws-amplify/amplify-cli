@@ -5,7 +5,7 @@ import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath, getLocalAudit
 
 describe('test log file path creation', () => {
   const slash = path.sep;
-  const localPath = 'myProj';
+  const projectPath = 'myProj';
   const homeDir = 'home';
 
   jest.spyOn(os, 'homedir').mockReturnValue(homeDir);
@@ -15,14 +15,14 @@ describe('test log file path creation', () => {
   });
 
   it('log audit file in a specified directory', () => {
-    const result = getLocalAuditLogFile(localPath);
-    const expected = localPath + slash + c.LOG_DIRECTORY + slash + c.LOG_AUDIT_FOLDER + slash + c.LOG_AUDIT_FILENAME;
+    const result = getLocalAuditLogFile(projectPath);
+    const expected = projectPath + slash + c.LOG_DIRECTORY + slash + c.LOG_AUDIT_FOLDER + slash + c.LOG_AUDIT_FILENAME;
     expect(result).toBe(expected);
   });
 
   it('log file in a specified directory', () => {
-    const result = getLocalLogFilePath(localPath);
-    const expected = localPath + slash + c.LOG_DIRECTORY + slash + c.LOG_FILENAME;
+    const result = getLocalLogFilePath(projectPath);
+    const expected = projectPath + slash + c.LOG_DIRECTORY + slash + c.LOG_FILENAME;
     expect(result).toBe(expected);
   });
 
