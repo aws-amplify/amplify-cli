@@ -1,6 +1,7 @@
 import {
   $TSContext,
   AmplifyError,
+  AmplifyException,
   AmplifyFault,
   exitOnNextTick,
   pathManager,
@@ -9,7 +10,6 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import * as inquirer from 'inquirer';
 import _ from 'lodash';
 import { removeResourceParameters } from './envResourceParams';
 import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
@@ -99,6 +99,9 @@ export async function removeResource(
   try {
     return await deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
+    if (err instanceof AmplifyException) {
+      throw err;
+    }
     throw new AmplifyFault(
       'ResourceRemoveFault',
       { message: 'An error occurred when removing the resources from the local directory' },
