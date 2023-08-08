@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.4-aug7test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-geo@3.3.3...@aws-amplify/amplify-category-geo@3.3.4-aug7test.0) (2023-08-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-geo
+
+
+
+
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-geo@3.3.2...@aws-amplify/amplify-category-geo@3.3.3) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-geo

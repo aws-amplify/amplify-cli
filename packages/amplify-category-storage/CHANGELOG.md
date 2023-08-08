@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.4-aug7test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.3.3...@aws-amplify/amplify-category-storage@5.3.4-aug7test.0) (2023-08-08)
+
+
+### Bug Fixes
+
+* remove vm2 ([#12989](https://github.com/aws-amplify/amplify-cli/issues/12989)) ([7bc0b56](https://github.com/aws-amplify/amplify-cli/commit/7bc0b5654a585104a537c1a3f9615bd672435b58))
+
+
+
+
+
 ## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.3.2...@aws-amplify/amplify-category-storage@5.3.3) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage
