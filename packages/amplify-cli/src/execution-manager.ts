@@ -65,6 +65,7 @@ const selectPluginForExecution = async (context: Context, pluginCandidates: Plug
     const consoleHostingPlugins = pluginCandidates.filter(
       (pluginInfo) => pluginInfo.packageName === '@aws-amplify/amplify-console-hosting',
     );
+
     if (consoleHostingPlugins.length > 0) {
       const otherPlugins = pluginCandidates.filter((pluginInfo) => pluginInfo.packageName !== '@aws-amplify/amplify-console-hosting');
       // put console hosting plugin at the top
