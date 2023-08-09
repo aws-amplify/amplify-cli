@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-function",
-  "version": "5.4.3",
+  "version": "5.4.4-aug-transformer-mv-bump.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.3",
-    "@aws-amplify/amplify-environment-parameters": "1.7.3",
+    "@aws-amplify/amplify-cli-core": "4.2.4-aug-transformer-mv-bump.0",
+    "@aws-amplify/amplify-environment-parameters": "1.7.4-aug-transformer-mv-bump.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.11.0",
-    "@aws-amplify/amplify-prompts": "2.8.0",
+    "@aws-amplify/amplify-prompts": "2.8.1-aug-transformer-mv-bump.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.1405.0",
     "chalk": "^4.1.1",

@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.16-aug-transformer-mv-bump.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.15...@aws-amplify/amplify-frontend-ios@3.6.16-aug-transformer-mv-bump.0) (2023-08-09)
+
+
+
+## 12.2.4 (2023-08-01)
+
+
+### Bug Fixes
+
+* **amplify-frontend-ios:** pass paths to command options as strings ([#12596](https://github.com/aws-amplify/amplify-cli/issues/12596)) ([43f73ab](https://github.com/aws-amplify/amplify-cli/commit/43f73ab268c2c08ed31faf16989fff12ef84c46e))
+
+
+
+
+
 ## [3.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.14...@aws-amplify/amplify-frontend-ios@3.6.15) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
