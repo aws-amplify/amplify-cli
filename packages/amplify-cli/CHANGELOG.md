@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.3...@aws-amplify/cli-internal@12.2.4) (2023-08-09)
+
+
+### Bug Fixes
+
+* Dependabot alerts for semver, tough-cookie ([#12962](https://github.com/aws-amplify/amplify-cli/issues/12962)) ([175a86b](https://github.com/aws-amplify/amplify-cli/commit/175a86b89a54c65bb6e68c0609be503d61e39d63))
+
+
+
+
+
 ## [12.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.2...@aws-amplify/cli-internal@12.2.3) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
