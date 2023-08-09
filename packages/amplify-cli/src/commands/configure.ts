@@ -1,4 +1,5 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { analyzeProject } from '../config-steps/c0-analyzeProject';
 import { configFrontendHandler } from '../config-steps/c1-configFrontend';
 import { configProviders } from '../config-steps/c2-configProviders';
@@ -13,25 +14,25 @@ import { Context } from '../domain/context';
 export const run = async (context: Context) => {
   if (context.parameters.options['usage-data-off']) {
     write(context, { usageDataConfig: { isUsageTrackingEnabled: false } });
-    context.print.success('Usage Data has been turned off');
+    printer.success('Usage Data has been turned off');
     return;
   }
 
   if (context.parameters.options['usage-data-on']) {
     write(context, { usageDataConfig: { isUsageTrackingEnabled: true } });
-    context.print.success('Usage Data has been turned on');
+    printer.success('Usage Data has been turned on');
     return;
   }
 
   if (context.parameters.options['share-project-config-off']) {
     DebugConfig.Instance.setAndWriteShareProject(false);
-    context.print.success('Share Project Config has been turned off');
+    printer.success('Share Project Config has been turned off');
     return;
   }
 
   if (context.parameters.options['share-project-config-on']) {
     DebugConfig.Instance.setAndWriteShareProject(true);
-    context.print.success('Share Project Config has been turned on');
+    printer.success('Share Project Config has been turned on');
     return;
   }
 
@@ -41,7 +42,7 @@ export const run = async (context: Context) => {
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
       await providerPlugin.adminLoginFlow(context, appId, envName);
     } catch (e) {
-      context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
+      printer.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
       await context.usageData.emitError(e);
       process.exit(1);
     }
