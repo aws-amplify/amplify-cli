@@ -12,10 +12,11 @@ import {
   hasStorageField,
   mapGenericDataSchemaToCodegen,
   waitForSucceededJob,
-  getUiBuilderComponentsPath,
   extractUIComponents,
 } from './utils';
+import { getUiBuilderComponentsPath } from './utils/getUiBuilderComponentsPath';
 import { AmplifyUIBuilder } from 'aws-sdk';
+import { getApiConfiguration, hasDataStoreConfiguration, hasGraphQLConfiguration } from './utils/getApiConfiguration';
 
 /**
  * Pulls ui components from Studio backend and generates the code in the user's file system
@@ -34,10 +35,15 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       studioClient.isGraphQLSupported ? getAmplifyDataSchema(context) : Promise.resolve(undefined),
     ]);
 
-    const nothingWouldAutogenerate =
-      !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported || !studioClient.isDataStoreEnabled;
+    const canGenerateDataComponents = dataSchema && studioClient.isGraphQLSupported;
 
-    if (nothingWouldAutogenerate && [componentSchemas, themeSchemas, formSchemas].every((group) => !group.entities.length)) {
+    const apiConfiguration: AmplifyUIBuilder.ApiConfiguration = canGenerateDataComponents
+      ? getApiConfiguration(studioClient, context)
+      : { noApiConfig: {} };
+    const hasDataAPI = hasDataStoreConfiguration(apiConfiguration) || hasGraphQLConfiguration(apiConfiguration);
+    const willAutogenerateItems = canGenerateDataComponents && studioClient.metadata.autoGenerateForms && hasDataAPI;
+
+    if (!willAutogenerateItems && [componentSchemas, themeSchemas, formSchemas].every((group) => !group.entities.length)) {
       printer.debug('Skipping UI component generation since none are found.');
       return;
     }
@@ -52,9 +58,10 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
           target: 'es2020',
           script: 'jsx',
           renderTypeDeclarations: true,
-        },
+          apiConfiguration,
+        } as AmplifyUIBuilder.ReactStartCodegenJobData,
       },
-      autoGenerateForms: studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported,
+      autoGenerateForms: studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && hasDataAPI,
       features: studioClient.metadata.formFeatureFlags,
     };
     // SDK will throw if this is undefined
