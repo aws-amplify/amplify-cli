@@ -125,7 +125,17 @@ const backupAmplifyFolder = (): void => {
       });
     }
     try {
+      const localAwsInfoFilePath = pathManager.getLocalAWSInfoFilePath();
+      const backupLocalAwsInfoFilePath = localAwsInfoFilePath.replace(amplifyDirPath, backupAmplifyDirPath);
+      // move all current contents to backup directory
       fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
+
+      // but preserve local-aws-info.json, if it exists
+      if (fs.existsSync(backupLocalAwsInfoFilePath)) {
+        const localAwsInfoDirPath = pathManager.getDotConfigDirPath();
+        fs.ensureDirSync(localAwsInfoDirPath);
+        fs.copyFileSync(backupLocalAwsInfoFilePath, localAwsInfoFilePath);
+      }
     } catch (e) {
       if (e.code === 'EPERM') {
         throw new AmplifyError(
