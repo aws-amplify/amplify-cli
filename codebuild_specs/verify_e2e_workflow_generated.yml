@@ -1,0 +1,11 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
+      - source ./shared-scripts.sh && _verifyGeneratedE2EWorkflow
+artifacts:
+  files:
+    - 'shared-scripts.sh'
