@@ -63,36 +63,30 @@ batch:
     - identifier: build_pkg_binaries_arm
       buildspec: codebuild_specs/build_pkg_binaries_arm.yml
       depend-on:
-        - build_linux
         - publish_to_local_registry
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_linux
       buildspec: codebuild_specs/build_pkg_binaries_linux.yml
       depend-on:
-        - build_linux
         - publish_to_local_registry
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_macos
       buildspec: codebuild_specs/build_pkg_binaries_macos.yml
       depend-on:
-        - build_linux
         - publish_to_local_registry
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
       depend-on:
-        - build_linux
         - publish_to_local_registry
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_pkg_cli
       buildspec: codebuild_specs/verify_pkg_cli.yml
       depend-on:
-        - build_linux
-        - publish_to_local_registry
         - build_pkg_binaries_arm
         - build_pkg_binaries_linux
         - build_pkg_binaries_macos
@@ -102,5 +96,4 @@ batch:
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
       depend-on:
-        - build_linux
         - publish_to_local_registry
