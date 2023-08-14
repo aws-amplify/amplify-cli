@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.2.4",
-    "@babel/core": "^7.10.5",
+    "@babel/core": "^7.22.10",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "chalk": "^4.1.1",
     "execa": "^5.1.1",
