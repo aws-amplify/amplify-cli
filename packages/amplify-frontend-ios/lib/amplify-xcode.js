@@ -33,7 +33,7 @@ const amplifyXcodePath = () => path.join(pathManager.getAmplifyPackageLibDirPath
 async function importConfig(params) {
   let command = `${amplifyXcodePath()} import-config`;
   if (params['path']) {
-    command += ` --path="${params['path']}"`;
+    command += ` --path=${params['path']}`;
   }
   await execa.command(command, { stdout: 'inherit' });
 }
@@ -46,7 +46,7 @@ async function importConfig(params) {
 async function importModels(params) {
   let command = `${amplifyXcodePath()} import-models`;
   if (params['path']) {
-    command += ` --path="${params['path']}"`;
+    command += ` --path=${params['path']}`;
   }
   await execa.command(command, { stdout: 'inherit' });
 }
@@ -59,7 +59,7 @@ async function importModels(params) {
 async function generateSchema(params) {
   let command = `${amplifyXcodePath()} generate-schema`;
   if (params['output-path']) {
-    command += ` --output-path="${params['output-path']}"`;
+    command += ` --output-path=${params['output-path']}`;
   }
   await execa.command(command, { stdout: 'inherit' });
 }

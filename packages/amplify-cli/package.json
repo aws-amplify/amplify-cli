@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "12.2.4",
+  "version": "12.2.5",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-app": "5.0.14",
+    "@aws-amplify/amplify-app": "5.0.15",
     "@aws-amplify/amplify-category-analytics": "5.0.16",
     "@aws-amplify/amplify-category-api": "^5.5.2",
     "@aws-amplify/amplify-category-auth": "3.5.0",
@@ -55,7 +55,7 @@
     "@aws-amplify/amplify-environment-parameters": "1.7.4",
     "@aws-amplify/amplify-frontend-android": "3.5.5",
     "@aws-amplify/amplify-frontend-flutter": "1.4.4",
-    "@aws-amplify/amplify-frontend-ios": "3.6.16",
+    "@aws-amplify/amplify-frontend-ios": "3.6.17",
     "@aws-amplify/amplify-frontend-javascript": "3.9.14",
     "@aws-amplify/amplify-go-function-template-provider": "1.4.5",
     "@aws-amplify/amplify-nodejs-function-template-provider": "2.8.9",
