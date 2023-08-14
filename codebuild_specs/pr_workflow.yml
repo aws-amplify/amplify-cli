@@ -14,6 +14,10 @@ env:
 batch:
   fast-fail: false
   build-graph:
+    - identifier: build_tests_standalone
+      buildspec: codebuild_specs/build_tests_standalone.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_linux
       buildspec: codebuild_specs/build_linux.yml
       env:
@@ -56,6 +60,10 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: verify_pkg_cli
+      buildspec: codebuild_specs/verify_pkg_cli.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
