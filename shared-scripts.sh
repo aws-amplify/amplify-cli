@@ -131,6 +131,39 @@ function _verifyAPIExtract {
     unset IS_AMPLIFY_CI
     yarn verify-api-extract
 }
+function _verifyGeneratedE2EWorkflow {
+    echo "Verify Generated E2E Workflow"
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
+    # backup current file and remove regions, they are not deterministic
+    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" > codebuild_specs/e2e_workflow_generated.yml.old.trimmed
+
+    # regenerate e2e workflow
+    yarn split-e2e-tests-codebuild
+
+    # remove regions from generated file, they are not deterministic
+    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" > codebuild_specs/e2e_workflow_generated.yml.trimmed
+
+    changed_lines_in_e2e_workflow_generated=$(diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed | wc -l)
+
+    if [[ changed_lines_in_e2e_workflow_generated -gt 0 ]]; then
+      echo "Fail! An uncommitted drift in E2E workflow has been detected - e2e_workflow_generated.yml. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
+      diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed
+      exit 1;
+    fi
+
+    # check if wait_for_ids.json changed.
+    changed_wait_for_ids_manifest=$(git status | grep -F wait_for_ids.json | wc -l)
+
+    if [[ changed_wait_for_ids_manifest -gt 0 ]]; then
+      echo "Fail! An uncommitted drift in E2E workflow has been detected - wait_for_ids.json. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
+      exit 1;
+    fi
+
+    echo "Success! No drift detected in E2E workflow."
+}
 function _verifyYarnLock {
     echo "Verify Yarn Lock"
     # download [repo, .cache from s3]
