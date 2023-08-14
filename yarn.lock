@@ -66,13 +66,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-app@5.0.14, @aws-amplify/amplify-app@workspace:packages/amplify-app":
+"@aws-amplify/amplify-app@5.0.15, @aws-amplify/amplify-app@workspace:packages/amplify-app":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-app@workspace:packages/amplify-app"
   dependencies:
     "@aws-amplify/amplify-frontend-android": 3.5.5
     "@aws-amplify/amplify-frontend-flutter": 1.4.4
-    "@aws-amplify/amplify-frontend-ios": 3.6.16
+    "@aws-amplify/amplify-frontend-ios": 3.6.17
     "@aws-amplify/amplify-frontend-javascript": 3.9.14
     "@types/glob": ^7.1.1
     chalk: ^4.1.1
@@ -578,7 +578,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-ios@3.6.16, @aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios":
+"@aws-amplify/amplify-frontend-ios@3.6.17, @aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios"
   dependencies:
@@ -1049,11 +1049,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.2.4, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.2.5, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
-    "@aws-amplify/amplify-app": 5.0.14
+    "@aws-amplify/amplify-app": 5.0.15
     "@aws-amplify/amplify-category-analytics": 5.0.16
     "@aws-amplify/amplify-category-api": ^5.5.0
     "@aws-amplify/amplify-category-auth": 3.5.0
@@ -1074,7 +1074,7 @@ __metadata:
     "@aws-amplify/amplify-environment-parameters": 1.7.4
     "@aws-amplify/amplify-frontend-android": 3.5.5
     "@aws-amplify/amplify-frontend-flutter": 1.4.4
-    "@aws-amplify/amplify-frontend-ios": 3.6.16
+    "@aws-amplify/amplify-frontend-ios": 3.6.17
     "@aws-amplify/amplify-frontend-javascript": 3.9.14
     "@aws-amplify/amplify-function-plugin-interface": 1.11.0
     "@aws-amplify/amplify-go-function-template-provider": 1.4.5
@@ -1148,7 +1148,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.2.4
+    "@aws-amplify/cli-internal": 12.2.5
     "@types/tar": ^6.1.1
     axios: ^0.26.0
     rimraf: ^3.0.2
