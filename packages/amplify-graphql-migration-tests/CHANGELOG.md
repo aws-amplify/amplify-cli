@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.1-rc.0ffe9f92c0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.5.0...amplify-graphql-migration-tests@2.5.1-rc.0ffe9f92c0.0) (2023-08-15)
+
+
+### Bug Fixes
+
+* update GraphQLTransform input types ([#13060](https://github.com/aws-amplify/amplify-cli/issues/13060)) ([b6ea551](https://github.com/aws-amplify/amplify-cli/commit/b6ea5519a81ca1467412f4ca9497b030660e5bf2))
+
+
+
+
+
 # [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.10...amplify-graphql-migration-tests@2.5.0) (2023-08-09)
 
 
