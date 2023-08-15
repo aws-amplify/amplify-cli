@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-smoketests.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.4.0...amplify-e2e-tests@4.5.0-smoketests.0) (2023-08-15)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
 # [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.3.3...amplify-e2e-tests@4.4.0) (2023-08-09)
 
 

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.3.0-smoketests.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.2.4...@aws-amplify/cli@12.3.0-smoketests.0) (2023-08-15)
+
+
+### Features
+
+* bump version ([#13114](https://github.com/aws-amplify/amplify-cli/issues/13114)) ([ad713f7](https://github.com/aws-amplify/amplify-cli/commit/ad713f7f2213ec60268724f1e9dc896f289b3c0b))
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
 ## [12.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.2.4...@aws-amplify/cli@12.2.5) (2023-08-14)
 
 **Note:** Version bump only for package @aws-amplify/cli

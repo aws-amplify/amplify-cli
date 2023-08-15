@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.5.0",
+  "version": "3.6.0-smoketests.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -28,14 +28,14 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.4",
-    "@aws-amplify/amplify-environment-parameters": "1.7.4",
+    "@aws-amplify/amplify-cli-core": "4.2.5-smoketests.0",
+    "@aws-amplify/amplify-environment-parameters": "1.8.0-smoketests.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.11.0",
-    "@aws-amplify/amplify-prompts": "2.8.1",
-    "@aws-amplify/amplify-util-import": "2.7.0",
-    "@aws-amplify/cli-extensibility-helper": "3.0.14",
+    "@aws-amplify/amplify-prompts": "2.8.2-smoketests.0",
+    "@aws-amplify/amplify-util-import": "2.8.0-smoketests.0",
+    "@aws-amplify/cli-extensibility-helper": "3.0.15-smoketests.0",
     "amplify-headless-interface": "1.17.4",
-    "amplify-util-headless-input": "1.9.14",
+    "amplify-util-headless-input": "1.9.15-smoketests.0",
     "aws-cdk-lib": "~2.80.0",
     "aws-sdk": "^2.1426.0",
     "axios": "^0.26.0",
