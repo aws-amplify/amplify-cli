@@ -2,6 +2,7 @@ version: 0.2
 env:
   shell: powershell.exe
   variables:
+    E2E_TEST_COVERAGE_DIR: node_v8_coverage
     CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts|src/__tests__/auth_2f.test.ts
     CI: true
@@ -33,6 +34,7 @@ phases:
       - bash ./codebuild_specs/scripts-windows/run-e2e-windows.sh
   post_build:
     commands:
+      - bash ./codebuild_specs/scripts-windows/convert-coverage.sh
       - bash ./codebuild_specs/upload-reports-windows.sh
 reports:
   e2e-reports:

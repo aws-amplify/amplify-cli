@@ -9,10 +9,16 @@ phases:
       - npm install aws-sdk
       - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH $PROJECT_NAME
       - cd ..
-      - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
+      - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION junit
+      - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION coverage
 reports:
-  e2e-reports:
+  e2e-junit-reports:
     files:
       - '*.xml'
     file-format: 'JUNITXML'
-    base-directory: '$CODEBUILD_SRC_DIR/aggregate_reports'
+    base-directory: '$CODEBUILD_SRC_DIR/aggregate_reports/junit'
+  e2e-coverage-reports:
+    files:
+      - '*.xml'
+    file-format: 'CLOVERXML'
+    base-directory: '$CODEBUILD_SRC_DIR/aggregate_reports/coverage'
