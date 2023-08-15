@@ -9,7 +9,7 @@ See the License for the specific language governing permissions and limitations 
 <%= props.topLevelComment %>
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand,  } = require('@aws-sdk/lib-dynamodb');
+const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')
@@ -55,9 +55,28 @@ const convertUrlType = (param, type) => {
   }
 }
 
-/********************************
- * HTTP Get method for list objects *
- ********************************/
+/************************************
+* HTTP Get method to list objects *
+************************************/
+
+app.get(path, async function(req, res) {
+  var params = {
+    TableName: tableName,
+    Select: 'ALL_ATTRIBUTES',
+  };
+
+  try {
+    const data = await ddbDocClient.send(new ScanCommand(params));
+    res.json(data.Items);
+  } catch (err) {
+    res.statusCode = 500;
+    res.json({error: 'Could not load items: ' + err.message});
+  }
+});
+
+/************************************
+ * HTTP Get method to query objects *
+ ************************************/
 
 app.get(path + hashKeyPath, async function(req, res) {
   const condition = {}
