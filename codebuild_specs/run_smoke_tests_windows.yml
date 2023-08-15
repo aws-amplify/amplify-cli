@@ -1,0 +1,21 @@
+version: 0.2
+env:
+  shell: powershell.exe
+phases:
+  build:
+    commands:
+      - echo $env:CLI_VERSION
+      - echo $env:AMPLIFY_PATH
+      - yarn build-tests
+      - yarn smoketest
+      - amplify version
+reports:
+  e2e-reports:
+    files:
+      - '*.xml'
+    file-format: 'JUNITXML'
+    base-directory: 'packages/amplify-e2e-tests/reports/junit'
+artifacts:
+  files:
+    - amplify-e2e-reports/*
+  base-directory: packages/amplify-e2e-tests/

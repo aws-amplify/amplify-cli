@@ -79,3 +79,26 @@ batch:
       debug-session: true
       depend-on:
         - publish_to_npm
+    - identifier: smoke_tests_linux
+      buildspec: codebuild_specs/run_smoke_tests_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        git-credential-helper: yes
+        variables:
+          CLI_VERSION: rc
+          AMPLIFY_PATH: amplify
+      debug-session: true
+      depend-on:
+        - publish_to_npm
+    - identifier: smoke_tests_windows
+      buildspec: codebuild_specs/run_smoke_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        image: $WINDOWS_IMAGE_2019
+        git-credential-helper: yes
+        variables:
+          CLI_VERSION: rc
+          AMPLIFY_PATH: amplify
+      debug-session: true
+      depend-on:
+        - publish_to_npm
