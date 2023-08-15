@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.3.0-smoketests.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.3.0-smoketests.0...@aws-amplify/cli-internal@12.3.0-smoketests.1) (2023-08-15)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 # [12.3.0-smoketests.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.4...@aws-amplify/cli-internal@12.3.0-smoketests.0) (2023-08-15)
 
 
