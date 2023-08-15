@@ -6,6 +6,7 @@ phases:
     commands:
       - echo "CLI_VERSION=$CLI_VERSION"
       - echo "AMPLIFY_PATH=$AMPLIFY_PATH"
+      - yarn install
       - yarn build-tests
       - yarn smoketest
       - amplify version
