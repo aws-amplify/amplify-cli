@@ -1,5 +1,4 @@
 import {
-  amplifyConfigure,
   amplifyConfigureProject,
   createNewProjectDir,
   deleteProject,
@@ -19,11 +18,6 @@ describe('amplify configure project tests', () => {
   afterAll(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
-  });
-
-  it('should turn on/off Usage Data', async () => {
-    await amplifyConfigure(null, 'usage-data-off');
-    await amplifyConfigure(null, 'usage-data-on');
   });
 
   it('should update the project to use access keys', async () => {

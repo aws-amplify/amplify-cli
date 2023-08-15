@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, createNewProjectDir, deleteProjectDir } from '@aws-amplify/amplify-e2e-core';
+import { amplifyConfigure, nspawn as spawn, getCLIPath, createNewProjectDir, deleteProjectDir } from '@aws-amplify/amplify-e2e-core';
 
 describe('amplify configure', () => {
   let projRoot: string;
@@ -13,6 +13,11 @@ describe('amplify configure', () => {
 
   it('validates key inputs', async () => {
     await testAmplifyConfigureValidation();
+  });
+
+  it.only('should turn on/off Usage Data', async () => {
+    await amplifyConfigure(null, 'usage-data-off');
+    await amplifyConfigure(null, 'usage-data-on');
   });
 });
 
