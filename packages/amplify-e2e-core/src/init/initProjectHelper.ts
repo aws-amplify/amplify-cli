@@ -91,7 +91,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   }
 
   if (s.includeUsageDataPrompt) {
-    chain.wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures').sendYes();
+    chain.wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/).sendYes();
   }
   return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
