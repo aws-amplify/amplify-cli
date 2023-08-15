@@ -94,6 +94,7 @@ batch:
       buildspec: codebuild_specs/run_smoke_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
+        compute-type: BUILD_GENERAL1_LARGE
         image: $WINDOWS_IMAGE_2019
         git-credential-helper: yes
         variables:
