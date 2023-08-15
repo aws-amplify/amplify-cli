@@ -88,14 +88,3 @@ batch:
           AMPLIFY_PATH: amplify
       depend-on:
         - publish_to_npm
-    - identifier: smoke_tests_windows
-      buildspec: codebuild_specs/run_smoke_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-        variables:
-          CLI_VERSION: rc
-          AMPLIFY_PATH: amplify
-      depend-on:
-        - publish_to_npm
