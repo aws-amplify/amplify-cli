@@ -84,3 +84,5 @@ batch:
       buildspec: codebuild_specs/verify_versions_match.yml
     - identifier: verify_e2e_workflow_generated
       buildspec: codebuild_specs/verify_e2e_workflow_generated.yml
+      depend-on:
+        - build_linux
