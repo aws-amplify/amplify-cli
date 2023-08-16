@@ -19,38 +19,58 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: validate_cdk_version
       buildspec: codebuild_specs/validate_cdk_version.yml
+      depend-on:
+        - build_linux
     - identifier: verify_yarn_lock
       buildspec: codebuild_specs/verify_yarn_lock.yml
+      depend-on:
+        - build_linux
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_arm
       buildspec: codebuild_specs/build_pkg_binaries_arm.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_linux
       buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_macos
       buildspec: codebuild_specs/build_pkg_binaries_macos.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: upb
       buildspec: codebuild_specs/upload_pkg_binaries.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_pkg_cli
       buildspec: codebuild_specs/verify_pkg_cli.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
+      depend-on:
+        - build_linux
     - identifier: publish_to_npm
       buildspec: codebuild_specs/publish_to_npm.yml
       env:
