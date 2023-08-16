@@ -64,28 +64,42 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_arm
       buildspec: codebuild_specs/build_pkg_binaries_arm.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_linux
       buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_macos
       buildspec: codebuild_specs/build_pkg_binaries_macos.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: upb
       buildspec: codebuild_specs/upload_pkg_binaries.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
+      depend-on:
+        - build_linux
     - identifier: verify_pkg_cli
       buildspec: codebuild_specs/verify_pkg_cli.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: run_e2e_tests_linux
@@ -130,6 +144,8 @@ batch:
         - upb
     - identifier: integration_test
       buildspec: codebuild_specs/integration_test.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: amplify_sudo_install_test
