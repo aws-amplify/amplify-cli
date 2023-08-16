@@ -24,6 +24,8 @@ batch:
         - build_linux
     - identifier: verify_yarn_lock
       buildspec: codebuild_specs/verify_yarn_lock.yml
+      depend-on:
+        - build_linux
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
       env:
