@@ -1,4 +1,13 @@
-import { amplifyConfigure, nspawn as spawn, getCLIPath, createNewProjectDir, deleteProjectDir } from '@aws-amplify/amplify-e2e-core';
+import {
+  amplifyConfigure,
+  nspawn as spawn,
+  getCLIPath,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
+  TEST_PROFILE_NAME,
+} from '@aws-amplify/amplify-e2e-core';
 
 describe('amplify configure', () => {
   let projRoot: string;
@@ -8,6 +17,7 @@ describe('amplify configure', () => {
   });
 
   afterEach(async () => {
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 
@@ -15,9 +25,15 @@ describe('amplify configure', () => {
     await testAmplifyConfigureValidation();
   });
 
-  it.only('should turn on/off Usage Data', async () => {
-    await amplifyConfigure(null, 'usage-data-off');
-    await amplifyConfigure(null, 'usage-data-on');
+  it('should turn on/off Usage Data', async () => {
+    await amplifyConfigure(projRoot, null, 'usage-data-on');
+    await amplifyConfigure(projRoot, null, 'usage-data-off');
+  });
+
+  it('should turn on/off share-project-config', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await amplifyConfigure(projRoot, null, 'share-project-config-off');
+    await amplifyConfigure(projRoot, null, 'share-project-config-on');
   });
 });
 
@@ -58,7 +74,7 @@ function testAmplifyConfigureValidation(): Promise<void> {
       .wait('You must enter a valid secretAccessKey')
       .sendLine(validMockAWSSecretAccessKey)
       .wait('Profile Name:')
-      .sendLine('config-test')
+      .sendLine(TEST_PROFILE_NAME)
       .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {

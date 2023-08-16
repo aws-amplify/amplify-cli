@@ -50,9 +50,9 @@ const authenticationOptions = ['AWS profile', 'AWS access keys'];
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
 
-export function amplifyConfigure(settings: AmplifyConfiguration | null, flag?: CommandFlags): Promise<void> {
+export function amplifyConfigure(cwd: string | null, settings: AmplifyConfiguration | null, flag?: CommandFlags): Promise<void> {
   if (flag) {
-    return spawn(getCLIPath(), ['configure', `--${flag}`], { stripColors: true })
+    return spawn(getCLIPath(), ['configure', `--${flag}`], { cwd, stripColors: true })
       .wait(commandFlagsReturnMessage[flag])
       .runAsync();
   } else {
@@ -63,7 +63,7 @@ export function amplifyConfigure(settings: AmplifyConfiguration | null, flag?: C
     }
 
     return new Promise((resolve, reject) => {
-      const chain = spawn(getCLIPath(), ['configure'], { stripColors: true })
+      const chain = spawn(getCLIPath(), ['configure'], { cwd, stripColors: true })
         .wait('Sign in to your AWS administrator account:')
         .wait('Press Enter to continue')
         .sendCarriageReturn()
