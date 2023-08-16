@@ -802,7 +802,7 @@ __metadata:
     "@types/lodash.throttle": ^4.1.6
     "@types/node": ^12.12.6
     "@types/uuid": ^8.0.0
-    amplify-codegen: ^4.2.0
+    amplify-codegen: ^4.3.0
     archiver: ^5.3.0
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1426.0
@@ -890,7 +890,7 @@ __metadata:
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
-    amplify-codegen: ^4.2.0
+    amplify-codegen: ^4.3.0
     amplify-dynamodb-simulator: 2.8.4
     amplify-nodejs-function-runtime-provider: 2.5.4
     amplify-storage-simulator: 1.10.0
@@ -932,14 +932,14 @@ __metadata:
     "@aws-amplify/amplify-category-api": ^5.5.2
     "@aws-amplify/amplify-cli-core": 4.2.4
     "@aws-amplify/amplify-prompts": 2.8.1
-    "@aws-amplify/appsync-modelgen-plugin": ^2.4.4
+    "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
     "@aws-amplify/codegen-ui": 2.14.2
     "@aws-amplify/codegen-ui-react": 2.14.2
     "@types/fs-extra": ^8.0.1
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
     "@types/tiny-async-pool": ^2.0.0
-    amplify-codegen: ^4.2.0
+    amplify-codegen: ^4.3.0
     aws-sdk: ^2.1426.0
     fs-extra: ^8.1.0
     node-fetch: ^2.6.7
@@ -1002,9 +1002,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/appsync-modelgen-plugin@npm:2.5.3, @aws-amplify/appsync-modelgen-plugin@npm:^2.4.4":
-  version: 2.5.3
-  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.5.3"
+"@aws-amplify/appsync-modelgen-plugin@npm:2.6.0, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.6.0"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^1.18.8
     "@graphql-codegen/visitor-plugin-common": ^1.22.0
@@ -1019,7 +1019,7 @@ __metadata:
     ts-dedent: ^1.1.0
   peerDependencies:
     graphql: ^15.5.0
-  checksum: a5ca3c82b5583bde43374f693034066aaf18b01323ba219ced0c4ef60b7a2810e47f1993d6c94c6eca09852b4e26952258eaf655c4cc78ed30e99ff0ec3d63f4
+  checksum: c70967d8d9d5a296f0936a59e2429afb2c79e5f480ccece6c3df604cbcb476dab06fa2432075d03363702a41b0963f3fe85cefcdae4038dfc266588b55d288ab
   languageName: node
   linkType: hard
 
@@ -1104,7 +1104,7 @@ __metadata:
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
-    amplify-codegen: ^4.2.0
+    amplify-codegen: ^4.3.0
     amplify-dotnet-function-runtime-provider: 2.0.9
     amplify-go-function-runtime-provider: 2.3.27
     amplify-headless-interface: 1.17.4
@@ -13839,11 +13839,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-codegen@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "amplify-codegen@npm:4.2.0"
+"amplify-codegen@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "amplify-codegen@npm:4.3.0"
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin": 2.5.3
+    "@aws-amplify/appsync-modelgen-plugin": 2.6.0
     "@aws-amplify/graphql-docs-generator": 4.0.5
     "@aws-amplify/graphql-types-generator": 3.2.0
     "@graphql-codegen/core": 2.6.6
@@ -13862,7 +13862,7 @@ __metadata:
   peerDependencies:
     "@aws-amplify/amplify-cli-core": "*"
     graphql-transformer-core: ^8.0.0
-  checksum: 24b4d19b3d40315368ecba06531d2646ab56612e2aa9c74332276c677ea41525455790317d3fde932628ce3ba4b2d64c4b17d87fe8bd844de4c0780599434026
+  checksum: ff18d81d17900cd4dfbf440eb4713c32474350b6ea443d49444619c7d4925f1ddab76b892f88d107f251ace3643669383408865664b463377b04cb164d8b53fc
   languageName: node
   linkType: hard
 
