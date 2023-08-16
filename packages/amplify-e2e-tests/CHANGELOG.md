@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-sobkamil-test.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.4.0...amplify-e2e-tests@4.5.0-sobkamil-test.0) (2023-08-16)
+
+
+### Features
+
+* add list all to lambda crud template ([#13116](https://github.com/aws-amplify/amplify-cli/issues/13116)) ([0fde28a](https://github.com/aws-amplify/amplify-cli/commit/0fde28a08a3d82b371cbbf858f462648376a318a))
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
 # [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.3.3...amplify-e2e-tests@4.4.0) (2023-08-09)
 
 

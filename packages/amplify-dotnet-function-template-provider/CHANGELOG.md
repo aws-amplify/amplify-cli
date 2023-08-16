@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.15-sobkamil-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.5.14...@aws-amplify/amplify-dotnet-function-template-provider@2.5.15-sobkamil-test.0) (2023-08-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [2.5.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.5.13...@aws-amplify/amplify-dotnet-function-template-provider@2.5.14) (2023-08-09)
 
 **Note:** Version bump only for package @aws-amplify/amplify-dotnet-function-template-provider

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.15-sobkamil-test.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.14...amplify-util-headless-input@1.9.15-sobkamil-test.0) (2023-08-16)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
 ## [1.9.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.13...amplify-util-headless-input@1.9.14) (2023-08-09)
 
 **Note:** Version bump only for package amplify-util-headless-input
