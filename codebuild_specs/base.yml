@@ -49,6 +49,8 @@ batch:
         - build_linux
     - identifier: verify_api_extract
       buildspec: codebuild_specs/verify_api_extract.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
