@@ -19,6 +19,8 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: validate_cdk_version
       buildspec: codebuild_specs/validate_cdk_version.yml
+      depend-on:
+        - build_linux
     - identifier: verify_yarn_lock
       buildspec: codebuild_specs/verify_yarn_lock.yml
     - identifier: publish_to_local_registry
