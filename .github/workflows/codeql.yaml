@@ -3,9 +3,7 @@ name: 'CodeQL'
 
 on:
   push:
-    branches-ignore:
-      - run-e2e/**
-      - run-cb-e2e/**
+    branches: [dev]
   pull_request:
 
 jobs:
