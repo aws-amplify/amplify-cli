@@ -6,7 +6,6 @@ import {
   deleteProject,
   deleteProjectDir,
   initJSProjectWithProfile,
-  TEST_PROFILE_NAME,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('amplify configure', () => {
@@ -74,7 +73,9 @@ function testAmplifyConfigureValidation(): Promise<void> {
       .wait('You must enter a valid secretAccessKey')
       .sendLine(validMockAWSSecretAccessKey)
       .wait('Profile Name:')
-      .sendLine(TEST_PROFILE_NAME)
+      // 'config-test' is a new profile name using defaultAWSSecretAccessKey and validMockAWSSecretAccessKey.
+      // Do NOT use TEST_PROFILE_NAME, otherwise, it will override the default profile.
+      .sendLine('config-test')
       .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {
