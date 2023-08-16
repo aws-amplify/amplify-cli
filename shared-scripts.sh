@@ -502,6 +502,8 @@ function _amplifyConsoleIntegrationTests {
     retry yarn console-integration --no-cache --maxWorkers=4 --forceExit
 }
 function _integrationTest {
+    npm install -g ts-node
+
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
 
