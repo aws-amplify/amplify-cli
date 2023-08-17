@@ -118,3 +118,48 @@ const convertKeyPathsToSdkPromises = (ssmClient: SSMType, keyPaths: string[]): (
   }
   return sdkParameterChunks.map((sdkParameters) => () => ssmClient.getParameters(sdkParameters).promise());
 };
+
+/**
+ * Higher order function for checking CloudFormation parameters to the service
+ */
+export const getEnvParametersCheckHandler = async (
+  context: $TSContext,
+): Promise<(key: string, value: string | boolean | number) => Promise<boolean>> => {
+  let appId: string;
+  try {
+    appId = resolveAppId(context);
+  } catch {
+    printer.warn('Failed to resolve AppId, skipping parameter check.');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return (__: string, ___: string | boolean | number) =>
+      new Promise((resolve) => {
+        resolve(false);
+      });
+  }
+  const envName = stateManager.getCurrentEnvName();
+  const { client } = await SSM.getInstance(context);
+  return checkParameterInParameterStore(appId, envName, client);
+};
+
+const checkParameterInParameterStore = (appId: string, envName: string, ssmClient: SSMType): ((key: string) => Promise<boolean>) => {
+  return async (key: string): Promise<boolean> => {
+    try {
+      const sdkParameters = {
+        Name: `/amplify/${appId}/${envName}/${key}`,
+      };
+      await executeSdkPromisesWithExponentialBackOff([() => ssmClient.getParameter(sdkParameters).promise()]);
+      return true;
+    } catch (e) {
+      if (e?.code === 'ParameterNotFound') {
+        return false;
+      }
+      throw new AmplifyFault(
+        'ParameterDownloadFault',
+        {
+          message: `Failed to download ${key} from ParameterStore`,
+        },
+        e,
+      );
+    }
+  };
+};

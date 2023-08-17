@@ -39,6 +39,7 @@ describe('function category provider', () => {
               {
                 category: 'function',
                 resourceName: 'testFunction',
+                service: 'Lambda',
               },
             ],
             resourcesToBeCreated: [],

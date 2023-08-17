@@ -2,7 +2,7 @@ import { $TSContext, AmplifyError, JSONUtilities, pathManager, ResourceName, sta
 import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from '@aws-amplify/amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ensureEnvParamManager, getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, getEnvParamManager, ServiceParameterCheckHandler } from '@aws-amplify/amplify-environment-parameters';
 import { categoryName } from '../../../constants';
 import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
@@ -103,6 +103,21 @@ export class FunctionSecretsStateManager {
     const addedSecrets = localSecretNames.filter((name) => !cloudSecretNames.includes(name));
     if (!addedSecrets.length) {
       return;
+    }
+    // check if the  secretsPathAmplifyAppIdKey is set in envParamManager
+    const isSecretKeyDefined = getEnvParamManager().getResourceParamManager('function', functionName).hasParam(secretsPathAmplifyAppIdKey);
+    if (isSecretKeyDefined) {
+      // check if the secret parameter is set on service
+      const envParametersExists: ServiceParameterCheckHandler = await this.context.amplify.invokePluginMethod(
+        this.context,
+        'awscloudformation',
+        undefined,
+        'getEnvParametersCheckHandler',
+        [this.context],
+      );
+      if (await envParametersExists(secretsPathAmplifyAppIdKey)) {
+        return;
+      }
     }
     if (!this.isInteractive()) {
       const inputEnvName = this.context?.exeInfo?.inputParams?.amplify?.envName;

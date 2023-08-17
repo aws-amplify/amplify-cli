@@ -229,6 +229,7 @@ export type IEnvironmentParameterManager = {
 
 export type ServiceUploadHandler = (key: string, value: string | number | boolean) => Promise<void>;
 export type ServiceDownloadHandler = (parameters: string[]) => Promise<Record<string, string | number | boolean>>;
+export type ServiceParameterCheckHandler = (key: string) => Promise<boolean>;
 
 const getFullParameterStorePath = (categoryName: string, resourceName: string, paramName: string, appId: string, envName: string) =>
   `/amplify/${appId}/${envName}/${getParameterStoreKey(categoryName, resourceName, paramName)}`;

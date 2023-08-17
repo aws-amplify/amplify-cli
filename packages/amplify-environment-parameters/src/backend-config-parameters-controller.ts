@@ -13,6 +13,7 @@ export type IBackendParametersController = {
   removeParameter: (name: string) => IBackendParametersController;
   removeAllParameters: () => IBackendParametersController;
   getParameters: () => Readonly<BackendParameters>;
+  hasParameter: (name: string) => boolean;
 };
 
 let localBackendParametersController: IBackendParametersController;
@@ -75,6 +76,13 @@ class LocalBackendParametersController implements IBackendParametersController {
 
   getParameters(): Readonly<BackendParameters> {
     return this.parameterMap;
+  }
+
+  /**
+   * Whether the given parameter is defined
+   */
+  hasParameter(name: string): boolean {
+    return !!this.parameterMap[name];
   }
 }
 

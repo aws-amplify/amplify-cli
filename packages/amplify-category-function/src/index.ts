@@ -1,4 +1,4 @@
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { ensureEnvParamManager, getParametersControllerInstance } from '@aws-amplify/amplify-environment-parameters';
 import { $TSAny, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
 import _ from 'lodash';
@@ -155,6 +155,9 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
   // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
   const resourceCategoryFilter = (resource: { category: string }): boolean => resource.category === categoryName;
 
+  // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
+  const resourceServiceFilter = (resource: { service: string }): boolean => resource.service === ServiceName.LambdaFunction;
+
   resourcesToBeDeleted.filter(resourceCategoryFilter).forEach((functionResource) => {
     amplify.removeResourceParameters(context, categoryName, functionResource.resourceName);
   });
@@ -190,10 +193,30 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
         resourceParamManager.setParams(s3Bucket);
         _.setWith(amplifyMeta, [categoryName, resourceName, 's3Bucket'], s3Bucket);
       }
-
-      // if the function has secrets, set the appId key in team-provider-info
-      if (getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: true }).length > 0) {
+    });
+  /**
+   * checking and updating if the lambda function resource needs tpi updated with secret Value
+   * all resources : all function resources in amplify cli project
+   */
+  allResources
+    .filter(resourceCategoryFilter)
+    .filter(resourceServiceFilter)
+    .forEach((r) => {
+      const { resourceName }: { resourceName: string } = r;
+      const resourceParamManager = envParamManager.getResourceParamManager(categoryName, resourceName);
+      // if the function has secrets, set the appId key in team-provider-info and checking local functions first
+      const localFunctionSecretNames = getLocalFunctionSecretNames(resourceName, { fromCurrentCloudBackend: false });
+      if (localFunctionSecretNames.length > 0) {
         resourceParamManager.setParam(secretsPathAmplifyAppIdKey, getAppId());
+      } else {
+        if (resourceParamManager.hasParam(secretsPathAmplifyAppIdKey)) {
+          resourceParamManager.deleteParam(secretsPathAmplifyAppIdKey);
+        }
+        const backendConfigFunctionKey = `AMPLIFY_function_${resourceName}_${secretsPathAmplifyAppIdKey}`;
+        // removing parameter in backend-config if present
+        if (getParametersControllerInstance().hasParameter(backendConfigFunctionKey)) {
+          getParametersControllerInstance().removeParameter(backendConfigFunctionKey);
+        }
       }
     });
   const sourceEnvParamManager = (await ensureEnvParamManager(sourceEnv)).instance;

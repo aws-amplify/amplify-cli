@@ -160,6 +160,7 @@ export const initializeEnv = async (
     }
 
     if (context.exeInfo.forcePush) {
+      // environment parameters verification after initializing environment
       await verifyExpectedEnvParams(context);
       // raising PrePush event here because init with --forcePush will do a push after initializing
       await raisePrePushEvent(context as unknown as Context);
