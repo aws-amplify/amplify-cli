@@ -39,7 +39,13 @@ const getFailedJobIdsFromBatchId = async (cb: CodeBuild, batchId: string): Promi
 };
 
 const main = async () => {
-  const cb = new CodeBuild({ region: 'us-east-1' });
+  const cb = new CodeBuild({
+    region: 'us-east-1',
+    maxRetries: 10,
+    retryDelayOptions: {
+      base: 10 * 1000,
+    },
+  });
   const expectedSourceVersion = process.argv[2];
   const jobsDependedOnFilepathOrId = process.argv[3];
   const codeBuildProjectName = process.argv[4];
