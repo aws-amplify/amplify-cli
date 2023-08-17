@@ -25,14 +25,14 @@ describe('amplify configure', () => {
   });
 
   it('should turn on/off Usage Data', async () => {
-    await amplifyConfigure(projRoot, null, 'usage-data-on');
-    await amplifyConfigure(projRoot, null, 'usage-data-off');
+    await amplifyConfigure(projRoot, 'usage-data-on');
+    await amplifyConfigure(projRoot, 'usage-data-off');
   });
 
   it('should turn on/off share-project-config', async () => {
     await initJSProjectWithProfile(projRoot, {});
-    await amplifyConfigure(projRoot, null, 'share-project-config-off');
-    await amplifyConfigure(projRoot, null, 'share-project-config-on');
+    await amplifyConfigure(projRoot, 'share-project-config-off');
+    await amplifyConfigure(projRoot, 'share-project-config-on');
   });
 });
 

@@ -50,10 +50,10 @@ const authenticationOptions = ['AWS profile', 'AWS access keys'];
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
 
-export function amplifyConfigure(cwd: string | null, settings: AmplifyConfiguration | null, flag?: CommandFlags): Promise<void> {
-  if (flag) {
-    return spawn(getCLIPath(), ['configure', `--${flag}`], { cwd, stripColors: true })
-      .wait(commandFlagsReturnMessage[flag])
+export function amplifyConfigure(cwd: string | null, settings: AmplifyConfiguration | CommandFlags | null): Promise<void> {
+  if (typeof settings === 'string') {
+    return spawn(getCLIPath(), ['configure', `--${settings}`], { cwd, stripColors: true })
+      .wait(commandFlagsReturnMessage[settings])
       .runAsync();
   } else {
     const allSettings = { ...defaultSettings, ...settings };
