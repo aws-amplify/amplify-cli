@@ -77,7 +77,6 @@ export async function removeResource(
   if (resourceNameCallback) {
     await resourceNameCallback(resourceName);
   }
-
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
 
   if (options.headless !== true) {
@@ -139,7 +138,9 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   stateManager.setMeta(undefined, amplifyMeta);
 
   // Remove resource directory from backend/
+  const stackBuildDir = pathManager.getStackBuildCategorySourceDirPath('', category, resourceName);
   context.filesystem.remove(resourceDir);
+  context.filesystem.remove(stackBuildDir);
 
   removeResourceParameters(context, category, resourceName);
   updateBackendConfigAfterResourceRemove(category, resourceName);
