@@ -26,5 +26,5 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
 # release candidate or local publish for testing / building binary
 else
   # create release commit and release tags
-  npx lerna version --preid=rc.$(git rev-parse --short HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
+  npx lerna version --preid=rc.$(git rev-parse --short=15 HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 fi
