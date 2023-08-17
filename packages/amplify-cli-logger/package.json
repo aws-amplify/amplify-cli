@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-cli-logger",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Amplify CLI Logger",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

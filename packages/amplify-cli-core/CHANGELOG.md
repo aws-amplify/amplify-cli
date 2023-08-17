@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.4...@aws-amplify/amplify-cli-core@4.2.5) (2023-08-17)
+
+
+### Bug Fixes
+
+* do not store windows specific package manager extension ([#13047](https://github.com/aws-amplify/amplify-cli/issues/13047)) ([d29a075](https://github.com/aws-amplify/amplify-cli/commit/d29a075d3d115db44bcaf68d58e260c7f234a4d3))
+
+
+
+
+
 ## [4.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.3...@aws-amplify/amplify-cli-core@4.2.4) (2023-08-09)
 
 
