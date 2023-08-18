@@ -637,7 +637,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-graphiql-explorer@workspace:packages/amplify-graphiql-explorer"
   dependencies:
-    "@babel/core": ^7.16.0
+    "@babel/core": ^7.22.10
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@semantic-ui-react/css-patch": ^1.0.0
     "@svgr/webpack": ^5.5.0
