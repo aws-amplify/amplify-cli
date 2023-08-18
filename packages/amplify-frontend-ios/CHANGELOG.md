@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.18](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.17...@aws-amplify/amplify-frontend-ios@3.6.18) (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
+
+
+
+
+
+## [3.6.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.16...@aws-amplify/amplify-frontend-ios@3.6.17) (2023-08-14)
+
+
+### Reverts
+
+* Revert "fix(amplify-frontend-ios): pass paths to command options as strings (#12596)" (#13106) ([8921dd0](https://github.com/aws-amplify/amplify-cli/commit/8921dd028d66e2a28498970231fd756504944968)), closes [#12596](https://github.com/aws-amplify/amplify-cli/issues/12596) [#13106](https://github.com/aws-amplify/amplify-cli/issues/13106)
+
+
+
+
+
+## [3.6.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.15...@aws-amplify/amplify-frontend-ios@3.6.16) (2023-08-09)
+
+
+### Bug Fixes
+
+* **amplify-frontend-ios:** pass paths to command options as strings ([#12596](https://github.com/aws-amplify/amplify-cli/issues/12596)) ([43f73ab](https://github.com/aws-amplify/amplify-cli/commit/43f73ab268c2c08ed31faf16989fff12ef84c46e))
+
+
+
+
+
 ## [3.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.14...@aws-amplify/amplify-frontend-ios@3.6.15) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-ios

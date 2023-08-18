@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.3.4...@aws-amplify/amplify-category-storage@5.4.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+## [5.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.3.3...@aws-amplify/amplify-category-storage@5.3.4) (2023-08-09)
+
+
+### Bug Fixes
+
+* remove vm2 ([#12989](https://github.com/aws-amplify/amplify-cli/issues/12989)) ([7bc0b56](https://github.com/aws-amplify/amplify-cli/commit/7bc0b5654a585104a537c1a3f9615bd672435b58))
+
+
+
+
+
 ## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.3.2...@aws-amplify/amplify-category-storage@5.3.3) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

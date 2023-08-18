@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-e2e-core",
-  "version": "5.1.3",
+  "version": "5.3.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -22,13 +22,13 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.3",
+    "@aws-amplify/amplify-cli-core": "4.2.5",
     "@aws-sdk/client-sts": "^3.303.0",
     "@aws-sdk/credential-providers": "^3.303.0",
     "amplify-headless-interface": "1.17.4",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
-    "aws-sdk": "^2.1405.0",
+    "aws-sdk": "^2.1426.0",
     "chalk": "^4.1.1",
     "dotenv": "^8.2.0",
     "execa": "^5.1.1",

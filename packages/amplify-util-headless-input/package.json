@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-headless-input",
-  "version": "1.9.13",
+  "version": "1.9.15",
   "description": "Logic for validating objects against JSON-schema specs and performing version upgrades when necessary / possible",
   "main": "lib/index.js",
   "scripts": {

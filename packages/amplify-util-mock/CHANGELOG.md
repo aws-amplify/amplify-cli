@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.4.4...@aws-amplify/amplify-util-mock@5.5.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+## [5.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.4.3...@aws-amplify/amplify-util-mock@5.4.4) (2023-08-09)
+
+
+### Bug Fixes
+
+* Dependabot alerts for semver, tough-cookie ([#12962](https://github.com/aws-amplify/amplify-cli/issues/12962)) ([175a86b](https://github.com/aws-amplify/amplify-cli/commit/175a86b89a54c65bb6e68c0609be503d61e39d63))
+
+
+
+
+
 ## [5.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.4.2...@aws-amplify/amplify-util-mock@5.4.3) (2023-07-28)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

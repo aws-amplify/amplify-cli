@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-migration-tests",
-  "version": "2.4.10",
+  "version": "2.5.1",
   "description": "Tests migration from v1 to v2 of the Amplify GraphQL transformer",
   "main": "lib/index.js",
   "private": true,
@@ -43,7 +43,7 @@
     ]
   },
   "devDependencies": {
-    "@aws-amplify/amplify-prompts": "2.8.0",
+    "@aws-amplify/amplify-prompts": "2.8.2",
     "@aws-amplify/graphql-auth-transformer": "^2.1.13",
     "@aws-amplify/graphql-default-value-transformer": "^1.1.13",
     "@aws-amplify/graphql-function-transformer": "^1.2.11",
