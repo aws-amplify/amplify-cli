@@ -502,6 +502,8 @@ function _amplifyConsoleIntegrationTests {
     retry yarn console-integration --no-cache --maxWorkers=4 --forceExit
 }
 function _integrationTest {
+    npm install -g ts-node
+
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
 
@@ -683,7 +685,7 @@ function _githubPrereleaseInstallSanityCheck {
     echo Install packaged Amplify CLI
     version=$(cat .amplify-pkg-version)
     curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash
-    echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
+    export PATH=$PATH:$HOME/.amplify/bin
     echo Sanity check install
     amplify version
 }

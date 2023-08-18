@@ -13,7 +13,7 @@ function RCLocal {
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    rc_sha=$(git rev-parse --short "$0")
+    rc_sha=$(git rev-parse --short=15 "$0")
     branch_name="release_rc/$rc_sha"
     git checkout -B "$branch_name" "$rc_sha"
     git push "origin" "$branch_name"
@@ -26,7 +26,7 @@ function RCBeta {
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    rc_sha=$(git rev-parse --short "$0")
+    rc_sha=$(git rev-parse --short=15 "$0")
     branch_name="release_rc/$rc_sha"
     git checkout -B "$branch_name" "$rc_sha"
     git push "origin" "$branch_name"
@@ -68,7 +68,7 @@ function ReleaseLocal {
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    rc_sha=$(git rev-parse --short "$0")
+    rc_sha=$(git rev-parse --short=15 "$0")
     rc_branch="release_rc/$rc_sha"
     git checkout "$rc_branch"
     git push "origin" "$rc_branch"~1:refs/heads/release
@@ -82,7 +82,7 @@ function ReleaseBeta {
         echo "Include the release candidate commit ref you wish to release as the first argument"
         exit 1
     fi
-    rc_sha=$(git rev-parse --short "$0")
+    rc_sha=$(git rev-parse --short=15 "$0")
     rc_branch="release_rc/$rc_sha"
     git checkout "$rc_branch"
     git push "origin" "$rc_branch"~1:refs/heads/release
