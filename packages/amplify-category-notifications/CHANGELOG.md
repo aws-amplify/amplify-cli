@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.26.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.25.4...@aws-amplify/amplify-category-notifications@2.26.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
 ## [2.25.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.25.3...@aws-amplify/amplify-category-notifications@2.25.4) (2023-08-09)
 
 
