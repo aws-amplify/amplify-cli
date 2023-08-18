@@ -43,7 +43,7 @@ git fetch --all --tags
 
 # A sanity check that we haven't altered commit we're building from. This must be last section in this script
 HEAD_HASH=$(git rev-parse HEAD)
-if [[ "$INITIAL_HEAD_HASH" != "$HEAD_HASH" ]]
+if [[ "$INITIAL_HEAD_HASH" != "$HEAD_HASH" ]]; then
   echo "Fail! Detected a drift of commit we attempt to build!"
   echo "INITIAL_HEAD_HASH=$INITIAL_HEAD_HASH"
   echo "HEAD_HASH=$HEAD_HASH"
