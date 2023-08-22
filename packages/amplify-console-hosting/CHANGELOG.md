@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.16-sobkamil-test-0822.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.15...@aws-amplify/amplify-console-hosting@2.5.16-sobkamil-test-0822.0) (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-hosting
+
+
+
+
+
 ## [2.5.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.14...@aws-amplify/amplify-console-hosting@2.5.15) (2023-08-17)
 
 

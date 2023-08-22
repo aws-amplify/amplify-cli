@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.6-sobkamil-test-0822.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.5...@aws-amplify/amplify-cli-core@4.2.6-sobkamil-test-0822.0) (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-core
+
+
+
+
+
 ## [4.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.4...@aws-amplify/amplify-cli-core@4.2.5) (2023-08-17)
 
 
