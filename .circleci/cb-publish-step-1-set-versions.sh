@@ -9,7 +9,7 @@ if [[ "$PROJECT_NAME" == "TaggedReleaseWithoutE2E" ]]; then
     exit 1
   fi
 
-  if [[ "$BRANCH_NAME" == "main" ]] || [[ "$BRANCH_NAME" == "dev" ]] || [[ "$BRANCH_NAME" == "hotfix" ]] || || [[ "$BRANCH_NAME" == "release" ]]; then
+  if [[ "$BRANCH_NAME" == "main" ]] || [[ "$BRANCH_NAME" == "dev" ]] || [[ "$BRANCH_NAME" == "hotfix" ]] || [[ "$BRANCH_NAME" == "release" ]]; then
     echo "You can't use $BRANCH_NAME for tagged release"
     exit 1
   fi
