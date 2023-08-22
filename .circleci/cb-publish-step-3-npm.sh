@@ -29,16 +29,14 @@ function verifyPkgIsAvailable {
   curl -I --fail  https://$PKG_CLI_CLOUDFRONT_URL/$desiredPkgVersion/amplify-pkg-win-x64.tgz
 }
 
-if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
-  if [[ "$BRANCH_NAME" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
-    # Remove tagged-release-without-e2e-tests/
-    export NPM_TAG="${BRANCH_NAME/tagged-release-without-e2e-tests\//}"
-  elif [[ "$BRANCH_NAME" =~ ^tagged-release\/.* ]]; then
-    # Remove tagged-release/
-    export NPM_TAG="${BRANCH_NAME/tagged-release\//}"
-  fi
+if [[ "$PROJECT_NAME" == "TaggedReleaseWithoutE2E" ]]; then
   if [ -z "$NPM_TAG" ]; then
-    echo "Tag name is missing. Name your branch with either tagged-release/<tag-name> or tagged-release-without-e2e-tests/<tag-name>"
+    echo "Tag name is missing. Make sure CodeBuild workflow was started with NPM_TAG environment variable"
+    exit 1
+  fi
+
+  if [[ "$BRANCH_NAME" == "main" ]] || [[ "$BRANCH_NAME" == "dev" ]] || [[ "$BRANCH_NAME" == "hotfix" ]] || || [[ "$BRANCH_NAME" == "release" ]]; then
+    echo "You can't use $BRANCH_NAME for tagged release"
     exit 1
   fi
 
@@ -49,7 +47,13 @@ if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
   lernaPublishExitOnFailure from-git --yes --no-push --dist-tag=$NPM_TAG
 
 # @latest release
-elif [[ "$BRANCH_NAME" == "release" ]]; then
+elif [[ "$PROJECT_NAME" == "Release" ]]; then
+
+  if [[ "$BRANCH_NAME" != "release" ]]; then
+    echo "Release must run from release branch. Branch provided was $BRANCH_NAME."
+    exit 1
+  fi
+
   # verify that binary has been uploaded
   verifyPkgIsAvailable
 
@@ -57,7 +61,7 @@ elif [[ "$BRANCH_NAME" == "release" ]]; then
   lernaPublishExitOnFailure from-git --yes --no-push
 
 # release candidate or local publish for testing / building binary
-elif [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^release_rc\/.* ]]; then
+elif [[ "$PROJECT_NAME" == "RC" ]]; then
 
   # verify that binary has been uploaded
   verifyPkgIsAvailable
@@ -65,6 +69,6 @@ elif [[ "$BRANCH_NAME" =~ ^run-e2e-with-rc\/.* ]] || [[ "$BRANCH_NAME" =~ ^relea
   # publish versions that were just computed
   lernaPublishExitOnFailure from-git --yes --no-push --dist-tag rc
 else
-  echo "branch name" "$BRANCH_NAME" "did not match any branch publish rules."
+  echo "Project name" "$PROJECT_NAME" "did not match any publish rules."
   exit 1
 fi

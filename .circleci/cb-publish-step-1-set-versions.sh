@@ -3,23 +3,27 @@
 git config --global user.name aws-amplify-bot
 git config --global user.email aws@amazon.com
 
-if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
-  if [[ "$BRANCH_NAME" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
-    # Remove tagged-release-without-e2e-tests/
-    export NPM_TAG="${BRANCH_NAME/tagged-release-without-e2e-tests\//}"
-  elif [[ "$BRANCH_NAME" =~ ^tagged-release\/.* ]]; then
-    # Remove tagged-release/
-    export NPM_TAG="${BRANCH_NAME/tagged-release\//}"
-  fi
+if [[ "$PROJECT_NAME" == "TaggedReleaseWithoutE2E" ]]; then
   if [ -z "$NPM_TAG" ]; then
-    echo "Tag name is missing. Name your branch with either tagged-release/<tag-name> or tagged-release-without-e2e-tests/<tag-name>"
+    echo "Tag name is missing. Make sure CodeBuild workflow was started with NPM_TAG environment variable"
+    exit 1
+  fi
+
+  if [[ "$BRANCH_NAME" == "main" ]] || [[ "$BRANCH_NAME" == "dev" ]] || [[ "$BRANCH_NAME" == "hotfix" ]] || || [[ "$BRANCH_NAME" == "release" ]]; then
+    echo "You can't use $BRANCH_NAME for tagged release"
     exit 1
   fi
 
   npx lerna version --exact --preid=$NPM_TAG --conventional-commits --conventional-prerelease --yes --no-push --include-merged-tags --message "chore(release): Publish tagged release $NPM_TAG [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 
 # @latest release
-elif [[ "$BRANCH_NAME" == "release" ]]; then
+elif [[ "$PROJECT_NAME" == "Release" ]]; then
+
+  if [[ "$BRANCH_NAME" != "release" ]]; then
+    echo "Release must run from release branch. Branch provided was $BRANCH_NAME."
+    exit 1
+  fi
+
   # create release commit and release tags
   npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 
