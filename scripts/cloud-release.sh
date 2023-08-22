@@ -47,7 +47,7 @@ function RCProd {
 # and create an upstream branch (not in your fork, but in parent)
 function TaggedRCLocal {
     echo Running Local Tagged RC
-    printf 'From which branch do you want to release from? (must be pushed and available in main repo)'
+    printf 'From which branch do you want to release from? (must be pushed and available in main repo): '
     read branch_name
     if [[ "$branch_name" == "main" ]] || [[ "$branch_name" == "dev" ]] || [[ "$branch_name" == "hotfix" ]] || [[ "$branch_name" == "release" ]]; then
       echo "You can't use $branch_name for tagged release"
@@ -59,7 +59,7 @@ function TaggedRCLocal {
 }
 function TaggedRCBeta {
     echo Running Beta Tagged RC
-    printf 'From which branch do you want to release from? (must be pushed and available in main repo)'
+    printf 'From which branch do you want to release from? (must be pushed and available in main repo): '
     read branch_name
     if [[ "$branch_name" == "main" ]] || [[ "$branch_name" == "dev" ]] || [[ "$branch_name" == "hotfix" ]] || [[ "$branch_name" == "release" ]]; then
       echo "You can't use $branch_name for tagged release"
@@ -71,7 +71,7 @@ function TaggedRCBeta {
 }
 function TaggedRCProd {
     echo Running Prod Tagged RC
-    printf 'From which branch do you want to release from? (must be pushed and available in main repo)'
+    printf 'From which branch do you want to release from? (must be pushed and available in main repo): '
     read branch_name
     if [[ "$branch_name" == "main" ]] || [[ "$branch_name" == "dev" ]] || [[ "$branch_name" == "hotfix" ]] || [[ "$branch_name" == "release" ]]; then
       echo "You can't use $branch_name for tagged release"

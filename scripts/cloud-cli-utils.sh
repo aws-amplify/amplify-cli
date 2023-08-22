@@ -23,13 +23,14 @@ function triggerProjectBatch {
     project_name=$4
     target_branch=$5
     npm_tag=$6
-    if [[ "$npm_tag" != "" ]]; then
-      npm_variable_override="--environment-variables-override name=NPM_TAG,value=$npm_tag,type=PLAINTEXT"
-    fi
     authenticate $account_number $role_name $profile_name
     echo AWS Account: $account_number
     echo Project: $project_name
     echo Target Branch: $target_branch
+    if [[ "$npm_tag" != "" ]]; then
+      echo NPM tag: $npm_tag
+      npm_variable_override="name=NPM_TAG,value=$npm_tag,type=PLAINTEXT"
+    fi
     RESULT=$(aws codebuild start-build-batch --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
      --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT $npm_variable_override \
      --query 'buildBatch.id' --output text)
