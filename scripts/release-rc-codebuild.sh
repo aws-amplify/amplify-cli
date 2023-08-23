@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-repo_name="sobolk/amplify-cli"
+repo_name="aws-amplify/amplify-cli"
 
 git remote update
 
