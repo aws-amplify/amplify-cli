@@ -21,6 +21,7 @@ fi
 
 branch_name="release_rc/$rc_sha"
 
+echo "Creating $branch_name branch"
 git checkout -B "$branch_name" "$rc_sha"
 git fetch "$remote_name" main
 set +e
@@ -32,4 +33,15 @@ if [[ $merge_exit_code -gt 0 ]]; then
   echo "Resolve merge conflicts and resume release candidate publish by running 'kill -CONT $$'"
   kill -TSTP $$
 fi
+
+# If merge resulted in extra commit rename branch to reflect that. Pipeline will use HEAD commit to name RC version.
+rc_sha_head=$(git rev-parse --short=15 HEAD)
+if [[ "$rc_sha_head" != "$rc_sha" ]]; then
+  branch_name="release_rc/$rc_sha_head"
+  echo "New commit was added to RC branch during merge, renaming branch to $branch_name"
+  # Create new branch from current branch, i.e. rename branch
+  git checkout -b "$branch_name"
+fi
+
+echo "Pushing $branch_name to $remote_name"
 git push "$remote_name" "$branch_name"
