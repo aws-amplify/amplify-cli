@@ -1,4 +1,5 @@
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import * as path from 'path';
 
 const stackTraceRegex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
 const ARNRegex =
@@ -54,28 +55,26 @@ const processPaths = (paths: string[]): string[] => {
   }
   const longestString = paths.reduce((a, b) => (a.length > b.length ? a : b));
   const directoriesToRemove = longestString.split('/');
-  const directoriesRemoved = new Set<string>();
+  const directoriesRemoved: Array<string> = [];
   directoriesToRemove.forEach((directory) => {
     if (directory === '') {
       return;
     }
+    let removedInAnyPath = false;
     for (let i = 0; i < result.length; i++) {
       if (result[i].startsWith(`/${directory}`) && result[i] !== longestString) {
         result[i] = result[i].replace(`/${directory}`, '');
-        directoriesRemoved.add(directory);
+        removedInAnyPath = true;
       }
+    }
+    if (removedInAnyPath) {
+      directoriesRemoved.push(directory);
     }
   });
 
   return result.map((r) => {
-    if (r === longestString) {
-      for (const directory of directoriesRemoved) {
-        if (r.startsWith(`/${directory}`)) {
-          r = r.replace(`/${directory}`, '');
-        } else {
-          break;
-        }
-      }
+    if (r === longestString && directoriesRemoved.length > 0) {
+      return longestString.replace(path.join(...directoriesRemoved), '');
     }
     return r;
   });
