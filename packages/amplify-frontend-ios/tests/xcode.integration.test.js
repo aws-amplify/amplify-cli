@@ -16,15 +16,24 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
 describe('Should call amplify-xcode binary', () => {
   if (process.platform === 'darwin') {
     const pathsToTest = [];
+    const sampleXcodeProjectPath = path.resolve(__dirname, 'sample-xcode-project');
+    const sampleXcodeProjectWithWhiteSpacePath = path.resolve(__dirname, 'sample xcode project');
     beforeAll(async () => {
-      const source = path.resolve(__dirname, 'sample-xcode-project');
-      pathsToTest.push(source);
-      const destination = path.resolve(__dirname, 'sample xcode project');
-      pathsToTest.push(destination);
-      if (!existsSync(destination)) {
-        await fs.mkdir(destination);
-        await fs.cp(source, destination, {
+      pathsToTest.push(sampleXcodeProjectPath);
+      pathsToTest.push(sampleXcodeProjectWithWhiteSpacePath);
+      if (!existsSync(sampleXcodeProjectWithWhiteSpacePath)) {
+        await fs.mkdir(sampleXcodeProjectWithWhiteSpacePath);
+        await fs.cp(sampleXcodeProjectPath, sampleXcodeProjectWithWhiteSpacePath, {
           recursive: true,
+        });
+      }
+    });
+
+    afterAll(async () => {
+      if (existsSync(sampleXcodeProjectWithWhiteSpacePath)) {
+        await fs.rm(sampleXcodeProjectWithWhiteSpacePath, {
+          recursive: true,
+          force: true,
         });
       }
     });
