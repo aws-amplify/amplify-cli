@@ -273,6 +273,7 @@ describe('remove-resource', () => {
         },
       });
       expect(context.filesystem.remove).toBeCalledWith('backendDirPath/function/lambdaLayer1');
+      expect(context.filesystem.remove).toBeCalledWith('backendDirPath/awscloudformation/build/function/lambdaLayer1');
       expect(removeResourceParameters).toBeCalledWith(context, 'function', 'lambdaLayer1');
       expect(updateBackendConfigAfterResourceRemove).toBeCalledWith('function', 'lambdaLayer1');
       expect(printer.success).toBeCalledWith('Successfully removed resource');
