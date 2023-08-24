@@ -77,6 +77,8 @@ const processPaths = (paths: string[]): string[] => {
       for (const directory of directoriesRemoved) {
         if (r.startsWith(`/${directory}`)) {
           r = r.replace(`/${directory}`, '');
+        } else {
+          break;
         }
       }
     }
