@@ -49,13 +49,13 @@ const generateCommandParameters = (parameters) => {
     let output;
     switch (kind) {
       case 'option':
-        output = [`if (${funcParamValue}) {`, `    command += \` --${name}=\${${funcParamValue}}\`;`, `  }`];
+        output = [`if (${funcParamValue}) {`, `    args.push(\`--${name}=\${${funcParamValue}}\`);`, `  }`];
         break;
       case 'flag':
-        output = [`if (${funcParamValue}) {`, `    command += \` --${name}\`;`, `  }`];
+        output = [`if (${funcParamValue}) {`, `    args.push(\`--${name}\`);`, `  }`];
         break;
       case 'argument':
-        output = [`  command += \` \${${funcParamValue}}\`;`];
+        output = [`  args.push(\`\${${funcParamValue}}\`);`];
     }
     return output;
   });
