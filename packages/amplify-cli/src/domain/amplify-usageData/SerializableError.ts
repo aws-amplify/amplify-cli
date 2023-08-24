@@ -53,11 +53,8 @@ const processPaths = (paths: string[]): string[] => {
   if (paths.length === 0) {
     return result;
   }
-  console.log(`paths: ${JSON.stringify(paths)}`);
   const longestString = paths.reduce((a, b) => (a.length > b.length ? a : b));
-  console.log(`longestString: ${longestString}`);
   const directoriesToRemove = longestString.split('/');
-  console.log(`directoriesToRemove: ${directoriesToRemove}`);
   const directoriesRemoved = new Set<string>();
   directoriesToRemove.forEach((directory) => {
     if (directory === '') {
@@ -67,7 +64,6 @@ const processPaths = (paths: string[]): string[] => {
       if (result[i].startsWith(`/${directory}`) && result[i] !== longestString) {
         result[i] = result[i].replace(`/${directory}`, '');
         directoriesRemoved.add(directory);
-        console.log(`directoryRemoved: ${directory}`);
       }
     }
   });
