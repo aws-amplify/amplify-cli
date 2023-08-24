@@ -74,7 +74,11 @@ const processPaths = (paths: string[]): string[] => {
 
   return result.map((r) => {
     if (r === longestString) {
-      return longestString.replace(path.join(...directoriesRemoved), '');
+      for (const directory of directoriesRemoved) {
+        if (r.startsWith(`/${directory}`)) {
+          r = r.replace(`/${directory}`, '');
+        }
+      }
     }
     return r;
   });
