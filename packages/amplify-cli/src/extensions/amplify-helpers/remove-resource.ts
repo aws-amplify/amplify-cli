@@ -115,14 +115,14 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
     const { allResources } = await context.amplify.getResourceStatus();
     allResources.forEach((resourceItem) => {
       if (resourceItem.dependsOn) {
-        resourceItem.dependsOn.forEach((dependsOnItem) => {
+        for (const dependsOnItem of resourceItem.dependsOn) {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
             throw new AmplifyError('ResourceRemoveError', {
               message: 'Resource cannot be removed because it has a dependency on another resource',
               details: `Dependency: ${resourceItem.service} - ${resourceItem.resourceName}. Remove the dependency first.`,
             });
           }
-        });
+        }
       }
     });
   }

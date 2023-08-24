@@ -23,6 +23,9 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
   pathManager: {
     getResourceDirectoryPath: jest.fn((_, categoryName, resourceName) => path.join('backendDirPath', categoryName, resourceName)),
+    getStackBuildCategorySourceDirPath: jest.fn((_, categoryName, resourceName) =>
+      path.join('backendDirPath/awscloudformation/build/', categoryName, resourceName),
+    ),
   },
   exitOnNextTick: jest.fn().mockImplementation(() => {
     throw 'process.exit mock';

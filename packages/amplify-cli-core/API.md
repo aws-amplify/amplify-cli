@@ -1653,6 +1653,8 @@ export class PathManager {
     // (undocumented)
     getRootStackBuildDirPath: (projectPath: string) => string;
     // (undocumented)
+    getStackBuildCategorySourceDirPath: (projectPath: string, category: string, resourceName: string) => string;
+    // (undocumented)
     getTagFilePath: (projectPath?: string) => string;
     // (undocumented)
     getTeamProviderInfoFilePath: (projectPath?: string) => string;
