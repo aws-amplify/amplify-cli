@@ -24,4 +24,4 @@ jobs:
         run: yarn build
 
       - name: Test
-        run: cd packages/amplify-cli && yarn test
+        run: yarn test-ci
