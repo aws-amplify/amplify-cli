@@ -201,6 +201,8 @@ describe('remove-resource', () => {
         },
       });
       expect(context.filesystem.remove).toBeCalledWith(path.join('backendDirPath', 'function', 'lambda1'));
+      expect(context.filesystem.remove).toBeCalledWith(path.join('backendDirPath/awscloudformation/build', 'function', 'lambda1'));
+      expect(context.filesystem.remove).toBeCalledTimes(2);
       expect(removeResourceParameters).toBeCalledWith(context, 'function', 'lambda1');
       expect(updateBackendConfigAfterResourceRemove).toBeCalledWith('function', 'lambda1');
       expect(printer.success).toBeCalledWith('Successfully removed resource');
