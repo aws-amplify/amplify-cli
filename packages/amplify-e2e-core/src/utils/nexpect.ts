@@ -439,7 +439,12 @@ function chain(context: Context): ExecutionContext {
           //
           return onError(new Error(`Command not found: ${context.command}`), false);
         }
-        return onError(new Error(`Process exited with non zero exit code ${code}`), false);
+        const recording = context.process?.getRecording();
+        if (recording) {
+          return onError(new Error(`Process exited with non zero exit code ${code} and output:\n${recording}`), false);
+        } else {
+          return onError(new Error(`Process exited with non zero exit code ${code}`), false);
+        }
       }
       if (context.queue.length && !flushQueue()) {
         // if flushQueue returned false, onError was called
