@@ -1,5 +1,10 @@
 name: Run Smoke Tests
 
+# This is required by aws-actions/configure-aws-credentials
+permissions:
+  id-token: write
+  contents: read
+
 on:
   push:
     branches: [smoke-tests-prototype]
