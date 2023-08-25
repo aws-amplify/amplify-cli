@@ -37,11 +37,21 @@ jobs:
 
       - name: Install CLI
         shell: bash
+        if: runner.os != 'Windows'
         run: |
           npm install -g @aws-amplify/cli@${{ matrix.cli-version }}
           AMPLIFY_PATH=$(which amplify)
           echo "AMPLIFY_PATH=$AMPLIFY_PATH"
           echo "AMPLIFY_PATH=$AMPLIFY_PATH" >> $GITHUB_ENV
+
+      - name: Install CLI Windows
+        shell: powershell
+        if: runner.os == 'Windows'
+        run: |
+          npm install -g @aws-amplify/cli@${{ matrix.cli-version }}
+          $AMPLIFY_PATH=(Get-Command amplify).Path
+          echo "AMPLIFY_PATH=$AMPLIFY_PATH"
+          "AMPLIFY_PATH=$AMPLIFY_PATH" >> $env:GITHUB_ENV
 
       - name: Run Smoke Tests
         uses: ./.github/actions/run-smoke-tests
