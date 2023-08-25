@@ -7,26 +7,20 @@ import { getCLIPath, initJSProjectWithProfile, nspawn as spawn } from '@aws-ampl
 jest.retryTimes(0);
 
 export const NPM = {
-  install(pkgName: string, isGlobal: boolean = false): Promise<void> {
-    return new Promise((resolve) => {
-      const args = ['install'];
-      if (isGlobal) {
-        args.push('-g');
-      }
-      args.push(pkgName);
-      execa.sync('npm', args, { stdio: 'inherit' });
-      resolve();
-    });
+  async install(pkgName: string, isGlobal: boolean = false): Promise<void> {
+    const args = ['install'];
+    if (isGlobal) {
+      args.push('-g');
+    }
+    args.push(pkgName);
+    await execa('npm', args, { stdio: 'inherit' });
   },
-  uninstall(pkgName: string, isGlobal: boolean = false): Promise<void> {
-    return new Promise((resolve) => {
-      const args = ['uninstall', pkgName];
-      if (isGlobal) {
-        args.push('-g');
-      }
-      execa.sync('npm', args, { stdio: 'inherit' });
-      resolve();
-    });
+  async uninstall(pkgName: string, isGlobal: boolean = false): Promise<void> {
+    const args = ['uninstall', pkgName];
+    if (isGlobal) {
+      args.push('-g');
+    }
+    await execa('npm', args, { stdio: 'inherit' });
   },
 };
 

@@ -8,7 +8,7 @@ env:
   NODE_OPTIONS: --max-old-space-size=8096
 
 jobs:
-  build-and-test:
+  run-smoke-tests:
     runs-on: macos-latest-xl
     steps:
       - name: Checkout Code
@@ -26,3 +26,10 @@ jobs:
         run: yarn smoketest
         env:
           CLI_VERSION: rc
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test report
+          path: packages/amplify-e2e-tests/amplify-e2e-reports
