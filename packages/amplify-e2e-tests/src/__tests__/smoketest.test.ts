@@ -201,6 +201,10 @@ function writeBanner(text: string) {
 describe('Release Smoke Tests', () => {
   const createCommands = (amplify: Amplify, directory: string): Command[] => [
     {
+      description: 'Amplify CLI version',
+      run: () => amplify.version(),
+    },
+    {
       description: 'Create an Amplify project',
       run: () => amplify.init(directory),
     },

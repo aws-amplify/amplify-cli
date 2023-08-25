@@ -6,11 +6,14 @@ permissions:
   contents: read
 
 on:
+  workflow_dispatch:
   push:
     branches: [smoke-tests-prototype]
 
 env:
   NODE_OPTIONS: --max-old-space-size=8096
+  CI: true
+  CIRCLECI: true
 
 jobs:
   run-smoke-tests:
