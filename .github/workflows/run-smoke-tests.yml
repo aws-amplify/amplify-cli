@@ -22,10 +22,15 @@ jobs:
       - name: Build
         run: yarn build-tests
 
+      - name: Install CLI
+        run: |
+          npm install -g @aws-amplify/cli@rc
+          AMPLIFY_PATH=$(which amplify)
+          echo "AMPLIFY_PATH=$AMPLIFY_PATH"
+          echo "AMPLIFY_PATH=$AMPLIFY_PATH" >> $GITHUB_ENV
+
       - name: Run Smoke Tests
         run: yarn smoketest
-        env:
-          CLI_VERSION: rc
 
       - name: Upload Report
         uses: actions/upload-artifact@v3

@@ -2,31 +2,11 @@ import execa from 'execa';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
-import * as pty from 'node-pty';
 import { getCLIPath, initJSProjectWithProfile, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 jest.retryTimes(0);
 
-export const NPM = {
-  async install(pkgName: string, isGlobal: boolean = false): Promise<void> {
-    const args = ['install'];
-    if (isGlobal) {
-      args.push('-g');
-    }
-    args.push(pkgName);
-    await execa('npm', args, { stdio: 'inherit' });
-  },
-  async uninstall(pkgName: string, isGlobal: boolean = false): Promise<void> {
-    const args = ['uninstall', pkgName];
-    if (isGlobal) {
-      args.push('-g');
-    }
-    await execa('npm', args, { stdio: 'inherit' });
-  },
-};
-
 export type SmoketestArgs = {
   projectDirectory: string;
-  cliVersion: string;
   destructive: boolean;
 };
 
@@ -40,10 +20,9 @@ function defaultProjectDirectoryName(): string {
 }
 
 function getArgs(): SmoketestArgs {
-  const { DESTRUCTIVE = 'false', CLI_VERSION = 'latest', PROJECT_DIRECTORY = defaultProjectDirectoryName() } = process.env;
+  const { DESTRUCTIVE = 'false', PROJECT_DIRECTORY = defaultProjectDirectoryName() } = process.env;
   return {
     projectDirectory: PROJECT_DIRECTORY,
-    cliVersion: CLI_VERSION,
     destructive: DESTRUCTIVE.toLowerCase() === 'true',
   };
 }
@@ -63,14 +42,16 @@ export function removeProjectDirectory(projectDirectory: string) {
   fs.removeSync(projectDirectory);
 }
 
-export type Evaluatable = {
-  evaluate(data: string, ptyProcess: pty.IPty): Promise<boolean>;
-};
 export class Amplify {
   private executionArgs: { cwd: string; encoding: 'utf8' };
   constructor(projectDirectory: string) {
     this.executionArgs = { cwd: projectDirectory, encoding: 'utf8' };
   }
+  version = async () => {
+    const cliPath = getCLIPath();
+    const version = await execa(cliPath, ['version']);
+    writeBanner(`CLI version is ${version}`);
+  };
   init = async (cwd: string) => {
     return initJSProjectWithProfile(cwd, {});
   };
@@ -166,7 +147,6 @@ export class Amplify {
       .sendLine('n')
       .wait('Do you want to add another path?')
       .sendNo()
-
       .runAsync();
   };
   status = () => {
@@ -219,11 +199,7 @@ function writeBanner(text: string) {
 }
 
 describe('Release Smoke Tests', () => {
-  const createCommands = (amplify: Amplify, cliVersion: string, directory: string): Command[] => [
-    {
-      description: `Install @aws-amplify/cli@${cliVersion}`,
-      run: () => NPM.install(`@aws-amplify/cli@${cliVersion}`, true),
-    },
+  const createCommands = (amplify: Amplify, directory: string): Command[] => [
     {
       description: 'Create an Amplify project',
       run: () => amplify.init(directory),
@@ -292,7 +268,7 @@ describe('Release Smoke Tests', () => {
     }
     assertEmpty(args.projectDirectory);
 
-    const commands = createCommands(amplify, args.cliVersion, args.projectDirectory);
+    const commands = createCommands(amplify, args.projectDirectory);
     for (const command of commands) {
       writeBanner(command.description);
       await command.run();
