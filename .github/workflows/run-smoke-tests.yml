@@ -12,9 +12,6 @@ on:
 
 env:
   NODE_OPTIONS: --max-old-space-size=8096
-  CI: true
-  CIRCLECI: true
-  CLI_REGION: us-west-2
 
 jobs:
   run-smoke-tests:
@@ -25,12 +22,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Dependencies
-        run: yarn install
-
-      - name: Build
-        run: yarn build-tests
-
       - name: Install CLI
         run: |
           npm install -g @aws-amplify/cli@rc
@@ -38,18 +29,5 @@ jobs:
           echo "AMPLIFY_PATH=$AMPLIFY_PATH"
           echo "AMPLIFY_PATH=$AMPLIFY_PATH" >> $GITHUB_ENV
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
-          aws-region: ${{ env.CLI_REGION }}
-
       - name: Run Smoke Tests
-        run: yarn smoketest
-
-      - name: Upload Report
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: test report
-          path: packages/amplify-e2e-tests/amplify-e2e-reports
+        uses: ./.github/actions/run-smoke-tests

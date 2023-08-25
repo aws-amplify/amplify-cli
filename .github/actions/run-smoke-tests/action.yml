@@ -1,0 +1,41 @@
+name: Run Smoke Tests
+description: Executes Smoke Tests
+inputs:
+  region:
+    description: an AWS region to run in
+    required: false
+    default: us-west-2
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Dependencies
+      run: yarn install
+
+    - name: Build
+      run: yarn build-tests
+
+    - name: Verify Amplify Path
+      run: |
+        if [[ -z "$AMPLIFY_PATH" ]]; then echo "AMPLIFY_PATH must be defined" fi
+        echo "AMPLIFY_PATH=$AMPLIFY_PATH"
+        $AMPLIFY_PATH version
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
+        aws-region: ${{ inputs.region }}
+
+    - name: Run Smoke Tests
+      run: yarn smoketest
+      env:
+        CLI_REGION: ${{ inputs.region }}
+        CI: true
+        CIRCLECI: true
+
+    - name: Upload Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test report
+        path: packages/amplify-e2e-tests/amplify-e2e-reports
