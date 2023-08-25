@@ -1,4 +1,4 @@
-name: Run Smoke Tests
+name: Smoke Tests
 
 # This is required by aws-actions/configure-aws-credentials
 permissions:
