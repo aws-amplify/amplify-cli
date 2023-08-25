@@ -14,6 +14,7 @@ env:
   NODE_OPTIONS: --max-old-space-size=8096
   CI: true
   CIRCLECI: true
+  CLI_REGION: us-west-2
 
 jobs:
   run-smoke-tests:
@@ -41,7 +42,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
-          aws-region: us-west-2
+          aws-region: ${{ env.CLI_REGION }}
 
       - name: Run Smoke Tests
         run: yarn smoketest

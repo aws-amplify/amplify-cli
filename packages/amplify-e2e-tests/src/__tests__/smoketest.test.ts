@@ -49,7 +49,8 @@ export class Amplify {
   }
   version = async () => {
     const cliPath = getCLIPath();
-    const version = await execa(cliPath, ['version']);
+    const versionResult = await execa(cliPath, ['version']);
+    const version = versionResult.stdout;
     writeBanner(`CLI version is ${version}`);
   };
   init = async (cwd: string) => {
