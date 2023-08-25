@@ -1,5 +1,10 @@
 name: Smoke Tests - Manual Run
 
+# This is required by aws-actions/configure-aws-credentials
+permissions:
+  id-token: write
+  contents: read
+
 on:
   workflow_dispatch:
   push:
