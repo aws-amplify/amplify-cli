@@ -1,6 +1,7 @@
 name: Run Smoke Tests
 
 on:
+  workflow_dispatch:
   push:
     branches: [smoke-tests-prototype]
 
