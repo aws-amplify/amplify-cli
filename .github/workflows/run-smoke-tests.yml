@@ -15,7 +15,12 @@ env:
 
 jobs:
   run-smoke-tests:
-    runs-on: macos-latest-xl
+    strategy:
+      matrix:
+        os: [macos-latest-xl, ubuntu-latest, windows-latest]
+        cli-version: [rc, latest]
+    name: Smoke Tests ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
@@ -24,7 +29,7 @@ jobs:
 
       - name: Install CLI
         run: |
-          npm install -g @aws-amplify/cli@rc
+          npm install -g @aws-amplify/cli@${{ matrix.cli-version }}
           AMPLIFY_PATH=$(which amplify)
           echo "AMPLIFY_PATH=$AMPLIFY_PATH"
           echo "AMPLIFY_PATH=$AMPLIFY_PATH" >> $GITHUB_ENV

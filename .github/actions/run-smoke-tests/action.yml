@@ -11,14 +11,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Install Dependencies
-      shell: bash
-      run: yarn install
-
-    - name: Build
-      shell: bash
-      run: yarn build-tests
-
     - name: Verify Amplify Path
       shell: bash
       run: |
@@ -28,6 +20,14 @@ runs:
         fi
         echo "AMPLIFY_PATH=$AMPLIFY_PATH"
         $AMPLIFY_PATH version
+
+    - name: Install Dependencies
+      shell: bash
+      run: yarn install
+
+    - name: Build
+      shell: bash
+      run: yarn build-tests
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v3
