@@ -1,0 +1,16 @@
+{
+    "UserAgent": "aws-amplify/cli",
+    "Version": "0.1.0",
+    "IdentityManager": {
+        "Default": {}
+    },
+    "AppSync": {
+        "Default": {
+            "ApiUrl": "https://gvjvge2nl5dlxbosyswzqsykve.appsync-api.us-west-2.amazonaws.com/graphql",
+            "Region": "us-west-2",
+            "AuthMode": "API_KEY",
+            "ApiKey": "REDACTED",
+            "ClientDatabasePrefix": "samplexcodeproject_API_KEY"
+        }
+    }
+}

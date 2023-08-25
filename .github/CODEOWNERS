@@ -9,7 +9,8 @@
 
 # Add folks focused on reviewing changes to CI/CD scripts/buildspecs
 
-/.circleci/ @aws-amplify/amplify-cli-admins 
-/scripts/ @aws-amplify/amplify-cli-admins 
-/shared-scripts.sh @aws-amplify/amplify-cli-admins 
-/codebuild_specs/ @aws-amplify/amplify-cli-admins 
+/.circleci/ @aws-amplify/amplify-cli-admins
+/.github/ @aws-amplify/amplify-cli-admins
+/scripts/ @aws-amplify/amplify-cli-admins
+/shared-scripts.sh @aws-amplify/amplify-cli-admins
+/codebuild_specs/ @aws-amplify/amplify-cli-admins
