@@ -13,3 +13,4 @@ on:
 jobs:
   call-smoke-tests:
     uses: ./.github/workflows/smoke-tests.yml
+    secrets: inherit
