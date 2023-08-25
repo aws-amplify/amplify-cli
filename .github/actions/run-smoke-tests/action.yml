@@ -51,6 +51,7 @@ runs:
         CLI_REGION: ${{ inputs.region }}
         CI: true
         CIRCLECI: true
+        AMPLIFY_CI_USE_POWERSHELL: false
 
     - name: Upload Report
       uses: actions/upload-artifact@v3
