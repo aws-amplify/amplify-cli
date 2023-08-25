@@ -9,12 +9,15 @@ runs:
   using: 'composite'
   steps:
     - name: Install Dependencies
+      shell: bash
       run: yarn install
 
     - name: Build
+      shell: bash
       run: yarn build-tests
 
     - name: Verify Amplify Path
+      shell: bash
       run: |
         if [[ -z "$AMPLIFY_PATH" ]]; then echo "AMPLIFY_PATH must be defined" fi
         echo "AMPLIFY_PATH=$AMPLIFY_PATH"
@@ -27,6 +30,7 @@ runs:
         aws-region: ${{ inputs.region }}
 
     - name: Run Smoke Tests
+      shell: bash
       run: yarn smoketest
       env:
         CLI_REGION: ${{ inputs.region }}
