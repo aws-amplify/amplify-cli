@@ -22,7 +22,10 @@ runs:
     - name: Verify Amplify Path
       shell: bash
       run: |
-        if [[ -z "$AMPLIFY_PATH" ]]; then echo "AMPLIFY_PATH must be defined" fi
+        if [[ -z "$AMPLIFY_PATH" ]]; then
+          echo "AMPLIFY_PATH must be defined"
+          exit 1
+        fi
         echo "AMPLIFY_PATH=$AMPLIFY_PATH"
         $AMPLIFY_PATH version
 
