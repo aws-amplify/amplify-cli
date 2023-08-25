@@ -1,0 +1,10 @@
+name: Smoke Tests - Manual Run
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [smoke-tests-prototype]
+
+jobs:
+  call-smoke-tests:
+    uses: ./.github/workflows/smoke-tests.yml
