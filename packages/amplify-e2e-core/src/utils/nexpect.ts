@@ -623,7 +623,8 @@ function chain(context: Context): ExecutionContext {
         return false;
       }
       if (context.queue.length > 0) {
-        onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue), true);
+        const recording = context.process?.getRecording();
+        onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue, recording), true);
         return false;
       }
       if (!validateFnType(step)) {
@@ -700,9 +701,9 @@ function testExpectation(data: string, expectation: string | RegExp, context: Co
   return data.indexOf(expectation) > -1;
 }
 
-function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep[]) {
+function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep[], recording = '') {
   const desc: string[] = remainingQueue.map((it) => it.description);
-  const msg = `${message}\n${desc.join('\n')}`;
+  const msg = `Queue:\n${message}\n${desc.join('\n')}\n\nRecording:${recording}`;
 
   return new AssertionError({
     message: msg,
