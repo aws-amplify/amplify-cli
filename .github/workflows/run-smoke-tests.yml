@@ -16,10 +16,11 @@ env:
 jobs:
   run-smoke-tests:
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest-xl, ubuntu-latest, windows-latest]
         cli-version: [rc, latest]
-    name: Smoke Tests ${{ matrix.os }}
+    name: Smoke Tests ${{ matrix.os }} ${{ matrix.cli-version }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Code
@@ -28,6 +29,7 @@ jobs:
           persist-credentials: false
 
       - name: Install CLI
+        shell: bash
         run: |
           npm install -g @aws-amplify/cli@${{ matrix.cli-version }}
           AMPLIFY_PATH=$(which amplify)
