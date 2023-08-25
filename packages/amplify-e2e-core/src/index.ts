@@ -36,12 +36,15 @@ const amplifyTestsDir = 'amplify-e2e-tests';
 export function getCLIPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
     if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
+      console.log(`getCLIPath using process.env.AMPLIFY_PATH ${process.env.AMPLIFY_PATH}`);
       return process.env.AMPLIFY_PATH;
     }
+    console.log(`getCLIPath using amplify or amplify.exe`);
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
 
   const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
+  console.log(`getCLIPath using amplifyScriptPath ${amplifyScriptPath}`);
   return amplifyScriptPath;
 }
 
