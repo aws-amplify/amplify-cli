@@ -29,6 +29,12 @@ jobs:
           echo "AMPLIFY_PATH=$AMPLIFY_PATH"
           echo "AMPLIFY_PATH=$AMPLIFY_PATH" >> $GITHUB_ENV
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
+          aws-region: us-west-2
+
       - name: Run Smoke Tests
         run: yarn smoketest
 
