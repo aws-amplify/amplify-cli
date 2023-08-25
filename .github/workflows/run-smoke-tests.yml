@@ -1,0 +1,28 @@
+name: Run Smoke Tests
+
+on:
+  push:
+    branches: [smoke-tests-prototype]
+
+env:
+  NODE_OPTIONS: --max-old-space-size=8096
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest-xl
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          persist-credentials: false
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build-tests
+
+      - name: Run Smoke Tests
+        run: yarn smoketest
+        env:
+          CLI_VERSION: rc
