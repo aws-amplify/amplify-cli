@@ -1,6 +1,9 @@
 name: Run Smoke Tests
 description: Executes Smoke Tests
 inputs:
+  role-to-assume:
+    description: an IAM role to use in tests
+    required: true
   region:
     description: an AWS region to run in
     required: false
@@ -26,7 +29,7 @@ runs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
-        role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
+        role-to-assume: ${{ inputs.role-to-assume }}
         aws-region: ${{ inputs.region }}
 
     - name: Run Smoke Tests

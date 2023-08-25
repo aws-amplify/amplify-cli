@@ -31,3 +31,5 @@ jobs:
 
       - name: Run Smoke Tests
         uses: ./.github/actions/run-smoke-tests
+        with:
+          role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
