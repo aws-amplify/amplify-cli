@@ -29,5 +29,5 @@ jobs:
     uses: ./.github/workflows/smoke-tests.yml
     secrets: inherit
     with:
-      os: ${{ github.event.inputs.os }}"
-      versions: ${{ github.event.inputs.versions }}"
+      os: ${{ github.event.inputs.os }}
+      versions: ${{ github.event.inputs.versions }}
