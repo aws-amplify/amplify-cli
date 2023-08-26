@@ -145,6 +145,8 @@ async function getUser(username) {
 }
 
 async function listUsers(Limit, PaginationToken) {
+  Limit = parseInt(Limit);
+
   const params = {
     UserPoolId: userPoolId,
     ...(Limit && { Limit }),
@@ -168,6 +170,8 @@ async function listUsers(Limit, PaginationToken) {
 }
 
 async function listGroups(Limit, PaginationToken) {
+  Limit = parseInt(Limit);
+
   const params = {
     UserPoolId: userPoolId,
     ...(Limit && { Limit }),
@@ -191,6 +195,8 @@ async function listGroups(Limit, PaginationToken) {
 }
 
 async function listGroupsForUser(username, Limit, NextToken) {
+  Limit = parseInt(Limit);
+
   const params = {
     UserPoolId: userPoolId,
     Username: username,
@@ -218,6 +224,8 @@ async function listGroupsForUser(username, Limit, NextToken) {
 }
 
 async function listUsersInGroup(groupname, Limit, NextToken) {
+  Limit = parseInt(Limit);
+
   const params = {
     GroupName: groupname,
     UserPoolId: userPoolId,
