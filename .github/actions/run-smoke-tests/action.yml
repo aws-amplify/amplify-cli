@@ -32,12 +32,10 @@ runs:
 
     - name: Install Dependencies
       shell: bash
-      if: runner.os != 'Windows'
       run: yarn install
 
     - name: Build
       shell: bash
-      if: runner.os != 'Windows'
       run: yarn build-tests
 
     - name: Configure AWS Credentials
@@ -48,28 +46,11 @@ runs:
 
     - name: Run Smoke Tests
       shell: bash
-      if: runner.os != 'Windows'
       run: yarn smoketest
       env:
         CLI_REGION: ${{ inputs.region }}
         CI: true
         CIRCLECI: true
-        AMPLIFY_CI_USE_POWERSHELL: false
-
-    - name: Run Smoke Tests Windows
-      shell: bash
-      if: runner.os == 'Windows'
-      run: |
-        random_guid=$(powershell -Command "[guid]::NewGuid().ToString()")
-        random_guid=${random_guid//-/}
-        random_guid=${random_guid:0:6}
-        projDir="smoke-test-${random_guid}"
-        mkdir $projDir
-        cd $projDir
-        expect ../.githhub/actions/run-smoke-tests/configure.exp
-        amplify init -y
-        expect ../.githhub/actions/run-smoke-tests/add_auth.exp
-        amplify delete --force
 
     - name: Upload Report
       uses: actions/upload-artifact@v3
