@@ -1,0 +1,17 @@
+#!/usr/bin/expect
+spawn amplify configure
+expect "Sign in to your AWS administrator account:"
+expect "Press Enter to continue"
+send -- "\r"
+expect "Specify the AWS Region"
+send -- "\r"
+expect "Press Enter to continue"
+send -- "\r"
+expect "accessKeyId:"
+send -- "$AWS_ACCESS_KEY_ID\r"
+expect "secretAccessKey:"
+send -- "$AWS_SECRET_ACCESS_KEY\r"
+expect "Profile Name:"
+send -- "default\r"
+set timeout 70
+interact

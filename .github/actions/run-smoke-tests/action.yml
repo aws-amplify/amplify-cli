@@ -66,6 +66,7 @@ runs:
         projDir="smoke-test-${random_guid}"
         mkdir $projDir
         cd $projDir
+        expect ../.githhub/actions/run-smoke-tests/configure.exp
         amplify init -y
         expect ../.githhub/actions/run-smoke-tests/add_auth.exp
         amplify delete --force
