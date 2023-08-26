@@ -33,6 +33,14 @@ runs:
         msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi /qn
         aws --version
 
+    - name: Configure Profile
+      shell: bash
+      run: |
+        aws configure set region ${{ inputs.region }} --profile default
+        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+        aws configure set aws_session_token  $AWS_SESSION_TOKEN --profile default
+
     - name: Run Smoke Tests
       shell: bash
       run: .github/actions/run-smoke-tests-windows/windows-smoke-tests.sh
@@ -42,5 +50,4 @@ runs:
       if: always()
       run: |
         cd $AMPLIFY_PROJ_DIR
-        cd ..
-        rm -rf $AMPLIFY_PROJ_DIR
+        $AMPLIFY_PATH delete --force

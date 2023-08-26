@@ -11,3 +11,4 @@ echo "AMPLIFY_PROJ_DIR=$projDir" >> $GITHUB_ENV
 mkdir $projDir
 cd $projDir
 
+$AMPLIFY_PATH init --yes
