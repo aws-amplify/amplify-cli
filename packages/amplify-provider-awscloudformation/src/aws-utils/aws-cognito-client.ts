@@ -9,7 +9,12 @@ export class CognitoUserPoolClientProvider {
 
   static async getInstance(context: $TSContext, options = {}): Promise<CognitoUserPoolClientProvider> {
     if (!CognitoUserPoolClientProvider.instance) {
-      const cred: AwsSecrets = await loadConfiguration(context);
+      let cred: AwsSecrets = {};
+      try {
+        cred = await loadConfiguration(context);
+      } catch (e) {
+        // ignore missing config
+      }
 
       CognitoUserPoolClientProvider.instance = new CognitoUserPoolClientProvider(cred, options);
     }
