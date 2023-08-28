@@ -52,7 +52,7 @@ runs:
 
     - name: Run Smoke Tests
       shell: bash
-      run: yarn smoketest
+      run: yarn smoketest -- --forceExit --no-cache --maxWorkers=2
       env:
         CLI_REGION: ${{ inputs.region }}
         CI: true
