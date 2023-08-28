@@ -3,6 +3,7 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  generateModels,
   initIosProjectWithXcode,
   nspawn as spawn,
 } from '@aws-amplify/amplify-e2e-core';
@@ -28,9 +29,10 @@ describe('Smoke Test - iOS', () => {
       });
 
       await initIosProjectWithXcode(projRoot);
+      await addApi(projRoot);
+      await generateModels(projRoot, { expectXcode: true });
       await rubyBundleInstall(projRoot);
       await buildAndTestExampleIosApp(projRoot);
-      // await addApi(projRoot);
     });
   } else {
     it('dummy test', () => {});

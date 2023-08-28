@@ -220,7 +220,7 @@ export function initIosProjectWithXcode(cwd: string): Promise<void> {
     .sendCarriageReturn()
     .wait('Please choose the profile you want to use')
     .sendLine(defaultSettings.profileName)
-    .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
+    .wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/)
     .sendYes()
     .wait('Updating Xcode project:')
     .wait('Amplify project found.')
