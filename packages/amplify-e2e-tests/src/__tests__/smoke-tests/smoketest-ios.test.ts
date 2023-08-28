@@ -1,8 +1,9 @@
 import {
+  addApi,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  initIosProjectQuickStart,
+  initIosProjectWithXcode,
   nspawn as spawn,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs/promises';
@@ -26,11 +27,10 @@ describe('Smoke Test - iOS', () => {
         recursive: true,
       });
 
-      await initIosProjectQuickStart(projRoot);
-
+      await initIosProjectWithXcode(projRoot);
       await rubyBundleInstall(projRoot);
-
       await buildAndTestExampleIosApp(projRoot);
+      // await addApi(projRoot);
     });
   } else {
     it('dummy test', () => {});
