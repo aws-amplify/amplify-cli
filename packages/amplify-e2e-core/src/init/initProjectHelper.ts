@@ -200,6 +200,19 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
   });
 }
 
+export function initIosProjectQuickStart(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['init', '--quickstart', '--frontend', 'ios'], {
+    cwd,
+    stripColors: true,
+  })
+    .wait('Updating Xcode project:')
+    .wait('Amplify project found.')
+    .wait('Amplify config files found.')
+    .wait('Successfully updated project')
+    .wait('Amplify setup completed successfully.')
+    .runAsync();
+}
+
 export function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 

@@ -35,6 +35,13 @@ runs:
         role-to-assume: ${{ inputs.role-to-assume }}
         aws-region: ${{ inputs.region }}
 
+      # For iOS tests
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939 # v1.152.0
+      if: runner.os == 'macOS'
+      with:
+        ruby-version: '3.2.1'
+
     - name: Run Smoke Tests
       shell: bash
       run: yarn smoketest
