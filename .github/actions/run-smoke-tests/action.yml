@@ -43,7 +43,7 @@ runs:
         ruby-version: '3.2.1'
 
       # For iOS tests
-    - name: Set Default Xcode Version to ${{ matrix.xcode-version }}
+    - name: Set Default Xcode Version
       if: runner.os == 'macOS'
       shell: bash
       run: |
