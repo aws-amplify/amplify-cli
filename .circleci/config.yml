@@ -21,16 +21,6 @@ jobs:
               }
             }'
 workflows:
-  trigger_e2e_resource_cleanup:
-    triggers:
-      - schedule:
-          cron: 45 0,12 * * *
-          filters:
-            branches:
-              only:
-                - nightly-jobs
-    jobs:
-      - run-e2e_resource_cleanup
   run_on_push:
     jobs:
       - run-e2e_resource_cleanup:
