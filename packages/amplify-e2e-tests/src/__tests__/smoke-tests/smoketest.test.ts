@@ -199,7 +199,7 @@ function writeBanner(text: string) {
   process.stdout.write('\n');
 }
 
-describe('Release Smoke Tests', () => {
+describe('Smoke Tests', () => {
   const createCommands = (amplify: Amplify, directory: string): Command[] => [
     {
       description: 'Amplify CLI version',
@@ -262,7 +262,7 @@ describe('Release Smoke Tests', () => {
       run: () => amplify.delete(),
     },
   ];
-  test('An amplify project can be created without error', async () => {
+  it('An amplify project can be created without error', async () => {
     const args = getArgs();
 
     const amplify = new Amplify(args.projectDirectory);
