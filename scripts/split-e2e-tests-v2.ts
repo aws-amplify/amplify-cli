@@ -31,6 +31,7 @@ const RUN_SOLO = [
   'src/__tests__/import_s3_3.test.ts',
   'src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts',
   'src/__tests__/notifications-in-app-messaging.test.ts',
+  'src/__tests__/notifications-lifecycle.test.ts',
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
@@ -103,8 +104,8 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
     /* TEMPORARY-PR12830: Remove after we ship PR12830 */
-    '/src/__tests__/custom_resources.test.ts',
-    '/src/__tests__/custom-resource-with-storage.test.ts',
+    'src/__tests__/custom_resources.test.ts',
+    'src/__tests__/custom-resource-with-storage.test.ts',
     /* END TEMPORARY */
     'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
@@ -172,7 +173,7 @@ type CandidateJob = {
   tests: string[];
   useParentAccount: boolean;
   // intentially leaving this here - accounts are randomly assigned to jobs
-  // by a via local_publish_helpers.sh script
+  // by a via local_publish_helpers_codebuild.sh script
   // account: string,
 };
 

@@ -41,11 +41,16 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+  'src/__tests__/uibuilder.test.ts',
 ];
 const DISABLE_COVERAGE = ['src/__tests__/datastore-modelgen.test.ts', 'src/__tests__/amplify-app.test.ts'];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    /* TEMPORARY-PR12830: Remove after we ship PR12830 */
+    'src/__tests__/custom_resources.test.ts',
+    'src/__tests__/custom-resource-with-storage.test.ts',
+    /* END TEMPORARY */
     'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',

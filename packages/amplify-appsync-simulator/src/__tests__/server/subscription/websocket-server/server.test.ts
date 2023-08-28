@@ -78,8 +78,8 @@ describe('WebsocketSubscriptionServer', () => {
     server.start();
   });
 
-  afterEach(() => {
-    server?.stop();
+  afterEach(async () => {
+    await server?.stop();
     httpServer?.close();
   });
 
@@ -103,7 +103,7 @@ describe('WebsocketSubscriptionServer', () => {
 
     it('should accept connection when the protocol is graphql-ws', async () => {
       const client = new WS(`ws://localhost:${serverPort}${REALTIME_SUBSCRIPTION_PATH}`, 'graphql-ws');
-      const messagePromise = new Promise((resolve, _) => {
+      const messagePromise = new Promise((resolve) => {
         client.addEventListener('close', (event) => {
           expect(event.wasClean).toBeTruthy();
           resolve(undefined);
@@ -133,7 +133,7 @@ describe('WebsocketSubscriptionServer', () => {
     it('should fail connection when onConnectionHandler throw and error', async () => {
       onConnectHandler.mockRejectedValue('error');
       const client = new WS(`ws://localhost:${serverPort}${REALTIME_SUBSCRIPTION_PATH}`, 'graphql-ws');
-      const messagePromise = new Promise((resolve, _) => {
+      const messagePromise = new Promise((resolve) => {
         client.addEventListener('close', (event) => {
           expect(event.code).toEqual(1002);
           resolve(undefined);
@@ -164,7 +164,7 @@ describe('WebsocketSubscriptionServer', () => {
         type: MESSAGE_TYPES.GQL_CONNECTION_INIT,
         payload: {},
       };
-      const messagePromise = new Promise((resolve, _) => {
+      const messagePromise = new Promise((resolve) => {
         client.onmessage = (message: WS.MessageEvent) => {
           const data = JSON.parse(message.data as string);
           expect(data.type).toEqual(MESSAGE_TYPES.GQL_CONNECTION_ACK);
@@ -183,7 +183,7 @@ describe('WebsocketSubscriptionServer', () => {
         type: 'invalid',
         payload: {},
       };
-      const messagePromise = new Promise((resolve, _) => {
+      const messagePromise = new Promise((resolve) => {
         client.onmessage = (message: WS.MessageEvent) => {
           const data = JSON.parse(message.data as string);
           expect(data.type).toEqual(MESSAGE_TYPES.GQL_ERROR);
@@ -390,7 +390,7 @@ describe('WebsocketSubscriptionServer', () => {
       const data = {
         onMessage: 'hello from iterator',
       };
-      pubsub.publish('onMessage', data);
+      void pubsub.publish('onMessage', data);
       const msg = await waitForMessage(client, MESSAGE_TYPES.GQL_DATA);
       expect(msg).toEqual({
         type: MESSAGE_TYPES.GQL_DATA,

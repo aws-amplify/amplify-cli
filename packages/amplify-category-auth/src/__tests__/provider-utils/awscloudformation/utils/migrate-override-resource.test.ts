@@ -83,7 +83,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 }));
 test('migrate resource', async () => {
   const resourceName = 'mockResource';
-  migrateResourceToSupportOverride(resourceName);
+  await migrateResourceToSupportOverride(resourceName);
   const expectedPath = path.join('mockProjectPath', 'cli-inputs.json');
   const expectedPayload = {
     version: '1',

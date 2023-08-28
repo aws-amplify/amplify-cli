@@ -80,7 +80,7 @@ export function initJSProjectWithProfileV12(cwd: string, settings?: Partial<type
       .sendLine(s.profileName);
   }
   return chain
-    .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    .wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/)
     .sendYes()
     .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
     .runAsync();
@@ -117,7 +117,7 @@ export function initIosProjectWithProfileV12(cwd: string, settings: Record<strin
     .sendCarriageReturn()
     .wait('Please choose the profile you want to use')
     .sendLine(s.profileName)
-    .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    .wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/)
     .sendYes()
     .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
     .runAsync();
@@ -156,7 +156,7 @@ export function initAndroidProjectWithProfileV12(cwd: string, settings: Partial<
     .sendCarriageReturn()
     .wait('Please choose the profile you want to use')
     .sendLine(s.profileName)
-    .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+    .wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/)
     .sendYes()
     .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
     .runAsync();

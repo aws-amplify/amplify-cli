@@ -2,11 +2,10 @@ import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
 import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 
-let port = 20005; // for testing
-let route = '/mock-testing';
-let bucket = 'mock-testing';
-let localDirS3 = __dirname + '/test-data/';
-const actual_file = __dirname + '/test-data/2.png';
+const port = 20005; // for testing
+const route = '/mock-testing';
+const bucket = 'mock-testing';
+const localDirS3 = __dirname + '/test-data/';
 
 let s3client;
 let simulator;
@@ -20,7 +19,7 @@ beforeAll(async () => {
     region: 'eu-west-2',
   });
 
-  let ep = new AWS.Endpoint('http://localhost:20005');
+  const ep = new AWS.Endpoint('http://localhost:20005');
   s3client = new AWS.S3({
     apiVersion: '2006-03-01',
     endpoint: ep.href,
@@ -56,7 +55,6 @@ describe('test server running', () => {
 });
 
 describe('Test get api', () => {
-  const actual_file = __dirname + '/test-data/2.png';
   test('get image work ', async () => {
     const data = await s3client.getObject({ Bucket: bucket, Key: '2.png' }).promise();
     expect(data).toBeDefined();
@@ -90,7 +88,7 @@ describe('Test list api', () => {
   });
 
   test('list object pagination', async () => {
-    let maxKeys = 2;
+    const maxKeys = 2;
     let total = 7;
     let response = await s3client
       .listObjects({
@@ -124,7 +122,7 @@ describe('Test delete api', () => {
     fs.copySync(__dirname + '/test-data/normal/', dirPathOne + '/');
   });
   test('test one delete ', async () => {
-    const data = await s3client.deleteObject({ Bucket: bucket, Key: 'deleteOne/2.png' }).promise();
+    await s3client.deleteObject({ Bucket: bucket, Key: 'deleteOne/2.png' }).promise();
     expect(fs.rmdirSync(dirPathOne)).toBeUndefined;
   });
 });

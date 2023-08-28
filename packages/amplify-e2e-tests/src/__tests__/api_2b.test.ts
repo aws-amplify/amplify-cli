@@ -15,7 +15,6 @@ import {
 } from '@aws-amplify/amplify-e2e-core';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import _ from 'lodash';
 import * as path from 'path';
 
 const providerName = 'awscloudformation';

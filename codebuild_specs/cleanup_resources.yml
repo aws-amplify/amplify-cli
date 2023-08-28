@@ -6,3 +6,6 @@ phases:
     commands:
       - npm install -g ts-node
       - source ./shared-scripts.sh && _cleanUpResources
+artifacts:
+  files:
+    - 'shared-scripts.sh'

@@ -541,14 +541,60 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
        *  # Created to map Auth and Unauth roles to the identity pool
           # Depends on Identity Pool for ID ref
        */
-      this.identityPoolRoleMap = new cognito.CfnIdentityPoolRoleAttachment(this, 'IdentityPoolRoleMap', {
+
+      let identityPoolRoleMapParams = {
         identityPoolId: cdk.Fn.ref('IdentityPool'),
         roles: {
           unauthenticated: cdk.Fn.ref('unauthRoleArn'),
           authenticated: cdk.Fn.ref('authRoleArn'),
         },
-      });
+      };
+
+      const addRoleMappingAttachments = props.userPoolGroups || (props.userPoolGroupList || []).length > 0;
+
+      if (addRoleMappingAttachments) {
+        const roleMappings = {
+          roleMappings: {
+            UserPoolClientRoleMapping: {
+              identityProvider: cdk.Fn.sub('cognito-idp.${region}.amazonaws.com/${userPool}:${client}', {
+                region: cdk.Fn.ref('AWS::Region'),
+                userPool: cdk.Fn.ref('UserPool'),
+                client: cdk.Fn.ref('UserPoolClient'),
+              }),
+              ambiguousRoleResolution: 'AuthenticatedRole',
+              type: 'Token',
+            },
+            UserPoolWebClientRoleMapping: {
+              identityProvider: cdk.Fn.sub('cognito-idp.${region}.amazonaws.com/${userPool}:${webClient}', {
+                region: cdk.Fn.ref('AWS::Region'),
+                userPool: cdk.Fn.ref('UserPool'),
+                webClient: cdk.Fn.ref('UserPoolClientWeb'),
+              }),
+              ambiguousRoleResolution: 'AuthenticatedRole',
+              type: 'Token',
+            },
+          },
+        };
+
+        identityPoolRoleMapParams = {
+          ...identityPoolRoleMapParams,
+          ...roleMappings,
+        };
+      }
+
+      this.identityPoolRoleMap = new cognito.CfnIdentityPoolRoleAttachment(this, 'IdentityPoolRoleMap', identityPoolRoleMapParams);
+
       this.identityPoolRoleMap.addDependency(this.identityPool);
+
+      if (addRoleMappingAttachments) {
+        if (this.userPoolClient) {
+          this.identityPoolRoleMap.addDependency(this.userPoolClient);
+        }
+
+        if (this.userPoolClientWeb) {
+          this.identityPoolRoleMap.addDependency(this.userPoolClientWeb);
+        }
+      }
     }
   };
 
@@ -630,7 +676,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
 
@@ -714,7 +760,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
 
@@ -860,7 +906,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('MFALambdaRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
     this.mfaLambda.addDependency(this.mfaLambdaRole);
@@ -1001,7 +1047,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('OpenIdLambdaRole', 'Arn').toString(),
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 300,
     });
     this.openIdLambda.addDependency(this.openIdLambdaRole);

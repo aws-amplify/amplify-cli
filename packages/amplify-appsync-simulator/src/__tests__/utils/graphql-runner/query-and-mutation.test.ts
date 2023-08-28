@@ -156,7 +156,6 @@ describe('runQueryAndMutation', () => {
   });
 
   it('should have error object populated when error occurs in the resolver (e.g. Lambda DataSource)', async () => {
-    const name = 'John Doe';
     const doc = parse(/* GraphQL */ `
       query getName {
         getName

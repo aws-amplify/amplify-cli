@@ -31,6 +31,7 @@ function getServiceMeta(projectRoot: string, category: string, service: string):
       return meta.storage[storageResourceName];
     }
   }
+  return undefined;
 }
 
 describe('s3 override tests', () => {
@@ -208,6 +209,9 @@ describe('ddb override tests', () => {
     );
 
     replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
+    await expect(buildOverrideStorage(projRoot, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
+    // should succeed now
     await buildOverrideStorage(projRoot);
     let ddbCFNFileJSON = JSONUtilities.readJson<$TSObject>(cfnFilePath);
     // check if overrides are applied to the cfn file

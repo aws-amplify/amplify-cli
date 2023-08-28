@@ -1,5 +1,4 @@
 import { Pinpoint } from 'aws-sdk';
-import _ from 'lodash';
 import { EOL } from 'os';
 import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 
@@ -101,7 +100,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
 
     singleSelect(chain, settings.region, amplifyRegions);
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {

@@ -31,6 +31,6 @@ send -- "$env(AWS_SECRET_ACCESS_KEY)\r"
 expect -exact "region:"
 log_user 1;
 send -- "j\r"
-expect "Help improve Amplify CLI by sharing non sensitive configurations on failures"
+expect "Help improve Amplify CLI by sharing non-sensitive project configurations on failures"
 send -- "\r"
 interact;

@@ -1,6 +1,5 @@
 import { stateManager, exitOnNextTick, ResourceDoesNotExistError } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import * as inquirer from 'inquirer';
 import * as path from 'path';
 import { removeResourceParameters } from '../../../extensions/amplify-helpers/envResourceParams';
 import { removeResource, forceRemoveResource } from '../../../extensions/amplify-helpers/remove-resource';
@@ -31,7 +30,6 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 }));
 
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
-const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
 
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
@@ -149,14 +147,21 @@ describe('remove-resource', () => {
 
     it('print the deletion info when choose LambdaLayer', async () => {
       prompterMock.pick.mockResolvedValueOnce('lambdaLayer1');
-      await expect(
-        removeResource(context as any, 'function', undefined, {
+
+      let error;
+      try {
+        await removeResource(context as any, 'function', undefined, {
           serviceDeletionInfo: {
             LambdaLayer: 'lambdaLayer deletion info message',
           },
           serviceSuffix: { Lambda: '(function)', LambdaLayer: '(layer)' },
-        }),
-      ).rejects.toThrowError('An error occurred when removing the resources from the local directory');
+        });
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeDefined();
+      expect(error.message).toBe('Resource cannot be removed because it has a dependency on another resource');
+      expect(error.details).toBe('Dependency: Lambda - lambda1. Remove the dependency first.');
 
       expect(prompterMock.pick).toBeCalledWith('Choose the resource you would want to remove', [
         {
@@ -210,9 +215,15 @@ describe('remove-resource', () => {
     });
 
     it('throw an error when the dependent resources has a specified resource', async () => {
-      await expect(removeResource(context as any, 'function', 'lambdaLayer1')).rejects.toThrowError(
-        'An error occurred when removing the resources from the local directory',
-      );
+      let error;
+      try {
+        await removeResource(context as any, 'function', 'lambdaLayer1');
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeDefined();
+      expect(error.message).toBe('Resource cannot be removed because it has a dependency on another resource');
+      expect(error.details).toBe('Dependency: Lambda - lambda1. Remove the dependency first.');
     });
 
     it('print message to unlink the imported resource on confirm prompt when the specified service is imported resource', async () => {

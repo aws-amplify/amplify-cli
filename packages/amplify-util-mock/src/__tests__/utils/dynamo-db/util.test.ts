@@ -1,7 +1,7 @@
 import * as ddbUtils from '../../../utils/dynamo-db/utils';
 import * as AWSMock from 'aws-sdk-mock';
 import * as AWS from 'aws-sdk';
-import { DescribeTableOutput, CreateTableInput, UpdateTableInput, UpdateTableOutput, TableDescription } from 'aws-sdk/clients/dynamodb';
+import { DescribeTableOutput, CreateTableInput, UpdateTableInput, TableDescription } from 'aws-sdk/clients/dynamodb';
 import { waitTillTableStateIsActive } from '../../../utils/dynamo-db/helpers';
 import { DynamoDB } from 'aws-sdk';
 
@@ -219,6 +219,7 @@ describe('DynamoDB Utils', () => {
         };
         if (typeof callback === 'function') {
           callback(null, response);
+          return undefined;
         } else {
           return {
             promise: jest.fn().mockResolvedValue(response),

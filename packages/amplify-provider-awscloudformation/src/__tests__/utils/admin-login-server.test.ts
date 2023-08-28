@@ -18,10 +18,8 @@ describe('AdminLoginServer', () => {
   test('run server with 0.0.0.0', async () => {
     const adminLoginServer = new AdminLoginServer('appId', 'http://example.com', printer);
 
-    await new Promise<void>((resolve) => {
-      adminLoginServer.startServer(() => {});
-      resolve();
-    });
+    await adminLoginServer.startServer(() => {});
+
     expect(useMock).toBeCalled();
     expect(postMock).toBeCalled();
     expect(getMock).toBeCalled();
@@ -32,10 +30,7 @@ describe('AdminLoginServer', () => {
     const adminLoginServer = new AdminLoginServer('appId', 'http://example.com', printer);
     listenMock.mockReturnValue({ close: serverCloseMock });
 
-    await new Promise<void>((resolve) => {
-      adminLoginServer.startServer(() => {});
-      resolve();
-    });
+    await adminLoginServer.startServer(() => {});
     adminLoginServer.shutdown();
     expect(serverCloseMock).toBeCalled();
   });

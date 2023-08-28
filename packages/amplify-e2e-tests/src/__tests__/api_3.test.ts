@@ -50,7 +50,7 @@ describe('amplify add api (GraphQL)', () => {
 
     transformConfig.Version = TRANSFORM_BASE_VERSION;
     const apiRoot = path.join(projRoot, 'amplify', 'backend', 'api', name);
-    writeTransformerConfiguration(apiRoot, transformConfig);
+    await writeTransformerConfiguration(apiRoot, transformConfig);
 
     await amplifyPush(projRoot);
 

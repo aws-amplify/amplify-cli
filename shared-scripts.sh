@@ -90,6 +90,7 @@ function _buildLinux {
     yarn --immutable
     yarn production-build
     yarn build-tests
+    ./.circleci/cb-publish-step-1-set-versions.sh
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
@@ -116,6 +117,8 @@ function _lint {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
+    export NODE_OPTIONS=--max-old-space-size=8096
+
     yarn lint-check
     yarn lint-check-package-json
     yarn prettier-check
@@ -125,7 +128,41 @@ function _verifyAPIExtract {
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
+    unset IS_AMPLIFY_CI
     yarn verify-api-extract
+}
+function _verifyGeneratedE2EWorkflow {
+    echo "Verify Generated E2E Workflow"
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
+    # backup current file and remove regions, they are not deterministic
+    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" > codebuild_specs/e2e_workflow_generated.yml.old.trimmed
+
+    # regenerate e2e workflow
+    yarn split-e2e-tests-codebuild
+
+    # remove regions from generated file, they are not deterministic
+    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" > codebuild_specs/e2e_workflow_generated.yml.trimmed
+
+    changed_lines_in_e2e_workflow_generated=$(diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed | wc -l)
+
+    if [[ changed_lines_in_e2e_workflow_generated -gt 0 ]]; then
+      echo "Fail! An uncommitted drift in E2E workflow has been detected - e2e_workflow_generated.yml. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
+      diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed
+      exit 1;
+    fi
+
+    # check if wait_for_ids.json changed.
+    changed_wait_for_ids_manifest=$(git status | grep -F wait_for_ids.json | wc -l)
+
+    if [[ changed_wait_for_ids_manifest -gt 0 ]]; then
+      echo "Fail! An uncommitted drift in E2E workflow has been detected - wait_for_ids.json. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
+      exit 1;
+    fi
+
+    echo "Success! No drift detected in E2E workflow."
 }
 function _verifyYarnLock {
     echo "Verify Yarn Lock"
@@ -141,7 +178,7 @@ function _verifyVersionsMatch {
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
 
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     checkPackageVersionsInLocalNpmRegistry
@@ -151,9 +188,12 @@ function _mockE2ETests {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
-    source .circleci/local_publish_helpers.sh
+    # make repo directory accessible to codebuild-user
+    chown -R codebuild-user .
+    source .circleci/local_publish_helpers_codebuild.sh
     cd packages/amplify-util-mock/
-    yarn e2e
+    # run mock e2e tests as codebuild-user, root can't run open search
+    sudo -u codebuild-user bash -c 'export NODE_OPTIONS=--max-old-space-size=4096 && yarn e2e'
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
@@ -161,17 +201,16 @@ function _publishToLocalRegistry {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
-    source ./.circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source ./.circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
-    export LOCAL_PUBLISH_TO_LATEST=true
-    ./.circleci/publish-codebuild.sh
+    ./.circleci/cb-publish-step-2-verdaccio.sh
     unsetNpmRegistryUrl
 
     echo Generate Change Log
     # Leaving this breadcrumb here "git reset --soft HEAD~1"
-    # we commented this out because the publish script is now checking out the current branch, and this started to fail as a result
+    # we commented this out previously because the publish script is now checking out the current branch, and this started to fail as a result
     # if we run into problems in the future, we should revisit this
-    # git reset --soft HEAD~1
+    git reset --soft HEAD~1
     yarn ts-node scripts/unified-changelog.ts
     cat UNIFIED_CHANGELOG.md
 
@@ -202,8 +241,8 @@ function _uploadPkgBinaries {
     echo Done loading binaries
     ls $CODEBUILD_SRC_DIR/out
 
-    source .circleci/local_publish_helpers.sh
-    uploadPkgCliForE2E
+    source .circleci/local_publish_helpers_codebuild.sh
+    uploadPkgCliCodeBuild
 
     storeCache $CODEBUILD_SRC_DIR/out all-binaries
 }
@@ -218,7 +257,7 @@ function _buildBinaries {
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     generatePkgCli $binaryType
@@ -238,7 +277,7 @@ function _install_packaged_cli_linux {
 function _convertCoverage {
     echo Convert Coverage
 
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
 
@@ -282,8 +321,9 @@ function _runE2ETestsLinux {
     _loadE2ECache
     _install_packaged_cli_linux
     # verify installation
+    which amplify
     amplify version
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
@@ -300,7 +340,7 @@ function _unassumeTestAccountCredentials {
 function _runMigrationMultiEnvLayersTest {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     _loadTestAccountCredentials
@@ -309,7 +349,7 @@ function _runMigrationMultiEnvLayersTest {
 function _runMigrationNonMultiEnvLayersTest {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     _loadTestAccountCredentials
@@ -318,7 +358,7 @@ function _runMigrationNonMultiEnvLayersTest {
 function _runMigrationV8Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
@@ -329,7 +369,7 @@ function _runMigrationV8Test {
 function _runMigrationV10Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
@@ -340,7 +380,7 @@ function _runMigrationV10Test {
 function _runMigrationV12Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
@@ -424,7 +464,7 @@ function _amplifySudoInstallTestSetup {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setSudoNpmRegistryUrlToLocal
     changeSudoNpmGlobalPath
     # sudo npm install -g @aws-amplify/cli
@@ -435,7 +475,7 @@ function _amplifyInstallTestSetup {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     # limit memory for new processes to 1GB
@@ -449,7 +489,7 @@ function _amplifyInstallTestSetup {
 function _amplifyConsoleIntegrationTests {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     npm install -g @aws-amplify/cli
@@ -462,6 +502,8 @@ function _amplifyConsoleIntegrationTests {
     retry yarn console-integration --no-cache --maxWorkers=4 --forceExit
 }
 function _integrationTest {
+    npm install -g ts-node
+
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
 
@@ -611,12 +653,72 @@ function _waitForJobs {
     ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME $account_for_failures
     cd ..
 }
+function _verifyPkgCLI {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache repo-out-arm $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-linux $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-macos $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-win $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers_codebuild.sh && verifyPkgCli
+}
+function _githubPrerelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
+    cd out
+    mv amplify-pkg-macos-x64 amplify-pkg-macos
+    mv amplify-pkg-linux-x64 amplify-pkg-linux
+    mv amplify-pkg-win-x64.exe amplify-pkg-win.exe
+    tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
+    tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
+    tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
+    cd $CODEBUILD_SRC_DIR
+    echo Publish Amplify CLI GitHub prerelease
+    commit=$(git rev-parse HEAD~1)
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/github-prerelease.ts $version $commit
+}
+function _githubPrereleaseInstallSanityCheck {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Install packaged Amplify CLI
+    version=$(cat .amplify-pkg-version)
+    curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash
+    export PATH=$PATH:$HOME/.amplify/bin
+    echo Sanity check install
+    amplify version
+}
+function _publishToNpm {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
 
+    ./out/amplify-pkg-linux-x64 --version
+    echo Authenticate with npm
+    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
+
+    source ./.circleci/cb-publish-step-3-npm.sh
+}
+function _postPublishPushToGit {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    echo Push release commit and tags
+    source ./.circleci/cb-publish-step-4-push-to-git.sh
+}
+function _githubRelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Publish Amplify CLI GitHub release
+    commit=$(git rev-parse HEAD~1)
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/github-release.ts $version $commit
+}
 function _amplifyGeneralConfigTests {
     _loadE2ECache
     _install_packaged_cli_linux
     amplify version
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
@@ -633,4 +735,18 @@ function _cleanUpResources {
     yarn install
     ts-node ./src/cleanup-codebuild-resources.ts
     _unassumeTestAccountCredentials
+}
+function _deploymentVerificationPostRelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Verify Release Deployment
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/verify-deployment.ts -v $version
+}
+function _deploymentVerificationRCOrTagged {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Verify Tagged or RC Deployment
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/verify-deployment.ts --version $version --exclude-github
 }

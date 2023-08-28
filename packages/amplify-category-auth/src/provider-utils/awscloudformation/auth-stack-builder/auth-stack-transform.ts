@@ -11,6 +11,7 @@ import {
   FeatureFlags,
   JSONUtilities,
   pathManager,
+  runOverride,
   stateManager,
   Template,
   writeCFNTemplate,
@@ -20,7 +21,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
@@ -109,26 +109,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     const overrideDir = path.join(backendDir, this._category, this.resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir);
     if (isBuild) {
-      const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
-        formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
-        return '';
-      });
-
-      const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
-        timeout: 5000,
-        sandbox: {},
-        require: {
-          context: 'sandbox',
-          builtin: ['path'],
-          external: true,
-        },
-      });
       const projectInfo = getProjectInfo();
       try {
-        await sandboxNode
-          .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
-          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate, projectInfo);
+        await runOverride(overrideDir, this._authTemplateObj, projectInfo);
       } catch (err) {
         throw new AmplifyError(
           'InvalidOverrideError',

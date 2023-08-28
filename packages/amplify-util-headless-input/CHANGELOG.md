@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.14...amplify-util-headless-input@1.9.15) (2023-08-17)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
+## [1.9.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.13...amplify-util-headless-input@1.9.14) (2023-08-09)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
 ## [1.9.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.12...amplify-util-headless-input@1.9.13) (2023-06-13)
 
 **Note:** Version bump only for package amplify-util-headless-input

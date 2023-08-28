@@ -20,8 +20,8 @@ describe('initialize environment', () => {
   it('throws AmplifyError if the deployment bucket does not exist', async () => {
     downloadZipMock.mockRejectedValueOnce({ code: 'NoSuchBucket' });
     const actual = await expect(run(contextStub, {})).rejects;
-    actual.toBeInstanceOf(AmplifyException);
-    actual.toMatchInlineSnapshot(
+    await actual.toBeInstanceOf(AmplifyException);
+    await actual.toMatchInlineSnapshot(
       `[EnvironmentNotInitializedError: Could not find a deployment bucket for the specified backend environment. This environment may have been deleted.]`,
     );
   });

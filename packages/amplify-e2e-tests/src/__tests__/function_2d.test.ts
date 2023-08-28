@@ -113,6 +113,17 @@ describe('nodejs', () => {
       response = await functionCloudInvoke(projRoot, {
         funcName,
         payload: JSON.stringify({
+          path: '/item',
+          httpMethod: 'GET',
+        }),
+      });
+      expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+      expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toContainEqual(item1);
+      expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toContainEqual(item2);
+
+      response = await functionCloudInvoke(projRoot, {
+        funcName,
+        payload: JSON.stringify({
           path: `/item/object/${item2.column1}/${item2.column2}`,
           httpMethod: 'DELETE',
         }),

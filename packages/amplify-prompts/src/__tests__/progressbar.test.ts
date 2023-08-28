@@ -1,5 +1,3 @@
-/* eslint-disable jest/no-conditional-expect */
-
 import { ProgressBar as Bar, BarOptions } from '../progressbars/progressbar';
 
 const options: BarOptions = {

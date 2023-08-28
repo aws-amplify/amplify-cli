@@ -2,7 +2,7 @@ import { stateManager, $TSContext, AmplifyError, AmplifyFault } from '@aws-ampli
 import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';
-import proxyAgent from 'proxy-agent';
+import { ProxyAgent } from 'proxy-agent';
 import { adminLoginFlow } from '../admin-login';
 import { AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken } from './auth-types';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
@@ -89,8 +89,9 @@ type AppStateResponse = {
 async function getAdminAppState(appId: string, region: string): Promise<AppStateResponse> {
   // environment variable AMPLIFY_CLI_APPSTATE_BASE_URL useful for development against beta/gamma appstate endpoints
   const appStateBaseUrl = process.env.AMPLIFY_CLI_APPSTATE_BASE_URL ?? adminBackendMap[region].appStateUrl;
+  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-  const fetchOptions = httpProxy ? { agent: proxyAgent(httpProxy) } : {};
+  const fetchOptions = httpProxy ? { agent: new ProxyAgent() } : {};
   const res = await fetch(`${appStateBaseUrl}/AppState/?appId=${appId}`, fetchOptions);
   if (res.status >= 500) {
     throw new AmplifyFault('ServiceCallFault', {

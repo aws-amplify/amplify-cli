@@ -11,13 +11,11 @@ import {
   addS3StorageWithSettings,
 } from '@aws-amplify/amplify-e2e-core';
 import {
-  AuthProjectDetails,
   createIDPAndUserPoolWithOAuthSettings,
   expectAuthLocalAndOGMetaFilesOutputMatching,
   expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
   getAuthProjectDetails,
-  getOGAuthProjectDetails,
   getShortId,
   headlessPull,
   importIdentityPoolAndUserPool,
@@ -45,11 +43,9 @@ describe('auth import identity pool and userpool', () => {
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
-  let ogProjectDetails: AuthProjectDetails;
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
 
   let projectRoot: string;
@@ -64,10 +60,7 @@ describe('auth import identity pool and userpool', () => {
     await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
-    ogProjectDetails = getOGAuthProjectDetails(ogProjectRoot);
-
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createIDPAndUserPoolWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
@@ -112,7 +105,7 @@ describe('auth import identity pool and userpool', () => {
 
     await amplifyPushAuth(projectRoot);
 
-    let projectDetails = getAuthProjectDetails(projectRoot);
+    const projectDetails = getAuthProjectDetails(projectRoot);
 
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();

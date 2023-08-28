@@ -26,20 +26,36 @@ batch:
         image: $WINDOWS_IMAGE_2019
     - identifier: test
       buildspec: codebuild_specs/test.yml
+      depend-on:
+        - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: lint
+      buildspec: codebuild_specs/lint.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: mock_e2e_tests
       buildspec: codebuild_specs/mock_e2e_tests.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: validate_cdk_version
       buildspec: codebuild_specs/validate_cdk_version.yml
+      depend-on:
+        - build_linux
     - identifier: verify_api_extract
       buildspec: codebuild_specs/verify_api_extract.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_yarn_lock
       buildspec: codebuild_specs/verify_yarn_lock.yml
+      depend-on:
+        - build_linux
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
       env:
@@ -66,6 +82,14 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
+      depend-on:
+        - build_linux
+    - identifier: verify_pkg_cli
+      buildspec: codebuild_specs/verify_pkg_cli.yml
+      depend-on:
+        - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: run_e2e_tests_linux
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
@@ -108,6 +132,8 @@ batch:
         - upb
     - identifier: integration_test
       buildspec: codebuild_specs/integration_test.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: amplify_sudo_install_test

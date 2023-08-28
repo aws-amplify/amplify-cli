@@ -7,5 +7,7 @@ env:
 phases:
   build:
     commands:
-      - source shared-scripts.sh && _waitForJobs build_linux requirePrevJobsToSucceed
       - source ./shared-scripts.sh && _mockE2ETests
+artifacts:
+  files:
+    - 'shared-scripts.sh'

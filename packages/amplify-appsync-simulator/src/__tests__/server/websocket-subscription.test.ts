@@ -73,10 +73,10 @@ describe('websocket subscription', () => {
     expect(startSpy).toHaveBeenCalled();
   });
 
-  it('should call websocket servers stop method when stop is called', () => {
+  it('should call websocket servers stop method when stop is called', async () => {
     const stopSpy = jest.spyOn(WebsocketSubscriptionServer.prototype, 'stop');
     const subs = new AppSyncSimulatorSubscriptionServer(simulatorContext, server, subscriptionPath);
-    subs.stop();
+    await subs.stop();
     expect(stopSpy).toHaveBeenCalled();
   });
 
@@ -119,7 +119,7 @@ describe('websocket subscription', () => {
 
   describe('onSubscribe', () => {
     let subsServer: AppSyncSimulatorSubscriptionServer;
-    let asyncIterator = new PubSub().asyncIterator('onMessage');
+    const asyncIterator = new PubSub().asyncIterator('onMessage');
     const tokenString = 'token-here';
     const jwt = { iss: 'some issuer' };
     const doc = parse(/* GraphQL */ `

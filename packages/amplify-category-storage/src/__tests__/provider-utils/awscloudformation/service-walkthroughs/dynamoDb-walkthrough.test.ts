@@ -141,7 +141,7 @@ describe('update ddb walkthrough tests', () => {
   });
 
   it('updateWalkthrough() test to add gsi', async () => {
-    let mockAmplifyMeta = {
+    const mockAmplifyMeta = {
       storage: {
         mockresourcename: {
           service: 'DynamoDB',
