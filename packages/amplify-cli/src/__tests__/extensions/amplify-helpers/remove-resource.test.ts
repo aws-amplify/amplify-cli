@@ -23,6 +23,9 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
   pathManager: {
     getResourceDirectoryPath: jest.fn((_, categoryName, resourceName) => path.join('backendDirPath', categoryName, resourceName)),
+    getStackBuildCategoryResourceDirPath: jest.fn((_, categoryName, resourceName) =>
+      path.join('backendDirPath/awscloudformation/build/', categoryName, resourceName),
+    ),
   },
   exitOnNextTick: jest.fn().mockImplementation(() => {
     throw 'process.exit mock';
@@ -198,6 +201,8 @@ describe('remove-resource', () => {
         },
       });
       expect(context.filesystem.remove).toBeCalledWith(path.join('backendDirPath', 'function', 'lambda1'));
+      expect(context.filesystem.remove).toBeCalledWith(path.join('backendDirPath/awscloudformation/build', 'function', 'lambda1'));
+      expect(context.filesystem.remove).toBeCalledTimes(2);
       expect(removeResourceParameters).toBeCalledWith(context, 'function', 'lambda1');
       expect(updateBackendConfigAfterResourceRemove).toBeCalledWith('function', 'lambda1');
       expect(printer.success).toBeCalledWith('Successfully removed resource');
@@ -268,6 +273,7 @@ describe('remove-resource', () => {
         },
       });
       expect(context.filesystem.remove).toBeCalledWith('backendDirPath/function/lambdaLayer1');
+      expect(context.filesystem.remove).toBeCalledWith('backendDirPath/awscloudformation/build/function/lambdaLayer1');
       expect(removeResourceParameters).toBeCalledWith(context, 'function', 'lambdaLayer1');
       expect(updateBackendConfigAfterResourceRemove).toBeCalledWith('function', 'lambdaLayer1');
       expect(printer.success).toBeCalledWith('Successfully removed resource');
