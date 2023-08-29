@@ -12,7 +12,6 @@ import { ARN } from '@aws-sdk/util-arn-parser';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import * as execa from 'execa';
 import opn from 'open';
 import { Ora } from 'ora';
@@ -331,7 +330,7 @@ export class ApiCategoryFacade {
     // (undocumented)
     static getTransformerVersion(context: $TSContext): Promise<number>;
     // (undocumented)
-    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | undefined>;
+    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<$TSAny | undefined>;
 }
 
 // @public (undocumented)
@@ -1652,6 +1651,8 @@ export class PathManager {
     getRootOverrideDirPath: (projectPath: string) => string;
     // (undocumented)
     getRootStackBuildDirPath: (projectPath: string) => string;
+    // (undocumented)
+    getStackBuildCategoryResourceDirPath: (projectPath: string, category: string, resourceName: string) => string;
     // (undocumented)
     getTagFilePath: (projectPath?: string) => string;
     // (undocumented)
