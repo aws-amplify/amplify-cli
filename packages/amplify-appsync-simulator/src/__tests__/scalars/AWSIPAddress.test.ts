@@ -1,4 +1,3 @@
-import { URL } from 'url';
 import { scalars } from '../../schema/appsync-scalars';
 describe('AWSIPAddress parse', () => {
   it('should parse valid ip address', () => {

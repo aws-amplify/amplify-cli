@@ -19,7 +19,7 @@ let GRAPHQL_ENDPOINT = undefined;
 let APIKEY_GRAPHQL_CLIENT = undefined;
 let USER_POOL_AUTH_CLIENT = undefined;
 
-let USER_POOL_ID = 'fake_user_pool';
+const USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
 

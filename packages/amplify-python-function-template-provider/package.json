@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-python-function-template-provider",
-  "version": "1.4.3",
+  "version": "1.4.5",
   "description": "Python templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -25,10 +25,15 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-function-plugin-interface": "1.10.2"
+    "@aws-amplify/amplify-function-plugin-interface": "1.11.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

@@ -5,9 +5,11 @@ import {
   amplifyPull,
   amplifyPushAuth,
   createNewProjectDir,
+  createUserPoolOnlyWithOAuthSettings,
   deleteProject,
   deleteProjectDir,
   getAppId,
+  getCognitoResourceName,
   getEnvVars,
   getTeamProviderInfo,
   initJSProjectWithProfile,
@@ -19,7 +21,6 @@ import {
   addAppClientWithSecret,
   AppClientSettings,
   AuthProjectDetails,
-  createUserPoolOnlyWithOAuthSettings,
   deleteAppClient,
   expectAuthLocalAndOGMetaFilesOutputMatching,
   expectAuthProjectDetailsMatch,
@@ -30,7 +31,6 @@ import {
   getShortId,
   importUserPoolOnly,
 } from '../import-helpers';
-import { getCognitoResourceName } from '../schema-api-directives/authHelper';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('auth import userpool only', () => {
@@ -59,7 +59,6 @@ describe('auth import userpool only', () => {
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddAuthUserPoolOnlyWithOAuthSettings;
 
   let projectRoot: string;
@@ -77,7 +76,6 @@ describe('auth import userpool only', () => {
     ogProjectDetails = getOGAuthProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createUserPoolOnlyWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
@@ -259,7 +257,7 @@ describe('auth import userpool only', () => {
     } finally {
       // delete the app client
       if (appClientId) {
-        deleteAppClient(profileName, ogProjectRoot, appClientId);
+        await deleteAppClient(profileName, ogProjectRoot, appClientId);
       }
     }
   });
@@ -295,7 +293,7 @@ describe('auth import userpool only', () => {
     } finally {
       // delete the app client
       if (appClientId) {
-        deleteAppClient(profileName, ogProjectRoot, appClientId);
+        await deleteAppClient(profileName, ogProjectRoot, appClientId);
       }
     }
   });

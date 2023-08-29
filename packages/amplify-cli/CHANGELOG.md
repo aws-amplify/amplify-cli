@@ -3,6 +3,143 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.5...@aws-amplify/cli-internal@12.3.0) (2023-08-17)
+
+
+### Bug Fixes
+
+* remove error incorrectly swallowed (fixes [#13030](https://github.com/aws-amplify/amplify-cli/issues/13030)) ([#13041](https://github.com/aws-amplify/amplify-cli/issues/13041)) ([2941584](https://github.com/aws-amplify/amplify-cli/commit/294158417ab176db4ece2acf043cc16355e9c737))
+
+
+### Features
+
+* bump version ([#13114](https://github.com/aws-amplify/amplify-cli/issues/13114)) ([ad713f7](https://github.com/aws-amplify/amplify-cli/commit/ad713f7f2213ec60268724f1e9dc896f289b3c0b))
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+## [12.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.4...@aws-amplify/cli-internal@12.2.5) (2023-08-14)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+## [12.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.3...@aws-amplify/cli-internal@12.2.4) (2023-08-09)
+
+
+### Bug Fixes
+
+* Dependabot alerts for semver, tough-cookie ([#12962](https://github.com/aws-amplify/amplify-cli/issues/12962)) ([175a86b](https://github.com/aws-amplify/amplify-cli/commit/175a86b89a54c65bb6e68c0609be503d61e39d63))
+
+
+
+
+
+## [12.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.2...@aws-amplify/cli-internal@12.2.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+## [12.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.1...@aws-amplify/cli-internal@12.2.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+## [12.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.0...@aws-amplify/cli-internal@12.2.1) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [12.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.1.1...@aws-amplify/cli-internal@12.2.0) (2023-07-20)
+
+
+### Bug Fixes
+
+* added Prepush after init and before deploy ([#12674](https://github.com/aws-amplify/amplify-cli/issues/12674)) ([a54f837](https://github.com/aws-amplify/amplify-cli/commit/a54f83743b5995317170c9b4f5a140e5a1aa57f3))
+* beta reporter endpoints urls ([#12806](https://github.com/aws-amplify/amplify-cli/issues/12806)) ([88b5f90](https://github.com/aws-amplify/amplify-cli/commit/88b5f907c5f599dbef988de4476a26daf80466d0))
+* usage data should not throw errors ([#12839](https://github.com/aws-amplify/amplify-cli/issues/12839)) ([fbea273](https://github.com/aws-amplify/amplify-cli/commit/fbea273f9b65cd21e8d02ddfe4a803a843c2afe4))
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
+## [12.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.1.0...@aws-amplify/cli-internal@12.1.1) (2023-06-16)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [12.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.0.3...@aws-amplify/cli-internal@12.1.0) (2023-06-13)
+
+
+### Bug Fixes
+
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+
+
+### Features
+
+* bump version ([#12752](https://github.com/aws-amplify/amplify-cli/issues/12752)) ([2def814](https://github.com/aws-amplify/amplify-cli/commit/2def814808a18440a7be71baccda902f07fedc49))
+
+
+
+
+
+## [12.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.0.1...@aws-amplify/cli-internal@12.0.3) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+* version bump ([#12680](https://github.com/aws-amplify/amplify-cli/issues/12680)) ([09f319a](https://github.com/aws-amplify/amplify-cli/commit/09f319af8bb817f92a567dae2fdac6f98a0bf549))
+* version bump ([#12684](https://github.com/aws-amplify/amplify-cli/issues/12684)) ([63f02ce](https://github.com/aws-amplify/amplify-cli/commit/63f02ced2bc114c9db1b51f21f41f4c4b790a0a4))
+
+
+
+
+
+## [12.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.0.0...@aws-amplify/cli-internal@12.0.2) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([#12680](https://github.com/aws-amplify/amplify-cli/issues/12680)) ([09f319a](https://github.com/aws-amplify/amplify-cli/commit/09f319af8bb817f92a567dae2fdac6f98a0bf549))
+* version bump ([#12684](https://github.com/aws-amplify/amplify-cli/issues/12684)) ([63f02ce](https://github.com/aws-amplify/amplify-cli/commit/63f02ced2bc114c9db1b51f21f41f4c4b790a0a4))
+
+
+
+
+
+## [12.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.0.0...@aws-amplify/cli-internal@12.0.1) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 # [12.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@11.1.1...@aws-amplify/cli-internal@12.0.0) (2023-05-11)
 
 

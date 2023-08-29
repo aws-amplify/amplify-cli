@@ -29,7 +29,7 @@ describe('BackendConfigParameterMapController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.isolateModules(async () => {
+    jest.isolateModules(() => {
       // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
       const { getParametersControllerInstance } = require('../backend-config-parameters-controller');
       backendParamsController = getParametersControllerInstance();
@@ -47,25 +47,25 @@ describe('BackendConfigParameterMapController', () => {
     it('adds single parameter', () => {
       backendParamsController.addParameter('anotherParam', [{ category: 'something', resourceName: 'else' }]);
       expect(backendParamsController.getParameters()).toMatchInlineSnapshot(`
-        Object {
-          "anotherParam": Object {
-            "usedBy": Array [
-              Object {
-                "category": "something",
-                "resourceName": "else",
-              },
-            ],
-          },
-          "testParam": Object {
-            "usedBy": Array [
-              Object {
-                "category": "function",
-                "resourceName": "other",
-              },
-            ],
-          },
-        }
-      `);
+{
+  "anotherParam": {
+    "usedBy": [
+      {
+        "category": "something",
+        "resourceName": "else",
+      },
+    ],
+  },
+  "testParam": {
+    "usedBy": [
+      {
+        "category": "function",
+        "resourceName": "other",
+      },
+    ],
+  },
+}
+`);
     });
   });
 
@@ -90,33 +90,33 @@ describe('BackendConfigParameterMapController', () => {
         },
       });
       expect(backendParamsController.getParameters()).toMatchInlineSnapshot(`
-        Object {
-          "anotherParam": Object {
-            "usedBy": Array [
-              Object {
-                "category": "something",
-                "resourceName": "else",
-              },
-            ],
-          },
-          "lastParam": Object {
-            "usedBy": Array [
-              Object {
-                "category": "aCategory",
-                "resourceName": "aResource",
-              },
-            ],
-          },
-          "testParam": Object {
-            "usedBy": Array [
-              Object {
-                "category": "function",
-                "resourceName": "other",
-              },
-            ],
-          },
-        }
-      `);
+{
+  "anotherParam": {
+    "usedBy": [
+      {
+        "category": "something",
+        "resourceName": "else",
+      },
+    ],
+  },
+  "lastParam": {
+    "usedBy": [
+      {
+        "category": "aCategory",
+        "resourceName": "aResource",
+      },
+    ],
+  },
+  "testParam": {
+    "usedBy": [
+      {
+        "category": "function",
+        "resourceName": "other",
+      },
+    ],
+  },
+}
+`);
     });
   });
 
@@ -136,24 +136,24 @@ describe('BackendConfigParameterMapController', () => {
 
   describe('save', () => {
     it('writes current parameter state to backend config', async () => {
-      backendParamsController.save();
+      await backendParamsController.save();
       expect(stateManagerMock.setBackendConfig.mock.calls[0][1]).toMatchInlineSnapshot(`
-        Object {
-          "parameters": Object {
-            "testParam": Object {
-              "usedBy": Array [
-                Object {
-                  "category": "function",
-                  "resourceName": "other",
-                },
-              ],
-            },
-          },
-          "someCategory": Object {
-            "other": "stuff",
-          },
-        }
-      `);
+{
+  "parameters": {
+    "testParam": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "other",
+        },
+      ],
+    },
+  },
+  "someCategory": {
+    "other": "stuff",
+  },
+}
+`);
     });
   });
 });
@@ -166,22 +166,22 @@ describe('getParametersControllerInstance', () => {
     const { getParametersControllerInstance } = jest.requireActual('../backend-config-parameters-controller');
     expect(() => getParametersControllerInstance()).toThrow();
     expect(AmplifyErrorMock.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "BackendConfigValidationError",
-        Object {
-          "details": "{
-        \\"keyword\\": \\"type\\",
-        \\"dataPath\\": \\"\\",
-        \\"schemaPath\\": \\"#/type\\",
-        \\"params\\": {
-          \\"type\\": \\"object\\"
-        },
-        \\"message\\": \\"should be object\\"
-      }",
-          "message": "backend-config.json parameter config is invalid",
-          "resolution": "Correct the errors in the file and retry the command",
-        },
-      ]
-    `);
+[
+  "BackendConfigValidationError",
+  {
+    "details": "{
+  "keyword": "type",
+  "dataPath": "",
+  "schemaPath": "#/type",
+  "params": {
+    "type": "object"
+  },
+  "message": "should be object"
+}",
+    "message": "backend-config.json parameter config is invalid",
+    "resolution": "Correct the errors in the file and retry the command",
+  },
+]
+`);
   });
 });

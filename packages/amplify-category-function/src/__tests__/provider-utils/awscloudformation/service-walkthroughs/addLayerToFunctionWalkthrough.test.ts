@@ -172,7 +172,7 @@ describe('add layer to function walkthrough', () => {
   });
 
   it('asks to reorder the selected layers', async () => {
-    const result = await addLayersToFunctionWalkthrough(getContextStubWith(confirmPromptTrue_mock), runtimeStub);
+    await addLayersToFunctionWalkthrough(getContextStubWith(confirmPromptTrue_mock), runtimeStub);
 
     expect(askLayerOrderQuestion_mock.mock.calls.length).toBe(1);
   });

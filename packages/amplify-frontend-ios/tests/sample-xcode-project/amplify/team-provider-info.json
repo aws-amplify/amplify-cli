@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-samplexcodeproject-dev-90949-authRole",
+      "UnauthRoleArn": "arn:aws:iam::595032847868:role/amplify-samplexcodeproject-dev-90949-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::595032847868:role/amplify-samplexcodeproject-dev-90949-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-samplexcodeproject-dev-90949-deployment",
+      "UnauthRoleName": "amplify-samplexcodeproject-dev-90949-unauthRole",
+      "StackName": "amplify-samplexcodeproject-dev-90949",
+      "StackId": "arn:aws:cloudformation:us-west-2:595032847868:stack/amplify-samplexcodeproject-dev-90949/a6fdb0d0-4298-11ee-9b50-0a9c954e78b3",
+      "AmplifyAppId": "d19g9qfivk7dw4"
+    },
+    "categories": {
+      "api": {
+        "samplexcodeproject": {}
+      }
+    }
+  }
+}

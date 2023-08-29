@@ -29,7 +29,9 @@ const RUN_SOLO = [
   'src/__tests__/import_s3_2b.test.ts',
   'src/__tests__/import_s3_2c.test.ts',
   'src/__tests__/import_s3_3.test.ts',
+  'src/__tests__/notifications-analytics-compatibility-in-app-1.test.ts',
   'src/__tests__/notifications-in-app-messaging.test.ts',
+  'src/__tests__/notifications-lifecycle.test.ts',
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
@@ -101,6 +103,10 @@ const WINDOWS_SMOKE_TESTS = [
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    /* TEMPORARY-PR12830: Remove after we ship PR12830 */
+    'src/__tests__/custom_resources.test.ts',
+    'src/__tests__/custom-resource-with-storage.test.ts',
+    /* END TEMPORARY */
     'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
@@ -111,6 +117,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/diagnose.test.ts',
     'src/__tests__/env-2.test.ts',
+    'src/__tests__/pr-previews-multi-env-1.test.ts',
     'src/__tests__/export.test.ts',
     'src/__tests__/function_3a.test.ts',
     'src/__tests__/function_3b.test.ts',
@@ -118,6 +125,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/function_6.test.ts',
     'src/__tests__/function_7.test.ts',
     'src/__tests__/function_8.test.ts',
+    'src/__tests__/function_15.test.ts',
     'src/__tests__/geo-add-e.test.ts',
     'src/__tests__/geo-add-f.test.ts',
     'src/__tests__/geo-remove-2.test.ts',
@@ -165,7 +173,7 @@ type CandidateJob = {
   tests: string[];
   useParentAccount: boolean;
   // intentially leaving this here - accounts are randomly assigned to jobs
-  // by a via local_publish_helpers.sh script
+  // by a via local_publish_helpers_codebuild.sh script
   // account: string,
 };
 

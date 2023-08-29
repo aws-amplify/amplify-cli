@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-cli-logger",
-  "version": "1.3.2",
+  "version": "1.3.4",
   "description": "Amplify CLI Logger",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -50,5 +50,10 @@
   "dependencies": {
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.0"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

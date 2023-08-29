@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.27...amplify-python-function-runtime-provider@2.4.28) (2023-08-17)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.27](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.26...amplify-python-function-runtime-provider@2.4.27) (2023-08-09)
+
+
+### Bug Fixes
+
+* Dependabot alerts for semver, tough-cookie ([#12962](https://github.com/aws-amplify/amplify-cli/issues/12962)) ([175a86b](https://github.com/aws-amplify/amplify-cli/commit/175a86b89a54c65bb6e68c0609be503d61e39d63))
+
+
+
+
+
+## [2.4.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.25...amplify-python-function-runtime-provider@2.4.26) (2023-07-28)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.24...amplify-python-function-runtime-provider@2.4.25) (2023-07-27)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.23...amplify-python-function-runtime-provider@2.4.24) (2023-07-24)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.22...amplify-python-function-runtime-provider@2.4.23) (2023-07-20)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.21...amplify-python-function-runtime-provider@2.4.22) (2023-06-13)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.19...amplify-python-function-runtime-provider@2.4.21) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [2.4.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.18...amplify-python-function-runtime-provider@2.4.20) (2023-05-25)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [2.4.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.18...amplify-python-function-runtime-provider@2.4.19) (2023-05-25)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [2.4.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.17...amplify-python-function-runtime-provider@2.4.18) (2023-05-11)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

@@ -3,6 +3,138 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.4.0...amplify-e2e-tests@4.5.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+# [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.3.3...amplify-e2e-tests@4.4.0) (2023-08-09)
+
+
+### Bug Fixes
+
+* remove vm2 ([#12989](https://github.com/aws-amplify/amplify-cli/issues/12989)) ([7bc0b56](https://github.com/aws-amplify/amplify-cli/commit/7bc0b5654a585104a537c1a3f9615bd672435b58))
+* surface override build error if scripting features are disabled ([#13013](https://github.com/aws-amplify/amplify-cli/issues/13013)) ([fa80249](https://github.com/aws-amplify/amplify-cli/commit/fa802491f8767f50dc3636e190fb70eb492fa969))
+
+
+### Features
+
+* replace oauth and userpoolclient lambdas with cfn and sdk calls ([#12935](https://github.com/aws-amplify/amplify-cli/issues/12935)) ([b3ab512](https://github.com/aws-amplify/amplify-cli/commit/b3ab5125f2ec405afd1af9d2f77b8683d5914010))
+* replace role mapping lambda in auth category ([#13003](https://github.com/aws-amplify/amplify-cli/issues/13003)) ([4ce0329](https://github.com/aws-amplify/amplify-cli/commit/4ce032932702305b9f9564a77418855ceb0f0fca))
+
+
+
+
+
+## [4.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.3.2...amplify-e2e-tests@4.3.3) (2023-07-28)
+
+
+### Bug Fixes
+
+* surface override build error if scripting features are disabled ([#13013](https://github.com/aws-amplify/amplify-cli/issues/13013)) ([#13023](https://github.com/aws-amplify/amplify-cli/issues/13023)) ([9e99800](https://github.com/aws-amplify/amplify-cli/commit/9e998008c6aef13ee50e6ce88cc78d8e9367b66a))
+
+
+
+
+
+## [4.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.3.1...amplify-e2e-tests@4.3.2) (2023-07-27)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [4.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.3.0...amplify-e2e-tests@4.3.1) (2023-07-24)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.5...amplify-e2e-tests@4.3.0) (2023-07-20)
+
+
+### Bug Fixes
+
+* added Prepush after init and before deploy ([#12674](https://github.com/aws-amplify/amplify-cli/issues/12674)) ([a54f837](https://github.com/aws-amplify/amplify-cli/commit/a54f83743b5995317170c9b4f5a140e5a1aa57f3))
+* ensure AWS_REGION matches CLI_REGION in all tests ([#12837](https://github.com/aws-amplify/amplify-cli/issues/12837)) ([7be43e4](https://github.com/aws-amplify/amplify-cli/commit/7be43e41ded3bf09fd20cd9d9b95467491344cbe))
+* fetch deployment key from current-cloud-backend ([#12687](https://github.com/aws-amplify/amplify-cli/issues/12687)) ([af0bf82](https://github.com/aws-amplify/amplify-cli/commit/af0bf82d18b3a30d4cdac2cdd14b8534e0ffff1d))
+* fix yarn path ([#12769](https://github.com/aws-amplify/amplify-cli/issues/12769)) ([dca98aa](https://github.com/aws-amplify/amplify-cli/commit/dca98aa35e544dce4cf0ac9f340919b87041e65f))
+* smoke test flakynes ([#12760](https://github.com/aws-amplify/amplify-cli/issues/12760)) ([5654640](https://github.com/aws-amplify/amplify-cli/commit/56546401274820207bc2e64fb682bbe2ed1981f2))
+* update notification channel name lookup ([#12763](https://github.com/aws-amplify/amplify-cli/issues/12763)) ([92ca721](https://github.com/aws-amplify/amplify-cli/commit/92ca721134d59b68e85d4f92f4814d6717a3be3a))
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+### Reverts
+
+* Revert "chore: cleanup stale resources in CodeBuild (#12779)" (#12853) ([d19d17e](https://github.com/aws-amplify/amplify-cli/commit/d19d17ebcace24c9db56331c0c2bd053f8ec0966)), closes [#12779](https://github.com/aws-amplify/amplify-cli/issues/12779) [#12853](https://github.com/aws-amplify/amplify-cli/issues/12853)
+* Revert "test: make test teardown resilient to failures (#12799)" (#12823) ([ec098ca](https://github.com/aws-amplify/amplify-cli/commit/ec098caa57174b928cf6b024a1bc419a65dd8aff)), closes [#12799](https://github.com/aws-amplify/amplify-cli/issues/12799) [#12823](https://github.com/aws-amplify/amplify-cli/issues/12823)
+
+
+
+
+
+## [4.2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.4...amplify-e2e-tests@4.2.5) (2023-06-16)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [4.2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.3...amplify-e2e-tests@4.2.4) (2023-06-13)
+
+
+### Bug Fixes
+
+* deploy category resources when calling amplify push <categoryName> ([#12587](https://github.com/aws-amplify/amplify-cli/issues/12587)) ([260723c](https://github.com/aws-amplify/amplify-cli/commit/260723cb67432308dd35a4ddbedacfbbc69c6c81))
+* do not throw when localEnvInfo is missing on pull (fixes 12492) ([#12528](https://github.com/aws-amplify/amplify-cli/issues/12528)) ([0ae8689](https://github.com/aws-amplify/amplify-cli/commit/0ae8689efbb3907393f493c8707ab025573fb487))
+* remove parameters when resource is deleted or unlinked ([#12544](https://github.com/aws-amplify/amplify-cli/issues/12544)) ([f78fb68](https://github.com/aws-amplify/amplify-cli/commit/f78fb686f4719ef8a487251ded8bf01b9df29dbd))
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.1...amplify-e2e-tests@4.2.3) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.0...amplify-e2e-tests@4.2.2) (2023-05-25)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.2.0...amplify-e2e-tests@4.2.1) (2023-05-25)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 # [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.1.1...amplify-e2e-tests@4.2.0) (2023-05-11)
 
 

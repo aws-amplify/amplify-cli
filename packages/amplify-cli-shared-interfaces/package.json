@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-cli-shared-interfaces",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "API interfaces to be shared across different amplfy-cli packages",
   "main": "lib/index.js",
   "scripts": {
@@ -30,5 +30,10 @@
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "devDependencies": {
     "rimraf": "^3.0.2"
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
+    ]
   }
 }

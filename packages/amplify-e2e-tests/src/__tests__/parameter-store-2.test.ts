@@ -19,7 +19,7 @@ import {
 
 describe('parameters in Parameter Store', () => {
   let projRoot: string;
-  const envName = 'enva';
+  const envName = 'devtest';
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('multi-env');

@@ -41,14 +41,14 @@ describe('zero config auth', () => {
     const authMeta: $TSAny = Object.values(meta.auth)[1];
 
     expect(authMeta.frontendAuthConfig).toMatchInlineSnapshot(`
-      Object {
+      {
         "mfaConfiguration": "ON",
-        "mfaTypes": Array [
+        "mfaTypes": [
           "SMS",
           "TOTP",
         ],
-        "passwordProtectionSettings": Object {
-          "passwordPolicyCharacters": Array [
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [
             "REQUIRES_LOWERCASE",
             "REQUIRES_UPPERCASE",
             "REQUIRES_NUMBERS",
@@ -56,17 +56,17 @@ describe('zero config auth', () => {
           ],
           "passwordPolicyMinLength": 8,
         },
-        "signupAttributes": Array [
+        "signupAttributes": [
           "EMAIL",
         ],
-        "socialProviders": Array [
+        "socialProviders": [
           "FACEBOOK",
           "GOOGLE",
           "AMAZON",
           "APPLE",
         ],
-        "usernameAttributes": Array [],
-        "verificationMechanisms": Array [
+        "usernameAttributes": [],
+        "verificationMechanisms": [
           "EMAIL",
         ],
       }
@@ -103,6 +103,9 @@ describe('zero config auth', () => {
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-auth.ts');
     replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', PROJECT_NAME);
+    // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
+    await expect(amplifyPushOverride(projRoot, false, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
+    // should succeed now
     await amplifyPushOverride(projRoot);
 
     // check overwritten config

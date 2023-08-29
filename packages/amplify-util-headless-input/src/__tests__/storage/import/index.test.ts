@@ -20,7 +20,7 @@ describe('validates import storage headless request', () => {
 
   it('non-json content rejects', async () => {
     const resultPromise = validateImportStorageRequest('garbage');
-    expect(resultPromise).rejects.toBeTruthy();
+    await expect(resultPromise).rejects.toBeTruthy();
   });
 
   test.each([

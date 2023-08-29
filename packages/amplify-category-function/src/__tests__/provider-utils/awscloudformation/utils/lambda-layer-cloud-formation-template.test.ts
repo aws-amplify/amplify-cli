@@ -114,7 +114,7 @@ describe('test layer CFN generation functions', () => {
   });
 
   it('should generate the expected CFN for an existing LL version and new version with complex permissions', () => {
-    let permissions: LayerPermission[] = [
+    const permissions: LayerPermission[] = [
       { type: PermissionEnum.Private },
       { type: PermissionEnum.AwsAccounts, accounts: ['123456789012', '098765432112'] },
       { type: PermissionEnum.AwsOrg, orgs: ['o-123456789012', 'o-098765432112'] },
@@ -129,7 +129,7 @@ describe('test layer CFN generation functions', () => {
 
   it('should generate the expected CFN for an existing LL version and new version with public permission', () => {
     // Public should override other permissions
-    let permissions: LayerPermission[] = [
+    const permissions: LayerPermission[] = [
       { type: PermissionEnum.Private },
       { type: PermissionEnum.AwsAccounts, accounts: ['123456789012', '098765432112'] },
       { type: PermissionEnum.AwsOrg, orgs: ['o-123456789012', 'o-098765432112'] },

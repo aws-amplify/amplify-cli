@@ -23,7 +23,7 @@ const profileName = 'amplify-integ-test-user';
 
 describe('headless s3 import', () => {
   const projectPrefix = 'sssheadimp';
-  const bucketPrefix = 'sss-headless-import-';
+  const bucketPrefix = 'sss-headless-import-test';
 
   const projectSettings = {
     name: projectPrefix,

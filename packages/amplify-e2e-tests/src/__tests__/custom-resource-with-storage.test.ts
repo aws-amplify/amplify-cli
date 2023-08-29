@@ -12,6 +12,9 @@ import {
   getAppId,
   addAuthWithDefault,
   addS3WithGuestAccess,
+  /* TEMPORARY-PR12830: Remove after we ship PR12830 */
+  useLatestExtensibilityHelper,
+  /* END TEMPORARY */
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -20,7 +23,7 @@ import { v4 as uuid } from 'uuid';
 describe('adding custom resources test', () => {
   const projectName = 'cusres';
   let projRoot: string;
-  const envName = 'dev';
+  const envName = 'devtest';
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projectName);
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
@@ -41,6 +44,11 @@ describe('adding custom resources test', () => {
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack-with-storage.ts');
     const destCustomResourceFilePath = path.join(projRoot, 'amplify', 'backend', 'custom', cdkResourceName, 'cdk-stack.ts');
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
+    /* TEMPORARY-PR12830: Remove after we ship PR12830
+     * this is required to jump over breaking change between 2.68 and 2.80 of CDK.
+     */
+    useLatestExtensibilityHelper(projRoot, cdkResourceName);
+    /* END TEMPORARY */
     await buildCustomResources(projRoot);
     await amplifyPushAuth(projRoot);
     await gitCleanFdX(projRoot);

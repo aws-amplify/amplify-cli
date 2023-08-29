@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-geo",
-  "version": "3.2.0",
+  "version": "3.4.0",
   "description": "Amplify CLI plugin to manage the Geo resources for the project",
   "repository": {
     "type": "git",
@@ -26,13 +26,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.5",
-    "@aws-amplify/amplify-prompts": "2.7.0",
+    "@aws-amplify/amplify-cli-core": "4.2.5",
+    "@aws-amplify/amplify-prompts": "2.8.2",
     "ajv": "^6.12.6",
-    "amplify-headless-interface": "1.17.3",
-    "amplify-util-headless-input": "1.9.12",
-    "aws-cdk-lib": "~2.68.0",
-    "aws-sdk": "^2.1354.0",
+    "amplify-headless-interface": "1.17.4",
+    "amplify-util-headless-input": "1.9.15",
+    "aws-cdk-lib": "~2.80.0",
+    "aws-sdk": "^2.1426.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",
@@ -50,7 +50,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
@@ -59,6 +61,11 @@
       "jsx",
       "json",
       "node"
+    ]
+  },
+  "berry": {
+    "plugins": [
+      "@yarn/plugin-typescript"
     ]
   }
 }

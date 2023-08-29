@@ -3,6 +3,95 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.4...@aws-amplify/amplify-category-custom@3.1.5) (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [3.1.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.3...@aws-amplify/amplify-category-custom@3.1.4) (2023-08-09)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [3.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.2...@aws-amplify/amplify-category-custom@3.1.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [3.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.1...@aws-amplify/amplify-category-custom@3.1.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.0...@aws-amplify/amplify-category-custom@3.1.1) (2023-07-24)
+
+
+### Bug Fixes
+
+* skip hooks if flag detected ([a58e13c](https://github.com/aws-amplify/amplify-cli/commit/a58e13c55fb7dfd9e4f4a945e96d429cbecd2f9a))
+
+
+
+
+
+# [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.9...@aws-amplify/amplify-category-custom@3.1.0) (2023-07-20)
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+
+
+
+
+
+## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.8...@aws-amplify/amplify-category-custom@3.0.9) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [3.0.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.6...@aws-amplify/amplify-category-custom@3.0.8) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [3.0.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.5...@aws-amplify/amplify-category-custom@3.0.7) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
+## [3.0.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.5...@aws-amplify/amplify-category-custom@3.0.6) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-custom
+
+
+
+
+
 ## [3.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.0.4...@aws-amplify/amplify-category-custom@3.0.5) (2023-05-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

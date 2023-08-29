@@ -48,7 +48,6 @@ describe('auth import identity pool and userpool', () => {
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
 
   let projectRoot: string;
@@ -66,7 +65,6 @@ describe('auth import identity pool and userpool', () => {
     ogProjectDetails = getOGAuthProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createIDPAndUserPoolWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
@@ -105,7 +103,7 @@ describe('auth import identity pool and userpool', () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
-    let projectDetails = getAuthProjectDetails(projectRoot);
+    const projectDetails = getAuthProjectDetails(projectRoot);
 
     expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 

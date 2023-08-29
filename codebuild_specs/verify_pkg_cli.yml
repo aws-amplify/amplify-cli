@@ -1,0 +1,11 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - source shared-scripts.sh && _waitForJobs $CODEBUILD_SRC_DIR/codebuild_specs/wait_upb.json requirePrevJobsToSucceed
+      - source ./shared-scripts.sh && _verifyPkgCLI
+artifacts:
+  files:
+    - 'shared-scripts.sh'

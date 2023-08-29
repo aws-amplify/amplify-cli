@@ -148,7 +148,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -191,7 +191,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with json error', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -211,7 +211,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully - overrides 1', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -237,7 +237,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully - overrides 2', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -263,7 +263,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully - overrides 3', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -289,7 +289,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider successfully - overrides 4', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -315,7 +315,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with env error - section', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -333,7 +333,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with env error - value', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -351,7 +351,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with env error - bool', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -369,7 +369,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail with env error - number', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -387,7 +387,7 @@ describe('feature flags', () => {
 
     test('initialize feature flag provider fail unknown flags unless false', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -415,7 +415,7 @@ The following feature flags have validation errors:
 
     test('initialize feature flag provider with unknown false flag', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -464,12 +464,12 @@ The following feature flags have validation errors:
       process.env = { ...realProcessEnv };
     });
 
-    test('initialization does not fail when process.env is not available', () => {
+    test('initialization does not fail when process.env is not available', async () => {
       process.env = {};
 
       expect(process.env).toEqual({});
 
-      provider.load();
+      await provider.load();
     });
 
     test('successfully parse every form of variables', async () => {
@@ -555,7 +555,7 @@ The following feature flags have validation errors:
   describe('file provider tests', () => {
     test('missing projectPath argument', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -573,7 +573,7 @@ The following feature flags have validation errors:
 
     test('reads features when both files exists', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -603,7 +603,7 @@ The following feature flags have validation errors:
 
     test('reads features when no environment file exist', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -627,7 +627,7 @@ The following feature flags have validation errors:
 
     test('reads features when no files exist', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -647,7 +647,7 @@ The following feature flags have validation errors:
 
     test('reads features when only environment file exists', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => ({
+        getEnvInfo: (): any => ({
           envName: 'dev',
         }),
       };
@@ -673,7 +673,7 @@ The following feature flags have validation errors:
 
     test('reads features when no files exists and env is unavailable', async () => {
       const context: any = {
-        getEnvInfo: (__: boolean): any => undefined,
+        getEnvInfo: (): any => undefined,
       };
 
       const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);

@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.14...@aws-amplify/cli-extensibility-helper@3.0.15) (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [3.0.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.13...@aws-amplify/cli-extensibility-helper@3.0.14) (2023-08-09)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [3.0.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.12...@aws-amplify/cli-extensibility-helper@3.0.13) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [3.0.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.11...@aws-amplify/cli-extensibility-helper@3.0.12) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [3.0.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.10...@aws-amplify/cli-extensibility-helper@3.0.11) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [3.0.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.9...@aws-amplify/cli-extensibility-helper@3.0.10) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.8...@aws-amplify/cli-extensibility-helper@3.0.9) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [3.0.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.6...@aws-amplify/cli-extensibility-helper@3.0.8) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [3.0.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.5...@aws-amplify/cli-extensibility-helper@3.0.7) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
+## [3.0.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.5...@aws-amplify/cli-extensibility-helper@3.0.6) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
 ## [3.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.4...@aws-amplify/cli-extensibility-helper@3.0.5) (2023-05-11)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

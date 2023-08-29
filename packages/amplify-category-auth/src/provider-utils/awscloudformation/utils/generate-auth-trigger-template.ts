@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSAny, AmplifyFault, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, AmplifyFault, JSONUtilities, pathManager, getPermissionsBoundaryArn } from '@aws-amplify/amplify-cli-core';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
@@ -152,7 +152,7 @@ const createCustomResource = (
 ): void => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
-    runtime: lambda.Runtime.NODEJS_16_X,
+    runtime: lambda.Runtime.NODEJS_18_X,
     code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });
@@ -165,6 +165,11 @@ const createCustomResource = (
         resources: [userpoolArn.valueAsString],
       }),
     );
+
+    const policyArn = getPermissionsBoundaryArn();
+    if (policyArn) {
+      iam.PermissionsBoundary.of(authTriggerFn).apply(iam.ManagedPolicy.fromManagedPolicyArn(stack, 'PermissionsBoundary', policyArn));
+    }
 
     // reason to add iam::PassRole
     // AccessDeniedException: User: <IAM User> is not authorized to perform: iam:PassRole

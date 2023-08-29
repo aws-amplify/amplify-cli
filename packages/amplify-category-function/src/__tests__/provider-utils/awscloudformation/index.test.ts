@@ -33,7 +33,7 @@ const buildFunction_mock = buildFunction as jest.MockedFunction<typeof buildFunc
 
 describe('awscloudformation function provider', () => {
   beforeEach(() => jest.clearAllMocks());
-  it('opens the correct service console', () => {
+  it('opens the correct service console', async () => {
     const contextStub = {
       amplify: {
         getProjectMeta: () => ({
@@ -45,14 +45,14 @@ describe('awscloudformation function provider', () => {
         }),
       },
     } as $TSContext;
-    openConsole(contextStub, ServiceName.LambdaFunction);
+    await openConsole(contextStub, ServiceName.LambdaFunction);
     const openMock = open as any;
     expect(openMock.mock.calls.length).toBe(1);
     expect(openMock.mock.calls[0][0]).toMatchSnapshot();
 
     openMock.mockClear();
 
-    openConsole(contextStub, ServiceName.LambdaLayer);
+    await openConsole(contextStub, ServiceName.LambdaLayer);
     expect(openMock.mock.calls.length).toBe(1);
     expect(openMock.mock.calls[0][0]).toMatchSnapshot();
   });

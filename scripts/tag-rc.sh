@@ -8,7 +8,7 @@ fi
 
 rc_tag="v$(jq -r .version packages/amplify-cli/package.json)"
 commit="$(git rev-parse HEAD~1)"
-short_commit="$(git rev-parse --short HEAD~1)"
+short_commit="$(git rev-parse --short=15 HEAD~1)"
 git tag $rc_tag $commit
 # push the main release tag
 git push origin $rc_tag

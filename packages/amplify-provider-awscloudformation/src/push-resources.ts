@@ -360,6 +360,13 @@ export const run = async (context: $TSContext, resourceDefinition: $TSObject, re
     }
 
     await postPushGraphQLCodegen(context);
+    await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.AUTH,
+      AmplifySupportedService.COGNITO,
+      'updateAppClientWithGeneratedSecret',
+      [context],
+    );
     await postPushCheck(context);
 
     if (resources.concat(resourcesToBeDeleted).length > 0) {
@@ -564,7 +571,10 @@ export const updateStackForAPIMigration = async (context: $TSContext, category: 
 
 const prepareBuildableResources = async (context: $TSContext, resources: $TSAny[]): Promise<void> => {
   // Only build and package resources which are required
-  await Promise.all(resources.filter((resource) => resource.build).map((resource) => prepareResource(context, resource)));
+  const resourcesToBuild = resources.filter((resource) => resource.build);
+  for (const resource of resourcesToBuild) {
+    await prepareResource(context, resource);
+  }
 };
 
 const prepareResource = async (context: $TSContext, resource: $TSAny) => {

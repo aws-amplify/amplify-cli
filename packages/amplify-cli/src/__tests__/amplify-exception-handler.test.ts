@@ -8,12 +8,12 @@ const printerMock = printer as any;
 
 const reportErrorMock = reportError as jest.MockedFunction<typeof reportError>;
 jest.mock('../commands/diagnose', () => ({
-  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => {
+  reportError: jest.fn(async (): Promise<void> => {
     /* no-op */
   }),
 }));
 
-const processExit = jest.spyOn(process, 'exit').mockImplementation((__code?: number) => undefined as never);
+let processExit;
 
 jest.mock('@aws-amplify/amplify-prompts');
 
@@ -30,6 +30,7 @@ describe('test exception handler', () => {
   } as unknown as Context;
   beforeEach(() => {
     jest.resetAllMocks();
+    processExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     init(contextMock);
   });
   it('error handler should call usageData emitError', async () => {

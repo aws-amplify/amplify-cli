@@ -1,4 +1,5 @@
-import { $TSObject, getPackageManager, JSONUtilities, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
+import { $TSObject, getPackageManager, JSONUtilities, AmplifyError, PackageManager } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
@@ -12,19 +13,24 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
   const resourceDir = request.service ? request.srcRoot : path.join(request.srcRoot, 'src');
 
   if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp, request.buildType, request.lastBuildType)) {
-    installDependencies(resourceDir, request.buildType);
-    if (request.legacyBuildHookParams) {
-      runBuildScriptHook(request.legacyBuildHookParams.resourceName, request.legacyBuildHookParams.projectRoot);
+    if (request.scripts?.build) {
+      await execWithOutputAsString(request.scripts.build, { cwd: resourceDir });
+    } else {
+      await installDependencies(resourceDir, request.buildType);
     }
-    return Promise.resolve({ rebuilt: true });
+
+    if (request.legacyBuildHookParams) {
+      await runBuildScriptHook(request.legacyBuildHookParams.resourceName, request.legacyBuildHookParams.projectRoot);
+    }
+    return { rebuilt: true };
   }
-  return Promise.resolve({ rebuilt: false });
+  return { rebuilt: false };
 };
 
-const runBuildScriptHook = (resourceName: string, projectRoot: string): void => {
+const runBuildScriptHook = async (resourceName: string, projectRoot: string): Promise<void> => {
   const scriptName = `amplify:${resourceName}`;
   if (scriptExists(projectRoot, scriptName)) {
-    runPackageManager(projectRoot, undefined, scriptName);
+    await runPackageManagerScript(projectRoot, scriptName);
   }
 };
 
@@ -35,24 +41,38 @@ const scriptExists = (projectRoot: string, scriptName: string): boolean => {
   return !!rootPackageJsonContents?.scripts?.[scriptName];
 };
 
-const installDependencies = (resourceDir: string, buildType: BuildType): void => {
-  runPackageManager(resourceDir, buildType);
+const installDependencies = async (resourceDir: string, buildType: BuildType): Promise<void> => {
+  await runPackageManagerInstall(resourceDir, buildType);
 };
 
-const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: string): void => {
-  const packageManager = getPackageManager(cwd);
-
+const runPackageManagerInstall = async (resourceDir: string, buildType: BuildType): Promise<void> => {
+  const packageManager = await getPackageManager(resourceDir);
   if (packageManager === null) {
     // If no package manager was detected, it means that this functions or layer has no package.json, so no package operations
     // should be done.
     return;
   }
 
-  const useYarn = packageManager.packageManager === 'yarn';
-  const args = toPackageManagerArgs(useYarn, buildType, scriptName);
+  const args = packageManager.getInstallArgs(buildType);
+  await runPackageManager(packageManager, args, resourceDir);
+};
+
+const runPackageManagerScript = async (resourceDir: string, scriptName: string): Promise<void> => {
+  const packageManager = await getPackageManager(resourceDir);
+  if (packageManager === null) {
+    // If no package manager was detected, it means that this functions or layer has no package.json, so no package operations
+    // should be done.
+    return;
+  }
+
+  const args = packageManager.getRunScriptArgs(scriptName);
+  await runPackageManager(packageManager, args, resourceDir);
+};
+
+const runPackageManager = async (packageManager: PackageManager, args: string[], resourceDir: string): Promise<void> => {
   try {
     execa.sync(packageManager.executable, args, {
-      cwd,
+      cwd: resourceDir,
       stdio: 'pipe',
       encoding: 'utf-8',
     });
@@ -62,14 +82,6 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
         'PackagingLambdaFunctionError',
         {
           message: `Packaging lambda function failed. Could not find ${packageManager.packageManager} executable in the PATH.`,
-        },
-        error,
-      );
-    } else if (error.stdout?.includes('YN0050: The --production option is deprecated')) {
-      throw new AmplifyError(
-        'PackagingLambdaFunctionError',
-        {
-          message: 'Packaging lambda function failed. Yarn 2 is not supported. Use Yarn 1.x and push again.',
         },
         error,
       );
@@ -83,20 +95,6 @@ const runPackageManager = (cwd: string, buildType?: BuildType, scriptName?: stri
       );
     }
   }
-};
-
-const toPackageManagerArgs = (useYarn: boolean, buildType?: BuildType, scriptName?: string): string[] => {
-  if (scriptName) {
-    return useYarn ? [scriptName] : ['run-script', scriptName];
-  }
-
-  const args = useYarn ? ['--no-bin-links'] : ['install', '--no-bin-links'];
-
-  if (buildType === BuildType.PROD) {
-    args.push('--production');
-  }
-
-  return args;
 };
 
 const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, buildType: BuildType, lastBuildType?: BuildType): boolean => {

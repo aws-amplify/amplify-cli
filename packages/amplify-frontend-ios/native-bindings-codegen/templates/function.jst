@@ -1,6 +1,7 @@
 <%= __FUNCTION_DOCS__ %>
 async function <%= __FUNCTION_NAME__ %>(params) {
-  let command = `${amplifyXcodePath()} <%= __COMMAND_NAME__ %>`;
+  const command = amplifyXcodePath();
+  const args = ['<%= __COMMAND_NAME__ %>'];
 <%=__COMMAND_PARAMS__ %>
-  await execa.command(command, { stdout: 'inherit' });
+  await execa(command, args, { stdout: 'inherit' });
 }

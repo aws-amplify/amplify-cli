@@ -26,6 +26,8 @@ const defaultSettings = {
   disableCIDetection: false,
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
+  includeUsageDataPrompt: true,
+  testingWithLatestCodebase: false,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
@@ -52,54 +54,46 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), cliArgs, {
-      cwd,
-      stripColors: true,
-      env,
-      disableCIDetection: s.disableCIDetection,
-    })
-      .wait('Enter a name for the project')
-      .sendLine(s.name)
-      .wait('Initialize the project with the above configuration?')
-      .sendConfirmNo()
-      .wait('Enter a name for the environment')
-      .sendLine(s.envName)
-      .wait('Choose your default editor:')
-      .sendLine(s.editor)
-      .wait("Choose the type of app that you're building")
-      .sendCarriageReturn()
-      .wait('What javascript framework are you using')
-      .sendLine(s.framework)
-      .wait('Source Directory Path:')
-      .sendLine(s.srcDir)
-      .wait('Distribution Directory Path:')
-      .sendLine(s.distDir)
-      .wait('Build Command:')
-      .sendLine(s.buildCmd)
-      .wait('Start Command:')
-      .sendCarriageReturn();
+  const chain = spawn(getCLIPath(s.testingWithLatestCodebase), cliArgs, {
+    cwd,
+    stripColors: true,
+    env,
+    disableCIDetection: s.disableCIDetection,
+  })
+    .wait('Enter a name for the project')
+    .sendLine(s.name)
+    .wait('Initialize the project with the above configuration?')
+    .sendConfirmNo()
+    .wait('Enter a name for the environment')
+    .sendLine(s.envName)
+    .wait('Choose your default editor:')
+    .sendLine(s.editor)
+    .wait("Choose the type of app that you're building")
+    .sendCarriageReturn()
+    .wait('What javascript framework are you using')
+    .sendLine(s.framework)
+    .wait('Source Directory Path:')
+    .sendLine(s.srcDir)
+    .wait('Distribution Directory Path:')
+    .sendLine(s.distDir)
+    .wait('Build Command:')
+    .sendLine(s.buildCmd)
+    .wait('Start Command:')
+    .sendCarriageReturn();
 
-    if (!providerConfigSpecified) {
-      chain
-        .wait('Using default provider  awscloudformation')
-        .wait('Select the authentication method you want to use:')
-        .sendCarriageReturn()
-        .wait('Please choose the profile you want to use')
-        .sendLine(s.profileName);
-    }
+  if (!providerConfigSpecified) {
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
-      .sendYes()
-      .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
-      .run((err: Error) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-  });
+      .wait('Using default provider  awscloudformation')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
+      .wait('Please choose the profile you want to use')
+      .sendLine(s.profileName);
+  }
+
+  if (s.includeUsageDataPrompt) {
+    chain.wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/).sendYes();
+  }
+  return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
 
 export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typeof defaultSettings>): Promise<void> {
@@ -137,7 +131,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -191,7 +185,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -233,7 +227,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
 
     singleSelect(chain, s.region, amplifyRegions);
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -296,7 +290,7 @@ export function initProjectWithAccessKey(
 
     singleSelect(chain, s.region, amplifyRegions);
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {

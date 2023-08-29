@@ -25,7 +25,6 @@ import {
   pushToCloud,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import { addCodegen } from '../codegen/add';
 import { getAWSExportsPath } from '../aws-exports/awsExports';
@@ -123,8 +122,8 @@ async function testDeletion(projRoot: string, settings: { ios?: boolean; android
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(false);
   expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
   expect(await bucketNotExists(deploymentBucketName2)).toBe(true);
-  expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
-  expect(UnauthRoleName).not.toBeIAMRoleWithArn(UnauthRoleName);
+  await expect(AuthRoleName).not.toBeIAMRoleWithArn(AuthRoleName);
+  await expect(UnauthRoleName).not.toBeIAMRoleWithArn(UnauthRoleName);
   // check that config/exports file was deleted
   if (settings.ios) {
     expect(fs.existsSync(getAWSConfigIOSPath(projRoot))).toBe(false);
@@ -174,7 +173,7 @@ async function appExists(appId: string, region: string) {
 }
 
 async function timeout(timeout: number) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
 }

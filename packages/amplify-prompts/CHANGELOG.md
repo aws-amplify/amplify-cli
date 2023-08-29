@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.8.1...@aws-amplify/amplify-prompts@2.8.2) (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-prompts
+
+
+
+
+
+## [2.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.8.0...@aws-amplify/amplify-prompts@2.8.1) (2023-08-09)
+
+**Note:** Version bump only for package @aws-amplify/amplify-prompts
+
+
+
+
+
+# [2.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.7.0...@aws-amplify/amplify-prompts@2.8.0) (2023-06-13)
+
+
+### Features
+
+* display error message instead of object ([#12636](https://github.com/aws-amplify/amplify-cli/issues/12636)) ([811e8fc](https://github.com/aws-amplify/amplify-cli/commit/811e8fcd48f15b37401643b9b13f628acb4708bd))
+
+
+
+
+
 # [2.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.6.8...@aws-amplify/amplify-prompts@2.7.0) (2023-05-11)
 
 

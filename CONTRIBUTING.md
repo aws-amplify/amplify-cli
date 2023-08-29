@@ -4,22 +4,34 @@ Thank you for your interest in contributing to our project! 💛
 
 Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community. Please read through these guidelines carefully before submitting a PR or issue and let us know if it's not up-to-date (or even better, submit a PR with your proposed corrections 😉).
 
-- [Getting Started](#getting-started)
-  - [Local Environment Setup](#local-environment-setup)
-  - [Architecture of the codebase](#architecture-of-the-codebase)
-  - [Steps towards contributions](#steps-towards-contributions)
-- [Pull Requests](#pull-requests)
-- [Bug Reports](#bug-reports)
-- [Commits](#commits)
-  - [Git Hooks](#git-hooks)
-- [Tests](#tests)
-- [Debugging](#debugging)
-- [Code Style](#code-style)
-- [Finding Contributions](#finding-contributions)
-- [Community](#community)
-- [Code of Conduct](#code-of-conduct)
-- [Security Issue Reporting](#security-issue-reporting)
-- [Licensing](#licensing)
+- [Contributing to Amplify CLI](#contributing-to-amplify-cli)
+  - [Getting Started](#getting-started)
+    - [Local Environment Setup](#local-environment-setup)
+    - [Architecture of the codebase](#architecture-of-the-codebase)
+    - [Steps towards contributions](#steps-towards-contributions)
+      - [What's with all the lint errors?](#whats-with-all-the-lint-errors)
+  - [Pull Requests](#pull-requests)
+    - [Labels](#labels)
+    - [Steps](#steps)
+  - [Bug Reports](#bug-reports)
+  - [Commits](#commits)
+    - [Git Hooks](#git-hooks)
+      - ["commit-msg" hook:](#commit-msg-hook)
+      - ["pre-commit" hook:](#pre-commit-hook)
+      - ["pre-push" hook:](#pre-push-hook)
+  - [Tests](#tests)
+    - [How to Find and Create Unit Tests](#how-to-find-and-create-unit-tests)
+    - [Running Unit Tests](#running-unit-tests)
+    - [End-To-End Tests](#end-to-end-tests)
+    - [Code Coverage](#code-coverage)
+    - [Manual Testing](#manual-testing)
+  - [Debugging](#debugging)
+  - [Code Style](#code-style)
+  - [Finding Contributions](#finding-contributions)
+  - [Community](#community)
+  - [Code of Conduct](#code-of-conduct)
+  - [Security Issue Reporting](#security-issue-reporting)
+  - [Licensing](#licensing)
 
 ## Getting Started
 
@@ -29,21 +41,19 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
 ### Local Environment Setup
 
-1. Ensure you have [Node.js 18](https://nodejs.org/en/download/) installed, which comes bundled with [`npm`](https://github.com/npm/cli). Use it to install or upgrade [`yarn`](https://classic.yarnpkg.com/en/docs/install):
+1. Ensure you have [Node.js 18](https://nodejs.org/en/download/) installed, which comes bundled with [`npm`](https://github.com/npm/cli). Use it to install or upgrade [`yarn`](https://yarnpkg.com/getting-started/install):
 
    ```sh
    npm install --global yarn
    ```
 
-   > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
+   > Ensure that `.bin` directory is added to your PATH. For example, add `export PATH="<amplify-cli/.bin>:$PATH"` to your shell profile file on Linux or macOS.
 
-   > Ensure that [Yarn global bin](https://classic.yarnpkg.com/en/docs/cli/global) is added to your PATH. For example, add `export PATH="$(yarn global bin):$PATH"` to your shell profile file on Linux or macOS.
+2. Ensure you have [Java](https://aws.amazon.com/corretto/) installed and `java` command is available in your system. This is required for DynamoDB emulator.
 
-1. Ensure you have [Java](https://aws.amazon.com/corretto/) installed and `java` command is available in your system. This is required for DynamoDB emulator.
+3. Ensure you are using the npm registry, even with yarn by running `yarn config set npmRegistryServer https://registry.npmjs.org`
 
-1. Ensure you are using the npm registry, even with yarn by running `yarn config set registry https://registry.npmjs.org`
-
-1. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _dev_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
+4. Start by [forking](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the _dev_ branch of [amplify-cli](https://github.com/aws-amplify/amplify-cli). Then clone it to your machine to work with it locally using one of the following methods:
 
    ```sh
    # HTTPS
@@ -56,20 +66,20 @@ This section should get you running with **Amplify CLI** and get you familiar wi
    gh repo clone [username]/amplify-cli
    ```
 
-1. Move into your project folder:
+5. Move into your project folder:
 
    ```sh
    cd amplify-cli
    ```
 
-1. Then, you can run the `setup-dev` script, which installs dependencies and performs initial configuration:
+6. Then, you can run the `setup-dev` script, which installs dependencies and performs initial configuration:
 
    ```sh
    # Linux / macOS
-   yarn setup-dev
+   yarn && yarn setup-dev
 
    # Windows
-   yarn setup-dev-win
+   yarn && yarn setup-dev-win
    ## Must be run in Powershell
    ```
 
@@ -91,17 +101,6 @@ Amplify CLI is a monorepo built with [Yarn Workspaces](https://yarnpkg.com/featu
 - Test in sample app using [amplify-dev](#tests)
 - Submit a PR
 
-#### What's with all the lint errors?
-
-For a long time, the codebase had relatively lax lint checking. We have now added more strict rules but decided that it wasn't feasible to
-update all the code to adhere to the new rules at once. Instead we have opted for an iterative approach where lint errors are fixed as
-files are touched. If you are the first person to touch a file since the rules have been inforced we ask that you try your best to address
-the lint errors in that file. If addressing an error would significantly increase the scope of the change, it is okay to add a lint disable
-comment and a justification in the PR description.
-
-To get lint warnings as you type, configure the ESLint VSCode plugin. Alternatively, run `yarn lint-fix` to auto-fix errors where possible
-and print out errors that need manual attention.
-
 ## Pull Requests
 
 Pull requests are welcome!
@@ -122,9 +121,10 @@ If the change is a breaking change ([as defined by semantic versioning](https://
 1. Within your local fork, create a new branch based on the issue you're addressing - e.g. `git checkout -b category-auth/admin-auth-support`
    - Use grouping tokens at the beginning of the branch names. For e.g, if you are working on changes specific to `amplify-category-auth`, then you could start the branch name as `category-auth/...`
    - Use slashes to separate parts of branch names
+1. Before your first commit, install [git-secrets plugin](https://github.com/awslabs/git-secrets#installing-git-secrets)
 1. Once your work is committed and you're ready to share, run `yarn test`. Manually test your changes in a sample app with different edge cases and also test across different platforms if possible.
 1. Run `yarn lint-fix` to find and fix any linting errors
-1. Run `yarn prettify:changes` to fix styling issues
+1. Run `yarn prettier-changes` to fix styling issues
 1. Then, push your branch: `git push origin HEAD` (pushes the current branch to origin remote)
 1. Open GitHub to create a PR from your newly published branch. Fill out the PR template and submit a PR.
 1. Finally, the Amplify CLI team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners. _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
@@ -171,17 +171,7 @@ Valid commit types are as follows:
 
 ### Git Hooks
 
-You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/main) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/f2ac2b27b6b0dbf0c52edbc696c35b71f539c944/package.json#L61) file):
-
-```json
-"husky": {
-    "hooks": {
-        "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-        "pre-push": "yarn verify-api-extract && yarn build-tests-changed && yarn split-e2e-tests",
-        "pre-commit": "yarn verify-commit"
-    }
-}
-```
+You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/main) (you can see them in [.husky](.husky) file):
 
 > NOTE: To ensure those git hooks properly execute, run `yarn` or `npm install` at the root of this monorepo to install the necessary dev dependency packages.
 

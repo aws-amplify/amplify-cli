@@ -7,6 +7,7 @@ import {
   amplifyPushAuth,
   amplifyStatus,
   createNewProjectDir,
+  createUserPoolOnlyWithOAuthSettings,
   deleteProject,
   deleteProjectDir,
   getRootStackTemplate,
@@ -16,7 +17,6 @@ import {
 import {
   addS3WithAuthConfigurationMismatchErrorExit,
   AuthProjectDetails,
-  createUserPoolOnlyWithOAuthSettings,
   expectAuthParametersMatch,
   expectLocalAndCloudMetaFilesMatching,
   getAuthProjectDetails,
@@ -108,9 +108,7 @@ describe('auth import userpool only', () => {
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     // Imported auth resources cannot be used together with \'storage\' category\'s authenticated and unauthenticated access.
-    await expect(addS3WithAuthConfigurationMismatchErrorExit(projectRoot, {})).rejects.toThrowError(
-      'Process exited with non zero exit code 1',
-    );
+    await expect(addS3WithAuthConfigurationMismatchErrorExit(projectRoot)).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   it('imported user pool only should allow iam auth in graphql api', async () => {

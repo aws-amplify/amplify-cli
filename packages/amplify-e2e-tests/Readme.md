@@ -4,27 +4,27 @@ This packages contains end to end tests that are run in CircleCI to ensure that 
 
 ## Setup
 
-To run the tests locally, you need to have your AWS credentials stored in a `.env` file of this package. These values are used to configure the test projects.
+To run the tests locally, you need to have your personal AWS credentials stored in a `.env` file of this package. These values are used to configure the test projects.
 
-Please see sample.env for the keys that are expected in your `.env` file.
+Please see sample.env for the keys that are expected in your `.env` file. Or, for internal engineers, you can copy "Copy bash/zsh" directly from your personal account, and paste it in the terminal.
 
-The `.env` file does not get commited as its in the `.gitignore` file.
+The `.env` file does not get committed as its in the `.gitignore` file.
 
-Set `AMPLIFY_PATH` to point to `amplify-cli/bin/amplify`
+Set `AMPLIFY_PATH` to point to `amplify-cli/bin/amplify` or using absolute path `<PATH_TO_ROOT>/packages/amplify-cli/bin/amplify`
 
 ## Running individual tests
 
-Amplify E2E tests use Jest. So all the standard Jest comnmads work.
+Amplify E2E tests use Jest. So all the standard Jest commands work.
 You can run a single test while adding a new test by running
 
 ```bash
 cd <amplif-cli-root>/packages/amplify-e2e-tests/
-npm run e2e src/__tests__/init.test.ts
+yarn e2e src/__tests__/init_a.test.ts
 ```
 
 ## Writing a new integration test
 
-E2E tests internally use a forked version of [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfile` is a helper method that is used in `init` tests and also used in all the other tests to initalize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using `aws-sdk` to make assert the resource configuration.
+E2E tests internally use a forked version of [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfile` is a helper method that is used in `init` tests and also used in all the other tests to initialize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using `aws-sdk` to make assert the resource configuration.
 
 To configure the amount of time nexpect will wait for CLI responses, you can set the `AMPLIFY_TEST_TIMEOUT_SEC` environment variable. It is helpful to set this to a low value (10 seconds or so) when writing new tests so that you don't spend unnecessary time waiting for nexpect to error out on a misconfigured wait() block
 

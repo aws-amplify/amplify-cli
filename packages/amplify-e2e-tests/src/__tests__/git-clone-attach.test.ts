@@ -91,7 +91,7 @@ describe('attach amplify to git-cloned project', () => {
     const preCleanTpi = getTeamProviderInfo(projRoot);
     const importBucketRegion = (Object.values(preCleanTpi[envName].categories.storage)[0] as any).region;
     const appId = preCleanTpi[envName].awscloudformation.AmplifyAppId;
-    gitCleanFdx(projRoot);
+    await gitCleanFdx(projRoot);
 
     const socialProviders = getSocialProviders();
     const categoriesConfig = {
@@ -118,7 +118,7 @@ describe('attach amplify to git-cloned project', () => {
     // expect no file changes
     const changedFiles = await gitChangedFiles(projRoot);
     expect(changedFiles).toMatchInlineSnapshot(`
-      Array [
+      [
         ".gitignore",
         "amplify/README.md",
       ]

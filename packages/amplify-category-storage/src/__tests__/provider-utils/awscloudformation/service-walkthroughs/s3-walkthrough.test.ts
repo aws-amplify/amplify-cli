@@ -51,8 +51,8 @@ describe('add s3 walkthrough tests', () => {
         getResourceStatus: async () => {
           return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
         },
-        copyBatch: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
-        updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
+        copyBatch: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
+        updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
         pathManager: {
           getBackendDirPath: jest.fn().mockReturnValue('mockTargetDir'),
         },
@@ -70,7 +70,7 @@ describe('add s3 walkthrough tests', () => {
     });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
     jest.spyOn(s3AuthAPI, 'migrateAuthDependencyResource').mockReturnValue(
-      new Promise((resolve, _reject) => {
+      new Promise((resolve) => {
         process.nextTick(() => resolve(true));
       }),
     );
@@ -94,7 +94,7 @@ describe('add s3 walkthrough tests', () => {
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
-    let options = {};
+    const options = {};
     const returnedResourcename = await addWalkthrough(mockContext, S3MockDataBuilder.mockFilePath, mockContext, options);
 
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);
@@ -126,7 +126,7 @@ describe('add s3 walkthrough tests', () => {
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
-    let options = {};
+    const options = {};
     const returnedResourcename = await addWalkthrough(mockContext, S3MockDataBuilder.mockFilePath, mockContext, options);
 
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);
@@ -160,7 +160,7 @@ describe('add s3 walkthrough tests', () => {
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
-    let options = {};
+    const options = {};
     const returnedResourcename = await addWalkthrough(mockContext, S3MockDataBuilder.mockFilePath, mockContext, options);
 
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);
@@ -202,7 +202,7 @@ describe('add s3 walkthrough tests', () => {
 
     stateManager.getMeta = jest.fn().mockReturnValue(S3MockDataBuilder.mockAmplifyMeta);
 
-    let options = {};
+    const options = {};
     const returnedResourcename = await addWalkthrough(mockContext, S3MockDataBuilder.mockFilePath, mockContext, options);
 
     expect(returnedResourcename).toEqual(S3MockDataBuilder.mockResourceName);
@@ -241,8 +241,8 @@ describe('update s3 permission walkthrough tests', () => {
         getResourceStatus: () => {
           return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
         }, //eslint-disable-line
-        copyBatch: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
-        updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
+        copyBatch: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
+        updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
         pathManager: {
           getBackendDirPath: jest.fn().mockReturnValue('mockTargetDir'),
         },
@@ -445,8 +445,8 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
         getResourceStatus: () => {
           return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
         }, //eslint-disable-line
-        copyBatch: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
-        updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
+        copyBatch: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
+        updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
         pathManager: {
           getBackendDirPath: jest.fn().mockReturnValue('mockTargetDir'),
         },
@@ -710,8 +710,8 @@ describe('migrate s3 and update s3 permission walkthrough tests', () => {
         getResourceStatus: async () => {
           return { allResources: S3MockDataBuilder.getMockGetAllResourcesNoExistingLambdas() };
         },
-        copyBatch: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
-        updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve, reject) => resolve(true))),
+        copyBatch: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
+        updateamplifyMetaAfterResourceAdd: jest.fn().mockReturnValue(new Promise((resolve) => resolve(true))),
         pathManager: {
           getBackendDirPath: jest.fn().mockReturnValue('mockTargetDir'),
         },

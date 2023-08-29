@@ -21,6 +21,7 @@ function getServiceMeta(projectRoot: string, category: string, service: string):
       return meta.storage[storageResourceName];
     }
   }
+  return undefined;
 }
 
 describe('amplify add/update storage(S3)', () => {
@@ -48,7 +49,7 @@ describe('amplify add/update storage(S3)', () => {
   it('init a project and add S3 bucket with user pool groups and Admin API', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithGroupsAndAdminAPI(projRoot);
-    await addS3WithGroupAccess(projRoot, {});
+    await addS3WithGroupAccess(projRoot);
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });
@@ -68,7 +69,7 @@ describe('amplify add/update storage(S3)', () => {
     };
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithGroupsAndAdminAPI(projRoot);
-    await addS3WithGroupAccess(projRoot, settings);
+    await addS3WithGroupAccess(projRoot);
     await updateS3AddTriggerNewFunctionWithFunctionExisting(projRoot, settings);
     await amplifyPushAuth(projRoot);
     await validate(projRoot);

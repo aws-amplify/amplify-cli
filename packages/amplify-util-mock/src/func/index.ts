@@ -57,8 +57,7 @@ export async function start(context: $TSContext): Promise<void> {
       printer.success('Result:');
       printer.info(typeof result === 'undefined' ? '' : stringResult);
     } catch (err) {
-      printer.error(`${resourceName} failed with the following error:`);
-      printer.info(err);
+      printer.error(`${resourceName} failed with the following error:`, err);
     } finally {
       printer.info('Finished execution.');
     }

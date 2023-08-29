@@ -1,5 +1,4 @@
 import {
-  addFunction,
   addRestApi,
   amplifyPull,
   amplifyPushAuth,
@@ -17,6 +16,7 @@ import {
 import { cfnDiffExclusions } from '../../migration-helpers-v10/cfn-diff-exclusions';
 import { initJSProjectWithProfileV10 } from '../../migration-helpers-v10/init';
 import { assertNoParameterChangesBetweenProjects, collectCloudformationDiffBetweenProjects } from '../../migration-helpers/utils';
+import { addFunctionPreV12 } from '../../migration-helpers/lambda-function';
 
 describe('api lambda migration tests', () => {
   let projRoot: string;
@@ -32,7 +32,7 @@ describe('api lambda migration tests', () => {
     projRoot = await createNewProjectDir(projectName);
 
     await initJSProjectWithProfileV10(projRoot, { name: 'restApiTest', disableAmplifyAppCreation: false });
-    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addFunctionPreV12(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addRestApi(projRoot, {
       existingLambda: true,
       restrictAccess: true,
@@ -67,7 +67,7 @@ describe('api lambda migration tests', () => {
 
     // make sure current project meta is valid
     const meta = getProjectMeta(projRoot);
-    validateRestApiMeta(projRoot, meta);
+    await validateRestApiMeta(projRoot, meta);
 
     // pull down with vlatest
     const appId = getAppId(projRoot);
@@ -84,7 +84,7 @@ describe('api lambda migration tests', () => {
 
       // validate metadata for pulled down project
       const meta2 = getProjectMeta(projRoot2);
-      validateRestApiMeta(projRoot2, meta2);
+      await validateRestApiMeta(projRoot2, meta2);
 
       // validate role policies
       const cfnMeta = meta2.providers.awscloudformation;

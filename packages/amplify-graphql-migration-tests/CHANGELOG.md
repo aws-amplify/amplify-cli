@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.5.0...amplify-graphql-migration-tests@2.5.1) (2023-08-17)
+
+
+### Bug Fixes
+
+* update GraphQLTransform input types ([#13060](https://github.com/aws-amplify/amplify-cli/issues/13060)) ([b6ea551](https://github.com/aws-amplify/amplify-cli/commit/b6ea5519a81ca1467412f4ca9497b030660e5bf2))
+
+
+
+
+
+# [2.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.10...amplify-graphql-migration-tests@2.5.0) (2023-08-09)
+
+
+### Features
+
+* replace oauth and userpoolclient lambdas with cfn and sdk calls ([#12935](https://github.com/aws-amplify/amplify-cli/issues/12935)) ([b3ab512](https://github.com/aws-amplify/amplify-cli/commit/b3ab5125f2ec405afd1af9d2f77b8683d5914010))
+
+
+
+
+
+## [2.4.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.9...amplify-graphql-migration-tests@2.4.10) (2023-07-20)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+## [2.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.8...amplify-graphql-migration-tests@2.4.9) (2023-06-13)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+## [2.4.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.6...amplify-graphql-migration-tests@2.4.8) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [2.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.5...amplify-graphql-migration-tests@2.4.7) (2023-05-25)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
+## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.5...amplify-graphql-migration-tests@2.4.6) (2023-05-25)
+
+**Note:** Version bump only for package amplify-graphql-migration-tests
+
+
+
+
+
 ## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-migration-tests@2.4.4...amplify-graphql-migration-tests@2.4.5) (2023-05-11)
 
 

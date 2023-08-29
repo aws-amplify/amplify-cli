@@ -5,7 +5,6 @@ import * as fs from 'fs-extra';
 import { hideSync } from 'hidefile';
 import { setRegPendingDelete } from '../../utils/win-utils';
 import { windowsPathSerializer } from '../testUtils/snapshot-serializer';
-import * as path from 'path';
 
 jest.mock('execa');
 const execa_mock = execa as jest.Mocked<typeof execa>;
@@ -14,7 +13,7 @@ execa_mock.command.mockResolvedValue({} as any);
 jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
 
-let userConfirmation = true;
+const userConfirmation = true;
 const context_stub = {
   amplify: {
     confirmPrompt: async () => userConfirmation,
@@ -72,7 +71,7 @@ describe('uninstall packaged CLI on mac / linux', () => {
   });
 
   it('throws if it cannot remove the .amplify dir', async () => {
-    fs_mock.remove.mockImplementationOnce(async () => {
+    fs_mock.remove.mockImplementationOnce(() => {
       throw new Error('fs remove did not work!');
     });
 
@@ -110,14 +109,14 @@ describe('uninstall packaged CLI on windows', () => {
     await run(context_stub_typed);
 
     expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
-      Array [
-        "${path.join('homedir', '.amplify', 'bin', 'amplify.exe')}",
-        "a/test/path/.amplify-pending-delete.exe",
-        Object {
-          "overwrite": true,
-        },
-      ]
-    `);
+[
+  "homedir/.amplify/bin/amplify.exe",
+  "a/test/path/.amplify-pending-delete.exe",
+  {
+    "overwrite": true,
+  },
+]
+`);
     expect(fs_mock.remove.mock.calls[0][0]).toMatchInlineSnapshot(`"homedir/.amplify"`);
   });
 

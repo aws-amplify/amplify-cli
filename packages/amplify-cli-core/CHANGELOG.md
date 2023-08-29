@@ -3,6 +3,113 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.4...@aws-amplify/amplify-cli-core@4.2.5) (2023-08-17)
+
+
+### Bug Fixes
+
+* do not store windows specific package manager extension ([#13047](https://github.com/aws-amplify/amplify-cli/issues/13047)) ([d29a075](https://github.com/aws-amplify/amplify-cli/commit/d29a075d3d115db44bcaf68d58e260c7f234a4d3))
+
+
+
+
+
+## [4.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.3...@aws-amplify/amplify-cli-core@4.2.4) (2023-08-09)
+
+
+### Bug Fixes
+
+* Dependabot alerts for semver, tough-cookie ([#12962](https://github.com/aws-amplify/amplify-cli/issues/12962)) ([175a86b](https://github.com/aws-amplify/amplify-cli/commit/175a86b89a54c65bb6e68c0609be503d61e39d63))
+* remove vm2 ([#12989](https://github.com/aws-amplify/amplify-cli/issues/12989)) ([7bc0b56](https://github.com/aws-amplify/amplify-cli/commit/7bc0b5654a585104a537c1a3f9615bd672435b58))
+* surface override build error if scripting features are disabled ([#13013](https://github.com/aws-amplify/amplify-cli/issues/13013)) ([fa80249](https://github.com/aws-amplify/amplify-cli/commit/fa802491f8767f50dc3636e190fb70eb492fa969))
+* upgrade proxy-agent to ^6.3.0 to remove vm2 deps ([#13012](https://github.com/aws-amplify/amplify-cli/issues/13012)) ([989ec35](https://github.com/aws-amplify/amplify-cli/commit/989ec35be4dfd2bea19ea82bbe317f212729950f))
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.2...@aws-amplify/amplify-cli-core@4.2.3) (2023-07-28)
+
+
+### Bug Fixes
+
+* surface override build error if scripting features are disabled ([#13013](https://github.com/aws-amplify/amplify-cli/issues/13013)) ([#13023](https://github.com/aws-amplify/amplify-cli/issues/13023)) ([9e99800](https://github.com/aws-amplify/amplify-cli/commit/9e998008c6aef13ee50e6ce88cc78d8e9367b66a))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.1...@aws-amplify/amplify-cli-core@4.2.2) (2023-07-27)
+
+
+### Bug Fixes
+
+* parsing arn with multiple slashes when importing auth ([#13009](https://github.com/aws-amplify/amplify-cli/issues/13009)) ([455c514](https://github.com/aws-amplify/amplify-cli/commit/455c514fd9d29fcec37bc9a4de9c96fef80883b5))
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.0...@aws-amplify/amplify-cli-core@4.2.1) (2023-07-24)
+
+
+### Bug Fixes
+
+* skip hooks if flag detected ([a58e13c](https://github.com/aws-amplify/amplify-cli/commit/a58e13c55fb7dfd9e4f4a945e96d429cbecd2f9a))
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.1.0...@aws-amplify/amplify-cli-core@4.2.0) (2023-07-20)
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.8...@aws-amplify/amplify-cli-core@4.1.0) (2023-06-13)
+
+
+### Features
+
+* add status acm subcommand ([#12190](https://github.com/aws-amplify/amplify-cli/issues/12190)) ([a25ec17](https://github.com/aws-amplify/amplify-cli/commit/a25ec17bf1c5917d99b7eb8ec6e5a45b7def8a01))
+
+
+
+
+
+## [4.0.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.6...@aws-amplify/amplify-cli-core@4.0.8) (2023-05-25)
+
+
+### Bug Fixes
+
+* version bump ([f820824](https://github.com/aws-amplify/amplify-cli/commit/f82082416187bd1dd33de9f7b35753026ac17eea))
+
+
+
+
+
+## [4.0.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.5...@aws-amplify/amplify-cli-core@4.0.7) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-core
+
+
+
+
+
+## [4.0.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.5...@aws-amplify/amplify-cli-core@4.0.6) (2023-05-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-core
+
+
+
+
+
 ## [4.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.0.4...@aws-amplify/amplify-cli-core@4.0.5) (2023-05-11)
 
 

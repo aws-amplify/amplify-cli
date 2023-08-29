@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`check when lambdaLayer present and resourceSetting removed 1`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "Arn",
     ],
     "category": "function",
     "resourceName": "i5732692fb708",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Arn",
     ],
     "category": "function",
@@ -20,30 +20,30 @@ Array [
 `;
 
 exports[`check when lambdaLayer present and resourceSetting selected 1`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "mockUserPoolId",
     ],
     "category": "auth",
     "resourceName": "mockauth",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "mockArn",
     ],
     "category": "api",
     "resourceName": "mockapi",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Arn",
     ],
     "category": "function",
     "resourceName": "i5732692fb708",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Arn",
     ],
     "category": "function",
@@ -53,16 +53,16 @@ Array [
 `;
 
 exports[`check when lambdaLayer removed and resourceSetting present 1`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "Arn",
     ],
     "category": "function",
     "resourceName": "i5732692fb708",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "UserPoolId",
     ],
     "category": "auth",
@@ -72,9 +72,9 @@ Array [
 `;
 
 exports[`check when lambdaLayer removed and resourceSetting present 2`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "UserPoolId",
     ],
     "category": "auth",
@@ -84,23 +84,23 @@ Array [
 `;
 
 exports[`check when lambdaLayer selected and resourceSetting present 1`] = `
-Array [
-  Object {
-    "attributes": Array [
+[
+  {
+    "attributes": [
       "Arn",
     ],
     "category": "function",
     "resourceName": "i5732692fb708",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "Arn",
     ],
     "category": "function",
     "resourceName": "i5732f46becd3",
   },
-  Object {
-    "attributes": Array [
+  {
+    "attributes": [
       "UserPoolId",
     ],
     "category": "auth",

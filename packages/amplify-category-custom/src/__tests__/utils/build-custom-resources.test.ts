@@ -43,6 +43,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     readJson: jest.fn(),
     stringify: jest.fn(),
   },
+  skipHooks: jest.fn().mockReturnValue(false),
 }));
 
 describe('build custom resources scenarios', () => {

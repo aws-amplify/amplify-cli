@@ -6,4 +6,4 @@ exports[`AWSJSON parse Should reject a non json int 1`] = `"Unable to parse 1 as
 
 exports[`AWSJSON parse Should reject a non json string 1`] = `"Unable to parse hello world as valid JSON."`;
 
-exports[`AWSJSON parse Should reject an invalid json encoded object 1`] = `"Unable to parse {Foo: \\"Not Valid\\"} as valid JSON."`;
+exports[`AWSJSON parse Should reject an invalid json encoded object 1`] = `"Unable to parse {Foo: "Not Valid"} as valid JSON."`;

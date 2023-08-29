@@ -16,6 +16,9 @@ export type BuildRequest = {
     lastBuildTimeStamp?: Date;
     lastBuildType?: BuildType;
     service?: string;
+    scripts?: {
+        build: string;
+    };
 };
 
 // @public (undocumented)
@@ -108,6 +111,9 @@ export type FunctionParameters = {
     defaultRuntime?: string;
     skipAdvancedSection?: boolean;
     skipNextSteps?: boolean;
+    scripts?: {
+        build: string;
+    };
 };
 
 // @public (undocumented)
@@ -208,6 +214,10 @@ export interface FunctionTriggerParameters {
     resourceName: string;
     // (undocumented)
     roleName: string;
+    // (undocumented)
+    scripts?: {
+        build: string;
+    };
     // (undocumented)
     skipEdit: boolean;
     // (undocumented)
