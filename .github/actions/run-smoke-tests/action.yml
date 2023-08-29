@@ -23,7 +23,7 @@ runs:
 
     - name: Install Dependencies
       shell: bash
-      run: yarn install
+      run: yarn install --immutable
 
     - name: Build
       shell: bash
