@@ -439,12 +439,7 @@ function chain(context: Context): ExecutionContext {
           //
           return onError(new Error(`Command not found: ${context.command}`), false);
         }
-        const recording = context.process?.getRecording();
-        if (recording) {
-          return onError(new Error(`Process exited with non zero exit code ${code} and output:\n${recording}`), false);
-        } else {
-          return onError(new Error(`Process exited with non zero exit code ${code}`), false);
-        }
+        return onError(new Error(`Process exited with non zero exit code ${code}`), false);
       }
       if (context.queue.length && !flushQueue()) {
         // if flushQueue returned false, onError was called
@@ -623,8 +618,7 @@ function chain(context: Context): ExecutionContext {
         return false;
       }
       if (context.queue.length > 0) {
-        const recording = context.process?.getRecording();
-        onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue, recording), true);
+        onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue), true);
         return false;
       }
       if (!validateFnType(step)) {
@@ -701,9 +695,9 @@ function testExpectation(data: string, expectation: string | RegExp, context: Co
   return data.indexOf(expectation) > -1;
 }
 
-function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep[], recording = '') {
+function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep[]) {
   const desc: string[] = remainingQueue.map((it) => it.description);
-  const msg = `Queue:\n${message}\n${desc.join('\n')}\n\nRecording:${recording}`;
+  const msg = `${message}\n${desc.join('\n')}`;
 
   return new AssertionError({
     message: msg,
@@ -743,7 +737,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   }
 
   const testingWithLatestCodebase = isTestingWithLatestCodebase(command);
-  if (testingWithLatestCodebase) {
+  if (testingWithLatestCodebase || (process.platform === 'win32' && !command.endsWith('.exe'))) {
     params.unshift(command);
     command = getScriptRunnerPath(testingWithLatestCodebase);
   }
