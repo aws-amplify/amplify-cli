@@ -52,6 +52,6 @@ describe('test getStackBuildCategoryResourceDirPath', () => {
   const expectedPath = path.join(pathManager.getRootStackBuildDirPath('projectPath'), category, resourceName);
 
   it('should return correct path', () => {
-    expect(pathManager.getStackBuildCategorySourceDirPath('projectPath', category, resourceName)).toEqual(expectedPath);
+    expect(pathManager.getStackBuildCategoryResourceDirPath('projectPath', category, resourceName)).toEqual(expectedPath);
   });
 });

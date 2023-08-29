@@ -248,7 +248,7 @@ export class PathManager {
       PathConstants.BuildDirName,
     ]);
 
-  getStackBuildCategorySourceDirPath = (projectPath: string, category: string, resourceName: string): string =>
+  getStackBuildCategoryResourceDirPath = (projectPath: string, category: string, resourceName: string): string =>
     this.constructPath(projectPath, [
       PathConstants.AmplifyDirName,
       PathConstants.BackendDirName,

@@ -138,7 +138,7 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   stateManager.setMeta(undefined, amplifyMeta);
 
   // Remove resource directory from backend/
-  const stackBuildDir = pathManager.getStackBuildCategorySourceDirPath('', category, resourceName);
+  const stackBuildDir = pathManager.getStackBuildCategoryResourceDirPath('', category, resourceName);
   context.filesystem.remove(resourceDir);
   context.filesystem.remove(stackBuildDir);
 
