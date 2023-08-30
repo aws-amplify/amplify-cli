@@ -14,4 +14,4 @@ jobs:
     uses: ./.github/workflows/smoke-tests.yml
     secrets: inherit
     with:
-      versions: '["latest"]'
+      versions: '["rc", "latest"]'

@@ -16,8 +16,6 @@ on:
         required: false
         type: string
         default: '["rc", "latest"]'
-  push:
-    branches: [smoke-tests-prototype]
 
 jobs:
   call-smoke-tests:
