@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.16-disable-gsi-limit-check.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.15...@aws-amplify/amplify-container-hosting@2.6.16-disable-gsi-limit-check.0) (2023-08-30)
+
+**Note:** Version bump only for package @aws-amplify/amplify-container-hosting
+
+
+
+
+
 ## [2.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.14...@aws-amplify/amplify-container-hosting@2.6.15) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-container-hosting
