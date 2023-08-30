@@ -19,10 +19,6 @@ on:
 
 jobs:
   call-smoke-tests:
-    if: github.event_name != 'workflow_dispatch'
-    uses: ./.github/workflows/smoke-tests.yml
-    secrets: inherit
-  call-smoke-tests-with-params:
     if: github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/smoke-tests.yml
     secrets: inherit
