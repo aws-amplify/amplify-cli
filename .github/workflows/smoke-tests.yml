@@ -1,0 +1,53 @@
+name: Smoke Tests
+
+# This is required by aws-actions/configure-aws-credentials
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: false
+        type: string
+        default: '["macos-latest-xl", "ubuntu-latest", "windows-latest"]'
+      versions:
+        required: false
+        type: string
+        default: '["rc", "latest"]'
+
+env:
+  NODE_OPTIONS: --max-old-space-size=8096
+
+jobs:
+  run-smoke-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJson(inputs.os) }}
+        cli-version: ${{ fromJson(inputs.versions) }}
+    name: Smoke Tests ${{ matrix.os }} ${{ matrix.cli-version }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          persist-credentials: false
+
+      - name: Install Amplify CLI
+        uses: ./.github/actions/install-cli
+        with:
+          cli-version: ${{ matrix.cli-version }}
+
+      - name: Run Smoke Tests Unix
+        if: runner.os != 'Windows'
+        uses: ./.github/actions/run-smoke-tests
+        with:
+          role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
+
+      - name: Run Smoke Tests Windows
+        if: runner.os == 'Windows'
+        uses: ./.github/actions/run-smoke-tests-windows
+        with:
+          role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
