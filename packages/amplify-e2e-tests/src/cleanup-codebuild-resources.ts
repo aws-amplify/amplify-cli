@@ -501,7 +501,9 @@ const getStacks = async (account: AWSAccountInfo, region: string, cbClient: Code
 const getCIJobDetails = async (build_id: string, cbClient: CodeBuild): Promise<CodeBuild.Build | undefined> => {
   const batchBuilds = await cbClient.batchGetBuilds({ ids: [build_id] }).promise();
   const buildInfo = batchBuilds?.builds?.[0];
-
+  console.log(`getCIJobDetails build_id=${build_id}`);
+  console.log(`getCIJobDetails buildInfo=${JSON.stringify(buildInfo)}`);
+  console.log(`getCIJobDetails batchBuilds?.builds=${JSON.stringify(batchBuilds?.builds)}`);
   return buildInfo;
 };
 
@@ -872,6 +874,8 @@ const deleteResources = async (
   accountIndex: number,
   staleResources: Record<string, ReportEntry>,
 ): Promise<void> => {
+  console.log(`deleteResources accountIndex=${accountIndex}`)
+  console.log(`deleteResources staleResources=${JSON.stringify(staleResources)}`)
   for (const jobId of Object.keys(staleResources)) {
     const resources = staleResources[jobId];
     if (resources.amplifyApps) {
@@ -1051,7 +1055,14 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
  * of account ids since the logs these are written to will be effectively public.
  */
 const cleanup = async (): Promise<void> => {
-  const filterPredicateStaleResources = (job: ReportEntry) => job?.cbInfo?.buildStatus === 'finished' || job.jobId === ORPHAN;
+  const filterPredicateStaleResources = (job: ReportEntry) => {
+    console.log(`filterPredicateStaleResources job?.cbInfo?.buildStatus=${job?.cbInfo?.buildStatus}`)
+    console.log(`filterPredicateStaleResources job.jobId=${job.jobId}`);
+    if(job?.cbInfo?.buildStatus){
+      console.log(`filterPredicateStaleResources job=${JSON.stringify(job)}`);
+    }
+    return job?.cbInfo?.buildStatus === 'finished' || job.jobId === ORPHAN;
+  }
   const accounts = await getAccountsToCleanup();
   for (let i = 0; i < 3; ++i) {
     console.log('CLEANUP ROUND: ', i + 1);
