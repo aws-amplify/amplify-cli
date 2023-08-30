@@ -19,8 +19,10 @@ const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-2',
   'us-west-2',
   'eu-west-2',
+  'eu-west-3',
   'eu-central-1',
   'ap-northeast-1',
+  'ap-northeast-2',
   'ap-southeast-1',
   'ap-southeast-2',
 ];
@@ -471,10 +473,11 @@ const getStacks = async (account: AWSAccountInfo, region: string, cbClient: Code
   // eventually, we must clean up those child stacks too.
   let rootStacks = stacks.StackSummaries.filter((stack) => {
     const isRoot = !stack.RootId;
-    if (!isStale(stack.CreationTime)) {
+    const isStackStale = isStale(stack.CreationTime);
+    if (!isStackStale) {
       console.log('Skipping stack because created date is:', stack.CreationTime);
     }
-    return isRoot && isStale;
+    return isRoot && isStackStale;
   });
   if (rootStacks.length > DELETE_LIMITS.PER_REGION.CFN_STACK) {
     // we can only delete 100 stacks accross all regions every batch,
