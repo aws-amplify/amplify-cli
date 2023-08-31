@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.5.0...@aws-amplify/amplify-provider-awscloudformation@8.5.1) (2023-08-31)
+
+
+### Bug Fixes
+
+* handle profile load in cognito client factory ([#13143](https://github.com/aws-amplify/amplify-cli/issues/13143)) ([fb8a3cc](https://github.com/aws-amplify/amplify-cli/commit/fb8a3cc1a2a910575b957e47f2726a6c9134dfe9))
+
+
+
+
+
 # [8.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.4.0...@aws-amplify/amplify-provider-awscloudformation@8.5.0) (2023-08-17)
 
 
