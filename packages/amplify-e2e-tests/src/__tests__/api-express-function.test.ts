@@ -13,12 +13,16 @@ import { v4 as uuid } from 'uuid';
 
 const projName = 'apigwexpresstest';
 const [shortId] = uuid().split('-');
+const apiName = `expressapi${shortId}`;
 
 describe('API Gateway Express e2e test', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projName);
     await initJSProjectWithProfile(projRoot, { name: projName });
+    await addFunction(projRoot, { functionTemplate: 'Serverless ExpressJS function (Integration with API Gateway)' }, 'nodejs');
+    await addRestApi(projRoot, { apiName: apiName, existingLambda: true });
+    await amplifyPushAuth(projRoot);
   });
 
   afterEach(async () => {
@@ -26,23 +30,53 @@ describe('API Gateway Express e2e test', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('adds Rest API with express function, pushes and calls the API', async () => {
-    const apiName = `expressapi${shortId}`;
-
-    await addFunction(projRoot, { functionTemplate: 'Serverless ExpressJS function (Integration with API Gateway)' }, 'nodejs');
-    await addRestApi(projRoot, { apiName: apiName, existingLambda: true, path: '/items' });
-    await amplifyPushAuth(projRoot);
+  it(' curd requests to api gateway ', async () => {
     const projMeta = getProjectMeta(projRoot);
-
     expect(projMeta.api).toBeDefined();
     const apiPath = projMeta?.api?.[apiName]?.output?.RootUrl;
     expect(apiPath).toBeDefined();
-    console.log('API Path: ', apiPath);
-    const apiResource = apiPath + '/items';
-    console.log('API Resource: ', apiResource);
-    // await new Promise((r) => setTimeout(r, 20000));
-    const res = await fetch(apiResource);
-    console.log('API Response: ', res);
-    expect(res.status).toEqual(200);
+    const apiResource = `${apiPath}/items`;
+
+    // GET request
+    const resGet = await fetch(apiResource);
+    expect(resGet.status).toEqual(200);
+    await resGet.json().then((data) => {
+      expect(data.success).toEqual('get call succeed!');
+    });
+
+    // POST request
+    const resPost = await fetch(apiResource, {
+      method: 'POST',
+      body: JSON.stringify({ msg: 'hello' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    expect(resPost.status).toEqual(200);
+    await resPost.json().then((data) => {
+      expect(data.success).toEqual('post call succeed!');
+      expect(data.body.msg).toEqual('hello');
+    });
+
+    // PUT request
+    const resPut = await fetch(apiResource, {
+      method: 'PUT',
+      body: JSON.stringify({ msg: 'hello' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    expect(resPut.status).toEqual(200);
+    await resPut.json().then((data) => {
+      expect(data.success).toEqual('put call succeed!');
+      expect(data.body.msg).toEqual('hello');
+    });
+
+    // DELETE request
+    const resDelete = await fetch(apiResource, {
+      method: 'DELETE',
+      body: JSON.stringify({ msg: 'hello' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    expect(resDelete.status).toEqual(200);
+    await resDelete.json().then((data) => {
+      expect(data.success).toEqual('delete call succeed!');
+    });
   });
 });

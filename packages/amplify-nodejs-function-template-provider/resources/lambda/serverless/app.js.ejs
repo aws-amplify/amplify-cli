@@ -6,6 +6,7 @@ or in the "license" file accompanying this file. This file is distributed on an 
 See the License for the specific language governing permissions and limitations under the License.
 */
 
+
 <%= props.topLevelComment %>
 
 const express = require('express');
@@ -52,7 +53,7 @@ app.post('<%= props.functionTemplate.parameters.expressPath %>/*', function(req,
   // Add your code here
   const { event, context } = getCurrentInvoke();
   const requestBody = JSON.parse(event.body);
-  res.json({ success: 'post call succeed!'', url: req.url, body: requestBody });
+  res.json({ success: 'post call succeed!', url: req.url, body: requestBody });
 });
 
 /****************************
