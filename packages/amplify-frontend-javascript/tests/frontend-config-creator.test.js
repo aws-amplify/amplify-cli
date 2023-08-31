@@ -248,3 +248,39 @@ describe('generates pinpoint configuration', () => {
     expect(generatedConfig).toMatchObject(expectedGeneratedConfig);
   });
 });
+
+describe('createAmplifyConfig with CommonJS exports', () => {
+  let context;
+  const projectPath = path.resolve('./');
+  const srcDirPath = 'lib'; // change if need be
+  const awsmobile = {
+    aws_project_region: 'us-east-1',
+  };
+  const mockCopyBatch = jest.fn();
+  beforeAll(() => {
+    context = {
+      amplify: {
+        copyBatch: mockCopyBatch,
+        getEnvInfo: jest.fn().mockReturnValue({
+          projectPath,
+        }),
+        getProjectConfig: jest.fn().mockReturnValue({
+          javascript: {
+            config: {
+              SourceDir: srcDirPath,
+            },
+          },
+        }),
+      },
+    };
+  });
+
+  it('exports the config object with module.exports', async () => {
+    await configCreator.generateAwsExportsAtPath(context, awsmobile);
+    expect(mockCopyBatch).toHaveBeenCalledTimes(1);
+    const job = mockCopyBatch.mock.calls[0][1][0];
+    const templateFilePath = path.resolve(job.dir, job.template);
+    const content = fs.readFileSync(templateFilePath, { encoding: 'utf-8' });
+    expect(content).toMatchSnapshot();
+  });
+});
