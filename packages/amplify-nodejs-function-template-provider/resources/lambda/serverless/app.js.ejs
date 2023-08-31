@@ -6,16 +6,14 @@ or in the "license" file accompanying this file. This file is distributed on an 
 See the License for the specific language governing permissions and limitations under the License.
 */
 
-
 <%= props.topLevelComment %>
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const { getCurrentInvoke } = require("@vendia/serverless-express");
 
 // declare a new express app
 const app = express()
-app.use(bodyParser.json())
+app.use(express.json())
 
 // Enable CORS for all methods
 app.use(function(req, res, next) {
@@ -46,13 +44,15 @@ app.get('<%= props.functionTemplate.parameters.expressPath %>/*', function(req, 
 app.post('<%= props.functionTemplate.parameters.expressPath %>', function(req, res) {
   // Add your code here
   const { event, context } = getCurrentInvoke();
-  res.json({success: 'post call succeed!', url: req.url, body: event.body})
+  const requestBody = JSON.parse(event.body);
+  res.json({ success: 'post call succeed!', url: req.url, body: requestBody });
 });
 
 app.post('<%= props.functionTemplate.parameters.expressPath %>/*', function(req, res) {
   // Add your code here
   const { event, context } = getCurrentInvoke();
-  res.json({success: 'post call succeed!', url: req.url, body: event.body})
+  const requestBody = JSON.parse(event.body);
+  res.json({ success: 'post call succeed!'', url: req.url, body: requestBody });
 });
 
 /****************************
@@ -62,13 +62,15 @@ app.post('<%= props.functionTemplate.parameters.expressPath %>/*', function(req,
 app.put('<%= props.functionTemplate.parameters.expressPath %>', function(req, res) {
   // Add your code here
   const { event, context } = getCurrentInvoke();
-  res.json({success: 'put call succeed!', url: req.url, body: event.body})
+  const requestBody = JSON.parse(event.body);
+  res.json({ success: 'put call succeed!', url: req.url, body: requestBody });
 });
 
 app.put('<%= props.functionTemplate.parameters.expressPath %>/*', function(req, res) {
   // Add your code here
   const { event, context } = getCurrentInvoke();
-  res.json({success: 'put call succeed!', url: req.url, body: event.body})
+  const requestBody = JSON.parse(event.body);
+  res.json({ success: 'put call succeed!', url: req.url, body: requestBody });
 });
 
 /****************************
