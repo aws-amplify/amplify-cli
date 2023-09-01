@@ -1,0 +1,53 @@
+name: Run Smoke Tests
+description: Executes Smoke Tests
+inputs:
+  role-to-assume:
+    description: an IAM role to use in tests
+    required: true
+  region:
+    description: an AWS region to run in
+    required: false
+    default: us-west-2
+runs:
+  using: 'composite'
+  steps:
+    - name: Verify Amplify Path
+      shell: bash
+      run: |
+        if [[ -z "$AMPLIFY_PATH" ]]; then
+          echo "AMPLIFY_PATH must be defined"
+          exit 1
+        fi
+        echo "AMPLIFY_PATH=$AMPLIFY_PATH"
+        $AMPLIFY_PATH version
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@04b98b3f9e85f563fb061be8751a0352327246b0 # v3.0.1
+      with:
+        role-to-assume: ${{ inputs.role-to-assume }}
+        aws-region: ${{ inputs.region }}
+
+    - name: Install AWS CLI
+      shell: powershell
+      run: |
+        msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi /qn
+        aws --version
+
+    - name: Configure Profile
+      shell: bash
+      run: |
+        aws configure set region ${{ inputs.region }} --profile default
+        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+        aws configure set aws_session_token  $AWS_SESSION_TOKEN --profile default
+
+    - name: Run Smoke Tests
+      shell: bash
+      run: .github/actions/run-smoke-tests-windows/windows-smoke-tests.sh
+
+    - name: Cleanup
+      shell: bash
+      if: always()
+      run: |
+        cd $AMPLIFY_PROJ_DIR
+        $AMPLIFY_PATH delete --force
