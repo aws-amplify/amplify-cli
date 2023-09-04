@@ -742,7 +742,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
     command = getScriptRunnerPath(testingWithLatestCodebase);
   }
 
-  if (process.platform === 'win32' && !(command.endsWith('powershell.exe') || command.endsWith('.ps1'))) {
+  if (process.platform === 'win32' && !command.endsWith('powershell.exe')) {
     params.unshift(command);
     command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
   }
