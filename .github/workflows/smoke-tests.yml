@@ -11,7 +11,7 @@ on:
       os:
         required: false
         type: string
-        default: 'macos,ubuntu,windows'
+        default: '["macos-latest-xl", "ubuntu-latest", "amplify-cli_windows-latest_8-core"]'
       versions:
         required: false
         type: string
@@ -21,30 +21,11 @@ env:
   NODE_OPTIONS: --max-old-space-size=8096
 
 jobs:
-  compute-matrix:
-    outputs:
-      os-list: ${{ steps.compute-os-list.outputs.os-list }}
-    steps:
-      - id: compute-os-list
-        run: |
-          os_list='${{ inputs.os }}'
-          selected_runners=''
-          if [[ $os_list =~ "macos" ]]; then
-            selected_runners='macos-latest-xl,'
-          fi
-          if [[ $os_list =~ "ubuntu" ]]; then
-            selected_runners="$(selected_runners)ubuntu-latest,"
-          fi
-          if [[ $os_list =~ "windows" ]]; then
-            selected_runners="$(selected_runners)amplify-cli_windows-latest_8-core,"
-          fi
-          echo "os-list=$selected_runners" >> $GITHUB_OUTPUT
-
   run-smoke-tests:
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ needs.compute-matrix.outputs.os-list }}
+        os: ${{ fromJson(inputs.os) }}
         cli-version: ${{ fromJson(inputs.versions) }}
     name: Smoke Tests ${{ matrix.os }} ${{ matrix.cli-version }}
     runs-on: ${{ matrix.os }}
