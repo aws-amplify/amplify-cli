@@ -398,10 +398,11 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   // eventually, we must clean up those child stacks too.
   let rootStacks = stacks.StackSummaries.filter((stack) => {
     const isRoot = !stack.RootId;
-    if (!isStale(stack.CreationTime)) {
+    const isStackStale = isStale(stack.CreationTime);
+    if (!isStackStale) {
       console.log('Skipping stack because created date is:', stack.CreationTime);
     }
-    return isRoot && isStale;
+    return isRoot && isStackStale;
   });
   if (rootStacks.length > DELETE_LIMITS.PER_REGION.CFN_STACK) {
     // we can only delete 100 stacks accross all regions every batch,

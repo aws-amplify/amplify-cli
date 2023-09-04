@@ -209,6 +209,7 @@ module.exports = {
     '/packages/amplify-environment-parameters/lib',
     '/packages/amplify-opensearch-simulator/lib',
     '/packages/amplify-nodejs-function-runtime-provider/src/__tests__/utils/handlerWithSyntaxError.js',
+    '/packages/amplify-frontend-ios/tests/sample*',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',

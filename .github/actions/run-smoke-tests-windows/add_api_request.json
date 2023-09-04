@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "serviceName": "AppSync",
+    "apiName": "myApiName",
+    "transformSchema": "type Todo @model { id: ID!  content: String}",
+    "defaultAuthType": { "mode": "API_KEY" }
+  }
+}
