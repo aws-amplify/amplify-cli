@@ -41,7 +41,6 @@ jobs:
           echo "os-list=$selected_runners" >> $GITHUB_OUTPUT
 
   run-smoke-tests:
-    needs: compute-matrix
     strategy:
       fail-fast: false
       matrix:
