@@ -21,8 +21,6 @@ runs:
       if: runner.os == 'Windows'
       run: |
         npm install -g @aws-amplify/cli@${{ inputs.cli-version }}
-        $AMPLIFY_PATH=(Get-Command amplify).Path
-        $AMPLIFY_PATH2=(where.exe amplify)
+        $AMPLIFY_PATH="C:\npm\prefix\amplify.cmd"
         echo "AMPLIFY_PATH=$AMPLIFY_PATH"
-        echo "AMPLIFY_PATH2=$AMPLIFY_PATH2"
         "AMPLIFY_PATH=$AMPLIFY_PATH" >> $env:GITHUB_ENV

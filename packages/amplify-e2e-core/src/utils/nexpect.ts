@@ -737,12 +737,12 @@ export function nspawn(command: string | string[], params: string[] = [], option
   }
 
   const testingWithLatestCodebase = isTestingWithLatestCodebase(command);
-  if (testingWithLatestCodebase || (process.platform === 'win32' && !(command.endsWith('.exe') || command.endsWith('.ps1')))) {
+  if (testingWithLatestCodebase || (process.platform === 'win32' && !(command.endsWith('.exe') || command.endsWith('.cmd')))) {
     params.unshift(command);
     command = getScriptRunnerPath(testingWithLatestCodebase);
   }
 
-  if (process.platform === 'win32' && !command.endsWith('powershell.exe')) {
+  if (process.platform === 'win32' && !(command.endsWith('powershell.exe') || command.endsWith('.cmd'))) {
     params.unshift(command);
     command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
   }
