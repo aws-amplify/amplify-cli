@@ -5,6 +5,12 @@ import { v4 as uuid } from 'uuid';
 import { categoryName, functionCategoryName } from '../../constants';
 import { FunctionServiceNameLambdaFunction, providerName } from './provider-constants';
 
+/**
+ * More changes
+ * @param context
+ * @param resourceName
+ * @param triggerFunctionName
+ */
 export async function removeTrigger(context: $TSContext, resourceName: string, triggerFunctionName: string) {
   // Update CloudFormation file
   const projectRoot = pathManager.findProjectRoot();

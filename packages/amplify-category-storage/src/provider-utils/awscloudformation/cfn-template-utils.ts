@@ -30,6 +30,10 @@ export const getExistingTableColumnNames = async (resourceName: string): Promise
   return (await getExistingStorageAttributeDefinitions(resourceName)).map((att) => att.AttributeName.toString());
 };
 
+/**
+ * Other change
+ * @param resourceName foo
+ */
 const loadTable = async (resourceName?: string): Promise<Table | undefined> => {
   const table = getTableFromTemplate(await loadCfnTemplateSafe(resourceName));
   return table;
