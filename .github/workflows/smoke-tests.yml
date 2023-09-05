@@ -11,7 +11,7 @@ on:
       os:
         required: false
         type: string
-        default: '["macos-latest-xl", "ubuntu-latest", "windows-latest"]'
+        default: '["macos-latest-xl", "ubuntu-latest", "amplify-cli_windows-latest_8-core"]'
       versions:
         required: false
         type: string
@@ -40,14 +40,7 @@ jobs:
         with:
           cli-version: ${{ matrix.cli-version }}
 
-      - name: Run Smoke Tests Unix
-        if: runner.os != 'Windows'
+      - name: Run Smoke Tests
         uses: ./.github/actions/run-smoke-tests
-        with:
-          role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
-
-      - name: Run Smoke Tests Windows
-        if: runner.os == 'Windows'
-        uses: ./.github/actions/run-smoke-tests-windows
         with:
           role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
