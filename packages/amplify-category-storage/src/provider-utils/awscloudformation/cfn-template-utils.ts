@@ -14,6 +14,10 @@ export const getCloudFormationTemplatePath = (resourceName: string) => {
   );
 };
 
+/**
+ * Some irrelevant change
+ * @param resourceName foo
+ */
 export const getExistingStorageGSIs = async (resourceName: string) => {
   return ((await loadTable(resourceName))?.Properties?.GlobalSecondaryIndexes as GlobalSecondaryIndex[]) || [];
 };
