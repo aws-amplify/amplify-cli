@@ -13,8 +13,8 @@ export function provideServerless(): Promise<FunctionTemplateParameters> {
       sourceRoot: pathToTemplateFiles,
       sourceFiles: files,
       parameters: {
-        path: '/items',
-        expressPath: '/items',
+        path: '/item',
+        expressPath: '/item',
       },
       defaultEditorFile: path.join('src', 'app.js'),
       destMap: getDstMap(files),

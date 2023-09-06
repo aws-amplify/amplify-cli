@@ -5,7 +5,6 @@ import {
   deleteProjectDir,
   initJSProjectWithProfile,
   amplifyPushAuth,
-  addFunction,
   getProjectMeta,
 } from '@aws-amplify/amplify-e2e-core';
 import fetch from 'node-fetch';
@@ -20,8 +19,7 @@ describe('API Gateway Express e2e test', () => {
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projName);
     await initJSProjectWithProfile(projRoot, { name: projName });
-    await addFunction(projRoot, { functionTemplate: 'Serverless ExpressJS function (Integration with API Gateway)' }, 'nodejs');
-    await addRestApi(projRoot, { apiName: apiName, existingLambda: true });
+    await addRestApi(projRoot, { apiName: apiName, projectContainsFunctions: false, isCrud: false }); // rest api with serverless express template
     await amplifyPushAuth(projRoot);
   });
 
