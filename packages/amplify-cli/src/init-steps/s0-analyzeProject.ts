@@ -220,11 +220,8 @@ const getDefaultEnv = (context: $TSContext): string | undefined => {
       resolution: INVALID_ENV_NAME_MSG,
     });
   }
-  if (
-    isNewProject(context) ||
-    !context.amplify.getAllEnvs().includes(defaultEnv) ||
-    (context.exeInfo.inputParams && context.exeInfo.inputParams.yes)
-  ) {
+
+  if (isNewProject(context) || !context.amplify.getAllEnvs().includes(defaultEnv)) {
     return defaultEnv;
   }
   return undefined;
@@ -244,8 +241,8 @@ const getEnvName = async (context: $TSContext): Promise<string> => {
     });
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     throw new AmplifyError('ProjectInitError', {
-      message: `Amplify project is already initialized with environment name: ${getDefaultEnv(context)}`,
-      resolution: `To create a new environment run \`amplify add env\``,
+      message: `Invalid environment name: ${context.exeInfo.inputParams.amplify.envName}`,
+      resolution: INVALID_ENV_NAME_MSG,
     });
   }
 
