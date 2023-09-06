@@ -2,8 +2,6 @@ name: Pull Request Review Rules Enforcement
 
 on:
   pull_request:
-    branches:
-      - dev
 
 jobs:
   check-pull-request-merge-readiness:
