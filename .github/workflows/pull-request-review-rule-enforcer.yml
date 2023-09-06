@@ -5,6 +5,7 @@ on:
 
 jobs:
   check-pull-request-merge-readiness:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
