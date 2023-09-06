@@ -1,0 +1,20 @@
+name: Pull Request Review Rules Enforcement
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  check-pull-request-merge-readiness:
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        with:
+          persist-credentials: false
+
+      - name: Check merge readiness
+        run: |
+          cd scripts
+          yarn install --immutable
+          yarn ts-node check-pull-request-merge-readiness.ts 13191 ${{ secrets.GITHUB_TOKEN }}
