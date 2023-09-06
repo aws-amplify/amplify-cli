@@ -1,16 +1,21 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
 import { VelocityTemplateSimulator, AppSyncVTLContext, getIAMToken } from '../../velocity';
+import { DeploymentResources } from '../../__e2e_v2__/test-synthesizer/deployment-resources';
+import { testTransform } from '../v2-test-synthesizer/test-transform';
+
+type TestTransform = {
+  transform: (schema: string) => DeploymentResources;
+};
 
 jest.mock('@aws-amplify/amplify-prompts');
 
 describe('admin roles query checks', () => {
   const ADMIN_UI_ROLE = 'us-fake-1_uuid_Full-access/CognitoIdentityCredentials';
   let vtlTemplate: VelocityTemplateSimulator;
-  let transformer: GraphQLTransform;
+  let transformer: TestTransform;
   const adminFullAccessRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM,
     iamToken: getIAMToken('us-fake-1_uuid_Full-access'),
@@ -28,15 +33,19 @@ describe('admin roles query checks', () => {
         },
       ],
     };
-    transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [
-        new ModelTransformer(),
-        new AuthTransformer({
-          adminRoles: [ADMIN_UI_ROLE],
+    transformer = {
+      transform: (schema: string) =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [
+            new ModelTransformer(),
+            new AuthTransformer({
+              adminRoles: [ADMIN_UI_ROLE],
+            }),
+          ],
         }),
-      ],
-    });
+    };
 
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
@@ -92,7 +101,7 @@ describe('identity claim feature flag disabled', () => {
   describe('admin roles query checks', () => {
     const ADMIN_UI_ROLE = 'us-fake-1_uuid_Full-access/CognitoIdentityCredentials';
     let vtlTemplate: VelocityTemplateSimulator;
-    let transformer: GraphQLTransform;
+    let transformer: TestTransform;
     const adminFullAccessRequest: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM,
       iamToken: getIAMToken('us-fake-1_uuid_Full-access'),
@@ -110,15 +119,19 @@ describe('identity claim feature flag disabled', () => {
           },
         ],
       };
-      transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [
-          new ModelTransformer(),
-          new AuthTransformer({
-            adminRoles: [ADMIN_UI_ROLE],
+      transformer = {
+        transform: (schema: string) =>
+          testTransform({
+            schema,
+            authConfig,
+            transformers: [
+              new ModelTransformer(),
+              new AuthTransformer({
+                adminRoles: [ADMIN_UI_ROLE],
+              }),
+            ],
           }),
-        ],
-      });
+      };
 
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });

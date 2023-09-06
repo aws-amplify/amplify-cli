@@ -1,7 +1,6 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { deploy, launchDDBLocal, terminateDDB, logDebug, reDeploy, GraphQLClient } from '../__e2e__/utils';
+import { transformAndSynth, defaultTransformParams } from './test-synthesizer';
 
 let GRAPHQL_ENDPOINT: string;
 let GRAPHQL_CLIENT: GraphQLClient;
@@ -11,16 +10,16 @@ let server: AmplifyAppSyncSimulator;
 
 jest.setTimeout(2000000);
 
-const runTransformer = async (validSchema: string) => {
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer()],
+const runTransformer = async (validSchema: string) =>
+  transformAndSynth({
+    ...defaultTransformParams,
+    schema: validSchema,
     transformParameters: {
+      ...defaultTransformParams.transformParameters,
       sandboxModeEnabled: true,
     },
   });
-  const out = await transformer.transform(validSchema);
-  return out;
-};
+
 let ddbClient;
 const validSchema = /* GraphQL */ `
   type Post @model {
