@@ -1,15 +1,7 @@
-# Amplify CLI Team owns the full repo by default.
-
-* @aws-amplify/amplify-cli
+# Require at least one Amplify CLI Admin to approve changes.
+# Non-admin reviewers participate in pull request review quorum by having write access to repository.
+* @aws-amplify/amplify-cli-admins
 
 # Add Data team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team.
-
-/packages/amplify-graphiql-explorer @aws-amplify/amplify-cli @aws-amplify/amplify-data-buildtime
-/packages/amplify-velocity-template @aws-amplify/amplify-cli @aws-amplify/amplify-data-buildtime
-
-# Add folks focused on reviewing changes to CI/CD scripts/buildspecs
-
-/.circleci/ @aws-amplify/amplify-cli-admins 
-/scripts/ @aws-amplify/amplify-cli-admins 
-/shared-scripts.sh @aws-amplify/amplify-cli-admins 
-/codebuild_specs/ @aws-amplify/amplify-cli-admins 
+/packages/amplify-graphiql-explorer @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime
+/packages/amplify-velocity-template @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime

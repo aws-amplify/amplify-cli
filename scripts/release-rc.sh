@@ -20,7 +20,7 @@ if [[ -z ${1+x} ]]; then
   exit 1
 fi
 
-rc_sha=$(git rev-parse --short "$1")
+rc_sha=$(git rev-parse --short=15 "$1")
 remote_name=$(git remote -v | grep "$repo_name" | head -n1 | awk '{print $1;}')
 
 if [[ -z ${remote_name+x} ]]; then

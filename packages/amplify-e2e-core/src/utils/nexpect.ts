@@ -737,7 +737,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   }
 
   const testingWithLatestCodebase = isTestingWithLatestCodebase(command);
-  if (testingWithLatestCodebase || (process.platform === 'win32' && !command.endsWith('.exe'))) {
+  if (testingWithLatestCodebase || (process.platform === 'win32' && !(command.endsWith('.exe') || command.endsWith('.cmd')))) {
     params.unshift(command);
     command = getScriptRunnerPath(testingWithLatestCodebase);
   }
@@ -753,7 +753,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   // For push operations in E2E we have to explicitly disable the Amplify Console App creation
   // as for the tests that need it, it is already enabled for init, setting the env var here
   // disables the post push check we have in the CLI.
-  if (params.length > 0 && params.find((param: string) => param.toLowerCase() === 'push')) {
+  if (params.length > 0 && params.some((param: string) => param.toLowerCase() === 'push')) {
     pushEnv = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };

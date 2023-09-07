@@ -32,7 +32,7 @@ export class Git {
   }
 
   getShortSha(ref: string = 'HEAD'): string {
-    const command = ['git', 'rev-parse', '--short', ref];
+    const command = ['git', 'rev-parse', '--short=15', ref];
     return execa.sync(command[0], command.slice(1)).stdout.trim();
   }
 

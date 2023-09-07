@@ -685,7 +685,7 @@ function _githubPrereleaseInstallSanityCheck {
     echo Install packaged Amplify CLI
     version=$(cat .amplify-pkg-version)
     curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash
-    echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
+    export PATH=$PATH:$HOME/.amplify/bin
     echo Sanity check install
     amplify version
 }
@@ -725,6 +725,16 @@ function _amplifyGeneralConfigTests {
     cd packages/amplify-e2e-tests
     _loadTestAccountCredentials
     retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+}
+
+
+function _cleanUpResources {
+    _loadTestAccountCredentials
+    echo "Executing resource cleanup"
+    cd packages/amplify-e2e-tests
+    yarn install
+    ts-node ./src/cleanup-codebuild-resources.ts
+    _unassumeTestAccountCredentials
 }
 function _deploymentVerificationPostRelease {
     loadCache repo $CODEBUILD_SRC_DIR

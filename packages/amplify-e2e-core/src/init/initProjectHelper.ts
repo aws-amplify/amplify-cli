@@ -91,7 +91,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   }
 
   if (s.includeUsageDataPrompt) {
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+    chain.wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/).sendYes();
   }
   return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
@@ -131,7 +131,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -185,7 +185,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -198,6 +198,36 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
         }
       });
   });
+}
+
+export function initIosProjectWithXcode(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['init'], {
+    cwd,
+    stripColors: true,
+  })
+    .wait('Enter a name for the project')
+    .sendCarriageReturn()
+    .wait('Initialize the project with the above configuration?')
+    .sendConfirmNo()
+    .wait('Enter a name for the environment')
+    .sendLine(defaultSettings.envName)
+    .wait('Choose your default editor:')
+    .sendKeyDown(2)
+    .sendCarriageReturn()
+    .wait("Choose the type of app that you're building")
+    .sendLine('ios')
+    .wait('Select the authentication method you want to use:')
+    .sendCarriageReturn()
+    .wait('Please choose the profile you want to use')
+    .sendLine(defaultSettings.profileName)
+    .wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/)
+    .sendYes()
+    .wait('Updating Xcode project:')
+    .wait('Amplify project found.')
+    .wait('Amplify config files found.')
+    .wait('Successfully updated project')
+    .wait('Amplify setup completed successfully.')
+    .runAsync();
 }
 
 export function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
@@ -227,7 +257,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
 
     singleSelect(chain, s.region, amplifyRegions);
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -290,7 +320,7 @@ export function initProjectWithAccessKey(
 
     singleSelect(chain, s.region, amplifyRegions);
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
