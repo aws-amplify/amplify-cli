@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.3.0-rds-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.1...@aws-amplify/amplify-migration-tests@6.3.0-rds-2.0) (2023-09-07)
+
+
+### Features
+
+* **cli:** upgrade rds tag version ([e0e8d1f](https://github.com/aws-amplify/amplify-cli/commit/e0e8d1f9cc9bdbdb12bd8a18a081fd3e0d380078))
+
+
+
+
+
 ## [6.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.0...@aws-amplify/amplify-migration-tests@6.2.1) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

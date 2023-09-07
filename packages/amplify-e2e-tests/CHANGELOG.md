@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-rds-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.5.0...amplify-e2e-tests@4.6.0-rds-2.0) (2023-09-07)
+
+
+### Bug Fixes
+
+* remove stale data ([#13128](https://github.com/aws-amplify/amplify-cli/issues/13128)) ([9703223](https://github.com/aws-amplify/amplify-cli/commit/970322372278762fff88f7046b44574b611ad210))
+
+
+### Features
+
+* add list all to lambda crud template ([#13116](https://github.com/aws-amplify/amplify-cli/issues/13116)) ([0fde28a](https://github.com/aws-amplify/amplify-cli/commit/0fde28a08a3d82b371cbbf858f462648376a318a))
+* **cli:** upgrade rds tag version ([e0e8d1f](https://github.com/aws-amplify/amplify-cli/commit/e0e8d1f9cc9bdbdb12bd8a18a081fd3e0d380078))
+
+
+
+
+
 # [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.4.0...amplify-e2e-tests@4.5.0) (2023-08-17)
 
 

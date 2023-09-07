@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0-rds-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.15...@aws-amplify/amplify-container-hosting@2.7.0-rds-2.0) (2023-09-07)
+
+
+### Features
+
+* **cli:** upgrade rds tag version ([e0e8d1f](https://github.com/aws-amplify/amplify-cli/commit/e0e8d1f9cc9bdbdb12bd8a18a081fd3e0d380078))
+
+
+
+
+
 ## [2.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.14...@aws-amplify/amplify-container-hosting@2.6.15) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-container-hosting

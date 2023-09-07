@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.4.0-rds-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.3.0...@aws-amplify/cli-internal@12.4.0-rds-2.0) (2023-09-07)
+
+
+### Bug Fixes
+
+* remove stale data ([#13128](https://github.com/aws-amplify/amplify-cli/issues/13128)) ([9703223](https://github.com/aws-amplify/amplify-cli/commit/970322372278762fff88f7046b44574b611ad210))
+
+
+### Features
+
+* **cli:** upgrade rds tag version ([e0e8d1f](https://github.com/aws-amplify/amplify-cli/commit/e0e8d1f9cc9bdbdb12bd8a18a081fd3e0d380078))
+
+
+
+# 12.4.0 (2023-08-25)
+
+
+### Features
+
+* bump version to 12.4.0 ([#13154](https://github.com/aws-amplify/amplify-cli/issues/13154)) ([244e092](https://github.com/aws-amplify/amplify-cli/commit/244e092066968a24c5ec47c150354248490b3010))
+
+
+
+
+
 # [12.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.2.5...@aws-amplify/cli-internal@12.3.0) (2023-08-17)
 
 
