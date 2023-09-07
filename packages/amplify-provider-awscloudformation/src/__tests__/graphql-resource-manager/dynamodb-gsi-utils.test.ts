@@ -1,3 +1,4 @@
+import { DISABLE_GSI_LIMIT_CHECK_OPTION } from '../../graphql-resource-manager/amplify-graphql-resource-manager';
 import * as gsiUtils from '../../graphql-resource-manager/dynamodb-gsi-helpers';
 
 import { makeTableWithGSI } from './gsi-test-helpers';
@@ -109,7 +110,7 @@ describe('DynamoDB GSI Utils', () => {
       const tableWithNoGSI = makeTableWithGSI({
         gsis: [],
       });
-      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithNoGSI);
+      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithNoGSI, false);
       expect(updatedTable).toBeDefined();
       expect(updatedTable).not.toEqual(tableWithNoGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
@@ -136,7 +137,7 @@ describe('DynamoDB GSI Utils', () => {
           },
         ],
       });
-      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithGSI);
+      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithGSI, false);
       expect(updatedTable).toBeDefined();
       expect(updatedTable).not.toEqual(tableWithGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
@@ -170,7 +171,9 @@ describe('DynamoDB GSI Utils', () => {
           },
         ],
       });
-      expect(() => gsiUtils.addGSI(gsiItem, tableWithGSI)).toThrowError(`An index with name ${gsiItem.gsi.IndexName} already exists`);
+      expect(() => gsiUtils.addGSI(gsiItem, tableWithGSI, false)).toThrowError(
+        `An index with name ${gsiItem.gsi.IndexName} already exists`,
+      );
     });
 
     it(`should throw error when adding new index to a table with ${gsiUtils.MAX_GSI_PER_TABLE} GSIs`, () => {
@@ -187,9 +190,26 @@ describe('DynamoDB GSI Utils', () => {
           ];
         }, []),
       });
-      expect(() => gsiUtils.addGSI(gsiItem, tableWithMaxGSI)).toThrowError(
-        `DynamoDB ${tableWithMaxGSI.Properties.TableName} can have max of ${gsiUtils.MAX_GSI_PER_TABLE} GSIs`,
+      expect(() => gsiUtils.addGSI(gsiItem, tableWithMaxGSI, false)).toThrowError(
+        `DynamoDB ${tableWithMaxGSI.Properties.TableName} can have max of ${gsiUtils.MAX_GSI_PER_TABLE} GSIs. To disable this check, use the --${DISABLE_GSI_LIMIT_CHECK_OPTION} option.`,
       );
+    });
+
+    it(`should not throw error when adding new index to a table with ${gsiUtils.MAX_GSI_PER_TABLE} GSIs if disableGsiLimitcheck is configured`, () => {
+      const tableWithMaxGSI = makeTableWithGSI({
+        gsis: new Array(gsiUtils.MAX_GSI_PER_TABLE).fill(0).reduce((acc, i, idx) => {
+          return [
+            ...acc,
+            {
+              indexName: `byTitile${idx}AndId`,
+              attributes: {
+                hash: { name: `title${idx}` },
+              },
+            },
+          ];
+        }, []),
+      });
+      expect(() => gsiUtils.addGSI(gsiItem, tableWithMaxGSI, true)).not.toThrowError();
     });
 
     it('should not have duplicate AttributeDefinitions', () => {
@@ -210,7 +230,7 @@ describe('DynamoDB GSI Utils', () => {
           },
         ],
       });
-      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithGSI);
+      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithGSI, false);
       expect(updatedTable).toBeDefined();
       expect(updatedTable).not.toEqual(tableWithGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
