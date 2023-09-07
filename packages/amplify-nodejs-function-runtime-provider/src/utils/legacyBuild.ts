@@ -53,7 +53,7 @@ const runPackageManagerInstall = async (resourceDir: string, buildType: BuildTyp
     return;
   }
 
-  const args = packageManager.getInstallArgs(buildType);
+  const args = packageManager.getInstallArgs(buildType, resourceDir);
   await runPackageManager(packageManager, args, resourceDir);
 };
 

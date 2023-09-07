@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import execa from 'execa';
 import which from 'which';
 import { coerce, SemVer } from 'semver';
 import { execWithOutputAsString } from './shell-utils';
@@ -22,7 +23,7 @@ export interface PackageManager {
   readonly displayValue: string;
   version?: SemVer;
   getRunScriptArgs: (scriptName: string) => string[];
-  getInstallArgs: (buildType: BuildType) => string[];
+  getInstallArgs: (buildType: BuildType, resourceDir?: string) => string[];
 }
 
 const isWindows = process.platform === 'win32';
@@ -45,9 +46,31 @@ class YarnPackageManager implements PackageManager {
   version?: SemVer;
 
   getRunScriptArgs = (scriptName: string) => [scriptName];
-  getInstallArgs = (buildType = BuildType.PROD) => {
+  getInstallArgs = (buildType = BuildType.PROD, resourceDir = '') => {
     const useYarnModern = this.version?.major && this.version?.major > 1;
-    return (useYarnModern ? ['install'] : ['--no-bin-links']).concat(buildType === 'PROD' ? ['--production'] : []);
+    /**
+     * Since Yarn 2, resourceDir needs to be treated as a separate project,
+     * otherwise it'll be hoisted to use the lock.file from the parent directory,
+     * so we need to create a lock file for it.
+     * ref: https://github.com/yarnpkg/yarn/issues/5716#issuecomment-817330338
+     */
+    if (useYarnModern) {
+      if (fs.existsSync(`${resourceDir}/${this.lockFile}`)) {
+        console.log(`${resourceDir}/${this.lockFile} already exists.`);
+      } else {
+        fs.writeFile(`${resourceDir}/${this.lockFile}`, '', (err) => {
+          if (err) {
+            console.error(`Error creating ${resourceDir}/${this.lockFile}`, err);
+          } else {
+            console.log(`${resourceDir}/${this.lockFile} created successfully.`);
+          }
+        });
+      }
+
+      execa.sync('yarn', ['plugin', 'import', 'workspace-tools']);
+      execa.sync('yarn', ['install']);
+    }
+    return (useYarnModern ? ['workspaces', 'focus'] : ['--no-bin-links']).concat(buildType === 'PROD' ? ['--production'] : []);
   };
 }
 
