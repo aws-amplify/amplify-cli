@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 scriptDir=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 source $scriptDir/.env set
