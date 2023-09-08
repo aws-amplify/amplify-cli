@@ -105,6 +105,15 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
     await displayAndSetDefaults(context, projectPath, projectName);
   }
 
+  if (!context.exeInfo.isNewProject && context.parameters.options && context.parameters.options.yes) {
+    throw new AmplifyError('ProjectInitError', {
+      message: `Amplify project ${stateManager.getAppID()} is already initialized for environment ${stateManager.getCurrentEnvName(
+        projectPath,
+      )}`,
+      resolution: 'To create a new environment run `amplify add env`',
+    });
+  }
+
   const envName = await getEnvName(context);
 
   let defaultEditor = getDefaultEditor();
