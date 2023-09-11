@@ -18,7 +18,7 @@ jobs:
       - name: Set team as reviewer
         uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
         with:
-          github-token: ${{inputs.custom-github-token}} # need a PAT to add team as reviewer
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.rest.pulls.requestReviewers({
               owner: context.repo.owner,
