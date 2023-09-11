@@ -1,0 +1,28 @@
+name: Pull Request Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+
+permissions:
+  pull-requests: write
+
+jobs:
+  assign-to-team:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Set team as reviewer
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
+        with:
+          github-token: ${{inputs.custom-github-token}} # need a PAT to add team as reviewer
+          script: |
+            github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              team_reviewers: ["amplify-cli"]
+            });
