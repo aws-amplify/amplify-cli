@@ -125,7 +125,7 @@ const backupAmplifyFolder = (): void => {
       });
     }
     try {
-      fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
+      fs.copySync(amplifyDirPath, backupAmplifyDirPath);
     } catch (e) {
       if (e.code === 'EPERM') {
         throw new AmplifyError(
@@ -194,9 +194,10 @@ const removeAmplifyFolderStructure = (partial = false): void => {
 
 const prepareContext = (context: $TSContext, inputParams): void => {
   const projectPath = process.cwd();
+  const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
 
   context.exeInfo = {
-    isNewProject: true,
+    isNewProject: !fs.existsSync(projectConfigFilePath),
     inputParams,
     projectConfig: {},
     localEnvInfo: {

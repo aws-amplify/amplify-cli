@@ -16,10 +16,12 @@ export const generateFiles = async (context: $TSContext): Promise<$TSContext> =>
   const backendDirPath = pathManager.getBackendDirPath(projectPath);
   const currentBackendDirPath = pathManager.getCurrentCloudBackendDirPath(projectPath);
 
-  fs.ensureDirSync(amplifyDirPath);
-  fs.ensureDirSync(dotConfigDirPath);
-  fs.ensureDirSync(backendDirPath);
-  fs.ensureDirSync(currentBackendDirPath);
+  if (context.exeInfo.isNewProject) {
+    fs.ensureDirSync(amplifyDirPath);
+    fs.ensureDirSync(dotConfigDirPath);
+    fs.ensureDirSync(backendDirPath);
+    fs.ensureDirSync(currentBackendDirPath);
+  }
 
   const providerPlugins = getProviderPlugins(context);
   const providerOnSuccessTasks: (() => Promise<$TSAny>)[] = [];
