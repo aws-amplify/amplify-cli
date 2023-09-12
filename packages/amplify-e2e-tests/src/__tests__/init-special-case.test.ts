@@ -4,6 +4,7 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  getAppId,
   getBackendAmplifyMeta,
   getParameters,
   getProjectMeta,
@@ -11,6 +12,7 @@ import {
   gitCleanFdx,
   gitCommitAll,
   gitInit,
+  initHeadless,
   initJSProjectWithProfile,
   updateAuthAddUserGroups,
   updatedInitNewEnvWithProfile,
@@ -71,5 +73,13 @@ describe('amplify init', () => {
     expect(() => {
       getParameters(projectRoot, category, authResourceName);
     }).not.toThrow();
+  });
+
+  it('should fail if running amplify init -y on already initialized project', async () => {
+    const envName = 'devtest';
+    const resourceName = 'twoInitDefaultTest';
+    await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
+    const appId = getAppId(projectRoot);
+    await expect(initHeadless(projectRoot, envName, appId)).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 });
