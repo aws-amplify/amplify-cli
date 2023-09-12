@@ -113,7 +113,7 @@ describe('test require on aws-exports file on different JS projects', () => {
 async function createReactApp(cwd: string, projectName: string) {
   const projectRoot = `${cwd}/${projectName}`;
 
-  execa.sync(getNpxPath(), ['create-react-app', projectName, '--use-npm'], { cwd, encoding: 'utf-8' });
+  execa.sync(getNpxPath(), ['create-react-app', '--scripts-version', '5.0.1', projectName, '--use-npm'], { cwd, encoding: 'utf-8' });
 
   return projectRoot;
 }
