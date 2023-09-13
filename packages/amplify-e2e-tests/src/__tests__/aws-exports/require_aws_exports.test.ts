@@ -6,6 +6,7 @@ import {
   deleteProjectDir,
   getNpmPath,
   getNpxPath,
+  getScriptRunnerPath,
   initJSProjectWithProfile,
   nspawn,
 } from '@aws-amplify/amplify-e2e-core';
@@ -41,7 +42,7 @@ Amplify.configure(awsExports);
 function App() {
   return (
     <>
-      {Object.entries(process.env.AWS_EXPORTS).map(
+      {Object.entries(awsExports).map(
         ([key, value]) => \`\${key}: \${value}\`
       )}
     </>
@@ -49,6 +50,11 @@ function App() {
 }
 
 export default App;
+`;
+
+const esmIndex = `import awsExports from './aws-exports.cjs'
+
+console.log(awsExports);
 `;
 
 describe('test require on aws-exports file on different JS projects', () => {
@@ -81,13 +87,13 @@ describe('test require on aws-exports file on different JS projects', () => {
     fs.writeFileSync(`${appRoot}/pages/index.js`, nextIndexContent, { encoding: 'utf8', flag: 'w' });
     fs.writeFileSync(`${appRoot}/next.config.js`, nextConfigContent, { encoding: 'utf8', flag: 'w' });
 
-    // this will attempt to compile and start next server.
-    await nspawn(getNpmPath(), ['run', 'dev'], { cwd: appRoot })
-      .wait(/compiled client and server successfully/)
+    // this will attempt to compile and nextjs app
+    await nspawn(getNpmPath(), ['run', 'build'], { cwd: appRoot })
+      .wait(/Compiled successfully/)
       .runAsync();
   });
 
-  test('works with es6 react app', async () => {
+  test('works with create-react-app', async () => {
     // init react app using create-react-app
     const appRoot = await createReactApp(projRoot, 'es6react');
 
@@ -108,6 +114,26 @@ describe('test require on aws-exports file on different JS projects', () => {
       .wait(/Compiled successfully./)
       .runAsync();
   });
+
+  test('works with esm', async () => {
+    // npm init esm package
+    spawnSync(getNpmPath(), ['init', '-y'], { cwd: projRoot });
+    spawnSync(getNpmPath(), ['pkg', 'set', "'type'='module'"], { cwd: projRoot });
+
+    // install amplify dependency
+    spawnSync(getNpmPath(), ['install', '-E', '@aws-amplify/ui-react', 'aws-amplify'], { cwd: projRoot });
+
+    // amplify init, this will generate aws-exports in the project
+    await initJSProjectWithProfile(projRoot, { name: 'esm' });
+
+    // check if amplify init generated project files
+    expect(fs.existsSync(`${projRoot}/amplify/.config/project-config.json`)).toBeTruthy();
+    expect(fs.existsSync(`${projRoot}/src/aws-exports.js`)).toBeTruthy();
+
+    fs.writeFileSync(`${projRoot}/src/index.js`, esmIndex, { encoding: 'utf8', flag: 'w' });
+
+    await nspawn(getScriptRunnerPath(), [`${projRoot}/src/index.js`], { cwd: projRoot }).runAsync();
+  });
 });
 
 async function createReactApp(cwd: string, projectName: string) {
@@ -121,7 +147,7 @@ async function createReactApp(cwd: string, projectName: string) {
 async function createNextApp(cwd: string, projectName: string) {
   const projectRoot = `${cwd}/${projectName}`;
 
-  execa.sync(getNpxPath(), ['create-next-app', projectName, '--use-npm', '--example', 'with-env-from-next-config-js'], {
+  execa.sync(getNpxPath(), ['create-next-app', projectName, '--use-npm', '--example', 'basic-export'], {
     cwd,
     encoding: 'utf-8',
   });
