@@ -310,6 +310,16 @@ const raisePostPullEvent = async (context: Context): Promise<void> => {
 };
 
 const raisePostCodegenModelsEvent = async (context: Context): Promise<void> => {
+  const optionsIndicatingUninitializedModelgen = ['target', 'model-schema'];
+  const cliOptions = context?.parameters?.options ? new Set(Object.keys(context.parameters.options)) : new Set();
+  if (optionsIndicatingUninitializedModelgen.every((option) => cliOptions.has(option))) {
+    console.log(
+      `Skipping ${AmplifyEvent.PostCodegenModels} lifecycle event, due to presence of ${JSON.stringify(
+        optionsIndicatingUninitializedModelgen,
+      )} in context options`,
+    );
+    return;
+  }
   await raiseEvent(context, { event: AmplifyEvent.PostCodegenModels, data: {} });
 };
 

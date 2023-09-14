@@ -66,6 +66,7 @@ describe('execution manager', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockContext.parameters = { options: {} };
   });
 
   it.each([
@@ -92,5 +93,14 @@ describe('execution manager', () => {
     mockContext.input.command = command;
     await executeCommand(mockContext);
     expect(handleAmplifyEventMock).toBeCalledWith(mockContext, args);
+  });
+
+  it('executeCommand skips post models event when target and model-schema parameters are provided', async () => {
+    mockFs.readdirSync.mockReturnValue([]);
+    mockFs.existsSync.mockReturnValue(true);
+    mockContext.input.command = 'models';
+    mockContext.parameters.options = { target: 'javascript', 'model-schema': 'schema.graphql' };
+    await executeCommand(mockContext);
+    expect(handleAmplifyEventMock).not.toBeCalledWith(mockContext, { event: AmplifyEvent.PostCodegenModels, data: {} });
   });
 });
