@@ -5,6 +5,9 @@ import { CLIInput as CommandLineInput } from '../domain/command-input';
 import { Context } from '../domain/context';
 import { PluginInfo } from '@aws-amplify/amplify-cli-core';
 import { executeCommand } from '../execution-manager';
+import { printer } from '@aws-amplify/amplify-prompts';
+
+jest.mock('@aws-amplify/amplify-prompts');
 
 const handleAmplifyEventMock = jest.fn();
 jest.mock('../../__mocks__/faked-plugin', () => ({
@@ -95,12 +98,16 @@ describe('execution manager', () => {
     expect(handleAmplifyEventMock).toBeCalledWith(mockContext, args);
   });
 
-  it('executeCommand skips post models event when target and model-schema parameters are provided', async () => {
-    mockFs.readdirSync.mockReturnValue([]);
-    mockFs.existsSync.mockReturnValue(true);
-    mockContext.input.command = 'models';
-    mockContext.parameters.options = { target: 'javascript', 'model-schema': 'schema.graphql' };
-    await executeCommand(mockContext);
-    expect(handleAmplifyEventMock).not.toBeCalledWith(mockContext, { event: AmplifyEvent.PostCodegenModels, data: {} });
-  });
+  it.each([[AmplifyEvent.PreCodegenModels], [AmplifyEvent.PostCodegenModels]])(
+    'executeCommand skips %s when target and model-schema parameters are provided',
+    async (event) => {
+      mockFs.readdirSync.mockReturnValue([]);
+      mockFs.existsSync.mockReturnValue(true);
+      mockContext.input.command = 'models';
+      mockContext.parameters.options = { target: 'javascript', 'model-schema': 'schema.graphql' };
+      await executeCommand(mockContext);
+      expect(printer.info).toBeCalledWith(expect.stringContaining(`Skipping ${event}`));
+      expect(handleAmplifyEventMock).not.toBeCalledWith(mockContext, { event, data: {} });
+    },
+  );
 });
