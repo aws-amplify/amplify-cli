@@ -1,4 +1,5 @@
-import { GenericDataSchema, getGenericFromDataStore } from '@aws-amplify/codegen-ui';
+import { getGenericFromDataStore } from './codegen-ui';
+import type { GenericDataSchema } from './data-types';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { ModelIntrospectionSchema } from '@aws-amplify/appsync-modelgen-plugin';

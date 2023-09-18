@@ -1,5 +1,5 @@
 import { printer } from '@aws-amplify/amplify-prompts';
-import type { GenericDataSchema, GenericDataField, GenericDataRelationshipType } from '@aws-amplify/codegen-ui';
+import type { GenericDataSchema, GenericDataField, GenericDataRelationshipType } from './data-types';
 import {
   CodegenGenericDataEnum,
   CodegenGenericDataFieldDataType,
@@ -87,7 +87,7 @@ const mapDataFieldsToCodegen = (fields: { [fieldName: string]: GenericDataField 
   return codegenFields;
 };
 
-export const mapGenericDataSchemaToCodegen = (genericDataSchema: GenericDataSchema): CodegenJobGenericDataSchema => {
+export const mapGenericDataSchemaToCodegen = async (genericDataSchema: GenericDataSchema): CodegenJobGenericDataSchema | undefined => {
   const { models, nonModels, enums, dataSourceType } = genericDataSchema;
   const codegenModels: { [key: string]: CodegenGenericDataModel } = {};
   const codegenNonModels: { [key: string]: CodegenGenericDataNonModel } = {};

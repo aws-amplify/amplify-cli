@@ -1,4 +1,4 @@
-import type { GenericDataSchema } from '@aws-amplify/codegen-ui';
+import type { GenericDataSchema } from '../commands/utils/data-types';
 
 export const exampleSchema: GenericDataSchema = {
   dataSourceType: 'DataStore',
