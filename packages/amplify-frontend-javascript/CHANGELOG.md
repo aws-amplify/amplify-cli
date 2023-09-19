@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-js-v6-nextjs-ssr.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.9.15...@aws-amplify/amplify-frontend-javascript@3.10.0-js-v6-nextjs-ssr.0) (2023-09-19)
+
+
+### Bug Fixes
+
+* exclude tests from publish ([#13153](https://github.com/aws-amplify/amplify-cli/issues/13153)) ([1b1fe09](https://github.com/aws-amplify/amplify-cli/commit/1b1fe09a1c08be0262a1013f71354abd7160722a))
+* fix typo ([af7ef86](https://github.com/aws-amplify/amplify-cli/commit/af7ef864a9cfe743513b3006cf93377127b2d01c))
+
+
+### Features
+
+* generate amplifyconfiguration.json in JS frontend projects ([b523fcc](https://github.com/aws-amplify/amplify-cli/commit/b523fcc6df24cb32b8bad016d1eb5a77dd709631))
+
+
+
+
+
 ## [3.9.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.9.14...@aws-amplify/amplify-frontend-javascript@3.9.15) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-js-v6-nextjs-ssr.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.5.0...amplify-e2e-tests@4.6.0-js-v6-nextjs-ssr.0) (2023-09-19)
+
+
+### Bug Fixes
+
+* fix typo ([af7ef86](https://github.com/aws-amplify/amplify-cli/commit/af7ef864a9cfe743513b3006cf93377127b2d01c))
+* remove stale data ([#13128](https://github.com/aws-amplify/amplify-cli/issues/13128)) ([9703223](https://github.com/aws-amplify/amplify-cli/commit/970322372278762fff88f7046b44574b611ad210))
+
+
+### Features
+
+* add list all to lambda crud template ([#13116](https://github.com/aws-amplify/amplify-cli/issues/13116)) ([0fde28a](https://github.com/aws-amplify/amplify-cli/commit/0fde28a08a3d82b371cbbf858f462648376a318a))
+* generate amplifyconfiguration.json in JS frontend projects ([b523fcc](https://github.com/aws-amplify/amplify-cli/commit/b523fcc6df24cb32b8bad016d1eb5a77dd709631))
+
+
+
+
+
 # [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.4.0...amplify-e2e-tests@4.5.0) (2023-08-17)
 
 

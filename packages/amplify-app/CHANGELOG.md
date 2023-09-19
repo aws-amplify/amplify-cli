@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.17-js-v6-nextjs-ssr.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.16...@aws-amplify/amplify-app@5.0.17-js-v6-nextjs-ssr.0) (2023-09-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-app
+
+
+
+
+
 ## [5.0.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.15...@aws-amplify/amplify-app@5.0.16) (2023-08-17)
 
 

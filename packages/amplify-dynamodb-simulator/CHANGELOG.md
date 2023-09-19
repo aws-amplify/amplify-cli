@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1-js-v6-nextjs-ssr.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.9.0...amplify-dynamodb-simulator@2.9.1-js-v6-nextjs-ssr.0) (2023-09-19)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
 # [2.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.8.4...amplify-dynamodb-simulator@2.9.0) (2023-08-17)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.6.0",
+  "version": "3.6.1-js-v6-nextjs-ssr.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -28,12 +28,12 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.5",
-    "@aws-amplify/amplify-environment-parameters": "1.8.0",
+    "@aws-amplify/amplify-cli-core": "4.2.6-js-v6-nextjs-ssr.0",
+    "@aws-amplify/amplify-environment-parameters": "1.8.1-js-v6-nextjs-ssr.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.11.0",
-    "@aws-amplify/amplify-prompts": "2.8.2",
+    "@aws-amplify/amplify-prompts": "2.8.3-js-v6-nextjs-ssr.0",
     "@aws-amplify/amplify-util-import": "2.8.0",
-    "@aws-amplify/cli-extensibility-helper": "3.0.15",
+    "@aws-amplify/cli-extensibility-helper": "3.0.16-js-v6-nextjs-ssr.0",
     "amplify-headless-interface": "1.17.4",
     "amplify-util-headless-input": "1.9.15",
     "aws-cdk-lib": "~2.80.0",
