@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0-noinit-codegen.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.15...@aws-amplify/amplify-container-hosting@2.7.0-noinit-codegen.0) (2023-09-19)
+
+
+### Features
+
+* support codegen and modelgen commands in non-amplify directories ([448a90e](https://github.com/aws-amplify/amplify-cli/commit/448a90e5080f6abf738890aca025d7c00f2d8f28))
+
+
+
+
+
 ## [2.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.14...@aws-amplify/amplify-container-hosting@2.6.15) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-container-hosting

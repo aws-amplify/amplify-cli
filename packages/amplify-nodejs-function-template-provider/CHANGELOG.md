@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.9.0-noinit-codegen.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.8.10...@aws-amplify/amplify-nodejs-function-template-provider@2.9.0-noinit-codegen.0) (2023-09-19)
+
+
+### Features
+
+* add list all to lambda crud template ([#13116](https://github.com/aws-amplify/amplify-cli/issues/13116)) ([0fde28a](https://github.com/aws-amplify/amplify-cli/commit/0fde28a08a3d82b371cbbf858f462648376a318a))
+
+
+
+
+
 ## [2.8.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.8.9...@aws-amplify/amplify-nodejs-function-template-provider@2.8.10) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider
