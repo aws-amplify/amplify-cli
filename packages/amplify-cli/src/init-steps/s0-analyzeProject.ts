@@ -106,9 +106,12 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
     await displayAndSetDefaults(context, projectPath, projectName);
   }
 
-  // If forcePush is true, that means running `init -y --forcePush` which is used for the init handler
-  // this allows the function category to run pre-push checks after project is initialized
-  if (!context.exeInfo.isNewProject && context.parameters.options && context.parameters.options.yes && !context.exeInfo.forcePush) {
+  if (
+    !context.exeInfo.isNewProject &&
+    context.parameters.options &&
+    context.parameters.options.yes &&
+    !context.exeInfo.inputParams.amplify?.envName
+  ) {
     throw new AmplifyError('ProjectInitError', {
       message: `Amplify project ${stateManager.getAppID()} is already initialized for environment ${stateManager.getCurrentEnvName(
         projectPath,
