@@ -35,8 +35,8 @@ describe('JS frontend config tests', () => {
     expect(fs.existsSync(`${appRoot}/src/aws-exports.js`)).toBeTruthy();
     expect(fs.existsSync(`${appRoot}/src/amplifyconfiguration.json`)).toBeTruthy();
 
+    const awsExportsModule = await import(`${appRoot}/src/aws-exports.js`);
     const amplifyconfiguration = fs.readJSONSync(`${appRoot}/src/amplifyconfiguration.json`);
-    const awsExportsModule = await import(`${appRoot}/src/amplifyconfiguration.json`);
 
     // contents should match
     expect(amplifyconfiguration).toMatchObject(awsExportsModule.default);
@@ -48,11 +48,13 @@ describe('JS frontend config tests', () => {
     await amplifyPushAuth(appRoot);
 
     // when aws-exports updates, both files should still exist
+    const awsExportsModule = await import(`${appRoot}/src/aws-exports.js`);
     const amplifyconfiguration = fs.readJSONSync(`${appRoot}/src/amplifyconfiguration.json`);
-    const awsExportsModule = await import(`${appRoot}/src/amplifyconfiguration.json`);
+
+    // config should have updated
+    expect(amplifyconfiguration.aws_user_pools_id).toBeDefined();
 
     // contents should match
-    expect(amplifyconfiguration.aws_user_pools_id).toBeDefined();
     expect(amplifyconfiguration).toMatchObject(awsExportsModule.default);
   });
 
