@@ -4,7 +4,6 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getAppId,
   getBackendAmplifyMeta,
   getParameters,
   getProjectMeta,
@@ -79,7 +78,6 @@ describe('amplify init', () => {
     const envName = 'devtest';
     const resourceName = 'twoInitDefaultTest';
     await initJSProjectWithProfile(projectRoot, { disableAmplifyAppCreation: false, name: resourceName, envName });
-    const appId = getAppId(projectRoot);
-    await expect(initHeadless(projectRoot, envName, appId)).rejects.toThrowError('Process exited with non zero exit code 1');
+    await expect(initHeadless(projectRoot)).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 });

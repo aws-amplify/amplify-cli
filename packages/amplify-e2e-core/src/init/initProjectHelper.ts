@@ -513,6 +513,16 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
   });
 }
 
-export function initHeadless(cwd: string, envName: string, appId: string): Promise<void> {
-  return spawn(getCLIPath(), ['init', '--yes', '--envName', envName, '--appId', appId], { cwd, stripColors: true }).runAsync();
+export function initHeadless(cwd: string, envName?: string, appId?: string): Promise<void> {
+  const cliArgs = ['init', '--yes'];
+
+  if (envName) {
+    cliArgs.push('--envName', envName);
+  }
+
+  if (appId) {
+    cliArgs.push('--appId', appId);
+  }
+
+  return spawn(getCLIPath(), cliArgs, { cwd, stripColors: true }).runAsync();
 }
