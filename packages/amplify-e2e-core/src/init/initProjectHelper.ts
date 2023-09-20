@@ -516,3 +516,7 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
 export function initHeadless(cwd: string, envName: string, appId: string): Promise<void> {
   return spawn(getCLIPath(), ['init', '--yes', '--envName', envName, '--appId', appId], { cwd, stripColors: true }).runAsync();
 }
+
+export function initNonInteractive(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['init', '--yes'], { cwd, stripColors: true }).runAsync();
+}
