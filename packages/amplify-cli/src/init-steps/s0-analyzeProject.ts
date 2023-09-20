@@ -99,10 +99,25 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
   }
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
+  context.exeInfo.forcePush = !!context?.parameters?.options?.forcePush;
   const projectName = await getProjectName(context);
 
   if (context.exeInfo.isNewProject && context.parameters.command !== 'env') {
     await displayAndSetDefaults(context, projectPath, projectName);
+  }
+
+  if (
+    !context.exeInfo.isNewProject &&
+    context.parameters.options &&
+    context.parameters.options.yes &&
+    !context.exeInfo.inputParams.amplify?.envName
+  ) {
+    throw new AmplifyError('ProjectInitError', {
+      message: `Amplify project ${stateManager.getAppID()} is already initialized for environment ${stateManager.getCurrentEnvName(
+        projectPath,
+      )}`,
+      resolution: 'To create a new environment run `amplify add env`',
+    });
   }
 
   const envName = await getEnvName(context);
