@@ -258,4 +258,4 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
 };
 
 // bump version to 12.5.0
-//
+// dummy change to regenerate commit hash for RC
