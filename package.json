@@ -104,8 +104,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.10.5",
+    "@babel/cli": "^7.22.0",
+    "@babel/core": "^7.22.0",
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@babel/plugin-transform-typescript": "7.10.5",
@@ -124,7 +124,7 @@
     "@typescript-eslint/parser": "^5.34.0",
     "@zkochan/cmd-shim": "^5.1.0",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.3.0",
+    "babel-loader": "^9.1.3",
     "codecov": "^3.7.0",
     "copyfiles": "^2.2.0",
     "eslint": "^7.19.0",
@@ -174,9 +174,16 @@
     "jake/async": "^2.6.4",
     "json5": "^2.2.3",
     "nth-check": "^2.0.1",
-    "undici": "^5.8.0",
     "pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff",
+    "semver@2 || 3 || 4 || 5": "^5.7.2",
+    "semver@7.0.0": "^7.5.4",
+    "semver@~7.3.0": "^7.5.4",
+    "semver@7.3.4": "^7.5.4",
+    "semver@7.3.8": "^7.5.4",
+    "semver@7.5.0": "^7.5.4",
+    "semver@7.5.1": "^7.5.4",
     "tough-cookie": "^4.1.3",
+    "undici": "^5.8.0",
     "word-wrap": "^1.2.4"
   }
 }
