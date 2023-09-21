@@ -8,7 +8,6 @@ function lernaPublishExitOnFailure {
   set -e
   # run lerna publish with the args that were passed to this function
   # duplicate stdout to a temp file
-  # grep the temp file for the lerna err token and return exit 1
   npx lerna publish "$@" | tee /tmp/publish-results
   # grep the temp file for the lerna err token and return exit 1
   number_of_lerna_errors=$(grep -c "lerna ERR" /tmp/publish-results)
