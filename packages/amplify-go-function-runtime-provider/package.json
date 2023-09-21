@@ -1,6 +1,6 @@
 {
   "name": "amplify-go-function-runtime-provider",
-  "version": "2.3.29",
+  "version": "2.3.30-rc.0d5077acf100296.0",
   "description": "Provides functionality related to functions in Go 1.x on AWS",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.2.6",
+    "@aws-amplify/amplify-cli-core": "4.2.7-rc.0d5077acf100296.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.11.0",
     "archiver": "^5.3.0",
     "execa": "^5.1.1",
