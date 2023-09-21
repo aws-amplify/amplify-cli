@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.7-rc.d2eb33807d1eda6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.6...@aws-amplify/amplify-cli-core@4.2.7-rc.d2eb33807d1eda6.0) (2023-09-21)
+
+
+### Bug Fixes
+
+* remove stale data ([#13128](https://github.com/aws-amplify/amplify-cli/issues/13128)) ([9703223](https://github.com/aws-amplify/amplify-cli/commit/970322372278762fff88f7046b44574b611ad210))
+
+
+
+
+
 ## [4.2.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.5...@aws-amplify/amplify-cli-core@4.2.6) (2023-08-31)
 
 **Note:** Version bump only for package @aws-amplify/amplify-cli-core

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.6-rc.d2eb33807d1eda6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-logger@1.3.5...@aws-amplify/amplify-cli-logger@1.3.6-rc.d2eb33807d1eda6.0) (2023-09-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-logger
+
+
+
+
+
 ## [1.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-logger@1.3.4...@aws-amplify/amplify-cli-logger@1.3.5) (2023-08-31)
 
 

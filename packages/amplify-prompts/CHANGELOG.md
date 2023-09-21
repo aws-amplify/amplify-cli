@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.4-rc.d2eb33807d1eda6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.8.3...@aws-amplify/amplify-prompts@2.8.4-rc.d2eb33807d1eda6.0) (2023-09-21)
+
+
+### Bug Fixes
+
+* don't render spinner in non-TTY terminal ([#13242](https://github.com/aws-amplify/amplify-cli/issues/13242)) ([d75d0b2](https://github.com/aws-amplify/amplify-cli/commit/d75d0b295d9fb3cd85b3e9cb0de177f60091def1))
+
+
+
+
+
 ## [2.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.8.2...@aws-amplify/amplify-prompts@2.8.3) (2023-08-31)
 
 
