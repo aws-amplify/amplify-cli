@@ -86,10 +86,14 @@ const fileNames = ['queries', 'mutations', 'subscriptions'];
 
 function deleteAmplifyConfig(context) {
   const { srcDirPath, projectPath } = getSrcDir(context);
-  // delete aws-exports
+  // delete aws-exports.js & amplifyConfiguration.json
   if (fs.existsSync(srcDirPath)) {
-    const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
-    fs.removeSync(targetFilePath);
+    [constants.exportsJSFilename, constants.exportsJSONFilename].forEach((filename) => {
+      const filepath = path.join(srcDirPath, filename);
+      if (fs.existsSync(filepath)) {
+        fs.removeSync(filepath);
+      }
+    });
   }
   // eslint-disable-next-line spellcheck/spell-checker
   if (!fs.existsSync(path.join(projectPath, '.graphqlconfig.yml'))) return;
@@ -275,8 +279,7 @@ async function getCurrentAWSExports(context) {
   const projectPath = exeInfo?.localEnvInfo?.projectPath || amplify.getEnvInfo().projectPath;
   const { config: frontendConfig } = exeInfo?.projectConfig?.[constants.Label] || amplify.getProjectConfig()[constants.Label];
   const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
-
-  const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
+  const targetFilePath = path.join(srcDirPath, constants.exportsJSFilename);
   let awsExports = {};
 
   if (fs.existsSync(targetFilePath)) {
@@ -314,8 +317,11 @@ async function generateAWSExportsFile(context, configOutput) {
 
   fs.ensureDirSync(srcDirPath);
 
-  const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
-  await generateAwsExportsAtPath(context, targetFilePath, configOutput);
+  const pathToAwsExportsJS = path.join(srcDirPath, constants.exportsJSFilename);
+  const pathToAmplifyConfigurationJSON = path.join(srcDirPath, constants.exportsJSONFilename);
+
+  context.amplify.writeObjectAsJson(pathToAmplifyConfigurationJSON, configOutput, true);
+  await generateAwsExportsAtPath(context, pathToAwsExportsJS, configOutput);
 }
 
 async function generateAwsExportsAtPath(context, targetFilePath, configOutput) {

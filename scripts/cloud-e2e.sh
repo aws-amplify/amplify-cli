@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 source ./scripts/cloud-cli-utils.sh
 export CURR_BRANCH=$(git branch --show-current)

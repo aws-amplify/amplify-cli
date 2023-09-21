@@ -31,7 +31,7 @@
     "@aws-amplify/amplify-cli-logger": "1.3.5",
     "@aws-amplify/amplify-function-plugin-interface": "1.11.0",
     "@aws-amplify/amplify-prompts": "2.8.3",
-    "@aws-amplify/graphql-transformer-interfaces": "^2.3.0",
+    "@aws-amplify/graphql-transformer-interfaces": "^3.1.2",
     "@aws-sdk/util-arn-parser": "^3.310.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",

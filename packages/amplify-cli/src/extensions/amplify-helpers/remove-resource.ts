@@ -77,7 +77,6 @@ export async function removeResource(
   if (resourceNameCallback) {
     await resourceNameCallback(resourceName);
   }
-
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
 
   if (options.headless !== true) {
@@ -116,14 +115,14 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
     const { allResources } = await context.amplify.getResourceStatus();
     allResources.forEach((resourceItem) => {
       if (resourceItem.dependsOn) {
-        resourceItem.dependsOn.forEach((dependsOnItem) => {
+        for (const dependsOnItem of resourceItem.dependsOn) {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
             throw new AmplifyError('ResourceRemoveError', {
               message: 'Resource cannot be removed because it has a dependency on another resource',
               details: `Dependency: ${resourceItem.service} - ${resourceItem.resourceName}. Remove the dependency first.`,
             });
           }
-        });
+        }
       }
     });
   }
@@ -139,7 +138,9 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   stateManager.setMeta(undefined, amplifyMeta);
 
   // Remove resource directory from backend/
+  const stackBuildDir = pathManager.getStackBuildCategoryResourceDirPath('', category, resourceName);
   context.filesystem.remove(resourceDir);
+  context.filesystem.remove(stackBuildDir);
 
   removeResourceParameters(context, category, resourceName);
   updateBackendConfigAfterResourceRemove(category, resourceName);
