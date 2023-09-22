@@ -439,20 +439,6 @@ function chain(context: Context): ExecutionContext {
           //
           return onError(new Error(`Command not found: ${context.command}`), false);
         }
-        if (stdout) {
-          console.log('### Output received ###');
-          stdout.forEach(console.log);
-          console.log('#######################');
-        }
-        if (context.process?.getRecordingFrames()) {
-          console.log('### Frames received ###');
-          context.process
-            ?.getRecordingFrames()
-            .filter((f) => f[1] === 'o')
-            .map((f) => f[2])
-            .forEach(console.log);
-          console.log('#######################');
-        }
         return onError(new Error(`Process exited with non zero exit code ${code}`), false);
       }
       if (context.queue.length && !flushQueue()) {
@@ -632,20 +618,6 @@ function chain(context: Context): ExecutionContext {
         return false;
       }
       if (context.queue.length > 0) {
-        if (stdout) {
-          console.log('### Output received ###');
-          stdout.forEach(console.log);
-          console.log('#######################');
-        }
-        if (context.process?.getRecordingFrames()) {
-          console.log('### Frames received ###');
-          context.process
-            ?.getRecordingFrames()
-            .filter((f) => f[1] === 'o')
-            .map((f) => f[2])
-            .forEach(console.log);
-          console.log('#######################');
-        }
         onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue), true);
         return false;
       }
