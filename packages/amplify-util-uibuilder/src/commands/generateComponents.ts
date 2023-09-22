@@ -35,7 +35,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       studioClient.isGraphQLSupported ? getAmplifyDataSchema(context) : Promise.resolve(undefined),
     ]);
     const genericDataSchema = dataSchema ? mapGenericDataSchemaToCodegen(dataSchema) : undefined;
-    
+
     const canGenerateDataComponents = genericDataSchema && studioClient.isGraphQLSupported;
 
     const apiConfiguration: AmplifyUIBuilder.ApiConfiguration = canGenerateDataComponents

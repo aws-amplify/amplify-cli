@@ -1043,6 +1043,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-amplify/api@npm:5.4.5":
+  version: 5.4.5
+  resolution: "@aws-amplify/api@npm:5.4.5"
+  dependencies:
+    "@aws-amplify/api-graphql": 3.4.11
+    "@aws-amplify/api-rest": 3.5.5
+    tslib: ^1.8.0
+  checksum: 13f3551e5d2d29a201f5011a265fcaa24fdec4796afe835f2c0d9b8fcc76f243663d691de2273c680b2efbe4fea2fb1ecd7678ed393a605997ee97021f03d138
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/appsync-modelgen-plugin@npm:2.7.2, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
   version: 2.7.2
   resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.7.2"
@@ -12824,23 +12835,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:2.6.4":
+"@types/node-fetch@npm:2.6.4, @types/node-fetch@npm:^2.6.1":
   version: 2.6.4
   resolution: "@types/node-fetch@npm:2.6.4"
   dependencies:
     "@types/node": "*"
     form-data: ^3.0.0
   checksum: e43e4670ed8b7693dbf660ac1450b14fcfcdd8efca1eb0f501b6ad95af2d1fa06f8541db03e9511e82a5fee510a238fe0913330c9a58f8ac6892b985f6dd993e
-  languageName: node
-  linkType: hard
-
-"@types/node-fetch@npm:^2.6.1":
-  version: 2.6.1
-  resolution: "@types/node-fetch@npm:2.6.1"
-  dependencies:
-    "@types/node": "*"
-    form-data: ^3.0.0
-  checksum: 033945215fa6b36d5597b21bbdd7d946a751dcd066f8fa71e5f5ab5698390bc2e76e38932ec6ac709def39b6371dfd61844e6804409c7ba812e24d1c820fbff8
   languageName: node
   linkType: hard
 

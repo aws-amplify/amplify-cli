@@ -87,7 +87,7 @@ const mapDataFieldsToCodegen = (fields: { [fieldName: string]: GenericDataField 
   return codegenFields;
 };
 
-export const mapGenericDataSchemaToCodegen = async (genericDataSchema: GenericDataSchema): CodegenJobGenericDataSchema | undefined => {
+export const mapGenericDataSchemaToCodegen = (genericDataSchema: GenericDataSchema): CodegenJobGenericDataSchema => {
   const { models, nonModels, enums, dataSourceType } = genericDataSchema;
   const codegenModels: { [key: string]: CodegenGenericDataModel } = {};
   const codegenNonModels: { [key: string]: CodegenGenericDataNonModel } = {};
