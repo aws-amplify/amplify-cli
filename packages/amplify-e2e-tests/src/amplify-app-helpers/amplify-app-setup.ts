@@ -62,8 +62,19 @@ function amplifyAppAngular(projRoot: string): Promise<void> {
 }
 
 function amplifyAppReact(projRoot: string): Promise<void> {
+  const env: Record<string, string> = {};
+  if (isSmokeTestRun()) {
+    if (!process.env.AMPLIFY_PATH) {
+      throw new Error('AMPLIFY_PATH must be set in smoke tests');
+    }
+    const amplifyPathDir = path.parse(process.env.AMPLIFY_PATH).dir;
+    let pathEnvVar = process.env.PATH;
+    const separator = /^win/.test(process.platform) ? ';' : ':';
+    pathEnvVar = amplifyPathDir + separator + pathEnvVar;
+    env['PATH'] = pathEnvVar;
+  }
   return new Promise((resolve, reject) => {
-    spawn(getSpawnCommand(), [], { cwd: projRoot, stripColors: true })
+    spawn(getSpawnCommand(), [], { cwd: projRoot, stripColors: true, env })
       .wait('What type of app are you building')
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
