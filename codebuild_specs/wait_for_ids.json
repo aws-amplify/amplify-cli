@@ -1,4 +1,5 @@
 [
+  "l_amplify_app",
   "l_amplify_configure_env_2_init_d",
   "l_analytics_kinesis_analytics_pinpoint_flutter_analytics_pinpoint_js",
   "l_android_notifications_pinpoint_config_flutter_analytics_pinpoint_config_flutter_notifications_pinpoint_config",
@@ -112,7 +113,7 @@
   "l_parameter_store_1_parameter_store_2_android_analytics_pinpoint_config",
   "l_pinpoint_region_migration_v10",
   "l_predictions_schema_auth_11_b_schema_auth_1b",
-  "l_push_amplify_app_smoketest_ios",
+  "l_push_smoketest_amplify_app_smoketest_ios",
   "l_resolvers_schema_key_api_5",
   "l_scaffold_v10",
   "l_schema_auth_10_geo_multi_env_searchable_datastore",
@@ -205,7 +206,7 @@
   "w_notifications_in_app_messaging_env_2_with_babel_config_amplify_configure",
   "w_notifications_sms_pull_auth_10_container_hosting",
   "w_notifications_sms_update_parameter_store_1_parameter_store_2",
-  "w_push_amplify_app_smoketest_ios",
+  "w_push_smoketest_amplify_app_smoketest_ios",
   "w_s3_sse_schema_auth_4a_schema_model_b",
   "w_schema_auth_11_a",
   "w_schema_auth_15",
