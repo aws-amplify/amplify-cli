@@ -726,7 +726,6 @@ function createExpectationError(expected: string | RegExp, actual: string) {
  *
  */
 export function nspawn(command: string | string[], params: string[] = [], options: SpawnOptions = {}) {
-  console.log(`nspawn ${JSON.stringify(command)}`);
   if (Array.isArray(command)) {
     params = command;
     command = params.shift();
