@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.4.0...@aws-amplify/cli-internal@12.5.0) (2023-09-22)
+
+
+### Bug Fixes
+
+* add better error messaging when initializing an already initialized project ([98257a4](https://github.com/aws-amplify/amplify-cli/commit/98257a49da36d48e08c22dec6a5bc56d06d90a68))
+* remove stale data ([#13128](https://github.com/aws-amplify/amplify-cli/issues/13128)) ([9703223](https://github.com/aws-amplify/amplify-cli/commit/970322372278762fff88f7046b44574b611ad210))
+* update condition again ([b57f9ed](https://github.com/aws-amplify/amplify-cli/commit/b57f9ed097a78880531dc8e8d85aa023e72fbe53))
+* update condition for already initialized error ([842bf00](https://github.com/aws-amplify/amplify-cli/commit/842bf004a12d8fb8fbafb4868b2760b67cd55b7e))
+
+
+### Features
+
+* ensure modelgen does not throw an error when running in an uninitialized directory ([#13221](https://github.com/aws-amplify/amplify-cli/issues/13221)) ([8b5d433](https://github.com/aws-amplify/amplify-cli/commit/8b5d433163af10de1f1464055d62f04676cb3daf))
+* support codegen and modelgen commands in non-amplify directories ([#13245](https://github.com/aws-amplify/amplify-cli/issues/13245)) ([85dd5cb](https://github.com/aws-amplify/amplify-cli/commit/85dd5cb6b33d8df41e35c2cbcf3b3b0e390b1af0))
+* update main CLI version ([#13250](https://github.com/aws-amplify/amplify-cli/issues/13250)) ([f1f3118](https://github.com/aws-amplify/amplify-cli/commit/f1f3118f69f6f7702d5bb949d50e5cde44982024))
+
+
+
+
+
 # [12.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.3.0...@aws-amplify/cli-internal@12.4.0) (2023-08-31)
 
 

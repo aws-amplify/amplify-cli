@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.9.16...@aws-amplify/amplify-frontend-javascript@3.10.0) (2023-09-22)
+
+
+### Features
+
+* **amplify-frontend-javascript:** generate amplifyconfiguration.json for JS projects ([#13246](https://github.com/aws-amplify/amplify-cli/issues/13246)) ([49457b1](https://github.com/aws-amplify/amplify-cli/commit/49457b100a75dc2c6791780fdf67f76876bcf320))
+
+
+
+
+
 ## [3.9.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.9.15...@aws-amplify/amplify-frontend-javascript@3.9.16) (2023-08-31)
 
 
