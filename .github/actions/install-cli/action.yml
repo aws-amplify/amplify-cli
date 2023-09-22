@@ -20,7 +20,6 @@ runs:
       shell: powershell
       if: runner.os == 'Windows'
       run: |
-        npm install -g npx
         npm install -g @aws-amplify/cli@${{ inputs.cli-version }}
         # "where.exe" is used instead of "where" to disambiguate
         # "where" is aliased to "Where-Object" in powershell, i.e. not pointing to the tool we want
