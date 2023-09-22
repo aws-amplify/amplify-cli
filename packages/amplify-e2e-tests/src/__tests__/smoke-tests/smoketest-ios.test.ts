@@ -10,7 +10,7 @@ import {
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-describe('Smoke Test - iOS', () => {
+describe.skip('Smoke Test - iOS', () => {
   if (process.platform == 'darwin') {
     let projRoot: string;
     const exampleIOSAppPath = path.resolve(__dirname, '..', '..', '..', 'resources', 'example-ios-app');

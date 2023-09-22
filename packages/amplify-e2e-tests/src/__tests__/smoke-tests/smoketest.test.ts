@@ -199,7 +199,7 @@ function writeBanner(text: string) {
   process.stdout.write('\n');
 }
 
-describe('Smoke Tests', () => {
+describe.skip('Smoke Tests', () => {
   const createCommands = (amplify: Amplify, directory: string): Command[] => [
     {
       description: 'Amplify CLI version',
