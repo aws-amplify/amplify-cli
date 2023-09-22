@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.6.0...amplify-e2e-tests@4.7.0) (2023-09-22)
+
+
+### Bug Fixes
+
+* remove stale data ([#13128](https://github.com/aws-amplify/amplify-cli/issues/13128)) ([9703223](https://github.com/aws-amplify/amplify-cli/commit/970322372278762fff88f7046b44574b611ad210))
+
+
+### Features
+
+* **amplify-frontend-javascript:** generate amplifyconfiguration.json for JS projects ([#13246](https://github.com/aws-amplify/amplify-cli/issues/13246)) ([49457b1](https://github.com/aws-amplify/amplify-cli/commit/49457b100a75dc2c6791780fdf67f76876bcf320))
+
+
+### Reverts
+
+* Revert "test: add function to run init with only yes option" ([08734a9](https://github.com/aws-amplify/amplify-cli/commit/08734a9d2d9dba671ed3cff59b84f4f456c03927))
+
+
+
+
+
 # [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.5.0...amplify-e2e-tests@4.6.0) (2023-08-31)
 
 
