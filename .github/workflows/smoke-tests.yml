@@ -19,6 +19,7 @@ on:
 
 env:
   NODE_OPTIONS: --max-old-space-size=8096
+  IS_AMPLIFY_CLI_SMOKE_TEST_RUN: true
 
 jobs:
   run-smoke-tests:
