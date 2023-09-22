@@ -43,7 +43,11 @@ const RUN_SOLO = [
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
   'src/__tests__/uibuilder.test.ts',
 ];
-const DISABLE_COVERAGE = ['src/__tests__/datastore-modelgen.test.ts', 'src/__tests__/amplify-app.test.ts'];
+const DISABLE_COVERAGE = [
+  'src/__tests__/datastore-modelgen.test.ts',
+  'src/__tests__/amplify-app.test.ts',
+  'src/__tests__/smoke-tests/smoketest-amplify-app.test.ts',
+];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
