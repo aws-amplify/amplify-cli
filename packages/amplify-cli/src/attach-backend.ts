@@ -194,10 +194,9 @@ const removeAmplifyFolderStructure = (partial = false): void => {
 
 const prepareContext = (context: $TSContext, inputParams): void => {
   const projectPath = process.cwd();
-  const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
 
   context.exeInfo = {
-    isNewProject: !fs.existsSync(projectConfigFilePath),
+    isNewProject: true,
     inputParams,
     projectConfig: {},
     localEnvInfo: {
