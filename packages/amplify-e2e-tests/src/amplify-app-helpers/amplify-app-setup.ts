@@ -6,7 +6,7 @@ const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
 const getSpawnCommand = () => {
   if (isSmokeTestRun()) {
-    return ['npx', 'amplify-app'];
+    return ['npx', '--yes', 'amplify-app'];
   } else if (isCI()) {
     return 'amplify-app';
   } else {
