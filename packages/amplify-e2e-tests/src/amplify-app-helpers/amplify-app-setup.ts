@@ -2,13 +2,14 @@ import { nspawn as spawn, KEY_DOWN_ARROW, isCI, isSmokeTestRun } from '@aws-ampl
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-const npx = /^win/.test(process.platform) ? 'npx.cmd' : 'npx';
+const isRunningOnWindows = /^win/.test(process.platform);
+const npm = isRunningOnWindows ? 'npm.cmd' : 'npm';
+const npx = isRunningOnWindows ? 'npx.cmd' : 'npx';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
 const getSpawnCommand = () => {
   if (isSmokeTestRun()) {
     return [npx, 'amplify-app', '--yes'];
-  } else if (isCI()) {
+  } else if (isCI() && !isRunningOnWindows) {
     return 'amplify-app';
   } else {
     return amplifyAppBinPath;
@@ -75,7 +76,7 @@ function amplifyAppReact(projRoot: string): Promise<void> {
     }
     const amplifyPathDir = path.parse(process.env.AMPLIFY_PATH).dir;
     let pathEnvVar = process.env.PATH;
-    const separator = /^win/.test(process.platform) ? ';' : ':';
+    const separator = isRunningOnWindows ? ';' : ':';
     pathEnvVar = amplifyPathDir + separator + pathEnvVar;
     env['PATH'] = pathEnvVar;
   }
