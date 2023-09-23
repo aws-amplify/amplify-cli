@@ -2,8 +2,8 @@ const execa = require('execa');
 const path = require('path');
 
 const isWin = process.platform.startsWith('win');
-const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : isWin ? 'amplify.cmd' : 'amplify';
-const amplifyDev = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : isWin ? 'amplify-dev.cmd' : 'amplify-dev';
+const amplify = isWin ? 'amplify.cmd' : 'amplify';
+const amplifyDev = isWin ? 'amplify-dev.cmd' : 'amplify-dev';
 
 const defaultOpts = {
   inheritIO: true,
