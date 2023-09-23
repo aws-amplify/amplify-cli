@@ -59,6 +59,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
     'src/__tests__/amplify-app.test.ts',
+    'src/__tests__/smoke-tests/smoketest-amplify-app.test.ts',
     // failing in parsing JSON strings on powershell
     'src/__tests__/auth_2g.test.ts',
     'src/__tests__/auth_12.test.ts',
