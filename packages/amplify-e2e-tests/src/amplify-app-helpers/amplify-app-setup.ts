@@ -64,24 +64,8 @@ function amplifyAppAngular(projRoot: string): Promise<void> {
 }
 
 function amplifyAppReact(projRoot: string): Promise<void> {
-  const env: Record<string, string> = {};
-  if (isSmokeTestRun()) {
-    // If we're smoke testing we have to prepend a directory component of AMPLIFY_PATH to PATH
-    // Internally amplify-app spawns 'amplify' which makes OS look into PATH
-    // However, yarn injects local binaries into PATH as well which makes OS find packages/amplify-cli/bin content
-    // and packages are not fully built in smoke tests.
-    // OS traverses PATH from left to right, so prepending forces it to use AMPLIFY_PATH location.
-    if (!process.env.AMPLIFY_PATH) {
-      throw new Error('AMPLIFY_PATH must be set in smoke tests');
-    }
-    const amplifyPathDir = path.parse(process.env.AMPLIFY_PATH).dir;
-    let pathEnvVar = process.env.PATH;
-    const separator = isRunningOnWindows ? ';' : ':';
-    pathEnvVar = amplifyPathDir + separator + pathEnvVar;
-    env['PATH'] = pathEnvVar;
-  }
   return new Promise((resolve, reject) => {
-    spawn(getSpawnCommand(), [], { cwd: projRoot, stripColors: true, env })
+    spawn(getSpawnCommand(), [], { cwd: projRoot, stripColors: true })
       .wait('What type of app are you building')
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
