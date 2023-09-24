@@ -28,7 +28,10 @@ elif [[ "$PROJECT_NAME" == "Release" ]]; then
   npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 
 # release candidate or local publish for testing / building binary
+elif [[ "$PROJECT_NAME" == "RC" ]]; then
+  npx lerna version --preid=rc.$(git rev-parse --short=15 HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
+# local publish for testing / building binary, dev branch build, e2e tests
 else
   # create release commit and release tags
-  npx lerna version --preid=rc.$(git rev-parse --short=15 HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
+  npx lerna version --preid=dev.$(git rev-parse --short=15 HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish dev" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 fi

@@ -23,43 +23,41 @@ function startLocalRegistry {
     done
 }
 
-# Codebuild only
-function uploadPkgCliForE2E {
-    cd out/
-    export version=$(./amplify-pkg-linux-x64 --version)
-    aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
-    cd ..
-}
 function uploadPkgCli {
+    # fail and exit if any command fails
+    set -e
+
     aws configure --profile=s3-uploader set aws_access_key_id $S3_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_secret_access_key $S3_SECRET_ACCESS_KEY
     aws configure --profile=s3-uploader set aws_session_token $S3_AWS_SESSION_TOKEN
+
     cd out/
+
     export version=$(./amplify-pkg-linux-x64 --version)
 
-    if [[ "$CIRCLE_BRANCH" == "release" ]] || [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^tagged-release ]]; then
-
-        ALREADY_EXISTING_FILES="$(set -o pipefail && aws --profile=s3-uploader s3 ls s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64 | ( egrep -v "amplify-pkg-linux-x64-.*" || true ) | wc -l | xargs)"
-        INCORRECT_PERMISSIONS=$?
-
-        if [ INCORRECT_PERMISSIONS -ne "0" ]; then
-            echo "Insufficient permissions to list s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64"
+    # validate that version is uploaded in right build
+    if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        if [[ "$CIRCLE_BRANCH" != "release" ]]; then
+            echo "Invalid branch $CIRCLE_BRANCH for $version release."
             exit 1
         fi
-
-        if [ ALREADY_EXISTING_FILES -ne "0" ]; then
-            echo "Cannot overwrite existing file at s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz"
+    elif [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\. ]]; then
+        if [[ ! "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] && [[ ! "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]]; then
+            echo "Invalid branch $CIRCLE_BRANCH for $version release."
             exit 1
         fi
-
-        aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-x64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-x64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64.tgz
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
-
-    else
-        aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
+    elif [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-$ ]]; then
+        echo "Version $version is missing a tag";
+        exit 1
     fi
+
+    # It's ok to re-upload binaries for the same build to make this step idempotent
+    # Versioning is handled by publish-step1-set-versions script
+    # Version conflicts are caught at publish-step2-verdaccio script
+    aws --profile=s3-uploader s3 cp amplify-pkg-win-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-win-x64.tgz
+    aws --profile=s3-uploader s3 cp amplify-pkg-macos-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-macos-x64.tgz
+    aws --profile=s3-uploader s3 cp amplify-pkg-linux-arm64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-arm64.tgz
+    aws --profile=s3-uploader s3 cp amplify-pkg-linux-x64.tgz s3://aws-amplify-cli-do-not-delete/$(echo $version)/amplify-pkg-linux-x64.tgz
 
     cd ..
 }

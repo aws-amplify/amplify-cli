@@ -24,32 +24,35 @@ function startLocalRegistry {
 }
 
 function uploadPkgCliCodeBuild {
+    # fail and exit if any command fails
+    set -e
+
     cd out/
     export version=$(./amplify-pkg-linux-x64 --version)
 
-    if [[ "$PROJECT_NAME" == "Release" ]] || [[ "$PROJECT_NAME" == "RC" ]] || [[ "$PROJECT_NAME" == "TaggedReleaseWithoutE2E" ]]; then
-
-        ALREADY_EXISTING_FILES="$(set -o pipefail && aws s3 ls s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64 | ( egrep -v "amplify-pkg-linux-x64-.*" || true ) | wc -l | xargs)"
-        INCORRECT_PERMISSIONS=$?
-
-        if [ INCORRECT_PERMISSIONS -ne "0" ]; then
-            echo "Insufficient permissions to list s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64"
-            exit 1
-        fi
-
-        if [ ALREADY_EXISTING_FILES -ne "0" ]; then
-            echo "Cannot overwrite existing file at s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz"
-            exit 1
-        fi
-
-        aws s3 cp amplify-pkg-win-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-win-x64.tgz
-        aws s3 cp amplify-pkg-macos-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-x64.tgz
-        aws s3 cp amplify-pkg-linux-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-arm64.tgz
-        aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
-
-    else
-        aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
+    # validate that version is uploaded in right build
+    if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      if [[ "$PROJECT_NAME" != "Release" ]]; then
+        echo "Invalid project name $PROJECT_NAME for $version release."
+        exit 1
+      fi
+    elif [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\. ]]; then
+      if [[ "$PROJECT_NAME" != "RC" ]]; then
+        echo "Invalid project name $PROJECT_NAME for $version release."
+        exit 1
+      fi
+    elif [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-$ ]]; then
+      echo "Version $version is missing a tag";
+      exit 1
     fi
+
+    # It's ok to re-upload binaries for the same build to make this step idempotent
+    # Versioning is handled by publish-step1-set-versions script
+    # Version conflicts are caught at publish-step2-verdaccio script
+    aws s3 cp amplify-pkg-win-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-win-x64.tgz
+    aws s3 cp amplify-pkg-macos-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-x64.tgz
+    aws s3 cp amplify-pkg-linux-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-arm64.tgz
+    aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
 
     cd ..
 }
