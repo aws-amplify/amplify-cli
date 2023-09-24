@@ -30,5 +30,5 @@ if [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^rel
 # local publish for testing / building binary, dev branch build, e2e tests
 else
   # create release commit and release tags
-  npx lerna version --preid=dev.$(git rev-parse --short=15 HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish dev [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
+  npx lerna version --preid=dev.$(git rev-parse HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish dev [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 fi
