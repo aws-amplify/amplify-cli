@@ -23,8 +23,12 @@ elif [[ "$CIRCLE_BRANCH" == "release" ]]; then
   # create release commit and release tags
   npx lerna version --exact --conventional-commits --conventional-graduate --yes --no-push --include-merged-tags --message "chore(release): Publish latest [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 
-# release candidate or local publish for testing / building binary
-else
+# release candidate
+if [[ "$CIRCLE_BRANCH" =~ ^run-e2e-with-rc\/.* ]] || [[ "$CIRCLE_BRANCH" =~ ^release_rc\/.* ]]; then
   # create release commit and release tags
   npx lerna version --preid=rc.$(git rev-parse --short=15 HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish rc [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
+# local publish for testing / building binary, dev branch build, e2e tests
+else
+  # create release commit and release tags
+  npx lerna version --preid=dev.$(git rev-parse --short=15 HEAD) --exact --conventional-prerelease --conventional-commits --yes --no-push --include-merged-tags --message "chore(release): Publish dev [ci skip]" --no-commit-hooks --force-publish '@aws-amplify/cli-internal'
 fi
