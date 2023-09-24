@@ -47,8 +47,8 @@ function uploadPkgCliCodeBuild {
     fi
 
     # It's ok to re-upload binaries for the same build to make this step idempotent
-    # Versioning is handled by publish-step1-set-versions script
-    # Version conflicts are caught at publish-step2-verdaccio script
+    # Versioning is handled by cb-publish-step-1-set-versions script
+    # Version conflicts are caught at cb-publish-step-2-verdaccio script
     aws s3 cp amplify-pkg-win-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-win-x64.tgz
     aws s3 cp amplify-pkg-macos-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-x64.tgz
     aws s3 cp amplify-pkg-linux-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-arm64.tgz
