@@ -25,14 +25,9 @@ function startLocalRegistry {
 
 function uploadPkgCliCodeBuild {
     cd out/
-    export hash=$(git rev-parse HEAD | cut -c 1-12)
     export version=$(./amplify-pkg-linux-x64 --version)
 
     if [[ "$PROJECT_NAME" == "Release" ]] || [[ "$PROJECT_NAME" == "RC" ]] || [[ "$PROJECT_NAME" == "TaggedReleaseWithoutE2E" ]]; then
-        aws s3 cp amplify-pkg-win-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-win-x64-$(echo $hash).tgz
-        aws s3 cp amplify-pkg-macos-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-macos-x64-$(echo $hash).tgz
-        aws s3 cp amplify-pkg-linux-arm64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-arm64-$(echo $hash).tgz
-        aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
 
         ALREADY_EXISTING_FILES="$(set -o pipefail && aws s3 ls s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64 | ( egrep -v "amplify-pkg-linux-x64-.*" || true ) | wc -l | xargs)"
         INCORRECT_PERMISSIONS=$?
@@ -53,7 +48,7 @@ function uploadPkgCliCodeBuild {
         aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
 
     else
-        aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64-$(echo $hash).tgz
+        aws s3 cp amplify-pkg-linux-x64.tgz s3://$PKG_CLI_BUCKET_NAME/$(echo $version)/amplify-pkg-linux-x64.tgz
     fi
 
     cd ..
