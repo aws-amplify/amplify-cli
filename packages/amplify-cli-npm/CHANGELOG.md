@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.5.1-rc.09841ee211532da.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.5.0...@aws-amplify/cli@12.5.1-rc.09841ee211532da.0) (2023-09-24)
+
+
+### Reverts
+
+* Revert "Revert "test: remove extra hash (#13071)" (#13084)" ([aa43f90](https://github.com/aws-amplify/amplify-cli/commit/aa43f908d15857688fe9477abaefef1001c9bbc7)), closes [#13071](https://github.com/aws-amplify/amplify-cli/issues/13071) [#13084](https://github.com/aws-amplify/amplify-cli/issues/13084)
+
+
+
+
+
 # [12.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.4.0...@aws-amplify/cli@12.5.0) (2023-09-22)
 
 

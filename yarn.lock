@@ -1066,7 +1066,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.5.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.5.1-rc.09841ee211532da.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1166,7 +1166,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.5.0
+    "@aws-amplify/cli-internal": 12.5.1-rc.09841ee211532da.0
     "@types/tar": ^6.1.1
     axios: ^0.26.0
     rimraf: ^3.0.2
