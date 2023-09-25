@@ -6,7 +6,6 @@
 !.yarn/sdks
 !.yarn/versions
 **/.DS_Store
-.circleci/generated_config.yml
 scripts/cci-job.data.json
 scripts/cci-test.data.json
 scripts/.yarn/*
