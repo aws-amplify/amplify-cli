@@ -15,11 +15,11 @@ import {
   getTeamProviderInfo,
   amplifyPullNonInteractive,
   amplifyPullWithCtrlCOnFrameworkPrompt,
-  initHeadless,
 } from '@aws-amplify/amplify-e2e-core';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { addEnvironment } from '../environment/env';
 
 describe('amplify pull in two directories', () => {
   let projRoot: string;
@@ -67,10 +67,10 @@ describe('amplify pull in two directories', () => {
 
     // add both envs to project
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
-    const appId = getBackendAmplifyMeta(projRoot)?.providers?.awscloudformation?.AmplifyAppId;
-    await initHeadless(projRoot, newEnvName, appId);
+    await addEnvironment(projRoot, { envName: newEnvName });
 
-    // pull twice for both envs
+    // pull twice for both envs in other directory
+    const appId = getBackendAmplifyMeta(projRoot)?.providers?.awscloudformation?.AmplifyAppId;
     await amplifyPullNonInteractive(projRoot2, { appId, envName: envName });
     await amplifyPullNonInteractive(projRoot2, { appId, envName: newEnvName });
 
