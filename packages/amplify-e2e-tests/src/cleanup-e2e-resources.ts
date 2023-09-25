@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 /* eslint-disable spellcheck/spell-checker */
-import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
 import { config } from 'dotenv';
 import yargs from 'yargs';
 import * as aws from 'aws-sdk';
@@ -44,25 +43,12 @@ const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
 const ORPHAN = '<orphan>';
 const UNKNOWN = '<unknown>';
 
-type CircleCIJobDetails = {
-  build_url: string;
-  branch: string;
-  build_num: number;
-  outcome: string;
-  canceled: string;
-  infrastructure_fail: boolean;
-  status: string;
-  committer_name: null;
-  workflows: { workflow_id: string };
-};
-
 type StackInfo = {
   stackName: string;
   stackStatus: string;
   resourcesFailedToDelete?: string[];
   tags: Record<string, string>;
   region: string;
-  cciInfo: CircleCIJobDetails;
 };
 
 type AmplifyAppInfo = {
@@ -74,7 +60,6 @@ type AmplifyAppInfo = {
 
 type S3BucketInfo = {
   name: string;
-  cciInfo?: CircleCIJobDetails;
   createTime: Date;
 };
 
@@ -89,13 +74,11 @@ type PinpointAppInfo = {
   name: string;
   arn: string;
   region: string;
-  cciInfo?: CircleCIJobDetails;
   createTime: Date;
 };
 
 type IamRoleInfo = {
   name: string;
-  cciInfo?: CircleCIJobDetails;
   createTime: Date;
 };
 
@@ -103,14 +86,12 @@ type AppSyncApiInfo = {
   apiId: string;
   name: string;
   region: string;
-  cciInfo?: CircleCIJobDetails;
 };
 
 type ReportEntry = {
   jobId?: string;
   workflowId?: string;
   lifecycle?: string;
-  cciJobDetails?: CircleCIJobDetails;
   amplifyApps: AmplifyAppInfo[];
   stacks: StackInfo[];
   buckets: Record<string, S3BucketInfo>;
@@ -349,14 +330,12 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
       (r) => r.LogicalResourceId,
     );
   }
-  const jobId = getJobId(tags);
   return {
     stackName,
     stackStatus,
     resourcesFailedToDelete,
     region,
     tags: tags.reduce((acc, tag) => ({ ...acc, [tag.Key]: tag.Value }), {}),
-    cciInfo: jobId && (await getJobCircleCIDetails(jobId)),
   };
 };
 
@@ -424,37 +403,6 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   return results;
 };
 
-const getCircleCIClient = (): CircleCI => {
-  const options: CircleCIOptions = {
-    token: process.env.CIRCLECI_TOKEN,
-    vcs: {
-      repo: process.env.CIRCLE_PROJECT_REPONAME,
-      owner: process.env.CIRCLE_PROJECT_USERNAME,
-      type: GitType.GITHUB,
-    },
-  };
-  return new CircleCI(options);
-};
-
-const getJobCircleCIDetails = async (jobId: number): Promise<CircleCIJobDetails> => {
-  const client = getCircleCIClient();
-  const result = await client.build(jobId);
-
-  const r = _.pick(result, [
-    'build_url',
-    'branch',
-    'build_num',
-    'outcome',
-    'canceled',
-    'infrastructure_fail',
-    'status',
-    'committer_name',
-    'workflows.workflow_id',
-    'lifecycle',
-  ]) as unknown as CircleCIJobDetails;
-  return r;
-};
-
 const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
   const s3Client = new aws.S3(getAWSConfig(account));
   const buckets = await s3Client.listBuckets().promise();
@@ -466,7 +414,6 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       if (jobId) {
         result.push({
           name: bucket.Name,
-          cciInfo: await getJobCircleCIDetails(jobId),
           createTime: bucket.CreationDate,
         });
       }

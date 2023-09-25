@@ -14047,7 +14047,6 @@ __metadata:
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1426.0
     axios: ^0.26.0
-    circleci-api: ^4.1.4
     constructs: ^10.0.5
     dotenv: ^8.2.0
     esm: ^3.2.25
@@ -14990,7 +14989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:0.21.4, axios@npm:^0.21.1":
+"axios@npm:0.21.4":
   version: 0.21.4
   resolution: "axios@npm:0.21.4"
   dependencies:
@@ -16303,15 +16302,6 @@ __metadata:
     inherits: ^2.0.1
     safe-buffer: ^5.0.1
   checksum: d8d005f8b64d8a77b3d3ce531301ae7b45902c9cab4ec8b66bdbd2bf2a1d9fceb9a2133c293eb3c060b2d964da0f14c47fb740366081338aa3795dd1faa8984b
-  languageName: node
-  linkType: hard
-
-"circleci-api@npm:^4.1.4":
-  version: 4.1.4
-  resolution: "circleci-api@npm:4.1.4"
-  dependencies:
-    axios: ^0.21.1
-  checksum: 0421655b39055aa73bbe1338fc80f35da46cb35bbee298edda50202e98e4a7ccf04992eef234309cc84d87f98939f66d97b32b68c20f848127785d90cfd1cb6e
   languageName: node
   linkType: hard
 
