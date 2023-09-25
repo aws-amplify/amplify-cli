@@ -75,7 +75,7 @@ describe('amplify pull in two directories', () => {
     await amplifyPullNonInteractive(projRoot2, { appId, envName: newEnvName });
 
     // assert that local-aws-info.json contains both envs
-    expect(Object.keys(stateManager.getLocalAWSInfo(projRoot))).toEqual(expectedEnvs);
+    expect(Object.keys(stateManager.getLocalAWSInfo(projRoot2))).toEqual(expectedEnvs);
   });
 });
 
