@@ -36,6 +36,11 @@ export * from './credentials-rotator';
  */
 export const isCI = (): boolean => JSON.parse(process.env.CI || 'false') && JSON.parse(process.env.CIRCLECI || 'false');
 
+/**
+ * Whether the current run is smoke test run.
+ */
+export const isSmokeTestRun = (): boolean => JSON.parse(process.env.IS_AMPLIFY_CLI_SMOKE_TEST_RUN || 'false');
+
 // eslint-disable-next-line spellcheck/spell-checker
 export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';
 

@@ -1,8 +1,9 @@
-import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { constructMockPluginPlatform } from '../extensions/amplify-helpers/mock-plugin-platform';
 import { CLIInput as CommandLineInput } from '../../domain/command-input';
 import { constructContext } from '../../context-manager';
+import * as fs from 'fs-extra';
 
 jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({ envA: 'test', envB: 'test' });
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ defaultEditor: 'Visual Studio Code' });
@@ -74,5 +75,27 @@ describe('analyzeProject', () => {
     jest.spyOn(stateManager, 'getLocalAWSInfo').mockReturnValue({});
     await analyzeProject(mockContext);
     expect(mockContext.exeInfo.isNewEnv).toBe(true);
+  });
+
+  it('throws helpful error message when running subsequent init -y commands', async () => {
+    const appID = 'testAppID';
+    const currentEnv = 'dev';
+
+    mockContext.parameters = {
+      options: {
+        yes: true,
+      },
+    };
+
+    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
+    jest.spyOn(stateManager, 'getAppID').mockReturnValue(appID);
+    jest.spyOn(stateManager, 'getCurrentEnvName').mockReturnValue(currentEnv);
+
+    const amplifyError = new AmplifyError('ProjectInitError', {
+      message: `Amplify project ${appID} is already initialized for environment ${currentEnv}`,
+      resolution: `To create a new environment run \`amplify add env\``,
+    });
+
+    await expect(analyzeProject(mockContext)).rejects.toThrow(amplifyError);
   });
 });
