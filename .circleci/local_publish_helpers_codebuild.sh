@@ -38,7 +38,7 @@ function uploadPkgCliCodeBuild {
       fi
     elif [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\. ]]; then
       if [[ "$PROJECT_NAME" != "RC" ]]; then
-        echo "Invalid project name $PROJECT_NAME for $version release."
+        echo "Invalid project name $PROJECT_NAME for $version RC release."
         exit 1
       fi
     elif [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+-$ ]]; then
