@@ -104,14 +104,17 @@ function constructApi(metadata, amplifyConfig, amplifyResources) {
           } else if (resourceMeta.output.securityType) {
             authorizationType = resourceMeta.output.securityType;
           }
+          const apiKey = getAppSyncResourceOutput(amplifyResources, 'GraphQLAPIKeyOutput') || resourceMeta.output.GraphQLAPIKeyOutput;
           amplifyConfig[categoryName].plugins[pluginName][r] = {
             endpointType: 'GraphQL',
             endpoint:
               getAppSyncResourceOutput(amplifyResources, 'GraphQLAPIEndpointOutput') || resourceMeta.output.GraphQLAPIEndpointOutput,
             region,
             authorizationType,
-            apiKey: getAppSyncResourceOutput(amplifyResources, 'GraphQLAPIKeyOutput') || resourceMeta.output.GraphQLAPIKeyOutput,
           };
+          if (apiKey) {
+            amplifyConfig[categoryName].plugins[pluginName][r]['apiKey'] = apiKey;
+          }
         } else if (resourceMeta.service === 'API Gateway') {
           amplifyConfig[categoryName].plugins[pluginName][r] = {
             endpointType: 'REST',

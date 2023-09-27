@@ -214,4 +214,25 @@ describe('AppSync configuration', () => {
     const amplifyConfiguration = configHelper.generateConfig(mockContext, {}, amplifyResources);
     expect(amplifyConfiguration).toMatchObject(expectedAmplifyConfiguration);
   });
+
+  it('does not add apiKey if its not available', () => {
+    amplifyMeta.api.testapi.output.GraphQLAPIEndpointOutput = 'notExpectedEndpoint';
+    delete amplifyMeta.api.testapi.output.GraphQLAPIKeyOutput;
+    mockContext.amplify.getProjectMeta = jest.fn().mockReturnValue(amplifyMeta);
+    const amplifyResources = {
+      serviceResourceMapping: {
+        AppSync: [
+          {
+            output: {
+              GraphQLAPIEndpointOutput: 'expectedEndpoint',
+            },
+          },
+        ],
+      },
+    };
+    const expected = { ...expectedAmplifyConfiguration };
+    delete expected.api.plugins.awsAPIPlugin.testapi.apiKey;
+    const amplifyConfiguration = configHelper.generateConfig(mockContext, {}, amplifyResources);
+    expect(amplifyConfiguration).toMatchObject(expected);
+  });
 });
