@@ -1,4 +1,4 @@
-function generateConfig(context, newAWSConfig) {
+function generateConfig(context, newAWSConfig, amplifyResources) {
   const metadata = context.amplify.getProjectMeta();
   const amplifyConfig = {
     UserAgent: 'aws-amplify-cli/2.0',
@@ -6,7 +6,7 @@ function generateConfig(context, newAWSConfig) {
   };
   constructAnalytics(metadata, amplifyConfig);
   constructNotifications(metadata, amplifyConfig);
-  constructApi(metadata, amplifyConfig);
+  constructApi(metadata, amplifyConfig, amplifyResources);
   // Auth plugin with entire awsconfiguration contained required for Native GA release
   constructAuth(metadata, amplifyConfig, newAWSConfig);
   constructPredictions(metadata, amplifyConfig);
@@ -85,7 +85,7 @@ function constructAnalytics(metadata, amplifyConfig) {
   }
 }
 
-function constructApi(metadata, amplifyConfig) {
+function constructApi(metadata, amplifyConfig, amplifyResources) {
   const categoryName = 'api';
   const pluginName = 'awsAPIPlugin';
   const region = metadata.providers.awscloudformation.Region;
@@ -106,10 +106,11 @@ function constructApi(metadata, amplifyConfig) {
           }
           amplifyConfig[categoryName].plugins[pluginName][r] = {
             endpointType: 'GraphQL',
-            endpoint: resourceMeta.output.GraphQLAPIEndpointOutput,
+            endpoint:
+              getAppSyncResourceOutput(amplifyResources, 'GraphQLAPIEndpointOutput') || resourceMeta.output.GraphQLAPIEndpointOutput,
             region,
             authorizationType,
-            apiKey: resourceMeta.output.GraphQLAPIKeyOutput,
+            apiKey: getAppSyncResourceOutput(amplifyResources, 'GraphQLAPIKeyOutput') || resourceMeta.output.GraphQLAPIKeyOutput,
           };
         } else if (resourceMeta.service === 'API Gateway') {
           amplifyConfig[categoryName].plugins[pluginName][r] = {
@@ -280,6 +281,13 @@ function constructGeo(metadata, amplifyConfig) {
   }
   if (placeIndexConfig.items.length > 0) {
     amplifyConfig[categoryName].plugins[pluginName]['searchIndices'] = placeIndexConfig;
+  }
+}
+
+function getAppSyncResourceOutput(amplifyResources, outputName) {
+  const appSyncResourceMapping = amplifyResources?.serviceResourceMapping?.AppSync;
+  if (appSyncResourceMapping && appSyncResourceMapping[0]) {
+    return appSyncResourceMapping[0]?.output?.[outputName];
   }
 }
 
