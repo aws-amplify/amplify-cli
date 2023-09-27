@@ -25,12 +25,10 @@ export interface PackageManager {
   getInstallArgs: (buildType: BuildType) => string[];
 }
 
-const isWindows = process.platform === 'win32';
-
 class NpmPackageManager implements PackageManager {
   readonly packageManager = 'npm';
   readonly displayValue = 'NPM';
-  readonly executable = isWindows ? 'npm.cmd' : 'npm';
+  readonly executable = 'npm';
   readonly lockFile = 'package-lock.json';
 
   getRunScriptArgs = (scriptName: string) => ['run-script', scriptName];
@@ -40,7 +38,7 @@ class NpmPackageManager implements PackageManager {
 class YarnPackageManager implements PackageManager {
   readonly packageManager: PackageManagerType = 'yarn';
   readonly displayValue = 'Yarn';
-  readonly executable = 'yarn'; // Windows does not require `.cmd` extension to invoke yarn
+  readonly executable = 'yarn';
   readonly lockFile = 'yarn.lock';
   version?: SemVer;
 
@@ -54,7 +52,7 @@ class YarnPackageManager implements PackageManager {
 class PnpmPackageManager implements PackageManager {
   readonly packageManager: PackageManagerType = 'pnpm';
   readonly displayValue = 'PNPM';
-  readonly executable = isWindows ? 'pnpm.cmd' : 'pnpm';
+  readonly executable = 'pnpm';
   readonly lockFile = 'pnpm-lock.yaml';
 
   getRunScriptArgs = (scriptName: string) => [scriptName];
