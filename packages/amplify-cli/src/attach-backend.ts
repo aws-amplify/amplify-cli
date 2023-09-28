@@ -125,7 +125,7 @@ const backupAmplifyFolder = (): void => {
       });
     }
     try {
-      fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
+      fs.copySync(amplifyDirPath, backupAmplifyDirPath);
     } catch (e) {
       if (e.code === 'EPERM') {
         throw new AmplifyError(
