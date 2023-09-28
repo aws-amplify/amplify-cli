@@ -13,6 +13,8 @@ import {
   mapGenericDataSchemaToCodegen,
   waitForSucceededJob,
   extractUIComponents,
+  parsePackageJsonFile,
+  getStartCodegenJobDependencies,
 } from './utils';
 import { getUiBuilderComponentsPath } from './utils/getUiBuilderComponentsPath';
 import { AmplifyUIBuilder } from 'aws-sdk';
@@ -51,6 +53,11 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
 
     const genericDataSchema = dataSchema ? mapGenericDataSchemaToCodegen(dataSchema) : undefined;
 
+    const packageJsonFile = parsePackageJsonFile(context);
+    let startCodegenJobDependencies: { [key: string]: string } = {};
+    if (packageJsonFile) {
+      startCodegenJobDependencies = getStartCodegenJobDependencies(packageJsonFile);
+    }
     const job: AmplifyUIBuilder.StartCodegenJobData = {
       renderConfig: {
         react: {
@@ -59,6 +66,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
           script: 'jsx',
           renderTypeDeclarations: true,
           apiConfiguration,
+          dependencies: startCodegenJobDependencies,
         } as AmplifyUIBuilder.ReactStartCodegenJobData,
       },
       autoGenerateForms: studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && hasDataAPI,
@@ -115,7 +123,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       );
     }
 
-    notifyMissingPackages(context, hasStorageManagerField);
+    notifyMissingPackages(context, hasStorageManagerField, finishedJob.dependencies);
 
     await deleteDetachedForms(detachedForms, studioClient);
   } catch (e) {
