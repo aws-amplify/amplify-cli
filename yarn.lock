@@ -12783,16 +12783,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/openpgp@npm:^4.4.18":
-  version: 4.4.18
-  resolution: "@types/openpgp@npm:4.4.18"
-  dependencies:
-    "@types/bn.js": "*"
-  checksum: 01e70eecc91a11878672da1c774babc33ca31e5822f541b32c8d9f6ec2f0c06acd0a679530294a0178d7152a940544053141f149e148fa166456421f351407b3
-  languageName: node
-  linkType: hard
-
-"@types/openpgp@npm:^4.4.19":
+"@types/openpgp@npm:^4.4.18, @types/openpgp@npm:^4.4.19":
   version: 4.4.19
   resolution: "@types/openpgp@npm:4.4.19"
   dependencies:
