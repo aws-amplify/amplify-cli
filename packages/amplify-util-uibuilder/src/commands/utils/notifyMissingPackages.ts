@@ -9,9 +9,9 @@ import { CodegenDependencies } from 'aws-sdk/clients/amplifyuibuilder';
 type PackageJson = { dependencies: { [key: string]: string } };
 
 /**
- * Returns a parsed package.json file
+ * Returns a parsed package.json file if present
  * @param context cli context object
- * @returns A JSON object representing the package.json file in the local project
+ * @returns A JSON object representing the package.json file in the local project or undefined if not found
  */
 export const parsePackageJsonFile = (context: $TSContext): PackageJson | undefined => {
   const args = extractArgs(context);
