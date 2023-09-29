@@ -1071,7 +1071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/appsync-modelgen-plugin@npm:2.7.3":
+"@aws-amplify/appsync-modelgen-plugin@npm:2.7.3, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
   version: 2.7.3
   resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.7.3"
   dependencies:
@@ -1090,27 +1090,6 @@ __metadata:
   peerDependencies:
     graphql: ^15.5.0
   checksum: fd98753be0ec764bfc3ae9c2fc39021511bc67d00555c7c5caf94acff3176ed0a0c47b2d97c134e8a8b363356f135dc0db7f55b9e10a22d8c9690177e0a6cc0d
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
-  version: 2.7.1
-  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.7.1"
-  dependencies:
-    "@graphql-codegen/plugin-helpers": ^1.18.8
-    "@graphql-codegen/visitor-plugin-common": ^1.22.0
-    "@graphql-tools/utils": ^6.0.18
-    "@types/node": ^12.12.6
-    "@types/pluralize": 0.0.29
-    chalk: ^3.0.0
-    change-case: ^4.1.1
-    lower-case-first: ^2.0.1
-    pluralize: ^8.0.0
-    strip-indent: ^3.0.0
-    ts-dedent: ^1.1.0
-  peerDependencies:
-    graphql: ^15.5.0
-  checksum: a8eb3fbf1c954416b81f9dd28606b3168166e71afa9aa42f151891688300987bd3ad22a3fd9655fb2c45180d58be55e0ed5b4b29b583d3fb7c67e96451dd5454
   languageName: node
   linkType: hard
 
@@ -7727,7 +7706,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-utf8-browser@npm:3.186.0":
+"@aws-sdk/util-utf8-browser@npm:3.186.0, @aws-sdk/util-utf8-browser@npm:^3.0.0":
   version: 3.186.0
   resolution: "@aws-sdk/util-utf8-browser@npm:3.186.0"
   dependencies:
@@ -7736,7 +7715,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-utf8-browser@npm:3.37.0, @aws-sdk/util-utf8-browser@npm:^3.0.0":
+"@aws-sdk/util-utf8-browser@npm:3.37.0":
   version: 3.37.0
   resolution: "@aws-sdk/util-utf8-browser@npm:3.37.0"
   dependencies:
@@ -13873,23 +13852,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:2.6.4":
+"@types/node-fetch@npm:2.6.4, @types/node-fetch@npm:^2.6.1":
   version: 2.6.4
   resolution: "@types/node-fetch@npm:2.6.4"
   dependencies:
     "@types/node": "*"
     form-data: ^3.0.0
   checksum: e43e4670ed8b7693dbf660ac1450b14fcfcdd8efca1eb0f501b6ad95af2d1fa06f8541db03e9511e82a5fee510a238fe0913330c9a58f8ac6892b985f6dd993e
-  languageName: node
-  linkType: hard
-
-"@types/node-fetch@npm:^2.6.1":
-  version: 2.6.1
-  resolution: "@types/node-fetch@npm:2.6.1"
-  dependencies:
-    "@types/node": "*"
-    form-data: ^3.0.0
-  checksum: 033945215fa6b36d5597b21bbdd7d946a751dcd066f8fa71e5f5ab5698390bc2e76e38932ec6ac709def39b6371dfd61844e6804409c7ba812e24d1c820fbff8
   languageName: node
   linkType: hard
 
@@ -13937,7 +13906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pluralize@npm:0.0.29, @types/pluralize@npm:^0.0.29":
+"@types/pluralize@npm:^0.0.29":
   version: 0.0.29
   resolution: "@types/pluralize@npm:0.0.29"
   checksum: 840796fa1db158eb4d9787758d134736e29d9a8035f5b0cbad06e3801fc64b79112ba944c83f9a1a5b94da08703f505b8315b7e0f28bfc0f8e9e1ccfead7b083
@@ -30704,14 +30673,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"safe-stable-stringify@npm:^2.2.0, safe-stable-stringify@npm:^2.4.0":
-  version: 2.4.1
-  resolution: "safe-stable-stringify@npm:2.4.1"
-  checksum: 391dbab34964be0d0e63b91bc996ca23ef8daae440b18cb4132f7c3db1af206f88d047af1149ef7ea69db6b6cdb49472166bb35e43fe82db53a9a3ed315aab79
-  languageName: node
-  linkType: hard
-
-"safe-stable-stringify@npm:^2.3.1":
+"safe-stable-stringify@npm:^2.2.0, safe-stable-stringify@npm:^2.3.1, safe-stable-stringify@npm:^2.4.0":
   version: 2.4.3
   resolution: "safe-stable-stringify@npm:2.4.3"
   checksum: 81dede06b8f2ae794efd868b1e281e3c9000e57b39801c6c162267eb9efda17bd7a9eafa7379e1f1cacd528d4ced7c80d7460ad26f62ada7c9e01dec61b2e768
@@ -33096,21 +33058,21 @@ node-pty@beta:
 
 "typescript@patch:typescript@^3 || ^4#~builtin<compat/typescript>, typescript@patch:typescript@^4.9.5#~builtin<compat/typescript>":
   version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"
+  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=289587"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10d31da0caa997927eab0167b7ddacb9ac8d3fd87e6584185b14da32b7f033e727309682fc0395021f4ac110860a3be6054e9b039a996a24d282a20bafc599f4
+  checksum: e3333f887c6829dfe0ab6c1dbe0dd1e3e2aeb56c66460cb85c5440c566f900c833d370ca34eb47558c0c69e78ced4bfe09b8f4f98b6de7afed9b84b8d1dd06a1
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^4.6.4 || ^5.0.0#~builtin<compat/typescript>":
   version: 5.1.3
-  resolution: "typescript@patch:typescript@npm%3A5.1.3#~builtin<compat/typescript>::version=5.1.3&hash=85af82"
+  resolution: "typescript@patch:typescript@npm%3A5.1.3#~builtin<compat/typescript>::version=5.1.3&hash=5da071"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 6219383250b585b201c9ea10576164c9d5760c7a167bc761b118692c9fb8e88610f37730c0a1169d96ac19b29ed80418048763d0c1ff00ce48e051abbc213a9b
+  checksum: 769c5a11a9d5207ae5ce4c84b5c7a72ad92a28877a0061881ccfb326a43a1a1de79c4daff2f9d74720137744cfc9332fddbfbc4c3973c1e859b2f977f5d11b72
   languageName: node
   linkType: hard
 
