@@ -765,7 +765,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.2.7
     "@aws-amplify/amplify-prompts": 2.8.4
     "@types/node": ^12.12.6
-    "@types/openpgp": ^4.4.18
+    "@types/openpgp": ^4.4.19
     aws-sdk: ^2.1426.0
     detect-port: ^1.3.0
     execa: ^5.1.1
@@ -773,7 +773,7 @@ __metadata:
     get-port: ^5.1.1
     gunzip-maybe: ^1.4.2
     node-fetch: ^2.6.7
-    openpgp: ^4.10.10
+    openpgp: ^5.10.2
     promise-toolbox: ^0.20.0
     tar: ^6.1.11
     uuid: ^8.3.2
@@ -12783,12 +12783,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/openpgp@npm:^4.4.18":
-  version: 4.4.18
-  resolution: "@types/openpgp@npm:4.4.18"
+"@types/openpgp@npm:^4.4.18, @types/openpgp@npm:^4.4.19":
+  version: 4.4.19
+  resolution: "@types/openpgp@npm:4.4.19"
   dependencies:
     "@types/bn.js": "*"
-  checksum: 01e70eecc91a11878672da1c774babc33ca31e5822f541b32c8d9f6ec2f0c06acd0a679530294a0178d7152a940544053141f149e148fa166456421f351407b3
+  checksum: 1d01f52cad3e3996c647467a31aa552b7acadfe6ed8df15088c7ef7d0aaffc49cf16d8cb87a30cbd96071098cc7e09e5f4a876c85430f08a27b7d8653f2e43a6
   languageName: node
   linkType: hard
 
@@ -14034,6 +14034,7 @@ __metadata:
     moment: ^2.24.0
     node-fetch: ^2.6.7
     node-pty: beta
+    openpgp: ^5.10.2
     rimraf: ^3.0.0
     title-case: ^3.0.3
     ts-jest: ^29.1.0
@@ -25576,7 +25577,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:2.6.7, node-fetch@npm:^2.1.2, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.5, node-fetch@npm:^2.6.6, node-fetch@npm:^2.6.7":
+"node-fetch@npm:2.6.7, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.5, node-fetch@npm:^2.6.6, node-fetch@npm:^2.6.7":
   version: 2.6.7
   resolution: "node-fetch@npm:2.6.7"
   dependencies:
@@ -25632,15 +25633,6 @@ __metadata:
   version: 0.4.0
   resolution: "node-int64@npm:0.4.0"
   checksum: a6a4d8369e2f2720e9c645255ffde909c0fbd41c92ea92a5607fc17055955daac99c1ff589d421eee12a0d24e99f7bfc2aabfeb1a4c14742f6c099a51863f31a
-  languageName: node
-  linkType: hard
-
-"node-localstorage@npm:~1.3.0":
-  version: 1.3.1
-  resolution: "node-localstorage@npm:1.3.1"
-  dependencies:
-    write-file-atomic: ^1.1.4
-  checksum: 78eb29d4fa36bd7fc1f48a6e197201beb46d75532ad5ba11932f29fd60ed7e0d83018977a31e0bea44ef49d3c8448f5ddf0eb7566fcc5f6321b29d45f36663a6
   languageName: node
   linkType: hard
 
@@ -26354,14 +26346,12 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"openpgp@npm:^4.10.10":
-  version: 4.10.10
-  resolution: "openpgp@npm:4.10.10"
+"openpgp@npm:^5.10.2":
+  version: 5.10.2
+  resolution: "openpgp@npm:5.10.2"
   dependencies:
     asn1.js: ^5.0.0
-    node-fetch: ^2.1.2
-    node-localstorage: ~1.3.0
-  checksum: abec215d19bc2d6c7a4a7fbf970f8003c495338d948ef3a6abd36bab5a5036a7217e2ea89d899c313e70a7c54ae819f1550c6ae657095d334e8acaec743578bf
+  checksum: 2978a8f3b39c74da92aea268def44a75e9e41665157f6a60bd753d5c0d44d2ea659ae17c6095be6d3d1485fd556d65a31403ef63cf24451fc113794e7f2e74a9
   languageName: node
   linkType: hard
 
@@ -30135,13 +30125,6 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"slide@npm:^1.1.5":
-  version: 1.1.6
-  resolution: "slide@npm:1.1.6"
-  checksum: f3bde70fd4c0a2ba6c23c674f010849865ddfacbc0ae3a57522d7ce88e4cc6c186d627943c34004d4f009a3fb477c03307b247ab69a266de4b3c72b271a6a03a
-  languageName: node
-  linkType: hard
-
 "smart-buffer@npm:^4.2.0":
   version: 4.2.0
   resolution: "smart-buffer@npm:4.2.0"
@@ -33171,17 +33154,6 @@ node-pty@beta:
     imurmurhash: ^0.1.4
     signal-exit: ^3.0.7
   checksum: 3a4d89bdb993937917a61e3847f75eb857dcac157ab4c956c9bab5d95ba82a482de6eff950752e06e86d1950fdc0f794cc29fe63d6ee9dba00aedc21a8b1e039
-  languageName: node
-  linkType: hard
-
-"write-file-atomic@npm:^1.1.4":
-  version: 1.3.4
-  resolution: "write-file-atomic@npm:1.3.4"
-  dependencies:
-    graceful-fs: ^4.1.11
-    imurmurhash: ^0.1.4
-    slide: ^1.1.5
-  checksum: 6f6270708f12e9bba36c527da3f06e4e11146681947b00732695f769f23651713e085e88a5e0f8d04f40d131ed1f1f588d9eeade3a0f862fe8a91f4b4a15a23c
   languageName: node
   linkType: hard
 
