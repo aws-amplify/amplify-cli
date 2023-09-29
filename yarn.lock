@@ -14034,6 +14034,7 @@ __metadata:
     moment: ^2.24.0
     node-fetch: ^2.6.7
     node-pty: beta
+    openpgp: ^5.10.2
     rimraf: ^3.0.0
     title-case: ^3.0.3
     ts-jest: ^29.1.0
