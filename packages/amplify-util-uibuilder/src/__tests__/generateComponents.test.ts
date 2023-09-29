@@ -316,7 +316,7 @@ describe('can generate components', () => {
       });
     });
 
-    it('should inclue dependencies', async () => {
+    it('should include dependencies', async () => {
       isDataStoreEnabledMocked.mockResolvedValue(false);
       getMetadataPromise.mockReturnValue({
         features: {
