@@ -1,9 +1,9 @@
 import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { getCodegenConfig } from 'amplify-codegen';
+import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 import * as utils from '../commands/utils';
 import { run } from '../commands/generateComponents';
-import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
-import { getCodegenConfig } from 'amplify-codegen';
 import { getUiBuilderComponentsPath } from '../commands/utils/getUiBuilderComponentsPath';
 
 jest.mock('../commands/utils');
@@ -40,6 +40,10 @@ utilsMock.extractUIComponents = jest.fn().mockReturnValue(undefined);
 utilsMock.waitForSucceededJob = jest
   .fn()
   .mockReturnValue({ asset: { downloadUrl: 'amazon.com' }, statusMessage: `{\"codegenErrors\": [{\"schemaName\": \"BlogUpdateForm\"}]}` });
+utilsMock.parsePackageJsonFile = jest.fn().mockReturnValue({ dependencies: {} });
+utilsMock.getStartCodegenJobDependencies = jest
+  .fn()
+  .mockReturnValue({ '@aws-amplify/ui-react': '4.6.0', 'aws-amplify': '^5.0.2', '@aws-amplify/ui-react-storage': '^1.2.0' });
 
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
@@ -306,6 +310,28 @@ describe('can generate components', () => {
                   typesFilePath: '',
                 },
               },
+            }),
+          },
+        }),
+      });
+    });
+
+    it('should include dependencies', async () => {
+      isDataStoreEnabledMocked.mockResolvedValue(false);
+      getMetadataPromise.mockReturnValue({
+        features: {
+          ...defaultStudioFeatureFlags,
+          isGraphQLEnabled: 'true',
+        },
+      });
+      await run(context, 'PostPull');
+      expect(mockStartCodegenJob).toHaveBeenCalledWith({
+        appId: 'testAppId',
+        environmentName: 'testEnvName',
+        codegenJobToCreate: expect.objectContaining({
+          renderConfig: {
+            react: expect.objectContaining({
+              dependencies: { '@aws-amplify/ui-react': '4.6.0', 'aws-amplify': '^5.0.2', '@aws-amplify/ui-react-storage': '^1.2.0' },
             }),
           },
         }),

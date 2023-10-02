@@ -78,7 +78,7 @@
     "amplify-nodejs-function-runtime-provider": "2.5.7",
     "aws-appsync": "^4.1.4",
     "aws-cdk-lib": "~2.80.0",
-    "aws-sdk": "^2.1426.0",
+    "aws-sdk": "^2.1464.0",
     "aws-sdk-mock": "^5.8.0",
     "axios": "^0.26.0",
     "constructs": "^10.0.5",
