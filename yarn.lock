@@ -945,8 +945,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.2.7
     "@aws-amplify/amplify-prompts": 2.8.4
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
-    "@aws-amplify/codegen-ui": 2.14.2
-    "@aws-amplify/codegen-ui-react": 2.14.2
+    "@aws-amplify/datastore": ^4.7.5
     "@types/fs-extra": ^8.0.1
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
@@ -956,6 +955,7 @@ __metadata:
     fs-extra: ^8.1.0
     node-fetch: ^2.6.7
     ora: ^4.0.3
+    semver: ^7.5.4
     tiny-async-pool: ^2.1.0
     ts-jest: ^29.1.0
   languageName: unknown
@@ -994,6 +994,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-amplify/api-graphql@npm:3.4.11":
+  version: 3.4.11
+  resolution: "@aws-amplify/api-graphql@npm:3.4.11"
+  dependencies:
+    "@aws-amplify/api-rest": 3.5.5
+    "@aws-amplify/auth": 5.6.5
+    "@aws-amplify/cache": 5.1.11
+    "@aws-amplify/core": 5.8.5
+    "@aws-amplify/pubsub": 5.5.5
+    graphql: 15.8.0
+    tslib: ^1.8.0
+    uuid: ^3.2.1
+    zen-observable-ts: 0.8.19
+  checksum: ae4bc4b03174824ed67163864c661c9486de6b3480ebac29a93381beb8570ae39ec5f4913801bf2dedc41a98a7e87bb597d972d0aeb4225e4b7ca4d583462370
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/api-rest@npm:2.0.29":
   version: 2.0.29
   resolution: "@aws-amplify/api-rest@npm:2.0.29"
@@ -1004,6 +1021,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-amplify/api-rest@npm:3.5.5":
+  version: 3.5.5
+  resolution: "@aws-amplify/api-rest@npm:3.5.5"
+  dependencies:
+    "@aws-amplify/core": 5.8.5
+    axios: 0.26.0
+    tslib: ^1.8.0
+    url: 0.11.0
+  checksum: 2822d75b0abefd091d0c52ba8822b2a6b34589708dce980a47c1ebb1d492a06ba56b47fbe1b101e4c427acd598be3912a00a30b56aae685063e6630f809930c0
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/api@npm:4.0.29":
   version: 4.0.29
   resolution: "@aws-amplify/api@npm:4.0.29"
@@ -1011,6 +1040,17 @@ __metadata:
     "@aws-amplify/api-graphql": 2.2.18
     "@aws-amplify/api-rest": 2.0.29
   checksum: bb3a8b3a6edc765e0c5a37083832833291aed7edcc012f0d219d7450b93e98554414e21537d0ec84bad402b9ce7d3364d0328ff58e45ff6b8ca6a56250e18f39
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/api@npm:5.4.5":
+  version: 5.4.5
+  resolution: "@aws-amplify/api@npm:5.4.5"
+  dependencies:
+    "@aws-amplify/api-graphql": 3.4.11
+    "@aws-amplify/api-rest": 3.5.5
+    tslib: ^1.8.0
+  checksum: 13f3551e5d2d29a201f5011a265fcaa24fdec4796afe835f2c0d9b8fcc76f243663d691de2273c680b2efbe4fea2fb1ecd7678ed393a605997ee97021f03d138
   languageName: node
   linkType: hard
 
@@ -1045,12 +1085,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-amplify/auth@npm:5.6.5":
+  version: 5.6.5
+  resolution: "@aws-amplify/auth@npm:5.6.5"
+  dependencies:
+    "@aws-amplify/core": 5.8.5
+    amazon-cognito-identity-js: 6.3.6
+    buffer: 4.9.2
+    tslib: ^1.8.0
+    url: 0.11.0
+  checksum: 8113f435c11fb3a5619f08cffe488fd71fc2ef29d7f5c82c5fa3db9328823b60f5ac4b5eae10ce92624e57287fad7cefe3de794a0e32d3f157765f68c3658956
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/cache@npm:4.0.31":
   version: 4.0.31
   resolution: "@aws-amplify/cache@npm:4.0.31"
   dependencies:
     "@aws-amplify/core": 4.3.11
   checksum: 81c3add804bda06c44535d385d4ab0bdb7ae57f996fff8bc78c1e4b281382f3ba5f131f38bd6b0bfe9fc5d0284c31917e924f85d320785a6443fcca6c9a380d0
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/cache@npm:5.1.11":
+  version: 5.1.11
+  resolution: "@aws-amplify/cache@npm:5.1.11"
+  dependencies:
+    "@aws-amplify/core": 5.8.5
+    tslib: ^1.8.0
+  checksum: 0ea58972d1b9bdcd46218d9c858be7ec3523aca3734239476a9dbd7951b40643c6cad7b2eec2f21806696c3a380a9e2e6b867cf5dc1b33b8f29877405c7ca2cd
   languageName: node
   linkType: hard
 
@@ -1174,34 +1237,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/codegen-ui-react@npm:2.14.2":
-  version: 2.14.2
-  resolution: "@aws-amplify/codegen-ui-react@npm:2.14.2"
-  dependencies:
-    "@aws-amplify/codegen-ui": 2.14.2
-    "@typescript/vfs": ~1.3.5
-    prettier: 2.3.2
-    typescript: <=4.5.0
-  peerDependencies:
-    react: ^16.8 || ^17.0 || ^18.0
-    react-dom: ^16.8 || ^17.0 || ^18.0
-  dependenciesMeta:
-    prettier:
-      optional: true
-  checksum: 91052ff146601bedc2e08f6b878ddc89e8633529e203f1a4a4c68ff441cc27d141c0dc748893e572b2f91501d81405f819d76aacde6345b212ef271d1b223b4d
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/codegen-ui@npm:2.14.2":
-  version: 2.14.2
-  resolution: "@aws-amplify/codegen-ui@npm:2.14.2"
-  dependencies:
-    change-case: ^4.1.2
-    yup: ^0.32.11
-  checksum: 1ef00989aa89584e10e9d5216c78265ba3ce06f6770b414237db1e09fa49fa07a5d7faa24cd121df67af1bffcf9d8c4c518fb0a30df2e9b95cc3b637a523c704
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/core@npm:4.3.11":
   version: 4.3.11
   resolution: "@aws-amplify/core@npm:4.3.11"
@@ -1215,6 +1250,24 @@ __metadata:
     universal-cookie: ^4.0.4
     zen-observable-ts: 0.8.19
   checksum: b749fdf7ee82ca988932651ec15a8e2096e96c8b17d896909f90cf1e2310eb528ee3f34364a3681f1ea28ed985b7d31704ee79dffe0c29004f281fea2192ea5f
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/core@npm:5.8.5":
+  version: 5.8.5
+  resolution: "@aws-amplify/core@npm:5.8.5"
+  dependencies:
+    "@aws-crypto/sha256-js": 1.2.2
+    "@aws-sdk/client-cloudwatch-logs": 3.6.1
+    "@aws-sdk/types": 3.6.1
+    "@aws-sdk/util-hex-encoding": 3.6.1
+    "@types/node-fetch": 2.6.4
+    isomorphic-unfetch: ^3.0.0
+    react-native-url-polyfill: ^1.3.0
+    tslib: ^1.8.0
+    universal-cookie: ^4.0.4
+    zen-observable-ts: 0.8.19
+  checksum: b018787a8cafba68d83b316dab8216ee42dd0673e839bf44efac259b1ac2b4aa51324d259b9cbfbd24e3a469a8b05bd5ad5920d6b7c9ddb948955a1dc59ed4e3
   languageName: node
   linkType: hard
 
@@ -1234,6 +1287,26 @@ __metadata:
     zen-observable-ts: 0.8.19
     zen-push: 0.2.1
   checksum: 6299c9034a3c33ebedea6602c712d57626e06019e8e7147e3d972378547f3a04a5ee20eea34c0055a46feb3838a0af783ff3dca89da5e17aacb8f94fa03cc98a
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/datastore@npm:^4.7.5":
+  version: 4.7.5
+  resolution: "@aws-amplify/datastore@npm:4.7.5"
+  dependencies:
+    "@aws-amplify/api": 5.4.5
+    "@aws-amplify/auth": 5.6.5
+    "@aws-amplify/core": 5.8.5
+    "@aws-amplify/pubsub": 5.5.5
+    amazon-cognito-identity-js: 6.3.6
+    buffer: 4.9.2
+    idb: 5.0.6
+    immer: 9.0.6
+    ulid: 2.3.0
+    uuid: 3.4.0
+    zen-observable-ts: 0.8.19
+    zen-push: 0.2.1
+  checksum: 7d3df8684831f48875cca89316c0d71e1c3c7150b23ff9f687501c0457ff9d1538027cd82715541932ca910f2e5ab55c50a02c86be80db7f01274f8b165f3d28
   languageName: node
   linkType: hard
 
@@ -1601,6 +1674,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-amplify/pubsub@npm:5.5.5":
+  version: 5.5.5
+  resolution: "@aws-amplify/pubsub@npm:5.5.5"
+  dependencies:
+    "@aws-amplify/auth": 5.6.5
+    "@aws-amplify/cache": 5.1.11
+    "@aws-amplify/core": 5.8.5
+    buffer: 4.9.2
+    graphql: 15.8.0
+    tslib: ^1.8.0
+    url: 0.11.0
+    uuid: ^3.2.1
+    zen-observable-ts: 0.8.19
+  checksum: c5540f4cc33c18d9d6ecdc9e31dcb1fff976f5a5589ecd2f74b6244f9590a30cdf58a57d6c6796b366d50d16249c59aab06ad3f10005e4a269b998fca7acf6de
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/storage@npm:4.4.12":
   version: 4.4.12
   resolution: "@aws-amplify/storage@npm:4.4.12"
@@ -1821,6 +1911,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-crypto/sha256-js@npm:1.2.2, @aws-crypto/sha256-js@npm:^1.0.0, @aws-crypto/sha256-js@npm:^1.2.0, @aws-crypto/sha256-js@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "@aws-crypto/sha256-js@npm:1.2.2"
+  dependencies:
+    "@aws-crypto/util": ^1.2.2
+    "@aws-sdk/types": ^3.1.0
+    tslib: ^1.11.1
+  checksum: f4e8593cfbc48591413f00c744569b21e5ed5fab0e27fa4b59c517f2024ca4f46fab7b3874f2a207ceeef8feefc22d143a82d6c6bfe5303ea717f579d8d7ad0a
+  languageName: node
+  linkType: hard
+
 "@aws-crypto/sha256-js@npm:2.0.0":
   version: 2.0.0
   resolution: "@aws-crypto/sha256-js@npm:2.0.0"
@@ -1840,17 +1941,6 @@ __metadata:
     "@aws-sdk/types": ^3.222.0
     tslib: ^1.11.1
   checksum: fc013b25a5813c425d4fb77c9ffbc8b5f73d2c78b423df98a1b2575a26de5ff3775c8f62fcf8ef2cc39c8af1cc651013e2c670c1a605a2e16749e06920a2d68f
-  languageName: node
-  linkType: hard
-
-"@aws-crypto/sha256-js@npm:^1.0.0, @aws-crypto/sha256-js@npm:^1.2.0, @aws-crypto/sha256-js@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "@aws-crypto/sha256-js@npm:1.2.2"
-  dependencies:
-    "@aws-crypto/util": ^1.2.2
-    "@aws-sdk/types": ^3.1.0
-    tslib: ^1.11.1
-  checksum: f4e8593cfbc48591413f00c744569b21e5ed5fab0e27fa4b59c517f2024ca4f46fab7b3874f2a207ceeef8feefc22d143a82d6c6bfe5303ea717f579d8d7ad0a
   languageName: node
   linkType: hard
 
@@ -8259,7 +8349,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.4, @babel/runtime@npm:^7.10.5, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.10.4, @babel/runtime@npm:^7.10.5, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
   version: 7.17.9
   resolution: "@babel/runtime@npm:7.17.9"
   dependencies:
@@ -12701,7 +12791,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*, @types/lodash@npm:^4.14.149, @types/lodash@npm:^4.14.175":
+"@types/lodash@npm:*, @types/lodash@npm:^4.14.149":
   version: 4.14.178
   resolution: "@types/lodash@npm:4.14.178"
   checksum: 820e33578a084aba2ca66fc83728c14d82813b91f3f14f281621b36904533c3d1681992b5e2719579b8beb52e1a77cfa914283a145f66dfa71b5e02a7cec5a37
@@ -12745,13 +12835,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:^2.6.1":
-  version: 2.6.1
-  resolution: "@types/node-fetch@npm:2.6.1"
+"@types/node-fetch@npm:2.6.4, @types/node-fetch@npm:^2.6.1":
+  version: 2.6.4
+  resolution: "@types/node-fetch@npm:2.6.4"
   dependencies:
     "@types/node": "*"
     form-data: ^3.0.0
-  checksum: 033945215fa6b36d5597b21bbdd7d946a751dcd066f8fa71e5f5ab5698390bc2e76e38932ec6ac709def39b6371dfd61844e6804409c7ba812e24d1c820fbff8
+  checksum: e43e4670ed8b7693dbf660ac1450b14fcfcdd8efca1eb0f501b6ad95af2d1fa06f8541db03e9511e82a5fee510a238fe0913330c9a58f8ac6892b985f6dd993e
   languageName: node
   linkType: hard
 
@@ -13342,15 +13432,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript/vfs@npm:~1.3.5":
-  version: 1.3.5
-  resolution: "@typescript/vfs@npm:1.3.5"
-  dependencies:
-    debug: ^4.1.1
-  checksum: b3512eb50b6dc6affbd0402eb6cf6ee31b2877c262588520753f5a4de8ecf73f396843ac776b3b1ab681d34448154672b6fd6f826184cb9318c9835e5511b3da
-  languageName: node
-  linkType: hard
-
 "@ungap/promise-all-settled@npm:1.1.2":
   version: 1.1.2
   resolution: "@ungap/promise-all-settled@npm:1.1.2"
@@ -13851,6 +13932,19 @@ __metadata:
     isomorphic-unfetch: ^3.0.0
     js-cookie: ^2.2.1
   checksum: 2210b65a0f87744ce017512fa13856e67fa3c7c0766a79ab991b67e8fe3776eeb763ce33061e6bba223090c9c8a85e9502ecf3c4e40c1f5c1aea4c43b72f31fa
+  languageName: node
+  linkType: hard
+
+"amazon-cognito-identity-js@npm:6.3.6":
+  version: 6.3.6
+  resolution: "amazon-cognito-identity-js@npm:6.3.6"
+  dependencies:
+    "@aws-crypto/sha256-js": 1.2.2
+    buffer: 4.9.2
+    fast-base64-decode: ^1.0.0
+    isomorphic-unfetch: ^3.0.0
+    js-cookie: ^2.2.1
+  checksum: 96512224b26fc9f7aa052c8d76b968aae33910745e8647854754ff72d8e184bdc246e330c4e8ab46af0e926372c0be7f25767d4ce8394c83a7480b6b60d543fe
   languageName: node
   linkType: hard
 
@@ -14970,7 +15064,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.26.0":
+"axios@npm:0.26.0, axios@npm:^0.26.0":
   version: 0.26.0
   resolution: "axios@npm:0.26.0"
   dependencies:
@@ -15786,7 +15880,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:^5.5.0, buffer@npm:^5.7.0":
+"buffer@npm:^5.4.3, buffer@npm:^5.5.0, buffer@npm:^5.7.0":
   version: 5.7.1
   resolution: "buffer@npm:5.7.1"
   dependencies:
@@ -25423,13 +25517,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoclone@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "nanoclone@npm:0.2.1"
-  checksum: 760b569ea841c9678fdf8d763c6d7bb093f0889150087f82d86c536a318b302939c82ce35cdaec999d0f687789d0d79d0f3f75a272d7a98dfac7a067c0b47053
-  languageName: node
-  linkType: hard
-
 "nanoid@npm:3.1.25":
   version: 3.1.25
   resolution: "nanoid@npm:3.1.25"
@@ -27989,15 +28076,6 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.3.2":
-  version: 2.3.2
-  resolution: "prettier@npm:2.3.2"
-  bin:
-    prettier: bin-prettier.js
-  checksum: 40f159f05808966ff4c57e147651cf038adb7f5af3fbca8d999b87ccbaeff7d73cf9038a45f667a8c18cbb049c1a980a752fa8987dfd3dcdd66e932e366f40be
-  languageName: node
-  linkType: hard
-
 "prettier@npm:^1.19.1":
   version: 1.19.1
   resolution: "prettier@npm:1.19.1"
@@ -28231,13 +28309,6 @@ node-pty@beta:
   version: 2.0.1
   resolution: "propagate@npm:2.0.1"
   checksum: 01e1023b60ae4050d1a2783f976d7db702022dbdb70dba797cceedad8cfc01b3939c41e77032f8c32aa9d93192fe937ebba1345e8604e5ce61fd3b62ee3003b8
-  languageName: node
-  linkType: hard
-
-"property-expr@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "property-expr@npm:2.0.4"
-  checksum: 6d289a02bbb812990bcc63f1e3607bf97adcb912e3a75d72cfc33f01bfd80170d4234668de965fa44bfac73e3e18f5bf4cff7bae5713bd2caa1e9b583bd8a51a
   languageName: node
   linkType: hard
 
@@ -28617,6 +28688,17 @@ node-pty@beta:
   peerDependencies:
     react-native: ">=0.56"
   checksum: 56da68d9cb9dba5e0a7cc3c22cf3374961133c58f1c34c9b91c462e1ec927d5a267edb17c96f095f9061225f541adb8cc2d62c94cec87c2fd5dce9bbc97c5c24
+  languageName: node
+  linkType: hard
+
+"react-native-url-polyfill@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "react-native-url-polyfill@npm:1.3.0"
+  dependencies:
+    whatwg-url-without-unicode: 8.0.0-3
+  peerDependencies:
+    react-native: "*"
+  checksum: d8167ad2cc17261906ffde19970279406db63d61b9ca85d85b02f5592e53a83db70aace3c1d89081ce46ddcfacbdac6a7faaa329b5235c6b980e1f533de5b318
   languageName: node
   linkType: hard
 
@@ -31286,13 +31368,6 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"toposort@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "toposort@npm:2.0.2"
-  checksum: ab9ca91fce4b972ccae9e2f539d755bf799a0c7eb60da07fd985fce0f14c159ed1e92305ff55697693b5bc13e300f5417db90e2593b127d421c9f6c440950222
-  languageName: node
-  linkType: hard
-
 "tough-cookie@npm:^4.1.3":
   version: 4.1.3
   resolution: "tough-cookie@npm:4.1.3"
@@ -31735,16 +31810,6 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"typescript@npm:<=4.5.0, typescript@npm:~4.4.4":
-  version: 4.4.4
-  resolution: "typescript@npm:4.4.4"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 7cd160bbfdf99404238c296db0d56352c7e1d57e367f02640ca36f254f3fa47f74bfc76615e0010c2688a443d9e7403e2d26c79d98ab450d924b17c950732486
-  languageName: node
-  linkType: hard
-
 "typescript@npm:^3 || ^4, typescript@npm:^4.9.5":
   version: 4.9.5
   resolution: "typescript@npm:4.9.5"
@@ -31765,6 +31830,16 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
+"typescript@npm:~4.4.4":
+  version: 4.4.4
+  resolution: "typescript@npm:4.4.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 7cd160bbfdf99404238c296db0d56352c7e1d57e367f02640ca36f254f3fa47f74bfc76615e0010c2688a443d9e7403e2d26c79d98ab450d924b17c950732486
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~4.8.3, typescript@npm:~4.8.4":
   version: 4.8.4
   resolution: "typescript@npm:4.8.4"
@@ -31772,16 +31847,6 @@ node-pty@beta:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 663bf455b21ac024e719bb8c6a07bcaaa027a9943abfb58a694b59789e7d08578badb5556170267ad480e31786b8b4c8ab3c9c0e597d3b8df39af800e43c6ed5
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@<=4.5.0#~builtin<compat/typescript>, typescript@patch:typescript@~4.4.4#~builtin<compat/typescript>":
-  version: 4.4.4
-  resolution: "typescript@patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=bbeadb"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 5eb1f150ac8d9a1bf79b971dcabe4158e10666d19733a1e9d36ea6b2c9f60e129889fe02c945b7b863d94749f582e633115a9dcb3c607e435246fdecb957dc27
   languageName: node
   linkType: hard
 
@@ -31802,6 +31867,16 @@ node-pty@beta:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 6219383250b585b201c9ea10576164c9d5760c7a167bc761b118692c9fb8e88610f37730c0a1169d96ac19b29ed80418048763d0c1ff00ce48e051abbc213a9b
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~4.4.4#~builtin<compat/typescript>":
+  version: 4.4.4
+  resolution: "typescript@patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=bbeadb"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 5eb1f150ac8d9a1bf79b971dcabe4158e10666d19733a1e9d36ea6b2c9f60e129889fe02c945b7b863d94749f582e633115a9dcb3c607e435246fdecb957dc27
   languageName: node
   linkType: hard
 
@@ -32154,7 +32229,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"url@npm:^0.11.0":
+"url@npm:0.11.0, url@npm:^0.11.0":
   version: 0.11.0
   resolution: "url@npm:0.11.0"
   dependencies:
@@ -32236,7 +32311,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"uuid@npm:3.x, uuid@npm:^3.0.0, uuid@npm:^3.2.1, uuid@npm:^3.3.2":
+"uuid@npm:3.4.0, uuid@npm:3.x, uuid@npm:^3.0.0, uuid@npm:^3.2.1, uuid@npm:^3.3.2":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
@@ -32488,6 +32563,13 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
+"webidl-conversions@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "webidl-conversions@npm:5.0.0"
+  checksum: bf31df332ed11e1114bfcae7712d9ab2c37e7faa60ba32d8fdbee785937c0b012eee235c19d2b5d84f5072db84a160e8d08dd382da7f850feec26a4f46add8ff
+  languageName: node
+  linkType: hard
+
 "webpack-dev-middleware@npm:^5.3.1":
   version: 5.3.1
   resolution: "webpack-dev-middleware@npm:5.3.1"
@@ -32652,6 +32734,17 @@ node-pty@beta:
   version: 3.6.2
   resolution: "whatwg-fetch@npm:3.6.2"
   checksum: cc10f6893fe71839250b6e2fa9bc293bcf0ca5b93129712a7d1097fb7528b3ff617eb065098dc972e74d1455378e514aa34c0901ded41584be16508db63477c8
+  languageName: node
+  linkType: hard
+
+"whatwg-url-without-unicode@npm:8.0.0-3":
+  version: 8.0.0-3
+  resolution: "whatwg-url-without-unicode@npm:8.0.0-3"
+  dependencies:
+    buffer: ^5.4.3
+    punycode: ^2.1.1
+    webidl-conversions: ^5.0.0
+  checksum: c27a637ab7d01981b2e2f576fde2113b9c42247500e093d2f5ba94b515d5c86dbcf70e5cad4b21b8813185f21fa1b4846f53c79fa87995293457e28c889cc0fd
   languageName: node
   linkType: hard
 
@@ -33444,21 +33537,6 @@ node-pty@beta:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: dceb44c28578b31641e13695d200d34ec4ab3966a5729814d5445b194933c096b7ced71494ce53a0e8820685d1d010df8b2422e5bf2cdea7e469d97ffbea306f
-  languageName: node
-  linkType: hard
-
-"yup@npm:^0.32.11":
-  version: 0.32.11
-  resolution: "yup@npm:0.32.11"
-  dependencies:
-    "@babel/runtime": ^7.15.4
-    "@types/lodash": ^4.14.175
-    lodash: ^4.17.21
-    lodash-es: ^4.17.21
-    nanoclone: ^0.2.1
-    property-expr: ^2.0.4
-    toposort: ^2.0.2
-  checksum: f0802798dc64b49f313886b983a9bea5f283e2094ee2aa1197587b84f50ac5b5d03af99857c313139e63dc02558fac3aaa343503bdbffa96f70006b39d1f59c9
   languageName: node
   linkType: hard
 

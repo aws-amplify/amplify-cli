@@ -35,6 +35,7 @@ const getUiBuilderComponentsPathMocked = getUiBuilderComponentsPath as any;
 utilsMock.shouldRenderComponents = jest.fn().mockReturnValue(true);
 utilsMock.notifyMissingPackages = jest.fn().mockReturnValue(true);
 utilsMock.getAmplifyDataSchema = jest.fn().mockReturnValue({});
+utilsMock.mapGenericDataSchemaToCodegen = jest.fn().mockReturnValue({});
 utilsMock.isFormDetachedFromModel = jest.fn().mockReturnValue(false);
 utilsMock.extractUIComponents = jest.fn().mockReturnValue(undefined);
 utilsMock.waitForSucceededJob = jest

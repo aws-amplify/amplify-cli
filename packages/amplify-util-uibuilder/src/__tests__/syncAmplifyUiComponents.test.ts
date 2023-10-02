@@ -11,7 +11,7 @@ import {
 } from '../commands/utils';
 import { AmplifyStudioClient } from '../clients';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
-import type { GenericDataSchema } from '@aws-amplify/codegen-ui';
+import type { GenericDataSchema } from '../commands/utils/data-types';
 import fetch, { Response } from 'node-fetch';
 import { existsSync, writeFileSync } from 'fs';
 

@@ -3,8 +3,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import fs from 'fs-extra';
 import path from 'path';
 import rangeSubset from 'semver/ranges/subset';
-import { RequiredDependency } from '@aws-amplify/codegen-ui';
-import { ReactRequiredDependencyProvider } from '@aws-amplify/codegen-ui-react';
+import { RequiredDependency, ReactRequiredDependencyProvider } from '../../commands/utils/codegen-ui-dependency-provider';
 import { extractArgs } from './extractArgs';
 
 const getRequiredDependencies = (hasStorageManagerField?: boolean): RequiredDependency[] =>

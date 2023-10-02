@@ -1,5 +1,5 @@
 import { printer } from '@aws-amplify/amplify-prompts';
-import type { GenericDataSchema, GenericDataField, GenericDataRelationshipType } from '@aws-amplify/codegen-ui';
+import type { GenericDataSchema, GenericDataField, GenericDataRelationshipType } from './data-types';
 import {
   CodegenGenericDataEnum,
   CodegenGenericDataFieldDataType,

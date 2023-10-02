@@ -34,8 +34,9 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       studioClient.listForms(),
       studioClient.isGraphQLSupported ? getAmplifyDataSchema(context) : Promise.resolve(undefined),
     ]);
+    const genericDataSchema = dataSchema ? mapGenericDataSchemaToCodegen(dataSchema) : undefined;
 
-    const canGenerateDataComponents = dataSchema && studioClient.isGraphQLSupported;
+    const canGenerateDataComponents = genericDataSchema && studioClient.isGraphQLSupported;
 
     const apiConfiguration: AmplifyUIBuilder.ApiConfiguration = canGenerateDataComponents
       ? getApiConfiguration(studioClient, context)
@@ -48,8 +49,6 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       return;
     }
     spinner.start('Generating UI components...');
-
-    const genericDataSchema = dataSchema ? mapGenericDataSchemaToCodegen(dataSchema) : undefined;
 
     const job: AmplifyUIBuilder.StartCodegenJobData = {
       renderConfig: {
@@ -79,10 +78,10 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
 
     const detachedForms: { id: string; name: string }[] = [];
     const failedResponseNames: string[] = [];
-    const modelNames = dataSchema?.models ? new Set(Object.keys(dataSchema.models)) : new Set<string>();
+    const modelNames = genericDataSchema?.models ? new Set(Object.keys(genericDataSchema.models)) : new Set<string>();
     const hasStorageManagerField = formSchemas.entities.some((formSchema) => hasStorageField(formSchema));
 
-    if (dataSchema && eventType === 'PostPush') {
+    if (genericDataSchema && eventType === 'PostPush') {
       formSchemas.entities.forEach((formSchema) => {
         isFormDetachedFromModel(formSchema, modelNames) && detachedForms.push({ id: formSchema.id, name: formSchema.name });
       });
