@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.11.2",
+  "version": "1.11.3-rds-3.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-category-api": "^5.8.0-rds-3.0",
-    "@aws-amplify/amplify-cli-core": "4.2.8",
+    "@aws-amplify/amplify-cli-core": "4.2.9-rds-3.0",
     "@aws-amplify/amplify-prompts": "2.8.4",
     "@aws-amplify/codegen-ui": "2.14.2",
     "@aws-amplify/codegen-ui-react": "2.14.2",

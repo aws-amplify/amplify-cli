@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.9-rds-3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.8...@aws-amplify/amplify-cli-core@4.2.9-rds-3.0) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-core
+
+
+
+
+
 ## [4.2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.7...@aws-amplify/amplify-cli-core@4.2.8) (2023-10-03)
 
 
