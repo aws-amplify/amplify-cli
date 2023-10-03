@@ -17,6 +17,7 @@ export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersF
     enableAutoIndexQueryNames: true,
     respectPrimaryKeyAttributesOnConnectionField: true,
     enableSearchNodeToNodeEncryption: false,
+    enableTransformerCfnOutputs: true,
   },
 };
 
