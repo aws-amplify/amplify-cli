@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.2-rc.aca85b972d466da.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.6.1...@aws-amplify/amplify-util-mock@5.6.2-rc.aca85b972d466da.0) (2023-10-03)
+
+
+### Bug Fixes
+
+* add missing config value for mock tests ([4445f8e](https://github.com/aws-amplify/amplify-cli/commit/4445f8e6eedc0e848de97365a6ee65eb6495aa33))
+* update api category and codegen to capture high-priority bug-fixes ([3836b90](https://github.com/aws-amplify/amplify-cli/commit/3836b90b3f9ccd654d9c1b61a4b83c9c4712290c))
+
+
+
+
+
 ## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.6.0...@aws-amplify/amplify-util-mock@5.6.1) (2023-09-27)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock
