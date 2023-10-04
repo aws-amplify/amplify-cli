@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-cli-core",
-  "version": "4.2.8",
+  "version": "4.2.9-rc.86c48b34a884a89.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",

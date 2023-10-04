@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.6.0-rc.86c48b34a884a89.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.5.2...@aws-amplify/cli-internal@12.6.0-rc.86c48b34a884a89.0) (2023-10-04)
+
+
+### Bug Fixes
+
+* pulling with env append to local files ([#13227](https://github.com/aws-amplify/amplify-cli/issues/13227)) ([ef1c43f](https://github.com/aws-amplify/amplify-cli/commit/ef1c43fd955596366114e883b2db31fda55feaf8))
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
 ## [12.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.5.1...@aws-amplify/cli-internal@12.5.2) (2023-10-03)
 
 

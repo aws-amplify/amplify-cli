@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0-rc.86c48b34a884a89.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.8.3...@aws-amplify/amplify-environment-parameters@1.9.0-rc.86c48b34a884a89.0) (2023-10-04)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
 ## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.8.2...@aws-amplify/amplify-environment-parameters@1.8.3) (2023-10-03)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

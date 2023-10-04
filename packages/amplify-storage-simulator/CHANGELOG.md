@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.1-rc.86c48b34a884a89.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.0...amplify-storage-simulator@1.11.1-rc.86c48b34a884a89.0) (2023-10-04)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
 # [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.10.0...amplify-storage-simulator@1.11.0) (2023-08-17)
 
 
