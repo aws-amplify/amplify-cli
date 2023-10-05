@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.7.1...amplify-e2e-tests@4.8.0) (2023-10-05)
+
+
+### Bug Fixes
+
+* dependabot alert for openpgp ([#13282](https://github.com/aws-amplify/amplify-cli/issues/13282)) ([49314ad](https://github.com/aws-amplify/amplify-cli/commit/49314ad063cfb3111af2a5406028c5c73958cd24))
+* pulling with env append to local files ([#13227](https://github.com/aws-amplify/amplify-cli/issues/13227)) ([ef1c43f](https://github.com/aws-amplify/amplify-cli/commit/ef1c43fd955596366114e883b2db31fda55feaf8))
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
 ## [4.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.7.0...amplify-e2e-tests@4.7.1) (2023-10-03)
 
 

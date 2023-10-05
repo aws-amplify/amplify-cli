@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.8...@aws-amplify/amplify-cli-core@4.2.9) (2023-10-05)
+
+
+### Bug Fixes
+
+* remove .cmd extension for pnpm and npm invocations ([#13133](https://github.com/aws-amplify/amplify-cli/issues/13133)) ([ea81e43](https://github.com/aws-amplify/amplify-cli/commit/ea81e43cb6cee4822d5fa6c3e1714decb7ed18b0))
+
+
+
+
+
 ## [4.2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.7...@aws-amplify/amplify-cli-core@4.2.8) (2023-10-03)
 
 
