@@ -40,12 +40,21 @@ describe('amplify init e', () => {
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
+    // test default vscode settings.json for awscloudformation folder
+    const editorSettingsPath = path.join(projRoot, '.vscode', 'settings.json');
+    const editorSettings = fs.readJSONSync(editorSettingsPath);
+    expect(editorSettings['files.exclude']['amplify/backend/awscloudformation']).toEqual(true);
+
     await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
     await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
     await expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // override new env
     await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: false });
+
+    // test awscloudformation folder is not excluded in vscode settings.json after override
+    const editorSettingsAfterOverride = fs.readJSONSync(editorSettingsPath);
+    expect(editorSettingsAfterOverride['files.exclude']['amplify/backend/awscloudformation']).toEqual(false);
 
     // this is where we will write overrides to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');

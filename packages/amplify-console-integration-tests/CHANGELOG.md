@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.10.3...@aws-amplify/amplify-console-integration-tests@2.11.0) (2023-10-05)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-console-integration-tests/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-console-integration-tests/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [2.10.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.10.2...@aws-amplify/amplify-console-integration-tests@2.10.3) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
 ## [2.10.2](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.10.1...@aws-amplify/amplify-console-integration-tests@2.10.2) (2023-09-22)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
