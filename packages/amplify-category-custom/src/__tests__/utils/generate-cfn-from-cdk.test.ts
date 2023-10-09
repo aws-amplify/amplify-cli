@@ -8,7 +8,7 @@ describe('generate-cfn-from-cdk', () => {
 
     test('should return undefined if CDK env vars are not set', () => {
       const actual = getCDKProps();
-      expect(actual).toBeUndefined();
+      expect(Object.values(actual)).toHaveLength(0);
     });
 
     test('should return cdk props with env set', () => {
