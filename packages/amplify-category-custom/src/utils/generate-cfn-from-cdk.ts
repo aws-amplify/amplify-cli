@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import { categoryName } from './constants';
-import { StackProps } from '@aws-cdk/core';
+import { StackProps } from 'aws-cdk-lib';
 
 export type AmplifyResourceProps = {
   category: string;
