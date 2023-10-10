@@ -811,7 +811,7 @@ __metadata:
     "@types/lodash.throttle": ^4.1.6
     "@types/node": ^12.12.6
     "@types/uuid": ^8.0.0
-    amplify-codegen: ^4.6.5
+    amplify-codegen: ^4.7.0
     archiver: ^5.3.0
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
@@ -900,7 +900,7 @@ __metadata:
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
-    amplify-codegen: ^4.6.5
+    amplify-codegen: ^4.7.0
     amplify-dynamodb-simulator: 2.9.4
     amplify-nodejs-function-runtime-provider: 2.5.9
     amplify-storage-simulator: 1.11.1
@@ -951,7 +951,7 @@ __metadata:
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
     "@types/tiny-async-pool": ^2.0.0
-    amplify-codegen: ^4.6.5
+    amplify-codegen: ^4.7.0
     aws-sdk: ^2.1464.0
     fs-extra: ^8.1.0
     node-fetch: ^2.6.7
@@ -1014,9 +1014,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/appsync-modelgen-plugin@npm:2.7.5, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
-  version: 2.7.5
-  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.7.5"
+"@aws-amplify/appsync-modelgen-plugin@npm:2.8.0, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
+  version: 2.8.0
+  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.8.0"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^1.18.8
     "@graphql-codegen/visitor-plugin-common": ^1.22.0
@@ -1031,7 +1031,7 @@ __metadata:
     ts-dedent: ^1.1.0
   peerDependencies:
     graphql: ^15.5.0
-  checksum: 6e2a4058a103e61483c5c3213ee529dcc29fdd48d84363342aac99437298c2e6094c5b9a469e3fb317b35a468ea20de7a3975f312d25609ee8d0f668ca16a549
+  checksum: c97b8f6b7b2c0683a9a10fe84f8af5c5048c28cf30c563b15ee887846c09186cd3ac37e3d781d662e884a3d30cce43907a584d6f0217f9e26ab8303cff756456
   languageName: node
   linkType: hard
 
@@ -1116,7 +1116,7 @@ __metadata:
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
-    amplify-codegen: ^4.6.5
+    amplify-codegen: ^4.7.0
     amplify-dotnet-function-runtime-provider: 2.0.14
     amplify-go-function-runtime-provider: 2.3.32
     amplify-headless-interface: 1.17.4
@@ -1313,17 +1313,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-generator@npm:0.1.5":
-  version: 0.1.5
-  resolution: "@aws-amplify/graphql-generator@npm:0.1.5"
+"@aws-amplify/graphql-generator@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@aws-amplify/graphql-generator@npm:0.2.0"
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin": 2.7.5
+    "@aws-amplify/appsync-modelgen-plugin": 2.8.0
     "@aws-amplify/graphql-docs-generator": 4.2.0
     "@aws-amplify/graphql-types-generator": 3.4.3
     "@graphql-codegen/core": ^2.6.6
     "@graphql-tools/apollo-engine-loader": ^8.0.0
     graphql: ^15.5.0
-  checksum: 663dd85126221ec210ea3ceff1bfb1d39b5e6874953b2612b139b0b5a50f270052fb3b65e954f8e06634ba947587a9e16dae2a20dfe3bfed5851d95cce0d08ca
+  checksum: 17f462278cc7b8b75fa6adb3b0ec592aa6cdbd0a5967c00b02f74c9a523a01786c4d3e5405afefa9210fdf00618e7b26e8637ab00c0c059537c237f1b0de9dad
   languageName: node
   linkType: hard
 
@@ -13937,12 +13937,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-codegen@npm:^4.6.5":
-  version: 4.6.5
-  resolution: "amplify-codegen@npm:4.6.5"
+"amplify-codegen@npm:^4.7.0":
+  version: 4.7.0
+  resolution: "amplify-codegen@npm:4.7.0"
   dependencies:
     "@aws-amplify/graphql-docs-generator": 4.2.0
-    "@aws-amplify/graphql-generator": 0.1.5
+    "@aws-amplify/graphql-generator": 0.2.0
     "@aws-amplify/graphql-types-generator": 3.4.3
     "@graphql-codegen/core": 2.6.6
     chalk: ^3.0.0
@@ -13960,7 +13960,7 @@ __metadata:
   peerDependencies:
     "@aws-amplify/amplify-cli-core": "*"
     graphql-transformer-core: ^8.0.0
-  checksum: a60721a9aa340a94663e78729ce418d3e3c657f665340d214fd658364a1ee0b56206eb93716cbed8ea5b8c4efd0abceaee1d51236642ae1f85dc50579e22db29
+  checksum: 5f2978bdc3af3c6ad7a5e376069d0d122d4a1e3c8fd8c47b07abb6fc442589530684a57f18788c09e2d06e8735ba728d3e3f7143377285606832dfc596b25884
   languageName: node
   linkType: hard
 
