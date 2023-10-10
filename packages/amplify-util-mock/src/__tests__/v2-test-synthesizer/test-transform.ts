@@ -1,5 +1,5 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import type { SynthParameters, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DatasourceType,
   GraphQLTransform,
@@ -19,7 +19,6 @@ export type TestTransformParameters = {
   stackMapping?: Record<string, string>;
   modelToDatasourceMap?: Map<string, DatasourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
-  synthParameters?: Partial<SynthParameters>;
 };
 
 /**
