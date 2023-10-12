@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.7.0-rc.71a7e4edba6c6b0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.6.0...@aws-amplify/cli-internal@12.7.0-rc.71a7e4edba6c6b0.0) (2023-10-12)
+
+
+### Features
+
+* codegen support for Amplify Android Lazy loading and custom selection set ([8f9d855](https://github.com/aws-amplify/amplify-cli/commit/8f9d855a6eb74a8d0452b2878a65ff5222ac61ee))
+
+
+
+
+
 # [12.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.5.2...@aws-amplify/cli-internal@12.6.0) (2023-10-05)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.10-rc.71a7e4edba6c6b0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.9...@aws-amplify/amplify-cli-core@4.2.10-rc.71a7e4edba6c6b0.0) (2023-10-12)
+
+
+### Bug Fixes
+
+* set awscloudformation flag to false in vscode settings after override ([#13310](https://github.com/aws-amplify/amplify-cli/issues/13310)) ([d60e505](https://github.com/aws-amplify/amplify-cli/commit/d60e505391b4f8fc58c2cc4d352698a6157f1b59))
+
+
+
+
+
 ## [4.2.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.8...@aws-amplify/amplify-cli-core@4.2.9) (2023-10-05)
 
 
