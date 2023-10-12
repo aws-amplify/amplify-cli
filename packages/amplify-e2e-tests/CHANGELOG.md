@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.0...amplify-e2e-tests@4.8.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* add retained secrets to syncSecretDeltas ([#13300](https://github.com/aws-amplify/amplify-cli/issues/13300)) ([f3c9c05](https://github.com/aws-amplify/amplify-cli/commit/f3c9c05617b55560ac78f824cf71d4001cb5c58b))
+* set awscloudformation flag to false in vscode settings after override ([#13310](https://github.com/aws-amplify/amplify-cli/issues/13310)) ([d60e505](https://github.com/aws-amplify/amplify-cli/commit/d60e505391b4f8fc58c2cc4d352698a6157f1b59))
+
+
+
+
+
 # [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.7.1...amplify-e2e-tests@4.8.0) (2023-10-05)
 
 
