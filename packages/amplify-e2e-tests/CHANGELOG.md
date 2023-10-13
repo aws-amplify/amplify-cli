@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.7.1...amplify-e2e-tests@4.8.0) (2023-10-05)
+
+
+### Bug Fixes
+
+* dependabot alert for openpgp ([#13282](https://github.com/aws-amplify/amplify-cli/issues/13282)) ([49314ad](https://github.com/aws-amplify/amplify-cli/commit/49314ad063cfb3111af2a5406028c5c73958cd24))
+* pulling with env append to local files ([#13227](https://github.com/aws-amplify/amplify-cli/issues/13227)) ([ef1c43f](https://github.com/aws-amplify/amplify-cli/commit/ef1c43fd955596366114e883b2db31fda55feaf8))
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [4.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.7.0...amplify-e2e-tests@4.7.1) (2023-10-03)
+
+
+### Bug Fixes
+
+* update api category and codegen to capture high-priority bug-fixes ([3836b90](https://github.com/aws-amplify/amplify-cli/commit/3836b90b3f9ccd654d9c1b61a4b83c9c4712290c))
+
+
+
+
+
+# [4.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.6.0...amplify-e2e-tests@4.7.0) (2023-09-22)
+
+
+### Bug Fixes
+
+* remove stale data ([#13128](https://github.com/aws-amplify/amplify-cli/issues/13128)) ([9703223](https://github.com/aws-amplify/amplify-cli/commit/970322372278762fff88f7046b44574b611ad210))
+
+
+### Features
+
+* **amplify-frontend-javascript:** generate amplifyconfiguration.json for JS projects ([#13246](https://github.com/aws-amplify/amplify-cli/issues/13246)) ([49457b1](https://github.com/aws-amplify/amplify-cli/commit/49457b100a75dc2c6791780fdf67f76876bcf320))
+
+
+### Reverts
+
+* Revert "test: add function to run init with only yes option" ([08734a9](https://github.com/aws-amplify/amplify-cli/commit/08734a9d2d9dba671ed3cff59b84f4f456c03927))
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.5.0...amplify-e2e-tests@4.6.0) (2023-08-31)
+
+
+### Features
+
+* add list all to lambda crud template ([#13116](https://github.com/aws-amplify/amplify-cli/issues/13116)) ([0fde28a](https://github.com/aws-amplify/amplify-cli/commit/0fde28a08a3d82b371cbbf858f462648376a318a))
+
+
+
+
+
 # [4.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.4.0...amplify-e2e-tests@4.5.0) (2023-08-17)
 
 

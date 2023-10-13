@@ -305,13 +305,13 @@ export const ensureOpenSearchLocalExists = async (pathToOpenSearchData: string) 
   const latestPublicKey = await nodeFetch(publicKeyUrl).then((res) => res.text());
   const opensearchSimulatorGunZippedTarball = await nodeFetch(opensearchMinLinuxArtifactUrl).then((res) => res.buffer());
 
-  const signature = await openpgp.signature.read(latestSig);
-  const publickey = await openpgp.key.readArmored(latestPublicKey);
-  const message = await openpgp.message.fromBinary(new Uint8Array(opensearchSimulatorGunZippedTarball));
+  const signature = await openpgp.readSignature({ binarySignature: latestSig });
+  const publickey = await openpgp.readKey({ armoredKey: latestPublicKey });
+  const message = await openpgp.createMessage({ binary: new Uint8Array(opensearchSimulatorGunZippedTarball) });
   const verificationResult = await openpgp.verify({
     message: message,
     signature: signature,
-    publicKeys: publickey.keys,
+    verificationKeys: publickey,
   });
 
   const { verified } = verificationResult.signatures[0];

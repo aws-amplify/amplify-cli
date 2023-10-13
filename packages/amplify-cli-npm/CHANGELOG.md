@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.5.2...@aws-amplify/cli@12.6.0) (2023-10-05)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [12.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.5.1...@aws-amplify/cli@12.5.2) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [12.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.5.0...@aws-amplify/cli@12.5.1) (2023-09-27)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [12.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.4.0...@aws-amplify/cli@12.5.0) (2023-09-22)
+
+
+### Features
+
+* update main CLI version ([#13250](https://github.com/aws-amplify/amplify-cli/issues/13250)) ([f1f3118](https://github.com/aws-amplify/amplify-cli/commit/f1f3118f69f6f7702d5bb949d50e5cde44982024))
+
+
+
+
+
+# [12.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.3.0...@aws-amplify/cli@12.4.0) (2023-08-31)
+
+
+### Features
+
+* bump version to 12.4.0 ([#13154](https://github.com/aws-amplify/amplify-cli/issues/13154)) ([244e092](https://github.com/aws-amplify/amplify-cli/commit/244e092066968a24c5ec47c150354248490b3010))
+
+
+
+
+
 # [12.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.2.5...@aws-amplify/cli@12.3.0) (2023-08-17)
 
 

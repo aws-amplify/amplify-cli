@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.4...@aws-amplify/amplify-migration-tests@6.2.5) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.3...@aws-amplify/amplify-migration-tests@6.2.4) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.2...@aws-amplify/amplify-migration-tests@6.2.3) (2023-09-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.1...@aws-amplify/amplify-migration-tests@6.2.2) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
 ## [6.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.0...@aws-amplify/amplify-migration-tests@6.2.1) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

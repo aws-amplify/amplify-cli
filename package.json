@@ -4,7 +4,6 @@
   "description": "amplify-cli",
   "scripts": {
     "addwords": "node ./scripts/add-to-dict.js",
-    "all-cloud-e2e-circleci": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/run-all-tests && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "build-and-verify": "yarn clean && yarn && yarn build && yarn prettier-check && yarn lint-check && yarn verify-api-extract",
     "build-tests-changed": "lerna run build-tests --since dev",
     "build-tests": "lerna run build-tests",
@@ -13,8 +12,6 @@
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "clean": "lerna run clean && yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "cloud-e2e-beta": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2EBeta'",
-    "cloud-e2e-circleci-with-rc": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e-with-rc/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
-    "cloud-e2e-circleci": "CURR_BRANCH=$(git branch | awk '/\\*/{printf \"%s\", $2}') && UPSTREAM_BRANCH=run-e2e/$USER/$CURR_BRANCH && git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$UPSTREAM_BRANCH --no-verify --force-with-lease && echo \"\n\n 🏃 E2E test are running at:\nhttps://app.circleci.com/pipelines/github/aws-amplify/amplify-cli?branch=$UPSTREAM_BRANCH\"",
     "cloud-e2e-local": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2ELocal'",
     "cloud-e2e": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2E'",
     "cloud-pr": "./scripts/cloud-pr.sh",
@@ -46,12 +43,10 @@
     "promote-rc-local": "bash -c 'source ./scripts/cloud-release.sh && ReleaseLocal'",
     "promote-rc-beta": "bash -c 'source ./scripts/cloud-release.sh && ReleaseBeta'",
     "promote-rc": "bash -c 'source ./scripts/cloud-release.sh && ReleaseProd'",
-    "promote-rc-circleci": "./scripts/promote-rc.sh",
     "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access",
     "release-rc-local": "bash -c 'source ./scripts/cloud-release.sh && RCLocal'",
     "release-rc-beta": "bash -c 'source ./scripts/cloud-release.sh && RCBeta'",
     "release-rc": "bash -c 'source ./scripts/cloud-release.sh && RCProd'",
-    "release-rc-circleci": "./scripts/release-rc.sh",
     "tagged-release-without-e2e-local": "bash -c 'source ./scripts/cloud-release.sh && TaggedRCLocal'",
     "tagged-release-without-e2e-beta": "bash -c 'source ./scripts/cloud-release.sh && TaggedRCBeta'",
     "tagged-release-without-e2e-prod": "bash -c 'source ./scripts/cloud-release.sh && TaggedRCProd'",
@@ -62,7 +57,6 @@
     "smoketest": "lerna run smoketest",
     "split-e2e-tests-codebuild-single": "yarn ts-node ./scripts/generate_single_test_buildspec_codebuild.ts",
     "split-e2e-tests-codebuild": "yarn ts-node ./scripts/split-e2e-tests-codebuild.ts",
-    "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "test-changed": "lerna run test --since dev",
     "test-ci": "lerna run test --concurrency 4 -- --ci -i",
     "test": "lerna run test --concurrency 1",
@@ -166,7 +160,7 @@
   },
   "packageManager": "yarn@3.5.0",
   "resolutions": {
-    "aws-sdk": "^2.1426.0",
+    "aws-sdk": "^2.1464.0",
     "cross-fetch": "^2.2.6",
     "glob-parent": "^6.0.2",
     "got": "^11.8.5",
@@ -177,6 +171,7 @@
     "undici": "^5.8.0",
     "pkg-fetch": "https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff",
     "tough-cookie": "^4.1.3",
+    "semver": "^7.5.4",
     "word-wrap": "^1.2.4"
   }
 }

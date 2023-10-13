@@ -116,15 +116,26 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
     }
   }
   if (settings.secretsConfig) {
-    if (settings.secretsConfig.operation === 'add') {
-      throw new Error('Secrets update walkthrough only supports update and delete');
-    }
-    // this walkthrough assumes 1 existing secret is configured for the function
     const actions = ['Add a secret', 'Update a secret', 'Remove secrets', "I'm done"];
-    const action = settings.secretsConfig.operation === 'delete' ? actions[2] : actions[1];
+    const operation = settings.secretsConfig.operation;
+    let action: string;
+    if (operation === 'add') {
+      action = actions[0];
+    } else if (operation === 'delete') {
+      action = actions[2];
+    } else {
+      action = actions[1];
+    }
     chain.wait('What do you want to do?');
     singleSelect(chain, action, actions);
-    switch (settings.secretsConfig.operation) {
+    switch (operation) {
+      case 'add': {
+        chain.wait('Enter a secret name');
+        chain.sendLine(settings.secretsConfig.name);
+        chain.wait('Enter the value for');
+        chain.sendLine(settings.secretsConfig.value);
+        break;
+      }
       case 'delete': {
         chain.wait('Select the secrets to delete:');
         chain.sendLine(' '); // assumes one secret
@@ -137,8 +148,17 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
         break;
       }
     }
+
     chain.wait('What do you want to do?');
     chain.sendCarriageReturn(); // "I'm done"
+
+    if (operation === 'add') {
+      // assumes function is already pushed to the cloud
+      chain.wait('This will immediately update secret values in the cloud');
+      chain.sendCarriageReturn(); // "Yes"
+      chain.wait('Do you want to edit the local lambda function now');
+      chain.sendCarriageReturn(); // "No"
+    }
   }
 };
 

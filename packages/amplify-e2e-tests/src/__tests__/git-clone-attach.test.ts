@@ -120,9 +120,8 @@ describe('attach amplify to git-cloned project', () => {
     expect(changedFiles).toMatchInlineSnapshot(`
       [
         ".gitignore",
-        "amplify/README.md",
       ]
-    `); // there is a .gitignore newline and the amplify/README.md file is modified after pull
+    `); // there is a .gitignore newline after pull
     expect(getTeamProviderInfo(projRoot)).toEqual(preCleanTpi);
   });
 });

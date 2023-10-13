@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.8...@aws-amplify/amplify-cli-core@4.2.9) (2023-10-05)
+
+
+### Bug Fixes
+
+* remove .cmd extension for pnpm and npm invocations ([#13133](https://github.com/aws-amplify/amplify-cli/issues/13133)) ([ea81e43](https://github.com/aws-amplify/amplify-cli/commit/ea81e43cb6cee4822d5fa6c3e1714decb7ed18b0))
+
+
+
+
+
+## [4.2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.7...@aws-amplify/amplify-cli-core@4.2.8) (2023-10-03)
+
+
+### Bug Fixes
+
+* update api category and codegen to capture high-priority bug-fixes ([3836b90](https://github.com/aws-amplify/amplify-cli/commit/3836b90b3f9ccd654d9c1b61a4b83c9c4712290c))
+
+
+
+
+
+## [4.2.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.6...@aws-amplify/amplify-cli-core@4.2.7) (2023-09-22)
+
+
+### Bug Fixes
+
+* remove stale data ([#13128](https://github.com/aws-amplify/amplify-cli/issues/13128)) ([9703223](https://github.com/aws-amplify/amplify-cli/commit/970322372278762fff88f7046b44574b611ad210))
+
+
+
+
+
+## [4.2.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.5...@aws-amplify/amplify-cli-core@4.2.6) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-cli-core
+
+
+
+
+
 ## [4.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.2.4...@aws-amplify/amplify-cli-core@4.2.5) (2023-08-17)
 
 

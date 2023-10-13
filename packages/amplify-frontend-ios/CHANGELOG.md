@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.21...@aws-amplify/amplify-frontend-ios@3.6.22) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
+
+
+
+
+
+## [3.6.21](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.20...@aws-amplify/amplify-frontend-ios@3.6.21) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
+
+
+
+
+
+## [3.6.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.19...@aws-amplify/amplify-frontend-ios@3.6.20) (2023-09-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
+
+
+
+
+
+## [3.6.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.18...@aws-amplify/amplify-frontend-ios@3.6.19) (2023-08-31)
+
+
+### Bug Fixes
+
+* allow whitespace characters in Xcode projects ([#13151](https://github.com/aws-amplify/amplify-cli/issues/13151)) ([415a430](https://github.com/aws-amplify/amplify-cli/commit/415a430aab368cf4c0f0a14599088e6e188975f6))
+
+
+
+
+
 ## [3.6.18](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.17...@aws-amplify/amplify-frontend-ios@3.6.18) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-ios

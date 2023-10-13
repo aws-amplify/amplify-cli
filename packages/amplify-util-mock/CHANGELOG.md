@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.6.2...@aws-amplify/amplify-util-mock@5.7.0) (2023-10-05)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [5.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.6.1...@aws-amplify/amplify-util-mock@5.6.2) (2023-10-03)
+
+
+### Bug Fixes
+
+* add missing config value for mock tests ([4445f8e](https://github.com/aws-amplify/amplify-cli/commit/4445f8e6eedc0e848de97365a6ee65eb6495aa33))
+* update api category and codegen to capture high-priority bug-fixes ([3836b90](https://github.com/aws-amplify/amplify-cli/commit/3836b90b3f9ccd654d9c1b61a4b83c9c4712290c))
+
+
+
+
+
+## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.6.0...@aws-amplify/amplify-util-mock@5.6.1) (2023-09-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-mock
+
+
+
+
+
+# [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.5.1...@aws-amplify/amplify-util-mock@5.6.0) (2023-09-22)
+
+
+### Features
+
+* support codegen and modelgen commands in non-amplify directories ([#13245](https://github.com/aws-amplify/amplify-cli/issues/13245)) ([85dd5cb](https://github.com/aws-amplify/amplify-cli/commit/85dd5cb6b33d8df41e35c2cbcf3b3b0e390b1af0))
+
+
+
+
+
+## [5.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.5.0...@aws-amplify/amplify-util-mock@5.5.1) (2023-08-31)
+
+
+### Bug Fixes
+
+* exclude tests from publish ([#13153](https://github.com/aws-amplify/amplify-cli/issues/13153)) ([1b1fe09](https://github.com/aws-amplify/amplify-cli/commit/1b1fe09a1c08be0262a1013f71354abd7160722a))
+
+
+
+
+
 # [5.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.4.4...@aws-amplify/amplify-util-mock@5.5.0) (2023-08-17)
 
 

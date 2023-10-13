@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.3.3...@aws-amplify/amplify-e2e-core@5.4.0) (2023-10-05)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.3.2...@aws-amplify/amplify-e2e-core@5.3.3) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
+## [5.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.3.1...@aws-amplify/amplify-e2e-core@5.3.2) (2023-09-22)
+
+
+### Reverts
+
+* Revert "test: add function to run init with only yes option" ([08734a9](https://github.com/aws-amplify/amplify-cli/commit/08734a9d2d9dba671ed3cff59b84f4f456c03927))
+
+
+
+
+
+## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.3.0...@aws-amplify/amplify-e2e-core@5.3.1) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
 # [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.2.0...@aws-amplify/amplify-e2e-core@5.3.0) (2023-08-17)
 
 

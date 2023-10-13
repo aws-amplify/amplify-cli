@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.7.1...@aws-amplify/amplify-container-hosting@2.7.2) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-container-hosting
+
+
+
+
+
+## [2.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.7.0...@aws-amplify/amplify-container-hosting@2.7.1) (2023-10-03)
+
+
+### Bug Fixes
+
+* update api category and codegen to capture high-priority bug-fixes ([3836b90](https://github.com/aws-amplify/amplify-cli/commit/3836b90b3f9ccd654d9c1b61a4b83c9c4712290c))
+
+
+
+
+
+# [2.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.16...@aws-amplify/amplify-container-hosting@2.7.0) (2023-09-22)
+
+
+### Features
+
+* support codegen and modelgen commands in non-amplify directories ([#13245](https://github.com/aws-amplify/amplify-cli/issues/13245)) ([85dd5cb](https://github.com/aws-amplify/amplify-cli/commit/85dd5cb6b33d8df41e35c2cbcf3b3b0e390b1af0))
+
+
+
+
+
+## [2.6.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.15...@aws-amplify/amplify-container-hosting@2.6.16) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-container-hosting
+
+
+
+
+
 ## [2.6.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.6.14...@aws-amplify/amplify-container-hosting@2.6.15) (2023-08-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-container-hosting

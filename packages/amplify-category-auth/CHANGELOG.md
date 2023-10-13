@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.6.3...@aws-amplify/amplify-category-auth@3.7.0) (2023-10-05)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [3.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.6.2...@aws-amplify/amplify-category-auth@3.6.3) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [3.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.6.1...@aws-amplify/amplify-category-auth@3.6.2) (2023-09-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.6.0...@aws-amplify/amplify-category-auth@3.6.1) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 # [3.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.5.0...@aws-amplify/amplify-category-auth@3.6.0) (2023-08-17)
 
 
