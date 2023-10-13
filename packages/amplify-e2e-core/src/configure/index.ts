@@ -34,6 +34,7 @@ export const amplifyRegions = [
   'eu-west-2',
   'eu-west-3',
   'eu-central-1',
+  'ap-east-1',
   'ap-northeast-1',
   'ap-northeast-2',
   'ap-northeast-3',
