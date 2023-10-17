@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.4.0...@aws-amplify/amplify-e2e-core@5.4.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* add retained secrets to syncSecretDeltas ([#13300](https://github.com/aws-amplify/amplify-cli/issues/13300)) ([f3c9c05](https://github.com/aws-amplify/amplify-cli/commit/f3c9c05617b55560ac78f824cf71d4001cb5c58b))
+
+
+
+
+
 # [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.3.3...@aws-amplify/amplify-e2e-core@5.4.0) (2023-10-05)
 
 
