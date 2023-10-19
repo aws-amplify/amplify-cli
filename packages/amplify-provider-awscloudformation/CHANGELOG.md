@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.9.0-rds-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.7.0...@aws-amplify/amplify-provider-awscloudformation@8.9.0-rds-4.0) (2023-10-19)
+
+
+### Features
+
+* **cli:** ignore node_modules in glob to drastically increase performance in Node environments ([#13305](https://github.com/aws-amplify/amplify-cli/issues/13305)) ([5cc1b55](https://github.com/aws-amplify/amplify-cli/commit/5cc1b556d8081421dc68ee264dac02d5660ffee7))
+* codegen support for Amplify Android Lazy loading and custom selection set ([8f9d855](https://github.com/aws-amplify/amplify-cli/commit/8f9d855a6eb74a8d0452b2878a65ff5222ac61ee))
+
+
+
+
+
 # [8.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.7.0...@aws-amplify/amplify-provider-awscloudformation@8.8.0) (2023-10-12)
 
 

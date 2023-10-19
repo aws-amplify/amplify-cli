@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.14.0-rds-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.12.0...@aws-amplify/amplify-util-uibuilder@1.14.0-rds-4.0) (2023-10-19)
+
+
+### Features
+
+* codegen support for Amplify Android Lazy loading and custom selection set ([8f9d855](https://github.com/aws-amplify/amplify-cli/commit/8f9d855a6eb74a8d0452b2878a65ff5222ac61ee))
+
+
+
+
+
 # [1.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.12.0...@aws-amplify/amplify-util-uibuilder@1.13.0) (2023-10-12)
 
 

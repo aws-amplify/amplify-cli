@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.2-rds-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.0...@aws-amplify/amplify-category-function@5.6.2-rds-4.0) (2023-10-19)
+
+
+### Bug Fixes
+
+* add retained secrets to syncSecretDeltas ([#13300](https://github.com/aws-amplify/amplify-cli/issues/13300)) ([f3c9c05](https://github.com/aws-amplify/amplify-cli/commit/f3c9c05617b55560ac78f824cf71d4001cb5c58b))
+
+
+
+
+
 ## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.0...@aws-amplify/amplify-category-function@5.6.1) (2023-10-12)
 
 

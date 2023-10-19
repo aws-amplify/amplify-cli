@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.8.0-rds-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.6.0...@aws-amplify/cli-internal@12.8.0-rds-4.0) (2023-10-19)
+
+
+### Features
+
+* bump npm version tot 12.7.0 ([31c8ae2](https://github.com/aws-amplify/amplify-cli/commit/31c8ae2ac0b2f8dcab4c1fe2e2d7e98253ba80ff))
+* codegen support for Amplify Android Lazy loading and custom selection set ([8f9d855](https://github.com/aws-amplify/amplify-cli/commit/8f9d855a6eb74a8d0452b2878a65ff5222ac61ee))
+
+
+
+
+
 # [12.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.6.0...@aws-amplify/cli-internal@12.7.0) (2023-10-12)
 
 
