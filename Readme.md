@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
   </a>
 </p>
-
+test change
 ### Reporting Bugs/Feature Requests
 
 [![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-cli/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
