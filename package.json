@@ -99,7 +99,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.10.5",
+    "@babel/core": "^7.23.2",
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@babel/plugin-transform-typescript": "7.10.5",
