@@ -34,7 +34,7 @@
     "@aws-sdk/client-dynamodb": "^3.303.0",
     "@aws-sdk/client-s3": "^3.303.0",
     "@aws-sdk/client-ssm": "^3.303.0",
-    "@babel/core": "^7.10.5",
+    "@babel/core": "^7.23.2",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "amplify-dynamodb-simulator": "2.9.5",
     "amplify-headless-interface": "1.17.4",
