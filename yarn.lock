@@ -811,7 +811,7 @@ __metadata:
     "@types/lodash.throttle": ^4.1.6
     "@types/node": ^12.12.6
     "@types/uuid": ^8.0.0
-    amplify-codegen: ^4.7.1
+    amplify-codegen: ^4.7.2
     archiver: ^5.3.0
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
@@ -900,7 +900,7 @@ __metadata:
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
-    amplify-codegen: ^4.7.1
+    amplify-codegen: ^4.7.2
     amplify-dynamodb-simulator: 2.9.5
     amplify-nodejs-function-runtime-provider: 2.5.10
     amplify-storage-simulator: 1.11.1
@@ -951,7 +951,7 @@ __metadata:
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
     "@types/tiny-async-pool": ^2.0.0
-    amplify-codegen: ^4.7.1
+    amplify-codegen: ^4.7.2
     aws-sdk: ^2.1464.0
     fs-extra: ^8.1.0
     node-fetch: ^2.6.7
@@ -1116,7 +1116,7 @@ __metadata:
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
-    amplify-codegen: ^4.7.1
+    amplify-codegen: ^4.7.2
     amplify-dotnet-function-runtime-provider: 2.0.15
     amplify-go-function-runtime-provider: 2.3.33
     amplify-headless-interface: 1.17.4
@@ -1313,17 +1313,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-generator@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@aws-amplify/graphql-generator@npm:0.2.1"
+"@aws-amplify/graphql-generator@npm:0.2.2":
+  version: 0.2.2
+  resolution: "@aws-amplify/graphql-generator@npm:0.2.2"
   dependencies:
     "@aws-amplify/appsync-modelgen-plugin": 2.8.0
     "@aws-amplify/graphql-docs-generator": 4.2.0
-    "@aws-amplify/graphql-types-generator": 3.4.4
+    "@aws-amplify/graphql-types-generator": 3.4.5
     "@graphql-codegen/core": ^2.6.6
     "@graphql-tools/apollo-engine-loader": ^8.0.0
     graphql: ^15.5.0
-  checksum: da6af7623be0db5f96aae2218c37ededd1be9d9d0402cfac8a15f380f2da2387f36d864fc6870da0435b59802aaa6e757a965289ead9150ca10add0c6325bd66
+  checksum: 41c2d783007b17afc00f70bb3dad051be62e157e470d950ff574bfc05078cd4daea052df7211562ad041a460d6e27250bca6ee95e7bd66e5074958a35d729cc8
   languageName: node
   linkType: hard
 
@@ -1535,9 +1535,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-types-generator@npm:3.4.4":
-  version: 3.4.4
-  resolution: "@aws-amplify/graphql-types-generator@npm:3.4.4"
+"@aws-amplify/graphql-types-generator@npm:3.4.5":
+  version: 3.4.5
+  resolution: "@aws-amplify/graphql-types-generator@npm:3.4.5"
   dependencies:
     "@babel/generator": 7.0.0-beta.4
     "@babel/types": 7.0.0-beta.4
@@ -1556,7 +1556,7 @@ __metadata:
     yargs: ^15.1.0
   bin:
     graphql-types-generator: lib/cli.js
-  checksum: 3747fddf44b5cff03f23c5547e6e8b1657d7a4c248269aa7ea9220857c09e714c9850d32ccb7ac9117cbcc418b095e7c17066d7efd5d5e68afb1acff00eebc2b
+  checksum: 150d2c73454fbfe25ffa654f92cd4d49086532a8ccac0c02f79b9a7d8a448fffbbfbd0df084090fc3a0270bce4b3de2547ab7397ef3e648fa7fc6064c6efe0a9
   languageName: node
   linkType: hard
 
@@ -13934,13 +13934,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-codegen@npm:^4.7.1":
-  version: 4.7.1
-  resolution: "amplify-codegen@npm:4.7.1"
+"amplify-codegen@npm:^4.7.2":
+  version: 4.7.2
+  resolution: "amplify-codegen@npm:4.7.2"
   dependencies:
     "@aws-amplify/graphql-docs-generator": 4.2.0
-    "@aws-amplify/graphql-generator": 0.2.1
-    "@aws-amplify/graphql-types-generator": 3.4.4
+    "@aws-amplify/graphql-generator": 0.2.2
+    "@aws-amplify/graphql-types-generator": 3.4.5
     "@graphql-codegen/core": 2.6.6
     chalk: ^3.0.0
     fs-extra: ^8.1.0
@@ -13957,7 +13957,7 @@ __metadata:
   peerDependencies:
     "@aws-amplify/amplify-cli-core": "*"
     graphql-transformer-core: ^8.0.0
-  checksum: aa05984aad050d1af1cf87c14c5ea0bc2a694c2f8cc115e5c5e5a2dfc646facf4f3623387bf1f9e22d43b5b34e327a2bdc9ab7fb3b73f421bd9e6c530900357b
+  checksum: 1f4da5f435c1fb3f36e5eaad09c90672b45283d91f3e5cb60dd7dd52a34f8e023a09fb9844c0cb2b6450b1259c4a04885548caa667c0905a76e730ee35d03e22
   languageName: node
   linkType: hard
 
