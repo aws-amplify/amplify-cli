@@ -40,7 +40,7 @@ function loadCache {
     # create directory if it doesn't exist yet
     mkdir -p $localPath
     # check if cache exists in s3
-    if ! aws s3 ls $s3Path > /dev/null; then
+    if ! aws s3 ls $s3Path >/dev/null; then
         echo "Cache not found."
         exit 0
     fi
@@ -57,7 +57,7 @@ function loadCacheFile {
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
     echo loading cache file from $s3Path
     # check if cache file exists in s3
-    if ! aws s3 ls $s3Path > /dev/null; then
+    if ! aws s3 ls $s3Path >/dev/null; then
         echo "Cache file not found."
         exit 0
     fi
@@ -81,9 +81,6 @@ function _loadTestAccountCredentials {
     export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
-
-
-
 
 function _buildLinux {
     echo Linux Build
@@ -138,28 +135,28 @@ function _verifyGeneratedE2EWorkflow {
     loadCache .cache $HOME/.cache
 
     # backup current file and remove regions, they are not deterministic
-    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" > codebuild_specs/e2e_workflow_generated.yml.old.trimmed
+    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" >codebuild_specs/e2e_workflow_generated.yml.old.trimmed
 
     # regenerate e2e workflow
     yarn split-e2e-tests-codebuild
 
     # remove regions from generated file, they are not deterministic
-    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" > codebuild_specs/e2e_workflow_generated.yml.trimmed
+    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" >codebuild_specs/e2e_workflow_generated.yml.trimmed
 
     changed_lines_in_e2e_workflow_generated=$(diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed | wc -l)
 
     if [[ changed_lines_in_e2e_workflow_generated -gt 0 ]]; then
-      echo "Fail! An uncommitted drift in E2E workflow has been detected - e2e_workflow_generated.yml. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
-      diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed
-      exit 1;
+        echo "Fail! An uncommitted drift in E2E workflow has been detected - e2e_workflow_generated.yml. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
+        diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed
+        exit 1
     fi
 
     # check if wait_for_ids.json changed.
     changed_wait_for_ids_manifest=$(git status | grep -F wait_for_ids.json | wc -l)
 
     if [[ changed_wait_for_ids_manifest -gt 0 ]]; then
-      echo "Fail! An uncommitted drift in E2E workflow has been detected - wait_for_ids.json. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
-      exit 1;
+        echo "Fail! An uncommitted drift in E2E workflow has been detected - wait_for_ids.json. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
+        exit 1
     fi
 
     echo "Success! No drift detected in E2E workflow."
@@ -215,7 +212,7 @@ function _publishToLocalRegistry {
     cat UNIFIED_CHANGELOG.md
 
     echo Save new amplify Github tag
-    node scripts/echo-current-cli-version.js > .amplify-pkg-version
+    node scripts/echo-current-cli-version.js >.amplify-pkg-version
 
     echo LS HOME
     ls $CODEBUILD_SRC_DIR/..
@@ -290,8 +287,7 @@ function _convertCoverage {
 }
 # https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader
 function _uploadCoverageLinux {
-    if [ -z ${CODECOV_TOKEN+x} ]
-    then
+    if [ -z ${CODECOV_TOKEN+x} ]; then
         echo "CODECOV_TOKEN not set: No coverage will be uploaded."
     else
         curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
@@ -545,7 +541,8 @@ function _integrationTest {
 
     echo "running auth server in background"
     export NODE_OPTIONS=--openssl-legacy-provider
-    nohup yarn start > server_output.txt & disown $!
+    nohup yarn start >server_output.txt &
+    disown $!
     echo "Polling for server ready message"
     while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
     echo "server started"
@@ -564,7 +561,6 @@ function _integrationTest {
     chmod +x ../amplify-cli/codebuild_specs/sh-files/delete.sh
     expect ../amplify-cli/codebuild_specs/exp-files/delete.exp
     aws s3 rb "$DEPLOYMENT_BUCKET" --force
-
 
     echo "Clone API test package"
     cd .. && pwd
@@ -586,7 +582,8 @@ function _integrationTest {
 
     echo "running api server in background"
     export NODE_OPTIONS=--openssl-legacy-provider
-    nohup yarn start > server_output.txt & disown $!
+    nohup yarn start >server_output.txt &
+    disown $!
     echo "Polling for server ready message"
     while ! grep -Fxq "You can now view aws-amplify-cypress-api in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
     echo "server started"
@@ -637,6 +634,19 @@ function _downloadReportsFromS3 {
 }
 
 function _buildTestsStandalone {
+    echo "Running yarn install --immutable"
+    yarn install --immutable
+    echo "Running yarn build-tests"
+    yarn build-tests
+}
+
+function _buildTestsStandaloneYarn3 {
+    echo "Checking Yarn version"
+    yarn --version
+    echo "Set Yarn version to 3"
+    yarn set version stable
+    echo "Checking Yarn version"
+    yarn --version
     echo "Running yarn install --immutable"
     yarn install --immutable
     echo "Running yarn build-tests"
@@ -695,7 +705,7 @@ function _publishToNpm {
 
     ./out/amplify-pkg-linux-x64 --version
     echo Authenticate with npm
-    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
+    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" >~/.npmrc
 
     source ./.circleci/cb-publish-step-3-npm.sh
 }
@@ -726,7 +736,6 @@ function _amplifyGeneralConfigTests {
     _loadTestAccountCredentials
     retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
 }
-
 
 function _cleanUpResources {
     _loadTestAccountCredentials
