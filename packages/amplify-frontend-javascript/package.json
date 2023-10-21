@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-frontend-javascript",
-  "version": "3.10.3",
+  "version": "3.10.4",
   "description": "amplify-cli front-end plugin for JavaScript projects",
   "scripts": {
     "test": "jest --logHeapUsage",
