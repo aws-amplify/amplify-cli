@@ -37,6 +37,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     userDefinedSlots,
     stackMapping,
     transformParameters,
+    synthParameters: overrideSynthParameters,
   } = params;
 
   const transform = new GraphQLTransform({
@@ -58,10 +59,13 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     scope: transformManager.getTransformScope(),
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
-    synthParameters: transformManager.getSynthParameters(
-      authConfigTypes.some((type) => type === 'AWS_IAM'),
-      authConfigTypes.some((type) => type === 'AMAZON_COGNITO_USER_POOLS'),
-    ),
+    synthParameters: {
+      ...transformManager.getSynthParameters(
+        authConfigTypes.some((type) => type === 'AWS_IAM'),
+        authConfigTypes.some((type) => type === 'AMAZON_COGNITO_USER_POOLS'),
+      ),
+      ...overrideSynthParameters,
+    },
     schema,
     datasourceConfig: {
       modelToDatasourceMap,
