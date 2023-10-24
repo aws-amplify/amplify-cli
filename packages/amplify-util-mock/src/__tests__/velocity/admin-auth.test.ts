@@ -14,6 +14,8 @@ jest.mock('@aws-amplify/amplify-prompts');
 
 describe('admin roles query checks', () => {
   const ADMIN_UI_ROLE = 'us-fake-1_uuid_Full-access/CognitoIdentityCredentials';
+  const MOCK_BEFORE_TEMPLATE = `$util.qr($ctx.stash.put("adminRoles", ["${ADMIN_UI_ROLE}"]))`;
+
   let vtlTemplate: VelocityTemplateSimulator;
   let transformer: TestTransform;
   const adminFullAccessRequest: AppSyncGraphQLExecutionContext = {
@@ -38,12 +40,8 @@ describe('admin roles query checks', () => {
         testTransform({
           schema,
           authConfig,
-          transformers: [
-            new ModelTransformer(),
-            new AuthTransformer({
-              adminRoles: [ADMIN_UI_ROLE],
-            }),
-          ],
+          synthParameters: { adminRoles: [ADMIN_UI_ROLE] },
+          transformers: [new ModelTransformer(), new AuthTransformer()],
         }),
     };
 
@@ -61,7 +59,7 @@ describe('admin roles query checks', () => {
     const out = transformer.transform(validSchema);
 
     // field resolver
-    const secretValueTemplate = out.resolvers['Student.secretValue.req.vtl'];
+    const secretValueTemplate = [MOCK_BEFORE_TEMPLATE, out.resolvers['Student.secretValue.req.vtl']].join('\n');
     const iamFieldContext: AppSyncVTLContext = {
       source: {
         secretValue: 'secretValue001',
@@ -76,7 +74,7 @@ describe('admin roles query checks', () => {
     expect(secretValueResponse.result).toEqual('secretValue001');
 
     // mutation resolver
-    const createStudentTemplate = out.resolvers['Mutation.createStudent.auth.1.req.vtl'];
+    const createStudentTemplate = [MOCK_BEFORE_TEMPLATE, out.resolvers['Mutation.createStudent.auth.1.req.vtl']].join('\n');
     const iamCreateContext: AppSyncVTLContext = {
       arguments: {
         input: {
@@ -100,6 +98,8 @@ describe('admin roles query checks', () => {
 describe('identity claim feature flag disabled', () => {
   describe('admin roles query checks', () => {
     const ADMIN_UI_ROLE = 'us-fake-1_uuid_Full-access/CognitoIdentityCredentials';
+    const MOCK_BEFORE_TEMPLATE = `$util.qr($ctx.stash.put("adminRoles", ["${ADMIN_UI_ROLE}"]))`;
+
     let vtlTemplate: VelocityTemplateSimulator;
     let transformer: TestTransform;
     const adminFullAccessRequest: AppSyncGraphQLExecutionContext = {
@@ -124,12 +124,8 @@ describe('identity claim feature flag disabled', () => {
           testTransform({
             schema,
             authConfig,
-            transformers: [
-              new ModelTransformer(),
-              new AuthTransformer({
-                adminRoles: [ADMIN_UI_ROLE],
-              }),
-            ],
+            synthParameters: { adminRoles: [ADMIN_UI_ROLE] },
+            transformers: [new ModelTransformer(), new AuthTransformer()],
           }),
       };
 
@@ -147,7 +143,7 @@ describe('identity claim feature flag disabled', () => {
       const out = transformer.transform(validSchema);
 
       // field resolver
-      const secretValueTemplate = out.resolvers['Student.secretValue.req.vtl'];
+      const secretValueTemplate = [MOCK_BEFORE_TEMPLATE, out.resolvers['Student.secretValue.req.vtl']].join('\n');
       const iamFieldContext: AppSyncVTLContext = {
         source: {
           secretValue: 'secretValue001',
@@ -162,7 +158,7 @@ describe('identity claim feature flag disabled', () => {
       expect(secretValueResponse.result).toEqual('secretValue001');
 
       // mutation resolver
-      const createStudentTemplate = out.resolvers['Mutation.createStudent.auth.1.req.vtl'];
+      const createStudentTemplate = [MOCK_BEFORE_TEMPLATE, out.resolvers['Mutation.createStudent.auth.1.req.vtl']].join('\n');
       const iamCreateContext: AppSyncVTLContext = {
         arguments: {
           input: {

@@ -1,5 +1,5 @@
 import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import type { SynthParameters, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DatasourceType,
   GraphQLTransform,
@@ -19,6 +19,7 @@ export type TestTransformParameters = {
   stackMapping?: Record<string, string>;
   modelToDatasourceMap?: Map<string, DatasourceType>;
   datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
+  synthParameters?: Partial<SynthParameters>;
 };
 
 /**
@@ -36,6 +37,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     userDefinedSlots,
     stackMapping,
     transformParameters,
+    synthParameters: overrideSynthParameters,
   } = params;
 
   const transform = new GraphQLTransform({
@@ -57,10 +59,13 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     scope: transformManager.getTransformScope(),
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
-    synthParameters: transformManager.getSynthParameters(
-      authConfigTypes.some((type) => type === 'AWS_IAM'),
-      authConfigTypes.some((type) => type === 'AMAZON_COGNITO_USER_POOLS'),
-    ),
+    synthParameters: {
+      ...transformManager.getSynthParameters(
+        authConfigTypes.some((type) => type === 'AWS_IAM'),
+        authConfigTypes.some((type) => type === 'AMAZON_COGNITO_USER_POOLS'),
+      ),
+      ...overrideSynthParameters,
+    },
     schema,
     datasourceConfig: {
       modelToDatasourceMap,
