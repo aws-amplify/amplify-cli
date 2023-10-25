@@ -7,6 +7,8 @@ let mockCognitoIdentityRoles = {
   unauthenticated: 'arn:aws:iam::123456789012:role/service-role/my-unauth-role',
 };
 
+const iamRoleNameRegex = /[\w+=,.@-]+/;
+
 jest.mock('aws-sdk', () => {
   return {
     CognitoIdentity: jest.fn(() => {
@@ -37,8 +39,8 @@ describe('IdentityPoolService', () => {
 
     // ensure role names match regex for IAM
     // see: https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html
-    expect(identityPoolRoles.authRoleName).toMatch(/[\w+=,.@-]+/);
-    expect(identityPoolRoles.unauthRoleName).toMatch(/[\w+=,.@-]+/);
+    expect(identityPoolRoles.authRoleName).toMatch(iamRoleNameRegex);
+    expect(identityPoolRoles.unauthRoleName).toMatch(iamRoleNameRegex);
 
     expect(identityPoolRoles).toEqual({
       authRoleArn: 'arn:aws:iam::123456789012:role/service-role/my-auth-role',
@@ -59,8 +61,8 @@ describe('IdentityPoolService', () => {
 
     // ensure role names match regex for IAM
     // see: https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html
-    expect(identityPoolRoles.authRoleName).toMatch(/[\w+=,.@-]+/);
-    expect(identityPoolRoles.unauthRoleName).toMatch(/[\w+=,.@-]+/);
+    expect(identityPoolRoles.authRoleName).toMatch(iamRoleNameRegex);
+    expect(identityPoolRoles.unauthRoleName).toMatch(iamRoleNameRegex);
 
     expect(identityPoolRoles).toEqual({
       authRoleArn: 'arn:aws:iam::123456789012:role/my-auth-role',
