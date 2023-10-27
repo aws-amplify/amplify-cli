@@ -152,9 +152,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.7.6":
-  version: 5.7.6
-  resolution: "@aws-amplify/amplify-category-api@npm:5.7.6"
+"@aws-amplify/amplify-category-api@npm:^5.7.7":
+  version: 5.7.7
+  resolution: "@aws-amplify/amplify-category-api@npm:5.7.7"
   dependencies:
     "@aws-amplify/graphql-auth-transformer": 3.1.9
     "@aws-amplify/graphql-schema-generator": 0.4.8
@@ -202,7 +202,7 @@ __metadata:
     amplify-util-headless-input: ^1.9.15
     aws-cdk-lib: ^2.80.0
     constructs: ^10.0.5
-  checksum: 5afaa811602ad18dbc44512ab56901f0d202676a92acf736e672ca72f72a3fc77f80e7f51fef27cc9cb410d3874ba00d647df035b6684acbf99853ca4d8428b2
+  checksum: 8bf174ae4ddbe769bcbe16d0efffff9f86b91514255aea8f8cd1b2544eba086f8e9c297e88668640a7d775d8ad7f5d2387f93c99b40992d8ae45f8f0574df16e
   languageName: node
   linkType: hard
 
@@ -502,7 +502,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.7.6
+    "@aws-amplify/amplify-category-api": ^5.7.7
     "@aws-amplify/amplify-cli-core": 4.2.10
     "@aws-amplify/amplify-environment-parameters": 1.9.1
     fs-extra: ^8.1.0
@@ -941,7 +941,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.7.6
+    "@aws-amplify/amplify-category-api": ^5.7.7
     "@aws-amplify/amplify-cli-core": 4.2.10
     "@aws-amplify/amplify-prompts": 2.8.4
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
@@ -1072,7 +1072,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-app": 5.0.22
     "@aws-amplify/amplify-category-analytics": 5.0.22
-    "@aws-amplify/amplify-category-api": ^5.7.6
+    "@aws-amplify/amplify-category-api": ^5.7.7
     "@aws-amplify/amplify-category-auth": 3.7.1
     "@aws-amplify/amplify-category-custom": 3.1.10
     "@aws-amplify/amplify-category-function": 5.6.1
