@@ -55,7 +55,7 @@ describe('transformer predictions migration test', () => {
     expect(translateResult.errors).toBeUndefined();
     expect(translateResult.data).toBeDefined();
     expect((translateResult.data as any).translateThis).toMatch(
-      /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b))/i,
+      /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b)|(\bStimmentest\b))/i,
     );
 
     const speakQuery = /* GraphQL */ `
@@ -93,7 +93,7 @@ describe('transformer predictions migration test', () => {
     expect(translateResult.errors).toBeUndefined();
     expect(translateResult.data).toBeDefined();
     expect((translateResult.data as any).translateThis).toMatch(
-      /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b))/i,
+      /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b)|(\bStimmentest\b))/i,
     );
 
     speakResult = await appSyncClient.query({

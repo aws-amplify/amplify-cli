@@ -104,7 +104,7 @@ export class IdentityPoolService implements IIdentityPoolService {
       const fullRoleName = parseArn(arn).resource;
       const parts = fullRoleName.split('/');
       if (parts.length >= 2) {
-        resourceName = parts.slice(1).join('/');
+        resourceName = [...parts].pop();
       }
     }
 

@@ -14,12 +14,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.7.2",
+    "@aws-amplify/amplify-category-api": "^5.7.7",
     "@aws-amplify/amplify-cli-core": "4.2.10",
     "@aws-amplify/amplify-prompts": "2.8.4",
     "@aws-amplify/codegen-ui": "2.14.2",
     "@aws-amplify/codegen-ui-react": "2.14.2",
-    "amplify-codegen": "^4.7.0",
+    "amplify-codegen": "^4.7.2",
     "aws-sdk": "^2.1464.0",
     "fs-extra": "^8.1.0",
     "node-fetch": "^2.6.7",

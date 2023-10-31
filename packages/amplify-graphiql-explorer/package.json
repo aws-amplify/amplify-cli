@@ -1,9 +1,9 @@
 {
   "name": "@aws-amplify/amplify-graphiql-explorer",
-  "version": "2.5.9",
+  "version": "2.5.10",
   "private": true,
   "dependencies": {
-    "@babel/core": "^7.16.0",
+    "@babel/core": "^7.23.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^5.5.0",
     "@testing-library/jest-dom": "^5.11.4",

@@ -7,6 +7,8 @@ let mockCognitoIdentityRoles = {
   unauthenticated: 'arn:aws:iam::123456789012:role/service-role/my-unauth-role',
 };
 
+const iamRoleNameRegex = /[\w+=,.@-]+/;
+
 jest.mock('aws-sdk', () => {
   return {
     CognitoIdentity: jest.fn(() => {
@@ -33,11 +35,18 @@ jest.mock('../../configuration-manager', () => {
 describe('IdentityPoolService', () => {
   it('should correctly parse arn if it contains multiple forward slashes', async () => {
     const idpService = await createIdentityPoolService({} as unknown as $TSContext, {});
-    expect(await idpService.getIdentityPoolRoles('mockIdpId')).toEqual({
+    const identityPoolRoles = await idpService.getIdentityPoolRoles('mockIdpId');
+
+    // ensure role names match regex for IAM
+    // see: https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html
+    expect(identityPoolRoles.authRoleName).toMatch(iamRoleNameRegex);
+    expect(identityPoolRoles.unauthRoleName).toMatch(iamRoleNameRegex);
+
+    expect(identityPoolRoles).toEqual({
       authRoleArn: 'arn:aws:iam::123456789012:role/service-role/my-auth-role',
-      authRoleName: 'service-role/my-auth-role',
+      authRoleName: 'my-auth-role',
       unauthRoleArn: 'arn:aws:iam::123456789012:role/service-role/my-unauth-role',
-      unauthRoleName: 'service-role/my-unauth-role',
+      unauthRoleName: 'my-unauth-role',
     });
   });
 
@@ -48,7 +57,14 @@ describe('IdentityPoolService', () => {
       unauthenticated: 'arn:aws:iam::123456789012:role/my-unauth-role',
     };
 
-    expect(await idpService.getIdentityPoolRoles('mockIdpId')).toEqual({
+    const identityPoolRoles = await idpService.getIdentityPoolRoles('mockIdpId');
+
+    // ensure role names match regex for IAM
+    // see: https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html
+    expect(identityPoolRoles.authRoleName).toMatch(iamRoleNameRegex);
+    expect(identityPoolRoles.unauthRoleName).toMatch(iamRoleNameRegex);
+
+    expect(identityPoolRoles).toEqual({
       authRoleArn: 'arn:aws:iam::123456789012:role/my-auth-role',
       authRoleName: 'my-auth-role',
       unauthRoleArn: 'arn:aws:iam::123456789012:role/my-unauth-role',
