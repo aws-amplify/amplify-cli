@@ -14,7 +14,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.7.7",
+    "@aws-amplify/amplify-category-api": "^5.8.0-rds-5.0",
     "@aws-amplify/amplify-cli-core": "4.2.10",
     "@aws-amplify/amplify-prompts": "2.8.4",
     "@aws-amplify/codegen-ui": "2.14.2",
