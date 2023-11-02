@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.2-rds-5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.1...@aws-amplify/amplify-category-function@5.6.2-rds-5.0) (2023-11-02)
+
+
+### Bug Fixes
+
+* **cli:** postgres trigger rds tagged release ([759cbcf](https://github.com/aws-amplify/amplify-cli/commit/759cbcf2c86ea9f38c830c3ec128c29c8fefe2f7))
+
+
+
+
+
 ## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.0...@aws-amplify/amplify-category-function@5.6.1) (2023-10-12)
 
 

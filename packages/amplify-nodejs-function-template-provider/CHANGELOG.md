@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.5-rds-5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.9.4...@aws-amplify/amplify-nodejs-function-template-provider@2.9.5-rds-5.0) (2023-11-02)
+
+
+### Bug Fixes
+
+* **cli:** postgres trigger rds tagged release ([759cbcf](https://github.com/aws-amplify/amplify-cli/commit/759cbcf2c86ea9f38c830c3ec128c29c8fefe2f7))
+
+
+
+
+
 ## [2.9.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.9.3...@aws-amplify/amplify-nodejs-function-template-provider@2.9.4) (2023-10-12)
 
 **Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider

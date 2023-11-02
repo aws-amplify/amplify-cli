@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.8.0-rds-5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.7.1...@aws-amplify/cli-internal@12.8.0-rds-5.0) (2023-11-02)
+
+
+### Bug Fixes
+
+* **cli:** postgres trigger rds tagged release ([759cbcf](https://github.com/aws-amplify/amplify-cli/commit/759cbcf2c86ea9f38c830c3ec128c29c8fefe2f7))
+
+
+### Features
+
+* bump npm version tot 12.7.0 ([31c8ae2](https://github.com/aws-amplify/amplify-cli/commit/31c8ae2ac0b2f8dcab4c1fe2e2d7e98253ba80ff))
+
+
+
+
+
 ## [12.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.7.0...@aws-amplify/cli-internal@12.7.1) (2023-10-21)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
