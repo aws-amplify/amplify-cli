@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.23-rc.2398b84d61e1899.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.22...@aws-amplify/amplify-app@5.0.23-rc.2398b84d61e1899.0) (2023-11-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-app
+
+
+
+
+
 ## [5.0.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.21...@aws-amplify/amplify-app@5.0.22) (2023-10-21)
 
 **Note:** Version bump only for package @aws-amplify/amplify-app

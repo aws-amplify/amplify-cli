@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.3-rc.2398b84d61e1899.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.2...amplify-e2e-tests@4.8.3-rc.2398b84d61e1899.0) (2023-11-07)
+
+
+### Bug Fixes
+
+* parse cognito pools with service role ([#13365](https://github.com/aws-amplify/amplify-cli/issues/13365)) ([1513938](https://github.com/aws-amplify/amplify-cli/commit/1513938ed2808c407853daf291912c0e644158c9))
+
+
+
+
+
 ## [4.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.1...amplify-e2e-tests@4.8.2) (2023-10-21)
 
 **Note:** Version bump only for package amplify-e2e-tests
