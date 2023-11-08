@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.2...@aws-amplify/amplify-category-auth@3.7.4) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
 ## [3.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.2...@aws-amplify/amplify-category-auth@3.7.3) (2023-11-08)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
