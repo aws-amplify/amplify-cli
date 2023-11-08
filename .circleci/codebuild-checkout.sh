@@ -41,4 +41,5 @@ if [[ "$INITIAL_HEAD_HASH" != "$HEAD_HASH" ]]; then
   echo "Fail! Detected a drift of commit we attempt to build!"
   echo "INITIAL_HEAD_HASH=$INITIAL_HEAD_HASH"
   echo "HEAD_HASH=$HEAD_HASH"
+  exit 1
 fi

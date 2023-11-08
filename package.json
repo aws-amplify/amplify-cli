@@ -62,7 +62,7 @@
     "test": "lerna run test --concurrency 1",
     "update-data-packages": "./scripts/update-data-dependencies.sh && yarn && yarn dedupe",
     "update-test-timing-data": "ts-node ./scripts/cci-get-job-metrics.ts && ts-node ./scripts/cci-extract-test-timings-from-job-metrics.ts",
-    "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version",
+    "update-versions": "lerna version --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version --force-publish",
     "verdaccio-clean": "rimraf ../verdaccio-cache",
     "verdaccio-connect": "bash -c 'source .circleci/local_publish_helpers_codebuild.sh && setNpmRegistryUrlToLocal'",
     "verdaccio-disconnect": "bash -c 'source .circleci/local_publish_helpers_codebuild.sh && unsetNpmRegistryUrl'",

@@ -13,7 +13,7 @@ if [[ "$PROJECT_NAME" == "TaggedReleaseWithoutE2E" ]] || [[ "$PROJECT_NAME" == "
   git push origin "$BRANCH_NAME" --no-verify
 
   # push release tags
-  git tag --points-at HEAD | xargs git push origin
+  git tag --points-at HEAD | xargs git push origin --no-verify
 
 # @latest release
 elif [[ "$PROJECT_NAME" == "Release" ]]; then
@@ -21,7 +21,7 @@ elif [[ "$PROJECT_NAME" == "Release" ]]; then
   git push origin "$BRANCH_NAME" --no-verify
 
   # push release tags
-  git tag --points-at HEAD | xargs git push origin
+  git tag --points-at HEAD | xargs git push origin --no-verify
 
   # fast forward main to release
   git fetch origin main
