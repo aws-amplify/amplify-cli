@@ -26,6 +26,7 @@ const LambdaTriggersKeys = [
   'PreSignup',
   'PreTokenGeneration',
   'VerifyAuthChallengeResponse',
+  'UserMigration'
 ];
 
 const authProvidersList: Record<string, string> = {
@@ -360,6 +361,12 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
             this.userPool!.lambdaConfig = {
               ...this.userPool!.lambdaConfig,
               verifyAuthChallengeResponse: cdk.Fn.ref(`function${props.resourceName}${'VerifyAuthChallengeResponse'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('UserMigration')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              userMigration: cdk.Fn.ref(`function${props.resourceName}${'UserMigration'}Arn`),
             };
           }
         });
