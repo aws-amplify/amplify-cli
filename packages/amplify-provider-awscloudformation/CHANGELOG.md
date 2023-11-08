@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.8.0...@aws-amplify/amplify-provider-awscloudformation@8.9.0) (2023-11-08)
+
+
+### Bug Fixes
+
+* parse cognito pools with service role ([#13365](https://github.com/aws-amplify/amplify-cli/issues/13365)) ([1513938](https://github.com/aws-amplify/amplify-cli/commit/1513938ed2808c407853daf291912c0e644158c9))
+
+
+### Features
+
+* **cli:** ignore node_modules in glob to drastically increase performance in Node environments ([#13305](https://github.com/aws-amplify/amplify-cli/issues/13305)) ([5cc1b55](https://github.com/aws-amplify/amplify-cli/commit/5cc1b556d8081421dc68ee264dac02d5660ffee7))
+
+
+
+
+
 # [8.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.7.0...@aws-amplify/amplify-provider-awscloudformation@8.8.0) (2023-10-12)
 
 
