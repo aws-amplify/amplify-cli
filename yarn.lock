@@ -223,7 +223,7 @@ __metadata:
     amplify-util-headless-input: 1.9.17
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
-    axios: ^0.26.0
+    axios: ^1.6.0
     chalk: ^4.1.1
     change-case: ^4.1.1
     cloudform-types: ^4.2.0
@@ -908,7 +908,7 @@ __metadata:
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
     aws-sdk-mock: ^5.8.0
-    axios: ^0.26.0
+    axios: ^1.6.0
     chokidar: ^3.5.3
     constructs: ^10.0.5
     detect-port: ^1.3.0
@@ -1168,7 +1168,7 @@ __metadata:
   dependencies:
     "@aws-amplify/cli-internal": 12.8.2
     "@types/tar": ^6.1.1
-    axios: ^0.26.0
+    axios: ^1.6.0
     rimraf: ^3.0.2
     tar-stream: ^2.2.0
   bin:
@@ -14033,7 +14033,7 @@ __metadata:
     aws-appsync: ^4.1.1
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
-    axios: ^0.26.0
+    axios: ^1.6.0
     constructs: ^10.0.5
     dotenv: ^8.2.0
     esm: ^3.2.25
@@ -14986,15 +14986,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.26.0":
-  version: 0.26.0
-  resolution: "axios@npm:0.26.0"
-  dependencies:
-    follow-redirects: ^1.14.8
-  checksum: 22a8e41f1d2fc1a923fbb68b6b0025f27dbb0b51fba80124c0e432dfa347f8827d10820fa131233d222343d4790776d87b80081363c6623ad8a2e1d0586e5ee8
-  languageName: node
-  linkType: hard
-
 "axios@npm:^1.0.0":
   version: 1.3.2
   resolution: "axios@npm:1.3.2"
@@ -15003,6 +14994,17 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: 163f4b41e7a447b17aa131cd915aea0cf35aa00eb62531292c66359436dc16eef82cab64a5dc2cafcb612744b34789fa84615031cd06a55ac982e7add14e4468
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.0":
+  version: 1.6.1
+  resolution: "axios@npm:1.6.1"
+  dependencies:
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: ca2c6f56659a7f19e4a99082f549fe151952f6fd8aa72ed148559ab2d6a32ce37cd5dc72ce6d4d3cd91f0c1e2617c7c95c20077e5e244a79f319a6c0ce41204f
   languageName: node
   linkType: hard
 
@@ -19885,7 +19887,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.15.0":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.0":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:

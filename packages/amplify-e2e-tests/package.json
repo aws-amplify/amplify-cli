@@ -43,7 +43,7 @@
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.80.0",
     "aws-sdk": "^2.1464.0",
-    "axios": "^0.26.0",
+    "axios": "^1.6.0",
     "constructs": "^10.0.5",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",

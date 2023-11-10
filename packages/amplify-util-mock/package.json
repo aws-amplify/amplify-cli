@@ -80,7 +80,7 @@
     "aws-cdk-lib": "~2.80.0",
     "aws-sdk": "^2.1464.0",
     "aws-sdk-mock": "^5.8.0",
-    "axios": "^0.26.0",
+    "axios": "^1.6.0",
     "constructs": "^10.0.5",
     "graphql": "^15.5.0",
     "graphql-auth-transformer": "^7.2.67",
