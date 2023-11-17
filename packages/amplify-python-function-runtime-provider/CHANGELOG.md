@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.37-sql-schema.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.36...amplify-python-function-runtime-provider@2.4.37-sql-schema.0) (2023-11-17)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [2.4.36](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.34...amplify-python-function-runtime-provider@2.4.36) (2023-11-08)
 
 

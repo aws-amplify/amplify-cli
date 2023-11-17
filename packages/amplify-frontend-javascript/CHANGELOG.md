@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.8-sql-schema.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.10.7...@aws-amplify/amplify-frontend-javascript@3.10.8-sql-schema.0) (2023-11-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript
+
+
+
+
+
 ## [3.10.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.10.5...@aws-amplify/amplify-frontend-javascript@3.10.7) (2023-11-08)
 
 

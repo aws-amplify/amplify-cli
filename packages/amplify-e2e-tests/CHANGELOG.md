@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0-sql-schema.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.5...amplify-e2e-tests@4.9.0-sql-schema.0) (2023-11-17)
+
+
+### Features
+
+* bump data dependencies to launch RDS feature ([#13409](https://github.com/aws-amplify/amplify-cli/issues/13409)) ([7fbf29f](https://github.com/aws-amplify/amplify-cli/commit/7fbf29f56eb7335d20de0b5526fbed7795a2af09))
+
+
+
+
+
 ## [4.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.3...amplify-e2e-tests@4.8.5) (2023-11-08)
 
 
