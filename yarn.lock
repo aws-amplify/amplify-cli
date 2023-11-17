@@ -669,7 +669,7 @@ __metadata:
     case-sensitive-paths-webpack-plugin: ^2.4.0
     cross-env: ^7.0.3
     crypto-browserify: ^3.12.0
-    css-loader: ^6.5.1
+    css-loader: ^6.8.1
     css-minimizer-webpack-plugin: ^5.0.1
     dotenv: ^10.0.0
     dotenv-expand: ^5.1.0
@@ -688,7 +688,7 @@ __metadata:
     jest-watch-typeahead: ^1.0.0
     jsonwebtoken: ^9.0.0
     mini-css-extract-plugin: ^2.4.5
-    postcss: ^8.4.4
+    postcss: ^8.4.31
     postcss-flexbugs-fixes: ^5.0.2
     postcss-loader: ^6.2.1
     postcss-normalize: ^10.0.1
@@ -17626,21 +17626,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:^6.5.1":
-  version: 6.7.1
-  resolution: "css-loader@npm:6.7.1"
+"css-loader@npm:^6.8.1":
+  version: 6.8.1
+  resolution: "css-loader@npm:6.8.1"
   dependencies:
     icss-utils: ^5.1.0
-    postcss: ^8.4.7
+    postcss: ^8.4.21
     postcss-modules-extract-imports: ^3.0.0
-    postcss-modules-local-by-default: ^4.0.0
+    postcss-modules-local-by-default: ^4.0.3
     postcss-modules-scope: ^3.0.0
     postcss-modules-values: ^4.0.0
     postcss-value-parser: ^4.2.0
-    semver: ^7.3.5
+    semver: ^7.3.8
   peerDependencies:
     webpack: ^5.0.0
-  checksum: c9e900e2a6012a988ab36cf87598fa1e74cd570ab25dbcc8a5d7f10a91a0f9549ff3656b9bbb2bf26b9f5a39f76b9b4b148513c4085c23b73c9c1d5cc2f7de12
+  checksum: a6e23de4ec1d2832f10b8ca3cfec6b6097a97ca3c73f64338ae5cd110ac270f1b218ff0273d39f677a7a561f1a9d9b0d332274664d0991bcfafaae162c2669c4
   languageName: node
   linkType: hard
 
@@ -27983,16 +27983,16 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"postcss-modules-local-by-default@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "postcss-modules-local-by-default@npm:4.0.0"
+"postcss-modules-local-by-default@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "postcss-modules-local-by-default@npm:4.0.3"
   dependencies:
     icss-utils: ^5.0.0
     postcss-selector-parser: ^6.0.2
     postcss-value-parser: ^4.1.0
   peerDependencies:
     postcss: ^8.1.0
-  checksum: 8ee9c0d9918fd838854d434731371874b25c412dde135df981cc28d37d0660496389b0f8653dbcdbb6ee81f2bec90cb5b14668f6208f6f517400ac064e234c5a
+  checksum: be49b86efbfb921f42287e227584aac91af9826fc1083db04958ae283dfe215ca539421bfba71f9da0f0b10651f28e95a64b5faca7166f578a1933b8646051f7
   languageName: node
   linkType: hard
 
@@ -28357,7 +28357,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.2.14, postcss@npm:^8.4.24":
+"postcss@npm:^8.2.14, postcss@npm:^8.4.21, postcss@npm:^8.4.24, postcss@npm:^8.4.31":
   version: 8.4.31
   resolution: "postcss@npm:8.4.31"
   dependencies:
@@ -28368,7 +28368,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.12, postcss@npm:^8.4.4, postcss@npm:^8.4.7":
+"postcss@npm:^8.4.12":
   version: 8.4.12
   resolution: "postcss@npm:8.4.12"
   dependencies:
