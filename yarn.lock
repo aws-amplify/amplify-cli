@@ -909,7 +909,7 @@ __metadata:
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
     aws-sdk-mock: ^5.8.0
-    axios: ^0.26.0
+    axios: ^1.6.2
     chokidar: ^3.5.3
     constructs: ^10.0.5
     detect-port: ^1.3.0
@@ -15091,6 +15091,17 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: 163f4b41e7a447b17aa131cd915aea0cf35aa00eb62531292c66359436dc16eef82cab64a5dc2cafcb612744b34789fa84615031cd06a55ac982e7add14e4468
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.2":
+  version: 1.6.2
+  resolution: "axios@npm:1.6.2"
+  dependencies:
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: 9b77e030e85e4f9cbcba7bb52fbff67d6ce906c92d213e0bd932346a50140faf83733bf786f55bd58301bd92f9973885c7b87d6348023e10f7eaf286d0791a1d
   languageName: node
   linkType: hard
 
