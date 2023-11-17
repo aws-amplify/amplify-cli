@@ -14121,7 +14121,7 @@ __metadata:
     aws-appsync: ^4.1.1
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
-    axios: ^0.26.0
+    axios: ^1.6.2
     constructs: ^10.0.5
     dotenv: ^8.2.0
     esm: ^3.2.25
@@ -15071,15 +15071,6 @@ __metadata:
   dependencies:
     follow-redirects: ^1.14.0
   checksum: fbcff55ec68f71f02d3773d467db2fcecdf04e749826c82c2427a232f9eba63242150a05f15af9ef15818352b814257541155de0281f8fb2b7e8a5b79f7f2142
-  languageName: node
-  linkType: hard
-
-"axios@npm:^0.26.0":
-  version: 0.26.0
-  resolution: "axios@npm:0.26.0"
-  dependencies:
-    follow-redirects: ^1.14.8
-  checksum: 22a8e41f1d2fc1a923fbb68b6b0025f27dbb0b51fba80124c0e432dfa347f8827d10820fa131233d222343d4790776d87b80081363c6623ad8a2e1d0586e5ee8
   languageName: node
   linkType: hard
 
@@ -19998,7 +19989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.15.0":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.0":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
