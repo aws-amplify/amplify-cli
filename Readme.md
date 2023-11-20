@@ -25,6 +25,8 @@
 >
 > To open a new issue related to Amplify's new backend building experience, please visit [AWS Amplify Backend](https://github.com/aws-amplify/amplify-backend)
 
+---
+
 # AWS Amplify CLI
 
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks to allow you to add or modify configurations locally before you push them for execution in your account.
