@@ -19,9 +19,9 @@
 
 > [!TIP]  
 > **Preview: AWS Amplify's new code-first DX (Gen 2) for building backends**
-> 
+>
 > The next generation of Amplify's backend building experience with a TypeScript-first DX is now available in Preview. To learn more, please visit [AWS Amplify (Gen 2)](https://docs.amplify.aws/gen2/).
-> 
+>
 > To open a new issue related to Amplify's new backend building experience, please visit [AWS Amplify Backend](https://github.com/aws-amplify/amplify-backend).
 
 # AWS Amplify CLI
