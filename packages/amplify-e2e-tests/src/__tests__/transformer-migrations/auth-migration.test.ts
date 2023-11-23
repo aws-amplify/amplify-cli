@@ -20,7 +20,6 @@ import {
   updateApiWithMultiAuth,
   updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
-import gql from 'graphql-tag';
 
 (global as any).fetch = require('node-fetch');
 
@@ -73,12 +72,9 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    let createPostResult = await appSyncClientViaUser.mutate({
-      mutation: gql(createPostMutation),
-      fetchPolicy: 'no-cache',
-    });
+    let createPostResult = (await appSyncClientViaUser.graphql({ query: createPostMutation }, { fetchPolicy: 'no-cache' })) as any;
 
-    expect(createPostResult.errors).toBeUndefined();
+    expect(createPostResult.error).toBeUndefined();
     expect(createPostResult.data).toBeDefined();
 
     let createPostPublicMutation = /* GraphQL */ `
@@ -89,10 +85,10 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    let createPostPublicResult = await appSyncClientViaApiKey.mutate({
-      mutation: gql(createPostPublicMutation),
-      fetchPolicy: 'no-cache',
-    });
+    let createPostPublicResult = (await appSyncClientViaApiKey.graphql(
+      { query: createPostPublicMutation },
+      { fetchPolicy: 'no-cache' },
+    )) as any;
 
     expect(createPostPublicResult.errors).toBeUndefined();
     expect(createPostPublicResult.data).toBeDefined();
@@ -105,10 +101,10 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    const createPostPublicIAMResult = await appSyncClientViaIAM.mutate({
-      mutation: gql(createPostPublicIAMMutation),
-      fetchPolicy: 'no-cache',
-    });
+    const createPostPublicIAMResult = (await appSyncClientViaIAM.graphql(
+      { query: createPostPublicIAMMutation },
+      { fetchPolicy: 'no-cache' },
+    )) as any;
 
     expect(createPostPublicIAMResult.errors).toBeUndefined();
     expect(createPostPublicIAMResult.data).toBeDefined();
@@ -122,10 +118,7 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    let createSalaryResult = await appSyncClientViaUser.mutate({
-      mutation: gql(createSalaryMutation),
-      fetchPolicy: 'no-cache',
-    });
+    let createSalaryResult = (await appSyncClientViaUser.graphql({ query: createSalaryMutation }, { fetchPolicy: 'no-cache' })) as any;
 
     expect(createSalaryResult.errors).toBeUndefined();
     expect(createSalaryResult.data).toBeDefined();
@@ -146,10 +139,7 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    createPostResult = await appSyncClientViaUser.mutate({
-      mutation: gql(createPostMutation),
-      fetchPolicy: 'no-cache',
-    });
+    createPostResult = (await appSyncClientViaUser.graphql({ query: createPostMutation }, { fetchPolicy: 'no-cache' })) as any;
 
     expect(createPostResult.errors).toBeUndefined();
     expect(createPostResult.data).toBeDefined();
@@ -165,10 +155,10 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    createPostPublicResult = await appSyncClientViaApiKey.mutate({
-      mutation: gql(createPostPublicMutation),
-      fetchPolicy: 'no-cache',
-    });
+    createPostPublicResult = (await appSyncClientViaApiKey.graphql(
+      { query: createPostPublicMutation },
+      { fetchPolicy: 'no-cache' },
+    )) as any;
 
     expect(createPostPublicResult.errors).toBeUndefined();
     expect(createPostPublicResult.data).toBeDefined();
@@ -182,10 +172,7 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    createSalaryResult = await appSyncClientViaUser.mutate({
-      mutation: gql(createSalaryMutation),
-      fetchPolicy: 'no-cache',
-    });
+    createSalaryResult = (await appSyncClientViaUser.graphql({ query: createSalaryMutation }, { fetchPolicy: 'no-cache' })) as any;
 
     expect(createSalaryResult.errors).toBeUndefined();
     expect(createSalaryResult.data).toBeDefined();
@@ -201,10 +188,7 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    let queryResult = await appSyncClientViaUser.query({
-      query: gql(postsQuery),
-      fetchPolicy: 'no-cache',
-    });
+    let queryResult = (await appSyncClientViaUser.graphql({ query: postsQuery }, { fetchPolicy: 'no-cache' })) as any;
 
     expect(queryResult.errors).toBeUndefined();
     expect(queryResult.data).toBeDefined();
@@ -221,10 +205,7 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    queryResult = await appSyncClientViaApiKey.query({
-      query: gql(postPublicsQuery),
-      fetchPolicy: 'no-cache',
-    });
+    queryResult = (await appSyncClientViaApiKey.graphql({ query: postPublicsQuery }, { fetchPolicy: 'no-cache' })) as any;
 
     expect(queryResult.errors).toBeUndefined();
     expect(queryResult.data).toBeDefined();
@@ -240,10 +221,7 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    queryResult = await appSyncClientViaUser.query({
-      query: gql(salaryQuery),
-      fetchPolicy: 'no-cache',
-    });
+    queryResult = (await appSyncClientViaUser.graphql({ query: salaryQuery }, { fetchPolicy: 'no-cache' })) as any;
 
     expect(queryResult.errors).toBeUndefined();
     expect(queryResult.data).toBeDefined();
