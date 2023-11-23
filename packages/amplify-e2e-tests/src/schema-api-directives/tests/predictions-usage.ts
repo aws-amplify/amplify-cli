@@ -22,7 +22,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await amplifyPush(projectDir);
   const apiKey = getApiKey(projectDir);
   const awsconfig = configureAmplify(projectDir);
-  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
+  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
 
   try {
     const result = await appSyncClient.query({

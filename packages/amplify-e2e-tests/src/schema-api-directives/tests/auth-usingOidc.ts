@@ -44,9 +44,9 @@ export async function runTest(projectDir: string, testModule: any) {
   const userPoolId = getUserPoolId(projectDir);
   await setupUser(userPoolId, USERNAME, PASSWORD, GROUPNAME);
 
-  const appSyncClientIAM = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
+  const appSyncClientIAM = getConfiguredAppsyncClientIAMAuth(awsconfig);
   const user = await signInUser(USERNAME, PASSWORD);
-  const appSyncClientOIDC = getConfiguredAppsyncClientOIDCAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, user);
+  const appSyncClientOIDC = getConfiguredAppsyncClientOIDCAuth(awsconfig, user);
 
   //test create post mutation with private iam provider
   await testMutation(appSyncClientIAM, createPostMutation, undefined, expected_result_createPostMutation);

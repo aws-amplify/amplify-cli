@@ -10,7 +10,7 @@ export async function runTest(projectDir: string, testModule: any) {
 
   const awsconfig = configureAmplify(projectDir);
   const apiKey = getApiKey(projectDir);
-  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
+  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
 
   await testMutations(testModule, appSyncClient);
   await new Promise<void>((res) => setTimeout(() => res(), 60000));

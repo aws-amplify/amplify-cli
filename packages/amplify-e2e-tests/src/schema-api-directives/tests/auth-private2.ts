@@ -11,7 +11,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await amplifyPush(projectDir);
 
   const awsconfig = configureAmplify(projectDir);
-  const appSyncClient = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
+  const appSyncClient = getConfiguredAppsyncClientIAMAuth(awsconfig);
 
   await testMutations(testModule, appSyncClient);
   await testQueries(testModule, appSyncClient);

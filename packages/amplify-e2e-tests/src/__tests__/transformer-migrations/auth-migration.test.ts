@@ -61,17 +61,9 @@ describe('transformer @auth migration test', () => {
 
     let apiKey = getApiKey(projRoot);
 
-    let appSyncClientViaUser = getConfiguredAppsyncClientCognitoAuth(
-      awsconfig.aws_appsync_graphqlEndpoint,
-      awsconfig.aws_appsync_region,
-      user,
-    );
-    let appSyncClientViaApiKey = getConfiguredAppsyncClientAPIKeyAuth(
-      awsconfig.aws_appsync_graphqlEndpoint,
-      awsconfig.aws_appsync_region,
-      apiKey,
-    );
-    const appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
+    let appSyncClientViaUser = getConfiguredAppsyncClientCognitoAuth(awsconfig, user);
+    let appSyncClientViaApiKey = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
+    const appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(awsconfig);
 
     let createPostMutation = /* GraphQL */ `
       mutation CreatePost {
@@ -144,7 +136,7 @@ describe('transformer @auth migration test', () => {
     await updateApiSchema(projRoot, projectName, modelSchemaV2);
     await amplifyPushUpdate(projRoot);
 
-    appSyncClientViaUser = getConfiguredAppsyncClientCognitoAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, user);
+    appSyncClientViaUser = getConfiguredAppsyncClientCognitoAuth(awsconfig, user);
 
     createPostMutation = /* GraphQL */ `
       mutation CreatePost {
@@ -163,11 +155,7 @@ describe('transformer @auth migration test', () => {
     expect(createPostResult.data).toBeDefined();
 
     apiKey = getApiKey(projRoot);
-    appSyncClientViaApiKey = getConfiguredAppsyncClientAPIKeyAuth(
-      awsconfig.aws_appsync_graphqlEndpoint,
-      awsconfig.aws_appsync_region,
-      apiKey,
-    );
+    appSyncClientViaApiKey = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
 
     createPostPublicMutation = /* GraphQL */ `
       mutation CreatePostPublic {
