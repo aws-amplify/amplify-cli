@@ -82,9 +82,14 @@ function _loadTestAccountCredentials {
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
 
-
-
-
+# Installs and caches dependencies
+# Use this in workflows that do not require building from CLI sources
+function _installAndCacheDependencies {
+    echo Install Dependencies
+    yarn --immutable
+    storeCache $CODEBUILD_SRC_DIR repo
+    storeCache $HOME/.cache .cache
+}
 function _buildLinux {
     echo Linux Build
     yarn --immutable
