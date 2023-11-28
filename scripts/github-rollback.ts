@@ -8,7 +8,7 @@ import { join } from 'path';
 const markReleaseAsLatest = async (version: string) => {
   const { id: releaseId } = await releasesRequest(join('tags', semverToGithubTag(version)));
   const releaseIdStr = (releaseId as number).toString();
-  console.log('Publishing release');
+  console.log(`Marking release ${version} as latest`);
   await releasesRequest(releaseIdStr, {
     method: 'PATCH',
     body: JSON.stringify({
