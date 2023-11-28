@@ -109,6 +109,17 @@ function _testLinux {
     # echo collecting coverage
     # yarn coverage
 }
+function _validateRollbackTargetVersion {
+    echo Validate Rollback Target Version
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+      echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+      exit 1
+    fi
+    yarn ts-node scripts/verify-deployment.ts -v $ROLLBACK_TARGET_VERSION
+}
 function _validateCDKVersion {
     echo Validate CDK Version
     # download [repo, .cache from s3]
