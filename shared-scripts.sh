@@ -730,6 +730,15 @@ function _githubRelease {
     version=$(cat .amplify-pkg-version)
     yarn ts-node scripts/github-release.ts $version $commit
 }
+function _githubRollback {
+    loadCache repo $CODEBUILD_SRC_DIR
+    echo Rollback Amplify CLI GitHub release
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+      echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+      exit 1
+    fi
+    yarn ts-node scripts/github-rollback.ts $ROLLBACK_TARGET_VERSION
+}
 function _amplifyGeneralConfigTests {
     _loadE2ECache
     _install_packaged_cli_linux

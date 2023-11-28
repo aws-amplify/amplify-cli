@@ -20,6 +20,12 @@ batch:
       buildspec: codebuild_specs/validate_rollback_target_version.yml
       depend-on:
         - install_dependencies
+    - identifier: github_rollback
+      buildspec: codebuild_specs/release_workflows/github_rollback.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - validate_rollback_target_version
 #    - identifier: verify_yarn_lock
 #      buildspec: codebuild_specs/verify_yarn_lock.yml
 #      depend-on:
