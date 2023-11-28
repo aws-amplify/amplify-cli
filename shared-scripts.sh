@@ -715,6 +715,19 @@ function _publishToNpm {
 
     source ./.circleci/cb-publish-step-3-npm.sh
 }
+function _rollbackNpm {
+    loadCache repo $CODEBUILD_SRC_DIR
+
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+      echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+      exit 1
+    fi
+
+    echo Authenticate with npm
+    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
+
+    npm dist-tag add @aws-amplify/cli@$ROLLBACK_TARGET_VERSION "latest"
+}
 function _postPublishPushToGit {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
