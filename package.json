@@ -47,6 +47,7 @@
     "release-rc-local": "bash -c 'source ./scripts/cloud-release.sh && RCLocal'",
     "release-rc-beta": "bash -c 'source ./scripts/cloud-release.sh && RCBeta'",
     "release-rc": "bash -c 'source ./scripts/cloud-release.sh && RCProd'",
+    "rollback": "./scripts/cloud-rollback.sh",
     "tagged-release-without-e2e-local": "bash -c 'source ./scripts/cloud-release.sh && TaggedRCLocal'",
     "tagged-release-without-e2e-beta": "bash -c 'source ./scripts/cloud-release.sh && TaggedRCBeta'",
     "tagged-release-without-e2e-prod": "bash -c 'source ./scripts/cloud-release.sh && TaggedRCProd'",
