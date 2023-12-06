@@ -85,7 +85,7 @@
     "execa": "^5.1.1",
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
-    "glob": "^7.2.0",
+    "glob": "^9.3.5",
     "graphql": "^15.5.0",
     "graphql-transformer-core": "^8.1.13",
     "gunzip-maybe": "^1.4.2",
