@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { byValues, printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
-import { globSync } from 'glob';
+import { globSync, GlobOptionsWithFileTypesFalse } from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
 import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';
@@ -29,7 +29,8 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     const cfnFiles = globSync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
       ignore: [AUTH_TRIGGER_TEMPLATE],
-    });
+      withFileTypes: false,
+    } as GlobOptionsWithFileTypesFalse);
 
     if (cfnFiles.length > 0) {
       // Only one CFN files is allowed per-resource - check if there's more than one and error out
@@ -48,7 +49,8 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     const cfnFiles = globSync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
       ignore: [AUTH_TRIGGER_TEMPLATE],
-    });
+      withFileTypes: false,
+    } as GlobOptionsWithFileTypesFalse);
     if (cfnFiles.length > 1) {
       printer.warn(`${resourceName} has more than one CloudFormation definitions in the resource folder which isn't permitted.`);
       return [];

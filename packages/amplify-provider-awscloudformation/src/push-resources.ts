@@ -622,7 +622,8 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
   const cfnFiles = globSync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
     ignore: [parametersJson],
-  });
+    withFileTypes: false,
+  } as GlobOptionsWithFileTypesFalse);
 
   if (cfnFiles.length !== 1) {
     throw new AmplifyError('CloudFormationTemplateError', {
