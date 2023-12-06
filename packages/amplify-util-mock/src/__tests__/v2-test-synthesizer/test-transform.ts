@@ -1,24 +1,32 @@
-import {
-  AppSyncAuthConfiguration,
-  TransformerPluginProvider,
-  TransformerLogLevel,
-  DataSourceType,
+import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
+import type {
+  ModelDataSourceStrategy,
+  RDSLayerMappingProvider,
+  SqlDirectiveDataSourceStrategy,
+  SynthParameters,
+  TransformParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type { SynthParameters, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, RDSConnectionSecrets, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import {
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  ResolverConfig,
+  UserDefinedSlot,
+  constructDataSourceStrategies,
+} from '@aws-amplify/graphql-transformer-core';
 import { TransformManager, DeploymentResources } from '../../__e2e_v2__/test-synthesizer';
 
-export type TestTransformParameters = {
-  transformers: TransformerPluginProvider[];
-  schema: string;
-  transformParameters?: Partial<TransformParameters>;
-  resolverConfig?: ResolverConfig;
+export type TestTransformParameters = RDSLayerMappingProvider & {
   authConfig?: AppSyncAuthConfiguration;
-  userDefinedSlots?: Record<string, UserDefinedSlot[]>;
+  // Making this optional so test code can simply use a default DDB strategy for each model in the schema.
+  dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
+  resolverConfig?: ResolverConfig;
+  schema: string;
+  sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
   stackMapping?: Record<string, string>;
-  modelToDatasourceMap?: Map<string, DataSourceType>;
-  datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
   synthParameters?: Partial<SynthParameters>;
+  transformers: TransformerPluginProvider[];
+  transformParameters?: Partial<TransformParameters>;
+  userDefinedSlots?: Record<string, UserDefinedSlot[]>;
 };
 
 /**
@@ -27,16 +35,17 @@ export type TestTransformParameters = {
  */
 export const testTransform = (params: TestTransformParameters): DeploymentResources & { logs: any[] } => {
   const {
-    schema,
-    modelToDatasourceMap,
-    datasourceSecretParameterLocations,
-    transformers,
     authConfig,
+    dataSourceStrategies,
     resolverConfig,
-    userDefinedSlots,
+    schema,
+    rdsLayerMapping,
+    sqlDirectiveDataSourceStrategies,
     stackMapping,
-    transformParameters,
     synthParameters: overrideSynthParameters,
+    transformers,
+    transformParameters,
+    userDefinedSlots,
   } = params;
 
   const transform = new GraphQLTransform({
@@ -66,10 +75,9 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
       ...overrideSynthParameters,
     },
     schema,
-    datasourceConfig: {
-      modelToDatasourceMap,
-      datasourceSecretParameterLocations,
-    },
+    rdsLayerMapping,
+    dataSourceStrategies: dataSourceStrategies ?? constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+    sqlDirectiveDataSourceStrategies,
   });
 
   const logs: any[] = [];
