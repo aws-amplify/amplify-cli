@@ -110,7 +110,6 @@
     "@types/columnify": "^1.5.1",
     "@types/folder-hash": "^4.0.1",
     "@types/fs-extra": "^8.0.1",
-    "@types/glob": "^7.1.1",
     "@types/gunzip-maybe": "^1.4.0",
     "@types/node": "^12.12.6",
     "@types/node-fetch": "^2.6.1",

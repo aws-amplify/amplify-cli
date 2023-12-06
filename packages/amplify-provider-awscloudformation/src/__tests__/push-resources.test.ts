@@ -25,8 +25,9 @@ glob_mock.sync.mockImplementation((pattern) => {
       return [...dummyCFNFiles];
     case 'stacks/*.+(yaml|yml|json)':
       return [...dummyNestedCFNFiles];
+    default:
+      return [];
   }
-  return [];
 });
 
 const fs_mock = jest.mocked(fs);
