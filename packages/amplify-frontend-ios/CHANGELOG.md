@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.27-sql-release.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.26...@aws-amplify/amplify-frontend-ios@3.6.27-sql-release.0) (2023-12-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
+
+
+
+
+
 ## [3.6.26](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.6.24...@aws-amplify/amplify-frontend-ios@3.6.26) (2023-11-08)
 
 

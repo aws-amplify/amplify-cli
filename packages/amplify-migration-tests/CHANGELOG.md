@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.3.0-sql-release.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.9...@aws-amplify/amplify-migration-tests@6.3.0-sql-release.0) (2023-12-06)
+
+
+### Features
+
+* bump data dependencies to launch RDS feature ([#13409](https://github.com/aws-amplify/amplify-cli/issues/13409)) ([7fbf29f](https://github.com/aws-amplify/amplify-cli/commit/7fbf29f56eb7335d20de0b5526fbed7795a2af09))
+
+
+
+
+
 ## [6.2.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.7...@aws-amplify/amplify-migration-tests@6.2.9) (2023-11-08)
 
 
