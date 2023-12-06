@@ -83,6 +83,7 @@ describe('resource-status-diff helpers', () => {
       cwd: stubFileFolder,
       follow: false,
       nodir: true,
+      withFileTypes: false,
     };
 
     const cfnFilename = globCFNFilePath(stubFileFolder);

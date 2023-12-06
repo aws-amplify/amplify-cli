@@ -17,7 +17,7 @@
 import _ from 'lodash';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { GlobOptions, globSync } from 'glob';
+import { GlobOptions, GlobOptionsWithFileTypesFalse, globSync } from 'glob';
 import {
   AmplifyCategories,
   AmplifySupportedService,
@@ -739,19 +739,21 @@ export const getCfnFiles = (category: string, resourceName: string, includeAllNe
    * Otherwise falls back to the default behavior.
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+    const cfnFiles = globSync(cfnTemplateGlobPattern, {
+      withFileTypes: false,
       cwd: resourceBuildDir,
       ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
       ...options,
-    });
+    } as GlobOptionsWithFileTypesFalse);
 
     if (includeAllNestedStacks) {
       cfnFiles.push(
         ...globSync(nestedStackTemplateGlobPattern, {
+          withFileTypes: false,
           cwd: resourceBuildDir,
           ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
           ...options,
-        }),
+        } as GlobOptionsWithFileTypesFalse),
       );
     }
 
@@ -763,11 +765,12 @@ export const getCfnFiles = (category: string, resourceName: string, includeAllNe
     }
   }
 
-  const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+  const cfnFiles = globSync(cfnTemplateGlobPattern, {
+    withFileTypes: false,
     cwd: resourceDir,
     ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
     ...options,
-  });
+  } as GlobOptionsWithFileTypesFalse);
 
   return {
     resourceDir,
