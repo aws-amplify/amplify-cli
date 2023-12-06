@@ -2,9 +2,7 @@ import { JSONUtilities } from '../../../../amplify-cli-core/lib';
 import { PluginInfo, PluginManifest, PluginPlatform } from '@aws-amplify/amplify-cli-core';
 import { checkPlatformHealth, getOfficialPlugins } from '../../plugin-helpers/platform-health-check';
 
-jest.mock('chalk', () => ({
-  yellow: jest.fn().mockImplementation((input) => input),
-}));
+jest.mock('chalk');
 
 const corePackageJson = {
   name: '@aws-amplify/cli',
