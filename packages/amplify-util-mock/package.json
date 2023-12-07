@@ -92,7 +92,7 @@
     "graphql-transformer-core": "^8.1.13",
     "graphql-versioned-transformer": "^5.2.66",
     "isomorphic-fetch": "^3.0.0",
-    "jest": "^29.0.0",
+    "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.0",
     "uuid": "^8.3.2",
     "ws": "^7.5.7"

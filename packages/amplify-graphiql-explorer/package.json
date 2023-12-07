@@ -34,7 +34,7 @@
     "graphql": "^15.5.0",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^29.0.0",
+    "jest": "^29.7.0",
     "jest-resolve": "^26.0.2",
     "jest-watch-typeahead": "^1.0.0",
     "jsonwebtoken": "^9.0.0",

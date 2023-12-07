@@ -88,7 +88,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "lerna": "^6.6.1",
-    "node-gyp": "^9.3.1",
+    "node-gyp": "^10.0.1",
     "strip-ansi": "^6.0.0",
     "yargs": "^17.7.2"
   },
@@ -133,12 +133,11 @@
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-spellcheck": "^0.0.17",
     "execa": "^5.1.1",
-    "glob": "^9.3.5",
     "husky": "^8.0.3",
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-report": "^3.0.0",
     "istanbul-reports": "^3.1.5",
-    "jest": "^29.0.0",
+    "jest": "^29.7.0",
     "jest-circus": "^29.0.0",
     "jest-junit": "^12.0.0",
     "js-yaml": "^4.0.0",
@@ -161,8 +160,9 @@
   "resolutions": {
     "aws-sdk": "^2.1464.0",
     "cross-fetch": "^2.2.6",
-    "glob-parent": "^6.0.2",
     "glob": "^9.3.5",
+    "glob-parent": "^6.0.2",
+    "rimraf": "^4.4.1",
     "got": "^11.8.5",
     "istanbul/async": "^2.6.4",
     "jake/async": "^2.6.4",
