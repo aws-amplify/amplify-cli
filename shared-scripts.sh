@@ -82,9 +82,14 @@ function _loadTestAccountCredentials {
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
 
-
-
-
+# Installs and caches dependencies
+# Use this in workflows that do not require building from CLI sources
+function _installAndCacheDependencies {
+    echo Install Dependencies
+    yarn --immutable
+    storeCache $CODEBUILD_SRC_DIR repo
+    storeCache $HOME/.cache .cache
+}
 function _buildLinux {
     echo Linux Build
     yarn --immutable
@@ -103,6 +108,17 @@ function _testLinux {
     yarn test-ci
     # echo collecting coverage
     # yarn coverage
+}
+function _validateRollbackTargetVersion {
+    echo Validate Rollback Target Version
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+      echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+      exit 1
+    fi
+    yarn ts-node scripts/verify-deployment.ts -v $ROLLBACK_TARGET_VERSION
 }
 function _validateCDKVersion {
     echo Validate CDK Version
@@ -699,6 +715,19 @@ function _publishToNpm {
 
     source ./.circleci/cb-publish-step-3-npm.sh
 }
+function _rollbackNpm {
+    loadCache repo $CODEBUILD_SRC_DIR
+
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+      echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+      exit 1
+    fi
+
+    echo Authenticate with npm
+    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" > ~/.npmrc
+
+    npm dist-tag add @aws-amplify/cli@$ROLLBACK_TARGET_VERSION "latest"
+}
 function _postPublishPushToGit {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache all-binaries $CODEBUILD_SRC_DIR/out
@@ -713,6 +742,15 @@ function _githubRelease {
     commit=$(git rev-parse HEAD~1)
     version=$(cat .amplify-pkg-version)
     yarn ts-node scripts/github-release.ts $version $commit
+}
+function _githubRollback {
+    loadCache repo $CODEBUILD_SRC_DIR
+    echo Rollback Amplify CLI GitHub release
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+      echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+      exit 1
+    fi
+    yarn ts-node scripts/github-rollback.ts $ROLLBACK_TARGET_VERSION
 }
 function _amplifyGeneralConfigTests {
     _loadE2ECache

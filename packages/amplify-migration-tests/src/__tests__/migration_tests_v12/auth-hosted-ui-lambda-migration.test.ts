@@ -16,6 +16,7 @@ import {
   getUserPool,
   getUserPoolDomain,
   getUserPoolId,
+  tryScheduleCredentialRefresh,
   updateAuthAddUserGroups,
   updateAuthDomainPrefixWithAllProvidersConfigured,
   updateHeadlessAuth,
@@ -25,6 +26,8 @@ import { UpdateAuthRequest } from 'amplify-headless-interface';
 
 describe('amplify auth hosted ui', () => {
   beforeAll(async () => {
+    tryScheduleCredentialRefresh();
+
     const migrateFromVersion = { v: '12.0.3' };
     const migrateToVersion = { v: 'uninitialized' };
 
