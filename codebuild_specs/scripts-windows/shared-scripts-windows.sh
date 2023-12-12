@@ -104,6 +104,7 @@ function _lsOut {
 }
 function _build {
     echo Windows Build
+    yarn --version
     yarn run production-build
     yarn build-tests
 }

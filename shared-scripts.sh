@@ -87,6 +87,7 @@ function _loadTestAccountCredentials {
 
 function _buildLinux {
     echo Linux Build
+    yarn --version
     yarn --immutable
     yarn production-build
     yarn build-tests
