@@ -1168,7 +1168,7 @@ __metadata:
     "@aws-amplify/cli-internal": 12.8.2
     "@types/tar": ^6.1.1
     axios: ^0.26.0
-    rimraf: ^4.4.1
+    rimraf: ^3.0.2
     tar-stream: ^2.2.0
   bin:
     amplify: ./lib/run.js
