@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "axios": "^0.26.0",
-    "rimraf": "^4.4.1",
+    "rimraf": "^3.0.2",
     "tar-stream": "^2.2.0"
   },
   "devDependencies": {
