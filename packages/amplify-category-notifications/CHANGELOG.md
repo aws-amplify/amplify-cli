@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.26.11-rc.49b946f4d00eada.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.10...@aws-amplify/amplify-category-notifications@2.26.11-rc.49b946f4d00eada.0) (2023-12-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-notifications
+
+
+
+
+
 ## [2.26.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.9...@aws-amplify/amplify-category-notifications@2.26.10) (2023-12-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-notifications
