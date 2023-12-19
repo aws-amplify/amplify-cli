@@ -124,26 +124,22 @@ export class S3 {
     const { _Body, ...others } = augmentedS3Params;
     let uploadTask;
     try {
-      // eslint-disable-next-line no-unused-expressions
-      showSpinner && spinner.start('Uploading files.');
-      if (
-        (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
-        (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
-      ) {
-        logger('uploadFile.s3.upload', [others])();
-        uploadTask = this.s3.upload(augmentedS3Params);
+      if (showSpinner) {
+        spinner.start('Uploading files.');
+      }
+      logger('uploadFile.s3.upload', [others])();
+      uploadTask = this.s3.upload(augmentedS3Params);
+      if (showSpinner) {
         uploadTask.on('httpUploadProgress', (max) => {
-          if (showSpinner) spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
+          spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
         });
-      } else {
-        logger('uploadFile.s3.putObject', [others])();
-        uploadTask = this.s3.putObject(augmentedS3Params);
       }
       await uploadTask.promise();
       return this.uploadState.s3Params.Bucket;
     } finally {
-      // eslint-disable-next-line no-unused-expressions
-      showSpinner && spinner.stop();
+      if (showSpinner) {
+        spinner.stop();
+      }
     }
   }
 
