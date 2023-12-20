@@ -10,7 +10,6 @@ import { $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager } from '@a
 
 import _ from 'lodash';
 
-import fs from 'fs-extra';
 import ora from 'ora';
 import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
 import { pagedAWSCall } from './paged-call';
@@ -19,7 +18,6 @@ import aws from './aws';
 
 const providerName = require('../constants').ProviderName;
 
-const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 const { fileLogger } = require('../utils/aws-logger');
 
 const logger = fileLogger('aws-s3');
