@@ -10,7 +10,6 @@ import { $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager } from '@a
 
 import _ from 'lodash';
 
-import fs from 'fs-extra';
 import ora from 'ora';
 import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
 import { pagedAWSCall } from './paged-call';
@@ -19,7 +18,6 @@ import aws from './aws';
 
 const providerName = require('../constants').ProviderName;
 
-const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 const { fileLogger } = require('../utils/aws-logger');
 
 const logger = fileLogger('aws-s3');
@@ -124,26 +122,22 @@ export class S3 {
     const { _Body, ...others } = augmentedS3Params;
     let uploadTask;
     try {
-      // eslint-disable-next-line no-unused-expressions
-      showSpinner && spinner.start('Uploading files.');
-      if (
-        (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
-        (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
-      ) {
-        logger('uploadFile.s3.upload', [others])();
-        uploadTask = this.s3.upload(augmentedS3Params);
+      if (showSpinner) {
+        spinner.start('Uploading files.');
+      }
+      logger('uploadFile.s3.upload', [others])();
+      uploadTask = this.s3.upload(augmentedS3Params);
+      if (showSpinner) {
         uploadTask.on('httpUploadProgress', (max) => {
-          if (showSpinner) spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
+          spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
         });
-      } else {
-        logger('uploadFile.s3.putObject', [others])();
-        uploadTask = this.s3.putObject(augmentedS3Params);
       }
       await uploadTask.promise();
       return this.uploadState.s3Params.Bucket;
     } finally {
-      // eslint-disable-next-line no-unused-expressions
-      showSpinner && spinner.stop();
+      if (showSpinner) {
+        spinner.stop();
+      }
     }
   }
 
