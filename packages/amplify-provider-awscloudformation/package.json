@@ -61,7 +61,6 @@
     "jose": "^4.3.7",
     "lodash": "^4.17.21",
     "lodash.throttle": "^4.1.1",
-    "moment": "^2.24.0",
     "netmask": "^2.0.2",
     "node-fetch": "^2.6.7",
     "ora": "^4.0.3",
