@@ -17,7 +17,7 @@ export async function init(amplifyServiceParams) {
 
   let amplifyAppId;
   let verifiedStackName = stackName;
-  let deploymentBucketName = `${stackName}-deploy`;
+  let deploymentBucketName = `${stackName}-deployment`;
 
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfigInfo);
   if (!amplifyClient) {

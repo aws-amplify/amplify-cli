@@ -55,9 +55,9 @@ export const run = async (context: $TSContext): Promise<void> => {
     context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     const { projectName } = context.exeInfo.projectConfig;
     const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
-    const timeStamp = uuid().substring(0, 6);
+    const uuidStamp = uuid().substring(0, 5);
     const { envName = '' } = context.exeInfo.localEnvInfo;
-    let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
+    let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${uuidStamp}`);
     const awsConfigInfo = await configurationManager.getAwsConfig(context);
 
     await configurePermissionsBoundaryForInit(context);
