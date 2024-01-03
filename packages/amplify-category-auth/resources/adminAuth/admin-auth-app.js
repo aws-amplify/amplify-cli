@@ -162,10 +162,7 @@ app.get('/getUser', async (req, res, next) => {
 
 app.get('/listUsers', async (req, res, next) => {
   try {
-    let limit = 25;
-    if (req.query.limit) {
-      limit = parseInt(req.query.limit);
-    }
+    const limit = req.query.limit ? parseInt(req.query.limit) : 25;
     const response = await listUsers(limit, req.query.token);
     res.status(200).json(response);
   } catch (err) {
@@ -175,10 +172,7 @@ app.get('/listUsers', async (req, res, next) => {
 
 app.get('/listGroups', async (req, res, next) => {
   try {
-    let limit = 25;
-    if (req.query.limit) {
-      limit = parseInt(req.query.limit);
-    }
+    const limit = req.query.limit ? parseInt(req.query.limit) : 25;
     const response = await listGroups(limit, req.query.token);
     res.status(200).json(response);
   } catch (err) {
@@ -194,10 +188,7 @@ app.get('/listGroupsForUser', async (req, res, next) => {
   }
 
   try {
-    let limit = 25;
-    if (req.query.limit) {
-      limit = parseInt(req.query.limit);
-    }
+    const limit = req.query.limit ? parseInt(req.query.limit) : 25;
     const response = await listGroupsForUser(req.query.username, limit, req.query.token);
     res.status(200).json(response);
   } catch (err) {
@@ -213,10 +204,7 @@ app.get('/listUsersInGroup', async (req, res, next) => {
   }
 
   try {
-    let limit = 25;
-    if (req.query.limit) {
-      limit = parseInt(req.query.limit);
-    }
+    const limit = req.query.limit ? parseInt(req.query.limit) : 25;
     const response = await listUsersInGroup(req.query.groupname, limit, req.query.token);
     res.status(200).json(response);
   } catch (err) {
