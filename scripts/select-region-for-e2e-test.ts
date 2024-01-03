@@ -2,10 +2,10 @@ import crypto from 'crypto';
 import { AWS_REGIONS_TO_RUN_TESTS } from './cci-utils';
 
 /**
- * This script prints region assignment for an e2e test.
- * The algorithm takes two inputs via environment variables - TEST_SUITE and CLI_REGION_SALT
+ * This script prints region assignment for an e2e test job.
+ * The algorithm takes input via environment variable - TEST_SUITE
  * and computes deterministic but random region assignment.
- * In order to reshuffle regions CLI_REGION_SALT should be modified in workflow yml definition.
+ * In order to reshuffle regions 'salt' constant below should be modified.
  *
  * If region is already assigned, i.e. CLI_REGION environment variable is set this script is pass-through.
  */
@@ -28,10 +28,7 @@ if (!selectedRegion) {
   }
   // See https://en.wikipedia.org/wiki/Salt_(cryptography).
   // Salt should be changed if we want re-shuffle regions but keep generation deterministic.
-  const salt = process.env.CLI_REGION_SALT;
-  if (!salt) {
-    throw Error('CLI_REGION_SALT environment variable must be set');
-  }
+  const salt = 'foo';
   const regionIndex = computeHashIndex(`${testSuite}${salt}`, AWS_REGIONS_TO_RUN_TESTS.length);
 
   selectedRegion = AWS_REGIONS_TO_RUN_TESTS[regionIndex];

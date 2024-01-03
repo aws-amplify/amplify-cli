@@ -6,7 +6,6 @@ env:
     AWS_DEFAULT_REGION: us-east-1
     AWS_REGION: us-east-1
     CDK_DEFAULT_REGION: us-east-1
-    CLI_REGION_SALT: abc
     AMPLIFY_DIR: '$CODEBUILD_SRC_DIR/out'
     AMPLIFY_PATH: '$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64'
 
