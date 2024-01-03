@@ -7,7 +7,6 @@ env:
     AWS_REGION: us-east-1
     CDK_DEFAULT_REGION: us-east-1
     CLI_REGION: us-east-1
-    TEST_SUITE: src/__tests__/auth_2b.test.ts
     AMPLIFY_DIR: '$CODEBUILD_SRC_DIR/out'
     AMPLIFY_PATH: '$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64'
 
@@ -102,14 +101,10 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: amplify_sudo_install_test
       buildspec: codebuild_specs/amplify_sudo_install_test.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - upb
     - identifier: amplify_install_test
       buildspec: codebuild_specs/amplify_install_test.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - upb
     - identifier: amplify_console_integration_tests
@@ -120,14 +115,10 @@ batch:
         - upb
     - identifier: amplify_migration_tests_non_multi_env_layers
       buildspec: codebuild_specs/amplify_migration_tests_non_multi_env_layers.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - upb
     - identifier: amplify_migration_tests_multi_env_layers
       buildspec: codebuild_specs/amplify_migration_tests_multi_env_layers.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - upb
     - identifier: amplify_general_config_tests
