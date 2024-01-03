@@ -284,7 +284,11 @@ const splitTestsV3 = (
       };
       formattedJob.env.variables = {};
       formattedJob.env.variables.TEST_SUITE = job.tests.join('|');
-      formattedJob.env.variables.CLI_REGION = job.region;
+      if (job.region) {
+        // Jobs with forced region are assigned one explicitly.
+        // Otherwise, region is assigned at runtime by select-region-for-e2e-test.ts script.
+        formattedJob.env.variables.CLI_REGION = job.region;
+      }
       if (job.useParentAccount) {
         formattedJob.env.variables.USE_PARENT_ACCOUNT = 1;
       }
