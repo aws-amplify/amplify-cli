@@ -1,35 +1,33 @@
-import crypto from 'crypto';
 import { AWS_REGIONS_TO_RUN_TESTS } from './cci-utils';
+import * as fs from 'fs-extra';
 
 /**
  * This script prints region assignment for an e2e test job.
- * The algorithm takes input via environment variable - TEST_SUITE
- * and computes deterministic but random region assignment.
- * In order to reshuffle regions 'salt' constant below should be modified.
+ * The algorithm takes input via environment variable - CODEBUILD_BATCH_BUILD_IDENTIFIER
+ * and computes deterministic region assignment by looking at position
+ * of build job in 'wait_for_ids.json' file.
+ * In order to reshuffle regions 'offset' constant below should be modified.
  *
  * If region is already assigned, i.e. CLI_REGION environment variable is set this script is pass-through.
  */
 
-const toNumber = (buf: Buffer) => {
-  return buf.readUInt16BE(0) * 0xffffffff + buf.readUInt32BE(2);
-};
-
-// Algorithm from https://github.com/watson/hash-index/blob/fd5d0606926a821166e428b6e266f03b4dc5d817/index.js#L19
-const computeHashIndex = (input: string, max: number) => {
-  return toNumber(crypto.createHash('sha1').update(input).digest()) % max;
-};
-
 // if region is specified by job honor it.
 let selectedRegion = process.env.CLI_REGION;
 if (!selectedRegion) {
-  const testSuite = process.env.TEST_SUITE;
-  if (!testSuite) {
-    throw Error('TEST_SUITE environment variable must be set');
+  const jobId = process.env.CODEBUILD_BATCH_BUILD_IDENTIFIER;
+  if (!jobId) {
+    throw Error('CODEBUILD_BATCH_BUILD_IDENTIFIER environment variable must be set');
   }
-  // See https://en.wikipedia.org/wiki/Salt_(cryptography).
-  // Salt should be changed if we want re-shuffle regions but keep generation deterministic.
-  const salt = 'foo';
-  const regionIndex = computeHashIndex(`${testSuite}${salt}`, AWS_REGIONS_TO_RUN_TESTS.length);
+  // Offset should be changed if we want re-shuffle regions.
+  const offset = 0;
+  const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
+  const jobIds = JSON.parse(fs.readFileSync(waitForIdsFilePath, 'utf-8')) as Array<string>;
+  let jobPosition = jobIds.indexOf(jobId);
+  if (jobPosition < 0) {
+    // this should never happen if PR checks pass, but just in case fall back to first region.
+    jobPosition = 0;
+  }
+  const regionIndex = (jobPosition + offset) % AWS_REGIONS_TO_RUN_TESTS.length;
 
   selectedRegion = AWS_REGIONS_TO_RUN_TESTS[regionIndex];
 }
