@@ -2,7 +2,6 @@ import * as glob from 'glob';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import * as yaml from 'js-yaml';
-import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
 import { REPO_ROOT } from './cci-utils';
 import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
 import { migrationFromV10Tests, migrationFromV12Tests, migrationFromV8Tests } from './split-e2e-test-filters';
@@ -146,7 +145,7 @@ type ConfigBase = {
 const MAX_WORKERS = 3;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
-  region: string;
+  region?: string;
   os: OS_TYPE;
   executor: string;
   tests: string[];
@@ -154,9 +153,7 @@ type CandidateJob = {
   disableCoverage: boolean;
 };
 const createRandomJob = (os: OS_TYPE): CandidateJob => {
-  const region = regions[Math.floor(Math.random() * regions.length)];
   return {
-    region,
     os,
     executor: os === 'l' ? 'l_large' : 'w_medium',
     tests: [],
@@ -262,7 +259,11 @@ const splitTestsV3 = (
         formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_SMALL';
       }
       formattedJob.env.variables.TEST_SUITE = job.tests.join('|');
-      formattedJob.env.variables.CLI_REGION = job.region;
+      if (job.region) {
+        // Jobs with forced region are assigned one explicitly.
+        // Otherwise, region is assigned at runtime by select-region-for-e2e-test.ts script.
+        formattedJob.env.variables.CLI_REGION = job.region;
+      }
       if (job.useParentAccount) {
         formattedJob.env.variables.USE_PARENT_ACCOUNT = 1;
       }
