@@ -47,6 +47,8 @@
               "            try {",
               "                delete authParamsJson.Statement[0].Condition;",
               "                delete unauthParamsJson.Statement[0].Condition;",
+              "                authParamsJson.Statement[0].Effect = 'Deny'",
+              "                unauthParamsJson.Statement[0].Effect = 'Deny'",
               "                let authParams = {PolicyDocument: JSON.stringify(authParamsJson), RoleName: authRoleName};",
               "                let unauthParams = {PolicyDocument: JSON.stringify(unauthParamsJson), RoleName: unauthRoleName};",
               "                const iam = new IAMClient({region: event.ResourceProperties.region});",
