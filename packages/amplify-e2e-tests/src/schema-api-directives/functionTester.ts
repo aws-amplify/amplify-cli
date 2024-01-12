@@ -21,7 +21,7 @@ export async function runFunctionTest(projectDir: string, testModule: any) {
 
   const awsconfig = configureAmplify(projectDir);
   const apiKey = getApiKey(projectDir);
-  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
+  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
 
   await testQueries(testModule, appSyncClient);
 }

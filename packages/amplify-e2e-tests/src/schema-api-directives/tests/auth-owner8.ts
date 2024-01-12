@@ -30,7 +30,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await setupUser(userPoolId, USERNAME, PASSWORD, GROUPNAME);
 
   const user = await signInUser(USERNAME, PASSWORD);
-  const appSyncClient = getConfiguredAppsyncClientCognitoAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, user);
+  const appSyncClient = getConfiguredAppsyncClientCognitoAuth(awsconfig, user);
 
   await testMutations(testModule, appSyncClient);
   await testQueries(testModule, appSyncClient);

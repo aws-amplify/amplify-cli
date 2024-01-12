@@ -9,7 +9,7 @@ import {
   signInUser,
   updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
-import Amplify from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { testMutations, testQueries, testSubscriptions, updateSchemaInTestProject } from '../common';
 
 const GROUPNAME = 'Admin';
@@ -33,11 +33,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await setupUser(userPoolId, USERNAME, PASSWORD, GROUPNAME);
 
   const user = await signInUser(USERNAME, PASSWORD);
-  const appSyncClient = getConfiguredAppsyncClientCognitoAuth(
-    amplifyConfig.aws_appsync_graphqlEndpoint,
-    amplifyConfig.aws_appsync_region,
-    user,
-  );
+  const appSyncClient = getConfiguredAppsyncClientCognitoAuth(amplifyConfig, user);
 
   await testMutations(testModule, appSyncClient);
   await testQueries(testModule, appSyncClient);

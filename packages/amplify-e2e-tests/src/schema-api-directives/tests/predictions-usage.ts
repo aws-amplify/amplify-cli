@@ -9,7 +9,6 @@ import {
   getApiKey,
   getConfiguredAppsyncClientAPIKeyAuth,
 } from '@aws-amplify/amplify-e2e-core';
-import gql from 'graphql-tag';
 
 import { updateSchemaInTestProject } from '../common';
 
@@ -22,14 +21,10 @@ export async function runTest(projectDir: string, testModule: any) {
   await amplifyPush(projectDir);
   const apiKey = getApiKey(projectDir);
   const awsconfig = configureAmplify(projectDir);
-  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
+  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
 
   try {
-    const result = await appSyncClient.query({
-      query: gql(query),
-      fetchPolicy: 'no-cache',
-    });
-
+    const result = (await appSyncClient.graphql({ query }, { fetchPolicy: 'no-cache' })) as any;
     expect(result).toBeDefined();
     const pollyURL = result.data.speakTranslatedImageText;
     // check that return format is a url

@@ -48,7 +48,7 @@ describe('api directives @function v1 to v2 migration', () => {
 
     let awsconfig = configureAmplify(projectDir);
     let apiKey = getApiKey(projectDir);
-    let appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
+    let appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
 
     await testQueries(testModule, appSyncClient);
 
@@ -62,7 +62,7 @@ describe('api directives @function v1 to v2 migration', () => {
 
     awsconfig = configureAmplify(projectDir);
     apiKey = getApiKey(projectDir);
-    appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
+    appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
 
     await testQueries(testModule, appSyncClient);
   });

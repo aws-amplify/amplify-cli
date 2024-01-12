@@ -1,5 +1,6 @@
-import Amplify, { Auth } from 'aws-amplify';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { Amplify } from 'aws-amplify';
+import { generateClient } from 'aws-amplify/api';
+import { signIn, signOut, resetPassword } from 'aws-amplify/auth';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
@@ -68,65 +69,52 @@ export function getConfiguredCognitoClient(region = process.env.CLI_REGION): Cog
   return cognitoClient;
 }
 
-export function getConfiguredAppsyncClientCognitoAuth(url: string, region: string, user: any) {
-  return new AWSAppSyncClient({
-    url,
-    region,
-    disableOffline: true,
-    auth: {
-      type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-      jwtToken: user.signInUserSession.idToken.jwtToken,
-    },
-  });
-}
-
-export function getConfiguredAppsyncClientOIDCAuth(url: string, region: string, user: any) {
-  return new AWSAppSyncClient({
-    url,
-    region,
-    disableOffline: true,
-    auth: {
-      type: AUTH_TYPE.OPENID_CONNECT,
-      jwtToken: user.signInUserSession.idToken.jwtToken,
-    },
-  });
-}
-
-export function getConfiguredAppsyncClientAPIKeyAuth(url: string, region: string, apiKey: string): any {
-  return new AWSAppSyncClient({
-    url,
-    region,
-    disableOffline: true,
-    auth: {
-      type: AUTH_TYPE.API_KEY,
-      apiKey,
-    },
-  });
-}
-
-export function getConfiguredAppsyncClientIAMAuth(url: string, region: string) {
-  return new AWSAppSyncClient({
-    url,
-    region,
-    disableOffline: true,
-    auth: {
-      type: AUTH_TYPE.AWS_IAM,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
+export function getConfiguredAppsyncClientCognitoAuth(config, user) {
+  config.aws_appsync_authenticationType = 'AMAZON_COGNITO_USER_POOLS';
+  Amplify.configure(config, {
+    API: {
+      REST: {
+        headers: async () => {
+          return { Authorization: user.signInUserSession.idToken.jwtToken };
+        },
       },
     },
   });
+  return generateClient();
+}
+
+export function getConfiguredAppsyncClientOIDCAuth(config, user) {
+  config.aws_appsync_authenticationType = 'OPENID_CONNECT';
+  Amplify.configure(config, {
+    API: {
+      REST: {
+        headers: async () => {
+          return { Authorization: user.signInUserSession.idToken.jwtToken };
+        },
+      },
+    },
+  });
+  return generateClient();
+}
+
+export function getConfiguredAppsyncClientAPIKeyAuth(config, apiKey) {
+  config.aws_appsync_authenticationType = 'API_KEY';
+  Amplify.configure({ ...config, aws_appsync_apiKey: apiKey });
+  return generateClient();
+}
+
+export function getConfiguredAppsyncClientIAMAuth(config) {
+  Amplify.configure(config);
+  return generateClient();
 }
 
 export async function signInUser(username: string, password: string) {
-  const user = await Auth.signIn(username, password);
+  const user = await signIn({ username, password });
   return user;
 }
 
 export async function signOutUser(): Promise<void> {
-  await Auth.signOut({ global: true });
+  await signOut({ global: true });
 }
 
 export function configureAmplify(projectDir: string) {
@@ -175,10 +163,9 @@ export function getApiKey(projectDir: string): string {
 }
 
 export async function authenticateUser(username: string, tempPassword: string, password: string) {
-  const signinResult = await Auth.signIn(username, tempPassword);
-  if (signinResult.challengeName === 'NEW_PASSWORD_REQUIRED') {
-    const { requiredAttributes } = signinResult.challengeParam; // the array of required attributes, e.g [‘email’, ‘phone_number’]
-    await Auth.completeNewPassword(signinResult, password, requiredAttributes);
+  const signinResult = await signIn({ username, password: tempPassword });
+  if (signinResult.nextStep.signInStep === 'RESET_PASSWORD') {
+    await resetPassword({ username, options: { password } });
   }
 }
 

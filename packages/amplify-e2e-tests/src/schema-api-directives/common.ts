@@ -26,7 +26,7 @@ export async function runTest(projectDir: string, testModule: any) {
 
   const awsconfig = configureAmplify(projectDir);
   const apiKey = getApiKey(projectDir);
-  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
+  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig, apiKey);
 
   await testMutations(testModule, appSyncClient);
   await testQueries(testModule, appSyncClient);
@@ -47,7 +47,7 @@ export async function runAuthTest(projectDir: string, testModule: any) {
   await setupUser(userPoolId, USERNAME, PASSWORD, GROUPNAME);
 
   const user = await signInUser(USERNAME, PASSWORD);
-  const appSyncClient = getConfiguredAppsyncClientCognitoAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, user);
+  const appSyncClient = getConfiguredAppsyncClientCognitoAuth(awsconfig, user);
 
   await testMutations(testModule, appSyncClient);
   await testQueries(testModule, appSyncClient);
@@ -71,7 +71,7 @@ export async function runMultiAutTest(projectDir: string, testModule: any) {
   await setupUser(userPoolId, USERNAME, PASSWORD, GROUPNAME);
 
   const user = await signInUser(USERNAME, PASSWORD);
-  const appSyncClient = getConfiguredAppsyncClientCognitoAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, user);
+  const appSyncClient = getConfiguredAppsyncClientCognitoAuth(awsconfig, user);
 
   await testMutations(testModule, appSyncClient);
   await testQueries(testModule, appSyncClient);
