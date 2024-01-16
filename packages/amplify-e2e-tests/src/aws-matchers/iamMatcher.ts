@@ -84,7 +84,9 @@ export const toHaveDenyAssumeRolePolicy = async (roleName: string) => {
 
     pass = assumeRolePolicyDocument?.Statement?.Effect === 'Deny';
 
-    message = pass ? 'Assume role policy has Effect: Deny' : 'Assume role policy does not exist or does not have Effect: Deny';
+    message = pass
+      ? 'Assume role policy has Effect: Deny'
+      : `Assume role policy does not exist or does not have Effect: Deny. Policy is ${JSON.stringify(assumeRolePolicyDocument)}`;
   } catch (e) {
     message = 'IAM GetRole threw Error: ' + e.message;
   }
