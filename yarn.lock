@@ -224,7 +224,7 @@ __metadata:
     amplify-util-headless-input: 1.9.17
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
-    axios: ^1.6.2
+    axios: ^1.6.5
     chalk: ^4.1.1
     change-case: ^4.1.1
     cloudform-types: ^4.2.0
@@ -908,7 +908,7 @@ __metadata:
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
     aws-sdk-mock: ^5.8.0
-    axios: ^1.6.2
+    axios: ^1.6.5
     chokidar: ^3.5.3
     constructs: ^10.0.5
     detect-port: ^1.3.0
@@ -1168,7 +1168,7 @@ __metadata:
   dependencies:
     "@aws-amplify/cli-internal": 12.10.1
     "@types/tar": ^6.1.1
-    axios: ^1.6.2
+    axios: ^1.6.5
     rimraf: ^3.0.2
     tar-stream: ^2.2.0
   bin:
@@ -14121,7 +14121,7 @@ __metadata:
     aws-appsync: ^4.1.1
     aws-cdk-lib: ~2.80.0
     aws-sdk: ^2.1464.0
-    axios: ^1.6.2
+    axios: ^1.6.5
     constructs: ^10.0.5
     dotenv: ^8.2.0
     esm: ^3.2.25
@@ -15074,14 +15074,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.0.0, axios@npm:^1.6.2":
-  version: 1.6.2
-  resolution: "axios@npm:1.6.2"
+"axios@npm:^1.0.0, axios@npm:^1.6.5":
+  version: 1.6.5
+  resolution: "axios@npm:1.6.5"
   dependencies:
-    follow-redirects: ^1.15.0
+    follow-redirects: ^1.15.4
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 9b77e030e85e4f9cbcba7bb52fbff67d6ce906c92d213e0bd932346a50140faf83733bf786f55bd58301bd92f9973885c7b87d6348023e10f7eaf286d0791a1d
+  checksum: aeb9acf87590d8aa67946072ced38e01ca71f5dfe043782c0ccea667e5dd5c45830c08afac9be3d7c894f09684b8ab2a458f497d197b73621233bcf202d9d468
   languageName: node
   linkType: hard
 
@@ -20066,13 +20066,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.0":
-  version: 1.15.2
-  resolution: "follow-redirects@npm:1.15.2"
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.4":
+  version: 1.15.5
+  resolution: "follow-redirects@npm:1.15.5"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: da5932b70e63944d38eecaa16954bac4347036f08303c913d166eda74809d8797d38386e3a0eb1d2fe37d2aaff2764cce8e9dbd99459d860cf2cdfa237923b5f
+  checksum: 418d71688ceaf109dfd6f85f747a0c75de30afe43a294caa211def77f02ef19865b547dfb73fde82b751e1cc507c06c754120b848fe5a7400b0a669766df7615
   languageName: node
   linkType: hard
 
