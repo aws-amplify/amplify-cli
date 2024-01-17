@@ -82,7 +82,7 @@ export const toHaveDenyAssumeRolePolicy = async (roleName: string) => {
     const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
     const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
 
-    pass = assumeRolePolicyDocument?.Statement?.Effect === 'Deny';
+    pass = assumeRolePolicyDocument?.Statement?.length === 1 && assumeRolePolicyDocument?.Statement?.[0]?.Effect === 'Deny';
 
     message = pass
       ? 'Assume role policy has Effect: Deny'
