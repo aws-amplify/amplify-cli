@@ -1,0 +1,5 @@
+{
+  "name": "another-project",
+  "version": "1.0.0",
+  "description": "Another project for testing yarn 2 workspaces focus install"
+}
