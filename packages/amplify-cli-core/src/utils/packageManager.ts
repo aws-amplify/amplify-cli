@@ -5,12 +5,23 @@ import { coerce, SemVer } from 'semver';
 import { execWithOutputAsString } from './shell-utils';
 import { AmplifyError } from '../errors/amplify-error';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
+import execa from 'execa';
 
 /**
  * package managers type
  */
 export type PackageManagerType = 'yarn' | 'npm' | 'pnpm' | 'custom';
 const packageJson = 'package.json';
+
+/**
+ * yarn (after v2) plugin info type
+ * this is used to parse the output of `yarn plugin list --json`
+ * this is outputted as a single line per plugin
+ */
+export type YarnRuntimePluginInfo = {
+  name: string;
+  builtin: boolean;
+};
 
 /**
  * package Manager type
@@ -45,7 +56,29 @@ class YarnPackageManager implements PackageManager {
   getRunScriptArgs = (scriptName: string) => [scriptName];
   getInstallArgs = (buildType = BuildType.PROD) => {
     const useYarnModern = this.version?.major && this.version?.major > 1;
-    return (useYarnModern ? ['install'] : ['--no-bin-links']).concat(buildType === 'PROD' ? ['--production'] : []);
+
+    const modernYarnInstallArgs = ['workspaces', 'focus', '--all'];
+    const legacyYarnInstallArgs = ['install', '--no-bin-links'];
+
+    const installedYarnPlugins = execa
+      .sync('yarn', ['plugin', 'runtime', '--json'], {
+        cwd: process.cwd(),
+      })
+      .stdout.split('\n')
+      .map((line) => {
+        const info = JSON.parse(line) as YarnRuntimePluginInfo;
+        return info.name;
+      });
+
+    if (useYarnModern) {
+      if (!installedYarnPlugins.indexOf('@yarnpkg/plugin-workspace-tools')) {
+        throw new AmplifyError('PackagingLambdaFunctionError', {
+          message: `Packaging lambda function failed. @yarnpkg/plugin-workspace-tools is not installed.\nIf you use yarn 2 or after, please install @yarnpkg/plugin-workspace-tools. You also need create blank yarn.lock in src directory unless it is not exist.`,
+        });
+      }
+    }
+
+    return (useYarnModern ? modernYarnInstallArgs : legacyYarnInstallArgs).concat(buildType === 'PROD' ? ['--production'] : []);
   };
 }
 
