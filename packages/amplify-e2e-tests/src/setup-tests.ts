@@ -1,4 +1,4 @@
-import { toBeIAMRoleWithArn, toHaveValidPolicyConditionMatchingIdpId, toBeAS3Bucket } from './aws-matchers';
+import { toBeIAMRoleWithArn, toHaveValidPolicyConditionMatchingIdpId, toBeAS3Bucket, toHaveDenyAssumeRolePolicy } from './aws-matchers';
 
 const removeYarnPaths = () => {
   // Remove yarn's temporary PATH modifications as they affect the yarn version used by jest tests when building the lambda functions
@@ -9,6 +9,7 @@ const removeYarnPaths = () => {
 
 expect.extend({ toBeIAMRoleWithArn });
 expect.extend({ toHaveValidPolicyConditionMatchingIdpId });
+expect.extend({ toHaveDenyAssumeRolePolicy });
 expect.extend({ toBeAS3Bucket });
 
 removeYarnPaths();
