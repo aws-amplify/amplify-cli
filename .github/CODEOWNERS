@@ -1,7 +1,6 @@
 # Require at least one Amplify CLI Admin to approve changes.
 # Non-admin reviewers participate in pull request review quorum by having write access to repository.
-
-- @aws-amplify/amplify-cli-admins
+* @aws-amplify/amplify-cli-admins
 
 # Add Data team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team.
 
