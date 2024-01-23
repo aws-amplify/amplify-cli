@@ -7,7 +7,6 @@
 /packages/amplify-velocity-template @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime
 
 # Templates with IAM resources
-
 packages/amplify-provider-awscloudformation/resources/rootStackTemplate.json @aws-amplify/amplify-cli-admins
 packages/amplify-provider-awscloudformation/src/root-stack-builder/root-stack-builder.ts @aws-amplify/amplify-cli-admins
 packages/amplify-provider-awscloudformation/resources/update-idp-roles-cfn.json @aws-amplify/amplify-cli-admins
