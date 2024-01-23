@@ -1,5 +1,4 @@
 # Require at least one Amplify CLI Admin to approve changes.
-
 # Non-admin reviewers participate in pull request review quorum by having write access to repository.
 
 - @aws-amplify/amplify-cli-admins
