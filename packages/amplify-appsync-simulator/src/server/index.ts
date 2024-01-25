@@ -2,6 +2,8 @@ import { OperationServer } from './operations';
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorServerConfig } from '../type-definition';
 import { Server, createServer } from 'http';
+import { createServer as createHttpsServer } from 'https';
+import { readFileSync } from 'fs';
 import { fromEvent } from 'promise-toolbox';
 import { address as getLocalIpAddress } from 'ip';
 import { AppSyncSimulatorSubscriptionServer } from './websocket-subscription';
@@ -17,10 +19,30 @@ export class AppSyncSimulatorServer {
   private _realTimeSubscriptionServer: AppSyncSimulatorSubscriptionServer;
   private _url: string;
   private _localhostUrl: string;
+  private _isHttps = false;
 
   constructor(private config: AppSyncSimulatorServerConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     this._operationServer = new OperationServer(config, simulatorContext);
-    this._httpServer = createServer(this._operationServer.app);
+
+    // Check if the SSL key path and certificate path exist and are valid
+    if (!config.sslKeyPath || !config.sslCertPath) {
+      this._httpServer = createServer(this._operationServer.app);
+    } else {
+      try {
+        // Read the ssl cert and key
+        const sslOptions = {
+          key: readFileSync(config.sslKeyPath),
+          cert: readFileSync(config.sslCertPath),
+        };
+        // Set the isHttps flag to true
+        this._isHttps = true;
+        // Create the https server
+        this._httpServer = createHttpsServer(sslOptions, this._operationServer.app);
+      } catch (e) {
+        throw new Error(`SSL key and certificate path provided are invalid. ${e.message}`);
+      }
+    }
+
     this._realTimeSubscriptionServer = new AppSyncSimulatorSubscriptionServer(
       simulatorContext,
       this._httpServer,
@@ -49,8 +71,9 @@ export class AppSyncSimulatorServer {
 
     this._httpServer.listen(port);
     await fromEvent(this._httpServer, 'listening').then(() => {
-      this._url = `http://${getLocalIpAddress()}:${port}`;
-      this._localhostUrl = `http://localhost:${port}`;
+      const protocol = this._isHttps ? 'https' : 'http';
+      this._url = `${protocol}://${getLocalIpAddress()}:${port}`;
+      this._localhostUrl = `${protocol}://localhost:${port}`;
     });
   }
 
@@ -67,5 +90,8 @@ export class AppSyncSimulatorServer {
     return {
       graphql: this._localhostUrl,
     };
+  }
+  get isHttps() {
+    return this._isHttps;
   }
 }

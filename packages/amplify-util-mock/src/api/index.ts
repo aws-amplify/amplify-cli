@@ -1,6 +1,7 @@
 import { APITest } from './api';
 import { addMockDataToGitIgnore, addMockAPIResourcesToGitIgnore } from '../utils';
 import { getMockConfig } from '../utils/mock-config-file';
+import { getHttpsConfig } from '../utils/get-https-config';
 
 export async function start(context) {
   const testApi = new APITest();
@@ -8,7 +9,9 @@ export async function start(context) {
     addMockDataToGitIgnore(context);
     addMockAPIResourcesToGitIgnore(context);
     const mockConfig = await getMockConfig(context);
-    await testApi.start(context, mockConfig.graphqlPort, mockConfig.graphqlPort);
+    const httpsConfig = getHttpsConfig(context);
+
+    await testApi.start(context, mockConfig.graphqlPort, mockConfig.graphqlPort, httpsConfig.sslKeyPath, httpsConfig.sslCertPath);
   } catch (e) {
     console.log(e);
     // Sending term signal so we clean up after ourselves

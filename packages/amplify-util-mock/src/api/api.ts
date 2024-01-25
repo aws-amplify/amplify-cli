@@ -55,7 +55,7 @@ export class APITest {
   private userOverriddenSlots: string[] = [];
   private searchableTables: string[] = [];
 
-  async start(context, port: number = MOCK_API_PORT, wsPort: number = MOCK_API_PORT) {
+  async start(context, port: number = MOCK_API_PORT, wsPort: number = MOCK_API_PORT, sslKeyPath?: string, sslCertPath?: string) {
     try {
       context.amplify.addCleanUpTask(async (context) => {
         await this.stop(context);
@@ -72,6 +72,8 @@ export class APITest {
       this.appSyncSimulator = new AmplifyAppSyncSimulator({
         port,
         wsPort,
+        sslKeyPath,
+        sslCertPath,
       });
       await this.appSyncSimulator.start();
       await this.resolverOverrideManager.start();
@@ -86,6 +88,10 @@ export class APITest {
 
       await this.generateTestFrontendExports(context);
       await this.generateCode(context, appSyncConfig);
+
+      if (this.appSyncSimulator.isHttps) {
+        context.print.success('\nHTTPS enabled successfully.\n');
+      }
 
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
       context.print.info(`GraphiQL IDE is available for local testing at ${this.appSyncSimulator.localhostUrl}`);
