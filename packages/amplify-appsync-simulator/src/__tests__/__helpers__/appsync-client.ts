@@ -5,7 +5,7 @@
 import * as http from 'http';
 import type { GraphQLError } from 'graphql';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorAuthenticationType } from '../../';
-import jwt from 'jsonwebtoken';
+import { SignJWT } from 'jose';
 
 /**
  * Minimal gql tag just for syntax highlighting and Prettier while writing client GraphQL queries
@@ -54,14 +54,14 @@ export async function appSyncClient<ResponseDataType = unknown, VarsType = Recor
       break;
 
     case AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS:
-      headers.Authorization = jwt.sign(
-        {
-          username: auth.username,
-          'cognito:groups': auth.groups ?? [],
-        },
-        'mockSecret',
-        { issuer: `https://cognito-idp.mock-region.amazonaws.com/mockUserPool` },
-      );
+      headers.Authorization = await new SignJWT({
+        username: auth.username,
+        'cognito:groups': auth.groups ?? [],
+      })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setIssuer('https://cognito-idp.mock-region.amazonaws.com/mockUserPool')
+        .sign(new TextEncoder().encode('mockSecret'));
       break;
 
     case AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM:

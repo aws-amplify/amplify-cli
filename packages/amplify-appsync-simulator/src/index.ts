@@ -181,6 +181,9 @@ export class AmplifyAppSyncSimulator {
   get url(): string {
     return this._server.url.graphql;
   }
+  get localhostUrl(): string {
+    return this._server.localhostUrl.graphql;
+  }
   get config(): AmplifyAppSyncSimulatorConfig {
     return this._config;
   }
