@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.25-sql-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.24...@aws-amplify/cli-extensibility-helper@3.0.25-sql-1.0) (2024-02-10)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
 ## [3.0.24](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.23...@aws-amplify/cli-extensibility-helper@3.0.24) (2023-12-11)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.2-sql-1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.1...amplify-e2e-tests@4.9.2-sql-1.0) (2024-02-10)
+
+
+### Bug Fixes
+
+* limit query parameter parsing in auth admin api ([#13512](https://github.com/aws-amplify/amplify-cli/issues/13512)) ([2480681](https://github.com/aws-amplify/amplify-cli/commit/24806814ce2275fe7d70e5484c3c485023b8041a))
+
+
+
+
+
 ## [4.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.0...amplify-e2e-tests@4.9.1) (2023-12-16)
 
 **Note:** Version bump only for package amplify-e2e-tests
