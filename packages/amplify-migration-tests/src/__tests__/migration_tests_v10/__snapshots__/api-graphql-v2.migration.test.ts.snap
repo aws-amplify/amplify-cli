@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`api graphql v2 migration tests ...adds graphql with v2 transformer, adds overrides, and pulls in latest version 1`] = `""`;
-
-exports[`api graphql v2 migration tests ...adds graphql with v2 transformer, adds overrides, and pulls in latest version 2`] = `""`;
