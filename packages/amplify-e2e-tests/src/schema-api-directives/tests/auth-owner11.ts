@@ -9,7 +9,7 @@ import {
   signInUser,
   updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
-import Amplify from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { testMutations, testQueries, testSubscriptions, updateSchemaInTestProject } from '../common';
 
 const GROUPNAME = 'Admin';
