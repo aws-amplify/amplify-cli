@@ -32176,12 +32176,12 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"undici@npm:^5.26.2":
-  version: 5.27.0
-  resolution: "undici@npm:5.27.0"
+"undici@npm:^5.28.3":
+  version: 5.28.3
+  resolution: "undici@npm:5.28.3"
   dependencies:
     "@fastify/busboy": ^2.0.0
-  checksum: 68a14e0981c4ccaa9e6192bb530e1d5d608cde8423bcca8ae18a6d230366b07b328d98b1ed092c53cbd751dca3067642ab5bdaffa75c3d6d6c69b98cdb4436ce
+  checksum: 3c559ae50ef3104b7085251445dda6f4de871553b9e290845649d2f80b06c0c9cfcdf741b0029c6b20d36c82e6a74dc815b139fa9a26757d70728074ca6d6f5c
   languageName: node
   linkType: hard
 
