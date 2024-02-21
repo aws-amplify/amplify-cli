@@ -44,7 +44,7 @@
     "graphql": "^15.5.0",
     "graphql-iso-date": "^3.6.1",
     "graphql-subscriptions": "^1.1.0",
-    "ip": "^1.1.5",
+    "ip": "^1.1.9",
     "js-string-escape": "^1.0.1",
     "jwt-decode": "^2.2.0",
     "libphonenumber-js": "1.9.47",
