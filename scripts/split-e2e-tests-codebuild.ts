@@ -20,7 +20,6 @@ const RUN_SOLO = [
   'src/__tests__/geo-remove-3.test.ts',
   'src/__tests__/geo-update-1.test.ts',
   'src/__tests__/geo-update-2.test.ts',
-  'src/__tests__/graphql-v2/searchable-datastore.test.ts',
   'src/__tests__/hostingPROD.test.ts',
   'src/__tests__/import_auth_1a.test.ts',
   'src/__tests__/import_auth_1b.test.ts',
@@ -37,11 +36,9 @@ const RUN_SOLO = [
   'src/__tests__/import_s3_2c.test.ts',
   'src/__tests__/import_s3_3.test.ts',
   'src/__tests__/notifications-in-app-messaging.test.ts',
-  'src/__tests__/resolvers.test.ts',
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
-  'src/__tests__/schema-iterative-update-locking.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
   'src/__tests__/uibuilder.test.ts',
 ];
@@ -146,6 +143,7 @@ type ConfigBase = {
   };
 };
 const MAX_WORKERS = 3;
+const MAX_WORKERS_WINDOWS = 2;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
   region?: string;
@@ -229,8 +227,9 @@ const splitTestsV3 = (
         currentJob.useParentAccount = true;
       }
 
+      const maxWorkers = os === 'w' ? MAX_WORKERS_WINDOWS : MAX_WORKERS;
       // create a new job once the current job is full;
-      if (currentJob.tests.length >= MAX_WORKERS) {
+      if (currentJob.tests.length >= maxWorkers) {
         osJobs.push(createRandomJob(os));
       }
     }
