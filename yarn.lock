@@ -144,7 +144,7 @@ __metadata:
     graphql: ^15.5.0
     graphql-iso-date: ^3.6.1
     graphql-subscriptions: ^1.1.0
-    ip: ^1.1.5
+    ip: ^1.1.9
     jose: ^5.2.0
     js-string-escape: ^1.0.1
     jwt-decode: ^2.2.0
@@ -449,7 +449,7 @@ __metadata:
     jest: ^29.5.0
     js-yaml: ^4.0.0
     lodash: ^4.17.21
-    nock: ^13.0.11
+    nock: ^13.5.0
     node-fetch: ^2.6.7
     open: ^8.4.0
     ora: ^4.0.3
@@ -1167,7 +1167,7 @@ __metadata:
     inquirer: ^7.3.3
     jest: ^29.5.0
     lodash: ^4.17.21
-    nock: ^12.0.3
+    nock: ^13.5.0
     node-fetch: ^2.6.7
     ora: ^4.0.3
     progress: ^2.0.3
@@ -21315,17 +21315,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip@npm:^1.1.5, ip@npm:^1.1.8":
-  version: 1.1.8
-  resolution: "ip@npm:1.1.8"
-  checksum: ab32a5ecfa678d4c158c1381c4c6744fce89a1d793e1b6635ba79d0753c069030b672d765887b6fff55670c711dfa47475895e5d6013efbbcf04687c51cb8db9
+"ip@npm:^1.1.8, ip@npm:^1.1.9":
+  version: 1.1.9
+  resolution: "ip@npm:1.1.9"
+  checksum: 5af58bfe2110c9978acfd77a2ffcdf9d33a6ce1c72f49edbaf16958f7a8eb979b5163e43bb18938caf3aaa55cdacde4e470874c58ca3b4b112ea7a30461a0c27
   languageName: node
   linkType: hard
 
 "ip@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "ip@npm:2.0.0"
-  checksum: 8d186cc5585f57372847ae29b6eba258c68862055e18a75cc4933327232cb5c107f89800ce29715d542eef2c254fbb68b382e780a7414f9ee7caf60b7a473958
+  version: 2.0.1
+  resolution: "ip@npm:2.0.1"
+  checksum: cab8eb3e88d0abe23e4724829621ec4c4c5cb41a7f936a2e626c947128c1be16ed543448d42af7cca95379f9892bfcacc1ccd8d09bc7e8bea0e86d492ce33616
   languageName: node
   linkType: hard
 
@@ -23934,7 +23934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.12, lodash@npm:^4.17.13, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.2.0, lodash@npm:^4.2.1, lodash@npm:~4.17.0, lodash@npm:~4.17.15":
+"lodash@npm:^4.17.12, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.2.0, lodash@npm:^4.2.1, lodash@npm:~4.17.0, lodash@npm:~4.17.15":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -24981,13 +24981,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nock@npm:^12.0.3":
-  version: 12.0.3
-  resolution: "nock@npm:12.0.3"
+"nock@npm:^13.5.0":
+  version: 13.5.0
+  resolution: "nock@npm:13.5.0"
   dependencies:
     debug: ^4.1.0
     json-stringify-safe: ^5.0.1
-    lodash: ^4.17.13
     propagate: ^2.0.0
   checksum: a0a76707762daac50a442d82fd96faac9e80fbd48a5a8fc491d405903d6ae5fc755d5ccbd27d2d7997e69ad409699c9e1a172aedf527c94a4278d855a6fe730b
   languageName: node
