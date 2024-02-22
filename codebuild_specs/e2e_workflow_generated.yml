@@ -679,54 +679,46 @@ batch:
           TEST_SUITE: src/__tests__/containers-api-secrets.test.ts|src/__tests__/storage-4.test.ts|src/__tests__/schema-auth-10.test.ts
       depend-on:
         - upb
-    - identifier: l_geo_multi_env_searchable_datastore_resolvers
+    - identifier: l_geo_multi_env_schema_key_api_5
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/geo-multi-env.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts|src/__tests__/resolvers.test.ts
+          TEST_SUITE: src/__tests__/geo-multi-env.test.ts|src/__tests__/schema-key.test.ts|src/__tests__/api_5.test.ts
       depend-on:
         - upb
-    - identifier: l_schema_key_api_5_apigw
+    - identifier: l_apigw_api_lambda_auth_1_api_key_migration2
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/schema-key.test.ts|src/__tests__/api_5.test.ts|src/__tests__/apigw.test.ts
+          TEST_SUITE: src/__tests__/apigw.test.ts|src/__tests__/graphql-v2/api_lambda_auth_1.test.ts|src/__tests__/migration/api.key.migration2.test.ts
       depend-on:
         - upb
-    - identifier: l_api_lambda_auth_1_api_key_migration2_schema_searchable
+    - identifier: l_schema_searchable_api_key_migration1_schema_auth_14
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/graphql-v2/api_lambda_auth_1.test.ts|src/__tests__/migration/api.key.migration2.test.ts|src/__tests__/schema-searchable.test.ts
+          TEST_SUITE: src/__tests__/schema-searchable.test.ts|src/__tests__/migration/api.key.migration1.test.ts|src/__tests__/schema-auth-14.test.ts
       depend-on:
         - upb
-    - identifier: l_api_key_migration1_schema_auth_14_api_3
+    - identifier: l_api_3_api_6b_api_1
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts|src/__tests__/schema-auth-14.test.ts|src/__tests__/api_3.test.ts
+          TEST_SUITE: src/__tests__/api_3.test.ts|src/__tests__/api_6b.test.ts|src/__tests__/api_1.test.ts
       depend-on:
         - upb
-    - identifier: l_api_6b_api_1_layer_1
+    - identifier: l_layer_1_api_key_migration4_schema_iterative_update_4
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/api_6b.test.ts|src/__tests__/api_1.test.ts|src/__tests__/layer-1.test.ts
+          TEST_SUITE: src/__tests__/layer-1.test.ts|src/__tests__/migration/api.key.migration4.test.ts|src/__tests__/schema-iterative-update-4.test.ts
       depend-on:
         - upb
-    - identifier: l_api_key_migration4_schema_iterative_update_4_function_1
+    - identifier: l_function_1_storage_5
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration4.test.ts|src/__tests__/schema-iterative-update-4.test.ts|src/__tests__/function_1.test.ts
-      depend-on:
-        - upb
-    - identifier: l_storage_5
-      buildspec: codebuild_specs/run_e2e_tests_linux.yml
-      env:
-        variables:
-          compute-type: BUILD_GENERAL1_SMALL
-          TEST_SUITE: src/__tests__/storage-5.test.ts
+          TEST_SUITE: src/__tests__/function_1.test.ts|src/__tests__/storage-5.test.ts
       depend-on:
         - upb
     - identifier: l_datastore_modelgen
@@ -994,6 +986,22 @@ batch:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
           TEST_SUITE: src/__tests__/containers-api-2.test.ts
+      depend-on:
+        - upb
+    - identifier: l_searchable_datastore
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_SMALL
+          TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
+      depend-on:
+        - upb
+    - identifier: l_resolvers
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_SMALL
+          TEST_SUITE: src/__tests__/resolvers.test.ts
       depend-on:
         - upb
     - identifier: l_import_s3_1
@@ -1703,63 +1711,53 @@ batch:
       depend-on:
         - build_windows
         - upb
-    - identifier: w_searchable_datastore_resolvers_schema_key
+    - identifier: w_schema_key_api_5_apigw
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/schema-key.test.ts
+          TEST_SUITE: src/__tests__/schema-key.test.ts|src/__tests__/api_5.test.ts|src/__tests__/apigw.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_5_apigw_api_lambda_auth_1
+    - identifier: w_api_lambda_auth_1_api_key_migration2_schema_searchable
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/api_5.test.ts|src/__tests__/apigw.test.ts|src/__tests__/graphql-v2/api_lambda_auth_1.test.ts
+          TEST_SUITE: src/__tests__/graphql-v2/api_lambda_auth_1.test.ts|src/__tests__/migration/api.key.migration2.test.ts|src/__tests__/schema-searchable.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_key_migration2_schema_searchable_api_key_migration1
+    - identifier: w_api_key_migration1_schema_auth_14_api_3
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts|src/__tests__/schema-searchable.test.ts|src/__tests__/migration/api.key.migration1.test.ts
+          TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts|src/__tests__/schema-auth-14.test.ts|src/__tests__/api_3.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_schema_auth_14_api_3_api_6b
+    - identifier: w_api_6b_api_1_layer_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/schema-auth-14.test.ts|src/__tests__/api_3.test.ts|src/__tests__/api_6b.test.ts
+          TEST_SUITE: src/__tests__/api_6b.test.ts|src/__tests__/api_1.test.ts|src/__tests__/layer-1.test.ts
       depend-on:
         - build_windows
         - upb
-    - identifier: w_api_1_layer_1_api_key_migration4
+    - identifier: w_api_key_migration4_schema_iterative_update_4_function_1
       buildspec: codebuild_specs/run_e2e_tests_windows.yml
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         image: $WINDOWS_IMAGE_2019
         variables:
-          TEST_SUITE: src/__tests__/api_1.test.ts|src/__tests__/layer-1.test.ts|src/__tests__/migration/api.key.migration4.test.ts
-      depend-on:
-        - build_windows
-        - upb
-    - identifier: w_schema_iterative_update_4_function_1
-      buildspec: codebuild_specs/run_e2e_tests_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        image: $WINDOWS_IMAGE_2019
-        variables:
-          TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts|src/__tests__/function_1.test.ts
+          TEST_SUITE: src/__tests__/migration/api.key.migration4.test.ts|src/__tests__/schema-iterative-update-4.test.ts|src/__tests__/function_1.test.ts
       depend-on:
         - build_windows
         - upb
@@ -1880,6 +1878,26 @@ batch:
         image: $WINDOWS_IMAGE_2019
         variables:
           TEST_SUITE: src/__tests__/containers-api-2.test.ts
+      depend-on:
+        - build_windows
+        - upb
+    - identifier: w_searchable_datastore
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        image: $WINDOWS_IMAGE_2019
+        variables:
+          TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
+      depend-on:
+        - build_windows
+        - upb
+    - identifier: w_resolvers
+      buildspec: codebuild_specs/run_e2e_tests_windows.yml
+      env:
+        type: WINDOWS_SERVER_2019_CONTAINER
+        image: $WINDOWS_IMAGE_2019
+        variables:
+          TEST_SUITE: src/__tests__/resolvers.test.ts
       depend-on:
         - build_windows
         - upb
