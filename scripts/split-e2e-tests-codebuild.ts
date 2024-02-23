@@ -143,6 +143,7 @@ type ConfigBase = {
   };
 };
 const MAX_WORKERS = 3;
+const MAX_WORKERS_WINDOWS = 2;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
   region?: string;
@@ -226,8 +227,9 @@ const splitTestsV3 = (
         currentJob.useParentAccount = true;
       }
 
+      const maxWorkers = os === 'w' ? MAX_WORKERS_WINDOWS : MAX_WORKERS;
       // create a new job once the current job is full;
-      if (currentJob.tests.length >= MAX_WORKERS) {
+      if (currentJob.tests.length >= maxWorkers) {
         osJobs.push(createRandomJob(os));
       }
     }

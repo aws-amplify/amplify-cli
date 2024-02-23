@@ -38,7 +38,7 @@
     "amplify-util-headless-input": "1.9.17",
     "aws-cdk-lib": "~2.80.0",
     "aws-sdk": "^2.1464.0",
-    "axios": "^1.6.5",
+    "axios": "^1.6.7",
     "chalk": "^4.1.1",
     "change-case": "^4.1.1",
     "constructs": "^10.0.5",

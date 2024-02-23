@@ -1,4 +1,4 @@
-import Amplify, { Auth } from 'aws-amplify';
+import { Amplify, Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import fs from 'fs-extra';
