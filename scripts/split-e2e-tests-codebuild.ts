@@ -10,6 +10,7 @@ const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_w
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
   'src/__tests__/auth_2e.test.ts',
+  'src/__tests__/aws-exports/js-frontend-config.test.ts',
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/env-3.test.ts',
