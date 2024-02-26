@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.6-rc.e21bdc5761a0868.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.5...@aws-amplify/amplify-category-auth@3.7.6-rc.e21bdc5761a0868.0) (2024-02-26)
+
+
+### Bug Fixes
+
+* limit query parameter parsing in auth admin api ([#13512](https://github.com/aws-amplify/amplify-cli/issues/13512)) ([2480681](https://github.com/aws-amplify/amplify-cli/commit/24806814ce2275fe7d70e5484c3c485023b8041a))
+
+
+
+
+
 ## [3.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.4...@aws-amplify/amplify-category-auth@3.7.5) (2023-12-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
