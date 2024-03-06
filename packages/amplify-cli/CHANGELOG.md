@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.10.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.10.1...@aws-amplify/cli-internal@12.10.2) (2024-03-06)
+
+
+### Bug Fixes
+
+* dependabot alert for lodash.set ([#13558](https://github.com/aws-amplify/amplify-cli/issues/13558)) ([c7f9bbe](https://github.com/aws-amplify/amplify-cli/commit/c7f9bbeb4943280bdda10304ce4e17622c5ec9c7))
+
+
+
+
+
 ## [12.10.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.10.0...@aws-amplify/cli-internal@12.10.1) (2024-01-10)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
