@@ -834,7 +834,7 @@ __metadata:
     inquirer: ^7.3.3
     is-wsl: ^2.2.0
     jest: ^29.5.0
-    jose: ^4.3.7
+    jose: ^4.15.5
     lodash: ^4.17.21
     lodash.throttle: ^4.1.1
     netmask: ^2.0.2
@@ -23607,10 +23607,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.3.7":
-  version: 4.9.2
-  resolution: "jose@npm:4.9.2"
-  checksum: e992b623f1f6bed35e447593a2ef204373bffdc140e21b188d9297dc1e609c4a95fd87e481a34abcdf83594583e498d2b5b053f4751ceb9ef97c4bd17af348c5
+"jose@npm:^4.15.5":
+  version: 4.15.5
+  resolution: "jose@npm:4.15.5"
+  checksum: 9f208492f55ae9c547fd407c36f67ec3385051b5ca390e24f5449740f17359640b3f96fabfd38bc132cc4292b964c31b921bf356253373b1bd3eb6df799b7433
   languageName: node
   linkType: hard
 
