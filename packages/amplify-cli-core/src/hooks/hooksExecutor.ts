@@ -105,7 +105,7 @@ const execHelper = async (
     }
     logger.info(`hooks file: ${execFileMeta.fileName} execution ended`);
   } catch (err) {
-    logger.info(`hooks file: ${execFileMeta.fileName} execution error - ${JSON.stringify(err)}`);
+    printer.info(`hooks file: ${execFileMeta.fileName} execution error - ${JSON.stringify(err)}`);
     if (err?.stderr?.length > 0) {
       printer.error(err.stderr);
     }
