@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.21-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.1.20...@aws-amplify/amplify-category-interactions@5.1.21-log-hooks-executor.0) (2024-03-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-interactions
+
+
+
+
+
 ## [5.1.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-interactions@5.1.19...@aws-amplify/amplify-category-interactions@5.1.20) (2024-03-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-interactions

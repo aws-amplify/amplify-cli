@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.16-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.5.15...amplify-nodejs-function-runtime-provider@2.5.16-log-hooks-executor.0) (2024-03-13)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
 ## [2.5.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.5.14...amplify-nodejs-function-runtime-provider@2.5.15) (2024-03-06)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider
