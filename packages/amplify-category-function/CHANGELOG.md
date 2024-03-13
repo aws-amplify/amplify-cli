@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.1-log-hooks-executorv12.10.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.0...@aws-amplify/amplify-category-function@5.7.1-log-hooks-executorv12.10.1.0) (2024-03-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
 # [5.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.4...@aws-amplify/amplify-category-function@5.7.0) (2023-12-11)
 
 

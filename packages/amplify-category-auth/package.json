@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.7.5",
+  "version": "3.7.6-log-hooks-executorv12.10.1.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -28,12 +28,12 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.3.0",
-    "@aws-amplify/amplify-environment-parameters": "1.9.5",
+    "@aws-amplify/amplify-cli-core": "4.3.1-log-hooks-executorv12.10.1.0",
+    "@aws-amplify/amplify-environment-parameters": "1.9.6-log-hooks-executorv12.10.1.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "@aws-amplify/amplify-util-import": "2.8.3",
-    "@aws-amplify/cli-extensibility-helper": "3.0.24",
+    "@aws-amplify/cli-extensibility-helper": "3.0.25-log-hooks-executorv12.10.1.0",
     "amplify-headless-interface": "1.17.6",
     "amplify-util-headless-input": "1.9.17",
     "aws-cdk-lib": "~2.80.0",

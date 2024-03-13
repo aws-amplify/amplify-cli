@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.10-log-hooks-executorv12.10.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.9.9...amplify-dynamodb-simulator@2.9.10-log-hooks-executorv12.10.1.0) (2024-03-13)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
 ## [2.9.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.9.8...amplify-dynamodb-simulator@2.9.9) (2023-12-11)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

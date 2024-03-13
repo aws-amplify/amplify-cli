@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.10.1-log-hooks-executorv12.10.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.10.0...@aws-amplify/cli-internal@12.10.1-log-hooks-executorv12.10.1.0) (2024-03-13)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 # [12.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.9.0...@aws-amplify/cli-internal@12.10.0) (2023-12-16)
 
 
