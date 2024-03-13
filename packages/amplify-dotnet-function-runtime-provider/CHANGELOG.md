@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.21-log-hooks-executor1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.21-log-hooks-executor.0...amplify-dotnet-function-runtime-provider@2.0.21-log-hooks-executor1.0) (2024-03-13)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
 ## [2.0.21-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.20...amplify-dotnet-function-runtime-provider@2.0.21-log-hooks-executor.0) (2024-03-13)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider

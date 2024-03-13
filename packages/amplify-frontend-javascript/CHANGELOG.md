@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.10-log-hooks-executor1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.10.10-log-hooks-executor.0...@aws-amplify/amplify-frontend-javascript@3.10.10-log-hooks-executor1.0) (2024-03-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript
+
+
+
+
+
 ## [3.10.10-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.10.9...@aws-amplify/amplify-frontend-javascript@3.10.10-log-hooks-executor.0) (2024-03-13)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript
