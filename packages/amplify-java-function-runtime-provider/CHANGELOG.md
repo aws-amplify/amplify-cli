@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.39-log-hooks-executor4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@2.3.39-log-hooks-executor3.0...amplify-java-function-runtime-provider@2.3.39-log-hooks-executor4.0) (2024-03-14)
+
+**Note:** Version bump only for package amplify-java-function-runtime-provider
+
+
+
+
+
 ## [2.3.39-log-hooks-executor3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@2.3.39-log-hooks-executor2.0...amplify-java-function-runtime-provider@2.3.39-log-hooks-executor3.0) (2024-03-14)
 
 **Note:** Version bump only for package amplify-java-function-runtime-provider
