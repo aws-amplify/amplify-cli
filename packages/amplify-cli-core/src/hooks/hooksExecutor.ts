@@ -93,13 +93,12 @@ const execHelper = async (
     const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
       cwd: projectRoot,
       env: { PATH: process.env.PATH },
-      input: JSON.stringify({
-        data: dataParameter,
-        error: errorParameter,
-      }),
+      // input: JSON.stringify({
+      //   data: dataParameter,
+      //   error: errorParameter,
+      // }),
       stripFinalNewline: false,
     });
-    childProcess?.stdin?.pipe(process.stdin);
     childProcess?.stdout?.pipe(process.stdout);
     logger.info('awaiting child process');
     const childProcessResult = await childProcess;
