@@ -98,9 +98,8 @@ const execHelper = async (
       }),
       stripFinalNewline: false,
     });
-    logger.info(`childProcess.stdout: ${childProcess?.stdout}`);
-    logger.info(`process.stdout: ${process.stdout}`);
-    childProcess?.stdout?.pipe(process.stdout);
+    // childProcess?.stdout?.pipe(process.stdout);
+    logger.info('awaiting child process');
     const childProcessResult = await childProcess;
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
       printer.blankLine();
