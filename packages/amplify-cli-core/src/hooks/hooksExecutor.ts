@@ -2,6 +2,7 @@ import * as which from 'which';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import execa from 'execa';
+import exit from 'exit';
 import { EOL } from 'os';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getLogger } from '../logger/index';
@@ -98,7 +99,7 @@ const execHelper = async (
       }),
       stripFinalNewline: false,
     });
-    // childProcess?.stdout?.pipe(process.stdout);
+    childProcess?.stdout?.pipe(process.stdout);
     logger.info('awaiting child process');
     const childProcessResult = await childProcess;
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
@@ -119,7 +120,7 @@ const execHelper = async (
     printer.blankLine();
     logger.error('hook script exited with error', err);
     // exit code is 76 indicating Amplify exited because user hook script exited with a non-zero status
-    process.exit(76);
+    exit(76);
   }
   printer.info(`----- 🪝 ${execFileMeta.baseName} execution end -----`);
   printer.blankLine();
