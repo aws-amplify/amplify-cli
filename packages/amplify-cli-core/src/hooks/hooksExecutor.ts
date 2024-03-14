@@ -98,6 +98,8 @@ const execHelper = async (
       }),
       stripFinalNewline: false,
     });
+    logger.info(`childProcess.stdout: ${childProcess?.stdout}`);
+    logger.info(`process.stdout: ${process.stdout}`);
     childProcess?.stdout?.pipe(process.stdout);
     const childProcessResult = await childProcess;
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
