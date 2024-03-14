@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.7-log-hooks-executor6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.7.7-log-hooks-executor5.0...@aws-amplify/amplify-opensearch-simulator@1.7.7-log-hooks-executor6.0) (2024-03-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-opensearch-simulator
+
+
+
+
+
 ## [1.7.7-log-hooks-executor5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-opensearch-simulator@1.7.7-log-hooks-executor4.0...@aws-amplify/amplify-opensearch-simulator@1.7.7-log-hooks-executor5.0) (2024-03-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-opensearch-simulator
