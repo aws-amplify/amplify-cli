@@ -99,6 +99,7 @@ const execHelper = async (
       }),
       stripFinalNewline: false,
     });
+    childProcess?.stdin?.pipe(process.stdin);
     childProcess?.stdout?.pipe(process.stdout);
     logger.info('awaiting child process');
     const childProcessResult = await childProcess;
