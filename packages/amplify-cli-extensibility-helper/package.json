@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-extensibility-helper",
-  "version": "3.0.26-log-hooks-executor4.0",
+  "version": "3.0.26-log-hooks-executor5.0",
   "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "3.1.16-log-hooks-executor4.0",
-    "@aws-amplify/amplify-cli-core": "4.3.2-log-hooks-executor4.0",
+    "@aws-amplify/amplify-category-custom": "3.1.16-log-hooks-executor5.0",
+    "@aws-amplify/amplify-cli-core": "4.3.2-log-hooks-executor5.0",
     "aws-cdk-lib": "~2.80.0"
   },
   "jest": {
