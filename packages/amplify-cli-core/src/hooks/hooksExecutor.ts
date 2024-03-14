@@ -74,20 +74,10 @@ const execHelper = async (
   printer.blankLine();
   printer.info(`----- 🪝 ${execFileMeta.baseName} execution start -----`);
 
-  // adding default if options aren't defined
-  const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
-  const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
-    cwd: projectRoot,
-    env: { PATH: process.env.PATH },
-    input: JSON.stringify({
-      data: dataParameter,
-      error: errorParameter,
-    }),
-    stripFinalNewline: false,
-  });
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
-
+    // adding default if options aren't defined
+    const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
     const execaVariables = {
       runtimePath: hooksRuntime.runtimePath,
       runtimeArgs,
@@ -99,9 +89,18 @@ const execHelper = async (
       },
     };
     logger.info(`execaVariables: ${JSON.stringify(execaVariables)}`);
-
+    const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
+      cwd: projectRoot,
+      env: { PATH: process.env.PATH },
+      input: JSON.stringify({
+        data: dataParameter,
+        error: errorParameter,
+      }),
+      stripFinalNewline: false,
+    });
+    logger.info(`childProcess.stdout: ${childProcess?.stdout}`);
+    logger.info(`process.stdout: ${process.stdout}`);
     childProcess?.stdout?.pipe(process.stdout);
-    logger.info(`awaiting child process`);
     const childProcessResult = await childProcess;
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
       printer.blankLine();
@@ -121,7 +120,6 @@ const execHelper = async (
     printer.blankLine();
     logger.error('hook script exited with error', err);
     // exit code is 76 indicating Amplify exited because user hook script exited with a non-zero status
-    childProcess.kill();
     process.exit(76);
   }
   printer.info(`----- 🪝 ${execFileMeta.baseName} execution end -----`);
