@@ -655,6 +655,7 @@ __metadata:
     "@testing-library/react": ^11.1.0
     "@testing-library/user-event": ^12.1.10
     "@types/jest": ^29.5.1
+    "@types/jsrsasign": ^10
     "@types/node": ^12.12.6
     "@types/react": ^17.0.39
     "@types/react-dom": ^17.0.11
@@ -686,7 +687,7 @@ __metadata:
     jest: ^29.0.0
     jest-resolve: ^26.0.2
     jest-watch-typeahead: ^1.0.0
-    jsonwebtoken: ^9.0.0
+    jsrsasign: ^10.8.6
     mini-css-extract-plugin: ^2.4.5
     postcss: ^8.4.31
     postcss-flexbugs-fixes: ^5.0.2
@@ -12662,6 +12663,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jsrsasign@npm:^10":
+  version: 10.5.8
+  resolution: "@types/jsrsasign@npm:10.5.8"
+  checksum: 50fae7b760ad56c6e51ed859b0d89fa877398266efe9e343229a02c8a5027eaf96a3568546ff5f639ffc53cda8be3fa5031855def9e800ca5d6d245dd12dc8d1
+  languageName: node
+  linkType: hard
+
 "@types/keyv@npm:^3.1.4":
   version: 3.1.4
   resolution: "@types/keyv@npm:3.1.4"
@@ -23868,6 +23876,13 @@ __metadata:
     json-schema: 0.4.0
     verror: 1.10.0
   checksum: 5e4bca99e90727c2040eb4c2190d0ef1fe51798ed5714e87b841d304526190d960f9772acc7108fa1416b61e1122bcd60e4460c91793dce0835df5852aab55af
+  languageName: node
+  linkType: hard
+
+"jsrsasign@npm:^10.8.6":
+  version: 10.8.6
+  resolution: "jsrsasign@npm:10.8.6"
+  checksum: 60f574594fdcd203a9204de9f1e6581e1b880f71358500a7ef62b995acc656e6dcd7f7ad055983b1cbb560ede6afc7b511e5afc88b821eea28661476067fa78e
   languageName: node
   linkType: hard
 
