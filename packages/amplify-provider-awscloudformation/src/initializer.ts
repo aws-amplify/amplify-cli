@@ -18,7 +18,6 @@ import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 
 import fs from 'fs-extra';
-import moment from 'moment';
 import path from 'path';
 import sequential from 'promise-sequential';
 import { getDefaultTemplateDescription } from './template-description-utils';
@@ -56,10 +55,9 @@ export const run = async (context: $TSContext): Promise<void> => {
     context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     const { projectName } = context.exeInfo.projectConfig;
     const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
-    /* eslint-disable-next-line spellcheck/spell-checker */
-    const timeStamp = process.env.CIRCLECI ? uuid().substring(0, 5) : `${moment().format('Hmmss')}`;
+    const uuidStamp = uuid().substring(0, 5);
     const { envName = '' } = context.exeInfo.localEnvInfo;
-    let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
+    let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${uuidStamp}`);
     const awsConfigInfo = await configurationManager.getAwsConfig(context);
 
     await configurePermissionsBoundaryForInit(context);
