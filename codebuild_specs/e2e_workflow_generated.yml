@@ -2302,12 +2302,21 @@ batch:
           CLI_REGION: us-west-2
       depend-on:
         - upb
-    - identifier: l_auth_hosted_ui_lambda_migration_v12
+    - identifier: l_auth_hosted_ui_lambda_migration_1_v12
       buildspec: codebuild_specs/migration_tests_v12.yml
       env:
         variables:
           compute-type: BUILD_GENERAL1_SMALL
-          TEST_SUITE: src/__tests__/migration_tests_v12/auth-hosted-ui-lambda-migration.test.ts
+          TEST_SUITE: src/__tests__/migration_tests_v12/auth-hosted-ui-lambda-migration-1.test.ts
+          CLI_REGION: us-west-2
+      depend-on:
+        - upb
+    - identifier: l_auth_hosted_ui_lambda_migration_2_v12
+      buildspec: codebuild_specs/migration_tests_v12.yml
+      env:
+        variables:
+          compute-type: BUILD_GENERAL1_SMALL
+          TEST_SUITE: src/__tests__/migration_tests_v12/auth-hosted-ui-lambda-migration-2.test.ts
           CLI_REGION: eu-central-1
       depend-on:
         - upb
