@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-provider-awscloudformation",
-  "version": "8.10.2",
+  "version": "8.10.3-log-hooks-executor.1.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",

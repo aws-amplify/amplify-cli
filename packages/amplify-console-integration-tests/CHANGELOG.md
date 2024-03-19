@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.6-log-hooks-executor.1.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.5...@aws-amplify/amplify-console-integration-tests@2.11.6-log-hooks-executor.1.0) (2024-03-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
+
+
+
+
+
 ## [2.11.5](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.4...@aws-amplify/amplify-console-integration-tests@2.11.5) (2023-12-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests

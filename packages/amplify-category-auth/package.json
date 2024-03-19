@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.7.5",
+  "version": "3.7.6-log-hooks-executor.1.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
