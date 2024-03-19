@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.1-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.0...@aws-amplify/amplify-category-function@5.7.1-log-hooks-executor.0) (2024-03-19)
+
+
+### Reverts
+
+* Revert "chore: bump data package versions (#13486)" (#13487) ([3280d40](https://github.com/aws-amplify/amplify-cli/commit/3280d40a5ab50c675b0e2b8050ad35a69c83cdc2)), closes [#13486](https://github.com/aws-amplify/amplify-cli/issues/13486) [#13487](https://github.com/aws-amplify/amplify-cli/issues/13487)
+
+
+
+
+
 # [5.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.4...@aws-amplify/amplify-category-function@5.7.0) (2023-12-11)
 
 

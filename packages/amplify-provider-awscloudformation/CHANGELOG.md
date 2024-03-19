@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.3-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.1...@aws-amplify/amplify-provider-awscloudformation@8.10.3-log-hooks-executor.0) (2024-03-19)
+
+
+### Bug Fixes
+
+* s3 bucket name randomizer ([#13510](https://github.com/aws-amplify/amplify-cli/issues/13510)) ([9034f86](https://github.com/aws-amplify/amplify-cli/commit/9034f865172fbc754a37c00783490ea972e02410))
+* use s3.upload instead of s3.putObject ([#13493](https://github.com/aws-amplify/amplify-cli/issues/13493)) ([413fcea](https://github.com/aws-amplify/amplify-cli/commit/413fcea115ab202096f69ffb1f58fe91ea242027))
+
+
+
+
+
 ## [8.10.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.1...@aws-amplify/amplify-provider-awscloudformation@8.10.2) (2024-01-10)
 
 
