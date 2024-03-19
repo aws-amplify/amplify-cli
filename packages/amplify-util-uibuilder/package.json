@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.14.0",
+  "version": "1.14.1-log-hooks-executor.3.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {

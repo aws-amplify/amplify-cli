@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.9.0",
+  "version": "4.9.1-log-hooks-executor.3.0",
   "description": "",
   "repository": {
     "type": "git",
