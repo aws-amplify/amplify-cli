@@ -13,6 +13,9 @@ export NODE_OPTIONS=--max-old-space-size=5120
 source .circleci/local_publish_helpers_codebuild.sh
 source ./codebuild_specs/scripts-windows/shared-scripts-windows.sh
 
+export CLI_REGION=$(yarn ts-node ./scripts/select-region-for-e2e-test.ts)
+echo "Test will run in $CLI_REGION"
+
 # source $BASH_ENV
 
 amplify version

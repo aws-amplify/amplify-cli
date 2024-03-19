@@ -42,12 +42,8 @@ export async function setupUser(
   }
 }
 
-export async function addUserToGroup(
-  cognitoClient: CognitoIdentityServiceProvider,
-  userPoolId: string,
-  username: string,
-  groupName?: string,
-): Promise<void> {
+export async function addUserToGroup(userPoolId: string, username: string, groupName: string, region?: string): Promise<void> {
+  const cognitoClient = getConfiguredCognitoClient(region);
   await cognitoClient
     .adminAddUserToGroup({
       UserPoolId: userPoolId,

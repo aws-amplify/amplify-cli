@@ -5,5 +5,6 @@ namespace jest {
     toBeIAMRoleWithArn(roleName: string, arn?: string): R;
     toBeAS3Bucket(bucketName: string): R;
     toHaveValidPolicyConditionMatchingIdpId(idpId: string): R;
+    toHaveDenyAssumeRolePolicy(): R;
   }
 }

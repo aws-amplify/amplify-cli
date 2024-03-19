@@ -336,6 +336,9 @@ function _runE2ETestsLinux {
     echo RUN E2E Tests Linux
     _loadE2ECache
     _install_packaged_cli_linux
+    # select region
+    export CLI_REGION=$(yarn ts-node ./scripts/select-region-for-e2e-test.ts)
+    echo "Test will run in $CLI_REGION"
     # verify installation
     which amplify
     amplify version
