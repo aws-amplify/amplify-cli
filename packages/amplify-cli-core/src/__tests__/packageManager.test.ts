@@ -1,6 +1,7 @@
 import * as path from 'path';
 import which from 'which';
 import { getPackageManager } from '../utils';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 
 jest.mock('which');
 
@@ -29,6 +30,22 @@ describe('packageManager tests', () => {
     expect(packageManager).toBeDefined();
     expect(packageManager?.packageManager).toEqual('yarn');
     expect(packageManager?.version?.major).toBeGreaterThanOrEqual(2);
+  });
+
+  test('detects yarn 2 install args correct', async () => {
+    which_mock.sync.mockReturnValue('/path/to/yarn');
+
+    const testDirectory = path.join(baseDirectory, 'packageManager-yarn2-workspace');
+    const spy = jest.spyOn(process, 'cwd');
+    spy.mockReturnValue(testDirectory);
+
+    const packageManager = await getPackageManager(testDirectory);
+    const installArgs = packageManager?.getInstallArgs(BuildType.PROD);
+
+    expect(which_mock.sync).toBeCalledTimes(1);
+    expect(packageManager).toBeDefined();
+    expect(packageManager?.packageManager).toEqual('yarn');
+    expect(installArgs).toEqual(['workspaces', 'focus', '--all', '--production']);
   });
 
   test('detects yarn correctly', async () => {
