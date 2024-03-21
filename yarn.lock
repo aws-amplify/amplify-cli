@@ -1067,7 +1067,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.10.1-log-hooks-executor.4.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.10.1-log-hooks-executor.5.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1167,7 +1167,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.10.1-log-hooks-executor.4.0
+    "@aws-amplify/cli-internal": 12.10.1-log-hooks-executor.5.0
     "@types/tar": ^6.1.1
     axios: ^1.6.2
     rimraf: ^3.0.2
