@@ -67,3 +67,30 @@ export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, 
     pass,
   };
 };
+
+export const toHaveDenyAssumeRolePolicy = async (roleName: string) => {
+  let pass = false;
+  let message = '';
+
+  try {
+    const iam = new IAM({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
+    });
+
+    const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
+    const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
+
+    pass = assumeRolePolicyDocument?.Statement?.length === 1 && assumeRolePolicyDocument?.Statement?.[0]?.Effect === 'Deny';
+
+    message = pass ? 'Assume role policy has Effect: Deny' : `Assume role policy does not exist or does not have Effect: Deny.`;
+  } catch (e) {
+    message = 'IAM GetRole threw Error: ' + e.message;
+  }
+
+  return {
+    message: () => message,
+    pass,
+  };
+};

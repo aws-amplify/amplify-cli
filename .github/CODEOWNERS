@@ -5,3 +5,12 @@
 # Add Data team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team.
 /packages/amplify-graphiql-explorer @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime
 /packages/amplify-velocity-template @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime
+
+# Templates with IAM resources
+packages/amplify-provider-awscloudformation/resources/rootStackTemplate.json @aws-amplify/amplify-cli-admins
+packages/amplify-provider-awscloudformation/src/root-stack-builder/root-stack-builder.ts @aws-amplify/amplify-cli-admins
+packages/amplify-provider-awscloudformation/resources/update-idp-roles-cfn.json @aws-amplify/amplify-cli-admins
+packages/amplify-category-auth/src/provider-utils/awscloudformation/auth-stack-builder/auth-user-pool-group-stack-builder.ts @aws-amplify/amplify-cli-admins
+packages/amplify-category-storage/resources/triggers/s3/lambda-cloudformation-template.json.ejs @aws-amplify/amplify-cli-admins
+packages/amplify-category-storage/resources/triggers/dynamoDB/lambda-cloudformation-template.json.ejs @aws-amplify/amplify-cli-admins
+packages/amplify-category-predictions/src/provider-utils/awscloudformation/triggers/s3/lambda-cloudformation-template.json.ejs @aws-amplify/amplify-cli-admins

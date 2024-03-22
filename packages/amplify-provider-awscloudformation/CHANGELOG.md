@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.2...@aws-amplify/amplify-provider-awscloudformation@8.10.3) (2024-03-06)
+
+
+### Bug Fixes
+
+* s3 bucket name randomizer ([#13510](https://github.com/aws-amplify/amplify-cli/issues/13510)) ([9034f86](https://github.com/aws-amplify/amplify-cli/commit/9034f865172fbc754a37c00783490ea972e02410))
+* use s3.upload instead of s3.putObject ([#13493](https://github.com/aws-amplify/amplify-cli/issues/13493)) ([413fcea](https://github.com/aws-amplify/amplify-cli/commit/413fcea115ab202096f69ffb1f58fe91ea242027))
+
+
+
+
+
+## [8.10.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.1...@aws-amplify/amplify-provider-awscloudformation@8.10.2) (2024-01-10)
+
+
+### Bug Fixes
+
+* set policy effect deny when removing auth ([#13523](https://github.com/aws-amplify/amplify-cli/issues/13523)) ([73b08dc](https://github.com/aws-amplify/amplify-cli/commit/73b08dc424db2fb60399c5343c314e02e849d4a1))
+
+
+
+
+
+## [8.10.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.0...@aws-amplify/amplify-provider-awscloudformation@8.10.1) (2023-12-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
+
+
+
+
+
+# [8.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.9.2...@aws-amplify/amplify-provider-awscloudformation@8.10.0) (2023-12-11)
+
+
+### Features
+
+* bump data dependencies to launch RDS feature ([#13409](https://github.com/aws-amplify/amplify-cli/issues/13409)) ([7fbf29f](https://github.com/aws-amplify/amplify-cli/commit/7fbf29f56eb7335d20de0b5526fbed7795a2af09))
+
+
+
+
+
+## [8.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.9.0...@aws-amplify/amplify-provider-awscloudformation@8.9.2) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [8.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.9.0...@aws-amplify/amplify-provider-awscloudformation@8.9.1) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
+
+
+
+
+
+# [8.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.8.0...@aws-amplify/amplify-provider-awscloudformation@8.9.0) (2023-11-08)
+
+
+### Bug Fixes
+
+* parse cognito pools with service role ([#13365](https://github.com/aws-amplify/amplify-cli/issues/13365)) ([1513938](https://github.com/aws-amplify/amplify-cli/commit/1513938ed2808c407853daf291912c0e644158c9))
+
+
+### Features
+
+* **cli:** ignore node_modules in glob to drastically increase performance in Node environments ([#13305](https://github.com/aws-amplify/amplify-cli/issues/13305)) ([5cc1b55](https://github.com/aws-amplify/amplify-cli/commit/5cc1b556d8081421dc68ee264dac02d5660ffee7))
+
+
+
+
+
 # [8.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.7.0...@aws-amplify/amplify-provider-awscloudformation@8.8.0) (2023-10-12)
 
 

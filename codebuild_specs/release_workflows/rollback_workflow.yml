@@ -1,0 +1,34 @@
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_MEDIUM
+  git-credential-helper: yes
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    AWS_REGION: us-east-1
+    CDK_DEFAULT_REGION: us-east-1
+    CLI_REGION: us-east-1
+
+batch:
+  fast-fail: false
+  build-graph:
+    - identifier: install_dependencies
+      buildspec: codebuild_specs/install_and_cache_dependencies.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: validate_rollback_target_version
+      buildspec: codebuild_specs/validate_rollback_target_version.yml
+      depend-on:
+        - install_dependencies
+    - identifier: github_rollback
+      buildspec: codebuild_specs/release_workflows/github_rollback.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - validate_rollback_target_version
+    - identifier: rollback_npm
+      buildspec: codebuild_specs/rollback_npm.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - validate_rollback_target_version

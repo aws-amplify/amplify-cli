@@ -40,7 +40,7 @@ describe('amplify add auth...a', () => {
     await removeAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
 
-    expect(AuthRoleName).not.toHaveValidPolicyConditionMatchingIdpId(idpId);
-    expect(UnauthRoleName).not.toHaveValidPolicyConditionMatchingIdpId(idpId);
+    expect(AuthRoleName).toHaveDenyAssumeRolePolicy();
+    expect(UnauthRoleName).toHaveDenyAssumeRolePolicy();
   });
 });

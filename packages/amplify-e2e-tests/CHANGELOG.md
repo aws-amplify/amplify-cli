@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.1...amplify-e2e-tests@4.9.2) (2024-03-06)
+
+
+### Bug Fixes
+
+* limit query parameter parsing in auth admin api ([#13512](https://github.com/aws-amplify/amplify-cli/issues/13512)) ([2480681](https://github.com/aws-amplify/amplify-cli/commit/24806814ce2275fe7d70e5484c3c485023b8041a))
+
+
+
+
+
+## [4.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.0...amplify-e2e-tests@4.9.1) (2023-12-16)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [4.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.5...amplify-e2e-tests@4.9.0) (2023-12-11)
+
+
+### Features
+
+* bump data dependencies to launch RDS feature ([#13409](https://github.com/aws-amplify/amplify-cli/issues/13409)) ([7fbf29f](https://github.com/aws-amplify/amplify-cli/commit/7fbf29f56eb7335d20de0b5526fbed7795a2af09))
+
+
+
+
+
+## [4.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.3...amplify-e2e-tests@4.8.5) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [4.8.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.3...amplify-e2e-tests@4.8.4) (2023-11-08)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [4.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.2...amplify-e2e-tests@4.8.3) (2023-11-08)
+
+
+### Bug Fixes
+
+* parse cognito pools with service role ([#13365](https://github.com/aws-amplify/amplify-cli/issues/13365)) ([1513938](https://github.com/aws-amplify/amplify-cli/commit/1513938ed2808c407853daf291912c0e644158c9))
+
+
+
+
+
 ## [4.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.8.1...amplify-e2e-tests@4.8.2) (2023-10-21)
 
 **Note:** Version bump only for package amplify-e2e-tests
