@@ -2,7 +2,7 @@ import GraphiQL from 'graphiql';
 import GraphiQLExplorer from 'graphiql-explorer';
 import 'graphiql/graphiql.css';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, parse } from 'graphql';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 import { AuthModal, AUTH_MODE } from './AuthModal';
@@ -125,14 +125,14 @@ class App extends Component<{}, State> {
   }
   async componentDidMount() {
     const apiInfo = await getAPIInfo();
-    this.loadCredentials(apiInfo);
+    await this.loadCredentials(apiInfo);
     this.setState({ apiInfo });
     const introspectionResult = await this.fetch({
       query: getIntrospectionQuery(),
     });
 
     const editor = this._graphiql?.getQueryEditor();
-    editor.setOption('extraKeys', {
+    editor?.setOption('extraKeys', {
       ...(editor.options.extraKeys || {}),
       'Shift-Alt-LeftClick': this._handleInspectOperation,
     });
@@ -263,7 +263,7 @@ class App extends Component<{}, State> {
     }));
   }
 
-  loadCredentials(apiInfo = this.state.apiInfo) {
+  async loadCredentials(apiInfo = this.state.apiInfo) {
     const credentials = {};
     const authProviders = [apiInfo.defaultAuthenticationType, ...apiInfo.additionalAuthenticationProviders];
     const possibleAuth = authProviders.map((auth) => auth.authenticationType);
@@ -273,12 +273,13 @@ class App extends Component<{}, State> {
     }
 
     if (possibleAuth.includes('AMAZON_COGNITO_USER_POOLS')) {
-      try {
-        credentials['cognitoJWTToken'] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken) || '');
-      } catch (e) {
+      let token = window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken);
+      if (token) {
+        credentials['cognitoJWTToken'] = await refreshToken(token);
+      } else {
         console.warn('Invalid Cognito token found in local storage. Using the default OIDC token');
         // token is not valid
-        credentials['cognitoJWTToken'] = refreshToken(DEFAULT_COGNITO_JWT_TOKEN);
+        credentials['cognitoJWTToken'] = await refreshToken(DEFAULT_COGNITO_JWT_TOKEN);
       }
     }
 
@@ -287,10 +288,10 @@ class App extends Component<{}, State> {
         .filter((auth) => auth.authenticationType === AUTH_MODE.OPENID_CONNECT)
         .map((auth: any) => auth.openIDConnectConfig.Issuer);
       try {
-        credentials['oidcJWTToken'] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.oidcToken) || '', issuers[0]);
+        credentials['oidcJWTToken'] = await refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.oidcToken) || '', issuers[0]);
       } catch (e) {
         console.warn('Invalid OIDC token found in local storage. Using the default OIDC token');
-        credentials['oidcJWTToken'] = refreshToken(DEFAULT_OIDC_JWT_TOKEN, issuers[0]);
+        credentials['oidcJWTToken'] = await refreshToken(DEFAULT_OIDC_JWT_TOKEN, issuers[0]);
       }
     }
 
@@ -329,6 +330,35 @@ class App extends Component<{}, State> {
     const clearDataModal = clearDataModalVisible ? (
       <ClearDataModal onClose={this.hideDataModal} onClear={this.clearDataAndShowMessage} />
     ) : null;
+
+    const buttons = [
+      {
+        onClick: () => this._graphiql?.handlePrettifyQuery(),
+        label: 'Prettify',
+        title: 'Prettify Query (Shift-Ctrl-P)',
+      },
+      {
+        onClick: () => this._graphiql?.handleToggleHistory(),
+        label: 'History',
+        title: 'Show History',
+      },
+      {
+        onClick: this._handleToggleExplorer,
+        label: 'Explorer',
+        title: 'Toggle Explorer',
+      },
+      {
+        onClick: this.toggleAuthModal,
+        label: 'Update Auth',
+        title: 'Auth Setting',
+      },
+      {
+        onClick: this.toggleClearDataModal,
+        label: 'Clear data',
+        title: 'Clear Mock Data',
+      },
+    ];
+
     return (
       <>
         {authModal}
@@ -351,23 +381,18 @@ class App extends Component<{}, State> {
             response={clearResponse}
           >
             <GraphiQL.Toolbar>
-              <GraphiQL.Button
-                onClick={() => this._graphiql?.handlePrettifyQuery()}
-                label="Prettify"
-                title="Prettify Query (Shift-Ctrl-P)"
-              />
-              <GraphiQL.Button onClick={() => this._graphiql?.handleToggleHistory()} label="History" title="Show History" />
-              <GraphiQL.Button onClick={this._handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
-              <GraphiQL.Button onClick={this.toggleAuthModal} label="Update Auth" title="Auth Setting" />
-              <GraphiQL.Button onClick={this.toggleClearDataModal} label="Clear data" title="Clear Mock Data" />
+              {buttons.map((button, index) => (
+                <GraphiQL.Button key={index} onClick={button.onClick} label={button.label} title={button.title} />
+              ))}
               <GraphiQL.Menu
                 label={`Auth - ${AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}${
                   this.state.currentAuthMode === 'AWS_IAM' ? `(${this.state.credentials.iamRole} Role)` : ''
                 }`}
                 title={AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}
               >
-                {authModes.map((mode) => (
+                {authModes.map((mode, index) => (
                   <GraphiQL.MenuItem
+                    key={index}
                     title={AUTH_TYPE_TO_NAME[mode]}
                     label={`Use: ${AUTH_TYPE_TO_NAME[mode]}`}
                     onSelect={() => this.switchAuthMode(mode)}

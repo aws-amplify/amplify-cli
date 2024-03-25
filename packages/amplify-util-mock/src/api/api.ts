@@ -88,6 +88,7 @@ export class APITest {
       await this.generateCode(context, appSyncConfig);
 
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
+      context.print.info(`GraphiQL IDE is available for local testing at ${this.appSyncSimulator.localhostUrl}`);
       await this.startDDBListeners(context, appSyncConfig, false);
     } catch (e) {
       const errMessage = 'Failed to start API Mocking.';

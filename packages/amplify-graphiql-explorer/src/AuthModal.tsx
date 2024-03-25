@@ -304,15 +304,15 @@ export class AuthModal extends Component<Props, State> {
       </Modal>
     );
   }
-  onGenerate() {
+  async onGenerate() {
     try {
       const newState = {
         isOpen: false,
       };
       if (this.state.currentAuthMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS) {
-        newState['currentCognitoToken'] = this.generateCognitoJWTToken();
+        newState['currentCognitoToken'] = await this.generateCognitoJWTToken();
       } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
-        newState['currentOIDCToken'] = this.generateOIDCJWTToken();
+        newState['currentOIDCToken'] = await this.generateOIDCJWTToken();
       }
       this.setState(newState, () => {
         this.onClose();
@@ -320,7 +320,7 @@ export class AuthModal extends Component<Props, State> {
     } catch (e) {}
   }
 
-  generateCognitoJWTToken() {
+  async generateCognitoJWTToken() {
     let additionalFields;
     try {
       additionalFields = JSON.parse(this.state.additionalFields?.trim() || '{}');
@@ -348,14 +348,14 @@ export class AuthModal extends Component<Props, State> {
     tokenPayload['cognito:groups'] = this.state.userGroups;
     tokenPayload['auth_time'] = Math.floor(Date.now() / 1000); // In seconds
 
-    const token = generateToken(tokenPayload);
+    const token = await generateToken(tokenPayload);
     return token;
   }
 
-  generateOIDCJWTToken() {
+  async generateOIDCJWTToken() {
     const tokenPayload = this.state.currentOIDCTokenDecoded || '';
     try {
-      return generateToken(tokenPayload);
+      return await generateToken(tokenPayload);
     } catch (e) {
       this.setState({
         oidcTokenError: e.message,

@@ -16,6 +16,7 @@ export class AppSyncSimulatorServer {
   private _httpServer: Server;
   private _realTimeSubscriptionServer: AppSyncSimulatorSubscriptionServer;
   private _url: string;
+  private _localhostUrl: string;
 
   constructor(private config: AppSyncSimulatorServerConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     this._operationServer = new OperationServer(config, simulatorContext);
@@ -49,6 +50,7 @@ export class AppSyncSimulatorServer {
     this._httpServer.listen(port);
     await fromEvent(this._httpServer, 'listening').then(() => {
       this._url = `http://${getLocalIpAddress()}:${port}`;
+      this._localhostUrl = `http://localhost:${port}`;
     });
   }
 
@@ -59,6 +61,11 @@ export class AppSyncSimulatorServer {
   get url() {
     return {
       graphql: this._url,
+    };
+  }
+  get localhostUrl() {
+    return {
+      graphql: this._localhostUrl,
     };
   }
 }
