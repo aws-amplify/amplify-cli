@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import execa from 'execa';
 import which from 'which';
 import { coerce, SemVer } from 'semver';
 import { execWithOutputAsString } from './shell-utils';
@@ -56,13 +55,7 @@ class YarnPackageManager implements PackageManager {
       if (fs.existsSync(`${resourceDir}/${this.lockFile}`)) {
         console.log(`${resourceDir}/${this.lockFile} already exists.`);
       } else {
-        fs.writeFile(`${resourceDir}/${this.lockFile}`, '', (err) => {
-          if (err) {
-            console.error(`Error creating ${resourceDir}/${this.lockFile}`, err);
-          } else {
-            console.log(`${resourceDir}/${this.lockFile} created successfully.`);
-          }
-        });
+        fs.writeFileSync(`${resourceDir}/${this.lockFile}`, '');
       }
     }
     return (useYarnModern ? ['workspaces', 'focus'] : ['--no-bin-links']).concat(buildType === 'PROD' ? ['--production'] : []);
