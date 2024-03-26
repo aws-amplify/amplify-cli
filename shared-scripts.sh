@@ -90,6 +90,7 @@ function _installAndCacheDependencies {
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
+
 function _buildLinux {
     echo Linux Build
     yarn --immutable
@@ -656,19 +657,6 @@ function _downloadReportsFromS3 {
 }
 
 function _buildTestsStandalone {
-    echo "Running yarn install --immutable"
-    yarn install --immutable
-    echo "Running yarn build-tests"
-    yarn build-tests
-}
-
-function _buildTestsStandaloneYarn3 {
-    echo "Checking Yarn version"
-    yarn --version
-    echo "Set Yarn version to 3"
-    yarn set version stable
-    echo "Checking Yarn version"
-    yarn --version
     echo "Running yarn install --immutable"
     yarn install --immutable
     echo "Running yarn build-tests"
