@@ -64,9 +64,6 @@ class YarnPackageManager implements PackageManager {
           }
         });
       }
-
-      execa.sync('yarn', ['plugin', 'import', 'workspace-tools']);
-      execa.sync('yarn', ['install']);
     }
     return (useYarnModern ? ['workspaces', 'focus'] : ['--no-bin-links']).concat(buildType === 'PROD' ? ['--production'] : []);
   };
