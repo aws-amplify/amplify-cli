@@ -478,28 +478,28 @@ batch:
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_3a.test.ts
+          TEST_SUITE: src/__tests__/function_3a_python.test.ts
       depend-on:
         - upb
     - identifier: l_function_3a_init_dotnet
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_3a.test.ts
+          TEST_SUITE: src/__tests__/function_3a_dotnet.test.ts
       depend-on:
         - upb
     - identifier: l_function_3a_init_nodejs
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_3a.test.ts
+          TEST_SUITE: src/__tests__/function_3a_nodejs.test.ts
       depend-on:
         - upb
     - identifier: l_function_3a_init_go
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_3a.test.ts
+          TEST_SUITE: src/__tests__/function_3a_go.test.ts
       depend-on:
         - upb
     - identifier: l_init_special_case
