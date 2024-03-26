@@ -6,8 +6,10 @@
   "functionTemplate": {
     "conditions": {
       "provider": "awscloudformation",
-      "services": ["Lambda"],
-      "runtime": "go1.x"
+      "services": [
+        "Lambda"
+      ],
+      "runtime": "provided.al2023"
     },
     "templates": [
       {
