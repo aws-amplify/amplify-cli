@@ -20,7 +20,7 @@ export const importMessages = {
     `The previously configured Cognito User Pool: '${userPoolName}' (${userPoolId}) cannot be found.`,
   IdentityPoolNotFound: (identityPoolName: string, identityPoolId: string) =>
     `The previously configured Identity Pool: '${identityPoolName}' (${identityPoolId}) cannot be found.`,
-  AppClientNotFound: (type: 'Web' | 'Native', clientId: string) => `The previously configured ${type} app client cannot be found.`,
+  AppClientNotFound: (type: 'Web' | 'Native') => `The previously configured ${type} app client cannot be found.`,
   NoAtLeastOneAppClient: (type: 'Web' | 'Native') =>
     `The selected Cognito User Pool does not have at least 1 ${type} app client configured. ${type} app clients are app clients ${
       type === 'Web' ? 'without' : 'with'

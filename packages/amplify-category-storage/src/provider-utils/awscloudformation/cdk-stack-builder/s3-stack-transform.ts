@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { AmplifyS3ResourceTemplate, getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
+import { getProjectInfo } from '@aws-amplify/cli-extensibility-helper';
 import {
   $TSAny,
   $TSContext,
@@ -12,7 +12,6 @@ import {
   pathManager,
   runOverride,
 } from '@aws-amplify/amplify-cli-core';
-import { formatter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { S3PermissionType, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';

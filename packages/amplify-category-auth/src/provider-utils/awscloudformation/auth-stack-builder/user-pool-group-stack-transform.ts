@@ -4,7 +4,6 @@ import {
   AmplifyCategories,
   AmplifyCategoryTransform,
   AmplifyError,
-  AmplifyStackTemplate,
   AmplifySupportedService,
   buildOverrideDir,
   CFNTemplateFormat,
@@ -14,9 +13,7 @@ import {
   Template,
   writeCFNTemplate,
 } from '@aws-amplify/amplify-cli-core';
-import { formatter } from '@aws-amplify/amplify-prompts';
 import * as cdk from 'aws-cdk-lib';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';

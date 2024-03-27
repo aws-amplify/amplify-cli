@@ -743,7 +743,19 @@
       "medianRuntime": 27
     },
     {
-      "test": "src/__tests__/function_3a.test.ts",
+      "test": "src/__tests__/function_3a_go.test.ts",
+      "medianRuntime": 27
+    },
+    {
+      "test": "src/__tests__/function_3a_python.test.ts",
+      "medianRuntime": 27
+    },
+    {
+      "test": "src/__tests__/function_3a_dotnet.test.ts",
+      "medianRuntime": 27
+    },
+    {
+      "test": "src/__tests__/function_3a_nodejs.test.ts",
       "medianRuntime": 27
     },
     {

@@ -4,7 +4,6 @@ import {
   AmplifyCategories,
   AmplifyCategoryTransform,
   AmplifyError,
-  AmplifyStackTemplate,
   AmplifySupportedService,
   buildOverrideDir,
   CFNTemplateFormat,
@@ -16,7 +15,6 @@ import {
   Template,
   writeCFNTemplate,
 } from '@aws-amplify/amplify-cli-core';
-import { formatter } from '@aws-amplify/amplify-prompts';
 import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -95,7 +93,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this.addCfnParameters(props);
 
     // add CFN condition
-    this.addCfnConditions(props);
+    this.addCfnConditions();
     // generate Resources
 
     await this._authTemplateObj.generateCognitoStackResources(props);
@@ -544,7 +542,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   /**
    *  adds cfn conditions
    */
-  private addCfnConditions = (props: CognitoStackOptions): void => {
+  private addCfnConditions = (): void => {
     this._authTemplateObj.addCfnCondition(
       {
         expression: cdk.Fn.conditionEquals(cdk.Fn.ref('env'), 'NONE'),

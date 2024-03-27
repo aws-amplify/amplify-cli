@@ -93,7 +93,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
   await initializeEnv(context, currentAmplifyMeta);
 
   if (!context.parameters.options?.app) {
-    printWelcomeMessage(context);
+    printWelcomeMessage();
   }
 };
 
@@ -217,7 +217,7 @@ const generateHooksSampleDirectory = (context: $TSContext): void => {
   stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
 };
 
-const printWelcomeMessage = (context: $TSContext): void => {
+const printWelcomeMessage = (): void => {
   printer.success('Your project has been successfully initialized and connected to the cloud!');
   printer.info('Some next steps:', 'green');
   printer.info(`

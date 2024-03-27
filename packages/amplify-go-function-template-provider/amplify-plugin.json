@@ -7,7 +7,7 @@
     "conditions": {
       "provider": "awscloudformation",
       "services": ["Lambda"],
-      "runtime": "go1.x"
+      "runtime": "provided.al2023"
     },
     "templates": [
       {
