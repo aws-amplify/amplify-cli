@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.7](https://github.com/awsluja/amplify-cli/compare/amplify-headless-interface@1.17.6...amplify-headless-interface@1.17.7) (2024-03-26)
+
+**Note:** Version bump only for package amplify-headless-interface
+
+
+
+
+
 ## [1.17.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.4...amplify-headless-interface@1.17.6) (2023-11-08)
 
 
