@@ -101,12 +101,13 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
     // for go@1.16, dependencies must be manually installed
     executeCommand(['mod', 'tidy', '-v'], true, envVars, srcDir);
     // Execute the build command, cwd must be the source file directory (Windows requires it)
+    // Details: https://github.com/aws/aws-lambda-go
     executeCommand(['build', '-o', 'bootstrap', 'main.go'], true, envVars, srcDir);
     // Compress this binary into a ZIP file deployment package, ready to deploy to Lambda
     if (isWindows) {
       executeCommand(['%USERPROFILE%Go\bin\build-lambda-zip.exe', '-o', 'lambda-handler.zip', 'bootstrap'], true, envVars, srcDir);
     } else {
-      executeCommand(['zip', 'lambda-handler.zip', 'bootstrap'], true, envVars, srcDir);
+      await execa('zip', ['lambda-handler.zip', 'bootstrap'], { cwd: srcDir, env: envVars });
     }
 
     rebuilt = true;
