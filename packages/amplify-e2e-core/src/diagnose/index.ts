@@ -13,6 +13,8 @@ export const diagnoseSendReport = async (cwd: string): Promise<string> => {
   };
   await spawn(getCLIPath(), ['diagnose', '--send-report'], { cwd, stripColors: true })
     .wait(/Report saved/, callback)
+    .wait(/Done/)
+    .sendEof()
     .runAsync();
   return path;
 };
