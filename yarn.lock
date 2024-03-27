@@ -152,16 +152,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.9.1":
-  version: 5.9.1
-  resolution: "@aws-amplify/amplify-category-api@npm:5.9.1"
+"@aws-amplify/amplify-category-api@npm:5.9.2-ecs-tagging-permissions.0":
+  version: 5.9.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/amplify-category-api@npm:5.9.2-ecs-tagging-permissions.0"
   dependencies:
-    "@aws-amplify/graphql-auth-transformer": 3.3.1
-    "@aws-amplify/graphql-schema-generator": 0.6.1
-    "@aws-amplify/graphql-transformer": 1.3.5
-    "@aws-amplify/graphql-transformer-core": 2.4.1
-    "@aws-amplify/graphql-transformer-interfaces": 3.3.2
-    "@aws-amplify/graphql-transformer-migrator": 2.2.14
+    "@aws-amplify/graphql-auth-transformer": 3.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-schema-generator": 0.6.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer": 1.3.6-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-migrator": 2.2.15-ecs-tagging-permissions.0
     "@aws-cdk/aws-apigatewayv2-alpha": ~2.80.0-alpha.0
     "@aws-sdk/client-ec2": 3.338.0
     "@aws-sdk/client-iam": 3.338.0
@@ -173,18 +173,18 @@ __metadata:
     cloudform-types: ^4.2.0
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-auth-transformer: 7.2.72
-    graphql-connection-transformer: 5.2.70
-    graphql-dynamodb-transformer: 7.2.70
-    graphql-elasticsearch-transformer: 5.2.71
-    graphql-function-transformer: 3.3.61
-    graphql-http-transformer: 5.2.70
-    graphql-key-transformer: 3.2.70
-    graphql-predictions-transformer: 3.2.70
-    graphql-relational-schema-transformer: 2.21.26
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
-    graphql-versioned-transformer: 5.2.70
+    graphql-auth-transformer: 7.2.73-ecs-tagging-permissions.0
+    graphql-connection-transformer: 5.2.71-ecs-tagging-permissions.0
+    graphql-dynamodb-transformer: 7.2.71-ecs-tagging-permissions.0
+    graphql-elasticsearch-transformer: 5.2.72-ecs-tagging-permissions.0
+    graphql-function-transformer: 3.3.62-ecs-tagging-permissions.0
+    graphql-http-transformer: 5.2.71-ecs-tagging-permissions.0
+    graphql-key-transformer: 3.2.71-ecs-tagging-permissions.0
+    graphql-predictions-transformer: 3.2.71-ecs-tagging-permissions.0
+    graphql-relational-schema-transformer: 2.21.27-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+    graphql-versioned-transformer: 5.2.71-ecs-tagging-permissions.0
     import-from: ^3.0.0
     import-global: ^0.1.0
     inquirer: ^7.3.3
@@ -203,7 +203,7 @@ __metadata:
     amplify-util-headless-input: ^1.9.15
     aws-cdk-lib: ^2.80.0
     constructs: ^10.0.5
-  checksum: 5b2b4b27f57e9311f6235139799aef1c08e11e1c7a29935af086470e75212efed0750a69a622dd29c93422be08bb6ca3ea3e9769c7c66f23e8d62a0aa8974b83
+  checksum: 9c3a0612d193bcf5cdceb76fcc287e35efd59f0016a569779a9b270694fe41f666f9062519aa383b6912a2694b4835505acbbc3eafbc5d4115aba84481e2edcd
   languageName: node
   linkType: hard
 
@@ -277,7 +277,7 @@ __metadata:
     folder-hash: ^4.0.2
     fs-extra: ^8.1.0
     globby: ^11.0.3
-    graphql-transformer-core: ^8.2.3
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     inquirer: ^7.3.3
     inquirer-datepicker: ^2.0.0
     jest: ^29.5.0
@@ -399,7 +399,7 @@ __metadata:
     "@aws-amplify/amplify-cli-logger": 1.3.9
     "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@aws-amplify/amplify-prompts": 2.8.7
-    "@aws-amplify/graphql-transformer-interfaces": ^3.3.2
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
     "@aws-sdk/util-arn-parser": ^3.310.0
     "@types/ejs": ^3.1.1
     "@types/fs-extra": ^8.0.1
@@ -503,7 +503,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.9.1
+    "@aws-amplify/amplify-category-api": 5.9.2-ecs-tagging-permissions.0
     "@aws-amplify/amplify-cli-core": 4.3.1
     "@aws-amplify/amplify-environment-parameters": 1.9.6
     fs-extra: ^8.1.0
@@ -522,7 +522,7 @@ __metadata:
     "@types/inquirer": ^6.5.0
     "@types/lodash": ^4.14.149
     "@types/node": ^12.12.6
-    graphql-transformer-core: ^8.2.3
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
   languageName: unknown
   linkType: soft
 
@@ -542,7 +542,7 @@ __metadata:
     dotenv: ^8.2.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
-    graphql-transformer-core: ^8.2.3
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     ini: ^1.3.5
     jest-circus: ^27.0.0
     jest-environment-node: ^26.6.2
@@ -734,7 +734,7 @@ __metadata:
     aws-cdk-lib: ~2.80.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
-    graphql-transformer-core: ^8.2.3
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     jest: ^29.5.0
     lodash: ^4.17.21
     semver: ^7.5.4
@@ -754,7 +754,7 @@ __metadata:
     "@types/fs-extra": ^8.0.1
     "@types/inquirer": ^6.5.0
     "@types/node": ^12.12.6
-    graphql-transformer-core: ^8.2.3
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     lodash: ^4.17.21
   languageName: unknown
   linkType: soft
@@ -804,8 +804,8 @@ __metadata:
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/amplify-util-import": 2.8.4
     "@aws-amplify/cli-extensibility-helper": 3.0.25
-    "@aws-amplify/graphql-transformer-core": ^2.4.1
-    "@aws-amplify/graphql-transformer-interfaces": ^3.3.2
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
     "@types/columnify": ^1.5.0
     "@types/deep-diff": ^1.0.0
     "@types/folder-hash": ^4.0.1
@@ -828,7 +828,7 @@ __metadata:
     fs-extra: ^8.1.0
     glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-core: ^8.2.3
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     ignore: ^5.2.0
     ini: ^1.3.5
     inquirer: ^7.3.3
@@ -880,20 +880,20 @@ __metadata:
     "@aws-amplify/amplify-opensearch-simulator": 1.7.6
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/amplify-provider-awscloudformation": 8.10.3
-    "@aws-amplify/graphql-auth-transformer": ^3.3.1
-    "@aws-amplify/graphql-default-value-transformer": ^2.2.1
-    "@aws-amplify/graphql-function-transformer": ^2.1.13
-    "@aws-amplify/graphql-http-transformer": ^2.1.13
-    "@aws-amplify/graphql-index-transformer": ^2.3.1
-    "@aws-amplify/graphql-maps-to-transformer": ^3.4.1
-    "@aws-amplify/graphql-model-transformer": ^2.4.1
-    "@aws-amplify/graphql-predictions-transformer": ^2.1.13
-    "@aws-amplify/graphql-relational-transformer": ^2.3.1
-    "@aws-amplify/graphql-searchable-transformer": ^2.4.1
+    "@aws-amplify/graphql-auth-transformer": 3.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-default-value-transformer": 2.2.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-function-transformer": 2.1.14-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-http-transformer": 2.1.14-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-index-transformer": 2.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-maps-to-transformer": 3.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-model-transformer": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-predictions-transformer": 2.1.14-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-relational-transformer": 2.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-searchable-transformer": 2.4.2-ecs-tagging-permissions.0
     "@aws-amplify/graphql-transformer": ^1.1.0
-    "@aws-amplify/graphql-transformer-core": ^2.4.1
-    "@aws-amplify/graphql-transformer-interfaces": ^3.3.2
-    "@aws-amplify/graphql-transformer-migrator": ^2.2.14
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-migrator": 2.2.15-ecs-tagging-permissions.0
     "@hapi/topo": ^5.0.0
     "@types/detect-port": ^1.3.0
     "@types/jest": ^29.0.0
@@ -917,14 +917,14 @@ __metadata:
     execa: ^5.1.1
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-auth-transformer: ^7.2.72
-    graphql-connection-transformer: ^5.2.70
-    graphql-dynamodb-transformer: ^7.2.70
-    graphql-function-transformer: ^3.3.61
-    graphql-key-transformer: ^3.2.70
+    graphql-auth-transformer: 7.2.73-ecs-tagging-permissions.0
+    graphql-connection-transformer: 5.2.71-ecs-tagging-permissions.0
+    graphql-dynamodb-transformer: 7.2.71-ecs-tagging-permissions.0
+    graphql-function-transformer: 3.3.62-ecs-tagging-permissions.0
+    graphql-key-transformer: 3.2.71-ecs-tagging-permissions.0
     graphql-tag: ^2.10.1
-    graphql-transformer-core: ^8.2.3
-    graphql-versioned-transformer: ^5.2.70
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+    graphql-versioned-transformer: 5.2.71-ecs-tagging-permissions.0
     inquirer: ^7.3.3
     isomorphic-fetch: ^3.0.0
     jest: ^29.0.0
@@ -942,7 +942,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.9.1
+    "@aws-amplify/amplify-category-api": 5.9.2-ecs-tagging-permissions.0
     "@aws-amplify/amplify-cli-core": 4.3.1
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
@@ -1073,7 +1073,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-app": 5.0.27
     "@aws-amplify/amplify-category-analytics": 5.0.27
-    "@aws-amplify/amplify-category-api": ^5.9.1
+    "@aws-amplify/amplify-category-api": 5.9.2-ecs-tagging-permissions.0
     "@aws-amplify/amplify-category-auth": 3.7.6
     "@aws-amplify/amplify-category-custom": 3.1.15
     "@aws-amplify/amplify-category-function": 5.7.1
@@ -1139,7 +1139,7 @@ __metadata:
     fs-extra: ^8.1.0
     glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-core: ^8.2.3
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     gunzip-maybe: ^1.4.2
     hidefile: ^3.0.0
     ini: ^1.3.5
@@ -1251,7 +1251,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-auth-transformer@npm:3.3.1, @aws-amplify/graphql-auth-transformer@npm:^3.3.1":
+"@aws-amplify/graphql-auth-transformer@npm:3.3.1":
   version: 3.3.1
   resolution: "@aws-amplify/graphql-auth-transformer@npm:3.3.1"
   dependencies:
@@ -1271,7 +1271,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-default-value-transformer@npm:2.2.1, @aws-amplify/graphql-default-value-transformer@npm:^2.2.1":
+"@aws-amplify/graphql-auth-transformer@npm:3.3.2-ecs-tagging-permissions.0":
+  version: 3.3.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-auth-transformer@npm:3.3.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-model-transformer": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-relational-transformer": 2.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    lodash: ^4.17.21
+    md5: ^2.3.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 9f0d4434f01306d4bd7f60678405304a51066417b157ed1a72895bdb36ff26bd27b810f0533fdb9f72ac45e17ac8e743a8a04f0c034f062542a9d941be37d883
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-default-value-transformer@npm:2.2.1":
   version: 2.2.1
   resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.2.1"
   dependencies:
@@ -1282,6 +1302,20 @@ __metadata:
     graphql-transformer-common: 4.27.0
     libphonenumber-js: 1.9.47
   checksum: b61e6d2bf415e9e2f4334bb40fff6a658877895fb33544be88b82f3bbeac8bd942dc3fd2984417bac3f2af1eb43b6173f6ec571494a5a34831cc43ca65720130
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-default-value-transformer@npm:2.2.2-ecs-tagging-permissions.0":
+  version: 2.2.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.2.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    libphonenumber-js: 1.9.47
+  checksum: dc0b48d21fe1384823f241ae97619e9c159cf1bff2aae34c255ca17b577dd78781262c51cfd36a468293fc6705ea478ee5bb5de003f9db81920200fa2b2326d0
   languageName: node
   linkType: hard
 
@@ -1298,7 +1332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-function-transformer@npm:2.1.13, @aws-amplify/graphql-function-transformer@npm:^2.1.13":
+"@aws-amplify/graphql-function-transformer@npm:2.1.13":
   version: 2.1.13
   resolution: "@aws-amplify/graphql-function-transformer@npm:2.1.13"
   dependencies:
@@ -1311,6 +1345,22 @@ __metadata:
     aws-cdk-lib: ^2.80.0
     constructs: ^10.0.5
   checksum: e403f071cd88cf87a9fbcf5f04df2a1db657338ea1db3056dd0fee852b7f20f08a4c3ebb76d8c99c6a36b2bc395b2f67ac4633641345b2f923a163251a6f6859
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-function-transformer@npm:2.1.14-ecs-tagging-permissions.0":
+  version: 2.1.14-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-function-transformer@npm:2.1.14-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: cdd3e365d34dd45f8c70d2cccdee784a5e90f8ab84f0738aed0be2456e833e4dc37ff50b1f820b7ba3023b1aaacabe9a77e23c847e1fc66cf017e2b562387cc1
   languageName: node
   linkType: hard
 
@@ -1329,7 +1379,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-http-transformer@npm:2.1.13, @aws-amplify/graphql-http-transformer@npm:^2.1.13":
+"@aws-amplify/graphql-http-transformer@npm:2.1.13":
   version: 2.1.13
   resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.13"
   dependencies:
@@ -1345,7 +1395,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-index-transformer@npm:2.3.1, @aws-amplify/graphql-index-transformer@npm:^2.3.1":
+"@aws-amplify/graphql-http-transformer@npm:2.1.14-ecs-tagging-permissions.0":
+  version: 2.1.14-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.14-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: ed64d819a4d2f26dc7b9c03f0f763f937cf005daf15940c2a48982853f88cc16090d98a334e17cc602ccb112f252cba053c039450f14c16ffb0cd0eeefbae121
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-index-transformer@npm:2.3.1":
   version: 2.3.1
   resolution: "@aws-amplify/graphql-index-transformer@npm:2.3.1"
   dependencies:
@@ -1362,7 +1428,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-maps-to-transformer@npm:3.4.1, @aws-amplify/graphql-maps-to-transformer@npm:^3.4.1":
+"@aws-amplify/graphql-index-transformer@npm:2.3.2-ecs-tagging-permissions.0":
+  version: 2.3.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-index-transformer@npm:2.3.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-model-transformer": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 03bc05bd24b0185f53713244d021de15f9a08167ca128c018df522e86ff14bebe80d0593d0fd9bc347ab817eb3b41e6ea76d8e8d09d2a42ea190241aeb1876d9
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-maps-to-transformer@npm:3.4.1":
   version: 3.4.1
   resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.4.1"
   dependencies:
@@ -1377,7 +1460,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-model-transformer@npm:2.4.1, @aws-amplify/graphql-model-transformer@npm:^2.4.1":
+"@aws-amplify/graphql-maps-to-transformer@npm:3.4.2-ecs-tagging-permissions.0":
+  version: 3.4.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.4.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 0564d5e9933c45c2c3c52be359a61ddc7474e26bc011dbf16f2f8a57ae035f63aa8bf3cfa51c403494d8d3dfbe9561c5e2cf69e282b1366f28c9a34499be172f
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-model-transformer@npm:2.4.1":
   version: 2.4.1
   resolution: "@aws-amplify/graphql-model-transformer@npm:2.4.1"
   dependencies:
@@ -1393,7 +1491,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-predictions-transformer@npm:2.1.13, @aws-amplify/graphql-predictions-transformer@npm:^2.1.13":
+"@aws-amplify/graphql-model-transformer@npm:2.4.2-ecs-tagging-permissions.0":
+  version: 2.4.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-model-transformer@npm:2.4.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: cf454c771a46595c09793c836d72b5e8318de157e208949a0714d616e5f76592730183c7402966cf7827a6f85069633c66ff720e6f436b373a73fd730c20317c
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-predictions-transformer@npm:2.1.13":
   version: 2.1.13
   resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.1.13"
   dependencies:
@@ -1409,7 +1523,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-relational-transformer@npm:2.3.1, @aws-amplify/graphql-relational-transformer@npm:^2.3.1":
+"@aws-amplify/graphql-predictions-transformer@npm:2.1.14-ecs-tagging-permissions.0":
+  version: 2.1.14-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.1.14-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 994e0d0b5a8040cd0b98f933f7ee5ecfde7f7e9bda426d46265f20893265513148d389b56b29593387975926ec7ec94d74ec6589fb1c3573ae85220bc3ce8dab
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-relational-transformer@npm:2.3.1":
   version: 2.3.1
   resolution: "@aws-amplify/graphql-relational-transformer@npm:2.3.1"
   dependencies:
@@ -1428,12 +1558,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-schema-generator@npm:0.6.1":
-  version: 0.6.1
-  resolution: "@aws-amplify/graphql-schema-generator@npm:0.6.1"
+"@aws-amplify/graphql-relational-transformer@npm:2.3.2-ecs-tagging-permissions.0":
+  version: 2.3.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-relational-transformer@npm:2.3.2-ecs-tagging-permissions.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 2.4.1
-    "@aws-amplify/graphql-transformer-interfaces": 3.3.2
+    "@aws-amplify/graphql-index-transformer": 2.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-model-transformer": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    immer: ^9.0.12
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 2b68c729680f62179fea3cc4af0572962b1f61d4cf4cef41b2f5d0cf7ac8b9258de6aaf2187b51db6916af01de399fc8ca2dd3795b321f12b7224abbb0fb5511
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-schema-generator@npm:0.6.2-ecs-tagging-permissions.0":
+  version: 0.6.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-schema-generator@npm:0.6.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
     "@aws-sdk/client-ec2": 3.338.0
     "@aws-sdk/client-iam": 3.338.0
     "@aws-sdk/client-lambda": 3.338.0
@@ -1441,7 +1590,7 @@ __metadata:
     csv-parse: ^5.5.2
     fs-extra: 11.1.1
     graphql: ^15.5.0
-    graphql-transformer-common: 4.27.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
     knex: ~2.4.0
     mysql2: ~2.3.3
     ora: ^4.0.3
@@ -1449,11 +1598,11 @@ __metadata:
     pluralize: ^8.0.0
   peerDependencies:
     "@aws-amplify/amplify-prompts": ^2.8.4
-  checksum: 29da83a675e467a4b8d100a9c9e939c185eadf0e7cb13f23298063689b141cda3c25aa27139d2cab40491f8d8879ecf022f2f32af764b07cb8bc44bec22bd04e
+  checksum: 649a626e116a1d5b0185a97df721eaa20a812e34cccabea9cbb612bd47d6d706996258d64ac2063f9fe8c5a964df7eaa3d94d80199fb71b0e222fba60c227146
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-searchable-transformer@npm:2.4.1, @aws-amplify/graphql-searchable-transformer@npm:^2.4.1":
+"@aws-amplify/graphql-searchable-transformer@npm:2.4.1":
   version: 2.4.1
   resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.4.1"
   dependencies:
@@ -1467,6 +1616,23 @@ __metadata:
     aws-cdk-lib: ^2.80.0
     constructs: ^10.0.5
   checksum: cf84dcbed94c69d2b1eeb50629f83b3470cd6898a27e23d62ed49a64ff5fa28820e5d27b155cfd6d995ea933e4e8cf9026a12e847aab125515932602fa56be44
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-searchable-transformer@npm:2.4.2-ecs-tagging-permissions.0":
+  version: 2.4.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.4.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-model-transformer": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: e1a7f470c96bff83e726146c8627f1cef19bb19965451a93b3e186eb910300524db8ed43745d12ad961ebe29edee0587d202d4f9e6e833415bbe60ba9296ce85
   languageName: node
   linkType: hard
 
@@ -1487,7 +1653,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-core@npm:2.4.1, @aws-amplify/graphql-transformer-core@npm:^2.4.1":
+"@aws-amplify/graphql-sql-transformer@npm:0.2.2-ecs-tagging-permissions.0":
+  version: 0.2.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-sql-transformer@npm:0.2.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-model-transformer": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: c668b3b95b476ef2134396b3de46aa133bb77c7acfdf071df3982d82e4285bb5bf97f1a45dc399f7fd459c8cc20b127fece09c0717afd237e258f5be0410acc2
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer-core@npm:2.4.1":
   version: 2.4.1
   resolution: "@aws-amplify/graphql-transformer-core@npm:2.4.1"
   dependencies:
@@ -1507,7 +1690,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-interfaces@npm:3.3.2, @aws-amplify/graphql-transformer-interfaces@npm:^3.3.2":
+"@aws-amplify/graphql-transformer-core@npm:2.4.2-ecs-tagging-permissions.0":
+  version: 2.4.2-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-transformer-core@npm:2.4.2-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+    fs-extra: ^8.1.0
+    graphql: ^15.5.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    hjson: ^3.2.2
+    lodash: ^4.17.21
+    md5: ^2.3.0
+    object-hash: ^3.0.0
+    ts-dedent: ^2.0.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 331bba60dcd8857e619d500e30c8df383a7647040e994a2508213d8db0fa60363a3a6f074c1de4bdd236439848a1ea49243a46ef562afe8f25fc499a41d35288
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer-interfaces@npm:3.3.2":
   version: 3.3.2
   resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.3.2"
   dependencies:
@@ -1519,25 +1722,61 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-migrator@npm:2.2.14, @aws-amplify/graphql-transformer-migrator@npm:^2.2.14":
-  version: 2.2.14
-  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.2.14"
+"@aws-amplify/graphql-transformer-interfaces@npm:3.3.3-ecs-tagging-permissions.0":
+  version: 3.3.3-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.3.3-ecs-tagging-permissions.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 2.4.1
-    fs-extra: ^8.1.0
-    glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-common: 4.27.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 7e3fc361547dc8ae6089fcc312529ac7cf51f3c2c0d595aaa6bffaa4035ae335498008ecc51990f9b2f24de246fe4487ecd171b4a412d9e66bd82a5cc78c7ed4
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer-migrator@npm:2.2.15-ecs-tagging-permissions.0":
+  version: 2.2.15-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.2.15-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    fs-extra: ^8.1.0
+    glob: ^10.3.0
+    graphql: ^15.5.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
     lodash: ^4.17.21
   peerDependencies:
     "@aws-amplify/amplify-cli-core": ^4.2.10
     "@aws-amplify/amplify-environment-parameters": ^1.9.1
     "@aws-amplify/amplify-prompts": ^2.8.4
-  checksum: 51075f053b935a8d2aafad6ad5d099e664a6e3232a1134a0d86e9b848b4dc267027b1709180ea5271bde0f6f71bc0b53d88d823ae37638915761037e362308d1
+  checksum: 9f71fa215c4b10bd2b18f6656345830f91ff40b848c382f6904c77372830357664e13baf26b66077e326491b0894de5595ad719bba2f40d957225d3781887957
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer@npm:1.3.5, @aws-amplify/graphql-transformer@npm:^1.1.0":
+"@aws-amplify/graphql-transformer@npm:1.3.6-ecs-tagging-permissions.0":
+  version: 1.3.6-ecs-tagging-permissions.0
+  resolution: "@aws-amplify/graphql-transformer@npm:1.3.6-ecs-tagging-permissions.0"
+  dependencies:
+    "@aws-amplify/graphql-auth-transformer": 3.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-default-value-transformer": 2.2.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-function-transformer": 2.1.14-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-http-transformer": 2.1.14-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-index-transformer": 2.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-maps-to-transformer": 3.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-model-transformer": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-predictions-transformer": 2.1.14-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-relational-transformer": 2.3.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-searchable-transformer": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-sql-transformer": 0.2.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.3.3-ecs-tagging-permissions.0
+  peerDependencies:
+    aws-cdk-lib: ^2.80.0
+    constructs: ^10.0.5
+  checksum: 02da3c13b5c69176f45d44e3f923007fcd38691ad225bdff13fd77e5a6436c75b5d50de7d9c9c23138ba46a37536172f4d960f204b0bbb0888db32a09d13c771
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer@npm:^1.1.0":
   version: 1.3.5
   resolution: "@aws-amplify/graphql-transformer@npm:1.3.5"
   dependencies:
@@ -9461,6 +9700,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@isaacs/cliui@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "@isaacs/cliui@npm:8.0.2"
+  dependencies:
+    string-width: ^5.1.2
+    string-width-cjs: "npm:string-width@^4.2.0"
+    strip-ansi: ^7.0.1
+    strip-ansi-cjs: "npm:strip-ansi@^6.0.1"
+    wrap-ansi: ^8.1.0
+    wrap-ansi-cjs: "npm:wrap-ansi@^7.0.0"
+  checksum: b1bf42535d49f11dc137f18d5e4e63a28c5569de438a221c369483731e9dac9fb797af554e8bf02b6192d1e5eba6e6402cf93900c3d0ac86391d00d04876789e
+  languageName: node
+  linkType: hard
+
 "@isaacs/string-locale-compare@npm:^1.1.0":
   version: 1.1.0
   resolution: "@isaacs/string-locale-compare@npm:1.1.0"
@@ -14102,7 +14355,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.3.1
     "@aws-amplify/amplify-e2e-core": 5.5.1
     "@aws-amplify/amplify-opensearch-simulator": 1.7.6
-    "@aws-amplify/graphql-transformer-core": ^2.4.1
+    "@aws-amplify/graphql-transformer-core": 2.4.2-ecs-tagging-permissions.0
     "@aws-sdk/client-appsync": ^3.303.0
     "@aws-sdk/client-dynamodb": ^3.303.0
     "@aws-sdk/client-s3": ^3.303.0
@@ -14132,7 +14385,7 @@ __metadata:
     get-port: ^5.1.1
     glob: ^8.0.3
     graphql-tag: ^2.10.1
-    graphql-transformer-core: ^8.2.3
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     isomorphic-fetch: ^3.0.0
     jest: ^29.5.0
     lodash: ^4.17.21
@@ -20680,18 +20933,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.2":
-  version: 10.2.2
-  resolution: "glob@npm:10.2.2"
+"glob@npm:^10.2.2, glob@npm:^10.3.0":
+  version: 10.3.10
+  resolution: "glob@npm:10.3.10"
   dependencies:
     foreground-child: ^3.1.0
-    jackspeak: ^2.0.3
-    minimatch: ^9.0.0
-    minipass: ^5.0.0
-    path-scurry: ^1.7.0
+    jackspeak: ^2.3.5
+    minimatch: ^9.0.1
+    minipass: ^5.0.0 || ^6.0.2 || ^7.0.0
+    path-scurry: ^1.10.1
   bin:
-    glob: dist/cjs/src/bin.js
-  checksum: 24238fc36ea34f4874e858eeda7d94ae2de6dbdd40d8a75dc707dc20853357394a12e9340b3e46f9e50231bf904b15e5dec15d2de63631bb1d2e8d4920c04996
+    glob: dist/esm/bin.mjs
+  checksum: 13d8a1feb7eac7945f8c8480e11cd4a44b24d26503d99a8d8ac8d5aefbf3e9802a2b6087318a829fad04cb4e829f25c5f4f1110c68966c498720dd261c7e344d
   languageName: node
   linkType: hard
 
@@ -20900,16 +21153,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-auth-transformer@npm:7.2.72, graphql-auth-transformer@npm:^7.2.72":
-  version: 7.2.72
-  resolution: "graphql-auth-transformer@npm:7.2.72"
+"graphql-auth-transformer@npm:7.2.73-ecs-tagging-permissions.0":
+  version: 7.2.73-ecs-tagging-permissions.0
+  resolution: "graphql-auth-transformer@npm:7.2.73-ecs-tagging-permissions.0"
   dependencies:
     graphql: ^15.5.0
-    graphql-connection-transformer: 5.2.70
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
-  checksum: e4f365986e5ea0a52b71953d0eaf4cf1b32fa40f0d6548a1d7f9c459cfe8fef6307cf1bfd815c69a423b0c5469790f19d11e443507b9d42e481ceef6c00e6a38
+    graphql-connection-transformer: 5.2.71-ecs-tagging-permissions.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+  checksum: 6ed5b854acfe4f8f895d274b36af5f83ebe6ebaba78720e39931aeced0214c9be4660cd9a26cc774ec6f7b5fbcedad95e043597aff54a8f5b10efd9302db878c
   languageName: node
   linkType: hard
 
@@ -20949,73 +21202,73 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-connection-transformer@npm:5.2.70, graphql-connection-transformer@npm:^5.2.70":
-  version: 5.2.70
-  resolution: "graphql-connection-transformer@npm:5.2.70"
+"graphql-connection-transformer@npm:5.2.71-ecs-tagging-permissions.0":
+  version: 5.2.71-ecs-tagging-permissions.0
+  resolution: "graphql-connection-transformer@npm:5.2.71-ecs-tagging-permissions.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-dynamodb-transformer: 7.2.70
-    graphql-key-transformer: 3.2.70
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
-  checksum: 23ec252e8c04f96285b92e634efc61553cd6e1373bb808bf00fa5ad4c71b318edc8cc105d2737bdce7f89190a2188b3b83e14213eff33c59d6afbbd36fbb01ae
+    graphql-dynamodb-transformer: 7.2.71-ecs-tagging-permissions.0
+    graphql-key-transformer: 3.2.71-ecs-tagging-permissions.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+  checksum: f0a94d4688bb291f9639a040ebc9f32d90776962ef81f75f2c4db427dec0915563285ee8f5e51961c3a14717d9bfa716c72eeed28070edc5d9894f5a9124e12b
   languageName: node
   linkType: hard
 
-"graphql-dynamodb-transformer@npm:7.2.70, graphql-dynamodb-transformer@npm:^7.2.70":
-  version: 7.2.70
-  resolution: "graphql-dynamodb-transformer@npm:7.2.70"
+"graphql-dynamodb-transformer@npm:7.2.71-ecs-tagging-permissions.0":
+  version: 7.2.71-ecs-tagging-permissions.0
+  resolution: "graphql-dynamodb-transformer@npm:7.2.71-ecs-tagging-permissions.0"
   dependencies:
     "@types/pluralize": ^0.0.29
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     md5: ^2.2.1
     pluralize: ^8.0.0
-  checksum: c64e462e631be58010e179c8ddc32c529aa03b11fb43e5ea8d98355f8ba5a50c819b9658a6d418a7b4c75f81057a2ea456403fa2fe4d12a47943c8c2c572434a
+  checksum: 02185e7d72752de6095c8660e796f787cb02ce625317b412498ae00e112027018427fe896f109a4c857d89c7e650759da00690778451e4dfbef8a171f6c0ae6a
   languageName: node
   linkType: hard
 
-"graphql-elasticsearch-transformer@npm:5.2.71":
-  version: 5.2.71
-  resolution: "graphql-elasticsearch-transformer@npm:5.2.71"
+"graphql-elasticsearch-transformer@npm:5.2.72-ecs-tagging-permissions.0":
+  version: 5.2.72-ecs-tagging-permissions.0
+  resolution: "graphql-elasticsearch-transformer@npm:5.2.72-ecs-tagging-permissions.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
-  checksum: bbc4bcb1eb1b01014e7f2d2eb7d11ac5b1bb9b9288f525bce3b0a571829cfaf30d3754114a7ec53e0e071441b84e370e7eb6ac83a0b83ee7e09484569517d3b3
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+  checksum: 4af28b0022a4f1a4bc457507fb36b6966589563329de74ad8aaa684c2fbe50ea3c6834f397fb0ab437caf4f775a6fd45bc72f9d41f4683bcb4e81dbd317cdefe
   languageName: node
   linkType: hard
 
-"graphql-function-transformer@npm:3.3.61, graphql-function-transformer@npm:^3.3.61":
-  version: 3.3.61
-  resolution: "graphql-function-transformer@npm:3.3.61"
+"graphql-function-transformer@npm:3.3.62-ecs-tagging-permissions.0":
+  version: 3.3.62-ecs-tagging-permissions.0
+  resolution: "graphql-function-transformer@npm:3.3.62-ecs-tagging-permissions.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
-  checksum: d17d57e691b7ff92f16a73546b3e3a2bc5f61efa2d018af508c9cdc7f8d03c99c2ac3c42ba66ee6f425570768d108999cf743b0db49e9428c8d63ead8cffa002
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+  checksum: d86b22c8967da7f570f2d06078dc1f69f7966fad6390a22bd365971405185c13b9e509fe8756fd5aa5a762c241b4e1e4aac7dc49a477af4031061d9e9e66b660
   languageName: node
   linkType: hard
 
-"graphql-http-transformer@npm:5.2.70":
-  version: 5.2.70
-  resolution: "graphql-http-transformer@npm:5.2.70"
+"graphql-http-transformer@npm:5.2.71-ecs-tagging-permissions.0":
+  version: 5.2.71-ecs-tagging-permissions.0
+  resolution: "graphql-http-transformer@npm:5.2.71-ecs-tagging-permissions.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
-  checksum: 73d9105bab45cb027243a053b501231a1253bda59e4d0f6d596cf4a5bccd7835ba0ea085634875d1bdb9b1aaddb308cad0258e3c90c9206f76bcfe8dffd2d323
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+  checksum: 9a7687756c6fc95d3c88f96ca643a8f80c03671cc82c57a21cd129086f1eab8e77ad020612dc4fb2277c8cb01fa090d7e231fdf7cd55f4b37df5f98eb8a2a19e
   languageName: node
   linkType: hard
 
@@ -21040,18 +21293,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-key-transformer@npm:3.2.70, graphql-key-transformer@npm:^3.2.70":
-  version: 3.2.70
-  resolution: "graphql-key-transformer@npm:3.2.70"
+"graphql-key-transformer@npm:3.2.71-ecs-tagging-permissions.0":
+  version: 3.2.71-ecs-tagging-permissions.0
+  resolution: "graphql-key-transformer@npm:3.2.71-ecs-tagging-permissions.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-dynamodb-transformer: 7.2.70
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
+    graphql-dynamodb-transformer: 7.2.71-ecs-tagging-permissions.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
     lodash: ^4.17.21
-  checksum: 50582c03907297820cf6abecc52f405d1ff7e81a195838f988470bc2be3b6ce21e5d9ae5a13c8685752622d5282cabdd8d6d4246ba11c5b5245e7ddc877d7c58
+  checksum: d377b6dcd118e719bd60d8b102a23b5f7cbd76523bdbce516e75da6802cedfe1881602c70cfca107db64a2036f04920f515df08190185fb263197225abff5a93
   languageName: node
   linkType: hard
 
@@ -21129,29 +21382,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-predictions-transformer@npm:3.2.70":
-  version: 3.2.70
-  resolution: "graphql-predictions-transformer@npm:3.2.70"
-  dependencies:
-    cloudform-types: ^4.2.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
-  checksum: 61bf90b9f102aa3029c436ce143e063f248d0c9e6b6e88b6ec49b130edd6c4874c535dcf9820d5fe195e6094b5903e641a56fb1a931969ccf24e7980da41c840
+"graphql-mapping-template@npm:4.20.14-ecs-tagging-permissions.0":
+  version: 4.20.14-ecs-tagging-permissions.0
+  resolution: "graphql-mapping-template@npm:4.20.14-ecs-tagging-permissions.0"
+  checksum: e54f77ae396deed17fdd8e7d914caa12f3d686b5ef67c8211dfff81b3b565580c769f4c0bc72f5ef70ac74f2a9f32cb35c0eeb05239520b454402905f4f4cb84
   languageName: node
   linkType: hard
 
-"graphql-relational-schema-transformer@npm:2.21.26":
-  version: 2.21.26
-  resolution: "graphql-relational-schema-transformer@npm:2.21.26"
+"graphql-predictions-transformer@npm:3.2.71-ecs-tagging-permissions.0":
+  version: 3.2.71-ecs-tagging-permissions.0
+  resolution: "graphql-predictions-transformer@npm:3.2.71-ecs-tagging-permissions.0"
+  dependencies:
+    cloudform-types: ^4.2.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+  checksum: 3753a1f8ecd2ec32938618790be7333fa8a7810c06882773b23579301bc73f583cf32dbb4d22245cfcee5aa66a5b64508142e33daab8575a3e0a744701adf1cf
+  languageName: node
+  linkType: hard
+
+"graphql-relational-schema-transformer@npm:2.21.27-ecs-tagging-permissions.0":
+  version: 2.21.27-ecs-tagging-permissions.0
+  resolution: "graphql-relational-schema-transformer@npm:2.21.27-ecs-tagging-permissions.0"
   dependencies:
     cloudform-types: ^4.2.0
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-  checksum: ad7144a881e658f60374de8b88bbbdad60143bb4066a1cce56d94d0cd1c2b5ea821322537f51f51f35a6cf374704aa3d5674a7e3c9017e719a9c8ac505c42d29
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+  checksum: d85de0bb53a226f77a93d0ed89d624a637a77c08d682784a4f51f95ae11166552ac8c1c8fa87ae37e7d0c0ff98e2f16512859cccbef6b1e63c17d2a841a05a22
   languageName: node
   linkType: hard
 
@@ -21207,30 +21467,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-transformer-core@npm:8.2.3, graphql-transformer-core@npm:^8.2.3":
-  version: 8.2.3
-  resolution: "graphql-transformer-core@npm:8.2.3"
+"graphql-transformer-common@npm:4.27.1-ecs-tagging-permissions.0":
+  version: 4.27.1-ecs-tagging-permissions.0
+  resolution: "graphql-transformer-common@npm:4.27.1-ecs-tagging-permissions.0"
+  dependencies:
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    md5: ^2.2.1
+    pluralize: 8.0.0
+  checksum: 8d64f4cc0b86b9cc98baca8209a43dcbd33f9c01c4885eced947cde8ced7be63ba8ff70788f9bd4246fd8f8e2ce5ecbec4540f7c99180dc209275ec17a70b804
+  languageName: node
+  linkType: hard
+
+"graphql-transformer-core@npm:8.2.4-ecs-tagging-permissions.0":
+  version: 8.2.4-ecs-tagging-permissions.0
+  resolution: "graphql-transformer-core@npm:8.2.4-ecs-tagging-permissions.0"
   dependencies:
     cloudform-types: ^4.2.0
     deep-diff: ^1.0.2
     fs-extra: ^8.1.0
-    glob: ^7.2.0
+    glob: ^10.3.0
     graphql: ^15.5.0
-    graphql-transformer-common: 4.27.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
     lodash: ^4.17.21
-  checksum: 8ac899fccb96f7e00d5dd0a0aa6cb0d0f553a6d7d69585a82eb6d63c008ebf2c88056c2d054f5e2e8b8d86b7e7cb373541ab398f6dbad7de9ca6227b3101c159
+  checksum: 13a6be81d00b30836d79f26994e8c521ece3ad6b3fbdadbe3516033ad02b9869f24ed64d540714c566c5931a11fed8572274501ea799e27fe711c51c0160e18a
   languageName: node
   linkType: hard
 
-"graphql-versioned-transformer@npm:5.2.70, graphql-versioned-transformer@npm:^5.2.70":
-  version: 5.2.70
-  resolution: "graphql-versioned-transformer@npm:5.2.70"
+"graphql-versioned-transformer@npm:5.2.71-ecs-tagging-permissions.0":
+  version: 5.2.71-ecs-tagging-permissions.0
+  resolution: "graphql-versioned-transformer@npm:5.2.71-ecs-tagging-permissions.0"
   dependencies:
     graphql: ^15.5.0
-    graphql-mapping-template: 4.20.13
-    graphql-transformer-common: 4.27.0
-    graphql-transformer-core: 8.2.3
-  checksum: f5dceec6a5a6896c04197d7cbac3fa530e2986d364c2a3f477e56124c7cac31ecf1f6667af5904cefdfc7d9c1ab5dc624996e058a96badb271872cecc971c2c5
+    graphql-mapping-template: 4.20.14-ecs-tagging-permissions.0
+    graphql-transformer-common: 4.27.1-ecs-tagging-permissions.0
+    graphql-transformer-core: 8.2.4-ecs-tagging-permissions.0
+  checksum: 403787c1edc8868382609c2b05aa68b40bbd01cd0097552f6c71143f96fbe1352c595699d3b82d7c659867d65db106bedcb17b938b27b5b43cecce5835856859
   languageName: node
   linkType: hard
 
@@ -22892,16 +23164,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jackspeak@npm:^2.0.3":
-  version: 2.1.1
-  resolution: "jackspeak@npm:2.1.1"
+"jackspeak@npm:^2.3.5":
+  version: 2.3.6
+  resolution: "jackspeak@npm:2.3.6"
   dependencies:
+    "@isaacs/cliui": ^8.0.2
     "@pkgjs/parseargs": ^0.11.0
-    cliui: ^8.0.1
   dependenciesMeta:
     "@pkgjs/parseargs":
       optional: true
-  checksum: 3c5919d4e2d01d539c99d1ed5fde84c29ef170b7bc50dbb80ed712df348ef3ec87346197db1a86264128d220b357b8ab619c70ece26f08abe4b4de0c424b1334
+  checksum: f01d8f972d894cd7638bc338e9ef5ddb86f7b208ce177a36d718eac96ec86638a6efa17d0221b10073e64b45edc2ce15340db9380b1f5d5c5d000cbc517dc111
   languageName: node
   linkType: hard
 
@@ -24810,10 +25082,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^9.0.0":
-  version: 9.1.1
-  resolution: "lru-cache@npm:9.1.1"
-  checksum: a70630bccc94e6d6bf5523de8103302407a3b0090f4e245d126569ba96f85b4fa10ad537fb5d9435c58ba3762c0880361f8f5a92d7c9d10b59c8fcc8a0c615e5
+"lru-cache@npm:^9.1.1 || ^10.0.0":
+  version: 10.2.0
+  resolution: "lru-cache@npm:10.2.0"
+  checksum: c9847612aa2daaef102d30542a8d6d9b2c2bb36581c1bf0dc3ebf5e5f3352c772a749e604afae2e46873b930a9e9523743faac4e5b937c576ab29196774712ee
   languageName: node
   linkType: hard
 
@@ -25255,12 +25527,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "minimatch@npm:9.0.0"
+"minimatch@npm:^9.0.0, minimatch@npm:^9.0.1":
+  version: 9.0.3
+  resolution: "minimatch@npm:9.0.3"
   dependencies:
     brace-expansion: ^2.0.1
-  checksum: d966656c280a994f89c3711e8cdac0c78d8703d028a26722d0229e3e92bf515a065165caa64cbccdd7ca89bb0338a3094920f8d42d36295c4d55922e19ae366e
+  checksum: 85f407dcd38ac3e180f425e86553911d101455ca3ad5544d6a7cec16286657e4f8a9aa6695803025c55e31e35a91a2252b5dc8e7d527211278b8b65b4dbd5eac
   languageName: node
   linkType: hard
 
@@ -25387,6 +25659,13 @@ __metadata:
   version: 5.0.0
   resolution: "minipass@npm:5.0.0"
   checksum: a91d8043f691796a8ac88df039da19933ef0f633e3d7f0d35dcd5373af49131cf2399bfc355f41515dc495e3990369c3858cd319e5c2722b4753c90bf3152462
+  languageName: node
+  linkType: hard
+
+"minipass@npm:^5.0.0 || ^6.0.2 || ^7.0.0":
+  version: 7.0.4
+  resolution: "minipass@npm:7.0.4"
+  checksum: 6c7370a6dfd257bf18222da581ba89a5eaedca10e158781232a8b5542a90547540b4b9b7e7f490e4cda43acfbd12e086f0453728ecf8c19e0ef6921bc5958ac5
   languageName: node
   linkType: hard
 
@@ -27110,13 +27389,13 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"path-scurry@npm:^1.6.1, path-scurry@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "path-scurry@npm:1.7.0"
+"path-scurry@npm:^1.10.1, path-scurry@npm:^1.6.1":
+  version: 1.10.1
+  resolution: "path-scurry@npm:1.10.1"
   dependencies:
-    lru-cache: ^9.0.0
-    minipass: ^5.0.0
-  checksum: a8d1fd105b5b1bb0b86c73e3e1433d8227b8075c4868453529611ed8b0ba768d1195c54690c1de125277c4e8f09c7459b0e98f99fbd357c9b34dd566cbe6b55b
+    lru-cache: ^9.1.1 || ^10.0.0
+    minipass: ^5.0.0 || ^6.0.2 || ^7.0.0
+  checksum: e5dc78a7348d25eec61ab166317e9e9c7b46818aa2c2b9006c507a6ff48c672d011292d9662527213e558f5652ce0afcc788663a061d8b59ab495681840c0c1e
   languageName: node
   linkType: hard
 
@@ -30832,7 +31111,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"string-width@npm:^1.0.2 || 2 || 3 || 4, string-width@npm:^4.0.0, string-width@npm:^4.1.0, string-width@npm:^4.2.0, string-width@npm:^4.2.2, string-width@npm:^4.2.3":
+"string-width-cjs@npm:string-width@^4.2.0, string-width@npm:^1.0.2 || 2 || 3 || 4, string-width@npm:^4.0.0, string-width@npm:^4.1.0, string-width@npm:^4.2.0, string-width@npm:^4.2.2, string-width@npm:^4.2.3":
   version: 4.2.3
   resolution: "string-width@npm:4.2.3"
   dependencies:
@@ -30938,6 +31217,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1, strip-ansi@npm:^6.0.0, strip-ansi@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "strip-ansi@npm:6.0.1"
+  dependencies:
+    ansi-regex: ^5.0.1
+  checksum: 1ae5f212a126fe5b167707f716942490e3933085a5ff6c008ab97ab2f272c8025d3aa218b7bd6ab25729ca20cc81cddb252102f8751e13482a5199e873680952
+  languageName: node
+  linkType: hard
+
 "strip-ansi@npm:^4.0.0":
   version: 4.0.0
   resolution: "strip-ansi@npm:4.0.0"
@@ -30953,15 +31241,6 @@ node-pty@beta:
   dependencies:
     ansi-regex: ^4.1.0
   checksum: de4658c8a097ce3b15955bc6008f67c0790f85748bdc025b7bc8c52c7aee94bc4f9e50624516150ed173c3db72d851826cd57e7a85fe4e4bb6dbbebd5d297fdf
-  languageName: node
-  linkType: hard
-
-"strip-ansi@npm:^6.0.0, strip-ansi@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "strip-ansi@npm:6.0.1"
-  dependencies:
-    ansi-regex: ^5.0.1
-  checksum: 1ae5f212a126fe5b167707f716942490e3933085a5ff6c008ab97ab2f272c8025d3aa218b7bd6ab25729ca20cc81cddb252102f8751e13482a5199e873680952
   languageName: node
   linkType: hard
 
@@ -33357,6 +33636,17 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0, wrap-ansi@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "wrap-ansi@npm:7.0.0"
+  dependencies:
+    ansi-styles: ^4.0.0
+    string-width: ^4.1.0
+    strip-ansi: ^6.0.0
+  checksum: d15fc12c11e4cbc4044a552129ebc75ee3f57aa9c1958373a4db0292d72282f54373b536103987a4a7594db1ef6a4f10acf92978f79b98c49306a4b58c77d4da
+  languageName: node
+  linkType: hard
+
 "wrap-ansi@npm:^6.2.0":
   version: 6.2.0
   resolution: "wrap-ansi@npm:6.2.0"
@@ -33368,25 +33658,14 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"wrap-ansi@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "wrap-ansi@npm:7.0.0"
-  dependencies:
-    ansi-styles: ^4.0.0
-    string-width: ^4.1.0
-    strip-ansi: ^6.0.0
-  checksum: d15fc12c11e4cbc4044a552129ebc75ee3f57aa9c1958373a4db0292d72282f54373b536103987a4a7594db1ef6a4f10acf92978f79b98c49306a4b58c77d4da
-  languageName: node
-  linkType: hard
-
-"wrap-ansi@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "wrap-ansi@npm:8.0.1"
+"wrap-ansi@npm:^8.0.1, wrap-ansi@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "wrap-ansi@npm:8.1.0"
   dependencies:
     ansi-styles: ^6.1.0
     string-width: ^5.0.1
     strip-ansi: ^7.0.1
-  checksum: f32dc32427920ff97b6e8265baecb79339dd4de2818f7a3e7bda60f32136a8bad7b9601b945b52552e1c46cece75dea967623a06dbc6a6e6604754c401b98820
+  checksum: 138ff58a41d2f877eae87e3282c0630fc2789012fc1af4d6bd626eeb9a2f9a65ca92005e6e69a75c7b85a68479fe7443c7dbe1eb8fbaa681a4491364b7c55c60
   languageName: node
   linkType: hard
 
