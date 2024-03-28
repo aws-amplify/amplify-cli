@@ -1488,7 +1488,7 @@ export interface PackageManager {
     // (undocumented)
     readonly executable: string;
     // (undocumented)
-    getInstallArgs: (buildType: BuildType) => string[];
+    getInstallArgs: (buildType: BuildType, resourceDir?: string) => string[];
     // (undocumented)
     getRunScriptArgs: (scriptName: string) => string[];
     // (undocumented)
