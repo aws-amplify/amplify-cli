@@ -86,7 +86,7 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
       fs.mkdirSync(outDir);
     }
 
-    const envVars: any = {};
+    const envVars: any = { GOPROXY: 'direct' };
 
     if (buildType === BuildType.PROD) {
       envVars.GOOS = 'linux';
@@ -102,13 +102,7 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
     executeCommand(['mod', 'tidy', '-v'], true, envVars, srcDir);
     // Execute the build command, cwd must be the source file directory (Windows requires it)
     // Details: https://github.com/aws/aws-lambda-go
-    executeCommand(['build', '-o', 'bootstrap', 'main.go'], true, envVars, srcDir);
-    // Compress this binary into a ZIP file deployment package, ready to deploy to Lambda
-    if (isWindows) {
-      executeCommand(['%USERPROFILE%Go\bin\build-lambda-zip.exe', '-o', 'lambda-handler.zip', 'bootstrap'], true, envVars, srcDir);
-    } else {
-      await execa('zip', ['lambda-handler.zip', 'bootstrap'], { cwd: srcDir, env: envVars });
-    }
+    executeCommand(['build', '-o', '../bin/bootstrap', 'main.go'], true, envVars, srcDir);
 
     rebuilt = true;
   }
