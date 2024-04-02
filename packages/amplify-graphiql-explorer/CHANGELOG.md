@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.14-log-hooks-executor-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.13...@aws-amplify/amplify-graphiql-explorer@2.5.14-log-hooks-executor-not-for-production.0) (2024-04-02)
+
+
+### Bug Fixes
+
+* bump webpack deps version ([#13675](https://github.com/aws-amplify/amplify-cli/issues/13675)) ([41ec40a](https://github.com/aws-amplify/amplify-cli/commit/41ec40a220ec693fd0eeb8b9e4033e00f8bad29e))
+
+
+
+
+
 ## [2.5.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.12...@aws-amplify/amplify-graphiql-explorer@2.5.13) (2023-12-11)
 
 **Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer

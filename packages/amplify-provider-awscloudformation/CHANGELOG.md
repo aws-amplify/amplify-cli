@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.5-log-hooks-executor-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.4...@aws-amplify/amplify-provider-awscloudformation@8.10.5-log-hooks-executor-not-for-production.0) (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
+
+
+
+
+
 ## [8.10.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.3...@aws-amplify/amplify-provider-awscloudformation@8.10.4) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation

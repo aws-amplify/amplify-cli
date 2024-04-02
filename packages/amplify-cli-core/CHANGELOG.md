@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.3-log-hooks-executor-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.2...@aws-amplify/amplify-cli-core@4.3.3-log-hooks-executor-not-for-production.0) (2024-04-02)
+
+
+### Bug Fixes
+
+* yarn modern install workspace ([#13197](https://github.com/aws-amplify/amplify-cli/issues/13197)) ([3ca4aa9](https://github.com/aws-amplify/amplify-cli/commit/3ca4aa99457e54a89805f86e56b475aaef531d7e))
+
+
+
+
+
 ## [4.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.1...@aws-amplify/amplify-cli-core@4.3.2) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-cli-core

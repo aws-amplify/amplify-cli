@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.40-log-hooks-executor-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.39...amplify-go-function-runtime-provider@2.3.40-log-hooks-executor-not-for-production.0) (2024-04-02)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
 ## [2.3.39](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.38...amplify-go-function-runtime-provider@2.3.39) (2024-03-29)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider
