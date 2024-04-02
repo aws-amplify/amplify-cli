@@ -15,7 +15,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           name: 'provided.al2023',
           value: 'provided.al2023',
           cloudTemplateValue: 'provided.al2023',
-          defaultHandler: 'main',
+          defaultHandler: 'bootstrap',
           layerExecutablePath: 'provided.al2023',
         },
       });
