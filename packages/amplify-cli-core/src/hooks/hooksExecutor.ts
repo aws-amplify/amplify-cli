@@ -85,6 +85,7 @@ const execHelper = async (
     }),
     stripFinalNewline: false,
     stdout: 'inherit',
+    // added to do further checks before throwing due to EPIPE error
     reject: false,
   });
 
@@ -92,15 +93,17 @@ const execHelper = async (
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
 
     const childProcessResult = await childProcess;
-    printer.error(`childProcessResult: ${childProcessResult}`);
+
+    // throw if child process ended with anything other than exitCode 0
+    if (childProcess.exitCode !== 0) {
+      throw childProcessResult;
+    }
 
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
       printer.blankLine();
     }
     logger.info(`hooks file: ${execFileMeta.fileName} execution ended`);
   } catch (err) {
-    printer.error(`childProcess`, JSON.stringify(childProcess, null, 2));
-    printer.error(`err`, JSON.stringify(err));
     logger.info(`hooks file: ${execFileMeta.fileName} execution error - ${JSON.stringify(err)}`);
     if (err?.stderr?.length > 0) {
       printer.error(err.stderr);
