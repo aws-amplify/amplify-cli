@@ -74,26 +74,31 @@ const execHelper = async (
   printer.blankLine();
   printer.info(`----- 🪝 ${execFileMeta.baseName} execution start -----`);
 
+  // adding default if options aren't defined
+  const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
+  const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
+    cwd: projectRoot,
+    env: { PATH: process.env.PATH },
+    input: JSON.stringify({
+      data: dataParameter,
+      error: errorParameter,
+    }),
+    stripFinalNewline: false,
+    stdout: 'inherit',
+  });
+
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
-    // adding default if options aren't defined
-    const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
-    const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
-      cwd: projectRoot,
-      env: { PATH: process.env.PATH },
-      input: JSON.stringify({
-        data: dataParameter,
-        error: errorParameter,
-      }),
-      stripFinalNewline: false,
-    });
-    childProcess?.stdout?.pipe(process.stdout);
+
     const childProcessResult = await childProcess;
+
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
       printer.blankLine();
     }
     logger.info(`hooks file: ${execFileMeta.fileName} execution ended`);
   } catch (err) {
+    printer.error(`childProcess`, JSON.stringify(childProcess, null, 2));
+    printer.error(`err`, JSON.stringify(err));
     logger.info(`hooks file: ${execFileMeta.fileName} execution error - ${JSON.stringify(err)}`);
     if (err?.stderr?.length > 0) {
       printer.error(err.stderr);
