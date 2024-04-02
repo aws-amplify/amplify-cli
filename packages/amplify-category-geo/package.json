@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-geo",
-  "version": "3.5.8-log-hooks-executor-not-for-production1.0",
+  "version": "3.5.8-log-hooks-executor-not-for-production2.0",
   "description": "Amplify CLI plugin to manage the Geo resources for the project",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.3.3-log-hooks-executor-not-for-production1.0",
+    "@aws-amplify/amplify-cli-core": "4.3.3-log-hooks-executor-not-for-production2.0",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "ajv": "^6.12.6",
     "amplify-headless-interface": "1.17.6",
