@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.4-log-hooks-executor-not-for-production1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.8.4-log-hooks-executor-not-for-production.0...@aws-amplify/amplify-container-hosting@2.8.4-log-hooks-executor-not-for-production1.0) (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-container-hosting
+
+
+
+
+
 ## [2.8.4-log-hooks-executor-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.8.3...@aws-amplify/amplify-container-hosting@2.8.4-log-hooks-executor-not-for-production.0) (2024-04-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-container-hosting
