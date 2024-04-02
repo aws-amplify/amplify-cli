@@ -85,12 +85,14 @@ const execHelper = async (
     }),
     stripFinalNewline: false,
     stdout: 'inherit',
+    reject: false,
   });
 
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
 
     const childProcessResult = await childProcess;
+    printer.error(`childProcessResult: ${childProcessResult}`);
 
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
       printer.blankLine();
