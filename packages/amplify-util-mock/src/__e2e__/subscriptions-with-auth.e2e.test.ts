@@ -146,7 +146,7 @@ beforeAll(async () => {
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
     // Configure Amplify, create users, and sign in.
-    const idToken1 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [INSTRUCTOR_GROUP_NAME, ADMIN_GROUP_NAME]);
+    const idToken1 = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [INSTRUCTOR_GROUP_NAME, ADMIN_GROUP_NAME]);
     APPSYNC_CLIENT_1 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -162,7 +162,7 @@ beforeAll(async () => {
     GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken1,
     });
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME]);
+    const idToken2 = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME]);
     APPSYNC_CLIENT_2 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -178,7 +178,7 @@ beforeAll(async () => {
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
-    const idToken3 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME3, USERNAME3, []);
+    const idToken3 = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME3, USERNAME3, []);
     new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
