@@ -13639,7 +13639,6 @@ __metadata:
     lnk: 1.1.0
     lodash: ^4.17.21
     node-gyp: ^9.3.1
-    node-pty: ^1.0.0
     npm-check-updates: ^16.1.0
     pkg: ^5.8.1
     prettier: ^2.8.4
@@ -25027,15 +25026,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.17.0":
-  version: 2.19.0
-  resolution: "nan@npm:2.19.0"
-  dependencies:
-    node-gyp: latest
-  checksum: b8d05d75f92ee9d94affa50d0aa41b6c698254c848529452d7ab67c2e0d160a83f563bfe2cbd53e077944eceb48c757f83c93634c7c9ff404c9ec1ed4e5ced1a
-  languageName: node
-  linkType: hard
-
 "nanoclone@npm:^0.2.1":
   version: 0.2.1
   resolution: "nanoclone@npm:0.2.1"
@@ -25224,16 +25214,6 @@ node-pty@beta:
   peerDependencies:
     node-gyp: ^8.3.0
   checksum: e6e50fa854a404b9e0ef9b621df7c30b5b6f92defed6692b7a63955bd2de7910a5d9f3b2024ed30cdcac5b276deea9bf0826542d0197d0e372dbe399c2b4571b
-  languageName: node
-  linkType: hard
-
-"node-pty@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "node-pty@npm:1.0.0"
-  dependencies:
-    nan: ^2.17.0
-    node-gyp: latest
-  checksum: c308686826eb2f7616735f4c71e6e41ff630346b14319972dbdf9711640bc6975ce21eab66a47b7ce9a88c70308fe81bfd9840127388d5fa26c52afbad255871
   languageName: node
   linkType: hard
 
