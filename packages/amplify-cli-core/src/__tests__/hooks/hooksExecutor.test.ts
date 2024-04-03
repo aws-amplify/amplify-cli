@@ -178,4 +178,40 @@ describe('hooksExecutioner tests', () => {
       duplicateErrorThrown,
     );
   });
+
+  test('should not exit process if execa fails with exitCode being 0', async () => {
+    const execaMock = execa as jest.Mocked<typeof execa>;
+    (execaMock as any).mockReturnValue({
+      exitCode: 0,
+      errNo: -32,
+      code: 'EPIPE',
+      syscall: 'write',
+      originalMessage: 'write EPIPE',
+      shortMessage: 'Command failed with EPIPE',
+      escapedCommand: 'testCommand',
+      stderr: '',
+      failed: true,
+      timedOut: false,
+      isCanceled: false,
+      killed: false,
+    });
+    const processExitMock = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    await executeHooks(HooksMeta.getInstance({ command: 'add', plugin: 'auth' } as CommandLineInput, 'pre'));
+    expect(processExitMock).toBeCalledTimes(0);
+  });
+
+  test('should exit process with exit code 76 if execa fails with exitCode other than 0', async () => {
+    const execaMock = execa as jest.Mocked<typeof execa>;
+    (execaMock as any).mockReturnValue({
+      exitCode: 1,
+      stderr: '',
+      failed: true,
+      timedOut: false,
+      isCanceled: false,
+      killed: false,
+    });
+    const processExitMock = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    await executeHooks(HooksMeta.getInstance({ command: 'add', plugin: 'auth' } as CommandLineInput, 'pre'));
+    expect(processExitMock).toBeCalledWith(76);
+  });
 });

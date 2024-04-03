@@ -74,28 +74,26 @@ const execHelper = async (
   printer.blankLine();
   printer.info(`----- 🪝 ${execFileMeta.baseName} execution start -----`);
 
-  // adding default if options aren't defined
-  const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
-  const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
-    cwd: projectRoot,
-    env: { PATH: process.env.PATH },
-    input: JSON.stringify({
-      data: dataParameter,
-      error: errorParameter,
-    }),
-    stripFinalNewline: false,
-    stdout: 'inherit',
-    // added to do further checks before throwing due to EPIPE error
-    reject: false,
-  });
-
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
-
+    // adding default if options aren't defined
+    const runtimeArgs = (hooksRuntime.runtimeOptions ?? []).concat([execFileMeta.filePath]);
+    const childProcess = execa(hooksRuntime.runtimePath, runtimeArgs, {
+      cwd: projectRoot,
+      env: { PATH: process.env.PATH },
+      input: JSON.stringify({
+        data: dataParameter,
+        error: errorParameter,
+      }),
+      stripFinalNewline: false,
+      stdout: 'inherit',
+      // added to do further checks before throwing due to EPIPE error
+      reject: false,
+    });
     const childProcessResult = await childProcess;
 
     // throw if child process ended with anything other than exitCode 0
-    if (childProcess.exitCode !== 0) {
+    if (childProcess !== undefined && childProcess.exitCode !== 0) {
       throw childProcessResult;
     }
 
