@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.40-log-hooks-executor-not-for-production3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.40-log-hooks-executor-not-for-production2.0...amplify-python-function-runtime-provider@2.4.40-log-hooks-executor-not-for-production3.0) (2024-04-03)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [2.4.40-log-hooks-executor-not-for-production2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.40-log-hooks-executor-not-for-production1.0...amplify-python-function-runtime-provider@2.4.40-log-hooks-executor-not-for-production2.0) (2024-04-02)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider
