@@ -1,12 +1,13 @@
-import { decode, sign, verify } from 'jsonwebtoken';
+import { decodeJwt, SignJWT, jwtVerify, JWTPayload } from 'jose';
 
-export function generateToken(decodedToken: string | object): string {
+export async function generateToken(decodedToken: string | object): Promise<string> {
   try {
     if (typeof decodedToken === 'string') {
       decodedToken = JSON.parse(decodedToken);
     }
-    const token = sign(decodedToken, 'open-secrete');
-    verify(token, 'open-secrete');
+    const secret = new TextEncoder().encode('open-secrete');
+    const token = await new SignJWT(decodedToken as JWTPayload).setProtectedHeader({ alg: 'HS256' }).sign(secret);
+    await jwtVerify(token, secret);
     return token;
   } catch (e) {
     const err = new Error('Error when generating OIDC token: ' + e.message);
@@ -14,8 +15,11 @@ export function generateToken(decodedToken: string | object): string {
   }
 }
 
-export function parse(token): object {
-  const decodedToken = decode(token);
+export function parse(token: string | undefined): object | null {
+  if (typeof token === 'undefined' || typeof token !== 'string') {
+    return null;
+  }
+  const decodedToken = decodeJwt(token);
   return decodedToken as object;
 }
 
@@ -25,7 +29,7 @@ export function parse(token): object {
  * @param token
  * @param issuer
  */
-export function refreshToken(token: string, issuer?: string): string {
+export async function refreshToken(token: string, issuer?: string): Promise<string> {
   const tokenObj: any = parse(token);
   if (!Object.keys(tokenObj).length) {
     throw new Error(`Invalid token ${token}`);
@@ -34,5 +38,5 @@ export function refreshToken(token: string, issuer?: string): string {
     tokenObj.iss = issuer;
   }
   tokenObj.exp = Math.floor(Date.now() / 100 + 20000);
-  return generateToken(JSON.stringify(tokenObj));
+  return await generateToken(JSON.stringify(tokenObj));
 }

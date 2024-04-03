@@ -1,7 +1,7 @@
-import { sign, verify } from 'jsonwebtoken';
+import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 import { v4 } from 'uuid';
 
-export function signUpAddToGroupAndGetJwtToken(
+export async function signUpAddToGroupAndGetJwtToken(
   userPool: string,
   username: string,
   email: string,
@@ -22,16 +22,17 @@ export function signUpAddToGroupAndGetJwtToken(
     iat: Math.floor(Date.now() / 1000),
     email,
   };
-  return generateToken(token);
+  return await generateToken(token);
 }
 
-function generateToken(decodedToken: string | object): string {
+async function generateToken(decodedToken: string | object): Promise<string> {
   try {
     if (typeof decodedToken === 'string') {
       decodedToken = JSON.parse(decodedToken);
     }
-    const token = sign(decodedToken, 'open-secrete');
-    verify(token, 'open-secrete');
+    const secret = new TextEncoder().encode('open-secrete');
+    const token = await new SignJWT(decodedToken as JWTPayload).setProtectedHeader({ alg: 'HS256' }).sign(secret);
+    await jwtVerify(token, secret);
     return token;
   } catch (e) {
     const err = new Error('Error when generating OIDC token: ' + e.message);
