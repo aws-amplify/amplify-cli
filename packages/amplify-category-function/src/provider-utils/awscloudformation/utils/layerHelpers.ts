@@ -243,8 +243,7 @@ export function getLayerName(context: $TSContext, layerName: string): string {
 
 export function getLambdaFunctionsDependentOnLayerFromMeta(layerName: string, meta: $TSMeta) {
   return Object.entries(meta[categoryName]).filter(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ([_, lambdaFunction]: [string, $TSObject]) =>
+    ([, lambdaFunction]: [string, $TSObject]) =>
       lambdaFunction.service === ServiceName.LambdaFunction &&
       lambdaFunction?.dependsOn?.filter((dependency) => dependency.resourceName === layerName).length > 0,
   );
