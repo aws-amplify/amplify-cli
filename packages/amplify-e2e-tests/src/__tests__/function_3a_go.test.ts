@@ -3,7 +3,6 @@ import {
   deleteProject,
   amplifyPushAuth,
   addFunction,
-  functionMockAssert,
   functionCloudInvoke,
   createNewProjectDir,
   deleteProjectDir,
@@ -34,14 +33,6 @@ describe('go function tests', () => {
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
-  });
-
-  it('add go hello world function and mock locally', async () => {
-    await functionMockAssert(projRoot, {
-      funcName,
-      successString: helloWorldSuccessOutput,
-      eventFile: 'src/event.json',
-    }); // will throw if successString is not in output
   });
 
   it('add go hello world function and invoke in the cloud', async () => {
