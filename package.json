@@ -28,7 +28,7 @@
     "link-dev": "mkdir -p .bin/ && cd packages/amplify-cli && ln -s \"$(pwd)/bin/amplify\" ../../.bin/amplify-dev && cd ../../",
     "link-win": "node ./scripts/link-bin.js packages/amplify-cli/bin/amplify amplify-dev",
     "lint-check-package-json": "yarn eslint --no-eslintrc --config .eslint.package.json.js '**/package.json'",
-    "lint-check": "yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=755",
+    "lint-check": "yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=750",
     "lint-fix-package-json": "yarn lint-check-package-json --fix",
     "lint-fix": "git diff --name-only --cached --diff-filter d | grep -E '\\.(js|jsx|ts|tsx)$' | xargs eslint --fix --quiet",
     "mergewords": "yarn ts-node ./scripts/handle-dict-conflicts.ts",

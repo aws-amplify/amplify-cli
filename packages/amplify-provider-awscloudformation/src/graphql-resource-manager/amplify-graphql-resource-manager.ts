@@ -481,5 +481,5 @@ export class GraphQLResourceManager {
   };
 
   private getTableNameFromTemplate = (template: Template): string | undefined =>
-    Object.entries(template?.Resources || {}).find(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')?.[0];
+    Object.entries(template?.Resources || {}).find(([, resource]) => resource.Type === 'AWS::DynamoDB::Table')?.[0];
 }
