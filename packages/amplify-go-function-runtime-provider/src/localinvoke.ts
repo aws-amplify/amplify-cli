@@ -26,7 +26,7 @@ const buildLocalInvoker = async (context: any) => {
     // Build localInvoker
     context.print.info('Local invoker binary was not found, building it...');
     executeCommand(['mod', 'tidy'], true, undefined, localInvokerDir);
-    executeCommand(['build', MAIN_SOURCE], true, undefined, localInvokerDir);
+    executeCommand(['build', '-o', 'bootstrap', MAIN_SOURCE], true, undefined, localInvokerDir);
   }
 
   return {
