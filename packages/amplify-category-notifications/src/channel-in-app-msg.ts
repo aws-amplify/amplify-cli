@@ -23,12 +23,7 @@ import {
 } from './plugin-client-api-analytics';
 import { IChannelAPIResponse, ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 
-import {
-  buildPinpointChannelResponseSuccess,
-  getPinpointAppStatusFromMeta,
-  IPinpointAppStatus,
-  IPinpointDeploymentStatus,
-} from './pinpoint-helper';
+import { buildPinpointChannelResponseSuccess, getPinpointAppStatusFromMeta, IPinpointDeploymentStatus } from './pinpoint-helper';
 import { ChannelType, getChannelViewName, isChannelEnabledNotificationsBackendConfig } from './notifications-backend-cfg-channel-api';
 import { getNotificationsAppMeta } from './notifications-amplify-meta-api';
 import { getNotificationsAppConfig } from './notifications-backend-cfg-api';
