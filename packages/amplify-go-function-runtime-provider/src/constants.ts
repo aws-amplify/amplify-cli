@@ -6,8 +6,8 @@ export const BIN = 'bin';
 export const SRC = 'src';
 export const DIST = 'dist';
 export const MAIN_SOURCE = 'main.go';
-export const MAIN_BINARY = 'main';
-export const MAIN_BINARY_WIN = 'main.exe';
+export const MAIN_BINARY = 'bootstrap';
+export const MAIN_BINARY_WIN = 'bootstrap.exe';
 
 export const BASE_PORT = 8900;
 export const MAX_PORT = 9999;

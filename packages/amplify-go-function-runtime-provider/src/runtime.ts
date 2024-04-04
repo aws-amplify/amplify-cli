@@ -86,7 +86,7 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
       fs.mkdirSync(outDir);
     }
 
-    const envVars: any = {};
+    const envVars: any = { GOPROXY: 'direct' };
 
     if (buildType === BuildType.PROD) {
       envVars.GOOS = 'linux';
@@ -95,12 +95,14 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
 
     if (isWindows) {
       envVars.CGO_ENABLED = 0;
+      executeCommand(['go.exe', 'install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip@latest'], true, envVars, srcDir);
     }
 
     // for go@1.16, dependencies must be manually installed
     executeCommand(['mod', 'tidy', '-v'], true, envVars, srcDir);
     // Execute the build command, cwd must be the source file directory (Windows requires it)
-    executeCommand(['build', '-o', executablePath, '.'], true, envVars, srcDir);
+    // Details: https://github.com/aws/aws-lambda-go
+    executeCommand(['build', '-o', '../bin/bootstrap', 'main.go'], true, envVars, srcDir);
 
     rebuilt = true;
   }
