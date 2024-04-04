@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.40-rc.08377cc5650526c.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.39...amplify-go-function-runtime-provider@2.3.40-rc.08377cc5650526c.0) (2024-04-04)
+
+
+### Bug Fixes
+
+* upgrade Go runtime and fix e2e ([#13671](https://github.com/aws-amplify/amplify-cli/issues/13671)) ([395f717](https://github.com/aws-amplify/amplify-cli/commit/395f717cf52e7beef76f00ee08d37877138b0c30))
+
+
+
+
+
 ## [2.3.39](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.38...amplify-go-function-runtime-provider@2.3.39) (2024-03-29)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider
