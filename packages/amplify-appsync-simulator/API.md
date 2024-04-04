@@ -91,6 +91,8 @@ export class AmplifyAppSyncSimulator {
     // (undocumented)
     get localhostUrl(): string;
     // (undocumented)
+    get isHttps(): boolean;
+    // (undocumented)
     get pubsub(): PubSub;
     // (undocumented)
     reload(config: AmplifyAppSyncSimulatorConfig): void;
