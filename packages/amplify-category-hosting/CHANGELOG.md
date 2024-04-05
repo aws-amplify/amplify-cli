@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.30-data-schema-generator.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.29...@aws-amplify/amplify-category-hosting@3.5.30-data-schema-generator.0) (2024-04-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-hosting
+
+
+
+
+
 ## [3.5.29](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.28...@aws-amplify/amplify-category-hosting@3.5.29) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-hosting

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.3-data-schema-generator.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.2...@aws-amplify/amplify-migration-tests@6.3.3-data-schema-generator.0) (2024-04-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
 ## [6.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.1...@aws-amplify/amplify-migration-tests@6.3.2) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

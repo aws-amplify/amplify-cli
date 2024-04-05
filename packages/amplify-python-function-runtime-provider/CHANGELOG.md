@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.40-data-schema-generator.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.39...amplify-python-function-runtime-provider@2.4.40-data-schema-generator.0) (2024-04-05)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [2.4.39](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.38...amplify-python-function-runtime-provider@2.4.39) (2024-03-29)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

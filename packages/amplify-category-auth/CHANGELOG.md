@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.8-data-schema-generator.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.7...@aws-amplify/amplify-category-auth@3.7.8-data-schema-generator.0) (2024-04-05)
+
+
+### Bug Fixes
+
+* upgrade Go runtime and fix e2e ([#13671](https://github.com/aws-amplify/amplify-cli/issues/13671)) ([395f717](https://github.com/aws-amplify/amplify-cli/commit/395f717cf52e7beef76f00ee08d37877138b0c30))
+
+
+
+
+
 ## [3.7.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.6...@aws-amplify/amplify-category-auth@3.7.7) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
