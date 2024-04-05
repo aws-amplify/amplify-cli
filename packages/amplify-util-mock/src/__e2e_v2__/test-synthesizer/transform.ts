@@ -47,7 +47,7 @@ export const transformAndSynth = (
     nestedStackProvider: transformManager.getNestedStackProvider(),
     assetProvider: transformManager.getAssetProvider(),
     synthParameters: transformManager.getSynthParameters(hasIamAuth(options.authConfig), hasUserPoolAuth(options.authConfig)),
-    dataSourceStrategies: options.dataSourceStrategies ?? constructDataSourceStrategies(options.schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+    dataSourceStrategies: {} as any, // this is temporary
   });
   return transformManager.generateDeploymentResources();
 };
