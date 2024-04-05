@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/amplify-go-function-template-provider",
   "version": "1.4.7",
-  "description": "Go 1.x templates supplied by the Amplify Team",
+  "description": "Go templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",

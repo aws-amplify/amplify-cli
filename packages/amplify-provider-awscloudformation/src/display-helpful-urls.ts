@@ -271,7 +271,7 @@ export const showSMSSandboxWarning = async (context): Promise<void> => {
 
 const showGraphQLTransformerMigrationMessage = (): void => {
   const hasGraphqlApi = !!Object.entries(stateManager.getMeta().api || {})
-    .filter(([__, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
     .map(([name]) => name).length;
   const suppressMessage = FeatureFlags.getBoolean('graphqltransformer.suppressSchemaMigrationPrompt');
   const usingV2 = FeatureFlags.getNumber('graphqltransformer.transformerVersion') === 2;
@@ -293,7 +293,7 @@ export const showGraphQLTransformerVersion = async (context): Promise<void> => {
   const meta = stateManager.getMeta();
   const apiObject = (meta && meta.api) || {};
   const hasGraphqlApi = !!Object.entries(apiObject)
-    .filter(([__, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
+    .filter(([, apiResource]) => (apiResource as $TSAny).service === 'AppSync')
     .map(([name]) => name).length;
 
   if (!hasGraphqlApi) {

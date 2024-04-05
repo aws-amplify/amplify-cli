@@ -11,8 +11,6 @@ import {
   Template,
   writeCFNTemplate,
 } from '@aws-amplify/amplify-cli-core';
-import { formatter } from '@aws-amplify/amplify-prompts';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSynthesizer } from './stack-synthesizer';

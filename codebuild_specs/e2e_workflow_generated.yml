@@ -474,11 +474,18 @@ batch:
           TEST_SUITE: src/__tests__/api_6a.test.ts|src/__tests__/auth_7b.test.ts|src/__tests__/export-pull-b.test.ts
       depend-on:
         - upb
-    - identifier: l_function_3a_init_special_case_http_migration
+    - identifier: l_function_3a_dotnet_function_3a_go_function_3a_nodejs
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_3a.test.ts|src/__tests__/init-special-case.test.ts|src/__tests__/transformer-migrations/http-migration.test.ts
+          TEST_SUITE: src/__tests__/function_3a_dotnet.test.ts|src/__tests__/function_3a_go.test.ts|src/__tests__/function_3a_nodejs.test.ts
+      depend-on:
+        - upb
+    - identifier: l_function_3a_python_init_special_case_http_migration
+      buildspec: codebuild_specs/run_e2e_tests_linux.yml
+      env:
+        variables:
+          TEST_SUITE: src/__tests__/function_3a_python.test.ts|src/__tests__/init-special-case.test.ts|src/__tests__/transformer-migrations/http-migration.test.ts
       depend-on:
         - upb
     - identifier: l_schema_auth_12_schema_auth_3_schema_function_2
