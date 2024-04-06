@@ -1,5 +1,10 @@
 export function getHttpsConfig(context): { sslKeyPath: string | undefined; sslCertPath: string | undefined } {
   const paths: { sslKeyPath: string | undefined; sslCertPath: string | undefined } = { sslKeyPath: undefined, sslCertPath: undefined };
+
+  if (!context.input || !context.input.argv) {
+    return paths;
+  }
+
   const argv = context.input.argv;
   const httpsIndex = argv.indexOf('--https');
 

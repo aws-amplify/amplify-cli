@@ -135,6 +135,35 @@ describe('Test Mock API methods', () => {
     await expect(mockContext.print.error).toHaveBeenCalledWith('Failed to start API Mocking.');
   });
 
+  it('shows error message and resolution when https enabled if SSL key and certificate paths are not provided', async () => {
+    ConfigOverrideManager.getInstance = jest.fn().mockReturnValue(jest.fn);
+    const mockContext = {
+      print: {
+        red: jest.fn(),
+        green: jest.fn(),
+        error: jest.fn(),
+      },
+      parameters: {
+        options: {
+          help: false,
+        },
+      },
+      input: {
+        argv: ['--https'],
+      },
+      amplify: {
+        getEnvInfo: jest.fn().mockReturnValue({ projectPath: mockProjectRoot }),
+        pathManager: {
+          getGitIgnoreFilePath: jest.fn(),
+        },
+      },
+    } as unknown as $TSContext;
+    await run(mockContext);
+    await expect(mockContext.print.error).toHaveBeenCalledWith(
+      '\nThe --https option must be followed by the path to the SSL key and the path to the SSL certificate.\n',
+    );
+  });
+
   it('attempts to set custom port correctly', async () => {
     const GRAPHQL_PORT = 8081;
     const mockContext = {
