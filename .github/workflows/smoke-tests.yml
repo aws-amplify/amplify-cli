@@ -45,10 +45,8 @@ jobs:
         uses: ./.github/actions/install-cli
         with:
           cli-version: ${{ matrix.cli-version }}
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        with:
-          limit-access-to-actor: true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Run Smoke Tests
         uses: ./.github/actions/run-smoke-tests
         with:
