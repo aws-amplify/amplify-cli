@@ -6,6 +6,9 @@ permissions:
   contents: read
 
 on:
+  push:
+    branches:
+      - smoketest-investigation
   workflow_dispatch:
     inputs:
       os:
@@ -19,9 +22,11 @@ on:
 
 jobs:
   call-smoke-tests:
-    if: github.event_name == 'workflow_dispatch'
+    # if: github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/smoke-tests.yml
     secrets: inherit
     with:
-      os: ${{ github.event.inputs.os }}
-      versions: ${{ github.event.inputs.versions }}
+      # os: ${{ github.event.inputs.os }}
+      # versions: ${{ github.event.inputs.versions }}
+      os: macos-latest-xl
+      versions: 12.11.0-rc.88f6e23a20eaba9.0
