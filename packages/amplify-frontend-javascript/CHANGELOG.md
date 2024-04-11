@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.11-data-gen2-0411.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.10.10...@aws-amplify/amplify-frontend-javascript@3.10.11-data-gen2-0411.0) (2024-04-11)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript
+
+
+
+
+
 ## [3.10.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-javascript@3.10.9...@aws-amplify/amplify-frontend-javascript@3.10.10) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-javascript

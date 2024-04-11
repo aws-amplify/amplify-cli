@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.5-data-gen2-0411.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.9.4...@aws-amplify/amplify-util-mock@5.9.5-data-gen2-0411.0) (2024-04-11)
+
+
+### Bug Fixes
+
+* resolve issues with graphiql explorer ([#13691](https://github.com/aws-amplify/amplify-cli/issues/13691)) ([4d0677d](https://github.com/aws-amplify/amplify-cli/commit/4d0677def73fb0d1c2fb77e30ed8b7c0e34cfebd))
+
+
+
+
+
 ## [5.9.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.9.3...@aws-amplify/amplify-util-mock@5.9.4) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

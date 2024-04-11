@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.4-data-gen2-0411.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.3...amplify-e2e-tests@4.9.4-data-gen2-0411.0) (2024-04-11)
+
+
+### Bug Fixes
+
+* upgrade Go runtime and fix e2e ([#13671](https://github.com/aws-amplify/amplify-cli/issues/13671)) ([395f717](https://github.com/aws-amplify/amplify-cli/commit/395f717cf52e7beef76f00ee08d37877138b0c30))
+* yarn modern install workspace ([#13197](https://github.com/aws-amplify/amplify-cli/issues/13197)) ([3ca4aa9](https://github.com/aws-amplify/amplify-cli/commit/3ca4aa99457e54a89805f86e56b475aaef531d7e))
+
+
+
+
+
 ## [4.9.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.2...amplify-e2e-tests@4.9.3) (2024-03-29)
 
 **Note:** Version bump only for package amplify-e2e-tests
