@@ -239,7 +239,7 @@ export async function verifyInput(pluginPlatform: PluginPlatform, input: CLIInpu
       const packageManager = (await getPackageManager())?.packageManager ?? 'npm';
       const executeCommand = packageManager === 'npm' ? 'npx' : `${packageManager} dlx`;
 
-      const amplifyGen2Message = `For Amplify Gen 2, install the @aws-amplify/backend-cli package or execute using the package name directly:${EOL}${executeCommand} @aws-amplify/backend-cli amplify${commandString}`;
+      const amplifyGen2Message = `For Amplify Gen 2, install the @aws-amplify/backend-cli package or execute using the package name directly:${EOL}${executeCommand} @aws-amplify/backend-cli${commandString}`;
 
       result.message = `The Amplify CLI can NOT find command: ${commandString}${EOL}${EOL}${amplifyGen2Message}`;
     }
