@@ -34,7 +34,7 @@ describe('input validation tests', () => {
 
     const verifyInputResult = await verifyInput(pluginPlatform, input);
     expect(verifyInputResult.message).toContain('can NOT find command');
-    expect(verifyInputResult.message).toContain('npx @aws-amplify/backend-cli amplify sandbox');
+    expect(verifyInputResult.message).toContain('npx @aws-amplify/backend-cli sandbox');
   });
 
   it('display yarn dlx Amplify Gen 2 message with command not found message', async () => {
@@ -48,7 +48,7 @@ describe('input validation tests', () => {
 
     const verifyInputResult = await verifyInput(pluginPlatform, input);
     expect(verifyInputResult.message).toContain('can NOT find command');
-    expect(verifyInputResult.message).toContain('yarn dlx @aws-amplify/backend-cli amplify sandbox');
+    expect(verifyInputResult.message).toContain('yarn dlx @aws-amplify/backend-cli sandbox');
   });
 
   it('display pnpm dlx Amplify Gen 2 message with command not found message', async () => {
@@ -62,6 +62,6 @@ describe('input validation tests', () => {
 
     const verifyInputResult = await verifyInput(pluginPlatform, input);
     expect(verifyInputResult.message).toContain('can NOT find command');
-    expect(verifyInputResult.message).toContain('pnpm dlx @aws-amplify/backend-cli amplify sandbox');
+    expect(verifyInputResult.message).toContain('pnpm dlx @aws-amplify/backend-cli sandbox');
   });
 });
