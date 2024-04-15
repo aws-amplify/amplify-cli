@@ -176,6 +176,7 @@
     "word-wrap": "^1.2.4",
     "follow-redirects": "^1.15.6",
     "amplify-codegen": "4.7.3",
-    "@aws-amplify/appsync-modelgen-plugin": "2.8.1"
+    "@aws-amplify/appsync-modelgen-plugin": "2.8.1",
+    "tar": "^6.2.1"
   }
 }
