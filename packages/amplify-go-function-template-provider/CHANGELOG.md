@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-go-function-template-provider@1.4.7...@aws-amplify/amplify-go-function-template-provider@1.4.8) (2024-04-15)
+
+
+### Bug Fixes
+
+* upgrade Go runtime and fix e2e ([#13671](https://github.com/aws-amplify/amplify-cli/issues/13671)) ([395f717](https://github.com/aws-amplify/amplify-cli/commit/395f717cf52e7beef76f00ee08d37877138b0c30))
+
+
+
+
+
 ## [1.4.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-go-function-template-provider@1.4.5...@aws-amplify/amplify-go-function-template-provider@1.4.7) (2023-11-08)
 
 
