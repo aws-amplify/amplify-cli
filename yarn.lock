@@ -811,7 +811,7 @@ __metadata:
     "@types/deep-diff": ^1.0.0
     "@types/folder-hash": ^4.0.1
     "@types/lodash.throttle": ^4.1.6
-    "@types/node": ^12.12.6
+    "@types/node": ^18.16.0
     "@types/uuid": ^8.0.0
     amplify-codegen: 4.7.3
     archiver: ^5.3.0
@@ -12503,9 +12503,18 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^16.9.2":
-  version: 16.11.14
-  resolution: "@types/node@npm:16.11.14"
-  checksum: 017037da8387c85ea92c4ecb06dfb1f511e398ec14504a9395bc92948d58840755066eba991e308b39cf1117648be20cd3c43d184f1ec1339bb60b836dd5e4e7
+  version: 16.18.96
+  resolution: "@types/node@npm:16.18.96"
+  checksum: 05ac1c80c8d075086863f7640fd3e75c3912c4ed067bb38bb8fd5377f4e64de7a81d5be3ceae5448dc90d9802a0c7b0d3376538759b91ea652d16cc6dc7de767
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^18.16.0":
+  version: 18.19.31
+  resolution: "@types/node@npm:18.19.31"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: bfebae8389220c0188492c82eaf328f4ba15e6e9b4abee33d6bf36d3b13f188c2f53eb695d427feb882fff09834f467405e2ed9be6aeb6ad4705509822d2ea08
   languageName: node
   linkType: hard
 
@@ -31463,6 +31472,13 @@ node-pty@beta:
   version: 0.1.2
   resolution: "unc-path-regex@npm:0.1.2"
   checksum: bf9c781c4e2f38e6613ea17a51072e4b416840fbe6eeb244597ce9b028fac2fb6cfd3dde1f14111b02c245e665dc461aab8168ecc30b14364d02caa37f812996
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: bb673d7876c2d411b6eb6c560e0c571eef4a01c1c19925175d16e3a30c4c428181fb8d7ae802a261f283e4166a0ac435e2f505743aa9e45d893f9a3df017b501
   languageName: node
   linkType: hard
 

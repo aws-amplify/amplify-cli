@@ -11,7 +11,6 @@ import { $TSAny, $TSContext, AmplifyError, AmplifyFault, stateManager } from '@a
 import _ from 'lodash';
 
 import fs from 'fs-extra';
-import { buffer } from 'node:stream/consumers';
 import ora from 'ora';
 import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
 import { pagedAWSCall } from './paged-call';
@@ -19,6 +18,7 @@ import { loadConfiguration } from '../configuration-manager';
 import aws from './aws';
 
 const providerName = require('../constants').ProviderName;
+const consumers = require('stream/consumers');
 
 const { fileLogger } = require('../utils/aws-logger');
 
@@ -129,12 +129,12 @@ export class S3 {
       }
       logger('uploadFile.s3.upload', [others])();
       const minChunkSize = 5 * 1024 * 1024; // 5 MB
-      if (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) {
+      if (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size <= minChunkSize) {
         // Buffer small files to avoid memory leak.
         // Previous implementation used s3.putObject for small uploads, but it didn't have retries, see https://github.com/aws-amplify/amplify-cli/pull/13493.
         // On the other hand uploading small streams leads to memory leak, see https://github.com/aws/aws-sdk-js/issues/2552.
         // Therefore, buffering small files ourselves seems to be middle ground between memory leak and loosing retries.
-        s3Params.Body = await buffer(s3Params.Body);
+        s3Params.Body = await consumers.buffer(s3Params.Body);
       }
       uploadTask = this.s3.upload(augmentedS3Params);
       if (showSpinner) {
