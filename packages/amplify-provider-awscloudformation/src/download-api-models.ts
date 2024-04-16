@@ -50,6 +50,9 @@ const extractAPIModel = async (context: $TSContext, resource: $TSObject, framewo
 
   fs.ensureDirSync(tempDir);
 
+  // This has been working fine before bumping node types to 18.x
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const buff = Buffer.from(data.body);
   fs.writeFileSync(`${tempDir}/${apiName}.zip`, buff);
   await extract(`${tempDir}/${apiName}.zip`, { dir: tempDir });

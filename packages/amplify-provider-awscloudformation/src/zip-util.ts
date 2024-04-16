@@ -15,6 +15,10 @@ export const downloadZip = async (s3: S3, tempDir: string, zipFileName: string, 
   log();
   const objectResult = await s3.getFile({ Key: zipFileName }, envName);
   fs.ensureDirSync(tempDir);
+
+  // This has been working fine before bumping node types to 18.x
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const buff = Buffer.from(objectResult);
   const tempFile = `${tempDir}/${zipFileName}`;
   await fs.writeFile(tempFile, buff);
