@@ -134,6 +134,8 @@ export class S3 {
         // Previous implementation used s3.putObject for small uploads, but it didn't have retries, see https://github.com/aws-amplify/amplify-cli/pull/13493.
         // On the other hand uploading small streams leads to memory leak, see https://github.com/aws/aws-sdk-js/issues/2552.
         // Therefore, buffering small files ourselves seems to be middle ground between memory leak and loosing retries.
+        // Buffering small files brings back balance between leaking and non-leaking uploads that is matching
+        // the ratio from before https://github.com/aws-amplify/amplify-cli/pull/13493.
         augmentedS3Params.Body = await consumers.buffer(augmentedS3Params.Body);
       }
       uploadTask = this.s3.upload(augmentedS3Params);
