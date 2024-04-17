@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.10-rc.6c2e90b1b22907f.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.15.9...@aws-amplify/amplify-appsync-simulator@2.15.10-rc.6c2e90b1b22907f.0) (2024-04-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
+
+
+
+
+
 ## [2.15.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.15.8...@aws-amplify/amplify-appsync-simulator@2.15.9) (2024-04-15)
 
 
