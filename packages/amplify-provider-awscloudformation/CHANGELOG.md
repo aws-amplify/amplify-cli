@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.6-rc.4e5b20dc77639f0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.5...@aws-amplify/amplify-provider-awscloudformation@8.10.6-rc.4e5b20dc77639f0.0) (2024-04-17)
+
+
+### Bug Fixes
+
+* reduce memory pressure while uploading files ([#13718](https://github.com/aws-amplify/amplify-cli/issues/13718)) ([2691a0a](https://github.com/aws-amplify/amplify-cli/commit/2691a0a08cb23054197fdbc958a9104f4e7f12c5))
+
+
+
+
+
 ## [8.10.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.4...@aws-amplify/amplify-provider-awscloudformation@8.10.5) (2024-04-15)
 
 
