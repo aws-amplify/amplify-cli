@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.5...@aws-amplify/amplify-provider-awscloudformation@8.10.6) (2024-04-18)
+
+
+### Bug Fixes
+
+* reduce memory pressure while uploading files ([#13718](https://github.com/aws-amplify/amplify-cli/issues/13718)) ([2691a0a](https://github.com/aws-amplify/amplify-cli/commit/2691a0a08cb23054197fdbc958a9104f4e7f12c5))
+
+
+
+
+
+## [8.10.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.4...@aws-amplify/amplify-provider-awscloudformation@8.10.5) (2024-04-15)
+
+
+### Bug Fixes
+
+* upgrade Go runtime and fix e2e ([#13671](https://github.com/aws-amplify/amplify-cli/issues/13671)) ([395f717](https://github.com/aws-amplify/amplify-cli/commit/395f717cf52e7beef76f00ee08d37877138b0c30))
+
+
+
+
+
 ## [8.10.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.3...@aws-amplify/amplify-provider-awscloudformation@8.10.4) (2024-03-29)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
