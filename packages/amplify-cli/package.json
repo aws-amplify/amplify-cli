@@ -66,7 +66,7 @@
     "@aws-amplify/amplify-util-mock": "5.9.6",
     "@aws-amplify/amplify-util-uibuilder": "1.14.5",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
-    "amplify-codegen": "4.7.3",
+    "amplify-codegen": "^4.8.0",
     "amplify-dotnet-function-runtime-provider": "2.0.23",
     "amplify-go-function-runtime-provider": "2.3.41",
     "amplify-java-function-runtime-provider": "2.3.41",
