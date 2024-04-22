@@ -50,6 +50,14 @@ const extractAPIModel = async (context: $TSContext, resource: $TSObject, framewo
 
   fs.ensureDirSync(tempDir);
 
+  // After updating node types from 12.x to 18.x the objectResult
+  // became not directly assignable to Buffer.from parameter type.
+  // However, this code has been running fine since 2022 which means that
+  // runtime types are compatible.
+  // The alternative would require multiple logical branches to handle type mismatch
+  // that doesn't seem to exist in runtime.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const buff = Buffer.from(data.body);
   fs.writeFileSync(`${tempDir}/${apiName}.zip`, buff);
   await extract(`${tempDir}/${apiName}.zip`, { dir: tempDir });
