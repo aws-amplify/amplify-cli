@@ -3,7 +3,8 @@ env:
   shell: bash
 phases:
   pre_build:
-    - echo 'Source Version - $CODEBUILD_RESOLVED_SOURCE_VERSION'
+    commands:
+      - echo 'Source Version - $CODEBUILD_RESOLVED_SOURCE_VERSION'
   build:
     commands:
       - echo "Build Tests Standalone"

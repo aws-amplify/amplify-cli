@@ -11,7 +11,8 @@ env:
     AMPLIFY_PATH: $CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
 phases:
   pre_build:
-    - echo 'Source Version - $CODEBUILD_RESOLVED_SOURCE_VERSION'
+    commands:
+      - echo 'Source Version - $CODEBUILD_RESOLVED_SOURCE_VERSION'
 batch:
   fast-fail: false
   build-graph:
