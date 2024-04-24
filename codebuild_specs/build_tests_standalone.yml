@@ -2,10 +2,12 @@ version: 0.2
 env:
   shell: bash
 phases:
+  pre_build:
+    - echo 'Source Version - $CODEBUILD_RESOLVED_SOURCE_VERSION'
   build:
     commands:
       - echo "Build Tests Standalone"
       - source ./shared-scripts.sh && _buildTestsStandalone
 artifacts:
   files:
-    - 'shared-scripts.sh'
+    - "shared-scripts.sh"
