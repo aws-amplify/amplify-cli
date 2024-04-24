@@ -152,8 +152,10 @@ export type AmplifyAppSyncSimulatorConfig = {
 export type AppSyncSimulatorServerConfig = {
   port?: number;
   wsPort?: number;
-  sslKeyPath?: string; // Path to the ssl key
-  sslCertPath?: string; // Path to the ssl cert
+  httpsConfig?: {
+    sslKeyPath: string;
+    sslCertPath: string;
+  };
 };
 
 export type AmplifyAppSyncSimulatorRequestContext = {

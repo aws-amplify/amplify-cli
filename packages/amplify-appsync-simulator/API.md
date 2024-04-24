@@ -270,8 +270,10 @@ export type AppSyncSimulatorSchemaConfig = AppSyncMockFile;
 export type AppSyncSimulatorServerConfig = {
     port?: number;
     wsPort?: number;
-    sslKeyPath?: string;
-    sslCertPath?: string;
+    httpsConfig?: {
+        sslKeyPath: string;
+        sslCertPath: string;
+    };
 };
 
 // @public (undocumented)
