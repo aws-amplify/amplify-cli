@@ -4,4 +4,4 @@ This is the package that contains graphiql explorer assets for amplify-appsync-s
 
 ## Development Mode
 
-When making changes to grapiql-explore, run `yarn start`. All the requests get proxied to `http://localhost:20002/`
+When making changes to grapiql-explorer, run `yarn start`. All the requests get proxied to `http://localhost:20002/` by default (If you use the --https flag on `amplify mock`, change the proxy from `http://localhost:20002/` to `https://localhost:20002/` in package.json.)

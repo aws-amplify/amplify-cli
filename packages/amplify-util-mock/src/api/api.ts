@@ -55,7 +55,12 @@ export class APITest {
   private userOverriddenSlots: string[] = [];
   private searchableTables: string[] = [];
 
-  async start(context, port: number = MOCK_API_PORT, wsPort: number = MOCK_API_PORT) {
+  async start(
+    context,
+    port: number = MOCK_API_PORT,
+    wsPort: number = MOCK_API_PORT,
+    httpsConfig?: { sslKeyPath: string; sslCertPath: string },
+  ) {
     try {
       context.amplify.addCleanUpTask(async (context) => {
         await this.stop(context);
@@ -72,6 +77,7 @@ export class APITest {
       this.appSyncSimulator = new AmplifyAppSyncSimulator({
         port,
         wsPort,
+        httpsConfig: httpsConfig,
       });
       await this.appSyncSimulator.start();
       await this.resolverOverrideManager.start();

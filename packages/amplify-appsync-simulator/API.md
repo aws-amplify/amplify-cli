@@ -89,6 +89,8 @@ export class AmplifyAppSyncSimulator {
     // (undocumented)
     init(config: AmplifyAppSyncSimulatorConfig): void;
     // (undocumented)
+    get isHttps(): boolean;
+    // (undocumented)
     get localhostUrl(): string;
     // (undocumented)
     get pubsub(): PubSub;
@@ -268,6 +270,10 @@ export type AppSyncSimulatorSchemaConfig = AppSyncMockFile;
 export type AppSyncSimulatorServerConfig = {
     port?: number;
     wsPort?: number;
+    httpsConfig?: {
+        sslKeyPath: string;
+        sslCertPath: string;
+    };
 };
 
 // @public (undocumented)
