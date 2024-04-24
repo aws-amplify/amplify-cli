@@ -25,15 +25,12 @@ describe('getHttpsConfig', () => {
     });
   });
 
-  it('returns undefined paths and prints error when --https option is not followed by key and cert paths', () => {
+  it('returns null and prints error when --https option is not followed by key and cert paths', () => {
     context.input.argv = ['--https'];
 
     const config = getHttpsConfig(context);
 
-    expect(config).toEqual({
-      sslKeyPath: undefined,
-      sslCertPath: undefined,
-    });
+    expect(config).toEqual(null);
     expect(context.print.error).toHaveBeenCalled();
   });
 });

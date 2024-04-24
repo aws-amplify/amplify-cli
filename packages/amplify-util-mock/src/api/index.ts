@@ -11,7 +11,7 @@ export async function start(context) {
     const mockConfig = await getMockConfig(context);
     const httpsConfig = getHttpsConfig(context);
 
-    await testApi.start(context, mockConfig.graphqlPort, mockConfig.graphqlPort, httpsConfig.sslKeyPath, httpsConfig.sslCertPath);
+    await testApi.start(context, mockConfig.graphqlPort, mockConfig.graphqlPort, httpsConfig);
   } catch (e) {
     console.log(e);
     // Sending term signal so we clean up after ourselves

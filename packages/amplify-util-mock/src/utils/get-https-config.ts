@@ -1,8 +1,6 @@
-export function getHttpsConfig(context): { sslKeyPath: string | undefined; sslCertPath: string | undefined } {
-  const paths: { sslKeyPath: string | undefined; sslCertPath: string | undefined } = { sslKeyPath: undefined, sslCertPath: undefined };
-
+export function getHttpsConfig(context): { sslKeyPath: string; sslCertPath: string } | null {
   if (!context.input || !context.input.argv) {
-    return paths;
+    return null;
   }
 
   const argv = context.input.argv;
@@ -12,8 +10,12 @@ export function getHttpsConfig(context): { sslKeyPath: string | undefined; sslCe
     if (httpsIndex < argv.length - 2) {
       const keyPath = argv[httpsIndex + 1];
       const certPath = argv[httpsIndex + 2];
-      paths.sslKeyPath = keyPath;
-      paths.sslCertPath = certPath;
+      if (typeof keyPath === 'string' && typeof certPath === 'string') {
+        return { sslKeyPath: keyPath, sslCertPath: certPath };
+      } else {
+        context.print.error('\nThe provided paths for the SSL key and certificate are not valid.\n');
+        context.print.error('Please ensure you have entered the correct paths.\n');
+      }
     } else {
       context.print.error('\nThe --https option must be followed by the path to the SSL key and the path to the SSL certificate.\n');
       context.print.error('Example: amplify mock api --https /path/to/key /path/to/cert\n');
@@ -23,5 +25,5 @@ export function getHttpsConfig(context): { sslKeyPath: string | undefined; sslCe
     }
   }
 
-  return paths;
+  return null;
 }

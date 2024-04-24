@@ -24,15 +24,15 @@ export class AppSyncSimulatorServer {
   constructor(private config: AppSyncSimulatorServerConfig, private simulatorContext: AmplifyAppSyncSimulator) {
     this._operationServer = new OperationServer(config, simulatorContext);
 
-    // Check if the SSL key path and certificate path exist and are valid
-    if (!config.sslKeyPath || !config.sslCertPath) {
+    // Check if the https configuration is not provided
+    if (!config.httpsConfig) {
       this._httpServer = createServer(this._operationServer.app);
     } else {
       try {
         // Read the ssl cert and key
         const sslOptions = {
-          key: readFileSync(config.sslKeyPath),
-          cert: readFileSync(config.sslCertPath),
+          key: readFileSync(config.httpsConfig.sslKeyPath),
+          cert: readFileSync(config.httpsConfig.sslCertPath),
         };
         // Set the isHttps flag to true
         this._isHttps = true;
