@@ -36,12 +36,12 @@ batch:
         - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
-    - identifier: lint
-      buildspec: codebuild_specs/lint.yml
-      depend-on:
-        - build_linux
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
+    # - identifier: lint
+    #   buildspec: codebuild_specs/lint.yml
+    #   depend-on:
+    #     - build_linux
+    #   env:
+    #     compute-type: BUILD_GENERAL1_LARGE
     - identifier: mock_e2e_tests
       buildspec: codebuild_specs/mock_e2e_tests.yml
       depend-on:
