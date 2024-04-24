@@ -6,8 +6,12 @@ env:
     AWS_DEFAULT_REGION: us-east-1
     AWS_REGION: us-east-1
     CDK_DEFAULT_REGION: us-east-1
-    AMPLIFY_DIR: '$CODEBUILD_SRC_DIR/out'
-    AMPLIFY_PATH: '$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64'
+    AMPLIFY_DIR: "$CODEBUILD_SRC_DIR/out"
+    AMPLIFY_PATH: "$CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64"
+
+phases:
+  pre_build:
+    - echo 'Source Version - $CODEBUILD_RESOLVED_SOURCE_VERSION'
 
 batch:
   fast-fail: false
