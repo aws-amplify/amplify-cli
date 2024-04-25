@@ -10,6 +10,8 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _amplifyGeneralConfigTests
+      - echo "Build Status"
+      - source ./shared-scripts.sh && _logBuildStatus
 artifacts:
   files:
-    - 'shared-scripts.sh'
+    - "shared-scripts.sh"

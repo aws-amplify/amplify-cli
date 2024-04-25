@@ -6,7 +6,11 @@ phases:
     commands:
       - ./.circleci/codebuild-checkout.sh
       - source ./shared-scripts.sh && _buildLinux
+  post_build:
+    commands:
+      - echo "Build Status"
+      - source ./shared-scripts.sh && _logBuildStatus
 
 artifacts:
   files:
-    - 'shared-scripts.sh'
+    - "shared-scripts.sh"

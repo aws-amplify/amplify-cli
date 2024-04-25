@@ -17,6 +17,10 @@ phases:
       - npm install -g @aws-amplify/cli
       - source .circleci/local_publish_helpers_codebuild.sh && unsetNpmRegistryUrl
       - amplify version
+  post_build:
+    commands:
+      - echo "Build Status"
+      - source ./shared-scripts.sh && _logBuildStatus
 artifacts:
   files:
-    - 'shared-scripts.sh'
+    - "shared-scripts.sh"

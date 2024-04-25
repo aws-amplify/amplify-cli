@@ -6,6 +6,10 @@ phases:
     commands:
       - npm install -g ts-node
       - source ./shared-scripts.sh && _cleanUpResources
+  post_build:
+    commands:
+      - echo "Build Status"
+      - source ./shared-scripts.sh && _logBuildStatus
 artifacts:
   files:
-    - 'shared-scripts.sh'
+    - "shared-scripts.sh"

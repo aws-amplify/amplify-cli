@@ -9,6 +9,10 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _integrationTest
+  post_build:
+    commands:
+      - echo "Build Status"
+      - source ./shared-scripts.sh && _logBuildStatus
 artifacts:
   files:
     - $CODEBUILD_SRC_DIR/../aws-amplify-cypress-auth/cypress/videos/*
