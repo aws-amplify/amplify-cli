@@ -14,9 +14,9 @@ phases:
 reports:
   e2e-reports:
     files:
-      - '*.xml'
-    file-format: 'JUNITXML'
-    base-directory: '$CODEBUILD_SRC_DIR/aggregate_reports'
+      - "*.xml"
+    file-format: "JUNITXML"
+    base-directory: "$CODEBUILD_SRC_DIR/aggregate_reports"
 artifacts:
   files:
-    - 'artifacts/*'
+    - "artifacts/*"
