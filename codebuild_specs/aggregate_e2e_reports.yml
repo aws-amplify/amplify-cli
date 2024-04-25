@@ -7,7 +7,7 @@ phases:
       - cd ./scripts
       - npm install -g ts-node
       - npm install aws-sdk
-      - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH $PROJECT_NAME
+      - ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION ../$WAIT_FOR_IDS_FILE_PATH $PROJECT_NAME $CODEBUILD_WEBHOOK_TRIGGER
       - cd ..
       - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
       - mkdir artifacts && echo "empty artifact" > artifacts/empty-artifact.txt

@@ -49,7 +49,8 @@ const main = async () => {
   const expectedSourceVersion = process.argv[2];
   const jobsDependedOnFilepathOrId = process.argv[3];
   const codeBuildProjectName = process.argv[4];
-  let accountForFailures: boolean = process.argv.length >= 6 && process.argv[5] === 'requirePrevJobsToSucceed';
+  const codebuildWebhookTrigger = process.argv[5];
+  const accountForFailures: boolean = process.argv.length >= 7 && process.argv[6] === 'requirePrevJobsToSucceed';
   let jobsDependedOn: string[];
   if (fs.existsSync(jobsDependedOnFilepathOrId)) {
     const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepathOrId, 'utf8');
@@ -84,6 +85,9 @@ const main = async () => {
       const intersectingFailedJobs = failedJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
       console.log(`failedJobsInBatch: ${JSON.stringify(failedJobsInBatch)}`);
       console.log(`intersectingFailedJobs: ${JSON.stringify(intersectingFailedJobs)}`);
+      if (failedJobsInBatch.length || intersectingFailedJobs.length) {
+        console.log(`Batch triggered by ${codebuildWebhookTrigger} failed.`);
+      }
       if (intersectingFailedJobs.length > 0) {
         console.log(`${jobsDependedOn[0]} failed. Exiting.`);
         process.exit(1);
