@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.18-codegen-gen2-e2e.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.17...amplify-util-headless-input@1.9.18-codegen-gen2-e2e.0) (2024-04-25)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
 ## [1.9.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.15...amplify-util-headless-input@1.9.17) (2023-11-08)
 
 

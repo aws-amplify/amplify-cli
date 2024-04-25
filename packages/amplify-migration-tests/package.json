@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-migration-tests",
-  "version": "6.3.4",
+  "version": "6.3.5-codegen-gen2-e2e.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,10 +27,10 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.3.4",
-    "@aws-amplify/amplify-e2e-core": "5.5.4",
+    "@aws-amplify/amplify-e2e-core": "5.5.5-codegen-gen2-e2e.0",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "@aws-sdk/client-s3": "^3.303.0",
-    "amplify-headless-interface": "1.17.6",
+    "amplify-headless-interface": "1.17.7-codegen-gen2-e2e.0",
     "aws-amplify": "^5.3.16",
     "aws-cdk-lib": "~2.80.0",
     "constructs": "^10.0.5",

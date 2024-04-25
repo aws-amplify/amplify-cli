@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0-codegen-gen2-e2e.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.14...@aws-amplify/amplify-graphiql-explorer@2.6.0-codegen-gen2-e2e.0) (2024-04-25)
+
+
+### Features
+
+* support https for mock util plugin ([#13700](https://github.com/aws-amplify/amplify-cli/issues/13700)) ([cf418f1](https://github.com/aws-amplify/amplify-cli/commit/cf418f1d9ebc46fff8e12abe7a61d9a5e4ccdfe7))
+
+
+
+
+
 ## [2.5.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.13...@aws-amplify/amplify-graphiql-explorer@2.5.14) (2024-04-15)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.11.2-codegen-gen2-e2e.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.11.1...@aws-amplify/cli-internal@12.11.2-codegen-gen2-e2e.0) (2024-04-25)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 ## [12.11.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.11.0...@aws-amplify/cli-internal@12.11.1) (2024-04-18)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
