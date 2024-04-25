@@ -11,12 +11,17 @@ phases:
       - cd ..
       - source ./shared-scripts.sh && _downloadReportsFromS3 $CODEBUILD_SOURCE_VERSION
       - mkdir artifacts && echo "empty artifact" > artifacts/empty-artifact.txt
+  post_build:
+    commands:
+      - echo $PROJECT_NAME
+      - echo $BRANCH_NAME
+      - echo "CODEBUILD_WEBHOOK_TRIGGER=$CODEBUILD_WEBHOOK_TRIGGER CODEBUILD_BUILD_SUCCEEDING=$CODEBUILD_BUILD_SUCCEEDING"
 reports:
   e2e-reports:
     files:
-      - '*.xml'
-    file-format: 'JUNITXML'
-    base-directory: '$CODEBUILD_SRC_DIR/aggregate_reports'
+      - "*.xml"
+    file-format: "JUNITXML"
+    base-directory: "$CODEBUILD_SRC_DIR/aggregate_reports"
 artifacts:
   files:
-    - 'artifacts/*'
+    - "artifacts/*"
