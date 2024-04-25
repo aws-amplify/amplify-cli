@@ -791,9 +791,3 @@ function _deploymentVerificationRCOrTagged {
     version=$(cat .amplify-pkg-version)
     yarn ts-node scripts/verify-deployment.ts --version $version --exclude-github
 }
-
-function _logBuildStatus {
-    echo $PROJECT_NAME
-    echo $BRANCH_NAME
-    echo "CODEBUILD_WEBHOOK_TRIGGER=$CODEBUILD_WEBHOOK_TRIGGER CODEBUILD_BUILD_SUCCEEDING=$CODEBUILD_BUILD_SUCCEEDING"
-}

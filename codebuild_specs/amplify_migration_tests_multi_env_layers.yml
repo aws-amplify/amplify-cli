@@ -38,7 +38,9 @@ phases:
       - source ./shared-scripts.sh && _scanArtifacts
       - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-migration-tests
       - echo "Build Status"
-      - source ./shared-scripts.sh && _logBuildStatus
+      - echo $PROJECT_NAME
+      - echo $BRANCH_NAME
+      - echo "CODEBUILD_WEBHOOK_TRIGGER=$CODEBUILD_WEBHOOK_TRIGGER CODEBUILD_BUILD_SUCCEEDING=$CODEBUILD_BUILD_SUCCEEDING"
 reports:
   e2e-reports:
     files:
