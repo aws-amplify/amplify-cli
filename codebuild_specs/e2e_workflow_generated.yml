@@ -9,10 +9,6 @@ env:
     CDK_DEFAULT_REGION: us-east-1
     AMPLIFY_DIR: $CODEBUILD_SRC_DIR/out
     AMPLIFY_PATH: $CODEBUILD_SRC_DIR/out/amplify-pkg-linux-x64
-phases:
-  pre_build:
-    commands:
-      - echo 'Source Version - $CODEBUILD_RESOLVED_SOURCE_VERSION'
 batch:
   fast-fail: false
   build-graph:
@@ -32,6 +28,12 @@ batch:
         image: $WINDOWS_IMAGE_2019
     - identifier: test
       buildspec: codebuild_specs/test.yml
+      depend-on:
+        - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: lint
+      buildspec: codebuild_specs/lint.yml
       depend-on:
         - build_linux
       env:
