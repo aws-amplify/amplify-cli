@@ -10,8 +10,7 @@ phases:
     commands:
       - echo $PROJECT_NAME
       - echo $BRANCH_NAME
-      - echo $CODEBUILD_WEBHOOK_TRIGGER
-      - echo $CODEBUILD_BUILD_SUCCEEDING
+      - echo "BRANCH_NAME=$BRANCH_NAME CODEBUILD_WEBHOOK_TRIGGER=$CODEBUILD_WEBHOOK_TRIGGER CODEBUILD_WEBHOOK_TRIGGER=$CODEBUILD_WEBHOOK_TRIGGER"
 artifacts:
   files:
     - "shared-scripts.sh"
