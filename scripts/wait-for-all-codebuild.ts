@@ -80,14 +80,14 @@ const main = async () => {
   let intersectingIncompleteJobs: string[];
   do {
     await new Promise((resolve) => setTimeout(resolve, 180 * 1000)); // sleep for 180 seconds
+    const failedJobsInBatch = await getFailedJobIdsFromBatchId(cb, batchId);
+    const intersectingFailedJobs = failedJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
+    const batchFailed = failedJobsInBatch.length || intersectingFailedJobs.length;
+    console.log(`Batch triggered by ${codebuildWebhookTrigger} ${batchFailed ? 'failed' : 'succeeded'}.`);
+
     if (accountForFailures) {
-      const failedJobsInBatch = await getFailedJobIdsFromBatchId(cb, batchId);
-      const intersectingFailedJobs = failedJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
       console.log(`failedJobsInBatch: ${JSON.stringify(failedJobsInBatch)}`);
       console.log(`intersectingFailedJobs: ${JSON.stringify(intersectingFailedJobs)}`);
-      if (failedJobsInBatch.length || intersectingFailedJobs.length) {
-        console.log(`Batch triggered by ${codebuildWebhookTrigger} failed.`);
-      }
       if (intersectingFailedJobs.length > 0) {
         console.log(`${jobsDependedOn[0]} failed. Exiting.`);
         process.exit(1);
