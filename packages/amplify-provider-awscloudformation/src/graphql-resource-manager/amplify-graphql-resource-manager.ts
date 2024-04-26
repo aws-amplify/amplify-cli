@@ -464,7 +464,7 @@ export class GraphQLResourceManager {
 
   /**
    * Remove all outputs and resources except for search domain for searchable stack
-   * @param template stack CFN template
+   * @param template stack CFN tempalte
    */
   private dropTemplateResourcesForSearchableStack = (template: Template): void => {
     const OpenSearchDomainLogicalID = 'OpenSearchDomain';
