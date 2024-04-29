@@ -55,7 +55,7 @@ const main = async () => {
   console.log('jobsDependedOnFilepathOrId:', jobsDependedOnFilepathOrId);
   console.log('codeBuildProjectName', codeBuildProjectName);
   console.log('codebuildWebhookTrigger', codebuildWebhookTrigger);
-  console.log('accountForFailures', accountForFailures);
+  console.log('accountForFailures', process.argv[6]);
 
   let jobsDependedOn: string[];
   if (fs.existsSync(jobsDependedOnFilepathOrId)) {
