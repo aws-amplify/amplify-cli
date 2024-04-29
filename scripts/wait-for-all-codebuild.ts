@@ -51,6 +51,12 @@ const main = async () => {
   const codeBuildProjectName = process.argv[4];
   const codebuildWebhookTrigger = process.argv[5];
   const accountForFailures: boolean = process.argv.length >= 7 && process.argv[6] === 'requirePrevJobsToSucceed';
+  console.log('expectedSourceVersion:', expectedSourceVersion);
+  console.log('jobsDependedOnFilepathOrId:', jobsDependedOnFilepathOrId);
+  console.log('codeBuildProjectName', codeBuildProjectName);
+  console.log('codebuildWebhookTrigger', codebuildWebhookTrigger);
+  console.log('accountForFailures', accountForFailures);
+
   let jobsDependedOn: string[];
   if (fs.existsSync(jobsDependedOnFilepathOrId)) {
     const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepathOrId, 'utf8');
