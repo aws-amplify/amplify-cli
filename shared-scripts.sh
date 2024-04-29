@@ -670,8 +670,8 @@ function _waitForJobs {
     cd ./scripts
     npm install -g ts-node
     npm install aws-sdk
-    echo "RUNNING RUNNING...ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME $CODEBUILD_WEBHOOK_TRIGGER $account_for_failures"
-    ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME $CODEBUILD_WEBHOOK_TRIGGER $account_for_failures
+    echo "RUNNING RUNNING...ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME ${CODEBUILD_WEBHOOK_TRIGGER:-empty} $account_for_failures"
+    ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME ${CODEBUILD_WEBHOOK_TRIGGER:-empty} $account_for_failures
     cd ..
 }
 function _verifyPkgCLI {
