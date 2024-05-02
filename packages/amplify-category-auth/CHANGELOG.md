@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.10-rc.5f002defb602bb4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.9...@aws-amplify/amplify-category-auth@3.7.10-rc.5f002defb602bb4.0) (2024-05-02)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** added pagination for listGroups api action ([#13723](https://github.com/aws-amplify/amplify-cli/issues/13723)) ([0d52c47](https://github.com/aws-amplify/amplify-cli/commit/0d52c478475e25f53d7693f79902b21dc4741942))
+
+
+
+
+
 ## [3.7.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.8...@aws-amplify/amplify-category-auth@3.7.9) (2024-04-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
