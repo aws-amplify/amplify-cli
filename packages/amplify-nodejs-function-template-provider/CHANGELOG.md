@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.5-acdk-upgrade-2-129.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.10.4...@aws-amplify/amplify-nodejs-function-template-provider@2.10.5-acdk-upgrade-2-129.0) (2024-05-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [2.10.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.10.3...@aws-amplify/amplify-nodejs-function-template-provider@2.10.4) (2024-04-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider
