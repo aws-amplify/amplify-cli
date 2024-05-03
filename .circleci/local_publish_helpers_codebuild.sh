@@ -190,7 +190,7 @@ function useChildAccountCredentials {
     parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
     child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
     org_size=$(echo $child_accts | jq 'length')
-    pick_acct=767220387042
+    pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
     session_id=$((1 + $RANDOM % 10000))
     if [[ -z "$pick_acct" || -z "$session_id" ]]; then
         echo "Unable to find a child account. Falling back to parent AWS account"
