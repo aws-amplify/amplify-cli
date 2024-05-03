@@ -14,6 +14,7 @@
     "cloud-e2e-beta": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2EBeta'",
     "cloud-e2e-local": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2ELocal'",
     "cloud-e2e": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2E'",
+    "cloud-e2e-debug": "bash -c 'source ./scripts/cloud-e2e.sh && cloudE2EDebug'",
     "cloud-pr": "./scripts/cloud-pr.sh",
     "commit": "git-cz",
     "coverage:collect": "ts-node ./scripts/collect-test-coverage.ts",

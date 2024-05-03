@@ -36,3 +36,26 @@ function triggerProjectBatch {
      --query 'buildBatch.id' --output text)
     echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=us-east-1"
 }
+
+function triggerProjectBatchWithDebugSession {
+    account_number=$1
+    role_name=$2
+    profile_name=$3
+    project_name=$4
+    target_branch=$5
+    authenticate $account_number $role_name $profile_name
+    echo AWS Account: $account_number
+    echo Project: $project_name 
+    echo Target Branch: $target_branch
+    debug_spec=$(cat codebuild_specs/debug_workflow.yml)
+    if [[ "$npm_tag" != "" ]]; then
+      echo NPM tag: $npm_tag
+      npm_variable_override="name=NPM_TAG,value=$npm_tag,type=PLAINTEXT"
+    fi
+    RESULT=$(aws codebuild start-build-batch --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
+     --debug-session-enabled \
+     --buildspec-override "$debug_spec" \
+     --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT $npm_variable_override \
+     --query 'buildBatch.id' --output text)
+    echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=us-east-1"
+}

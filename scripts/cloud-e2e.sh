@@ -20,3 +20,10 @@ function cloudE2E {
     git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$TARGET_BRANCH --no-verify --force-with-lease
     triggerProjectBatch $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "${E2E_PROFILE_NAME}Prod" $E2E_PROJECT_NAME $TARGET_BRANCH
 }
+
+function cloudE2EDebug {
+    echo Running Debug E2E Test Suite
+    export TARGET_BRANCH=run-cb-e2e/$USER/$CURR_BRANCH
+    git push $(git remote -v | grep aws-amplify/amplify-cli | head -n1 | awk '{print $1;}') $CURR_BRANCH:$TARGET_BRANCH --no-verify --force-with-lease
+    triggerProjectBatchWithDebugSession $E2E_ACCOUNT_PROD $E2E_ROLE_NAME "${E2E_PROFILE_NAME}Prod" $E2E_PROJECT_NAME $TARGET_BRANCH
+}
