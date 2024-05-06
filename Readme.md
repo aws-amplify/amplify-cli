@@ -17,7 +17,8 @@
 [![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-cli/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
 [![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-cli?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aclosed+)
 
-> [!Important]  
+> [!Important]
+>
 > # Amplify Gen 2 is now generally available
 >
 > If you are starting a new project, we recommend starting with [Amplify Gen 2](https://github.com/aws-amplify/amplify-backend).
