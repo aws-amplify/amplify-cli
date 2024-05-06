@@ -17,14 +17,17 @@
 [![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-cli/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
 [![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-cli?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aclosed+)
 
-> [!TIP]  
-> **Preview: AWS Amplify's new code-first DX (Gen 2) for building backends**
+> [!Important]
 >
-> The next generation of Amplify's backend building experience with a TypeScript-first DX is now available in Preview. To learn more, please visit [AWS Amplify (Gen 2)](https://docs.amplify.aws/gen2/).
+> # Amplify Gen 2 is now generally available
 >
-> To open a new issue related to Amplify's new backend building experience, please visit [AWS Amplify Backend](https://github.com/aws-amplify/amplify-backend).
+> If you are starting a new project, we recommend starting with [Amplify Gen 2](https://github.com/aws-amplify/amplify-backend).
+>
+> If you are an existing Gen 1 customer, we recommend that you continue working with your Gen 1 Amplify project. We are actively developing migration tooling to aid in transitioning your project from Gen 1 to Gen 2. We remain committed to supporting both Gen 1 and Gen 2 for the foreseeable future.
+>
+> Customers on Gen 1 will continue to receive support for high-priority bugs and essential security updates.
 
-# AWS Amplify CLI
+# AWS Amplify CLI (Gen 1)
 
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks to allow you to add or modify configurations locally before you push them for execution in your account.
 
