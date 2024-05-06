@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.18-acdk-upgrade-2-129.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.17...amplify-util-headless-input@1.9.18-acdk-upgrade-2-129.1) (2024-05-06)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
 ## [1.9.18-acdk-upgrade-2-129.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.9.17...amplify-util-headless-input@1.9.18-acdk-upgrade-2-129.0) (2024-05-03)
 
 **Note:** Version bump only for package amplify-util-headless-input

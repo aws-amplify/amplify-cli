@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0-acdk-upgrade-2-129.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.9.6...@aws-amplify/amplify-util-mock@5.10.0-acdk-upgrade-2-129.1) (2024-05-06)
+
+
+### Features
+
+* support https for mock util plugin ([#13700](https://github.com/aws-amplify/amplify-cli/issues/13700)) ([cf418f1](https://github.com/aws-amplify/amplify-cli/commit/cf418f1d9ebc46fff8e12abe7a61d9a5e4ccdfe7))
+
+
+
+
+
 # [5.10.0-acdk-upgrade-2-129.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.9.6...@aws-amplify/amplify-util-mock@5.10.0-acdk-upgrade-2-129.0) (2024-05-03)
 
 
