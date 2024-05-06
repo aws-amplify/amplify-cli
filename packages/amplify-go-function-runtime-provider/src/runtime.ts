@@ -100,7 +100,7 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
     executeCommand(['mod', 'tidy', '-v'], true, envVars, srcDir);
     // Execute the build command, cwd must be the source file directory (Windows requires it)
     // Details: https://github.com/aws/aws-lambda-go
-    executeCommand(['build', '-o', '../bin/bootstrap', 'main.go'], true, envVars, srcDir);
+    executeCommand(['build', '-o', '../bin/bootstrap', '.'], true, envVars, srcDir);
 
     rebuilt = true;
   }
