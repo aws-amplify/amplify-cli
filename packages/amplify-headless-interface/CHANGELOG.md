@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.6...amplify-headless-interface@1.17.7) (2024-05-07)
+
+
+### Bug Fixes
+
+* **amplify-headless-interface:** added lambda auth type to headless api payloads ([#13729](https://github.com/aws-amplify/amplify-cli/issues/13729)) ([450eaf1](https://github.com/aws-amplify/amplify-cli/commit/450eaf18af24f3cc15117a55fc565b68b5a63768))
+
+
+
+
+
 ## [1.17.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.4...amplify-headless-interface@1.17.6) (2023-11-08)
 
 
