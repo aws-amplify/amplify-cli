@@ -490,18 +490,9 @@ export class DeploymentManager {
     assert(stackParams.stackName, 'stackName should be passed to waitForDeployment');
 
     await cfnClient
-      .waitFor(
-        'stackUpdateComplete',
-        {
-          StackName: stackParams.stackName,
-        },
-        (err, data) => {
-          if (err) {
-            throw err;
-          }
-          return data;
-        },
-      )
+      .waitFor('stackUpdateComplete', {
+        StackName: stackParams.stackName,
+      })
       .promise();
   };
 
