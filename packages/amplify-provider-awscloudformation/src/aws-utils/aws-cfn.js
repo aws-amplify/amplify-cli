@@ -2,7 +2,6 @@
 /* eslint-disable */
 const fs = require('fs-extra');
 const path = require('path');
-const { EOL } = require('os');
 const _ = require('lodash');
 const BottleNeck = require('bottleneck');
 const chalk = require('chalk');
@@ -419,7 +418,7 @@ class CloudFormation {
 
                     if (completeErr) {
                       await this.collectStackErrors(cfnParentStackParams.StackName).then((errorDetails) => {
-                        completeErr.message = `${completeErr.message}${EOL}${errorDetails}`;
+                        completeErr.details = errorDetails;
                         reject(completeErr);
                       });
                     } else {

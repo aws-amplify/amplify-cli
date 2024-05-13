@@ -123,8 +123,12 @@ const executeSafely = async (functionToExecute: () => Promise<void> | void, erro
 
 const printAmplifyException = (amplifyException: AmplifyException): void => {
   const { message, details, resolution, link, stack } = amplifyException;
-
-  printer.error(message);
+  if (message === 'Resource is not in the state stackUpdateComplete') {
+    // This change is to help Studio log more details to save another round of log analysis.
+    printer.error(message + details);
+  } else {
+    printer.error(message);
+  }
   if (details) {
     printer.info(details);
   }
