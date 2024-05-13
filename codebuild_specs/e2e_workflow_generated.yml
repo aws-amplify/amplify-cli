@@ -66,18 +66,26 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_arm
       buildspec: codebuild_specs/build_pkg_binaries_arm.yml
+      depend-on:
+        - publish_to_local_registry
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_linux
       buildspec: codebuild_specs/build_pkg_binaries_linux.yml
+      depend-on:
+        - publish_to_local_registry
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_macos
       buildspec: codebuild_specs/build_pkg_binaries_macos.yml
+      depend-on:
+        - publish_to_local_registry
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
+      depend-on:
+        - publish_to_local_registry
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: upb
