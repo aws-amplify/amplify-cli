@@ -2,6 +2,7 @@
 /* eslint-disable */
 const fs = require('fs-extra');
 const path = require('path');
+const { EOL } = require('os');
 const _ = require('lodash');
 const BottleNeck = require('bottleneck');
 const chalk = require('chalk');
