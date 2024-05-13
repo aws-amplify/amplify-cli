@@ -60,6 +60,8 @@ batch:
         - build_linux
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
+      depend-on:
+        - build_linux
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_arm
@@ -80,16 +82,24 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: upb
       buildspec: codebuild_specs/upload_pkg_binaries.yml
+      depend-on:
+        - build_pkg_binaries_arm
+        - build_pkg_binaries_linux
+        - build_pkg_binaries_macos
+        - build_pkg_binaries_win
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
       depend-on:
-        - build_linux
+        - publish_to_local_registry
     - identifier: verify_pkg_cli
       buildspec: codebuild_specs/verify_pkg_cli.yml
       depend-on:
-        - build_linux
+        - build_pkg_binaries_arm
+        - build_pkg_binaries_linux
+        - build_pkg_binaries_macos
+        - build_pkg_binaries_win
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: integration_test
