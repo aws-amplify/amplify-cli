@@ -418,7 +418,7 @@ class CloudFormation {
 
                     if (completeErr) {
                       await this.collectStackErrors(cfnParentStackParams.StackName).then((errorDetails) => {
-                        completeErr.message = `${completeErr.message} \n ${errorDetails}`;
+                        completeErr.message = `${completeErr.message}${EOL}${errorDetails}`;
                         reject(completeErr);
                       });
                     } else {
