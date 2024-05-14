@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import { reportError } from '../commands/diagnose';
@@ -63,7 +64,7 @@ describe('test exception handler', () => {
 
     await handleException(amplifyError);
 
-    expect(printerMock.error).toHaveBeenCalledWith(amplifyError.message);
+    expect(printerMock.error).toHaveBeenCalledWith(`${amplifyError.message}${EOL}${amplifyError.details}`);
     expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
   });
@@ -78,7 +79,7 @@ describe('test exception handler', () => {
     reportErrorMock.mockRejectedValueOnce(new Error('MockTestError'));
     await handleException(amplifyError);
 
-    expect(printerMock.error).toHaveBeenCalledWith(amplifyError.message);
+    expect(printerMock.error).toHaveBeenCalledWith(`${amplifyError.message}${EOL}${amplifyError.details}`);
     expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
     expect(printerMock.error).toHaveBeenCalledWith('Failed to report error: MockTestError');
