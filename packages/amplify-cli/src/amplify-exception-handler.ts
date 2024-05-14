@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import {
   $TSAny,
   AmplifyException,
@@ -124,7 +125,7 @@ const executeSafely = async (functionToExecute: () => Promise<void> | void, erro
 const printAmplifyException = (amplifyException: AmplifyException): void => {
   const { message, details, resolution, link, stack } = amplifyException;
   if (details) {
-    printer.error(message + os.EOL + details);
+    printer.error(message + EOL + details);
   } else {
     printer.error(message);
   }
