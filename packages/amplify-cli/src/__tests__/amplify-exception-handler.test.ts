@@ -65,7 +65,9 @@ describe('test exception handler', () => {
     await handleException(amplifyError);
 
     expect(printerMock.error).toHaveBeenCalledWith(`${amplifyError.message}${EOL}${amplifyError.details}`);
-    expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
+    expect(printerMock.info).toHaveBeenCalledTimes(2);
+    expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.details}`);
+    expect(printerMock.info).toHaveBeenLastCalledWith('Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/');
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
   });
 
@@ -80,7 +82,9 @@ describe('test exception handler', () => {
     await handleException(amplifyError);
 
     expect(printerMock.error).toHaveBeenCalledWith(`${amplifyError.message}${EOL}${amplifyError.details}`);
-    expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
+    expect(printerMock.info).toHaveBeenCalledTimes(2);
+    expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.details}`);
+    expect(printerMock.info).toHaveBeenLastCalledWith('Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/');
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
     expect(printerMock.error).toHaveBeenCalledWith('Failed to report error: MockTestError');
   });
