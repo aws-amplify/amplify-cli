@@ -57,25 +57,25 @@ describe('test exception handler', () => {
 
   it('error handler should print error', async () => {
     const amplifyError = new AmplifyError('NotImplementedError', {
-      message: 'Test Not implemented',
-      details: 'Test Not implemented',
-      resolution: 'Test Not implemented',
+      message: 'Test Not implemented(message)',
+      details: 'Test Not implemented(details)',
+      resolution: 'Test Not implemented(resolution)',
     });
 
     await handleException(amplifyError);
 
     expect(printerMock.error).toHaveBeenCalledWith(`${amplifyError.message}${EOL}${amplifyError.details}`);
     expect(printerMock.info).toHaveBeenCalledTimes(2);
-    expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.details}`);
+    expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.resolution}`);
     expect(printerMock.info).toHaveBeenLastCalledWith('Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/');
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
   });
 
   it('error handler should handle encountered errors gracefully', async () => {
     const amplifyError = new AmplifyError('NotImplementedError', {
-      message: 'Test Not implemented',
-      details: 'Test Not implemented',
-      resolution: 'Test Not implemented',
+      message: 'Test Not implemented(message)',
+      details: 'Test Not implemented(details)',
+      resolution: 'Test Not implemented(resolution)',
     });
 
     reportErrorMock.mockRejectedValueOnce(new Error('MockTestError'));
@@ -83,7 +83,7 @@ describe('test exception handler', () => {
 
     expect(printerMock.error).toHaveBeenCalledWith(`${amplifyError.message}${EOL}${amplifyError.details}`);
     expect(printerMock.info).toHaveBeenCalledTimes(2);
-    expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.details}`);
+    expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.resolution}`);
     expect(printerMock.info).toHaveBeenLastCalledWith('Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/');
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
     expect(printerMock.error).toHaveBeenCalledWith('Failed to report error: MockTestError');
