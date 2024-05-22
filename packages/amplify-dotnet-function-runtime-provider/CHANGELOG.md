@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.25-rc.08f358da33163fa.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.24...amplify-dotnet-function-runtime-provider@2.0.25-rc.08f358da33163fa.0) (2024-05-22)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
 ## [2.0.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.23...amplify-dotnet-function-runtime-provider@2.0.24) (2024-05-07)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider
