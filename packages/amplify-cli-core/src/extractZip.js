@@ -1,5 +1,9 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable spellcheck/spell-checker */
+/**
+ * This file is copied from https://github.com/max-mapper/extract-zip
+ * and turned off creating symlinks on the machine where archive is extracted
+ */
 const { createWriteStream, promises: fs } = require('fs');
 const path = require('path');
 const { promisify } = require('util');
