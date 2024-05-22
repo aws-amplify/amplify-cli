@@ -1,6 +1,5 @@
-import { $TSAny, $TSContext, $TSObject, AmplifyError, AmplifyFrontend, pathManager } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyError, AmplifyFrontend, pathManager, extract } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import extract from 'extract-zip';
 import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
 import { APIGateway } from './aws-utils/aws-apigw';

@@ -48,7 +48,6 @@
     "constructs": "^10.0.5",
     "cors": "^2.8.5",
     "deep-diff": "^1.0.2",
-    "extract-zip": "^2.0.1",
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",

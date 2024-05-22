@@ -1,5 +1,4 @@
-import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
-import extract from 'extract-zip';
+import { AmplifyFault, extract } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import path from 'path';
 import { S3 } from './aws-utils/aws-s3';

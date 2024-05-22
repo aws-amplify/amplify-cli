@@ -821,6 +821,9 @@ export class ExportPathValidationError extends AmplifyError {
 }
 
 // @public (undocumented)
+export const extract: any;
+
+// @public (undocumented)
 export function fancy(message?: string): void;
 
 // @public (undocumented)
