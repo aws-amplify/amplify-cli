@@ -9,6 +9,7 @@ const path = require('path');
 const { promisify } = require('util');
 const stream = require('stream');
 const yauzl = require('yauzl');
+const { getAmplifyLogger } = require('@aws-amplify/amplify-cli-logger');
 
 const openZip = promisify(yauzl.open);
 const pipeline = promisify(stream.pipeline);
@@ -113,11 +114,12 @@ class Extractor {
     await fs.mkdir(destDir, mkdirOptions);
     if (isDir) return;
 
-    const readStream = await promisify(this.zipfile.openReadStream.bind(this.zipfile))(entry);
-
-    if (!symlink) {
-      await pipeline(readStream, createWriteStream(dest, { mode: procMode }));
+    if (symlink) {
+      getAmplifyLogger().logError({ message: 'Found symlinks in the zipped directory. These symlinks will not be extracted' });
+      return;
     }
+    const readStream = await promisify(this.zipfile.openReadStream.bind(this.zipfile))(entry);
+    await pipeline(readStream, createWriteStream(dest, { mode: procMode }));
   }
 
   getExtractedMode(entryMode, isDir) {
