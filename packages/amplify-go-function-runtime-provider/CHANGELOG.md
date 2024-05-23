@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.43-rc.bf639d0cf8ef612.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.42...amplify-go-function-runtime-provider@2.3.43-rc.bf639d0cf8ef612.0) (2024-05-23)
+
+
+### Bug Fixes
+
+* fix Go project with multiple files ([#13765](https://github.com/aws-amplify/amplify-cli/issues/13765)) ([bd5dc93](https://github.com/aws-amplify/amplify-cli/commit/bd5dc939dccc19520d45e6ff1d2e3870b2c9d679))
+
+
+
+
+
 ## [2.3.42](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.41...amplify-go-function-runtime-provider@2.3.42) (2024-05-07)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider

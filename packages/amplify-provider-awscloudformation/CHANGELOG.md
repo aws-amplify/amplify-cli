@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.8-rc.bf639d0cf8ef612.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.7...@aws-amplify/amplify-provider-awscloudformation@8.10.8-rc.bf639d0cf8ef612.0) (2024-05-23)
+
+
+### Bug Fixes
+
+* don't create symlinks after extracting zip ([#13791](https://github.com/aws-amplify/amplify-cli/issues/13791)) ([08f358d](https://github.com/aws-amplify/amplify-cli/commit/08f358da33163fa70930ae6ef900e1d018672ef1))
+
+
+
+
+
 ## [8.10.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.6...@aws-amplify/amplify-provider-awscloudformation@8.10.7) (2024-05-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation

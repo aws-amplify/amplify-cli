@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-analytics",
-  "version": "5.0.31",
+  "version": "5.0.32-rc.bf639d0cf8ef612.0",
   "description": "amplify-cli analytics plugin",
   "repository": {
     "type": "git",
@@ -25,8 +25,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.3.5",
-    "@aws-amplify/amplify-environment-parameters": "1.9.10",
+    "@aws-amplify/amplify-cli-core": "4.3.6-rc.bf639d0cf8ef612.0",
+    "@aws-amplify/amplify-environment-parameters": "1.9.11-rc.bf639d0cf8ef612.0",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "fs-extra": "^8.1.0",
     "uuid": "^8.3.2"
