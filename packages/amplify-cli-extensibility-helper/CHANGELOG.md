@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.30](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.29...@aws-amplify/cli-extensibility-helper@3.0.30) (2024-05-24)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
 ## [3.0.29](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.28...@aws-amplify/cli-extensibility-helper@3.0.29) (2024-05-07)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

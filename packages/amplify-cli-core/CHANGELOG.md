@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.5...@aws-amplify/amplify-cli-core@4.3.6) (2024-05-24)
+
+
+### Bug Fixes
+
+* do not create read stream for zip entries that are not being extracted ([883b23b](https://github.com/aws-amplify/amplify-cli/commit/883b23b6cd22a3c59296ca04f4d7f088ebb2d0a9))
+* don't create symlinks after extracting zip ([#13791](https://github.com/aws-amplify/amplify-cli/issues/13791)) ([08f358d](https://github.com/aws-amplify/amplify-cli/commit/08f358da33163fa70930ae6ef900e1d018672ef1))
+
+
+
+
+
 ## [4.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.4...@aws-amplify/amplify-cli-core@4.3.5) (2024-05-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-cli-core
