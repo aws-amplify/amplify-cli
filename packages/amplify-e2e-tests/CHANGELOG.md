@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.6...amplify-e2e-tests@4.9.7) (2024-05-24)
+
+
+### Bug Fixes
+
+* don't create symlinks after extracting zip ([#13791](https://github.com/aws-amplify/amplify-cli/issues/13791)) ([08f358d](https://github.com/aws-amplify/amplify-cli/commit/08f358da33163fa70930ae6ef900e1d018672ef1))
+
+
+
+
+
 ## [4.9.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.5...amplify-e2e-tests@4.9.6) (2024-05-07)
 
 **Note:** Version bump only for package amplify-e2e-tests
