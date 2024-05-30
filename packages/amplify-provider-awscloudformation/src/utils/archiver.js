@@ -2,7 +2,7 @@ const archiver = require('archiver');
 const path = require('path');
 const fs = require('fs-extra');
 
-const DEFAULT_IGNORE_PATTERN = ['*/*/build/**', '*/*/dist/**', 'function/*/src/node_modules/**'];
+const DEFAULT_IGNORE_PATTERN = ['*/*/build/**', '*/*/dist/**', 'function/*/src/node_modules/**', 'types/**'];
 
 async function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN, extraFiles) {
   const zipFileFolder = path.dirname(zipFilePath);

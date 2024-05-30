@@ -344,7 +344,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
 
     const unzippedDirPath = path.join(tempDirPath, path.basename(zipFileName, '.zip'));
 
-    await extract(tempFilePath, { dir: unzippedDirPath });
+    await extract(tempFilePath, { dir: unzippedDirPath, skipEntryPrefixes: ['types/'] });
 
     // Move out cli.*json if exists in the temp directory into the amplify directory before copying backend and
     // current cloud backend directories.
