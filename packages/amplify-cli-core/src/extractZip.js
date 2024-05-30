@@ -48,6 +48,15 @@ class Extractor {
           return;
         }
 
+        if (this.opts.skipEntryPrefixes && Array.isArray(this.opts.skipEntryPrefixes) && this.opts.skipEntryPrefixes.length > 0) {
+          for (const skipEntriesPrefix of this.opts.skipEntryPrefixes) {
+            if (entry.fileName.startsWith(skipEntriesPrefix)) {
+              this.zipfile.readEntry();
+              return;
+            }
+          }
+        }
+
         const destDir = path.dirname(path.join(this.opts.dir, entry.fileName));
 
         try {
