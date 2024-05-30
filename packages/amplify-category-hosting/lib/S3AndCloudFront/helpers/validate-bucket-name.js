@@ -1,8 +1,8 @@
 module.exports = (value) => {
-  let isValid = typeof value === 'string' && value.length >= 3 && value.length <= 63 && /^[a-z0-9.-]*$/.test(value);
+  let isValid = typeof value === 'string' && value.length >= 3 && /^[a-z0-9.-]*$/.test(value);
 
   if (!isValid) {
-    return 'The bucket name must be a string between 3 and 63 characters long, and can contain only lower-case characters, numbers, periods, and dashes.';
+    return 'The bucket name must be a string more than 3 characters long, and can contain only lower-case characters, numbers, periods, and dashes.';
   }
 
   isValid = /^[a-z0-9]/.test(value);

@@ -49,4 +49,11 @@ describe('validate-bucket-name', () => {
     expect(typeof result === 'boolean').toBeTruthy();
     expect(result).toEqual(true);
   });
+
+  test('validate, good bucket name with more than 63 characters', () => {
+    const bucketName = 'my.bucket-name10-more-than-63-characters-should-not-be-allowed-pqwew-qwesd-seredasde-wqe';
+    const result = validateBucketName(bucketName);
+    expect(typeof result === 'boolean').toBeTruthy();
+    expect(result).toEqual(true);
+  });
 });
