@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.8...@aws-amplify/amplify-provider-awscloudformation@8.10.9) (2024-06-06)
+
+
+### Bug Fixes
+
+* skip types in current cloud backend ([#13803](https://github.com/aws-amplify/amplify-cli/issues/13803)) ([81ce57a](https://github.com/aws-amplify/amplify-cli/commit/81ce57afdfe73ce951143e6b20607bb3c77b43ae))
+
+
+
+
+
 ## [8.10.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.7...@aws-amplify/amplify-provider-awscloudformation@8.10.8) (2024-05-24)
 
 
