@@ -74,15 +74,16 @@ export const PathConstants = {
  */
 export class PathManager {
   private readonly homeDotAmplifyDirPath: string;
-  // private readonly projectRootPath: string | undefined;
+  private projectRootPath: string | undefined;
 
   constructor() {
     this.homeDotAmplifyDirPath = path.join(homedir(), PathConstants.DotAmplifyDirName);
-    // this.projectRootPath = this.findProjectRoot();
   }
 
   getAmplifyPackageLibDirPath = (packageName: string): string => {
+    // eslint-disable-next-line spellcheck/spell-checker
     const descopedPackageName = packageName.replace(/^@/, '').replace(/\//, '-');
+    // eslint-disable-next-line spellcheck/spell-checker
     const result = path.join(this.getAmplifyLibRoot(), descopedPackageName);
     if (!process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB && !fs.pathExistsSync(result)) {
       throw new Error(`Package lib at ${result} does not exist.`);
@@ -316,12 +317,17 @@ export class PathManager {
   };
 
   public findProjectRoot = (): string | undefined => {
+    if (this.projectRootPath !== undefined) {
+      return this.projectRootPath;
+    }
+
     let currentPath = process.cwd();
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (this.validateProjectPath(currentPath)) {
-        return currentPath;
+        this.projectRootPath = currentPath;
+        return this.projectRootPath;
       }
 
       const parentPath = path.dirname(currentPath);
