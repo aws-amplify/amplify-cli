@@ -56,6 +56,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     GCMChannelRequest: {
       ...answers,
+      DefaultAuthenticationMethod: 'TOKEN',
       Enabled: true,
     },
   };
@@ -109,6 +110,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     GCMChannelRequest: {
       ...answers,
+      DefaultAuthenticationMethod: 'TOKEN',
       Enabled: false,
     },
   };

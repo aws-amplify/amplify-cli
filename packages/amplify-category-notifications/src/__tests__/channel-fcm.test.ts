@@ -130,6 +130,7 @@ describe('channel-FCM', () => {
       ApplicationId: undefined,
       GCMChannelRequest: {
         ServiceJson: serviceAccountJson,
+        DefaultAuthenticationMethod: 'TOKEN',
         Enabled: true,
       },
     });
