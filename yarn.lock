@@ -335,7 +335,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.26.19, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@2.26.20-rc.252093fc781547d.0, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
@@ -1073,7 +1073,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.12.2, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.12.3-rc.252093fc781547d.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1086,7 +1086,7 @@ __metadata:
     "@aws-amplify/amplify-category-geo": 3.5.12
     "@aws-amplify/amplify-category-hosting": 3.5.34
     "@aws-amplify/amplify-category-interactions": 5.1.26
-    "@aws-amplify/amplify-category-notifications": 2.26.19
+    "@aws-amplify/amplify-category-notifications": 2.26.20-rc.252093fc781547d.0
     "@aws-amplify/amplify-category-predictions": 5.5.12
     "@aws-amplify/amplify-category-storage": 5.5.12
     "@aws-amplify/amplify-cli-core": 4.3.7
@@ -1173,7 +1173,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.12.2
+    "@aws-amplify/cli-internal": 12.12.3-rc.252093fc781547d.0
     "@types/tar": ^6.1.1
     axios: ^1.6.7
     rimraf: ^3.0.2
