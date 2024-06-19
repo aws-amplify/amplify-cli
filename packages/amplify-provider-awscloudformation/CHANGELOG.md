@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.10-rc.4f9aadbd33a9adf.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.9...@aws-amplify/amplify-provider-awscloudformation@8.10.10-rc.4f9aadbd33a9adf.0) (2024-06-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
+
+
+
+
+
 ## [8.10.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.8...@aws-amplify/amplify-provider-awscloudformation@8.10.9) (2024-06-06)
 
 

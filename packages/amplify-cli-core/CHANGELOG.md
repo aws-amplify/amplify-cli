@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.8-rc.4f9aadbd33a9adf.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.7...@aws-amplify/amplify-cli-core@4.3.8-rc.4f9aadbd33a9adf.0) (2024-06-19)
+
+
+### Bug Fixes
+
+* **cli:** add feature flag to control subscription field redaction behavior ([#13827](https://github.com/aws-amplify/amplify-cli/issues/13827)) ([4f9aadb](https://github.com/aws-amplify/amplify-cli/commit/4f9aadbd33a9adfa6c93f39d55ccbe0b13285965))
+
+
+
+
+
 ## [4.3.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.6...@aws-amplify/amplify-cli-core@4.3.7) (2024-06-06)
 
 
