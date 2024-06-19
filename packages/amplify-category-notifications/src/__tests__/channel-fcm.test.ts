@@ -17,7 +17,12 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
   };
 });
 
-const apiKey = 'ApiKey-abc123';
+const serviceJSONFilePath = '/my/service/account/jsonFile.json';
+const serviceAccountJson = '{ "valid": { "service": "accountJson"}}';
+jest.mock('fs-extra', () => ({
+  readFile: () => Promise.resolve(serviceAccountJson),
+  existsSync: () => true,
+}));
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
@@ -97,7 +102,7 @@ describe('channel-FCM', () => {
   test('configure', async () => {
     mockChannelEnabledOutput.Enabled = true;
     prompterMock.yesOrNo.mockResolvedValueOnce(true);
-    prompterMock.input.mockResolvedValueOnce(apiKey);
+    prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
 
     const mockContextObj = mockContext(mockChannelEnabledOutput, mockPinpointClient);
     await channelFCM.configure(mockContextObj).then(() => {
@@ -118,20 +123,14 @@ describe('channel-FCM', () => {
   });
 
   test('enable', async () => {
-    prompterMock.input.mockResolvedValueOnce(apiKey);
+    prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
     const mockContextObj = mockContext(mockChannelEnabledOutput, mockPinpointClient);
     const data = await channelFCM.enable(mockContextObj, 'successMessage');
-    expect(mockPinpointClient.updateGcmChannel).toBeCalled();
-    expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.ENABLE));
-  });
-
-  test('enable with newline', async () => {
-    prompterMock.input.mockResolvedValueOnce(`${apiKey}\n`);
-    const data = await channelFCM.enable(mockContext(mockChannelEnabledOutput, mockPinpointClient), 'successMessage');
     expect(mockPinpointClient.updateGcmChannel).toBeCalledWith({
       ApplicationId: undefined,
       GCMChannelRequest: {
-        ApiKey: apiKey,
+        ServiceJson: serviceAccountJson,
+        DefaultAuthenticationMethod: 'TOKEN',
         Enabled: true,
       },
     });
@@ -139,7 +138,7 @@ describe('channel-FCM', () => {
   });
 
   test('enable unsuccessful', async () => {
-    prompterMock.input.mockResolvedValueOnce(apiKey);
+    prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
 
     const context = mockContextReject(mockServiceOutput, mockPinpointClientReject);
     const errCert: AmplifyFault = await getError(async () => channelFCM.enable(context as unknown as $TSContext, 'successMessage'));
