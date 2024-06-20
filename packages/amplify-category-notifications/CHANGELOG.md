@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.26.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.19...@aws-amplify/amplify-category-notifications@2.26.20) (2024-06-20)
+
+
+### Bug Fixes
+
+* migrate FCM channel authentication from ApiKey to ServiceToken based ([#13826](https://github.com/aws-amplify/amplify-cli/issues/13826)) ([252093f](https://github.com/aws-amplify/amplify-cli/commit/252093fc781547db3543928d1c3667dad16160ea))
+
+
+
+
+
 ## [2.26.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.18...@aws-amplify/amplify-category-notifications@2.26.19) (2024-06-06)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-notifications
