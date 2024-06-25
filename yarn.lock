@@ -222,7 +222,7 @@ __metadata:
     "@types/mime-types": ^2.1.1
     amplify-headless-interface: 1.17.7
     amplify-util-headless-input: 1.9.18
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
     axios: ^1.6.7
     chalk: ^4.1.1
@@ -249,7 +249,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.3.8
     "@aws-amplify/amplify-prompts": 2.8.6
     "@types/lodash": ^4.14.149
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
     glob: ^7.2.0
@@ -298,7 +298,7 @@ __metadata:
     ajv: ^6.12.6
     amplify-headless-interface: 1.17.7
     amplify-util-headless-input: 1.9.18
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
@@ -378,7 +378,7 @@ __metadata:
     "@aws-amplify/cli-extensibility-helper": 3.0.32
     amplify-headless-interface: 1.17.7
     amplify-util-headless-input: 1.9.18
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
     chalk: ^4.1.1
     cloudform-types: ^4.2.0
@@ -413,7 +413,7 @@ __metadata:
     "@types/yarnpkg__lockfile": ^1.1.5
     "@yarnpkg/lockfile": ^1.1.0
     ajv: ^6.12.6
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -734,7 +734,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.303.0
     amplify-headless-interface: 1.17.7
     aws-amplify: ^5.3.16
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
     graphql-transformer-core: ^8.2.10
@@ -817,7 +817,7 @@ __metadata:
     "@types/uuid": ^8.0.0
     amplify-codegen: ^4.9.3
     archiver: ^5.3.0
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
     bottleneck: 2.19.5
     chalk: ^4.1.1
@@ -907,7 +907,7 @@ __metadata:
     amplify-nodejs-function-runtime-provider: 2.5.22
     amplify-storage-simulator: 1.11.3
     aws-appsync: ^4.1.4
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
     aws-sdk-mock: ^5.8.0
     axios: ^1.6.7
@@ -1069,7 +1069,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-category-custom": 3.1.22
     "@aws-amplify/amplify-cli-core": 4.3.8
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
   languageName: unknown
   linkType: soft
 
@@ -1131,7 +1131,7 @@ __metadata:
     amplify-java-function-template-provider: 1.5.24
     amplify-nodejs-function-runtime-provider: 2.5.22
     amplify-python-function-runtime-provider: 2.4.45
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
@@ -1704,24 +1704,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-cdk/asset-awscli-v1@npm:^2.2.177":
-  version: 2.2.200
-  resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.200"
-  checksum: c0415247cdf2bb317ca36a0fae93934d49a0c5d72e8229bfc30ea4450cfedb10c69d2e499875d752384f3ab44cbffeb4b06fa05f8cb07328c199cc3b59523b97
+"@aws-cdk/asset-awscli-v1@npm:^2.2.202":
+  version: 2.2.202
+  resolution: "@aws-cdk/asset-awscli-v1@npm:2.2.202"
+  checksum: 3702ae0c6d57094a9f8f7fc86af2cf98d128c601ee2b8e14f72bf6b869e5b54df6448014f2d88c2fdff1258a182e28d735c9b0a807180e1eaa62367f93051bd4
   languageName: node
   linkType: hard
 
-"@aws-cdk/asset-kubectl-v20@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "@aws-cdk/asset-kubectl-v20@npm:2.1.1"
-  checksum: d06893086e49e852e765dea48acd2dd1567820a014121804d4d88b66f6dc2bf84bbe5d11c1d91090a38f25fcf8ff994a5d172b0cc78d404146d85baeb79c3b13
+"@aws-cdk/asset-kubectl-v20@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@aws-cdk/asset-kubectl-v20@npm:2.1.2"
+  checksum: 491883ada4b62f89e48e3d45d776b72d30cbb2d87e0802424164343c81723b23dd77044ab3cb02a7ecad9960622dc264f9f716d2ec830404482117ee63f8bb2d
   languageName: node
   linkType: hard
 
-"@aws-cdk/asset-node-proxy-agent-v5@npm:^2.0.148":
-  version: 2.0.166
-  resolution: "@aws-cdk/asset-node-proxy-agent-v5@npm:2.0.166"
-  checksum: 7385d48e25f199cdaac4e961ec6a95a031a60bb9a93d78ababaf3b91122593dc965fa764de6aeca2af9e12113dcbd18535aa031c67a1846e534294f2cf051558
+"@aws-cdk/asset-node-proxy-agent-v6@npm:^2.0.1":
+  version: 2.0.3
+  resolution: "@aws-cdk/asset-node-proxy-agent-v6@npm:2.0.3"
+  checksum: fa83c50bff30c5edb70b97314e68bc75362c1e541484b4f39c962e3f742f342ea11278a01606aaeca5b5257c582f108267f44675a452b8ea8a0348c715ad031b
   languageName: node
   linkType: hard
 
@@ -13737,7 +13737,7 @@ __metadata:
     amplify-storage-simulator: 1.11.3
     aws-amplify: ^5.3.16
     aws-appsync: ^4.1.1
-    aws-cdk-lib: ~2.80.0
+    aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
     axios: ^1.6.7
     constructs: ^10.0.5
@@ -14602,26 +14602,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-cdk-lib@npm:~2.80.0":
-  version: 2.80.0
-  resolution: "aws-cdk-lib@npm:2.80.0"
+"aws-cdk-lib@npm:~2.129.0":
+  version: 2.129.0
+  resolution: "aws-cdk-lib@npm:2.129.0"
   dependencies:
-    "@aws-cdk/asset-awscli-v1": ^2.2.177
-    "@aws-cdk/asset-kubectl-v20": ^2.1.1
-    "@aws-cdk/asset-node-proxy-agent-v5": ^2.0.148
+    "@aws-cdk/asset-awscli-v1": ^2.2.202
+    "@aws-cdk/asset-kubectl-v20": ^2.1.2
+    "@aws-cdk/asset-node-proxy-agent-v6": ^2.0.1
     "@balena/dockerignore": ^1.0.2
     case: 1.6.3
-    fs-extra: ^11.1.1
-    ignore: ^5.2.4
+    fs-extra: ^11.2.0
+    ignore: ^5.3.1
     jsonschema: ^1.4.1
     minimatch: ^3.1.2
-    punycode: ^2.3.0
-    semver: ^7.5.1
+    punycode: ^2.3.1
+    semver: ^7.6.0
     table: ^6.8.1
     yaml: 1.10.2
   peerDependencies:
     constructs: ^10.0.0
-  checksum: 5ab3972e3cd5101ec95f5c8ec9e7dfae6c402d9d34892df71aff44a74d17454a8ea8de3b7283786220b3a2f066b68883182a35364264da2468bdc3261afebf59
+  checksum: 9dffe0412912d8e4ce8d9df2d667dfc29124126ffa2393c2c03f216f88c76cbd5b2f507a6a25a360138f563180620298e56c0720340ff033a460bcaf966b0061
   languageName: node
   linkType: hard
 
@@ -19733,7 +19733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.1.1, fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0, fs-extra@npm:^11.1.1":
+"fs-extra@npm:11.1.1, fs-extra@npm:^11.0.0, fs-extra@npm:^11.1.0":
   version: 11.1.1
   resolution: "fs-extra@npm:11.1.1"
   dependencies:
@@ -19764,6 +19764,17 @@ __metadata:
     jsonfile: ^6.0.1
     universalify: ^2.0.0
   checksum: 85802f3d9e49d197744a8372f0d78d5a1faa3df73f4c5375d6366a4b9f745197d3da1f095841443d50f29a9f81cdc01363eb6d17bef2ba70c268559368211040
+  languageName: node
+  linkType: hard
+
+"fs-extra@npm:^11.2.0":
+  version: 11.2.0
+  resolution: "fs-extra@npm:11.2.0"
+  dependencies:
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^2.0.0
+  checksum: d77a9a9efe60532d2e790e938c81a02c1b24904ef7a3efb3990b835514465ba720e99a6ea56fd5e2db53b4695319b644d76d5a0e9988a2beef80aa7b1da63398
   languageName: node
   linkType: hard
 
@@ -21320,10 +21331,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ignore@npm:^5.0.4, ignore@npm:^5.2.0, ignore@npm:^5.2.4":
+"ignore@npm:^5.0.4, ignore@npm:^5.2.0":
   version: 5.2.4
   resolution: "ignore@npm:5.2.4"
   checksum: 7c7cd90edd9fea6e037f9b9da4b01bf0a86b198ce78345f9bbd983929d68ff14830be31111edc5d70c264921f4962404d75b7262b4d9cc3bc12381eccbd03096
+  languageName: node
+  linkType: hard
+
+"ignore@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "ignore@npm:5.3.1"
+  checksum: 703f7f45ffb2a27fb2c5a8db0c32e7dee66b33a225d28e8db4e1be6474795f606686a6e3bcc50e1aa12f2042db4c9d4a7d60af3250511de74620fbed052ea4cd
   languageName: node
   linkType: hard
 
@@ -28000,10 +28018,17 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"punycode@npm:^2.1.0, punycode@npm:^2.1.1, punycode@npm:^2.3.0":
+"punycode@npm:^2.1.0, punycode@npm:^2.1.1":
   version: 2.3.0
   resolution: "punycode@npm:2.3.0"
   checksum: 8e6f7abdd3a6635820049e3731c623bbef3fedbf63bbc696b0d7237fdba4cefa069bc1fa62f2938b0fbae057550df7b5318f4a6bcece27f1907fc75c54160bee
+  languageName: node
+  linkType: hard
+
+"punycode@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "punycode@npm:2.3.1"
+  checksum: 14f76a8206bc3464f794fb2e3d3cc665ae416c01893ad7a02b23766eb07159144ee612ad67af5e84fa4479ccfe67678c4feb126b0485651b302babf66f04f9e9
   languageName: node
   linkType: hard
 
