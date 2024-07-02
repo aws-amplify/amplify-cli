@@ -93,7 +93,7 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
 
     if (isWindows) {
       envVars.CGO_ENABLED = 0;
-      executeCommand(['go.exe', 'install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip@latest'], true, envVars, srcDir);
+      executeCommand(['install', 'github.com/aws/aws-lambda-go/cmd/build-lambda-zip@latest'], true, envVars, srcDir);
     }
 
     // for go@1.16, dependencies must be manually installed
