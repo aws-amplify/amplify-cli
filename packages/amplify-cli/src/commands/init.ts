@@ -10,6 +10,7 @@ import { initProviders } from '../init-steps/s2-initProviders';
 import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
 import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
 import { checkForNestedProject } from './helpers/projectUtils';
+import { migrationWarning } from '../init-steps/preInitMigrationWarning';
 
 const constructExeInfo = (context: $TSContext): void => {
   context.exeInfo = {
@@ -22,7 +23,7 @@ const constructExeInfo = (context: $TSContext): void => {
 const runStrategy = (quickstart: boolean) =>
   quickstart
     ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-    : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
+    : [migrationWarning, preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command
