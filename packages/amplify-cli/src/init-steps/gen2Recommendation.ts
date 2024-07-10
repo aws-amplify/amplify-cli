@@ -2,7 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { isNewProject } from './s0-analyzeProject';
 
-export const migrationWarning = async (context: $TSContext): Promise<$TSContext> => {
+export const gen2Recommendation = async (context: $TSContext): Promise<$TSContext> => {
   if (!isNewProject(context)) {
     return context;
   }
