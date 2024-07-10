@@ -34,8 +34,7 @@ export const run = async (context: $TSContext): Promise<void> => {
 
   const steps = runStrategy(!!context?.parameters?.options?.quickstart);
   for (const step of steps) {
-    const toContinue = await step(context);
-    if (!toContinue) break;
+    await step(context);
   }
 
   if (context.exeInfo.sourceEnvName && context.exeInfo.localEnvInfo.envName) {

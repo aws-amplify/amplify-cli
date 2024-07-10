@@ -2,7 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { isNewProject } from './s0-analyzeProject';
 
-export const migrationWarning = async (context: $TSContext): Promise<$TSContext | false> => {
+export const migrationWarning = async (context: $TSContext): Promise<$TSContext> => {
   if (!isNewProject(context)) {
     return context;
   }
@@ -16,7 +16,7 @@ export const migrationWarning = async (context: $TSContext): Promise<$TSContext 
     printer.info('Exiting the Amplify Gen1 project creation flow. 👋');
     printer.blankLine();
     printer.info('To create a new Amplify project using Amplify Gen 2 🫱 https://docs.amplify.aws/');
-    return false;
+    process.exit(0);
   }
 
   const whyContinueWithGen1 = await prompter.pick('Why would you like to use Amplify Gen 1?', [
