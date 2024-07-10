@@ -137,7 +137,9 @@ describe('amplify init:', () => {
           },
         },
       };
-      await preInitSetup(context as unknown as $TSContext);
+      const isHeadless = true;
+      const step = preInitSetup(!isHeadless);
+      await step(context as unknown as $TSContext);
       expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
       expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });
       expect(execSync).toBeCalledWith('yarn install', { stdio: 'inherit' });
