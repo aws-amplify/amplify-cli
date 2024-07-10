@@ -56,16 +56,16 @@ describe('gen2Recommendation', () => {
     const isNewProjectMock = jest.mocked(isNewProject);
     isNewProjectMock.mockReturnValue(true);
 
-    const confirmContinueMock = jest.mocked(require('@aws-amplify/amplify-prompts').prompter.confirmContinue);
+    const confirmContinueMock = jest.mocked(prompter.confirmContinue);
     confirmContinueMock.mockResolvedValue(true);
 
-    const pickMock = jest.mocked(require('@aws-amplify/amplify-prompts').prompter.pick);
+    const pickMock = jest.mocked(prompter.pick);
     pickMock.mockResolvedValue('I am a current Gen 1 user');
 
     await gen2Recommendation(context);
 
     expect(require('@aws-amplify/amplify-prompts').printer.warn).toHaveBeenCalledWith(
-      'AWS Amplify recommends using Amplify Gen 2 for new projects. Learn how to get started at https://docs.amplify.aws/react/start/quickstart/',
+      'For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/',
     );
     expect(confirmContinueMock).toHaveBeenCalledWith('Do you want to continue with Amplify Gen 1?');
     expect(pickMock).toHaveBeenCalledWith('Why would you like to use Amplify Gen 1?', expect.any(Array));
