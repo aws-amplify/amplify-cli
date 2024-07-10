@@ -3,11 +3,24 @@ import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { isNewProject } from './s0-analyzeProject';
+
+export const preInitSetup = (isHeadless) => {
+  if (isHeadless) {
+    return preInitSetupBasic;
+  } else {
+    return async (context) => {
+      await gen2Recommendation(context);
+      await preInitSetupBasic(context);
+    };
+  }
+};
 
 /**
  * Executes before init
  */
-export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => {
+const preInitSetupBasic = async (context: $TSContext): Promise<$TSContext> => {
   if (context.parameters.options?.app) {
     // Setting up a sample app
     context.print.warning('Note: Amplify does not have knowledge of the url provided');
@@ -19,6 +32,41 @@ export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => 
     await installPackage();
     await setLocalEnvDefaults(context);
   }
+  return context;
+};
+
+/**
+ * recommend using Gen 2 or continue with Gen 1.
+ * ask for why they are using Gen 1 and store the answer in project-config
+ */
+const gen2Recommendation = async (context: $TSContext): Promise<$TSContext> => {
+  if (!isNewProject(context)) {
+    return context;
+  }
+  printer.warn(
+    `AWS Amplify recommends using Amplify Gen 2 for new projects. Learn how to get started at https://docs.amplify.aws/react/start/quickstart/`,
+  );
+
+  const continueWithGen1 = await prompter.confirmContinue('Do you want to continue with Amplify Gen 1?');
+
+  if (!continueWithGen1) {
+    printer.info('Exiting the Amplify Gen1 project creation flow. 👋');
+    printer.blankLine();
+    printer.info('To create a new Amplify Gen2 project, 🫱 https://docs.amplify.aws/');
+    process.exit(0);
+  }
+
+  const whyContinueWithGen1 = await prompter.pick('Why would you like to use Amplify Gen 1?', [
+    'I am a current Gen 1 user',
+    'Gen 2 is missing features I need from Gen 1',
+    'I find the Gen 1 CLI easier to use',
+    'Prefer not to answer',
+  ]);
+
+  context.exeInfo.projectConfig = {
+    whyContinueWithGen1,
+  };
+
   return context;
 };
 

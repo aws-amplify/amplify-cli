@@ -10,7 +10,6 @@ import { initProviders } from '../init-steps/s2-initProviders';
 import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
 import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
 import { checkForNestedProject } from './helpers/projectUtils';
-import { gen2Recommendation } from '../init-steps/gen2Recommendation';
 
 const constructExeInfo = (context: $TSContext): void => {
   context.exeInfo = {
@@ -19,11 +18,12 @@ const constructExeInfo = (context: $TSContext): void => {
   };
 };
 
+const isHeadless = true;
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const runStrategy = (quickstart: boolean) =>
   quickstart
-    ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-    : [gen2Recommendation, preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
+    ? [preInitSetup(isHeadless), analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [preInitSetup(!isHeadless), analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command
