@@ -50,9 +50,6 @@ const gen2Recommendation = async (context: $TSContext): Promise<$TSContext> => {
   const continueWithGen1 = await prompter.confirmContinue('Do you want to continue with Amplify Gen 1?');
 
   if (!continueWithGen1) {
-    printer.info('Exiting the Amplify Gen1 project creation flow. 👋');
-    printer.blankLine();
-    printer.info('To create a new Amplify Gen2 project, 🫱 https://docs.amplify.aws/');
     process.exit(0);
   }
 
