@@ -15,7 +15,7 @@ export const migrationWarning = async (context: $TSContext): Promise<$TSContext>
   if (!continueWithGen1) {
     printer.info('Exiting the Amplify Gen1 project creation flow. 👋');
     printer.blankLine();
-    printer.info('To create a new Amplify project using Amplify Gen 2 🫱 https://docs.amplify.aws/');
+    printer.info('To create a new Amplify Gen2 project, 🫱 https://docs.amplify.aws/');
     process.exit(0);
   }
 
