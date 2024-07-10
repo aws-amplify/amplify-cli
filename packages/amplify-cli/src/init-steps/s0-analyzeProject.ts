@@ -326,7 +326,7 @@ const isNewEnv = (envName: string): boolean => {
   return !allEnvs.includes(envName);
 };
 
-const isNewProject = (context: $TSContext): boolean => {
+export const isNewProject = (context: $TSContext): boolean => {
   let newProject = true;
   const projectPath = process.cwd();
   const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);

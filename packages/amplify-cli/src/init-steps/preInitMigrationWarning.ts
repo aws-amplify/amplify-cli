@@ -1,7 +1,11 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { isNewProject } from './s0-analyzeProject';
 
 export const migrationWarning = async (context: $TSContext): Promise<$TSContext | false> => {
+  if (!isNewProject(context)) {
+    return context;
+  }
   printer.warn(
     `AWS Amplify recommends using Amplify Gen 2 for new projects. Learn how to get started at https://docs.amplify.aws/react/start/quickstart/`,
   );
