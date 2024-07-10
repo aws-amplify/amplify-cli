@@ -44,7 +44,7 @@ export const gen2Recommendation = async (context: $TSContext): Promise<$TSContex
     return context;
   }
   printer.warn(
-    `AWS Amplify recommends using Amplify Gen 2 for new projects. Learn how to get started at https://docs.amplify.aws/react/start/quickstart/`,
+    `For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/`,
   );
 
   const continueWithGen1 = await prompter.confirmContinue('Do you want to continue with Amplify Gen 1?');
