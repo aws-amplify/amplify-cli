@@ -152,6 +152,7 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
 const setProjectConfig = (context: $TSContext, projectName: string): void => {
   context.exeInfo.isNewProject = isNewProject(context);
   context.exeInfo.projectConfig = {
+    ...context.exeInfo.projectConfig,
     projectName,
     version: amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION,
   };
