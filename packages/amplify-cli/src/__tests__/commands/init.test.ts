@@ -11,7 +11,7 @@ import {
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
-import { preInitSetup } from '../../init-steps/preInitSetup';
+import { getPreInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
@@ -138,7 +138,7 @@ describe('amplify init:', () => {
         },
       };
       const isHeadless = true;
-      const step = preInitSetup(!isHeadless);
+      const step = getPreInitSetup(!isHeadless);
       await step(context as unknown as $TSContext);
       expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
       expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });

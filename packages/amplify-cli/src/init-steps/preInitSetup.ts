@@ -6,7 +6,7 @@ import { generateLocalEnvInfoFile } from './s9-onSuccess';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { isNewProject } from './s0-analyzeProject';
 
-export const preInitSetup = (isHeadless) => {
+export const getPreInitSetup = (isHeadless) => {
   if (isHeadless) {
     return preInitSetupBasic;
   } else {

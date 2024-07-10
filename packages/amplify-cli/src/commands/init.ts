@@ -3,7 +3,7 @@ import { constructInputParams } from '../amplify-service-helper';
 import { Context } from '../domain/context';
 import { raisePostEnvAddEvent } from '../execution-manager';
 import { postInitSetup } from '../init-steps/postInitSetup';
-import { preInitSetup } from '../init-steps/preInitSetup';
+import { getPreInitSetup } from '../init-steps/preInitSetup';
 import { analyzeProject, analyzeProjectHeadless } from '../init-steps/s0-analyzeProject';
 import { initFrontend } from '../init-steps/s1-initFrontend';
 import { initProviders } from '../init-steps/s2-initProviders';
@@ -22,8 +22,8 @@ const isHeadless = true;
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const runStrategy = (quickstart: boolean) =>
   quickstart
-    ? [preInitSetup(isHeadless), analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-    : [preInitSetup(!isHeadless), analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
+    ? [getPreInitSetup(isHeadless), analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [getPreInitSetup(!isHeadless), analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command
