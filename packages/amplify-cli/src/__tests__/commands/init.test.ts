@@ -137,8 +137,8 @@ describe('amplify init:', () => {
           },
         },
       };
-      const isHeadless = true;
-      const step = getPreInitSetup(!isHeadless);
+      const recommendGen2 = true;
+      const step = getPreInitSetup(!recommendGen2);
       await step(context as unknown as $TSContext);
       expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
       expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });
