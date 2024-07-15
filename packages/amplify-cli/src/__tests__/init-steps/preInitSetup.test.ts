@@ -1,6 +1,6 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { getPreInitSetup, preInitSetupBasic, gen2Recommendation } from '../../init-steps/preInitSetup';
+import { getPreInitSetup, preInitSetup, gen2Recommendation } from '../../init-steps/preInitSetup';
 import { isNewProject } from '../../init-steps/s0-analyzeProject';
 
 // Mock dependencies
@@ -32,7 +32,7 @@ jest.mock('../../init-steps/s0-analyzeProject', () => ({
 describe('preInitSetup', () => {
   it('should return preInitSetupBasic when isHeadless is true', () => {
     const result = getPreInitSetup(true);
-    expect(result).toBe(preInitSetupBasic);
+    expect(result).toBe(preInitSetup);
   });
 
   it('should return a function when isHeadless is false', () => {
