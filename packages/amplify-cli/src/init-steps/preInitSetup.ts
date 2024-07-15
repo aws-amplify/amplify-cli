@@ -8,11 +8,11 @@ import { isNewProject } from './s0-analyzeProject';
 
 export const getPreInitSetup = (recommendGen2: boolean) => {
   if (recommendGen2) {
-    return preInitSetupBasic;
+    return preInitSetup;
   } else {
     return async (context) => {
       await gen2Recommendation(context);
-      await preInitSetupBasic(context);
+      await preInitSetup(context);
     };
   }
 };
@@ -20,7 +20,7 @@ export const getPreInitSetup = (recommendGen2: boolean) => {
 /**
  * Executes before init
  */
-export const preInitSetupBasic = async (context: $TSContext): Promise<$TSContext> => {
+const preInitSetup = async (context: $TSContext): Promise<$TSContext> => {
   if (context.parameters.options?.app) {
     // Setting up a sample app
     context.print.warning('Note: Amplify does not have knowledge of the url provided');
@@ -39,7 +39,7 @@ export const preInitSetupBasic = async (context: $TSContext): Promise<$TSContext
  * recommend using Gen 2 or continue with Gen 1.
  * ask for why they are using Gen 1 and store the answer in project-config
  */
-export const gen2Recommendation = async (context: $TSContext): Promise<$TSContext> => {
+const gen2Recommendation = async (context: $TSContext): Promise<$TSContext> => {
   if (!isNewProject(context)) {
     return context;
   }
