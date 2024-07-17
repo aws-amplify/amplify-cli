@@ -1,6 +1,6 @@
 {
   "name": "amplify-go-function-runtime-provider",
-  "version": "2.3.46",
+  "version": "2.3.47-s3-bucket-ssl.0",
   "description": "Provides functionality related to functions in Go 1.x on AWS",
   "repository": {
     "type": "git",

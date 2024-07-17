@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.12-s3-bucket-ssl.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.11...@aws-amplify/amplify-provider-awscloudformation@8.10.12-s3-bucket-ssl.0) (2024-07-17)
+
+
+### Bug Fixes
+
+* enforce ssl on s3 deployment bucket ([0f1ab16](https://github.com/aws-amplify/amplify-cli/commit/0f1ab16e8fb2a5b77919a9032d8018d0d6138e46))
+
+
+
+
+
 ## [8.10.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.10...@aws-amplify/amplify-provider-awscloudformation@8.10.11) (2024-06-27)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
