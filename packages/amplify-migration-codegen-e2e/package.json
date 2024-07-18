@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
-    "@aws-amplify/amplify-gen2-codegen": "*"
+    "@aws-amplify/amplify-gen2-codegen": "^0.0.1"
   },
   "devDependencies": {
     "jest": "^29.5.0",

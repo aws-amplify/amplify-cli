@@ -1,6 +1,5 @@
 import { AuthDefinition, EmailOptions, LoginOptions, PasswordPolicyPath } from '@aws-amplify/amplify-gen2-codegen';
 import { MultifactorOptions } from '@aws-amplify/amplify-gen2-codegen/src/auth/source_builder';
-import { MFA } from '@aws-amplify/auth-construct';
 import { PasswordPolicyType, UserPoolMfaType, UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
 
 export interface AuthSynthesizerOptions {

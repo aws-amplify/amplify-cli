@@ -15,9 +15,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@aws-amplify/amplify-gen1-codegen-auth-adapter": "^1.0.0",
-    "@aws-amplify/amplify-gen1-codegen-storage-adapter": "^1.0.0",
-    "@aws-amplify/amplify-gen2-codegen": "^1.0.0",
+    "@aws-amplify/amplify-gen1-codegen-auth-adapter": "^0.0.1",
+    "@aws-amplify/amplify-gen1-codegen-storage-adapter": "^0.0.1",
+    "@aws-amplify/amplify-gen2-codegen": "^0.0.1",
     "@aws-amplify/amplify-provider-awscloudformation": "8.10.11",
     "@aws-sdk/client-amplify": "^3.592.0",
     "@aws-sdk/client-amplifybackend": "^3.592.0",
