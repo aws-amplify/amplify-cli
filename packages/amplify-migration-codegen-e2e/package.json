@@ -1,6 +1,7 @@
 {
   "name": "@aws-amplify/amplify-migration-e2e",
-  "version": "1.0.0",
+  "private": true,
+  "version": "0.0.1",
   "main": "index.js",
   "dependencies": {
     "@aws-amplify/amplify-gen2-codegen": "^0.0.1"
