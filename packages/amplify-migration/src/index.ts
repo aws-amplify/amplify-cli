@@ -13,6 +13,7 @@ import { BackendEnvironmentSelector } from './backend_environment_selector.js';
 import { Analytics, DummyAnalytics } from './analytics.js';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher.js';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher.js';
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -63,7 +64,7 @@ const generateGen2Code = async ({
   }
 };
 
-export async function executeAmplifyCommand(context: any) {
+export async function executeAmplifyCommand(context: $TSContext) {
   const amplifyClient = new AmplifyClient();
   const s3Client = new S3Client();
   const cloudFormationClient = new CloudFormationClient();

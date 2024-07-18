@@ -662,6 +662,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@aws-amplify/amplify-gen1-to-gen2-migration@^0.0.1, @aws-amplify/amplify-gen1-to-gen2-migration@workspace:packages/amplify-migration":
+  version: 0.0.0-use.local
+  resolution: "@aws-amplify/amplify-gen1-to-gen2-migration@workspace:packages/amplify-migration"
+  dependencies:
+    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-gen1-codegen-auth-adapter": ^0.0.1
+    "@aws-amplify/amplify-gen1-codegen-storage-adapter": ^0.0.1
+    "@aws-amplify/amplify-gen2-codegen": ^0.0.1
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.11
+    "@aws-sdk/client-amplify": ^3.592.0
+    "@aws-sdk/client-amplifybackend": ^3.592.0
+    "@aws-sdk/client-cloudformation": ^3.592.0
+    "@aws-sdk/client-cognito-identity": ^3.592.0
+    "@aws-sdk/client-cognito-identity-provider": ^3.592.0
+    "@aws-sdk/client-s3": ^3.592.0
+    "@types/node": ^20.14.2
+    "@types/unzipper": ^0.10.9
+    typescript: ^5.4.5
+    unzipper: ^0.12.1
+    yargs: ^17.7.2
+  bin:
+    amplify-migrator: lib/index.js
+  languageName: unknown
+  linkType: soft
+
 "@aws-amplify/amplify-gen2-codegen@^0.0.1, @aws-amplify/amplify-gen2-codegen@workspace:packages/amplify-gen2-codegen":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen2-codegen@workspace:packages/amplify-gen2-codegen"
@@ -795,30 +820,6 @@ __metadata:
     strip-ansi: ^6.0.0
     ts-node: ^10.9.1
     uuid: ^8.3.2
-  languageName: unknown
-  linkType: soft
-
-"@aws-amplify/amplify-migration@^0.0.1, @aws-amplify/amplify-migration@workspace:packages/amplify-migration":
-  version: 0.0.0-use.local
-  resolution: "@aws-amplify/amplify-migration@workspace:packages/amplify-migration"
-  dependencies:
-    "@aws-amplify/amplify-gen1-codegen-auth-adapter": ^0.0.1
-    "@aws-amplify/amplify-gen1-codegen-storage-adapter": ^0.0.1
-    "@aws-amplify/amplify-gen2-codegen": ^0.0.1
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.11
-    "@aws-sdk/client-amplify": ^3.592.0
-    "@aws-sdk/client-amplifybackend": ^3.592.0
-    "@aws-sdk/client-cloudformation": ^3.592.0
-    "@aws-sdk/client-cognito-identity": ^3.592.0
-    "@aws-sdk/client-cognito-identity-provider": ^3.592.0
-    "@aws-sdk/client-s3": ^3.592.0
-    "@types/node": ^20.14.2
-    "@types/unzipper": ^0.10.9
-    typescript: ^5.4.5
-    unzipper: ^0.12.1
-    yargs: ^17.7.2
-  bin:
-    amplify-migrator: lib/index.js
   languageName: unknown
   linkType: soft
 
@@ -1212,8 +1213,8 @@ __metadata:
     "@aws-amplify/amplify-frontend-ios": 3.7.6
     "@aws-amplify/amplify-frontend-javascript": 3.10.17
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
+    "@aws-amplify/amplify-gen1-to-gen2-migration": ^0.0.1
     "@aws-amplify/amplify-go-function-template-provider": 1.4.8
-    "@aws-amplify/amplify-migration": ^0.0.1
     "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.9
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/amplify-provider-awscloudformation": 8.10.11

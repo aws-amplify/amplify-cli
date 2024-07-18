@@ -31,7 +31,7 @@ export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
 
 export type PasswordPolicyPath = `Policies.PasswordPolicy.${keyof PasswordPolicyType}`;
 
-export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, any>>;
+export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, string | number | boolean>>;
 
 export type EmailOptions = {
   emailVerificationBody: string;

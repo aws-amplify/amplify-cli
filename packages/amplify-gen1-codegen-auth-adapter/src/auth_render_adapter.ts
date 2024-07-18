@@ -13,8 +13,11 @@ export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
   RequireNumbers: true,
   TemporaryPasswordValidityDays: 3,
 };
-const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<Record<PasswordPolicyPath, any>> => {
-  const policyOverrides: Partial<Record<PasswordPolicyPath, any>> = {};
+
+export type PasswordPolicyOverrides = Record<PasswordPolicyPath, string | boolean | number>;
+
+const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<PasswordPolicyOverrides> => {
+  const policyOverrides: Partial<PasswordPolicyOverrides> = {};
   const passwordOverridePath = (policyKey: keyof PasswordPolicyType): PasswordPolicyPath => `Policies.PasswordPolicy.${policyKey}`;
   for (const key of Object.keys(passwordPolicy)) {
     const typedKey: keyof PasswordPolicyType = key as keyof PasswordPolicyType;

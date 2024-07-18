@@ -23,6 +23,7 @@ const withDefault = (version?: string) => version ?? '*';
 export const patchNpmPackageJson = (
   packageJson: PackageJsonParameters,
   packageVersions: Partial<AmplifyPackageVersions> = {},
+// eslint-disable-nextline @typescript-eslint/no-explicit-any
 ): Record<string, any> => {
   return {
     name: 'my-gen2-app',
