@@ -798,7 +798,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-migration@^1.0.0, @aws-amplify/amplify-migration@workspace:packages/amplify-migration":
+"@aws-amplify/amplify-migration@^0.0.1, @aws-amplify/amplify-migration@workspace:packages/amplify-migration":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-migration@workspace:packages/amplify-migration"
   dependencies:
@@ -1213,7 +1213,7 @@ __metadata:
     "@aws-amplify/amplify-frontend-javascript": 3.10.17
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-go-function-template-provider": 1.4.8
-    "@aws-amplify/amplify-migration": ^1.0.0
+    "@aws-amplify/amplify-migration": ^0.0.1
     "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.9
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/amplify-provider-awscloudformation": 8.10.11
