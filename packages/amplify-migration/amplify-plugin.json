@@ -1,0 +1,8 @@
+{
+  "name": "gen2-migrate",
+  "type": "util",
+  "commands": [
+    "migrate",
+    "help"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@aws-amplify/amplify-migration-e2e",
+  "private": true,
+  "version": "0.0.1",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-amplify/amplify-gen2-codegen": "^0.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "typescript": "^5.4.5"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/templates/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  },
+  "scripts": {
+    "build": "exit 0",
+    "pretest": "mkdir -p coverage",
+    "test": "jest --logHeapUsage"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "description": ""
+}
