@@ -1,4 +1,4 @@
-export interface AmplifyDevDependencies {
+export type AmplifyDevDependencies = {
   '@aws-amplify/backend': string;
   '@aws-amplify/backend-cli': string;
   'aws-cdk': string;
@@ -7,24 +7,27 @@ export interface AmplifyDevDependencies {
   esbuild: string;
   tsx: string;
   typescript: string;
-}
-export interface AmplifyDependencies {
+};
+export type AmplifyDependencies = {
   'aws-amplify': string;
-}
+};
 export type AmplifyPackageVersions = AmplifyDevDependencies & AmplifyDependencies;
 
-export interface PackageJsonParameters {
+export type PackageJsonDependencies = {
   devDependencies?: Record<string, string>;
   dependencies?: Record<string, string>;
-}
+};
+
+export type PackageJson = {
+  name: string;
+} & PackageJsonDependencies;
 
 const withDefault = (version?: string) => version ?? '*';
 
 export const patchNpmPackageJson = (
-  packageJson: PackageJsonParameters,
+  packageJson: PackageJsonDependencies,
   packageVersions: Partial<AmplifyPackageVersions> = {},
-// eslint-disable-nextline @typescript-eslint/no-explicit-any
-): Record<string, any> => {
+): PackageJson => {
   return {
     name: 'my-gen2-app',
     ...packageJson,
