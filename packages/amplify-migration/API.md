@@ -4,8 +4,10 @@
 
 ```ts
 
+import { $TSContext } from '@aws-amplify/amplify-cli-core';
+
 // @public (undocumented)
-export function executeAmplifyCommand(context: any): Promise<void>;
+export function executeAmplifyCommand(context: $TSContext): Promise<void>;
 
 // (No @packageDocumentation comment for this package)
 

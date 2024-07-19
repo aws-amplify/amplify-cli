@@ -5,6 +5,7 @@
 ```ts
 
 import { AuthDefinition } from '@aws-amplify/amplify-gen2-codegen';
+import { PasswordPolicyPath } from '@aws-amplify/amplify-gen2-codegen';
 import { UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
 
 // @public (undocumented)
@@ -15,6 +16,9 @@ export interface AuthSynthesizerOptions {
 
 // @public (undocumented)
 export const getAuthDefinition: ({ userPool }: AuthSynthesizerOptions) => AuthDefinition;
+
+// @public (undocumented)
+export type PasswordPolicyOverrides = Record<PasswordPolicyPath, string | boolean | number>;
 
 // (No @packageDocumentation comment for this package)
 

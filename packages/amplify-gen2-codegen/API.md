@@ -75,15 +75,7 @@ export type Permission = 'read' | 'write' | 'create' | 'delete';
 // @public (undocumented)
 export interface Renderer {
     // (undocumented)
-    render(): Promise<Result<void>>;
-}
-
-// @public (undocumented)
-export interface Result<T> {
-    // (undocumented)
-    error?: any;
-    // (undocumented)
-    ok?: T;
+    render(): Promise<void>;
 }
 
 // @public (undocumented)
@@ -117,7 +109,7 @@ export interface StorageRenderParameters {
 export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
 
 // @public (undocumented)
-export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, any>>;
+export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, string | number | boolean>>;
 
 // (No @packageDocumentation comment for this package)
 
