@@ -24,7 +24,10 @@ export class AppAuthDefinitionFetcher {
       stackQueue.push(
         ...stackResources
           .filter((r) => r.ResourceType === AppAuthDefinitionFetcher.CFN_STACK_RESOURCE_TYPE)
-          .map((r) => r.PhysicalResourceId!),
+          .map((r) => {
+            assert(r.PhysicalResourceId, 'Resource does not have a physical resource id');
+            return r.PhysicalResourceId;
+          }),
       );
       resources.push(...stackResources.filter((r) => r.ResourceType !== AppAuthDefinitionFetcher.CFN_STACK_RESOURCE_TYPE));
     }

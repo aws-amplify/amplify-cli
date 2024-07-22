@@ -13,8 +13,7 @@ void describe('Codegen e2e tests', () => {
           },
         },
       });
-      const result = await pipeline.render();
-      assert.equal(result.error, undefined);
+      await assert.doesNotReject(pipeline.render);
     });
   });
 });
