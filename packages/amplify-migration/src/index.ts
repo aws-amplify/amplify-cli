@@ -25,6 +25,8 @@ interface CodegenCommandParameters {
   backendEnvironmentSelector: BackendEnvironmentSelector;
 }
 
+export type AuthCliInputs = Record<string, unknown>;
+
 const generateGen2Code = async ({
   logger,
   analytics,
@@ -44,6 +46,7 @@ const generateGen2Code = async ({
   assert(backendEnvironment, 'A BackendEnvironment must be selected');
   assert(backendEnvironment?.deploymentArtifacts, 'The app must have a deployment bucket');
   assert(backendEnvironment?.stackName, 'BackendEnvironment stack name not found');
+  logger.log(backendEnvironment?.stackName);
 
   logger.log('Getting latest environment info');
 

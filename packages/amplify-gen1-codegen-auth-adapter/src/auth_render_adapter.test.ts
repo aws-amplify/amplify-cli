@@ -1,6 +1,7 @@
 import assert from 'node:assert';
-import { PasswordPolicyType, UserPoolMfaType } from '@aws-sdk/client-cognito-identity-provider';
+import { LambdaConfigType, PasswordPolicyType, UserPoolMfaType } from '@aws-sdk/client-cognito-identity-provider';
 import { DEFAULT_PASSWORD_SETTINGS, getAuthDefinition } from './auth_render_adapter';
+import { AuthTriggerEvents } from '@aws-amplify/amplify-gen2-codegen';
 /**
  * @see https://github.com/aws-amplify/amplify-backend/blob/5d78622c7fd6fb050da11baff1295b9be0bd2eae/packages/auth-construct/src/construct.test.ts#L578
  * for examples of assertions in the cli codebase
@@ -105,5 +106,29 @@ void describe('auth codegen', () => {
       });
       assert.equal(result.loginOptions?.emailOptions?.emailVerificationSubject, emailSubject);
     });
+  });
+  void describe('Triggers', () => {
+    type triggerTestCase = [keyof LambdaConfigType, AuthTriggerEvents];
+    const testCases: triggerTestCase[] = [
+      ['PreSignUp', 'preSignUp'],
+      ['CustomMessage', 'customMessage'],
+      ['UserMigration', 'userMigration'],
+      ['PostConfirmation', 'postConfirmation'],
+      ['PreAuthentication', 'preAuthentication'],
+      ['PostAuthentication', 'postAuthentication'],
+      ['PreTokenGeneration', 'preTokenGeneration'],
+      ['DefineAuthChallenge', 'defineAuthChallenge'],
+      ['CreateAuthChallenge', 'createAuthChallenge'],
+      ['VerifyAuthChallengeResponse', 'verifyAuthChallengeResponse'],
+    ];
+    for (const [lambdaConfigKey, authEventKey] of testCases) {
+      void it(`adapts user pool lambda config key ${lambdaConfigKey} to triggers ${authEventKey}`, () => {
+        const result = getAuthDefinition({
+          userPool: { LambdaConfig: { [lambdaConfigKey]: {} } },
+        });
+        assert(result.lambdaTriggers);
+        assert.deepEqual(result.lambdaTriggers[authEventKey], { source: '' });
+      });
+    }
   });
 });

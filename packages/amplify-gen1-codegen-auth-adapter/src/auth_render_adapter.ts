@@ -1,6 +1,13 @@
-import { AuthDefinition, EmailOptions, LoginOptions, PasswordPolicyPath } from '@aws-amplify/amplify-gen2-codegen';
-import { MultifactorOptions } from '@aws-amplify/amplify-gen2-codegen/src/auth/source_builder';
-import { PasswordPolicyType, UserPoolMfaType, UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
+import {
+  Lambda,
+  AuthDefinition,
+  EmailOptions,
+  LoginOptions,
+  PasswordPolicyPath,
+  AuthTriggerEvents,
+  MultifactorOptions,
+} from '@aws-amplify/amplify-gen2-codegen';
+import { LambdaConfigType, PasswordPolicyType, UserPoolMfaType, UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
 
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
@@ -51,6 +58,40 @@ const getEmailConfig = (userPool: UserPoolType): EmailOptions => {
   };
 };
 
+const mappedLambdaConfigKey = (key: keyof LambdaConfigType): AuthTriggerEvents => {
+  switch (key) {
+    case 'PreSignUp':
+      return 'preSignUp';
+    case 'CustomMessage':
+      return 'customMessage';
+    case 'UserMigration':
+      return 'userMigration';
+    case 'PostConfirmation':
+      return 'postConfirmation';
+    case 'PreAuthentication':
+      return 'preAuthentication';
+    case 'PostAuthentication':
+      return 'postAuthentication';
+    case 'PreTokenGeneration':
+      return 'preTokenGeneration';
+    case 'DefineAuthChallenge':
+      return 'defineAuthChallenge';
+    case 'CreateAuthChallenge':
+      return 'createAuthChallenge';
+    case 'VerifyAuthChallengeResponse':
+      return 'verifyAuthChallengeResponse';
+    default:
+      throw new Error('Could not map the provided key');
+  }
+};
+
+const getAuthTriggers = (lambdaConfig: LambdaConfigType): Partial<Record<AuthTriggerEvents, Lambda>> => {
+  return Object.keys(lambdaConfig).reduce((prev, key) => {
+    prev[mappedLambdaConfigKey(key as keyof LambdaConfigType)] = { source: '' };
+    return prev;
+  }, {} as Partial<Record<AuthTriggerEvents, Lambda>>);
+};
+
 /**
  * [getAuthDefinition] describes gen 1 auth resources in terms that can be used to generate Gen 2 code.
  */
@@ -64,5 +105,6 @@ export const getAuthDefinition = ({ userPool }: AuthSynthesizerOptions): AuthDef
     loginOptions: loginWith,
     mfa: getMfaConfiguration(userPool.MfaConfiguration),
     userPoolOverrides,
+    lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}),
   };
 };

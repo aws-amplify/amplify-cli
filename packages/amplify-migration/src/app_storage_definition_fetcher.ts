@@ -4,6 +4,7 @@ import path from 'node:path';
 import { getStorageDefinition } from '@aws-amplify/amplify-gen1-codegen-storage-adapter';
 import { BackendDownloader } from './backend_downloader.js';
 import { fileOrDirectoryExists } from './directory_exists.js';
+import { StorageRenderParameters } from '@aws-amplify/amplify-gen2-codegen';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(deploymentBucket: string): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
@@ -14,7 +15,7 @@ export class AppStorageDefinitionFetcher {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
     return JSON.parse(contents);
   };
-  getDefinition = async (deploymentBucket: string) => {
+  getDefinition = async (deploymentBucket: string): Promise<StorageRenderParameters | undefined> => {
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(deploymentBucket);
 
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
