@@ -1,5 +1,8 @@
 import ts, { PropertyAssignment } from 'typescript';
+import assert from 'node:assert';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
+import { renderResourceTsFile } from '../resource/resource';
+import { Lambda } from '../function/lambda';
 
 export type StandardAttribute = {
   readonly mutable?: boolean;
@@ -52,13 +55,29 @@ export type MultifactorOptions = {
   totp?: boolean;
 };
 
+export type AuthTriggerEvents =
+  | 'createAuthChallenge'
+  | 'customMessage'
+  | 'defineAuthChallenge'
+  | 'postAuthentication'
+  | 'postConfirmation'
+  | 'preAuthentication'
+  | 'preSignUp'
+  | 'preTokenGeneration'
+  | 'userMigration'
+  | 'verifyAuthChallengeResponse';
+
+export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
+
 export interface AuthDefinition {
   loginOptions?: LoginOptions;
+  lambdaTriggers?: Partial<AuthLambdaTriggers>;
   groups?: Group[];
   mfa?: MultifactorOptions;
   userAttributes?: StandardAttributes;
   userPoolOverrides?: UserPoolOverrides;
 }
+
 const factory = ts.factory;
 
 function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
@@ -117,16 +136,6 @@ const createUserAttributeAssignments = (userAttributes: StandardAttributes) => {
 };
 
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
-  const authFunctionName = ts.factory.createIdentifier('defineAuth');
-  const importDeclaration = ts.factory.createImportDeclaration(
-    undefined,
-    factory.createImportClause(
-      false,
-      undefined,
-      factory.createNamedImports([factory.createImportSpecifier(false, undefined, authFunctionName)]),
-    ),
-    factory.createStringLiteral('@aws-amplify/backend'),
-  );
   const defineAuthProperties: Array<PropertyAssignment> = [];
 
   const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions);
@@ -146,6 +155,26 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
     );
   }
 
+  const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
+  if (hasFunctions) {
+    assert(definition.lambdaTriggers);
+    defineAuthProperties.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('triggers'),
+        factory.createObjectLiteralExpression(
+          Object.keys(definition.lambdaTriggers).map((key) => {
+            return factory.createPropertyAssignment(
+              key,
+              factory.createCallExpression(factory.createIdentifier('defineFunction'), undefined, [
+                factory.createObjectLiteralExpression([]),
+              ]),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
   if (definition.mfa) {
     defineAuthProperties.push(
       factory.createPropertyAssignment(
@@ -161,14 +190,11 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
     );
   }
 
-  const authCall = factory.createCallExpression(authFunctionName, undefined, [factory.createObjectLiteralExpression(defineAuthProperties)]);
-  const authIdentifier = factory.createIdentifier('auth');
-  const authVariable = factory.createVariableDeclaration(authIdentifier, undefined, undefined, authCall);
-
-  const exportAuthStatement = factory.createVariableStatement(
-    [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-    factory.createVariableDeclarationList([authVariable], ts.NodeFlags.Const),
-  );
-
-  return ts.factory.createNodeArray([importDeclaration, exportAuthStatement]);
+  return renderResourceTsFile({
+    exportedVariableName: factory.createIdentifier('auth'),
+    functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties),
+    additionalImportedBackendIdentifiers: hasFunctions ? ['defineFunction'] : [],
+    backendFunctionConstruct: 'defineAuth',
+    importedPackageName: '@aws-amplify/backend',
+  });
 }

@@ -6,7 +6,9 @@ import { JsonRenderer } from './renderers/package_json';
 import { TypescriptNodeArrayRenderer } from './renderers/typescript_block_node';
 import { BackendSynthesizer } from './backend/synthesizer';
 import { EnsureDirectory } from './renderers/ensure_directory';
+import { Lambda } from './function/lambda';
 import {
+  AuthTriggerEvents,
   AuthDefinition,
   renderAuthNode,
   SendingAccount,
@@ -101,4 +103,6 @@ export {
   StandardAttribute,
   StandardAttributes,
   MultifactorOptions,
+  AuthTriggerEvents,
+  Lambda,
 };

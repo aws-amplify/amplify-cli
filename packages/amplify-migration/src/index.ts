@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import util from 'node:util';
+
 import { Gen2RenderingOptions, createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 
 import { AmplifyClient } from '@aws-sdk/client-amplify';
@@ -25,6 +27,8 @@ interface CodegenCommandParameters {
   backendEnvironmentSelector: BackendEnvironmentSelector;
 }
 
+export type AuthCliInputs = Record<string, unknown>;
+
 const generateGen2Code = async ({
   logger,
   analytics,
@@ -44,6 +48,7 @@ const generateGen2Code = async ({
   assert(backendEnvironment, 'A BackendEnvironment must be selected');
   assert(backendEnvironment?.deploymentArtifacts, 'The app must have a deployment bucket');
   assert(backendEnvironment?.stackName, 'BackendEnvironment stack name not found');
+  logger.log(backendEnvironment?.stackName);
 
   logger.log('Getting latest environment info');
 
@@ -70,6 +75,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
   const cloudFormationClient = new CloudFormationClient();
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
   const appId = resolveAppId(context);
+  console.log(util.inspect(context, { depth: Infinity }));
 
   await generateGen2Code({
     outputDirectory: './output',

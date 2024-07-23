@@ -1,5 +1,6 @@
 import ts from 'typescript';
 import { getAccessPatterns } from './access';
+import { renderResourceTsFile } from '../resource/resource';
 const factory = ts.factory;
 export type S3TriggerDefinition = Record<string, never>;
 export type Permission = 'read' | 'write' | 'create' | 'delete';
@@ -19,22 +20,7 @@ export interface StorageRenderParameters {
   lambdas?: S3TriggerDefinition[];
   bucketEncryptionAlgorithm?: string;
 }
-const getImportStatements = (importName: ts.Identifier, importFrom: string) => {
-  return factory.createImportDeclaration(
-    undefined,
-    factory.createImportClause(false, undefined, factory.createNamedImports([factory.createImportSpecifier(false, undefined, importName)])),
-    factory.createStringLiteral(importFrom),
-  );
-};
-const getExportStatement = (variable: ts.VariableDeclaration) => {
-  return factory.createVariableStatement(
-    [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-    factory.createVariableDeclarationList([variable], ts.NodeFlags.Const),
-  );
-};
 export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
-  const defineStorage = factory.createIdentifier('defineStorage');
-  const importStatement = getImportStatements(defineStorage, '@aws-amplify/backend');
   const propertyAssignments: ts.PropertyAssignment[] = [];
 
   if (storageParams.storageIdentifier) {
@@ -59,12 +45,11 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
     );
   }
   const storageArgs = factory.createObjectLiteralExpression(propertyAssignments);
-  const storageVariable = factory.createVariableDeclaration(
-    'storage',
-    undefined,
-    undefined,
-    factory.createCallExpression(defineStorage, undefined, [storageArgs]),
-  );
-  const exportStatement = getExportStatement(storageVariable);
-  return factory.createNodeArray([importStatement, ...groupsComment, exportStatement]);
+  return renderResourceTsFile({
+    importedPackageName: '@aws-amplify/backend',
+    backendFunctionConstruct: 'defineStorage',
+    exportedVariableName: factory.createIdentifier('storage'),
+    functionCallParameter: storageArgs,
+    postImportStatements: groupsComment,
+  });
 };
