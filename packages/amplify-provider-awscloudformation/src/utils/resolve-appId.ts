@@ -1,4 +1,3 @@
-import util from 'util';
 import { stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
 
 /**
