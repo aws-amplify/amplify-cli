@@ -7,8 +7,6 @@ import { stateManager, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli
 export const resolveAppId = (context: $TSContext): string => {
   if (stateManager.metaFileExists()) {
     const meta = stateManager.getMeta();
-    console.log('meta---');
-    console.log(util.inspect(meta, { depth: null }));
     if (meta?.providers?.awscloudformation?.AmplifyAppId) {
       return meta.providers.awscloudformation.AmplifyAppId;
     }

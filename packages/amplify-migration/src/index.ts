@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import util from 'node:util';
-
 import { Gen2RenderingOptions, createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 
 import { AmplifyClient } from '@aws-sdk/client-amplify';
@@ -75,7 +73,6 @@ export async function executeAmplifyCommand(context: $TSContext) {
   const cloudFormationClient = new CloudFormationClient();
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
   const appId = resolveAppId(context);
-  console.log(util.inspect(context, { depth: Infinity }));
 
   await generateGen2Code({
     outputDirectory: './output',
