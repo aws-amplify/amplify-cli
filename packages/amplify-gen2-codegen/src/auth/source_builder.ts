@@ -1,4 +1,4 @@
-import ts, { PropertyAssignment } from 'typescript';
+import ts, { PropertyAssignment, SyntaxKind } from 'typescript';
 import assert from 'node:assert';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../resource/resource';
@@ -111,10 +111,10 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
         ),
       );
     }
-    const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments);
+    const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments, true);
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), emailDefinitionObject));
   }
-  return factory.createPropertyAssignment(logInWith, factory.createObjectLiteralExpression(assignments));
+  return factory.createPropertyAssignment(logInWith, factory.createObjectLiteralExpression(assignments, true));
 }
 
 const createStandardAttributeDefinition = (attribute: StandardAttribute) => {
@@ -124,7 +124,7 @@ const createStandardAttributeDefinition = (attribute: StandardAttribute) => {
       attribute[key as keyof StandardAttribute] ? factory.createTrue() : factory.createFalse(),
     ),
   );
-  return factory.createObjectLiteralExpression(properties);
+  return factory.createObjectLiteralExpression(properties, true);
 };
 
 const createUserAttributeAssignments = (userAttributes: StandardAttributes) => {
@@ -132,7 +132,7 @@ const createUserAttributeAssignments = (userAttributes: StandardAttributes) => {
   const userAttributeProperties = Object.entries((userAttributes as StandardAttributes) ?? {}).map(([key, value]) => {
     return factory.createPropertyAssignment(factory.createIdentifier(key), createStandardAttributeDefinition(value));
   });
-  return factory.createPropertyAssignment(userAttributeIdentifier, factory.createObjectLiteralExpression(userAttributeProperties));
+  return factory.createPropertyAssignment(userAttributeIdentifier, factory.createObjectLiteralExpression(userAttributeProperties, true));
 };
 
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
@@ -162,14 +162,20 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
       factory.createPropertyAssignment(
         factory.createIdentifier('triggers'),
         factory.createObjectLiteralExpression(
-          Object.keys(definition.lambdaTriggers).map((key) => {
-            return factory.createPropertyAssignment(
-              key,
-              factory.createCallExpression(factory.createIdentifier('defineFunction'), undefined, [
-                factory.createObjectLiteralExpression([]),
-              ]),
+          Object.entries(definition.lambdaTriggers).map(([key, { source }]) => {
+            return ts.addSyntheticLeadingComment(
+              factory.createPropertyAssignment(
+                key,
+                factory.createCallExpression(factory.createIdentifier('defineFunction'), undefined, [
+                  factory.createObjectLiteralExpression([]),
+                ]),
+              ),
+              SyntaxKind.MultiLineCommentTrivia,
+              `\nSource code for this function can be found in your Amplify Gen 1 Directory.\nSee ${source}\n`,
+              true,
             );
           }),
+          true,
         ),
       ),
     );
@@ -179,20 +185,23 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
     defineAuthProperties.push(
       factory.createPropertyAssignment(
         factory.createIdentifier('multifactor'),
-        factory.createObjectLiteralExpression([
-          factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
-          factory.createPropertyAssignment(
-            factory.createIdentifier('totp'),
-            definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
-          ),
-        ]),
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
+            factory.createPropertyAssignment(
+              factory.createIdentifier('totp'),
+              definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
+            ),
+          ],
+          true,
+        ),
       ),
     );
   }
 
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier('auth'),
-    functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties),
+    functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties, true),
     additionalImportedBackendIdentifiers: hasFunctions ? ['defineFunction'] : [],
     backendFunctionConstruct: 'defineAuth',
     importedPackageName: '@aws-amplify/backend',

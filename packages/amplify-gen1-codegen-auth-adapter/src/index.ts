@@ -1,1 +1,1 @@
-export { AuthSynthesizerOptions, getAuthDefinition, PasswordPolicyOverrides } from './auth_render_adapter.js';
+export { AuthSynthesizerOptions, getAuthDefinition, PasswordPolicyOverrides, AuthTriggerConnections } from './auth_render_adapter.js';

@@ -30,7 +30,7 @@ describe('render auth node', () => {
     for (const testCase of Object.keys(testCases)) {
       const rendered = renderAuthNode({ lambdaTriggers: { [testCase]: { source: "console.log('hello, world!')" } } });
       const source = printNodeArray(rendered);
-      assert.match(source, new RegExp(`triggers: \\{\\s+${testCase}: defineFunction\\(\\{`));
+      assert.match(source, new RegExp(`triggers: \\{\\s+\\/\\*[\\S\\s]*?\\*\\/\\s+${testCase}: defineFunction\\(\\{`));
     }
   });
   describe('mfa', () => {
@@ -43,14 +43,14 @@ describe('render auth node', () => {
       it('renders false if totp is not specified', () => {
         const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL' } });
         const source = printNodeArray(rendered);
-        assert.match(source, new RegExp(`multifactor:\\s+\\{.*?totp:\\sfalse`));
+        assert.match(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*totp:\\sfalse`));
       });
       const totpStates: boolean[] = [true, false];
       for (const state of totpStates) {
         it(`correctly renders totp state of ${state}`, async () => {
           const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL', totp: state } });
           const source = printNodeArray(rendered);
-          assert.match(source, new RegExp(`multifactor:\\s+\\{.*?totp:\\s${state}`));
+          assert.match(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*totp:\\s${state}`));
         });
       }
     });
@@ -123,7 +123,7 @@ describe('render auth node', () => {
       };
       const node = renderAuthNode(authDefinition);
       const source = printNodeArray(node);
-      assert.match(source, /defineAuth\(\{.*?groups:\s\["manager"\]/);
+      assert.match(source, /defineAuth\(\{[\s\S]*groups:\s\["manager"\]/);
     });
   });
   describe('loginWith', () => {
@@ -164,7 +164,7 @@ describe('render auth node', () => {
           assert.match(
             source,
             new RegExp(
-              `defineAuth\\(\\{\\s?loginWith:\\s?\\{\\s?email:\\s?\\{.*?${gen2DefinitionProperty}: ${searchPattern} \\}\\s?\\}\\s?\\}\\)`,
+              `defineAuth\\(\\{\\s+loginWith:\\s+\\{\\s+email:\\s+\\{\\s+${gen2DefinitionProperty}: ${searchPattern}\\s+\\}\\s+\\}\\s+\\}\\)`,
             ),
           );
         });
@@ -177,7 +177,7 @@ describe('render auth node', () => {
         };
         const node = renderAuthNode(authDefinition);
         const source = printNodeArray(node);
-        assert.match(source, /defineAuth\(\{\s?loginWith:\s?\{\s?email:\s?true\s?\}\s?\}\)/);
+        assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+email:\s?true\s+\}\s+\}\)/);
       });
     });
   });

@@ -38,7 +38,7 @@ export const createGen2Renderer = ({
   auth,
   storage,
   fileWriter = (content, path) => createFileWriter(path)(content),
-}: Gen2RenderingOptions): Renderer => {
+}: Readonly<Gen2RenderingOptions>): Renderer => {
   const ensureOutputDir = new EnsureDirectory(outputDir);
   const ensureAmplifyDirectory = new EnsureDirectory(path.join(outputDir, 'amplify'));
   const amplifyPackageJson = new JsonRenderer(

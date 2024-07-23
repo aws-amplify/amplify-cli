@@ -9,8 +9,16 @@ import {
 } from '@aws-amplify/amplify-gen2-codegen';
 import { LambdaConfigType, PasswordPolicyType, UserPoolMfaType, UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
 
+export interface AuthTriggerConnections {
+  triggerType: keyof LambdaConfigType;
+  lambdaFunctionName: string;
+}
+
+export type AuthTriggerConnectionMap = Partial<Record<keyof LambdaConfigType, string>>;
+
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
+  authTriggerConnections?: AuthTriggerConnectionMap;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -85,9 +93,13 @@ const mappedLambdaConfigKey = (key: keyof LambdaConfigType): AuthTriggerEvents =
   }
 };
 
-const getAuthTriggers = (lambdaConfig: LambdaConfigType): Partial<Record<AuthTriggerEvents, Lambda>> => {
+const getAuthTriggers = (
+  lambdaConfig: LambdaConfigType,
+  triggerSourceFiles: AuthTriggerConnectionMap,
+): Partial<Record<AuthTriggerEvents, Lambda>> => {
   return Object.keys(lambdaConfig).reduce((prev, key) => {
-    prev[mappedLambdaConfigKey(key as keyof LambdaConfigType)] = { source: '' };
+    const typedKey = key as keyof LambdaConfigType;
+    prev[mappedLambdaConfigKey(typedKey)] = { source: triggerSourceFiles[typedKey] ?? '' };
     return prev;
   }, {} as Partial<Record<AuthTriggerEvents, Lambda>>);
 };
@@ -95,7 +107,7 @@ const getAuthTriggers = (lambdaConfig: LambdaConfigType): Partial<Record<AuthTri
 /**
  * [getAuthDefinition] describes gen 1 auth resources in terms that can be used to generate Gen 2 code.
  */
-export const getAuthDefinition = ({ userPool }: AuthSynthesizerOptions): AuthDefinition => {
+export const getAuthDefinition = ({ userPool, authTriggerConnections }: AuthSynthesizerOptions): AuthDefinition => {
   const loginWith: LoginOptions = { email: true };
   if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
     loginWith.emailOptions = getEmailConfig(userPool);
@@ -105,6 +117,6 @@ export const getAuthDefinition = ({ userPool }: AuthSynthesizerOptions): AuthDef
     loginOptions: loginWith,
     mfa: getMfaConfiguration(userPool.MfaConfiguration),
     userPoolOverrides,
-    lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}),
+    lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
   };
 };
