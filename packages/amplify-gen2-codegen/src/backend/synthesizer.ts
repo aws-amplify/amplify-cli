@@ -23,7 +23,7 @@ export class BackendSynthesizer {
       factory.createStringLiteral(backendPackageName),
     );
   };
-  private defineBackendCall = (backendFunctionIdentifier: Identifier, properties: ts.PropertyAssignment[]): ts.CallExpression => {
+  private defineBackendCall = (backendFunctionIdentifier: Identifier, properties: ts.ObjectLiteralElementLike[]): ts.CallExpression => {
     const backendFunctionArgs = factory.createObjectLiteralExpression(properties, true);
     return factory.createCallExpression(backendFunctionIdentifier, undefined, [backendFunctionArgs]);
   };
@@ -36,12 +36,12 @@ export class BackendSynthesizer {
     const defineBackendProperties = [];
     if (renderArgs.auth) {
       imports.push(this.createImportStatement([authFunctionIdentifier], renderArgs.auth.importFrom));
-      const auth = factory.createPropertyAssignment('auth', authFunctionIdentifier);
+      const auth = factory.createShorthandPropertyAssignment(authFunctionIdentifier);
       defineBackendProperties.push(auth);
     }
     if (renderArgs.storage) {
       imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
-      const storage = factory.createPropertyAssignment('storage', storageFunctionIdentifier);
+      const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
       defineBackendProperties.push(storage);
     }
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));

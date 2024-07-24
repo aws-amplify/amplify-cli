@@ -1,14 +1,21 @@
 import assert from 'node:assert';
 import { AuthDefinition } from '@aws-amplify/amplify-gen2-codegen';
 import { CloudFormationClient, DescribeStackResourcesCommand, StackResource } from '@aws-sdk/client-cloudformation';
-import { CognitoIdentityProviderClient, DescribeUserPoolCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityProviderClient, DescribeUserPoolCommand, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 
 export interface AppAuthDefinitionFetcher {
   getDefinition(backendEnvironmentStack: string): Promise<AuthDefinition | undefined>;
 }
+
+export type AuthTriggerConnectionsFetcher = () => Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined>;
+
 export class AppAuthDefinitionFetcher {
-  constructor(private cognitoIdentityProviderClient: CognitoIdentityProviderClient, private cfnClient: CloudFormationClient) {}
+  constructor(
+    private cognitoIdentityProviderClient: CognitoIdentityProviderClient,
+    private cfnClient: CloudFormationClient,
+    private getAuthTriggerConnections: AuthTriggerConnectionsFetcher,
+  ) {}
   private static CFN_STACK_RESOURCE_TYPE = 'AWS::CloudFormation::Stack';
   private getStackResources = async (stackName: string) => {
     const resources: StackResource[] = [];
@@ -52,7 +59,9 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
+    const authTriggerConnections = await this.getAuthTriggerConnections();
+
     assert(userPool, 'User pool not found');
-    return getAuthDefinition({ userPool });
+    return getAuthDefinition({ userPool, authTriggerConnections });
   };
 }
