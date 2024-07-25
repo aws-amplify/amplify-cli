@@ -93,7 +93,6 @@ const getAuthTriggersConnections = async (context: $TSContext): Promise<Partial<
         prev[curr.triggerType] = getFunctionPath(context, curr.lambdaFunctionName);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
-      console.log(JSON.stringify(connections, null, 2));
       return connections;
     } catch (e) {
       throw new Error('Error parsing auth trigger connections');
@@ -112,7 +111,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
   await generateGen2Code({
     outputDirectory: './output',
     appId,
-    storageDefinitionFetcher: new AppStorageDefinitionFetcher(new BackendDownloader(s3Client)),
+    storageDefinitionFetcher: new AppStorageDefinitionFetcher(new BackendDownloader(s3Client), s3Client),
     authDefinitionFetcher: new AppAuthDefinitionFetcher(cognitoIdentityProviderClient, cloudFormationClient, () =>
       getAuthTriggersConnections(context),
     ),

@@ -20,6 +20,10 @@ export type Attribute = 'address' | 'birthdate' | 'email' | 'familyName' | 'gend
 export interface AuthDefinition {
     // (undocumented)
     groups?: Group[];
+    // Warning: (ae-forgotten-export) The symbol "AuthLambdaTriggers" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    lambdaTriggers?: Partial<AuthLambdaTriggers>;
     // (undocumented)
     loginOptions?: LoginOptions;
     // (undocumented)
@@ -31,7 +35,10 @@ export interface AuthDefinition {
 }
 
 // @public (undocumented)
-export const createGen2Renderer: ({ outputDir, auth, storage, fileWriter, }: Gen2RenderingOptions) => Renderer;
+export type AuthTriggerEvents = 'createAuthChallenge' | 'customMessage' | 'defineAuthChallenge' | 'postAuthentication' | 'postConfirmation' | 'preAuthentication' | 'preSignUp' | 'preTokenGeneration' | 'userMigration' | 'verifyAuthChallengeResponse';
+
+// @public (undocumented)
+export const createGen2Renderer: ({ outputDir, auth, storage, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
 
 // @public (undocumented)
 export type EmailOptions = {
@@ -53,6 +60,11 @@ export interface Gen2RenderingOptions {
 
 // @public (undocumented)
 export type Group = string;
+
+// @public (undocumented)
+export type Lambda = {
+    source: string;
+};
 
 // @public (undocumented)
 export type LoginOptions = {

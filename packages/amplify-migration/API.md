@@ -7,6 +7,9 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
+export type AuthCliInputs = Record<string, unknown>;
+
+// @public (undocumented)
 export function executeAmplifyCommand(context: $TSContext): Promise<void>;
 
 // (No @packageDocumentation comment for this package)

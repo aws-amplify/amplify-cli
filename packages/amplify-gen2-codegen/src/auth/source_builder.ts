@@ -2,7 +2,7 @@ import ts, { PropertyAssignment, SyntaxKind } from 'typescript';
 import assert from 'node:assert';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../resource/resource';
-import { Lambda } from '../function/lambda';
+import { createDefineFunctionCall, createTriggersProperty, Lambda } from '../function/lambda';
 
 export type StandardAttribute = {
   readonly mutable?: boolean;
@@ -158,27 +158,7 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
   if (hasFunctions) {
     assert(definition.lambdaTriggers);
-    defineAuthProperties.push(
-      factory.createPropertyAssignment(
-        factory.createIdentifier('triggers'),
-        factory.createObjectLiteralExpression(
-          Object.entries(definition.lambdaTriggers).map(([key, { source }]) => {
-            return ts.addSyntheticLeadingComment(
-              factory.createPropertyAssignment(
-                key,
-                factory.createCallExpression(factory.createIdentifier('defineFunction'), undefined, [
-                  factory.createObjectLiteralExpression([]),
-                ]),
-              ),
-              SyntaxKind.MultiLineCommentTrivia,
-              `\nSource code for this function can be found in your Amplify Gen 1 Directory.\nSee ${source}\n`,
-              true,
-            );
-          }),
-          true,
-        ),
-      ),
-    );
+    defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
   }
 
   if (definition.mfa) {
