@@ -21,6 +21,8 @@ export interface AuthDefinition {
     // (undocumented)
     groups?: Group[];
     // (undocumented)
+    lambdaTriggers?: Partial<AuthLambdaTriggers>;
+    // (undocumented)
     loginOptions?: LoginOptions;
     // (undocumented)
     mfa?: MultifactorOptions;
@@ -31,7 +33,13 @@ export interface AuthDefinition {
 }
 
 // @public (undocumented)
-export const createGen2Renderer: ({ outputDir, auth, storage, fileWriter, }: Gen2RenderingOptions) => Renderer;
+export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
+
+// @public (undocumented)
+export type AuthTriggerEvents = 'createAuthChallenge' | 'customMessage' | 'defineAuthChallenge' | 'postAuthentication' | 'postConfirmation' | 'preAuthentication' | 'preSignUp' | 'preTokenGeneration' | 'userMigration' | 'verifyAuthChallengeResponse';
+
+// @public (undocumented)
+export const createGen2Renderer: ({ outputDir, auth, storage, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
 
 // @public (undocumented)
 export type EmailOptions = {
@@ -53,6 +61,11 @@ export interface Gen2RenderingOptions {
 
 // @public (undocumented)
 export type Group = string;
+
+// @public (undocumented)
+export type Lambda = {
+    source: string;
+};
 
 // @public (undocumented)
 export type LoginOptions = {
@@ -103,7 +116,12 @@ export interface StorageRenderParameters {
     lambdas?: S3TriggerDefinition[];
     // (undocumented)
     storageIdentifier?: string;
+    // (undocumented)
+    triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
 }
+
+// @public (undocumented)
+export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 
 // @public (undocumented)
 export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';

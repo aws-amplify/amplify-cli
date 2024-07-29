@@ -16,7 +16,7 @@ import { Analytics, DummyAnalytics } from './analytics.js';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher.js';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher.js';
 import { $TSContext, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
-import { AuthTriggerConnections } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
+import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -88,12 +88,11 @@ const getAuthTriggersConnections = async (context: $TSContext): Promise<Partial<
   const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
   if ('cognitoConfig' in authInputs && 'authTriggerConnections' in authInputs.cognitoConfig) {
     try {
-      const triggerConnections: AuthTriggerConnections[] = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
+      const triggerConnections: AuthTriggerConnection[] = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
       const connections = triggerConnections.reduce((prev, curr) => {
         prev[curr.triggerType] = getFunctionPath(context, curr.lambdaFunctionName);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
-      console.log(JSON.stringify(connections, null, 2));
       return connections;
     } catch (e) {
       throw new Error('Error parsing auth trigger connections');
@@ -112,7 +111,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
   await generateGen2Code({
     outputDirectory: './output',
     appId,
-    storageDefinitionFetcher: new AppStorageDefinitionFetcher(new BackendDownloader(s3Client)),
+    storageDefinitionFetcher: new AppStorageDefinitionFetcher(new BackendDownloader(s3Client), s3Client),
     authDefinitionFetcher: new AppAuthDefinitionFetcher(cognitoIdentityProviderClient, cloudFormationClient, () =>
       getAuthTriggersConnections(context),
     ),

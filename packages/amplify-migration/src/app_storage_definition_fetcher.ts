@@ -5,12 +5,13 @@ import { getStorageDefinition } from '@aws-amplify/amplify-gen1-codegen-storage-
 import { BackendDownloader } from './backend_downloader.js';
 import { fileOrDirectoryExists } from './directory_exists.js';
 import { StorageRenderParameters } from '@aws-amplify/amplify-gen2-codegen';
+import { GetBucketNotificationConfigurationCommand, S3Client } from '@aws-sdk/client-s3';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(deploymentBucket: string): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
 }
 export class AppStorageDefinitionFetcher {
-  constructor(private ccbFetcher: BackendDownloader) {}
+  constructor(private ccbFetcher: BackendDownloader, private s3Client: S3Client) {}
   private readJsonFile = async (filePath: string) => {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
     return JSON.parse(contents);
@@ -28,9 +29,14 @@ export class AppStorageDefinitionFetcher {
       const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
       assert(await fileOrDirectoryExists(cliInputsPath));
       const cliInputs = await this.readJsonFile(cliInputsPath);
+      assert(cliInputs.bucketName);
+      const { bucketName } = cliInputs;
+      console.log(bucketName);
+      const triggers = await this.s3Client.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
+      console.log('triggers', triggers);
       const storageOptions = getStorageDefinition({
         cliInputs,
-        bucketName: cliInputs['bucketName'],
+        bucketName: bucketName,
       });
       return storageOptions;
     }

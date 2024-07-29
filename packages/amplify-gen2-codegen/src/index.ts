@@ -9,6 +9,7 @@ import { EnsureDirectory } from './renderers/ensure_directory';
 import { Lambda } from './function/lambda';
 import {
   AuthTriggerEvents,
+  AuthLambdaTriggers,
   AuthDefinition,
   renderAuthNode,
   SendingAccount,
@@ -23,7 +24,14 @@ import {
   StandardAttributes,
   MultifactorOptions,
 } from './auth/source_builder';
-import { StorageRenderParameters, renderStorage, AccessPatterns, Permission, S3TriggerDefinition } from './storage/source_builder.js';
+import {
+  StorageRenderParameters,
+  renderStorage,
+  AccessPatterns,
+  Permission,
+  S3TriggerDefinition,
+  StorageTriggerEvent,
+} from './storage/source_builder.js';
 
 export interface Gen2RenderingOptions {
   outputDir: string;
@@ -105,4 +113,6 @@ export {
   MultifactorOptions,
   AuthTriggerEvents,
   Lambda,
+  AuthLambdaTriggers,
+  StorageTriggerEvent,
 };
