@@ -3,6 +3,7 @@ import { getAccessPatterns } from './access';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTriggersProperty, Lambda } from '../function/lambda';
 const factory = ts.factory;
+
 export type S3TriggerDefinition = Record<string, never>;
 export type Permission = 'read' | 'write' | 'create' | 'delete';
 export type GroupPermissions<G extends readonly string[]> = {

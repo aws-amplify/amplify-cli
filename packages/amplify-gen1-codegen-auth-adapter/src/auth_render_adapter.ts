@@ -9,16 +9,16 @@ import {
 } from '@aws-amplify/amplify-gen2-codegen';
 import { LambdaConfigType, PasswordPolicyType, UserPoolMfaType, UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
 
-export interface AuthTriggerConnections {
+export interface AuthTriggerConnection {
   triggerType: keyof LambdaConfigType;
   lambdaFunctionName: string;
 }
 
-export type AuthTriggerConnectionMap = Partial<Record<keyof LambdaConfigType, string>>;
+export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigType, string>>;
 
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
-  authTriggerConnections?: AuthTriggerConnectionMap;
+  authTriggerConnections?: AuthTriggerConnectionSourceMap;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -95,7 +95,7 @@ const mappedLambdaConfigKey = (key: keyof LambdaConfigType): AuthTriggerEvents =
 
 const getAuthTriggers = (
   lambdaConfig: LambdaConfigType,
-  triggerSourceFiles: AuthTriggerConnectionMap,
+  triggerSourceFiles: AuthTriggerConnectionSourceMap,
 ): Partial<Record<AuthTriggerEvents, Lambda>> => {
   return Object.keys(lambdaConfig).reduce((prev, key) => {
     const typedKey = key as keyof LambdaConfigType;

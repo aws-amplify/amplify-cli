@@ -1,8 +1,8 @@
-import ts, { PropertyAssignment, SyntaxKind } from 'typescript';
+import ts, { PropertyAssignment } from 'typescript';
 import assert from 'node:assert';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../resource/resource';
-import { createDefineFunctionCall, createTriggersProperty, Lambda } from '../function/lambda';
+import { createTriggersProperty, Lambda } from '../function/lambda';
 
 export type StandardAttribute = {
   readonly mutable?: boolean;

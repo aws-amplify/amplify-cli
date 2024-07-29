@@ -11,21 +11,22 @@ import { UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
 
 // @public (undocumented)
 export interface AuthSynthesizerOptions {
-    // Warning: (ae-forgotten-export) The symbol "AuthTriggerConnectionMap" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    authTriggerConnections?: AuthTriggerConnectionMap;
+    authTriggerConnections?: AuthTriggerConnectionSourceMap;
     // (undocumented)
     userPool: UserPoolType;
 }
 
 // @public (undocumented)
-export interface AuthTriggerConnections {
+export interface AuthTriggerConnection {
     // (undocumented)
     lambdaFunctionName: string;
     // (undocumented)
     triggerType: keyof LambdaConfigType;
 }
+
+// @public (undocumented)
+export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigType, string>>;
 
 // @public (undocumented)
 export const getAuthDefinition: ({ userPool, authTriggerConnections }: AuthSynthesizerOptions) => AuthDefinition;

@@ -20,8 +20,6 @@ export type Attribute = 'address' | 'birthdate' | 'email' | 'familyName' | 'gend
 export interface AuthDefinition {
     // (undocumented)
     groups?: Group[];
-    // Warning: (ae-forgotten-export) The symbol "AuthLambdaTriggers" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     lambdaTriggers?: Partial<AuthLambdaTriggers>;
     // (undocumented)
@@ -33,6 +31,9 @@ export interface AuthDefinition {
     // (undocumented)
     userPoolOverrides?: UserPoolOverrides;
 }
+
+// @public (undocumented)
+export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
 
 // @public (undocumented)
 export type AuthTriggerEvents = 'createAuthChallenge' | 'customMessage' | 'defineAuthChallenge' | 'postAuthentication' | 'postConfirmation' | 'preAuthentication' | 'preSignUp' | 'preTokenGeneration' | 'userMigration' | 'verifyAuthChallengeResponse';
@@ -115,7 +116,12 @@ export interface StorageRenderParameters {
     lambdas?: S3TriggerDefinition[];
     // (undocumented)
     storageIdentifier?: string;
+    // (undocumented)
+    triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
 }
+
+// @public (undocumented)
+export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 
 // @public (undocumented)
 export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
