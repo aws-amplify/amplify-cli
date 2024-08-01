@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-cli-core",
-  "version": "4.3.9",
+  "version": "4.3.10-verify-update-awaiter-s3-key.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",

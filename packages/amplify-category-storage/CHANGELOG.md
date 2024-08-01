@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.15-verify-update-awaiter-s3-key.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.5.14...@aws-amplify/amplify-category-storage@5.5.15-verify-update-awaiter-s3-key.0) (2024-08-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-storage
+
+
+
+
+
 ## [5.5.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@5.5.13...@aws-amplify/amplify-category-storage@5.5.14) (2024-06-27)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

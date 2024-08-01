@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.10-verify-update-awaiter-s3-key.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.5.9...@aws-amplify/amplify-e2e-core@5.5.10-verify-update-awaiter-s3-key.0) (2024-08-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
 ## [5.5.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.5.8...@aws-amplify/amplify-e2e-core@5.5.9) (2024-06-27)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core
