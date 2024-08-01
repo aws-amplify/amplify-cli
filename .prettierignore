@@ -1,6 +1,5 @@
 .yarn
 .prettierignore
-.gitattributes
 yarn.lock
 packages/*/build
 packages/*/lib
