@@ -7,7 +7,7 @@ const factory = ts.factory;
 
 export const defineFunctionIdentifier = 'defineFunction';
 
-export interface DefineFunctionParamter {
+export interface DefineFunctionParameter {
   entry?: string;
   name?: string;
   timeoutSeconds?: string;
@@ -16,9 +16,10 @@ export interface DefineFunctionParamter {
   runtime?: 16 | 18 | 19;
 }
 
-const createParameter = (name: string, value: any) => factory.createPropertyAssignment(factory.createIdentifier(name), value);
+const createParameter = (name: string, value: ts.LiteralExpression | ts.ObjectLiteralExpression): ts.PropertyAssignment =>
+  factory.createPropertyAssignment(factory.createIdentifier(name), value);
 
-export const createDefineFunctionCall = (parameter?: DefineFunctionParamter): ts.CallExpression => {
+export const createDefineFunctionCall = (parameter?: DefineFunctionParameter): ts.CallExpression => {
   const parameters: ObjectLiteralElementLike[] = [];
   if (parameter?.entry) {
     parameters.push(createParameter('entry', factory.createStringLiteral(parameter.entry)));
