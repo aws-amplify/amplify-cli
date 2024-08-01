@@ -1,6 +1,6 @@
 import ts, { Identifier } from 'typescript';
 import assert from 'node:assert';
-import { createDefineFunctionCall, DefineFunctionParamter } from './lambda';
+import { createDefineFunctionCall, DefineFunctionParameter } from './lambda';
 import { printNode } from '../test_utils/ts_node_printer';
 
 describe('createDefineFunctionCall', () => {
@@ -11,7 +11,7 @@ describe('createDefineFunctionCall', () => {
     assert.equal(id.escapedText, 'defineFunction');
     assert.equal(fn.arguments.at(0)?.kind, ts.SyntaxKind.ObjectLiteralExpression);
   });
-  const parameter: DefineFunctionParamter = {
+  const parameter: DefineFunctionParameter = {
     runtime: 18,
     memoryMB: 1024,
     timeoutSeconds: '35',
