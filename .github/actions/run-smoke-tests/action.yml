@@ -21,14 +21,6 @@ runs:
         echo "AMPLIFY_PATH=$AMPLIFY_PATH"
         $AMPLIFY_PATH version
 
-    - name: Remove Pkg Fetch Checksum on Windows
-      shell: bash
-      if: runner.os == 'Windows'
-      run: |
-        cd scripts
-        yarn
-        yarn ts-node remove-pkg-fetch-checksum.ts
-
     - name: Install Dependencies
       shell: bash
       run: yarn install --immutable
