@@ -13,4 +13,3 @@ export const migrationFromV12Tests = [
   'src/__tests__/migration_tests_v12/auth-oauth-lambda-migration.test.ts',
   'src/__tests__/migration_tests_v12/auth-role-mapping-migration-test.ts',
 ];
-//test
