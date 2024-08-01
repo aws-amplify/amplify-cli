@@ -1,3 +1,4 @@
 /.yarn/releases/** binary
 /.yarn/plugins/** binary
 /scripts/.yarn/releases/** binary
+*.zip binary
