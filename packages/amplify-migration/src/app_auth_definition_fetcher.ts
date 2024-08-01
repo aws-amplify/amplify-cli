@@ -1,11 +1,12 @@
 import assert from 'node:assert';
 import { AuthDefinition } from '@aws-amplify/amplify-gen2-codegen';
-import { CloudFormationClient, DescribeStackResourcesCommand, StackResource } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, DescribeUserPoolCommand, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
+import { AmplifyStackParser } from './amplify_stack_parser';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
 
 export interface AppAuthDefinitionFetcher {
-  getDefinition(backendEnvironmentStack: string): Promise<AuthDefinition | undefined>;
+  getDefinition(): Promise<AuthDefinition | undefined>;
 }
 
 export type AuthTriggerConnectionsFetcher = () => Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined>;
@@ -13,45 +14,20 @@ export type AuthTriggerConnectionsFetcher = () => Promise<Partial<Record<keyof L
 export class AppAuthDefinitionFetcher {
   constructor(
     private cognitoIdentityProviderClient: CognitoIdentityProviderClient,
-    private cfnClient: CloudFormationClient,
+    private stackParser: AmplifyStackParser,
+    private backendEnvironmentResolver: BackendEnvironmentResolver,
     private getAuthTriggerConnections: AuthTriggerConnectionsFetcher,
   ) {}
-  private static CFN_STACK_RESOURCE_TYPE = 'AWS::CloudFormation::Stack';
-  private getStackResources = async (stackName: string) => {
-    const resources: StackResource[] = [];
-    const stackQueue = [stackName];
-    while (stackQueue.length) {
-      const currentStackName = stackQueue.shift();
-      const { StackResources: stackResources } = await this.cfnClient.send(
-        new DescribeStackResourcesCommand({
-          StackName: currentStackName,
-        }),
-      );
-      assert(stackResources);
-      stackQueue.push(
-        ...stackResources
-          .filter((r) => r.ResourceType === AppAuthDefinitionFetcher.CFN_STACK_RESOURCE_TYPE)
-          .map((r) => {
-            assert(r.PhysicalResourceId, 'Resource does not have a physical resource id');
-            return r.PhysicalResourceId;
-          }),
-      );
-      resources.push(...stackResources.filter((r) => r.ResourceType !== AppAuthDefinitionFetcher.CFN_STACK_RESOURCE_TYPE));
-    }
-    return resources;
-  };
 
-  private getResourcesByLogicalId = (resources: StackResource[]) => {
-    return resources.reduce((acc, curr) => {
-      if (curr.LogicalResourceId) {
-        acc[curr.LogicalResourceId] = curr;
-      }
-      return acc;
-    }, {} as Record<string, StackResource>);
-  };
-  getDefinition = async (backendEnvironmentStack: string): Promise<AuthDefinition | undefined> => {
-    const stackResources = await this.getStackResources(backendEnvironmentStack);
-    const resourcesByLogicalId = this.getResourcesByLogicalId(stackResources);
+  getDefinition = async (): Promise<AuthDefinition | undefined> => {
+    const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
+    assert(backendEnvironment?.stackName);
+    const stackResources = await this.stackParser.getAllStackResources(backendEnvironment.stackName);
+    const resourcesByLogicalId = this.stackParser.getResourcesByLogicalId(stackResources);
+
+    if (!resourcesByLogicalId['UserPool']) {
+      return undefined;
+    }
 
     const { UserPool: userPool } = await this.cognitoIdentityProviderClient.send(
       new DescribeUserPoolCommand({

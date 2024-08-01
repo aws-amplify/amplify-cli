@@ -6,18 +6,25 @@ import { BackendDownloader } from './backend_downloader.js';
 import { fileOrDirectoryExists } from './directory_exists.js';
 import { StorageRenderParameters } from '@aws-amplify/amplify-gen2-codegen';
 import { GetBucketNotificationConfigurationCommand, S3Client } from '@aws-sdk/client-s3';
+import { BackendEnvironmentResolver } from './backend_environment_selector.js';
 
 export interface AppStorageDefinitionFetcher {
-  getDefinition(deploymentBucket: string): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
+  getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
 }
 export class AppStorageDefinitionFetcher {
-  constructor(private ccbFetcher: BackendDownloader, private s3Client: S3Client) {}
+  constructor(
+    private backendEnvironmentResolver: BackendEnvironmentResolver,
+    private ccbFetcher: BackendDownloader,
+    private s3Client: S3Client,
+  ) {}
   private readJsonFile = async (filePath: string) => {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
     return JSON.parse(contents);
   };
-  getDefinition = async (deploymentBucket: string): Promise<StorageRenderParameters | undefined> => {
-    const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(deploymentBucket);
+  getDefinition = async (): Promise<StorageRenderParameters | undefined> => {
+    const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
+    assert(backendEnvironment?.deploymentArtifacts);
+    const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
 
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
 

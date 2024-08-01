@@ -5,27 +5,27 @@ import { Gen2RenderingOptions, createGen2Renderer } from '@aws-amplify/amplify-g
 
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
-import assert from 'node:assert';
 import { resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { S3Client } from '@aws-sdk/client-s3';
 import { BackendDownloader } from './backend_downloader.js';
-import { Logger } from './logger.js';
-import { BackendEnvironmentSelector } from './backend_environment_selector.js';
-import { Analytics, DummyAnalytics } from './analytics.js';
+import { AppContextLogger } from './logger.js';
+import { BackendEnvironmentResolver } from './backend_environment_selector.js';
+import { Analytics, AppAnalytics } from './analytics.js';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher.js';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher.js';
 import { $TSContext, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
+import { DataDefinitionFetcher } from './data_definition_fetcher.js';
+import { AmplifyStackParser } from './amplify_stack_parser.js';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
-  logger: Logger;
-  appId: string;
+  logger: AppContextLogger;
   outputDirectory: string;
+  dataDefinitionFetcher: DataDefinitionFetcher;
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
-  backendEnvironmentSelector: BackendEnvironmentSelector;
 }
 
 export type AuthCliInputs = Record<string, unknown>;
@@ -33,38 +33,28 @@ export type AuthCliInputs = Record<string, unknown>;
 const generateGen2Code = async ({
   logger,
   analytics,
-  appId,
   outputDirectory,
   authDefinitionFetcher,
+  dataDefinitionFetcher,
   storageDefinitionFetcher,
-  backendEnvironmentSelector,
 }: CodegenCommandParameters) => {
-  await analytics.logEvent('startMigration', {
-    appId,
-  });
-
-  logger.log(`Getting info for Amplify app: ${appId}`);
-
-  const backendEnvironment = await backendEnvironmentSelector.selectBackendEnvironment(appId);
-  assert(backendEnvironment, 'A BackendEnvironment must be selected');
-  assert(backendEnvironment?.deploymentArtifacts, 'The app must have a deployment bucket');
-  assert(backendEnvironment?.stackName, 'BackendEnvironment stack name not found');
-  logger.log(backendEnvironment?.stackName);
+  logger.log(`Getting info for Amplify app`);
 
   logger.log('Getting latest environment info');
 
   const gen2RenderOptions: Readonly<Gen2RenderingOptions> = {
     outputDir: outputDirectory,
-    auth: await authDefinitionFetcher.getDefinition(backendEnvironment.stackName),
-    storage: await storageDefinitionFetcher.getDefinition(backendEnvironment.deploymentArtifacts),
+    auth: await authDefinitionFetcher.getDefinition(),
+    storage: await storageDefinitionFetcher.getDefinition(),
+    data: await dataDefinitionFetcher.getDefinition(),
   };
 
   const pipeline = createGen2Renderer(gen2RenderOptions);
   try {
     await pipeline.render();
-    await analytics.logEvent('finishedMigration', { appId });
+    await analytics.logEvent('finishedMigration');
   } catch (e) {
-    await analytics.logEvent('failedMigration', { appId });
+    await analytics.logEvent('failedMigration');
   }
 };
 
@@ -78,7 +68,6 @@ type AmplifyMeta = {
 };
 
 const getFunctionPath = (context: $TSContext, functionName: string) => {
-  //  const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
   return path.join('amplify', 'backend', 'function', functionName, 'src');
 };
 
@@ -108,15 +97,17 @@ export async function executeAmplifyCommand(context: $TSContext) {
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
   const appId = resolveAppId(context);
 
+  const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
+  const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
+
   await generateGen2Code({
     outputDirectory: './output',
-    appId,
-    storageDefinitionFetcher: new AppStorageDefinitionFetcher(new BackendDownloader(s3Client), s3Client),
-    authDefinitionFetcher: new AppAuthDefinitionFetcher(cognitoIdentityProviderClient, cloudFormationClient, () =>
+    storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
+    authDefinitionFetcher: new AppAuthDefinitionFetcher(cognitoIdentityProviderClient, amplifyStackParser, backendEnvironmentResolver, () =>
       getAuthTriggersConnections(context),
     ),
-    analytics: new DummyAnalytics(),
-    logger: new Logger(),
-    backendEnvironmentSelector: new BackendEnvironmentSelector(amplifyClient),
+    dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
+    analytics: new AppAnalytics(appId),
+    logger: new AppContextLogger(appId),
   });
 }
