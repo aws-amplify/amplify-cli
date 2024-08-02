@@ -4,6 +4,8 @@ env:
 phases:
   build:
     commands:
+      - cd scripts
+      - yarn
       - yarn --immutable
       - yarn production-build
       - yarn build-tests

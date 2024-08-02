@@ -21,6 +21,13 @@ runs:
         echo "AMPLIFY_PATH=$AMPLIFY_PATH"
         $AMPLIFY_PATH version
 
+    - name: Yarn build on Windows
+      shell: bash
+      if: runner.os == 'Windows'
+      run: |
+        cd scripts
+        yarn
+
     - name: Install Dependencies
       shell: bash
       run: yarn install --immutable
