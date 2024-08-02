@@ -39,7 +39,12 @@ export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
 export type AuthTriggerEvents = 'createAuthChallenge' | 'customMessage' | 'defineAuthChallenge' | 'postAuthentication' | 'postConfirmation' | 'preAuthentication' | 'preSignUp' | 'preTokenGeneration' | 'userMigration' | 'verifyAuthChallengeResponse';
 
 // @public (undocumented)
-export const createGen2Renderer: ({ outputDir, auth, storage, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
+export const createGen2Renderer: ({ outputDir, auth, storage, data, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
+
+// @public (undocumented)
+export type DataDefinition = {
+    tableMapping: Record<string, string>;
+};
 
 // @public (undocumented)
 export type EmailOptions = {
@@ -51,6 +56,8 @@ export type EmailOptions = {
 export interface Gen2RenderingOptions {
     // (undocumented)
     auth?: AuthDefinition;
+    // (undocumented)
+    data?: DataDefinition;
     // (undocumented)
     fileWriter?: (content: string, path: string) => Promise<void>;
     // (undocumented)

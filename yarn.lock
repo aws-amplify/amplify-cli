@@ -648,6 +648,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@aws-amplify/amplify-gen1-codegen-data-adapter@workspace:packages/amplify-gen1-codegen-data-adapter":
+  version: 0.0.0-use.local
+  resolution: "@aws-amplify/amplify-gen1-codegen-data-adapter@workspace:packages/amplify-gen1-codegen-data-adapter"
+  dependencies:
+    "@aws-amplify/amplify-gen2-codegen": ^0.0.1
+    "@aws-amplify/auth-construct": ^1.1.5
+    "@aws-sdk/client-amplify": ^3.592.0
+    "@aws-sdk/client-cloudformation": ^3.592.0
+    "@aws-sdk/client-cognito-identity": ^3.592.0
+    "@aws-sdk/client-cognito-identity-provider": ^3.592.0
+    jest: ^29.5.0
+    typescript: ^5.4.5
+  languageName: unknown
+  linkType: soft
+
 "@aws-amplify/amplify-gen1-codegen-storage-adapter@^0.0.1, @aws-amplify/amplify-gen1-codegen-storage-adapter@workspace:packages/amplify-gen1-codegen-storage-adapter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-storage-adapter@workspace:packages/amplify-gen1-codegen-storage-adapter"
@@ -679,6 +694,7 @@ __metadata:
     "@aws-sdk/client-s3": ^3.592.0
     "@types/node": ^20.14.2
     "@types/unzipper": ^0.10.9
+    jest: ^29.5.0
     typescript: ^5.4.5
     unzipper: ^0.12.1
     yargs: ^17.7.2

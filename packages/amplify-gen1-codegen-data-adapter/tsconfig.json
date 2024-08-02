@@ -1,0 +1,10 @@
+{
+  "include": ["src/**/*"],
+  "compilerOptions": { "rootDir": "src", "outDir": "lib" },
+  "extends": "../../tsconfig.base.json",
+  "references": [
+    {
+      "path": "../amplify-gen2-codegen"
+    }
+  ]
+}
