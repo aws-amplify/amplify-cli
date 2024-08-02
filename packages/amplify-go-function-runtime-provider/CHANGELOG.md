@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.47](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.46...amplify-go-function-runtime-provider@2.3.47) (2024-08-02)
+
+
+### Bug Fixes
+
+* remove go.exe as argument to go command ([#13789](https://github.com/aws-amplify/amplify-cli/issues/13789)) ([2570d0c](https://github.com/aws-amplify/amplify-cli/commit/2570d0c448b63e6cad419757030fd9f26eb97557))
+
+
+
+
+
 ## [2.3.46](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.45...amplify-go-function-runtime-provider@2.3.46) (2024-06-27)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider
