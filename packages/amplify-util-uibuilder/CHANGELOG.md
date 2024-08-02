@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.12-rc.dacfab73fcc5358.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.11...@aws-amplify/amplify-util-uibuilder@1.14.12-rc.dacfab73fcc5358.0) (2024-08-02)
+
+
+### Bug Fixes
+
+* update awaiter s3 key ([#13872](https://github.com/aws-amplify/amplify-cli/issues/13872)) ([dacfab7](https://github.com/aws-amplify/amplify-cli/commit/dacfab73fcc53586b873f99e149d44c390b2d76f))
+
+
+
+
+
 ## [1.14.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.10...@aws-amplify/amplify-util-uibuilder@1.14.11) (2024-08-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
