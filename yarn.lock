@@ -26703,9 +26703,9 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"pkg-fetch@npm:3.4.2":
-  version: 3.4.2
-  resolution: "pkg-fetch@npm:3.4.2"
+"pkg-fetch@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "pkg-fetch@npm:3.5.2"
   dependencies:
     chalk: ^4.1.2
     fs-extra: ^9.1.0
@@ -26717,7 +26717,7 @@ node-pty@beta:
     yargs: ^16.2.0
   bin:
     pkg-fetch: lib-es5/bin.js
-  checksum: 388904c1748303e99821503d45f5794a210ee103be6f0752ae134633e5af1de7368e4ddf56cf4e95e334fa3134c7600703200adbcc3d1dc5329cdef7a6916888
+  checksum: 8105cf28178e0b325417a9dee6ec0f0f124ba7fe3608d8ad86628ef2f2a12d1490550a007d5be42e34f0c8573dcb9655737b4d07a177ce4ee278e762ccb42b9e
   languageName: node
   linkType: hard
 
