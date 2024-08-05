@@ -80,8 +80,18 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 
    # Windows
    yarn && yarn setup-dev-win
-   ## Must be run in Powershell
+   ## Preferably run in Git Bash
    ```
+
+   ### Additional Instructions for Windows Users:
+
+   Prior to running the `setup-dev` script:
+
+   1. Install the Visual C++ Build Environment by installing Visual Studio Community Edition. When selecting options, only 'Desktop Development for C++' needs to be added.
+   2. Open a terminal window/command prompt and run `npm config edit` and add or modify `msvs_version` setting to be your version of Visual Studio (e.g. `msvs_version=22`)
+   3. If you run into the build error 'MSB8040: Spectre-mitigated libraries are required for this project' open the Visual Studio installer, press the 'Modify' button for your version of Visual Studio, then navigate to the 'Individual Components' and search for 'Spectre'. Install options that look like "MSVC v143 - VS 2022 C++ x64/x86 Spectre-mitigated libs (Latest)", you should only need the x86-64 version, but can optionally install versions for ARM and ARM64/ARM64EC.
+   4. Go back to the terminal window/command prompt and navigate to the 'amplify-cli' folder and run `yarn clean cache --all`
+   5. You should now be ready to run the `setup-dev` script
 
 > NOTE: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with _dev_ branch of amplify-cli
 

@@ -26681,9 +26681,9 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"pkg-fetch@https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff":
-  version: 3.4.2
-  resolution: "pkg-fetch@https://github.com/aws-amplify/pkg-fetch.git#commit=ad4a21feb533d338bf951e7ba28cea7256aedeff"
+"pkg-fetch@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "pkg-fetch@npm:3.5.2"
   dependencies:
     chalk: ^4.1.2
     fs-extra: ^9.1.0
@@ -26695,7 +26695,7 @@ node-pty@beta:
     yargs: ^16.2.0
   bin:
     pkg-fetch: lib-es5/bin.js
-  checksum: 24e2b385b6510538b4253aba62f243f7a1783fa544970c0712bcc3dd3c10159f7eab741f8dfaf409afed5ed8e0c334ea2c046ffbd11b93901c41847142a34b5e
+  checksum: 8105cf28178e0b325417a9dee6ec0f0f124ba7fe3608d8ad86628ef2f2a12d1490550a007d5be42e34f0c8573dcb9655737b4d07a177ce4ee278e762ccb42b9e
   languageName: node
   linkType: hard
 
