@@ -90,11 +90,31 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
   }
 
   generateRootStackResources = async (): Promise<void> => {
+    const bucketName = this._cfnParameterMap.get('DeploymentBucketName').valueAsString;
     this.deploymentBucket = new s3.CfnBucket(this, 'DeploymentBucket', {
-      bucketName: this._cfnParameterMap.get('DeploymentBucketName').valueAsString,
+      bucketName: bucketName,
     });
 
     this.deploymentBucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+    new s3.CfnBucketPolicy(this, 'DeploymentBucketBlockHTTP', {
+      bucket: bucketName,
+      policyDocument: {
+        Statement: [
+          {
+            Action: 's3:*',
+            Effect: 'Deny',
+            Principal: '*',
+            Resource: [`arn:aws:s3:::${bucketName}/*`, `arn:aws:s3:::${bucketName}`],
+            Condition: {
+              Bool: {
+                'aws:SecureTransport': false,
+              },
+            },
+          },
+        ],
+      },
+    });
 
     this.authRole = new iam.CfnRole(this, 'AuthRole', {
       roleName: this._cfnParameterMap.get('AuthRoleName').valueAsString,

@@ -163,6 +163,7 @@
   "resolutions": {
     "aws-sdk": "^2.1464.0",
     "cross-fetch": "^2.2.6",
+    "fast-xml-parser": "^4.4.1",
     "glob-parent": "^6.0.2",
     "got": "^11.8.5",
     "istanbul/async": "^2.6.4",
