@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { PasswordPolicyType, UserPoolMfaType } from '@aws-sdk/client-cognito-identity-provider';
+import { IdentityProviderTypeType, PasswordPolicyType, UserPoolMfaType } from '@aws-sdk/client-cognito-identity-provider';
 import { DEFAULT_PASSWORD_SETTINGS, getAuthDefinition } from './auth_render_adapter';
 /**
  * @see https://github.com/aws-amplify/amplify-backend/blob/5d78622c7fd6fb050da11baff1295b9be0bd2eae/packages/auth-construct/src/construct.test.ts#L578
@@ -7,6 +7,46 @@ import { DEFAULT_PASSWORD_SETTINGS, getAuthDefinition } from './auth_render_adap
  */
 
 void describe('auth codegen', () => {
+  void describe('identity providers', () => {
+    void it('contains google login if Google identityProvider type is passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityProviders: [{ ProviderType: IdentityProviderTypeType.Google, ProviderName: 'Google' }],
+      });
+      assert(result.loginOptions?.googleLogin);
+    });
+    void it('contains apple login if SignInWithApple identityProvider type is passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityProviders: [{ ProviderType: IdentityProviderTypeType.SignInWithApple, ProviderName: 'SignInWithApple' }],
+      });
+      assert(result.loginOptions?.appleLogin);
+    });
+    void it('contains amazon login if LoginWithAmazon identityProvider type is passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityProviders: [{ ProviderType: IdentityProviderTypeType.LoginWithAmazon, ProviderName: 'LoginWithAmazon' }],
+      });
+      assert(result.loginOptions?.amazonLogin);
+    });
+    void it('contains facebook login if Facebook identityProvider type is passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityProviders: [{ ProviderType: IdentityProviderTypeType.Facebook, ProviderName: 'Facebook' }],
+      });
+      assert(result.loginOptions?.facebookLogin);
+    });
+  });
+  void describe('callback URLs and logout URLs', () => {
+    void it('contains callback urls if callbackURLs array is passed', () => {
+      const result = getAuthDefinition({ userPool: {}, webClient: { CallbackURLs: ['https://example.com/callback'] } });
+      assert.deepEqual(result.loginOptions?.callbackURLs, ['https://example.com/callback']);
+    });
+    void it('contains logout urls if logoutURLs array is passed', () => {
+      const result = getAuthDefinition({ userPool: {}, webClient: { LogoutURLs: ['https://example.com/logout'] } });
+      assert.deepEqual(result.loginOptions?.logoutURLs, ['https://example.com/logout']);
+    });
+  });
   void describe('no login parameters are provided', () => {
     void it('loginWith contains `email: true`', () => {
       const result = getAuthDefinition({ userPool: {} });

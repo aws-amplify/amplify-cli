@@ -1,7 +1,12 @@
 import assert from 'node:assert';
 import { AuthDefinition } from '@aws-amplify/amplify-gen2-codegen';
 import { CloudFormationClient, DescribeStackResourcesCommand, StackResource } from '@aws-sdk/client-cloudformation';
-import { CognitoIdentityProviderClient, DescribeUserPoolCommand } from '@aws-sdk/client-cognito-identity-provider';
+import {
+  CognitoIdentityProviderClient,
+  DescribeUserPoolCommand,
+  ListIdentityProvidersCommand,
+  DescribeUserPoolClientCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 
 export interface AppAuthDefinitionFetcher {
@@ -43,6 +48,18 @@ export class AppAuthDefinitionFetcher {
     const stackResources = await this.getStackResources(backendEnvironmentStack);
     const resourcesByLogicalId = this.getResourcesByLogicalId(stackResources);
 
+    const { UserPoolClient: webClient } = await this.cognitoIdentityProviderClient.send(
+      new DescribeUserPoolClientCommand({
+        UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+        ClientId: resourcesByLogicalId['UserPoolClientWeb'].PhysicalResourceId,
+      }),
+    );
+    const { Providers: identityProviders } = await this.cognitoIdentityProviderClient.send(
+      new ListIdentityProvidersCommand({
+        UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+      }),
+    );
+
     const { UserPool: userPool } = await this.cognitoIdentityProviderClient.send(
       new DescribeUserPoolCommand({
         UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
@@ -50,6 +67,6 @@ export class AppAuthDefinitionFetcher {
     );
 
     assert(userPool, 'User pool not found');
-    return getAuthDefinition({ userPool });
+    return getAuthDefinition({ userPool, identityProviders, webClient });
   };
 }

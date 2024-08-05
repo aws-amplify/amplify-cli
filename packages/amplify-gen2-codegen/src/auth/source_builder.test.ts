@@ -4,6 +4,46 @@ import { Attribute, AuthDefinition, EmailOptions, renderAuthNode, UserPoolMfaCon
 import { printNodeArray } from '../test_utils/ts_node_printer';
 
 describe('render auth node', () => {
+  describe('external providers', () => {
+    describe('Google', () => {
+      it('renders the google provider', () => {
+        const rendered = renderAuthNode({ loginOptions: { googleLogin: true } });
+        const source = printNodeArray(rendered);
+        assert.match(source, /google:/);
+        assert.match(source, /clientId: secret\("GOOGLE_CLIENT_ID"\)/);
+        assert.match(source, /clientSecret: secret\("GOOGLE_CLIENT_SECRET"\)/);
+      });
+    });
+    describe('Facebook', () => {
+      it('renders the facebook provider', () => {
+        const rendered = renderAuthNode({ loginOptions: { facebookLogin: true } });
+        const source = printNodeArray(rendered);
+        assert.match(source, /facebook:/);
+        assert.match(source, /clientId: secret\("FACEBOOK_CLIENT_ID"\)/);
+        assert.match(source, /clientSecret: secret\("FACEBOOK_CLIENT_SECRET"\)/);
+      });
+    });
+    describe('Apple', () => {
+      it('renders the apple provider', () => {
+        const rendered = renderAuthNode({ loginOptions: { appleLogin: true } });
+        const source = printNodeArray(rendered);
+        assert.match(source, /signInWithApple:/);
+        assert.match(source, /clientId: secret\("SIWA_CLIENT_ID"\)/);
+        assert.match(source, /keyId: secret\("SIWA_KEY_ID"\)/);
+        assert.match(source, /privateKey: secret\("SIWA_PRIVATE_KEY"\)/);
+        assert.match(source, /teamId: secret\("SIWA_TEAM_ID"\)/);
+      });
+    });
+    describe('Amazon', () => {
+      it('renders the amazon provider', () => {
+        const rendered = renderAuthNode({ loginOptions: { amazonLogin: true } });
+        const source = printNodeArray(rendered);
+        assert.match(source, /loginWithAmazon:/);
+        assert.match(source, /clientId: secret\("LOGINWITHAMAZON_CLIENT_ID"\)/);
+        assert.match(source, /clientSecret: secret\("LOGINWITHAMAZON_CLIENT_SECRET"\)/);
+      });
+    });
+  });
   describe('mfa', () => {
     it('does not render the multifactor property if no multifactor options are specified', () => {
       const rendered = renderAuthNode({});

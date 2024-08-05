@@ -1,9 +1,19 @@
 import { AuthDefinition, EmailOptions, LoginOptions, PasswordPolicyPath } from '@aws-amplify/amplify-gen2-codegen';
 import { MultifactorOptions } from '@aws-amplify/amplify-gen2-codegen/src/auth/source_builder';
-import { PasswordPolicyType, UserPoolMfaType, UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
+import {
+  IdentityProviderType,
+  IdentityProviderTypeType,
+  PasswordPolicyType,
+  ProviderDescription,
+  UserPoolMfaType,
+  UserPoolType,
+  UserPoolClientType,
+} from '@aws-sdk/client-cognito-identity-provider';
 
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
+  identityProviders?: ProviderDescription[];
+  webClient?: UserPoolClientType;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -51,10 +61,29 @@ const getEmailConfig = (userPool: UserPoolType): EmailOptions => {
 /**
  * [getAuthDefinition] describes gen 1 auth resources in terms that can be used to generate Gen 2 code.
  */
-export const getAuthDefinition = ({ userPool }: AuthSynthesizerOptions): AuthDefinition => {
+export const getAuthDefinition = ({ userPool, identityProviders, webClient }: AuthSynthesizerOptions): AuthDefinition => {
   const loginWith: LoginOptions = { email: true };
+  const identityProviderSet = new Set(identityProviders?.map((idp) => idp.ProviderType));
+  if (identityProviderSet.has(IdentityProviderTypeType.Google)) {
+    loginWith.googleLogin = true;
+  }
+  if (identityProviderSet.has(IdentityProviderTypeType.SignInWithApple)) {
+    loginWith.appleLogin = true;
+  }
+  if (identityProviderSet.has(IdentityProviderTypeType.LoginWithAmazon)) {
+    loginWith.amazonLogin = true;
+  }
+  if (identityProviderSet.has(IdentityProviderTypeType.Facebook)) {
+    loginWith.facebookLogin = true;
+  }
   if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
     loginWith.emailOptions = getEmailConfig(userPool);
+  }
+  if (webClient?.CallbackURLs) {
+    loginWith.callbackURLs = webClient?.CallbackURLs;
+  }
+  if (webClient?.LogoutURLs) {
+    loginWith.logoutURLs = webClient?.LogoutURLs;
   }
   const userPoolOverrides = getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {});
   return {
