@@ -43,8 +43,7 @@ describe('render auth node', () => {
         assert.match(source, /clientSecret: secret\("LOGINWITHAMAZON_CLIENT_SECRET"\)/);
       });
     });
-
-describe('render auth node', () => {
+  });
   describe('lambda', () => {
     it('imports defineFunction when a lambda trigger is defined', () => {
       const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: "console.log('hello, world!')" } } });

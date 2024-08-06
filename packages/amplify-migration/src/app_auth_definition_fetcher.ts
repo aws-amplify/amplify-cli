@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { AuthDefinition } from '@aws-amplify/amplify-gen2-codegen';
 export type AuthTriggerConnectionsFetcher = () => Promise<Partial<Record<keyof LambdaConfigType, string>> | undefined>;
 import { AmplifyStackParser } from './amplify_stack_parser';
-import { BackendEnvironmentSelector } from './backend_environment_selector';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { CognitoIdentityProviderClient, DescribeUserPoolCommand, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 
@@ -14,7 +14,7 @@ export class AppAuthDefinitionFetcher {
   constructor(
     private cognitoIdentityProviderClient: CognitoIdentityProviderClient,
     private stackParser: AmplifyStackParser,
-    private backendEnvironmentResolver: BackendEnvironmentSelector,
+    private backendEnvironmentResolver: BackendEnvironmentResolver,
     private getAuthTriggerConnections: AuthTriggerConnectionsFetcher,
   ) {}
 

@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'node:fs/promises';
 import { patchNpmPackageJson } from './npm_package/renderer';
-import { RenderPipeline, Renderer, Result } from './render_pipeline';
+import { RenderPipeline, Renderer } from './render_pipeline';
 import { JsonRenderer } from './renderers/package_json';
 import { TypescriptNodeArrayRenderer } from './renderers/typescript_block_node';
 import { BackendSynthesizer } from './backend/synthesizer';
@@ -110,7 +110,6 @@ export const createGen2Renderer = ({
 };
 export {
   Renderer,
-  Result,
   SendingAccount,
   UserPoolMfaConfig,
   StorageRenderParameters,

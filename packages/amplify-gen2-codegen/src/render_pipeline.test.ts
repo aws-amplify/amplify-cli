@@ -42,7 +42,7 @@ describe('render pipeline', () => {
   describe('successful render', () => {
     it('calls each renderer exactly once in the pipeline', async () => {
       const createSuccessfulRenderer = () => ({
-        render: async () => Promise.resolve({}),
+        render: async () => Promise.resolve(),
       });
 
       const renderers = new Array(10).fill(null).map(createSuccessfulRenderer);

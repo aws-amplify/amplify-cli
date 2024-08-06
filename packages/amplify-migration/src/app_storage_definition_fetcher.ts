@@ -6,14 +6,14 @@ import { BackendDownloader } from './backend_downloader.js';
 import { fileOrDirectoryExists } from './directory_exists.js';
 import { StorageRenderParameters } from '@aws-amplify/amplify-gen2-codegen';
 import { GetBucketNotificationConfigurationCommand, S3Client } from '@aws-sdk/client-s3';
-import { BackendEnvironmentSelector } from './backend_environment_selector';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
 }
 export class AppStorageDefinitionFetcher {
   constructor(
-    private backendEnvironmentResolver: BackendEnvironmentSelector,
+    private backendEnvironmentResolver: BackendEnvironmentResolver,
     private ccbFetcher: BackendDownloader,
     private s3Client: S3Client,
   ) {}
