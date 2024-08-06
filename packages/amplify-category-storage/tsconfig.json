@@ -5,6 +5,7 @@
     "rootDir": "src",
     "allowJs": false
   },
+  "include": ["src/**/*"],
   "exclude": ["coverage", "lib", "resources"],
   "references": [
     {

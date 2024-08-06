@@ -1,7 +1,14 @@
-import { AuthDefinition, EmailOptions, LoginOptions, PasswordPolicyPath } from '@aws-amplify/amplify-gen2-codegen';
-import { MultifactorOptions } from '@aws-amplify/amplify-gen2-codegen/src/auth/source_builder';
 import {
-  IdentityProviderType,
+  Lambda,
+  AuthDefinition,
+  EmailOptions,
+  LoginOptions,
+  PasswordPolicyPath,
+  AuthTriggerEvents,
+  MultifactorOptions,
+} from '@aws-amplify/amplify-gen2-codegen';
+import {
+  LambdaConfigType,
   IdentityProviderTypeType,
   PasswordPolicyType,
   ProviderDescription,
@@ -10,10 +17,18 @@ import {
   UserPoolClientType,
 } from '@aws-sdk/client-cognito-identity-provider';
 
+export interface AuthTriggerConnection {
+  triggerType: keyof LambdaConfigType;
+  lambdaFunctionName: string;
+}
+
+export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigType, string>>;
+
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
   identityProviders?: ProviderDescription[];
   webClient?: UserPoolClientType;
+  authTriggerConnections?: AuthTriggerConnectionSourceMap;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -23,8 +38,11 @@ export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
   RequireNumbers: true,
   TemporaryPasswordValidityDays: 3,
 };
-const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<Record<PasswordPolicyPath, any>> => {
-  const policyOverrides: Partial<Record<PasswordPolicyPath, any>> = {};
+
+export type PasswordPolicyOverrides = Record<PasswordPolicyPath, string | boolean | number>;
+
+const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<PasswordPolicyOverrides> => {
+  const policyOverrides: Partial<PasswordPolicyOverrides> = {};
   const passwordOverridePath = (policyKey: keyof PasswordPolicyType): PasswordPolicyPath => `Policies.PasswordPolicy.${policyKey}`;
   for (const key of Object.keys(passwordPolicy)) {
     const typedKey: keyof PasswordPolicyType = key as keyof PasswordPolicyType;
@@ -61,8 +79,56 @@ const getEmailConfig = (userPool: UserPoolType): EmailOptions => {
 /**
  * [getAuthDefinition] describes gen 1 auth resources in terms that can be used to generate Gen 2 code.
  */
-export const getAuthDefinition = ({ userPool, identityProviders, webClient }: AuthSynthesizerOptions): AuthDefinition => {
+const mappedLambdaConfigKey = (key: keyof LambdaConfigType): AuthTriggerEvents => {
+  switch (key) {
+    case 'PreSignUp':
+      return 'preSignUp';
+    case 'CustomMessage':
+      return 'customMessage';
+    case 'UserMigration':
+      return 'userMigration';
+    case 'PostConfirmation':
+      return 'postConfirmation';
+    case 'PreAuthentication':
+      return 'preAuthentication';
+    case 'PostAuthentication':
+      return 'postAuthentication';
+    case 'PreTokenGeneration':
+      return 'preTokenGeneration';
+    case 'DefineAuthChallenge':
+      return 'defineAuthChallenge';
+    case 'CreateAuthChallenge':
+      return 'createAuthChallenge';
+    case 'VerifyAuthChallengeResponse':
+      return 'verifyAuthChallengeResponse';
+    default:
+      throw new Error('Could not map the provided key');
+  }
+};
+
+const getAuthTriggers = (
+  lambdaConfig: LambdaConfigType,
+  triggerSourceFiles: AuthTriggerConnectionSourceMap,
+): Partial<Record<AuthTriggerEvents, Lambda>> => {
+  return Object.keys(lambdaConfig).reduce((prev, key) => {
+    const typedKey = key as keyof LambdaConfigType;
+    prev[mappedLambdaConfigKey(typedKey)] = { source: triggerSourceFiles[typedKey] ?? '' };
+    return prev;
+  }, {} as Partial<Record<AuthTriggerEvents, Lambda>>);
+};
+/**
+ * [getAuthDefinition] describes gen 1 auth resources in terms that can be used to generate Gen 2 code.
+ */
+export const getAuthDefinition = ({
+  userPool,
+  identityProviders,
+  webClient,
+  authTriggerConnections,
+}: AuthSynthesizerOptions): AuthDefinition => {
   const loginWith: LoginOptions = { email: true };
+  if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
+    loginWith.emailOptions = getEmailConfig(userPool);
+  }
   const identityProviderSet = new Set(identityProviders?.map((idp) => idp.ProviderType));
   if (identityProviderSet.has(IdentityProviderTypeType.Google)) {
     loginWith.googleLogin = true;
@@ -85,10 +151,12 @@ export const getAuthDefinition = ({ userPool, identityProviders, webClient }: Au
   if (webClient?.LogoutURLs) {
     loginWith.logoutURLs = webClient?.LogoutURLs;
   }
+
   const userPoolOverrides = getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {});
   return {
     loginOptions: loginWith,
     mfa: getMfaConfiguration(userPool.MfaConfiguration),
     userPoolOverrides,
+    lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
   };
 };

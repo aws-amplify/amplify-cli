@@ -1,12 +1,14 @@
 import assert from 'node:assert';
 import { stdin as input, stdout as output } from 'node:process';
 import readline from 'node:readline/promises';
-import { AmplifyClient, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
+import { AmplifyClient, BackendEnvironment, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
 
-export class BackendEnvironmentSelector {
-  constructor(private amplifyClient: AmplifyClient) {}
-  selectBackendEnvironment = async (appId: string) => {
-    const { backendEnvironments } = await this.amplifyClient.send(new ListBackendEnvironmentsCommand({ appId }));
+export class BackendEnvironmentResolver {
+  constructor(private appId: string, private amplifyClient: AmplifyClient) {}
+  private selectedEnvironment: BackendEnvironment | undefined;
+  selectBackendEnvironment = async (): Promise<BackendEnvironment | undefined> => {
+    if (this.selectedEnvironment) return this.selectedEnvironment;
+    const { backendEnvironments } = await this.amplifyClient.send(new ListBackendEnvironmentsCommand({ appId: this.appId }));
     assert(backendEnvironments, 'No backend environments found');
     const selectedStack = '';
     if (backendEnvironments?.length === 1) {
@@ -24,6 +26,7 @@ export class BackendEnvironmentSelector {
         const matchingEnvironment = backendEnvironments.find((be) => be.environmentName?.toLowerCase() === answer.trim().toLowerCase());
         if (matchingEnvironment) {
           rl.close();
+          this.selectedEnvironment = matchingEnvironment;
           return matchingEnvironment;
         }
       }

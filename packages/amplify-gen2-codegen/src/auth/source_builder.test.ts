@@ -1,6 +1,6 @@
 import { StandardAttributes } from 'aws-cdk-lib/aws-cognito';
 import assert from 'node:assert';
-import { Attribute, AuthDefinition, EmailOptions, renderAuthNode, UserPoolMfaConfig } from './source_builder';
+import { Attribute, AuthDefinition, AuthTriggerEvents, EmailOptions, renderAuthNode, UserPoolMfaConfig } from './source_builder';
 import { printNodeArray } from '../test_utils/ts_node_printer';
 
 describe('render auth node', () => {
@@ -43,6 +43,36 @@ describe('render auth node', () => {
         assert.match(source, /clientSecret: secret\("LOGINWITHAMAZON_CLIENT_SECRET"\)/);
       });
     });
+
+describe('render auth node', () => {
+  describe('lambda', () => {
+    it('imports defineFunction when a lambda trigger is defined', () => {
+      const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: "console.log('hello, world!')" } } });
+      const source = printNodeArray(rendered);
+      assert.match(source, /import\s?\{\s?defineAuth, defineFunction\s?\}\s?from\s?"\@aws-amplify\/backend"/);
+    });
+    it('adds a triggers object when a lambda trigger is defined', () => {
+      const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: "console.log('hello, world!')" } } });
+      const source = printNodeArray(rendered);
+      assert.match(source, /triggers: \{/);
+    });
+    const testCases: Record<AuthTriggerEvents, boolean> = {
+      createAuthChallenge: true,
+      customMessage: true,
+      defineAuthChallenge: true,
+      postAuthentication: true,
+      postConfirmation: true,
+      preAuthentication: true,
+      preSignUp: true,
+      preTokenGeneration: true,
+      userMigration: true,
+      verifyAuthChallengeResponse: true,
+    };
+    for (const testCase of Object.keys(testCases)) {
+      const rendered = renderAuthNode({ lambdaTriggers: { [testCase]: { source: "console.log('hello, world!')" } } });
+      const source = printNodeArray(rendered);
+      assert.match(source, new RegExp(`triggers: \\{\\s+\\/\\*[\\S\\s]*?\\*\\/\\s+${testCase}: defineFunction\\(\\{`));
+    }
   });
   describe('mfa', () => {
     it('does not render the multifactor property if no multifactor options are specified', () => {
@@ -54,14 +84,14 @@ describe('render auth node', () => {
       it('renders false if totp is not specified', () => {
         const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL' } });
         const source = printNodeArray(rendered);
-        assert.match(source, new RegExp(`multifactor:\\s+\\{.*?totp:\\sfalse`));
+        assert.match(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*totp:\\sfalse`));
       });
       const totpStates: boolean[] = [true, false];
       for (const state of totpStates) {
         it(`correctly renders totp state of ${state}`, async () => {
           const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL', totp: state } });
           const source = printNodeArray(rendered);
-          assert.match(source, new RegExp(`multifactor:\\s+\\{.*?totp:\\s${state}`));
+          assert.match(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*totp:\\s${state}`));
         });
       }
     });
@@ -134,7 +164,7 @@ describe('render auth node', () => {
       };
       const node = renderAuthNode(authDefinition);
       const source = printNodeArray(node);
-      assert.match(source, /defineAuth\(\{.*?groups:\s\["manager"\]/);
+      assert.match(source, /defineAuth\(\{[\s\S]*groups:\s\["manager"\]/);
     });
   });
   describe('loginWith', () => {
@@ -175,7 +205,7 @@ describe('render auth node', () => {
           assert.match(
             source,
             new RegExp(
-              `defineAuth\\(\\{\\s?loginWith:\\s?\\{\\s?email:\\s?\\{.*?${gen2DefinitionProperty}: ${searchPattern} \\}\\s?\\}\\s?\\}\\)`,
+              `defineAuth\\(\\{\\s+loginWith:\\s+\\{\\s+email:\\s+\\{\\s+${gen2DefinitionProperty}: ${searchPattern}\\s+\\}\\s+\\}\\s+\\}\\)`,
             ),
           );
         });
@@ -188,7 +218,7 @@ describe('render auth node', () => {
         };
         const node = renderAuthNode(authDefinition);
         const source = printNodeArray(node);
-        assert.match(source, /defineAuth\(\{\s?loginWith:\s?\{\s?email:\s?true\s?\}\s?\}\)/);
+        assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+email:\s?true\s+\}\s+\}\)/);
       });
     });
   });

@@ -1,9 +1,24 @@
 import assert from 'node:assert';
-import { AccessPatterns, Permission, renderStorage } from './source_builder';
+import { AccessPatterns, Permission, renderStorage, StorageTriggerEvent } from './source_builder';
 import { printNodeArray } from '../test_utils/ts_node_printer';
 import { getImportRegex } from '../test_utils/import_regex';
+import { Lambda } from '../function/lambda';
 
 describe('Storage source generation', () => {
+  describe('storage triggers', () => {
+    const triggers: Record<StorageTriggerEvent, Lambda> = {
+      onDelete: { source: 'onDelete' },
+      onUpload: { source: 'onUpload' },
+    };
+    for (const [key, value] of Object.entries(triggers)) {
+      it(`${key} trigger is rendered`, () => {
+        const rendered = renderStorage({ triggers });
+        const output = printNodeArray(rendered);
+        assert.match(output, new RegExp(`${key}: defineFunction\\(\\{ entry:\\s"${value.source}"`));
+        assert.match(output, /triggers: /);
+      });
+    }
+  });
   describe('imports', () => {
     it('renders the defineStorage import', () => {
       const rendered = renderStorage();

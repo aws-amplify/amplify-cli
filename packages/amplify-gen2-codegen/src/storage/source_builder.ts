@@ -1,12 +1,16 @@
 import ts from 'typescript';
 import { getAccessPatterns } from './access';
+import { renderResourceTsFile } from '../resource/resource';
+import { createTriggersProperty, Lambda } from '../function/lambda';
 const factory = ts.factory;
+
 export type S3TriggerDefinition = Record<string, never>;
 export type Permission = 'read' | 'write' | 'create' | 'delete';
 export type GroupPermissions<G extends readonly string[]> = {
   [Key in G[number]]: Permission[];
 };
 
+export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 export type AccessPatterns = {
   auth?: Permission[];
   guest?: Permission[];
@@ -14,27 +18,13 @@ export type AccessPatterns = {
 };
 
 export interface StorageRenderParameters {
+  triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
   accessPatterns?: AccessPatterns;
   storageIdentifier?: string;
   lambdas?: S3TriggerDefinition[];
   bucketEncryptionAlgorithm?: string;
 }
-const getImportStatements = (importName: ts.Identifier, importFrom: string) => {
-  return factory.createImportDeclaration(
-    undefined,
-    factory.createImportClause(false, undefined, factory.createNamedImports([factory.createImportSpecifier(false, undefined, importName)])),
-    factory.createStringLiteral(importFrom),
-  );
-};
-const getExportStatement = (variable: ts.VariableDeclaration) => {
-  return factory.createVariableStatement(
-    [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-    factory.createVariableDeclarationList([variable], ts.NodeFlags.Const),
-  );
-};
 export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
-  const defineStorage = factory.createIdentifier('defineStorage');
-  const importStatement = getImportStatements(defineStorage, '@aws-amplify/backend');
   const propertyAssignments: ts.PropertyAssignment[] = [];
 
   if (storageParams.storageIdentifier) {
@@ -58,13 +48,15 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
       ),
     );
   }
+  if (storageParams.triggers) {
+    propertyAssignments.push(createTriggersProperty(storageParams.triggers));
+  }
   const storageArgs = factory.createObjectLiteralExpression(propertyAssignments);
-  const storageVariable = factory.createVariableDeclaration(
-    'storage',
-    undefined,
-    undefined,
-    factory.createCallExpression(defineStorage, undefined, [storageArgs]),
-  );
-  const exportStatement = getExportStatement(storageVariable);
-  return factory.createNodeArray([importStatement, ...groupsComment, exportStatement]);
+  return renderResourceTsFile({
+    importedPackageName: '@aws-amplify/backend',
+    backendFunctionConstruct: 'defineStorage',
+    exportedVariableName: factory.createIdentifier('storage'),
+    functionCallParameter: storageArgs,
+    postImportStatements: groupsComment,
+  });
 };

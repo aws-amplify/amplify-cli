@@ -4,39 +4,39 @@ import assert from 'node:assert';
 describe('render pipeline', () => {
   describe('render errors', () => {
     it('returns an error if any renderer in the pipeline returns an error', async () => {
-      const renderErrorMessage = 'render error';
+      const message = 'my custom error';
+      const error = new Error(message);
       const errorRenderer: Renderer = {
-        render: async () => Promise.resolve({ error: renderErrorMessage }),
+        render: async () => Promise.reject(error),
       };
       const renderers = [errorRenderer];
       const pipeline = new RenderPipeline(renderers);
-      const result = await pipeline.render();
-      assert.equal(result.error, renderErrorMessage);
+      await assert.rejects(pipeline.render, { message });
     });
     it('the entire pipeline fails as soon as a renderer fails', async () => {
-      const renderErrorMessage = 'render error';
+      const message = 'render error';
+      const error = new Error(message);
       const mock = jest.fn();
       const successfulRenderer: Renderer = {
         render: mock,
       };
       const errorRenderer: Renderer = {
-        render: async () => Promise.resolve({ error: renderErrorMessage }),
+        render: async () => Promise.reject(error),
       };
       const renderers = [errorRenderer, successfulRenderer];
       const pipeline = new RenderPipeline(renderers);
-      const result = await pipeline.render();
-      assert.equal(result.error, renderErrorMessage);
+      await assert.rejects(pipeline.render, { message });
       assert.equal(mock.mock.calls.length, 0);
     });
     it('the render pipeline handles errors uncaught by constituent renderers', async () => {
-      const renderError = new Error('render error');
+      const message = 'render error';
+      const error = new Error(message);
       const errorRenderer: Renderer = {
-        render: async () => Promise.reject(renderError),
+        render: async () => Promise.reject(error),
       };
       const renderers = [errorRenderer];
       const pipeline = new RenderPipeline(renderers);
-      const result = await pipeline.render();
-      assert.equal(result.error, renderError);
+      await assert.rejects(pipeline.render, { message });
     });
   });
   describe('successful render', () => {
@@ -51,8 +51,7 @@ describe('render pipeline', () => {
       });
 
       const pipeline = new RenderPipeline(renderers);
-      const result = await pipeline.render();
-      assert.equal(result.error, undefined);
+      await assert.doesNotReject(pipeline.render);
       for (const spy of spies) {
         assert.equal(spy.mock.calls.length, 1);
       }

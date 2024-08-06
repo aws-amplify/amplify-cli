@@ -73,7 +73,7 @@ describe('BackendRenderer', () => {
           },
         });
         const output = printNodeArray(rendered);
-        assert(output.includes('storage: storage'));
+        assert(output.includes('storage'));
       });
     });
     describe('auth', () => {
@@ -81,7 +81,7 @@ describe('BackendRenderer', () => {
         const renderer = new BackendSynthesizer();
         const rendered = renderer.render({});
         const output = printNodeArray(rendered);
-        assert(!output.includes('storage: storage'));
+        assert(!output.includes('storage'));
       });
       it('adds property assignment when defined', () => {
         const renderer = new BackendSynthesizer();
@@ -91,7 +91,7 @@ describe('BackendRenderer', () => {
           },
         });
         const output = printNodeArray(rendered);
-        assert(output.includes('auth: auth'));
+        assert(output.includes('auth'));
       });
     });
   });
