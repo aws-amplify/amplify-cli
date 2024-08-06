@@ -5,7 +5,6 @@ import { Gen2RenderingOptions, createGen2Renderer } from '@aws-amplify/amplify-g
 
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
-import { resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { S3Client } from '@aws-sdk/client-s3';
 import { BackendDownloader } from './backend_downloader.js';
@@ -90,12 +89,17 @@ const getAuthTriggersConnections = async (context: $TSContext): Promise<Partial<
   return {};
 };
 
+const resolveAppId = (): string => {
+  const meta = stateManager.getMeta();
+  return meta?.providers?.awscloudformation?.AmplifyAppId;
+};
+
 export async function executeAmplifyCommand(context: $TSContext) {
   const amplifyClient = new AmplifyClient();
   const s3Client = new S3Client();
   const cloudFormationClient = new CloudFormationClient();
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
-  const appId = resolveAppId(context);
+  const appId = resolveAppId();
 
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
