@@ -54,21 +54,22 @@ export class AmplifyStackParser {
   getAmplifyStacks = async (rootStackName: string): Promise<AmplifyStacks> => {
     const rootStackResponse = await this.describeStack(rootStackName);
     const stackResources = await this.getStackResources(rootStackName);
-    const stackIds = stackResources.reduce((prev, curr) => {
-      if (curr.StackName?.startsWith('api')) {
-        assert(curr.StackId);
-        prev.dataStack = curr.StackId;
-      }
-      if (curr.StackName?.startsWith('auth')) {
-        assert(curr.StackId);
-        prev.authStack = curr.StackId;
-      }
-      if (curr.StackName?.startsWith('storage')) {
-        assert(curr.StackId);
-        prev.storageStack = curr.StackId;
-      }
-      return prev;
-    }, {} as Record<AmplifyStackTypes, string>);
+    const stackIds = stackResources
+      .filter((stack) => stack.ResourceType === 'AWS::CloudFormation::Stack')
+      .reduce((prev, curr) => {
+        if (curr.PhysicalResourceId) {
+          if (curr.LogicalResourceId?.startsWith('api')) {
+            prev.dataStack = curr.PhysicalResourceId;
+          }
+          if (curr.LogicalResourceId?.startsWith('auth')) {
+            prev.authStack = curr.PhysicalResourceId;
+          }
+          if (curr.LogicalResourceId?.startsWith('storage')) {
+            prev.storageStack = curr.PhysicalResourceId;
+          }
+        }
+        return prev;
+      }, {} as Record<AmplifyStackTypes, string>);
 
     const [dataStackResponse, authStackResponse, storageStackResponse] = await Promise.all([
       this.describeStack(stackIds.dataStack),
@@ -77,10 +78,10 @@ export class AmplifyStackParser {
     ]);
 
     return {
-      rootStack: rootStackResponse?.Stacks?.[0],
-      dataStack: dataStackResponse?.Stacks?.[0],
-      authStack: authStackResponse?.Stacks?.[0],
-      storageStack: storageStackResponse?.Stacks?.[0],
+      rootStack: rootStackResponse?.Stacks?.find(({ StackId }) => StackId === stackIds.rootStack),
+      dataStack: dataStackResponse?.Stacks?.find(({ StackId }) => StackId === stackIds.dataStack),
+      authStack: authStackResponse?.Stacks?.find(({ StackId }) => StackId === stackIds.authStack),
+      storageStack: storageStackResponse?.Stacks?.find(({ StackId }) => StackId === stackIds.storageStack),
     };
   };
 }
