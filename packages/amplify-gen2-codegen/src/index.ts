@@ -4,7 +4,7 @@ import { patchNpmPackageJson } from './npm_package/renderer';
 import { RenderPipeline, Renderer } from './render_pipeline';
 import { JsonRenderer } from './renderers/package_json';
 import { TypescriptNodeArrayRenderer } from './renderers/typescript_block_node';
-import { BackendSynthesizer } from './backend/synthesizer';
+import { BackendRenderParameters, BackendSynthesizer } from './backend/synthesizer';
 import { EnsureDirectory } from './renderers/ensure_directory';
 import { Lambda } from './function/lambda';
 import {
@@ -62,21 +62,9 @@ export const createGen2Renderer = ({
     (content) => fileWriter(content, path.join(outputDir, 'package.json')),
   );
   const backendSynthesizer = new BackendSynthesizer();
-  const backendRenderer = new TypescriptNodeArrayRenderer(
-    async () =>
-      backendSynthesizer.render({
-        storage: {
-          importFrom: './storage/resource',
-        },
-        auth: {
-          importFrom: './auth/resource',
-          userPoolOverrides: auth?.userPoolOverrides,
-        },
-      }),
-    (content) => fileWriter(content, path.join(outputDir, 'amplify', 'backend.ts')),
-  );
+  const backendRenderOptions: BackendRenderParameters = {};
 
-  const renderers = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer, backendRenderer];
+  const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer];
   if (auth) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
@@ -85,6 +73,10 @@ export const createGen2Renderer = ({
         (content) => fileWriter(content, path.join(outputDir, 'amplify', 'auth', 'resource.ts')),
       ),
     );
+    backendRenderOptions.auth = {
+      importFrom: './auth/resource',
+      userPoolOverrides: auth?.userPoolOverrides,
+    };
   }
 
   if (data) {
@@ -95,6 +87,9 @@ export const createGen2Renderer = ({
         (content) => fileWriter(content, path.join(outputDir, 'amplify', 'data', 'resource.ts')),
       ),
     );
+    backendRenderOptions.data = {
+      importFrom: './data/resource',
+    };
   }
 
   if (storage) {
@@ -105,7 +100,17 @@ export const createGen2Renderer = ({
         (content) => fileWriter(content, path.join(outputDir, 'amplify', 'storage', 'resource.ts')),
       ),
     );
+    backendRenderOptions.storage = {
+      importFrom: './storage/resource',
+    };
   }
+
+  const backendRenderer = new TypescriptNodeArrayRenderer(
+    async () => backendSynthesizer.render(backendRenderOptions),
+    (content) => fileWriter(content, path.join(outputDir, 'amplify', 'backend.ts')),
+  );
+
+  renderers.push(backendRenderer);
 
   return new RenderPipeline(renderers);
 };

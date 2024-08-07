@@ -7,6 +7,7 @@ export type ResourceTsParameters = {
   functionCallParameter: ts.ObjectLiteralExpression;
   exportedVariableName: ts.Identifier;
   postImportStatements?: ts.Node[];
+  postExportStatements?: ts.Node[];
 };
 export function renderResourceTsFile({
   additionalImportedBackendIdentifiers = [],
@@ -15,6 +16,7 @@ export function renderResourceTsFile({
   functionCallParameter,
   exportedVariableName,
   postImportStatements,
+  postExportStatements,
 }: ResourceTsParameters): ts.NodeArray<ts.Node> {
   const backendFunctionIdentifier = factory.createIdentifier(backendFunctionConstruct);
   const importSpecifiers = [factory.createImportSpecifier(false, undefined, backendFunctionIdentifier)].concat(
@@ -34,5 +36,5 @@ export function renderResourceTsFile({
     [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     factory.createVariableDeclarationList([exportedVariable], ts.NodeFlags.Const),
   );
-  return factory.createNodeArray([importStatement, ...(postImportStatements ?? []), exportStatement]);
+  return factory.createNodeArray([importStatement, ...(postImportStatements ?? []), exportStatement, ...(postExportStatements ?? [])]);
 }

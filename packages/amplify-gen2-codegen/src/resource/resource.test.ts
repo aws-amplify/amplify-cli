@@ -39,7 +39,22 @@ describe('Resource.ts file generation', () => {
     it('exports the variable', () => {
       assert.match(render(), new RegExp(`export const ${exportedVariableName} =`));
     });
-    it('adds additional statements', () => {
+    it('adds additional statements the define resource function call', () => {
+      assert.match(
+        render({
+          postExportStatements: [
+            factory.createExpressionStatement(
+              factory.createEquality(
+                factory.createAdd(factory.createNumericLiteral(1), factory.createNumericLiteral(1)),
+                factory.createNumericLiteral(2),
+              ),
+            ),
+          ],
+        }),
+        /1 \+ 1 == 2/,
+      );
+    });
+    it('adds additional statements after import', () => {
       assert.match(
         render({
           postImportStatements: [
