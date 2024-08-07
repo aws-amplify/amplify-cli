@@ -10,6 +10,8 @@ export type DataDefinition = {
 const importedAmplifyDynamoDBTableMapKeyName = 'importedAmplifyDynamoDBTableMap';
 const importedModelsKey = 'importedModels';
 
+export const schemaPlaceholderComment = 'TODO: Add your existing graphql schema here';
+
 export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArray<ts.Node> => {
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
 
@@ -34,13 +36,10 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
         factory.createObjectLiteralExpression(tableMappingProperties),
       ),
     );
-    dataRenderProperties.push(
-      factory.createPropertyAssignment(
-        factory.createIdentifier('schema'),
-        factory.createStringLiteral('"""\nTODO: Add your existing graphql schema here\n"""'),
-      ),
-    );
   }
+  dataRenderProperties.push(
+    factory.createPropertyAssignment(factory.createIdentifier('schema'), factory.createStringLiteral(schemaPlaceholderComment)),
+  );
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier('data'),
     functionCallParameter: factory.createObjectLiteralExpression(dataRenderProperties, true),

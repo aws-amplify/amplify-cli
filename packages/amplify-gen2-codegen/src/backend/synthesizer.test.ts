@@ -57,6 +57,26 @@ describe('BackendRenderer', () => {
       });
     });
   });
+  describe('imports', () => {
+    for (const resource of ['storage', 'data', 'auth']) {
+      describe(resource, () => {
+        const importFrom = './my-test/path';
+        const importRegex = new RegExp(`import \\{ ${resource} \\} from "${importFrom}"`);
+        it(`does not import ${resource} if no ${resource} key is passed`, () => {
+          const renderer = new BackendSynthesizer();
+          const rendered = renderer.render({});
+          const source = printNodeArray(rendered);
+          assert.doesNotMatch(source, importRegex);
+        });
+        it(`imports ${resource}`, () => {
+          const renderer = new BackendSynthesizer();
+          const rendered = renderer.render({ [resource]: { importFrom } });
+          const source = printNodeArray(rendered);
+          assert.match(source, importRegex);
+        });
+      });
+    }
+  });
   describe('defineBackend invocation', () => {
     describe('storage', () => {
       it('does not define storage property if it is undefined', () => {
