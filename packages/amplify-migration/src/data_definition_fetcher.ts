@@ -11,14 +11,16 @@ export class DataDefinitionFetcher {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     assert(backendEnvironment?.stackName);
     const amplifyStacks = await this.amplifyStackClient.getAmplifyStacks(backendEnvironment?.stackName);
-    const tableMappingText = amplifyStacks.dataStack?.Outputs?.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
-    assert(tableMappingText, 'Amplify Data table mapping not found.');
-    try {
-      return {
-        tableMapping: JSON.parse(tableMappingText),
-      };
-    } catch (e) {
-      throw new Error('Could not parse the Amplify Data table mapping');
+    if (amplifyStacks.dataStack) {
+      const tableMappingText = amplifyStacks.dataStack?.Outputs?.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
+      assert(tableMappingText, 'Amplify Data table mapping not found.');
+      try {
+        return {
+          tableMapping: JSON.parse(tableMappingText),
+        };
+      } catch (e) {
+        throw new Error('Could not parse the Amplify Data table mapping');
+      }
     }
   };
 }
