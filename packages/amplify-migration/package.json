@@ -1,5 +1,5 @@
 {
-  "name": "@aws-amplify/amplify-migration",
+  "name": "@aws-amplify/amplify-gen1-to-gen2-migration",
   "version": "0.0.1",
   "type": "commonjs",
   "main": "lib/index.js",
@@ -8,13 +8,40 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "exit 0",
+    "test": "jest --logHeapUsage",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/templates/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
   },
   "author": "",
   "license": "ISC",
   "description": "",
+  "devDependencies": {
+    "jest": "^29.5.0"
+  },
   "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.3.9",
     "@aws-amplify/amplify-gen1-codegen-auth-adapter": "^0.0.1",
     "@aws-amplify/amplify-gen1-codegen-storage-adapter": "^0.0.1",
     "@aws-amplify/amplify-gen2-codegen": "^0.0.1",

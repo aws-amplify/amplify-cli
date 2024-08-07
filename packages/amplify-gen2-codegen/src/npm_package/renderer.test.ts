@@ -36,12 +36,12 @@ describe('package.json renderer', () => {
     it('preserves existing dependencies', () => {
       const examplePackageJson = createPackageJson();
       const packageJson = patchNpmPackageJson(examplePackageJson, {});
-      assert.equal(packageJson.dependencies['existing-dependency'], '^0.0.1');
+      assert.equal(packageJson.dependencies?.['existing-dependency'], '^0.0.1');
     });
     it('preserves existing dev dependencies', () => {
       const examplePackageJson = createPackageJson();
       const packageJson = patchNpmPackageJson(examplePackageJson, {});
-      assert.equal(packageJson.devDependencies['existing-dev-dependency'], '^0.0.2');
+      assert.equal(packageJson.devDependencies?.['existing-dev-dependency'], '^0.0.2');
     });
     describe('when a version is defined', () => {
       for (const [dependency, isDevDependency] of Object.entries(installedDependencies)) {
@@ -53,10 +53,10 @@ describe('package.json renderer', () => {
           });
           if (isDevDependency) {
             const typedDependencyKey = dependency as keyof AmplifyDevDependencies;
-            assert.equal(packageJson.devDependencies[typedDependencyKey], version);
+            assert.equal(packageJson.devDependencies?.[typedDependencyKey], version);
           } else {
             const typedDependencyKey = dependency as keyof AmplifyDependencies;
-            assert.equal(packageJson.dependencies[typedDependencyKey], version);
+            assert.equal(packageJson.dependencies?.[typedDependencyKey], version);
           }
         });
       }
@@ -68,10 +68,10 @@ describe('package.json renderer', () => {
           const packageJson = patchNpmPackageJson(examplePackageJson, {});
           if (isDevDependency) {
             const typedDependencyKey = dependency as keyof AmplifyDevDependencies;
-            assert.equal(packageJson.devDependencies[typedDependencyKey], '*');
+            assert.equal(packageJson.devDependencies?.[typedDependencyKey], '*');
           } else {
             const typedDependencyKey = dependency as keyof AmplifyDependencies;
-            assert.equal(packageJson.dependencies[typedDependencyKey], '*');
+            assert.equal(packageJson.dependencies?.[typedDependencyKey], '*');
           }
         });
       }

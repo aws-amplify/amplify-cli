@@ -1,13 +1,14 @@
-export interface Logger {
+export interface AppContextLogger {
   info(...logs: string[]): void;
   warn(...logs: string[]): void;
   error(...logs: string[]): void;
   log(...logs: string[]): void;
 }
 
-export class Logger {
-  info = (...logs: string[]) => console.info(...logs);
-  warn = (...logs: string[]) => console.warn(...logs);
-  log = (...logs: string[]) => console.log(...logs);
-  error = (...logs: string[]) => console.error(...logs);
+export class AppContextLogger {
+  constructor(private appId: string) {}
+  info = (...logs: string[]) => console.info(...logs, `App ID: ${this.appId}`);
+  warn = (...logs: string[]) => console.warn(...logs, `App ID: ${this.appId}`);
+  log = (...logs: string[]) => console.log(...logs, `App ID: ${this.appId}`);
+  error = (...logs: string[]) => console.error(...logs, `App ID: ${this.appId}`);
 }

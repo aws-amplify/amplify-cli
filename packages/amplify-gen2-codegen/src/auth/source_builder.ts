@@ -1,5 +1,8 @@
 import ts, { PropertyAssignment } from 'typescript';
+import assert from 'node:assert';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
+import { renderResourceTsFile } from '../resource/resource';
+import { createTriggersProperty, Lambda } from '../function/lambda';
 
 export type StandardAttribute = {
   readonly mutable?: boolean;
@@ -31,7 +34,7 @@ export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
 
 export type PasswordPolicyPath = `Policies.PasswordPolicy.${keyof PasswordPolicyType}`;
 
-export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, any>>;
+export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, string | number | boolean>>;
 
 export type EmailOptions = {
   emailVerificationBody: string;
@@ -65,6 +68,24 @@ export interface AuthDefinition {
   userAttributes?: StandardAttributes;
   userPoolOverrides?: UserPoolOverrides;
 }
+export type AuthTriggerEvents =
+  | 'createAuthChallenge'
+  | 'customMessage'
+  | 'defineAuthChallenge'
+  | 'postAuthentication'
+  | 'postConfirmation'
+  | 'preAuthentication'
+  | 'preSignUp'
+  | 'preTokenGeneration'
+  | 'userMigration'
+  | 'verifyAuthChallengeResponse';
+
+export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
+
+export interface AuthDefinition {
+  loginOptions?: LoginOptions;
+  lambdaTriggers?: Partial<AuthLambdaTriggers>;
+}
 const factory = ts.factory;
 
 const secretIdentifier = factory.createIdentifier('secret');
@@ -85,6 +106,9 @@ const appleSiwaTeamID = 'SIWA_TEAM_ID';
 function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
   const logInWith = factory.createIdentifier('loginWith');
   const assignments: ts.ObjectLiteralElementLike[] = [];
+  if (logInDefinition.email === true) {
+    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
+  }
   if (logInDefinition.googleLogin) {
     assignments.push(
       factory.createPropertyAssignment(
@@ -212,10 +236,6 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
         ]),
       ),
     );
-  }
-
-  if (logInDefinition.email === true) {
-    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
   } else if (typeof logInDefinition.emailOptions === 'object') {
     const emailDefinitionAssignments: ts.ObjectLiteralElementLike[] = [];
 
@@ -242,10 +262,10 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
         ),
       );
     }
-    const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments);
+    const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments, true);
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), emailDefinitionObject));
   }
-  return factory.createPropertyAssignment(logInWith, factory.createObjectLiteralExpression(assignments));
+  return factory.createPropertyAssignment(logInWith, factory.createObjectLiteralExpression(assignments, true));
 }
 
 const createStandardAttributeDefinition = (attribute: StandardAttribute) => {
@@ -255,7 +275,7 @@ const createStandardAttributeDefinition = (attribute: StandardAttribute) => {
       attribute[key as keyof StandardAttribute] ? factory.createTrue() : factory.createFalse(),
     ),
   );
-  return factory.createObjectLiteralExpression(properties);
+  return factory.createObjectLiteralExpression(properties, true);
 };
 
 const createUserAttributeAssignments = (userAttributes: StandardAttributes) => {
@@ -266,11 +286,8 @@ const createUserAttributeAssignments = (userAttributes: StandardAttributes) => {
   return factory.createPropertyAssignment(userAttributeIdentifier, factory.createObjectLiteralExpression(userAttributeProperties));
 };
 
-const defineAuth = 'defineAuth';
-
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
-  const authFunctionName = ts.factory.createIdentifier(defineAuth);
-  const namedImports = new Set([defineAuth]);
+  const namedImports = [];
   const defineAuthProperties: Array<PropertyAssignment> = [];
 
   const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions);
@@ -290,52 +307,40 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
     );
   }
 
+  const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
+  const { loginOptions } = definition;
+  if (loginOptions?.appleLogin || loginOptions?.amazonLogin || loginOptions?.googleLogin || loginOptions?.facebookLogin) {
+    namedImports.push('secret');
+  }
+  if (hasFunctions) {
+    assert(definition.lambdaTriggers);
+    defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
+    namedImports.push('defineFunction');
+  }
+
   if (definition.mfa) {
     defineAuthProperties.push(
       factory.createPropertyAssignment(
         factory.createIdentifier('multifactor'),
-        factory.createObjectLiteralExpression([
-          factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
-          factory.createPropertyAssignment(
-            factory.createIdentifier('totp'),
-            definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
-          ),
-        ]),
+        factory.createObjectLiteralExpression(
+          [
+            factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
+            factory.createPropertyAssignment(
+              factory.createIdentifier('totp'),
+              definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
+            ),
+          ],
+          true,
+        ),
       ),
     );
   }
 
-  const authCall = factory.createCallExpression(authFunctionName, undefined, [
-    factory.createObjectLiteralExpression(defineAuthProperties, true),
-  ]);
-  const authIdentifier = factory.createIdentifier('auth');
-  const authVariable = factory.createVariableDeclaration(authIdentifier, undefined, undefined, authCall);
-
-  const exportAuthStatement = factory.createVariableStatement(
-    [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-    factory.createVariableDeclarationList([authVariable], ts.NodeFlags.Const),
-  );
-  if (
-    definition.loginOptions?.googleLogin ||
-    definition.loginOptions?.amazonLogin ||
-    definition.loginOptions?.facebookLogin ||
-    definition.loginOptions?.appleLogin
-  ) {
-    namedImports.add('secret');
-  }
-  const importDeclaration = ts.factory.createImportDeclaration(
-    undefined,
-    factory.createImportClause(
-      false,
-      undefined,
-      factory.createNamedImports(
-        Array.from(namedImports).map((namedImport) =>
-          factory.createImportSpecifier(false, undefined, factory.createIdentifier(namedImport)),
-        ),
-      ),
-    ),
-    factory.createStringLiteral('@aws-amplify/backend'),
-  );
-
-  return ts.factory.createNodeArray([importDeclaration, exportAuthStatement]);
+  return renderResourceTsFile({
+    exportedVariableName: factory.createIdentifier('auth'),
+    functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties, true),
+    additionalImportedBackendIdentifiers: namedImports,
+    backendFunctionConstruct: 'defineAuth',
+    importedPackageName: '@aws-amplify/backend',
+  });
 }

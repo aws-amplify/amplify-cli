@@ -31,7 +31,26 @@ export interface AuthDefinition {
 }
 
 // @public (undocumented)
-export const createGen2Renderer: ({ outputDir, auth, storage, fileWriter, }: Gen2RenderingOptions) => Renderer;
+export interface AuthDefinition {
+    // (undocumented)
+    lambdaTriggers?: Partial<AuthLambdaTriggers>;
+    // (undocumented)
+    loginOptions?: LoginOptions;
+}
+
+// @public (undocumented)
+export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
+
+// @public (undocumented)
+export type AuthTriggerEvents = 'createAuthChallenge' | 'customMessage' | 'defineAuthChallenge' | 'postAuthentication' | 'postConfirmation' | 'preAuthentication' | 'preSignUp' | 'preTokenGeneration' | 'userMigration' | 'verifyAuthChallengeResponse';
+
+// @public (undocumented)
+export const createGen2Renderer: ({ outputDir, auth, storage, data, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
+
+// @public (undocumented)
+export type DataDefinition = {
+    tableMapping: Record<string, string>;
+};
 
 // @public (undocumented)
 export type EmailOptions = {
@@ -44,6 +63,8 @@ export interface Gen2RenderingOptions {
     // (undocumented)
     auth?: AuthDefinition;
     // (undocumented)
+    data?: DataDefinition;
+    // (undocumented)
     fileWriter?: (content: string, path: string) => Promise<void>;
     // (undocumented)
     outputDir: string;
@@ -55,9 +76,20 @@ export interface Gen2RenderingOptions {
 export type Group = string;
 
 // @public (undocumented)
+export type Lambda = {
+    source: string;
+};
+
+// @public (undocumented)
 export type LoginOptions = {
     email?: boolean;
     emailOptions?: Partial<EmailOptions>;
+    googleLogin?: boolean;
+    amazonLogin?: boolean;
+    appleLogin?: boolean;
+    facebookLogin?: boolean;
+    callbackURLs?: string[];
+    logoutURLs?: string[];
 };
 
 // @public (undocumented)
@@ -75,15 +107,7 @@ export type Permission = 'read' | 'write' | 'create' | 'delete';
 // @public (undocumented)
 export interface Renderer {
     // (undocumented)
-    render(): Promise<Result<void>>;
-}
-
-// @public (undocumented)
-export interface Result<T> {
-    // (undocumented)
-    error?: any;
-    // (undocumented)
-    ok?: T;
+    render(): Promise<void>;
 }
 
 // @public (undocumented)
@@ -111,13 +135,18 @@ export interface StorageRenderParameters {
     lambdas?: S3TriggerDefinition[];
     // (undocumented)
     storageIdentifier?: string;
+    // (undocumented)
+    triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
 }
+
+// @public (undocumented)
+export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 
 // @public (undocumented)
 export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
 
 // @public (undocumented)
-export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, any>>;
+export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, string | number | boolean>>;
 
 // (No @packageDocumentation comment for this package)
 

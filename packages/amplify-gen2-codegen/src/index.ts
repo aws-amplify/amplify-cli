@@ -1,12 +1,15 @@
 import path from 'path';
 import fs from 'node:fs/promises';
 import { patchNpmPackageJson } from './npm_package/renderer';
-import { RenderPipeline, Renderer, Result } from './render_pipeline';
+import { RenderPipeline, Renderer } from './render_pipeline';
 import { JsonRenderer } from './renderers/package_json';
 import { TypescriptNodeArrayRenderer } from './renderers/typescript_block_node';
 import { BackendSynthesizer } from './backend/synthesizer';
 import { EnsureDirectory } from './renderers/ensure_directory';
+import { Lambda } from './function/lambda';
 import {
+  AuthTriggerEvents,
+  AuthLambdaTriggers,
   AuthDefinition,
   renderAuthNode,
   SendingAccount,
@@ -21,12 +24,22 @@ import {
   StandardAttributes,
   MultifactorOptions,
 } from './auth/source_builder';
-import { StorageRenderParameters, renderStorage, AccessPatterns, Permission, S3TriggerDefinition } from './storage/source_builder.js';
+import {
+  StorageRenderParameters,
+  renderStorage,
+  AccessPatterns,
+  Permission,
+  S3TriggerDefinition,
+  StorageTriggerEvent,
+} from './storage/source_builder.js';
+
+import { DataDefinition, generateDataSource } from './data/source_builder';
 
 export interface Gen2RenderingOptions {
   outputDir: string;
   auth?: AuthDefinition;
   storage?: StorageRenderParameters;
+  data?: DataDefinition;
   fileWriter?: (content: string, path: string) => Promise<void>;
 }
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
@@ -35,8 +48,9 @@ export const createGen2Renderer = ({
   outputDir,
   auth,
   storage,
+  data,
   fileWriter = (content, path) => createFileWriter(path)(content),
-}: Gen2RenderingOptions): Renderer => {
+}: Readonly<Gen2RenderingOptions>): Renderer => {
   const ensureOutputDir = new EnsureDirectory(outputDir);
   const ensureAmplifyDirectory = new EnsureDirectory(path.join(outputDir, 'amplify'));
   const amplifyPackageJson = new JsonRenderer(
@@ -61,6 +75,7 @@ export const createGen2Renderer = ({
       }),
     (content) => fileWriter(content, path.join(outputDir, 'amplify', 'backend.ts')),
   );
+
   const renderers = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer, backendRenderer];
   if (auth) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
@@ -71,6 +86,16 @@ export const createGen2Renderer = ({
       ),
     );
   }
+  if (data) {
+    renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
+    renderers.push(
+      new TypescriptNodeArrayRenderer(
+        async () => generateDataSource(data),
+        (content) => fileWriter(content, path.join(outputDir, 'amplify', 'data', 'resource.ts')),
+      ),
+    );
+  }
+
   if (storage) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
     renderers.push(
@@ -85,7 +110,6 @@ export const createGen2Renderer = ({
 };
 export {
   Renderer,
-  Result,
   SendingAccount,
   UserPoolMfaConfig,
   StorageRenderParameters,
@@ -102,4 +126,9 @@ export {
   StandardAttribute,
   StandardAttributes,
   MultifactorOptions,
+  AuthTriggerEvents,
+  Lambda,
+  AuthLambdaTriggers,
+  StorageTriggerEvent,
+  DataDefinition,
 };

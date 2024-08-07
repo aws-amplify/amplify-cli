@@ -5,16 +5,40 @@
 ```ts
 
 import { AuthDefinition } from '@aws-amplify/amplify-gen2-codegen';
+import { LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
+import { PasswordPolicyPath } from '@aws-amplify/amplify-gen2-codegen';
+import { ProviderDescription } from '@aws-sdk/client-cognito-identity-provider';
+import { UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
 
 // @public (undocumented)
 export interface AuthSynthesizerOptions {
     // (undocumented)
+    authTriggerConnections?: AuthTriggerConnectionSourceMap;
+    // (undocumented)
+    identityProviders?: ProviderDescription[];
+    // (undocumented)
     userPool: UserPoolType;
+    // (undocumented)
+    webClient?: UserPoolClientType;
 }
 
 // @public (undocumented)
-export const getAuthDefinition: ({ userPool }: AuthSynthesizerOptions) => AuthDefinition;
+export interface AuthTriggerConnection {
+    // (undocumented)
+    lambdaFunctionName: string;
+    // (undocumented)
+    triggerType: keyof LambdaConfigType;
+}
+
+// @public (undocumented)
+export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigType, string>>;
+
+// @public (undocumented)
+export const getAuthDefinition: ({ userPool, identityProviders, webClient, authTriggerConnections, }: AuthSynthesizerOptions) => AuthDefinition;
+
+// @public (undocumented)
+export type PasswordPolicyOverrides = Record<PasswordPolicyPath, string | boolean | number>;
 
 // (No @packageDocumentation comment for this package)
 
