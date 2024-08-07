@@ -2,6 +2,9 @@ import ts, { Identifier, Node } from 'typescript';
 import { UserPoolOverrides } from '../auth/source_builder.js';
 const factory = ts.factory;
 export interface BackendRenderParameters {
+  data?: {
+    importFrom: string;
+  };
   auth?: {
     importFrom: string;
     userPoolOverrides?: UserPoolOverrides;
@@ -30,6 +33,7 @@ export class BackendSynthesizer {
   render = (renderArgs: BackendRenderParameters): ts.NodeArray<Node> => {
     const authFunctionIdentifier = factory.createIdentifier('auth');
     const storageFunctionIdentifier = factory.createIdentifier('storage');
+    const dataFunctionIdentifier = factory.createIdentifier('data');
 
     const backendFunctionIdentifier = factory.createIdentifier('defineBackend');
     const imports = [];
@@ -38,6 +42,11 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([authFunctionIdentifier], renderArgs.auth.importFrom));
       const auth = factory.createShorthandPropertyAssignment(authFunctionIdentifier);
       defineBackendProperties.push(auth);
+    }
+    if (renderArgs.data) {
+      imports.push(this.createImportStatement([dataFunctionIdentifier], renderArgs.data.importFrom));
+      const data = factory.createShorthandPropertyAssignment(dataFunctionIdentifier);
+      defineBackendProperties.push(data);
     }
     if (renderArgs.storage) {
       imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));

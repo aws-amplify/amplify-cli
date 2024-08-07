@@ -1,5 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../resource/resource';
+import { createTodoError } from '../todo_error';
 const factory = ts.factory;
 
 export type DataDefinition = {
@@ -8,6 +9,8 @@ export type DataDefinition = {
 
 const importedAmplifyDynamoDBTableMapKeyName = 'importedAmplifyDynamoDBTableMap';
 const importedModelsKey = 'importedModels';
+
+export const schemaPlaceholderComment = 'TODO: Add your existing graphql schema here';
 
 export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArray<ts.Node> => {
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
@@ -34,9 +37,13 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
       ),
     );
   }
+  dataRenderProperties.push(
+    factory.createPropertyAssignment(factory.createIdentifier('schema'), factory.createStringLiteral(schemaPlaceholderComment)),
+  );
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier('data'),
     functionCallParameter: factory.createObjectLiteralExpression(dataRenderProperties, true),
+    postExportStatements: [createTodoError('Add Gen 1 GraphQL schema')],
     backendFunctionConstruct: 'defineData',
     importedPackageName: '@aws-amplify/backend',
   });
