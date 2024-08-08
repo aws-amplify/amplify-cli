@@ -68,7 +68,16 @@ describe('gen2Recommendation', () => {
       'For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/',
     );
     expect(confirmContinueMock).toHaveBeenCalledWith('Do you want to continue with Amplify Gen 1?');
-    expect(pickMock).toHaveBeenCalledWith('Why would you like to use Amplify Gen 1?', expect.any(Array));
+    expect(pickMock).toHaveBeenCalledWith(
+      'Why would you like to use Amplify Gen 1?',
+      [
+        'I am a current Gen 1 user',
+        'Gen 2 is missing features I need from Gen 1',
+        'I find the Gen 1 CLI easier to use',
+        'Prefer not to answer',
+      ],
+      { initial: 3 },
+    );
     expect(context.exeInfo.projectConfig).toEqual({ whyContinueWithGen1: 'I am a current Gen 1 user' });
   });
 
