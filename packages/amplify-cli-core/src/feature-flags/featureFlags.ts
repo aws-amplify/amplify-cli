@@ -677,6 +677,13 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
       },
+      {
+        // TODO: review name before release
+        name: 'enableGen2Migration',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
     ]);
 
     this.registerFlag('frontend-ios', [
