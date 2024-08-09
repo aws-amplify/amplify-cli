@@ -8,7 +8,7 @@ import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { S3Client } from '@aws-sdk/client-s3';
 import { BackendDownloader } from './backend_downloader.js';
-import { AppContextLogger } from './logger.js';
+import { AppContextLogger } from './logger';
 import { BackendEnvironmentResolver } from './backend_environment_selector.js';
 import { Analytics, AppAnalytics } from './analytics.js';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher.js';

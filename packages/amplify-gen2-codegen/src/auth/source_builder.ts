@@ -48,6 +48,12 @@ export type Group = string;
 export type LoginOptions = {
   email?: boolean;
   emailOptions?: Partial<EmailOptions>;
+  googleLogin?: boolean;
+  amazonLogin?: boolean;
+  appleLogin?: boolean;
+  facebookLogin?: boolean;
+  callbackURLs?: string[];
+  logoutURLs?: string[];
 };
 
 export type MultifactorOptions = {
@@ -55,6 +61,13 @@ export type MultifactorOptions = {
   totp?: boolean;
 };
 
+export interface AuthDefinition {
+  loginOptions?: LoginOptions;
+  groups?: Group[];
+  mfa?: MultifactorOptions;
+  userAttributes?: StandardAttributes;
+  userPoolOverrides?: UserPoolOverrides;
+}
 export type AuthTriggerEvents =
   | 'createAuthChallenge'
   | 'customMessage'
@@ -72,19 +85,157 @@ export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
 export interface AuthDefinition {
   loginOptions?: LoginOptions;
   lambdaTriggers?: Partial<AuthLambdaTriggers>;
-  groups?: Group[];
-  mfa?: MultifactorOptions;
-  userAttributes?: StandardAttributes;
-  userPoolOverrides?: UserPoolOverrides;
 }
-
 const factory = ts.factory;
+
+const secretIdentifier = factory.createIdentifier('secret');
+const googleClientID = 'GOOGLE_CLIENT_ID';
+const googleClientSecret = 'GOOGLE_CLIENT_SECRET';
+
+const amazonClientID = 'LOGINWITHAMAZON_CLIENT_ID';
+const amazonClientSecret = 'LOGINWITHAMAZON_CLIENT_SECRET';
+
+const facebookClientID = 'FACEBOOK_CLIENT_ID';
+const facebookClientSecret = 'FACEBOOK_CLIENT_SECRET';
+
+const appleSiwaClientID = 'SIWA_CLIENT_ID';
+const appleSiwaKeyId = 'SIWA_KEY_ID';
+const appleSiwaPrivateKey = 'SIWA_PRIVATE_KEY';
+const appleSiwaTeamID = 'SIWA_TEAM_ID';
 
 function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
   const logInWith = factory.createIdentifier('loginWith');
   const assignments: ts.ObjectLiteralElementLike[] = [];
   if (logInDefinition.email === true) {
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
+  }
+  if (logInDefinition.googleLogin) {
+    assignments.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('externalProviders'),
+        factory.createObjectLiteralExpression([
+          factory.createPropertyAssignment(
+            factory.createIdentifier('google'),
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment(
+                factory.createIdentifier('clientId'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(googleClientID)]),
+              ),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('clientSecret'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(googleClientSecret)]),
+              ),
+            ]),
+          ),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('callbackUrls'),
+            factory.createArrayLiteralExpression(logInDefinition.callbackURLs?.map((url) => factory.createStringLiteral(url))),
+          ),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('logoutUrls'),
+            factory.createArrayLiteralExpression(logInDefinition.logoutURLs?.map((url) => factory.createStringLiteral(url))),
+          ),
+        ]),
+      ),
+    );
+  }
+  if (logInDefinition.appleLogin) {
+    assignments.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('externalProviders'),
+        factory.createObjectLiteralExpression([
+          factory.createPropertyAssignment(
+            factory.createIdentifier('signInWithApple'),
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment(
+                factory.createIdentifier('clientId'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(appleSiwaClientID)]),
+              ),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('keyId'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(appleSiwaKeyId)]),
+              ),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('privateKey'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(appleSiwaPrivateKey)]),
+              ),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('teamId'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(appleSiwaTeamID)]),
+              ),
+            ]),
+          ),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('callbackUrls'),
+            factory.createArrayLiteralExpression(logInDefinition.callbackURLs?.map((url) => factory.createStringLiteral(url))),
+          ),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('logoutUrls'),
+            factory.createArrayLiteralExpression(logInDefinition.logoutURLs?.map((url) => factory.createStringLiteral(url))),
+          ),
+        ]),
+      ),
+    );
+  }
+  if (logInDefinition.amazonLogin) {
+    assignments.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('externalProviders'),
+        factory.createObjectLiteralExpression([
+          factory.createPropertyAssignment(
+            factory.createIdentifier('loginWithAmazon'),
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment(
+                factory.createIdentifier('clientId'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(amazonClientID)]),
+              ),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('clientSecret'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(amazonClientSecret)]),
+              ),
+            ]),
+          ),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('callbackUrls'),
+            factory.createArrayLiteralExpression(logInDefinition.callbackURLs?.map((url) => factory.createStringLiteral(url))),
+          ),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('logoutUrls'),
+            factory.createArrayLiteralExpression(logInDefinition.logoutURLs?.map((url) => factory.createStringLiteral(url))),
+          ),
+        ]),
+      ),
+    );
+  }
+  if (logInDefinition.facebookLogin) {
+    assignments.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('externalProviders'),
+        factory.createObjectLiteralExpression([
+          factory.createPropertyAssignment(
+            factory.createIdentifier('facebook'),
+            factory.createObjectLiteralExpression([
+              factory.createPropertyAssignment(
+                factory.createIdentifier('clientId'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(facebookClientID)]),
+              ),
+              factory.createPropertyAssignment(
+                factory.createIdentifier('clientSecret'),
+                factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(facebookClientSecret)]),
+              ),
+            ]),
+          ),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('callbackUrls'),
+            factory.createArrayLiteralExpression(logInDefinition.callbackURLs?.map((url) => factory.createStringLiteral(url))),
+          ),
+          factory.createPropertyAssignment(
+            factory.createIdentifier('logoutUrls'),
+            factory.createArrayLiteralExpression(logInDefinition.logoutURLs?.map((url) => factory.createStringLiteral(url))),
+          ),
+        ]),
+      ),
+    );
   } else if (typeof logInDefinition.emailOptions === 'object') {
     const emailDefinitionAssignments: ts.ObjectLiteralElementLike[] = [];
 
@@ -132,10 +283,11 @@ const createUserAttributeAssignments = (userAttributes: StandardAttributes) => {
   const userAttributeProperties = Object.entries((userAttributes as StandardAttributes) ?? {}).map(([key, value]) => {
     return factory.createPropertyAssignment(factory.createIdentifier(key), createStandardAttributeDefinition(value));
   });
-  return factory.createPropertyAssignment(userAttributeIdentifier, factory.createObjectLiteralExpression(userAttributeProperties, true));
+  return factory.createPropertyAssignment(userAttributeIdentifier, factory.createObjectLiteralExpression(userAttributeProperties));
 };
 
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
+  const namedImports = [];
   const defineAuthProperties: Array<PropertyAssignment> = [];
 
   const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions);
@@ -156,9 +308,14 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   }
 
   const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
+  const { loginOptions } = definition;
+  if (loginOptions?.appleLogin || loginOptions?.amazonLogin || loginOptions?.googleLogin || loginOptions?.facebookLogin) {
+    namedImports.push('secret');
+  }
   if (hasFunctions) {
     assert(definition.lambdaTriggers);
     defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
+    namedImports.push('defineFunction');
   }
 
   if (definition.mfa) {
@@ -182,7 +339,7 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier('auth'),
     functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties, true),
-    additionalImportedBackendIdentifiers: hasFunctions ? ['defineFunction'] : [],
+    additionalImportedBackendIdentifiers: namedImports,
     backendFunctionConstruct: 'defineAuth',
     importedPackageName: '@aws-amplify/backend',
   });

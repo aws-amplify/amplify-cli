@@ -6,7 +6,7 @@ import { BackendDownloader } from './backend_downloader.js';
 import { fileOrDirectoryExists } from './directory_exists.js';
 import { StorageRenderParameters } from '@aws-amplify/amplify-gen2-codegen';
 import { GetBucketNotificationConfigurationCommand, S3Client } from '@aws-sdk/client-s3';
-import { BackendEnvironmentResolver } from './backend_environment_selector.js';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
@@ -43,7 +43,7 @@ export class AppStorageDefinitionFetcher {
       console.log('triggers', triggers);
       const storageOptions = getStorageDefinition({
         cliInputs,
-        bucketName: bucketName,
+        bucketName,
       });
       return storageOptions;
     }
