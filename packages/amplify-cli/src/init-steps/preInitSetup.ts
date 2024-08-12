@@ -2,6 +2,7 @@ import { $TSContext, AmplifyError, getPackageManager, LocalEnvInfo, pathManager 
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
+import { isCI } from 'ci-info';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { isNewProject } from './s0-analyzeProject';
@@ -11,7 +12,9 @@ export const getPreInitSetup = (recommendGen2: boolean) => {
     return preInitSetup;
   } else {
     return async (context) => {
-      await gen2Recommendation(context);
+      if (!isCI) {
+        await gen2Recommendation(context);
+      }
       await preInitSetup(context);
     };
   }
