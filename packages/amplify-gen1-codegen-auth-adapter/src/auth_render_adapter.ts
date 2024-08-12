@@ -125,23 +125,21 @@ export const getAuthDefinition = ({
   webClient,
   authTriggerConnections,
 }: AuthSynthesizerOptions): AuthDefinition => {
-  const loginWith: LoginOptions = { email: true };
-  if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
-    loginWith.emailOptions = getEmailConfig(userPool);
-  }
+  const loginWith: any = { email: true };
+  const mapIdentityProvider = {
+    [IdentityProviderTypeType.Google]: 'googleLogin',
+    [IdentityProviderTypeType.SignInWithApple]: 'appleLogin',
+    [IdentityProviderTypeType.LoginWithAmazon]: 'amazonLogin',
+    [IdentityProviderTypeType.Facebook]: 'facebookLogin',
+  };
   const identityProviderSet = new Set(identityProviders?.map((idp) => idp.ProviderType));
-  if (identityProviderSet.has(IdentityProviderTypeType.Google)) {
-    loginWith.googleLogin = true;
+  for (const provider of identityProviderSet) {
+    const loginWithProperty = mapIdentityProvider[provider as keyof typeof mapIdentityProvider];
+    if (loginWithProperty != undefined) {
+      loginWith[loginWithProperty] = true;
+    }
   }
-  if (identityProviderSet.has(IdentityProviderTypeType.SignInWithApple)) {
-    loginWith.appleLogin = true;
-  }
-  if (identityProviderSet.has(IdentityProviderTypeType.LoginWithAmazon)) {
-    loginWith.amazonLogin = true;
-  }
-  if (identityProviderSet.has(IdentityProviderTypeType.Facebook)) {
-    loginWith.facebookLogin = true;
-  }
+
   if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
     loginWith.emailOptions = getEmailConfig(userPool);
   }

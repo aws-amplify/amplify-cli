@@ -61,13 +61,8 @@ export type MultifactorOptions = {
   totp?: boolean;
 };
 
-export interface AuthDefinition {
-  loginOptions?: LoginOptions;
-  groups?: Group[];
-  mfa?: MultifactorOptions;
-  userAttributes?: StandardAttributes;
-  userPoolOverrides?: UserPoolOverrides;
-}
+export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
+
 export type AuthTriggerEvents =
   | 'createAuthChallenge'
   | 'customMessage'
@@ -80,12 +75,15 @@ export type AuthTriggerEvents =
   | 'userMigration'
   | 'verifyAuthChallengeResponse';
 
-export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
-
 export interface AuthDefinition {
   loginOptions?: LoginOptions;
+  groups?: Group[];
+  mfa?: MultifactorOptions;
+  userAttributes?: StandardAttributes;
+  userPoolOverrides?: UserPoolOverrides;
   lambdaTriggers?: Partial<AuthLambdaTriggers>;
 }
+
 const factory = ts.factory;
 
 const secretIdentifier = factory.createIdentifier('secret');
@@ -108,6 +106,34 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
   const assignments: ts.ObjectLiteralElementLike[] = [];
   if (logInDefinition.email === true) {
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
+  } else if (typeof logInDefinition.emailOptions === 'object') {
+    const emailDefinitionAssignments: ts.ObjectLiteralElementLike[] = [];
+
+    if (logInDefinition.emailOptions?.emailVerificationSubject) {
+      emailDefinitionAssignments.push(
+        factory.createPropertyAssignment(
+          'verificationEmailSubject',
+          factory.createStringLiteral(logInDefinition.emailOptions.emailVerificationSubject),
+        ),
+      );
+    }
+    if (logInDefinition.emailOptions?.emailVerificationBody) {
+      emailDefinitionAssignments.push(
+        factory.createPropertyAssignment(
+          'verificationEmailBody',
+          factory.createArrowFunction(
+            undefined,
+            undefined,
+            [],
+            undefined,
+            undefined,
+            factory.createStringLiteral(logInDefinition.emailOptions.emailVerificationBody),
+          ),
+        ),
+      );
+    }
+    const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments, true);
+    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), emailDefinitionObject));
   }
   if (logInDefinition.googleLogin) {
     assignments.push(
@@ -138,8 +164,7 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
         ]),
       ),
     );
-  }
-  if (logInDefinition.appleLogin) {
+  } else if (logInDefinition.appleLogin) {
     assignments.push(
       factory.createPropertyAssignment(
         factory.createIdentifier('externalProviders'),
@@ -176,8 +201,7 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
         ]),
       ),
     );
-  }
-  if (logInDefinition.amazonLogin) {
+  } else if (logInDefinition.amazonLogin) {
     assignments.push(
       factory.createPropertyAssignment(
         factory.createIdentifier('externalProviders'),
@@ -206,8 +230,7 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
         ]),
       ),
     );
-  }
-  if (logInDefinition.facebookLogin) {
+  } else if (logInDefinition.facebookLogin) {
     assignments.push(
       factory.createPropertyAssignment(
         factory.createIdentifier('externalProviders'),
@@ -236,34 +259,6 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
         ]),
       ),
     );
-  } else if (typeof logInDefinition.emailOptions === 'object') {
-    const emailDefinitionAssignments: ts.ObjectLiteralElementLike[] = [];
-
-    if (logInDefinition.emailOptions?.emailVerificationSubject) {
-      emailDefinitionAssignments.push(
-        factory.createPropertyAssignment(
-          'verificationEmailSubject',
-          factory.createStringLiteral(logInDefinition.emailOptions.emailVerificationSubject),
-        ),
-      );
-    }
-    if (logInDefinition.emailOptions?.emailVerificationBody) {
-      emailDefinitionAssignments.push(
-        factory.createPropertyAssignment(
-          'verificationEmailBody',
-          factory.createArrowFunction(
-            undefined,
-            undefined,
-            [],
-            undefined,
-            undefined,
-            factory.createStringLiteral(logInDefinition.emailOptions.emailVerificationBody),
-          ),
-        ),
-      );
-    }
-    const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments, true);
-    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), emailDefinitionObject));
   }
   return factory.createPropertyAssignment(logInWith, factory.createObjectLiteralExpression(assignments, true));
 }
