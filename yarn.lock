@@ -123,7 +123,6 @@ __metadata:
     graphql: ^15.5.0
     graphql-iso-date: ^3.6.1
     graphql-subscriptions: ^1.1.0
-    ip: ^1.1.9
     jose: ^5.2.0
     js-string-escape: ^1.0.1
     jwt-decode: ^2.2.0
@@ -21603,7 +21602,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip@npm:^1.1.8, ip@npm:^1.1.9":
+"ip@npm:^1.1.8":
   version: 1.1.9
   resolution: "ip@npm:1.1.9"
   checksum: 5af58bfe2110c9978acfd77a2ffcdf9d33a6ce1c72f49edbaf16958f7a8eb979b5163e43bb18938caf3aaa55cdacde4e470874c58ca3b4b112ea7a30461a0c27
