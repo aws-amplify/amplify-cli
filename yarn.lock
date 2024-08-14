@@ -123,7 +123,6 @@ __metadata:
     graphql: ^15.5.0
     graphql-iso-date: ^3.6.1
     graphql-subscriptions: ^1.1.0
-    ip: ^1.1.9
     jose: ^5.2.0
     js-string-escape: ^1.0.1
     jwt-decode: ^2.2.0
@@ -16390,13 +16389,13 @@ __metadata:
   linkType: hard
 
 "axios@npm:^1.0.0, axios@npm:^1.6.5, axios@npm:^1.6.7":
-  version: 1.6.7
-  resolution: "axios@npm:1.6.7"
+  version: 1.7.4
+  resolution: "axios@npm:1.7.4"
   dependencies:
-    follow-redirects: ^1.15.4
+    follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 131bf8e62eee48ca4bd84e6101f211961bf6a21a33b95e5dfb3983d5a2fe50d9fffde0b57668d7ce6f65063d3dc10f2212cbcb554f75cfca99da1c73b210358d
+  checksum: 5ea1a93140ca1d49db25ef8e1bd8cfc59da6f9220159a944168860ad15a2743ea21c5df2967795acb15cbe81362f5b157fdebbea39d53117ca27658bab9f7f17
   languageName: node
   linkType: hard
 
@@ -23333,7 +23332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip@npm:^1.1.8, ip@npm:^1.1.9":
+"ip@npm:^1.1.8":
   version: 1.1.9
   resolution: "ip@npm:1.1.9"
   checksum: 5af58bfe2110c9978acfd77a2ffcdf9d33a6ce1c72f49edbaf16958f7a8eb979b5163e43bb18938caf3aaa55cdacde4e470874c58ca3b4b112ea7a30461a0c27
