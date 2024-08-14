@@ -84,7 +84,7 @@ export function getDefaultTemplateDescription(context: $TSContext, category: str
   const stackTypeDescription = service ? `${category}-${service}` : category;
 
   // get the reason why not switching to Gen2
-  const { whyContinueWithGen1 } = context.exeInfo.projectConfig;
+  const { whyContinueWithGen1 = '' } = context.exeInfo.projectConfig;
 
   const descriptionJson: TemplateDescription = {
     createdOn: platformDescription,
