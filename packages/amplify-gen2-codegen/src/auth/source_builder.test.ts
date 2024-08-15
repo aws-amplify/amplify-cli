@@ -24,7 +24,6 @@ describe('render auth node', () => {
           loginOptions: { facebookLogin: true, callbackURLs: ['https://example.com/callback'], logoutURLs: ['https://example.com/logout'] },
         });
         const source = printNodeArray(rendered);
-        console.log(source);
         assert.match(source, /facebook:/);
         assert.match(source, /clientId: secret\("FACEBOOK_CLIENT_ID"\)/);
         assert.match(source, /clientSecret: secret\("FACEBOOK_CLIENT_SECRET"\)/);
