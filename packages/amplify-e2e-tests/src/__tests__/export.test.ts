@@ -32,9 +32,9 @@ describe('amplify export backend', () => {
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await addS3StorageWithIdpAuth(projRoot);
 
-    // const exportPath = path.join(projRoot, 'exportedBackend');
-    // await exportBackend(projRoot, { exportPath });
-    // await amplifyPush(projRoot);
+    const exportPath = path.join(projRoot, 'exportedBackend');
+    await exportBackend(projRoot, { exportPath });
+    await amplifyPush(projRoot);
     // const name = getProjectConfig(projRoot).projectName;
     // const pathToExport = path.join(exportPath, `amplify-export-${name}`);
     // const pathToStackMappings = path.join(pathToExport, 'category-stack-mapping.json');
