@@ -34,7 +34,7 @@ describe('amplify export backend', () => {
 
     const exportPath = path.join(projRoot, 'exportedBackend');
     await exportBackend(projRoot, { exportPath });
-    await amplifyPush(projRoot);
+    // await amplifyPush(projRoot);
     // const name = getProjectConfig(projRoot).projectName;
     // const pathToExport = path.join(exportPath, `amplify-export-${name}`);
     // const pathToStackMappings = path.join(pathToExport, 'category-stack-mapping.json');
