@@ -34,20 +34,20 @@ describe('amplify export backend', () => {
 
     const exportPath = path.join(projRoot, 'exportedBackend');
     await exportBackend(projRoot, { exportPath });
-    // await amplifyPush(projRoot);
-    // const name = getProjectConfig(projRoot).projectName;
-    // const pathToExport = path.join(exportPath, `amplify-export-${name}`);
-    // const pathToStackMappings = path.join(pathToExport, 'category-stack-mapping.json');
-    // const pathToManifest = path.join(pathToExport, 'amplify-export-manifest.json');
-    // const stackMappings = JSONUtilities.readJson(pathToStackMappings) as { category: string; resourceName: string; service: string }[];
-    // const manifest = JSONUtilities.readJson(pathToManifest) as { stackName: string; props: any };
-    // const buildFolder = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'build');
-    // stackMappings.forEach((mapping) => {
-    //   const template1 = getTemplateForMapping(mapping, buildFolder);
-    //   const stack = manifest.props.loadNestedStacks[mapping.category + mapping.resourceName];
-    //   const template2 = readCFNTemplate(path.join(pathToExport, stack.templateFile)).cfnTemplate;
-    //   matchTemplates(template1, template2);
-    // });
+    await amplifyPush(projRoot);
+    const name = getProjectConfig(projRoot).projectName;
+    const pathToExport = path.join(exportPath, `amplify-export-${name}`);
+    const pathToStackMappings = path.join(pathToExport, 'category-stack-mapping.json');
+    const pathToManifest = path.join(pathToExport, 'amplify-export-manifest.json');
+    const stackMappings = JSONUtilities.readJson(pathToStackMappings) as { category: string; resourceName: string; service: string }[];
+    const manifest = JSONUtilities.readJson(pathToManifest) as { stackName: string; props: any };
+    const buildFolder = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'build');
+    stackMappings.forEach((mapping) => {
+      const template1 = getTemplateForMapping(mapping, buildFolder);
+      const stack = manifest.props.loadNestedStacks[mapping.category + mapping.resourceName];
+      const template2 = readCFNTemplate(path.join(pathToExport, stack.templateFile)).cfnTemplate;
+      matchTemplates(template1, template2);
+    });
   });
 });
 
