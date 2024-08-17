@@ -53,16 +53,12 @@ export const gen2Recommendation = async (context: $TSContext): Promise<$TSContex
     process.exit(0);
   }
 
-  const whyContinueWithGen1 = await prompter.pick(
-    'Why would you like to use Amplify Gen 1?',
-    [
-      'I am a current Gen 1 user',
-      'Gen 2 is missing features I need from Gen 1',
-      'I find the Gen 1 CLI easier to use',
-      'Prefer not to answer',
-    ],
-    { initial: 3 },
-  );
+  const whyContinueWithGen1 = await prompter.pick('Why would you like to use Amplify Gen 1?', [
+    'I am a current Gen 1 user',
+    'Gen 2 is missing features I need from Gen 1',
+    'I find the Gen 1 CLI easier to use',
+    'Prefer not to answer',
+  ]);
 
   context.exeInfo.projectConfig = {
     whyContinueWithGen1,
