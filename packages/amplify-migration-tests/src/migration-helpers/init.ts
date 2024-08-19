@@ -36,10 +36,6 @@ export function initJSProjectWithProfileV4_28_2(
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
-      .wait('Do you want to continue with Amplify Gen 1?')
-      .sendYes()
-      .wait('Why would you like to use Amplify Gen 1?')
-      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -92,10 +88,6 @@ export function initJSProjectWithProfileV4_52_0(
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
-      .wait('Do you want to continue with Amplify Gen 1?')
-      .sendYes()
-      .wait('Why would you like to use Amplify Gen 1?')
-      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -145,10 +137,6 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Record<stri
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
-      .wait('Do you want to continue with Amplify Gen 1?')
-      .sendYes()
-      .wait('Why would you like to use Amplify Gen 1?')
-      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -191,10 +179,6 @@ export function initAndroidProjectWithProfileInquirer(cwd: string, settings: Rec
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
-      .wait('Do you want to continue with Amplify Gen 1?')
-      .sendYes()
-      .wait('Why would you like to use Amplify Gen 1?')
-      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
