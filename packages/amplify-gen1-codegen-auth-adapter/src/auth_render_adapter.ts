@@ -5,7 +5,9 @@ import {
   PasswordPolicyPath,
   AuthTriggerEvents,
   MultifactorOptions,
-  LoginOptions,
+  StandardAttributes,
+  StandardAttribute,
+  Attribute,
 } from '@aws-amplify/amplify-gen2-codegen';
 import {
   LambdaConfigType,
@@ -15,6 +17,8 @@ import {
   UserPoolMfaType,
   UserPoolType,
   UserPoolClientType,
+  SchemaAttributeType,
+  GroupType,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 export interface AuthTriggerConnection {
@@ -27,6 +31,7 @@ export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigTy
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
   identityProviders?: ProviderDescription[];
+  identityGroups?: GroupType[];
   webClient?: UserPoolClientType;
   authTriggerConnections?: AuthTriggerConnectionSourceMap;
 }
@@ -76,6 +81,51 @@ const getEmailConfig = (userPool: UserPoolType): EmailOptions => {
   };
 };
 
+const getUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined): StandardAttributes => {
+  const mappedUserAttributeName = {
+    address: 'address',
+    birthdate: 'birthdate',
+    email: 'email',
+    family_name: 'familyName',
+    gender: 'gender',
+    given_name: 'givenName',
+    locale: 'locale',
+    middle_name: 'middleName',
+    name: 'fullname',
+    nickname: 'nickname',
+    phone_number: 'phoneNumber',
+    picture: 'profilePicture',
+    preferred_username: 'preferredUsername',
+    profile: 'profilePage',
+    zoneinfo: 'timezone',
+    updated_at: 'lastUpdateTime',
+    website: 'website',
+  };
+  return (
+    signupAttributes?.reduce((standardAttributes: StandardAttributes, attribute: SchemaAttributeType) => {
+      const standardAttribute: StandardAttribute = {
+        required: attribute.Required,
+        mutable: attribute.Mutable,
+      };
+      if (attribute.Name !== undefined && attribute.Name in mappedUserAttributeName) {
+        return {
+          ...standardAttributes,
+          [mappedUserAttributeName[attribute.Name as keyof typeof mappedUserAttributeName] as Attribute]: standardAttribute,
+        };
+      }
+      return standardAttributes;
+    }, {} as StandardAttributes) || {}
+  );
+};
+
+const getGroups = (identityGroups?: GroupType[]): string[] => {
+  if (!identityGroups || identityGroups.length === 0) {
+    return [];
+  }
+
+  return identityGroups.map((group) => group.GroupName).filter((groupName): groupName is string => groupName !== undefined);
+};
+
 /**
  * [getAuthDefinition] describes gen 1 auth resources in terms that can be used to generate Gen 2 code.
  */
@@ -102,7 +152,7 @@ const mappedLambdaConfigKey = (key: keyof LambdaConfigType): AuthTriggerEvents =
     case 'VerifyAuthChallengeResponse':
       return 'verifyAuthChallengeResponse';
     default:
-      throw new Error('Could not map the provided key');
+      throw new Error(`Could not map the provided key: ${key}`);
   }
 };
 
@@ -122,26 +172,27 @@ const getAuthTriggers = (
 export const getAuthDefinition = ({
   userPool,
   identityProviders,
+  identityGroups,
   webClient,
   authTriggerConnections,
 }: AuthSynthesizerOptions): AuthDefinition => {
-  const loginWith: LoginOptions = { email: true };
+  const loginWith: any = { email: true };
   const mapIdentityProvider = {
     [IdentityProviderTypeType.Google]: 'googleLogin',
     [IdentityProviderTypeType.SignInWithApple]: 'appleLogin',
     [IdentityProviderTypeType.LoginWithAmazon]: 'amazonLogin',
     [IdentityProviderTypeType.Facebook]: 'facebookLogin',
   };
-
-  if (identityProviders !== undefined) {
-    identityProviders.forEach((provider) => {
-      const loginWithProperty = mapIdentityProvider[provider?.ProviderType as keyof typeof mapIdentityProvider];
-      if (loginWithProperty !== undefined) {
-        (loginWith[loginWithProperty as keyof LoginOptions] as boolean) = true;
-      }
-    });
+  const identityProviderSet = new Set(identityProviders?.map((idp) => idp.ProviderType));
+  for (const provider of identityProviderSet) {
+    const loginWithProperty = mapIdentityProvider[provider as keyof typeof mapIdentityProvider];
+    if (loginWithProperty != undefined) {
+      loginWith[loginWithProperty] = true;
+    }
   }
-
+  if (userPool.UsernameAttributes?.includes('phone_number')) {
+    loginWith.phone = true;
+  }
   if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
     loginWith.emailOptions = getEmailConfig(userPool);
   }
@@ -156,6 +207,8 @@ export const getAuthDefinition = ({
   return {
     loginOptions: loginWith,
     mfa: getMfaConfiguration(userPool.MfaConfiguration),
+    userAttributes: getUserAttributes(userPool.SchemaAttributes),
+    groups: getGroups(identityGroups),
     userPoolOverrides,
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
   };

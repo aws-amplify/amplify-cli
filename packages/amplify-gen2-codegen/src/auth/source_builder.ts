@@ -47,6 +47,7 @@ export type Group = string;
 
 export type LoginOptions = {
   email?: boolean;
+  phone?: boolean;
   emailOptions?: Partial<EmailOptions>;
   googleLogin?: boolean;
   amazonLogin?: boolean;
@@ -207,6 +208,9 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
     }
     const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments, true);
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), emailDefinitionObject));
+  }
+  if (logInDefinition.phone === true) {
+    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
   }
   if (logInDefinition.amazonLogin || logInDefinition.googleLogin || logInDefinition.facebookLogin || logInDefinition.appleLogin) {
     assignments.push(
