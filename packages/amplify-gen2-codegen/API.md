@@ -21,6 +21,8 @@ export interface AuthDefinition {
     // (undocumented)
     groups?: Group[];
     // (undocumented)
+    lambdaTriggers?: Partial<AuthLambdaTriggers>;
+    // (undocumented)
     loginOptions?: LoginOptions;
     // (undocumented)
     mfa?: MultifactorOptions;
@@ -28,14 +30,6 @@ export interface AuthDefinition {
     userAttributes?: StandardAttributes;
     // (undocumented)
     userPoolOverrides?: UserPoolOverrides;
-}
-
-// @public (undocumented)
-export interface AuthDefinition {
-    // (undocumented)
-    lambdaTriggers?: Partial<AuthLambdaTriggers>;
-    // (undocumented)
-    loginOptions?: LoginOptions;
 }
 
 // @public (undocumented)
@@ -90,6 +84,7 @@ export type LoginOptions = {
     facebookLogin?: boolean;
     callbackURLs?: string[];
     logoutURLs?: string[];
+    [key: string]: boolean | Partial<EmailOptions> | string[] | undefined;
 };
 
 // @public (undocumented)
