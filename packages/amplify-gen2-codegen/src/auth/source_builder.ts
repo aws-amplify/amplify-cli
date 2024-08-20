@@ -54,6 +54,7 @@ export type LoginOptions = {
   facebookLogin?: boolean;
   callbackURLs?: string[];
   logoutURLs?: string[];
+  [key: string]: boolean | Partial<EmailOptions> | string[] | undefined;
 };
 
 export type MultifactorOptions = {
@@ -96,10 +97,10 @@ const amazonClientSecret = 'LOGINWITHAMAZON_CLIENT_SECRET';
 const facebookClientID = 'FACEBOOK_CLIENT_ID';
 const facebookClientSecret = 'FACEBOOK_CLIENT_SECRET';
 
-const appleSiwaClientID = 'SIWA_CLIENT_ID';
-const appleSiwaKeyId = 'SIWA_KEY_ID';
-const appleSiwaPrivateKey = 'SIWA_PRIVATE_KEY';
-const appleSiwaTeamID = 'SIWA_TEAM_ID';
+const appleClientID = 'SIWA_CLIENT_ID';
+const appleKeyId = 'SIWA_KEY_ID';
+const applePrivateKey = 'SIWA_PRIVATE_KEY';
+const appleTeamID = 'SIWA_TEAM_ID';
 
 function createProviderConfig(config: Record<string, string>) {
   return Object.entries(config).map(([key, value]) =>
@@ -132,10 +133,10 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
   if (loginOptions.appleLogin) {
     providerAssignments.push(
       createProviderPropertyAssignment('signInWithApple', {
-        clientId: appleSiwaClientID,
-        keyId: appleSiwaKeyId,
-        privateKey: appleSiwaPrivateKey,
-        teamId: appleSiwaTeamID,
+        clientId: appleClientID,
+        keyId: appleKeyId,
+        privateKey: applePrivateKey,
+        teamId: appleTeamID,
       }),
     );
   }

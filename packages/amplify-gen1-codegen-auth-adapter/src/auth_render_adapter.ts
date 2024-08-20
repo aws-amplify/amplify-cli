@@ -2,10 +2,10 @@ import {
   Lambda,
   AuthDefinition,
   EmailOptions,
-  LoginOptions,
   PasswordPolicyPath,
   AuthTriggerEvents,
   MultifactorOptions,
+  LoginOptions,
 } from '@aws-amplify/amplify-gen2-codegen';
 import {
   LambdaConfigType,
@@ -125,19 +125,21 @@ export const getAuthDefinition = ({
   webClient,
   authTriggerConnections,
 }: AuthSynthesizerOptions): AuthDefinition => {
-  const loginWith: any = { email: true };
+  const loginWith: LoginOptions = { email: true };
   const mapIdentityProvider = {
     [IdentityProviderTypeType.Google]: 'googleLogin',
     [IdentityProviderTypeType.SignInWithApple]: 'appleLogin',
     [IdentityProviderTypeType.LoginWithAmazon]: 'amazonLogin',
     [IdentityProviderTypeType.Facebook]: 'facebookLogin',
   };
-  const identityProviderSet = new Set(identityProviders?.map((idp) => idp.ProviderType));
-  for (const provider of identityProviderSet) {
-    const loginWithProperty = mapIdentityProvider[provider as keyof typeof mapIdentityProvider];
-    if (loginWithProperty != undefined) {
-      loginWith[loginWithProperty] = true;
-    }
+
+  if (identityProviders !== undefined) {
+    identityProviders.forEach((provider) => {
+      const loginWithProperty = mapIdentityProvider[provider?.ProviderType as keyof typeof mapIdentityProvider];
+      if (loginWithProperty !== undefined) {
+        (loginWith[loginWithProperty as keyof LoginOptions] as boolean) = true;
+      }
+    });
   }
 
   if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
