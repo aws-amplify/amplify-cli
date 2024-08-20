@@ -22,5 +22,6 @@ export class DataDefinitionFetcher {
         throw new Error('Could not parse the Amplify Data table mapping');
       }
     }
+    return undefined;
   };
 }
