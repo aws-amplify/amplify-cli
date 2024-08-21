@@ -9,6 +9,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     userPoolOverrides?: UserPoolOverrides;
     guestLogin?: boolean;
+    oAuthFlows?: string[];
   };
   storage?: {
     importFrom: string;
@@ -83,11 +84,13 @@ export class BackendSynthesizer {
     const userPoolOverrides = [];
     const cfnUserPoolVariableDeclaration = this.createVariableDeclaration('cfnUserPool', 'backend.auth.resources.cfnResources.cfnUserPool');
     const cfnUserPoolVariableStatement = this.createVariableStatement(cfnUserPoolVariableDeclaration);
-    const getOverrideValue = (value: number | string | boolean) => {
+    const getOverrideValue = (value: number | string | boolean | string[]) => {
       if (typeof value === 'number') {
         return factory.createNumericLiteral(value);
       } else if (typeof value === 'string') {
         return factory.createStringLiteral(value);
+      } else if (Array.isArray(value) && value.every((item) => typeof item === 'string')) {
+        return factory.createArrayLiteralExpression(value.map((item) => factory.createStringLiteral(item)));
       } else if (typeof value === 'boolean') {
         if (value) {
           return factory.createTrue();
@@ -104,6 +107,11 @@ export class BackendSynthesizer {
       'backend.auth.resources.cfnResources.cfnIdentityPool',
     );
     const cfnIdentityPoolVariableStatement = this.createVariableStatement(cfnIdentityPoolVariableDeclaration);
+
+    const cfnUserPoolClientvariableStatement = this.createVariableStatement(
+      this.createVariableDeclaration('cfnUserPoolClient', 'backend.auth.resources.cfnResources.cfnUserPoolClient'),
+    );
+
     if (renderArgs.auth?.userPoolOverrides) {
       userPoolOverrides.push(cfnUserPoolVariableStatement);
       const addOverrideIdentifier = factory.createIdentifier('addPropertyOverride');
@@ -143,6 +151,22 @@ export class BackendSynthesizer {
         //     factory.createFalse(),
         //   ),
         // ),
+      );
+    }
+    if (renderArgs.auth?.oAuthFlows) {
+      const addOverrideIdentifier = factory.createIdentifier('addPropertyOverride');
+      guestlogin.push(cfnUserPoolClientvariableStatement);
+      guestlogin.push(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('cfnUserPoolClient'), addOverrideIdentifier),
+            undefined,
+            [
+              factory.createStringLiteral('AllowedOAuthFlows'),
+              getOverrideValue(renderArgs.auth?.oAuthFlows as number | string | boolean | string[]),
+            ],
+          ),
+        ),
       );
     }
     return factory.createNodeArray([...imports, backendStatement, ...guestlogin, ...userPoolOverrides], true);

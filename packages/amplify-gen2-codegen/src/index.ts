@@ -77,6 +77,7 @@ export const createGen2Renderer = ({
       importFrom: './auth/resource',
       userPoolOverrides: auth?.userPoolOverrides,
       guestLogin: auth?.guestLogin,
+      oAuthFlows: auth?.oAuthFlows,
     };
   }
   if (data) {
