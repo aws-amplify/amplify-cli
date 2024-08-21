@@ -1,4 +1,4 @@
-import ts, { Identifier, Node } from 'typescript';
+import ts, { Expression, VariableDeclaration, Identifier, Node } from 'typescript';
 import { UserPoolOverrides } from '../auth/source_builder.js';
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -8,6 +8,7 @@ export interface BackendRenderParameters {
   auth?: {
     importFrom: string;
     userPoolOverrides?: UserPoolOverrides;
+    guestLogin?: boolean;
   };
   storage?: {
     importFrom: string;
@@ -15,6 +16,25 @@ export interface BackendRenderParameters {
 }
 
 export class BackendSynthesizer {
+  private createPropertyAccessExpression(propertyPath: string) {
+    const parts = propertyPath.split('.');
+    let expression: Expression = factory.createIdentifier(parts[0]);
+    for (let i = 1; i < parts.length; i++) {
+      expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(parts[i]));
+    }
+    return expression;
+  }
+
+  private createVariableDeclaration(identifierName: string, propertyPath: string) {
+    const identifier = factory.createIdentifier(identifierName);
+    const propertyAccessExpression = this.createPropertyAccessExpression(propertyPath);
+    return factory.createVariableDeclaration(identifier, undefined, undefined, propertyAccessExpression);
+  }
+
+  private createVariableStatement(variableDeclaration: VariableDeclaration) {
+    return factory.createVariableStatement([], factory.createVariableDeclarationList([variableDeclaration], ts.NodeFlags.Const));
+  }
+
   private createImportStatement = (identifiers: Identifier[], backendPackageName: string) => {
     return factory.createImportDeclaration(
       undefined,
@@ -61,20 +81,8 @@ export class BackendSynthesizer {
       factory.createVariableDeclarationList([backendVariable], ts.NodeFlags.Const),
     );
     const userPoolOverrides = [];
-    const cfnUserPoolIdentifier = factory.createIdentifier('cfnUserPool');
-    const cfnUserPoolVariable = factory.createVariableDeclaration(
-      cfnUserPoolIdentifier,
-      undefined,
-      undefined,
-      factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('auth')),
-        factory.createIdentifier('resources.cfnResources.cfnUserPool'),
-      ),
-    );
-    const cfnUserPoolVariableStatement = factory.createVariableStatement(
-      [],
-      factory.createVariableDeclarationList([cfnUserPoolVariable], ts.NodeFlags.Const),
-    );
+    const cfnUserPoolVariableDeclaration = this.createVariableDeclaration('cfnUserPool', 'backend.auth.resources.cfnResources.cfnUserPool');
+    const cfnUserPoolVariableStatement = this.createVariableStatement(cfnUserPoolVariableDeclaration);
     const getOverrideValue = (value: number | string | boolean) => {
       if (typeof value === 'number') {
         return factory.createNumericLiteral(value);
@@ -89,20 +97,54 @@ export class BackendSynthesizer {
       }
       throw new TypeError(`unrecognized type: ${typeof value}`);
     };
+
+    const guestlogin = [];
+    const cfnIdentityPoolVariableDeclaration = this.createVariableDeclaration(
+      'cfnIdentityPool',
+      'backend.auth.resources.cfnResources.cfnIdentityPool',
+    );
+    const cfnIdentityPoolVariableStatement = this.createVariableStatement(cfnIdentityPoolVariableDeclaration);
     if (renderArgs.auth?.userPoolOverrides) {
       userPoolOverrides.push(cfnUserPoolVariableStatement);
       const addOverrideIdentifier = factory.createIdentifier('addPropertyOverride');
       for (const [overridePath, value] of Object.entries(renderArgs.auth.userPoolOverrides)) {
         userPoolOverrides.push(
           factory.createExpressionStatement(
-            factory.createCallExpression(factory.createPropertyAccessExpression(cfnUserPoolIdentifier, addOverrideIdentifier), undefined, [
-              factory.createStringLiteral(overridePath),
-              getOverrideValue(value as number | string | boolean),
-            ]),
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('cfnUserPool'), addOverrideIdentifier),
+              undefined,
+              [factory.createStringLiteral(overridePath), getOverrideValue(value as number | string | boolean)],
+            ),
           ),
         );
       }
     }
-    return factory.createNodeArray([...imports, backendStatement, ...userPoolOverrides], true);
+    if (!renderArgs.auth?.guestLogin) {
+      const addOverrideIdentifier = factory.createIdentifier('addPropertyOverride');
+      guestlogin.push(cfnIdentityPoolVariableStatement);
+      guestlogin.push(
+        factory.createExpressionStatement(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('cfnIdentityPool'), addOverrideIdentifier),
+            undefined,
+            [
+              factory.createStringLiteral('AllowUnauthenticatedIdentities'),
+              getOverrideValue(renderArgs.auth?.guestLogin as number | string | boolean),
+            ],
+          ),
+        ),
+        // factory.createExpressionStatement(
+        //   factory.createBinaryExpression(
+        //     factory.createPropertyAccessExpression(
+        //       factory.createIdentifier('cfnIdentityPool'),
+        //       factory.createIdentifier('allowUnauthenticatedIdentities')
+        //     ),
+        //     factory.createToken(ts.SyntaxKind.EqualsToken),
+        //     factory.createFalse(),
+        //   ),
+        // ),
+      );
+    }
+    return factory.createNodeArray([...imports, backendStatement, ...guestlogin, ...userPoolOverrides], true);
   };
 }

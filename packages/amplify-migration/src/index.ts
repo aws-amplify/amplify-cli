@@ -6,6 +6,7 @@ import { Gen2RenderingOptions, createGen2Renderer } from '@aws-amplify/amplify-g
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { S3Client } from '@aws-sdk/client-s3';
 import { BackendDownloader } from './backend_downloader.js';
 import { AppContextLogger } from './logger';
@@ -99,6 +100,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
   const s3Client = new S3Client();
   const cloudFormationClient = new CloudFormationClient();
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
+  const cognitoIdentityPoolClient = new CognitoIdentityClient();
   const appId = resolveAppId();
 
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
@@ -107,8 +109,12 @@ export async function executeAmplifyCommand(context: $TSContext) {
   await generateGen2Code({
     outputDirectory: './output',
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
-    authDefinitionFetcher: new AppAuthDefinitionFetcher(cognitoIdentityProviderClient, amplifyStackParser, backendEnvironmentResolver, () =>
-      getAuthTriggersConnections(context),
+    authDefinitionFetcher: new AppAuthDefinitionFetcher(
+      cognitoIdentityPoolClient,
+      cognitoIdentityProviderClient,
+      amplifyStackParser,
+      backendEnvironmentResolver,
+      () => getAuthTriggersConnections(context),
     ),
     dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
     analytics: new AppAnalytics(appId),

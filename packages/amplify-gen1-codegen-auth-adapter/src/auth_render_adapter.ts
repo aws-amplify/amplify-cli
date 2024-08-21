@@ -35,6 +35,7 @@ export interface AuthSynthesizerOptions {
   identityGroups?: GroupType[];
   webClient?: UserPoolClientType;
   authTriggerConnections?: AuthTriggerConnectionSourceMap;
+  guestLogin?: boolean;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -176,6 +177,7 @@ export const getAuthDefinition = ({
   identityGroups,
   webClient,
   authTriggerConnections,
+  guestLogin,
 }: AuthSynthesizerOptions): AuthDefinition => {
   const loginWith: any = { email: true };
   const mapIdentityProvider = {
@@ -212,5 +214,6 @@ export const getAuthDefinition = ({
     groups: getGroups(identityGroups),
     userPoolOverrides,
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
+    guestLogin,
   };
 };
