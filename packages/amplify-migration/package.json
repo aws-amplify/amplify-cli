@@ -1,0 +1,60 @@
+{
+  "name": "@aws-amplify/amplify-gen1-to-gen2-migration",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "lib/index.js",
+  "bin": {
+    "amplify-migrator": "lib/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --logHeapUsage",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/templates/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "jest": "^29.5.0"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-cli-core": "4.3.9",
+    "@aws-amplify/amplify-gen1-codegen-auth-adapter": "^0.0.1",
+    "@aws-amplify/amplify-gen1-codegen-storage-adapter": "^0.0.1",
+    "@aws-amplify/amplify-gen2-codegen": "^0.0.1",
+    "@aws-sdk/client-amplify": "^3.592.0",
+    "@aws-sdk/client-amplifybackend": "^3.592.0",
+    "@aws-sdk/client-cloudformation": "^3.592.0",
+    "@aws-sdk/client-cognito-identity": "^3.592.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.592.0",
+    "@aws-sdk/client-s3": "^3.592.0",
+    "@types/node": "^20.14.2",
+    "@types/unzipper": "^0.10.9",
+    "typescript": "^5.4.5",
+    "unzipper": "^0.12.1",
+    "yargs": "^17.7.2"
+  }
+}
