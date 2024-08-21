@@ -84,6 +84,7 @@ export interface AuthDefinition {
   userPoolOverrides?: UserPoolOverrides;
   lambdaTriggers?: Partial<AuthLambdaTriggers>;
   guestLogin?: boolean;
+  oAuthFlows?: string[];
 }
 
 const factory = ts.factory;

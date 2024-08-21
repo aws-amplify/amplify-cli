@@ -215,5 +215,6 @@ export const getAuthDefinition = ({
     userPoolOverrides,
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
     guestLogin,
+    oAuthFlows: webClient?.AllowedOAuthFlows,
   };
 };
