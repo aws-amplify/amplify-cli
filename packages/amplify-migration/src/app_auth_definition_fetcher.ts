@@ -11,6 +11,7 @@ import {
   LambdaConfigType,
   ListGroupsCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityClient, DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 
 export interface AppAuthDefinitionFetcher {
@@ -19,6 +20,7 @@ export interface AppAuthDefinitionFetcher {
 
 export class AppAuthDefinitionFetcher {
   constructor(
+    private cognitoIdentityPoolClient: CognitoIdentityClient,
     private cognitoIdentityProviderClient: CognitoIdentityProviderClient,
     private stackParser: AmplifyStackParser,
     private backendEnvironmentResolver: BackendEnvironmentResolver,
@@ -60,9 +62,15 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
+    const { AllowUnauthenticatedIdentities: guestLogin } = await this.cognitoIdentityPoolClient.send(
+      new DescribeIdentityPoolCommand({
+        IdentityPoolId: resourcesByLogicalId['IdentityPool'].PhysicalResourceId,
+      }),
+    );
+
     const authTriggerConnections = await this.getAuthTriggerConnections();
 
     assert(userPool, 'User pool not found');
-    return getAuthDefinition({ userPool, identityProviders, identityGroups, webClient, authTriggerConnections });
+    return getAuthDefinition({ userPool, identityProviders, identityGroups, webClient, authTriggerConnections, guestLogin });
   };
 }

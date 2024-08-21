@@ -76,6 +76,7 @@ export const createGen2Renderer = ({
     backendRenderOptions.auth = {
       importFrom: './auth/resource',
       userPoolOverrides: auth?.userPoolOverrides,
+      guestLogin: auth?.guestLogin,
     };
   }
   if (data) {
