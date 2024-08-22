@@ -124,8 +124,12 @@ const getGroups = (identityGroups?: GroupType[]): string[] => {
   if (!identityGroups || identityGroups.length === 0) {
     return [];
   }
+  const groupsWithPrecedence = identityGroups.filter((group) => group.Precedence !== undefined);
 
-  return identityGroups.map((group) => group.GroupName).filter((groupName): groupName is string => groupName !== undefined);
+  return groupsWithPrecedence
+    .sort((a, b) => (a.Precedence || 0) - (b.Precedence || 0))
+    .map((group) => group.GroupName)
+    .filter((groupName): groupName is string => groupName !== undefined);
 };
 
 /**
