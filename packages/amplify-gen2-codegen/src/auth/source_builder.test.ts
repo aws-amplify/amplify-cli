@@ -155,7 +155,7 @@ describe('render auth node', () => {
             loginOptions: {
               email: true,
             },
-            userAttributes: {
+            standardUserAttributes: {
               [attribute as Attribute]: {
                 mutable: truthiness,
                 required: truthiness,

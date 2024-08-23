@@ -9,6 +9,19 @@ export type StandardAttribute = {
   readonly required?: boolean;
 };
 
+export type CustomAttribute = {
+  readonly dataType: string | undefined;
+  readonly mutable?: boolean;
+
+  // StringAttributeConstraints
+  minLen?: number;
+  maxLen?: number;
+
+  // NumberAttributeConstraints
+  min?: number;
+  max?: number;
+};
+
 export type Attribute =
   | 'address'
   | 'birthdate'
@@ -42,6 +55,7 @@ export type EmailOptions = {
 };
 
 export type StandardAttributes = Partial<Record<Attribute, StandardAttribute>>;
+export type CustomAttributes = Partial<Record<`custom:${string}`, CustomAttribute>>;
 
 export type Group = string;
 
@@ -81,7 +95,8 @@ export interface AuthDefinition {
   loginOptions?: LoginOptions;
   groups?: Group[];
   mfa?: MultifactorOptions;
-  userAttributes?: StandardAttributes;
+  standardUserAttributes?: StandardAttributes;
+  customUserAttributes?: CustomAttributes;
   userPoolOverrides?: UserPoolOverrides;
   lambdaTriggers?: Partial<AuthLambdaTriggers>;
   guestLogin?: boolean;
@@ -225,21 +240,49 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
   return factory.createPropertyAssignment(logInWith, factory.createObjectLiteralExpression(assignments, true));
 }
 
-const createStandardAttributeDefinition = (attribute: StandardAttribute) => {
-  const properties = Object.keys(attribute).map((key) =>
-    factory.createPropertyAssignment(
-      factory.createIdentifier(key),
-      attribute[key as keyof StandardAttribute] ? factory.createTrue() : factory.createFalse(),
-    ),
-  );
+const createStandardAttributeDefinition = (attribute: StandardAttribute | CustomAttribute) => {
+  const properties: ts.PropertyAssignment[] = [];
+
+  for (const key of Object.keys(attribute)) {
+    const value = attribute[key as keyof (StandardAttribute | CustomAttribute)];
+
+    if (typeof value === 'boolean') {
+      properties.push(
+        factory.createPropertyAssignment(factory.createIdentifier(key), value ? factory.createTrue() : factory.createFalse()),
+      );
+    } else if (typeof value === 'string') {
+      properties.push(factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value)));
+    } else if (typeof value === 'number') {
+      properties.push(factory.createPropertyAssignment(factory.createIdentifier(key), factory.createNumericLiteral(value)));
+    }
+  }
+
   return factory.createObjectLiteralExpression(properties, true);
 };
 
-const createUserAttributeAssignments = (userAttributes: StandardAttributes) => {
+const createUserAttributeAssignments = (
+  standardAttributes: StandardAttributes | undefined,
+  customAttributes: CustomAttributes | undefined,
+) => {
   const userAttributeIdentifier = factory.createIdentifier('userAttributes');
-  const userAttributeProperties = Object.entries((userAttributes as StandardAttributes) ?? {}).map(([key, value]) => {
-    return factory.createPropertyAssignment(factory.createIdentifier(key), createStandardAttributeDefinition(value));
-  });
+  const userAttributeProperties = [];
+  if (standardAttributes !== undefined) {
+    const standardAttributeProperties = Object.entries(standardAttributes).map(([key, value]) => {
+      return factory.createPropertyAssignment(factory.createIdentifier(key), createStandardAttributeDefinition(value));
+    });
+    userAttributeProperties.push(...standardAttributeProperties);
+  }
+  if (customAttributes !== undefined) {
+    const customAttributeProperties = Object.entries(customAttributes)
+      .map(([key, value]) => {
+        if (value !== undefined) {
+          return factory.createPropertyAssignment(factory.createStringLiteral(key), createStandardAttributeDefinition(value));
+        }
+        return undefined;
+      })
+      .filter((property): property is ts.PropertyAssignment => property !== undefined);
+    userAttributeProperties.push(...customAttributeProperties);
+  }
   return factory.createPropertyAssignment(userAttributeIdentifier, factory.createObjectLiteralExpression(userAttributeProperties, true));
 };
 
@@ -250,10 +293,11 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions);
   defineAuthProperties.push(logInWithPropertyAssignment);
 
-  if (definition.userAttributes) {
-    const userAttributePropertyAssignment = createUserAttributeAssignments(definition.userAttributes);
-    defineAuthProperties.push(userAttributePropertyAssignment);
-  }
+  const userAttributePropertyAssignment = createUserAttributeAssignments(
+    definition.standardUserAttributes,
+    definition.customUserAttributes,
+  );
+  defineAuthProperties.push(userAttributePropertyAssignment);
 
   if (definition.groups?.length) {
     defineAuthProperties.push(

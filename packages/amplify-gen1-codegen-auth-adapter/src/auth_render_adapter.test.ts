@@ -206,7 +206,7 @@ void describe('auth codegen', () => {
         const result = getAuthDefinition({
           userPool: { SchemaAttributes: [{ Name: typedKey, Required: true, Mutable: false }] },
         });
-        assert.deepEqual(result.userAttributes, {
+        assert.deepEqual(result.standardUserAttributes, {
           [testValue as Attribute]: { required: true, mutable: false } as StandardAttribute,
         } as StandardAttributes);
       });

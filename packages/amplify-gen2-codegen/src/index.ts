@@ -22,6 +22,8 @@ import {
   LoginOptions,
   StandardAttribute,
   StandardAttributes,
+  CustomAttribute,
+  CustomAttributes,
   MultifactorOptions,
 } from './auth/source_builder';
 import {
@@ -132,6 +134,8 @@ export {
   LoginOptions,
   StandardAttribute,
   StandardAttributes,
+  CustomAttribute,
+  CustomAttributes,
   MultifactorOptions,
   AuthTriggerEvents,
   Lambda,

@@ -7,6 +7,8 @@ import {
   MultifactorOptions,
   StandardAttributes,
   StandardAttribute,
+  CustomAttribute,
+  CustomAttributes,
   Attribute,
 } from '@aws-amplify/amplify-gen2-codegen';
 import {
@@ -82,7 +84,7 @@ const getEmailConfig = (userPool: UserPoolType): EmailOptions => {
   };
 };
 
-const getUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined): StandardAttributes => {
+const getStandardUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined): StandardAttributes => {
   const mappedUserAttributeName = {
     address: 'address',
     birthdate: 'birthdate',
@@ -116,6 +118,32 @@ const getUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined):
       }
       return standardAttributes;
     }, {} as StandardAttributes) || {}
+  );
+};
+
+const getCustomUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined): CustomAttributes => {
+  return (
+    signupAttributes?.reduce((customAttributes: CustomAttributes, attribute: SchemaAttributeType) => {
+      if (attribute.Name !== undefined && attribute.Name.startsWith('custom:')) {
+        const customAttribute: CustomAttribute = {
+          mutable: attribute.Mutable,
+          dataType: attribute.AttributeDataType,
+        };
+
+        if (attribute.NumberAttributeConstraints) {
+          customAttribute.min = Number(attribute.NumberAttributeConstraints.MinValue);
+          customAttribute.max = Number(attribute.NumberAttributeConstraints.MaxValue);
+        } else if (attribute.StringAttributeConstraints) {
+          customAttribute.minLen = Number(attribute.StringAttributeConstraints.MinLength);
+          customAttribute.maxLen = Number(attribute.StringAttributeConstraints.MaxLength);
+        }
+        return {
+          ...customAttributes,
+          [attribute.Name]: customAttribute,
+        };
+      }
+      return customAttributes;
+    }, {} as CustomAttributes) || {}
   );
 };
 
@@ -213,7 +241,8 @@ export const getAuthDefinition = ({
   return {
     loginOptions: loginWith,
     mfa: getMfaConfiguration(userPool.MfaConfiguration),
-    userAttributes: getUserAttributes(userPool.SchemaAttributes),
+    standardUserAttributes: getStandardUserAttributes(userPool.SchemaAttributes),
+    customUserAttributes: getCustomUserAttributes(userPool.SchemaAttributes),
     groups: getGroups(identityGroups),
     userPoolOverrides,
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
