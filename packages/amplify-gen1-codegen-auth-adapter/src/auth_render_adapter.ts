@@ -130,10 +130,10 @@ const getCustomUserAttributes = (signupAttributes: SchemaAttributeType[] | undef
           dataType: attribute.AttributeDataType,
         };
 
-        if (attribute.NumberAttributeConstraints) {
+        if (attribute.NumberAttributeConstraints && Object.keys(attribute.NumberAttributeConstraints).length > 0) {
           customAttribute.min = Number(attribute.NumberAttributeConstraints.MinValue);
           customAttribute.max = Number(attribute.NumberAttributeConstraints.MaxValue);
-        } else if (attribute.StringAttributeConstraints) {
+        } else if (attribute.StringAttributeConstraints && Object.keys(attribute.StringAttributeConstraints).length > 0) {
           customAttribute.minLen = Number(attribute.StringAttributeConstraints.MinLength);
           customAttribute.maxLen = Number(attribute.StringAttributeConstraints.MaxLength);
         }
