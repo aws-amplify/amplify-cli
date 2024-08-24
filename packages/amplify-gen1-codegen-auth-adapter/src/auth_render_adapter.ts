@@ -159,6 +159,17 @@ const getGroups = (identityGroups?: GroupType[]): string[] => {
     .filter((groupName): groupName is string => groupName !== undefined);
 };
 
+const getScopes = (scopes: string[]): string[] => {
+  const mappedScopes: Record<string, string> = {
+    email: 'EMAIL',
+    openid: 'OPENID',
+    phone: 'PHONE',
+    profile: 'PROFILE',
+    'aws.cognito.signin.user.admin': 'COGNITO_ADMIN',
+  };
+  return scopes.map((scope) => mappedScopes[scope] as string);
+};
+
 /**
  * [getAuthDefinition] describes gen 1 auth resources in terms that can be used to generate Gen 2 code.
  */
@@ -235,6 +246,9 @@ export const getAuthDefinition = ({
   }
   if (webClient?.LogoutURLs) {
     loginWith.logoutURLs = webClient?.LogoutURLs;
+  }
+  if (webClient?.AllowedOAuthScopes) {
+    loginWith.scopes = getScopes(webClient?.AllowedOAuthScopes);
   }
 
   const userPoolOverrides = getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {});

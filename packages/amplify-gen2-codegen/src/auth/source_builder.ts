@@ -4,6 +4,8 @@ import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTriggersProperty, Lambda } from '../function/lambda';
 
+export type Scope = 'PHONE' | 'EMAIL' | 'OPENID' | 'PROFILE' | 'COGNITO_ADMIN';
+
 export type StandardAttribute = {
   readonly mutable?: boolean;
   readonly required?: boolean;
@@ -69,6 +71,7 @@ export type LoginOptions = {
   facebookLogin?: boolean;
   callbackURLs?: string[];
   logoutURLs?: string[];
+  scopes?: Scope[];
 };
 
 export type MultifactorOptions = {
@@ -173,6 +176,15 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
         clientId: facebookClientID,
         clientSecret: facebookClientSecret,
       }),
+    );
+  }
+
+  if (loginOptions.scopes) {
+    providerAssignments.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('scopes'),
+        factory.createArrayLiteralExpression(loginOptions.scopes.map((scope) => factory.createStringLiteral(scope))),
+      ),
     );
   }
 
