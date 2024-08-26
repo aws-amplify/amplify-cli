@@ -103,6 +103,8 @@ export interface AuthDefinition {
   lambdaTriggers?: Partial<AuthLambdaTriggers>;
   guestLogin?: boolean;
   oAuthFlows?: string[];
+  readAttributes?: string[];
+  writeAttributes?: string[];
 }
 
 const factory = ts.factory;

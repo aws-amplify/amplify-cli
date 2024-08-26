@@ -262,5 +262,7 @@ export const getAuthDefinition = ({
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
     guestLogin,
     oAuthFlows: webClient?.AllowedOAuthFlows,
+    readAttributes: webClient?.ReadAttributes,
+    writeAttributes: webClient?.WriteAttributes,
   };
 };
