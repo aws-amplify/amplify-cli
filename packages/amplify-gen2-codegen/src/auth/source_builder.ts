@@ -49,7 +49,9 @@ export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
 
 export type PasswordPolicyPath = `Policies.PasswordPolicy.${keyof PasswordPolicyType}`;
 
-export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, string | number | boolean>>;
+export type PolicyOverrides = Partial<Record<PasswordPolicyPath | string, string | boolean | number | string[]>>;
+
+// export type UserPoolOverrides = Partial<Record<PasswordPolicyPath | string, string | number | boolean | string[]>>;
 
 export type EmailOptions = {
   emailVerificationBody: string;
@@ -99,7 +101,7 @@ export interface AuthDefinition {
   mfa?: MultifactorOptions;
   standardUserAttributes?: StandardAttributes;
   customUserAttributes?: CustomAttributes;
-  userPoolOverrides?: UserPoolOverrides;
+  userPoolOverrides?: PolicyOverrides;
   lambdaTriggers?: Partial<AuthLambdaTriggers>;
   guestLogin?: boolean;
   oAuthFlows?: string[];

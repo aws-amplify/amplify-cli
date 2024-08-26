@@ -9,7 +9,7 @@ import ts, {
   ImportDeclaration,
   VariableStatement,
 } from 'typescript';
-import { UserPoolOverrides } from '../auth/source_builder.js';
+import { PolicyOverrides } from '../auth/source_builder.js';
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
@@ -17,7 +17,7 @@ export interface BackendRenderParameters {
   };
   auth?: {
     importFrom: string;
-    userPoolOverrides?: UserPoolOverrides;
+    userPoolOverrides?: PolicyOverrides;
     guestLogin?: boolean;
     oAuthFlows?: string[];
     readAttributes?: string[];

@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { BackendSynthesizer } from './synthesizer';
 import { printNodeArray } from '../test_utils/ts_node_printer';
 import { getImportRegex } from '../test_utils/import_regex';
-import { UserPoolOverrides } from '../auth/source_builder';
+import { PolicyOverrides } from '../auth/source_builder';
 
 describe('BackendRenderer', () => {
   describe('overrides', () => {
@@ -19,7 +19,7 @@ describe('BackendRenderer', () => {
           assert(!output.includes('cfnUserPool'));
         });
       });
-      const testCases: UserPoolOverrides = {
+      const testCases: PolicyOverrides = {
         'Policies.PasswordPolicy.MinimumLength': 32,
         'Policies.PasswordPolicy.RequireNumbers': true,
         'Policies.PasswordPolicy.RequireSymbols': false,
