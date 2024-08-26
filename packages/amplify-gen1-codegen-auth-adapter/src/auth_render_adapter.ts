@@ -10,6 +10,7 @@ import {
   CustomAttribute,
   CustomAttributes,
   Attribute,
+  PolicyOverrides,
 } from '@aws-amplify/amplify-gen2-codegen';
 import {
   LambdaConfigType,
@@ -47,10 +48,8 @@ export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
   TemporaryPasswordValidityDays: 3,
 };
 
-export type PasswordPolicyOverrides = Record<PasswordPolicyPath, string | boolean | number>;
-
-const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<PasswordPolicyOverrides> => {
-  const policyOverrides: Partial<PasswordPolicyOverrides> = {};
+const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<PolicyOverrides> => {
+  const policyOverrides: Partial<PolicyOverrides> = {};
   const passwordOverridePath = (policyKey: keyof PasswordPolicyType): PasswordPolicyPath => `Policies.PasswordPolicy.${policyKey}`;
   for (const key of Object.keys(passwordPolicy)) {
     const typedKey: keyof PasswordPolicyType = key as keyof PasswordPolicyType;
@@ -62,6 +61,18 @@ const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>)
     }
   }
   return policyOverrides;
+};
+
+const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> => {
+  const userPoolOverrides: Partial<PolicyOverrides> = {};
+  Object.assign(userPoolOverrides, getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {}));
+  if (userPool.Name) {
+    const userNamePolicy: Partial<PolicyOverrides> = {
+      UserPoolName: userPool.Name,
+    };
+    Object.assign(userPoolOverrides, userNamePolicy);
+  }
+  return userPoolOverrides;
 };
 
 const getMfaConfiguration = (mfa?: UserPoolMfaType): MultifactorOptions => {
@@ -251,7 +262,7 @@ export const getAuthDefinition = ({
     loginWith.scopes = getScopes(webClient?.AllowedOAuthScopes);
   }
 
-  const userPoolOverrides = getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {});
+  const userPoolOverrides = getUserPoolOverrides(userPool);
   return {
     loginOptions: loginWith,
     mfa: getMfaConfiguration(userPool.MfaConfiguration),
