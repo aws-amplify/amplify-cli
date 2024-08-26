@@ -20,6 +20,8 @@ export interface BackendRenderParameters {
     userPoolOverrides?: UserPoolOverrides;
     guestLogin?: boolean;
     oAuthFlows?: string[];
+    readAttributes?: string[];
+    writeAttributes?: string[];
   };
   storage?: {
     importFrom: string;
@@ -153,20 +155,39 @@ export class BackendSynthesizer {
       );
     }
 
-    if (renderArgs.auth?.oAuthFlows) {
+    if (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) {
       const cfnUserPoolClientvariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnUserPoolClient', 'backend.auth.resources.cfnResources.cfnUserPoolClient'),
       );
       nodes.push(cfnUserPoolClientvariableStatement);
+      if (renderArgs.auth?.oAuthFlows) {
+        nodes.push(
+          this.createOverrideStatement(
+            factory.createIdentifier('cfnUserPoolClient'),
+            'AllowedOAuthFlows',
+            renderArgs.auth?.oAuthFlows as number | string | boolean | string[],
+          ),
+        );
+      }
+      if (renderArgs.auth?.readAttributes) {
+        nodes.push(
+          this.createOverrideStatement(
+            factory.createIdentifier('cfnUserPoolClient'),
+            'ReadAttributes',
+            renderArgs.auth?.readAttributes as number | string | boolean | string[],
+          ),
+        );
+      }
+    }
+    if (renderArgs.auth?.writeAttributes) {
       nodes.push(
         this.createOverrideStatement(
           factory.createIdentifier('cfnUserPoolClient'),
-          'AllowedOAuthFlows',
-          renderArgs.auth?.oAuthFlows as number | string | boolean | string[],
+          'WriteAttributes',
+          renderArgs.auth?.writeAttributes as string[],
         ),
       );
     }
-
     return factory.createNodeArray([...imports, backendStatement, ...nodes], true);
   }
 }

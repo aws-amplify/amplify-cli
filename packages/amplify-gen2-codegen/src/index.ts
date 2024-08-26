@@ -80,6 +80,8 @@ export const createGen2Renderer = ({
       userPoolOverrides: auth?.userPoolOverrides,
       guestLogin: auth?.guestLogin,
       oAuthFlows: auth?.oAuthFlows,
+      readAttributes: auth?.readAttributes,
+      writeAttributes: auth?.writeAttributes,
     };
   }
   if (data) {
