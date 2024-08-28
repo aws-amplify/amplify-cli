@@ -25,6 +25,8 @@ import {
   CustomAttribute,
   CustomAttributes,
   MultifactorOptions,
+  OidcOptions,
+  SamlOptions,
 } from './auth/source_builder';
 import {
   StorageRenderParameters,
@@ -144,4 +146,6 @@ export {
   AuthLambdaTriggers,
   StorageTriggerEvent,
   DataDefinition,
+  SamlOptions,
+  OidcOptions,
 };

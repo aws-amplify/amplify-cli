@@ -11,6 +11,8 @@ import {
   CustomAttributes,
   Attribute,
   PolicyOverrides,
+  SamlOptions,
+  OidcOptions,
 } from '@aws-amplify/amplify-gen2-codegen';
 import {
   LambdaConfigType,
@@ -22,6 +24,7 @@ import {
   UserPoolClientType,
   SchemaAttributeType,
   GroupType,
+  IdentityProviderType,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 export interface AuthTriggerConnection {
@@ -34,6 +37,7 @@ export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigTy
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
   identityProviders?: ProviderDescription[];
+  identityProvidersDetails?: IdentityProviderType[];
   identityGroups?: GroupType[];
   webClient?: UserPoolClientType;
   authTriggerConnections?: AuthTriggerConnectionSourceMap;
@@ -227,6 +231,7 @@ const getAuthTriggers = (
 export const getAuthDefinition = ({
   userPool,
   identityProviders,
+  identityProvidersDetails,
   identityGroups,
   webClient,
   authTriggerConnections,
@@ -246,6 +251,44 @@ export const getAuthDefinition = ({
       loginWith[loginWithProperty] = true;
     }
   }
+
+  if (identityProvidersDetails) {
+    const oidcOptions: OidcOptions[] = [];
+    let samlOptions: SamlOptions | undefined;
+
+    for (const provider of identityProvidersDetails) {
+      const { ProviderType, ProviderName, ProviderDetails } = provider;
+
+      if (ProviderType === IdentityProviderTypeType.OIDC && ProviderDetails) {
+        const { oidc_issuer, authorize_url, token_url, attributes_url, jwks_uri } = ProviderDetails;
+        const oidcOption: OidcOptions = {
+          issuerUrl: oidc_issuer,
+        };
+        if (ProviderName) oidcOption.name = ProviderName;
+        if (authorize_url && token_url && attributes_url && jwks_uri) {
+          oidcOption.endpoints = {
+            authorization: authorize_url,
+            token: token_url,
+            userInfo: attributes_url,
+            jwksUri: jwks_uri,
+          };
+        }
+        oidcOptions.push(oidcOption);
+      } else if (ProviderType === IdentityProviderTypeType.SAML && ProviderDetails) {
+        const { metadataURL, metadataContent } = ProviderDetails;
+        samlOptions = {
+          metadata: {
+            metadataContent: metadataURL || metadataContent,
+            metadataType: metadataURL ? 'URL' : 'FILE',
+          },
+        };
+        if (ProviderName) samlOptions.name = ProviderName;
+      }
+    }
+    loginWith.oidcLogin = oidcOptions;
+    loginWith.samlLogin = samlOptions;
+  }
+
   if (userPool.UsernameAttributes?.includes('phone_number')) {
     loginWith.phone = true;
   }
