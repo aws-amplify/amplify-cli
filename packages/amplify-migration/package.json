@@ -1,14 +1,15 @@
 {
-  "name": "@aws-amplify/amplify-gen1-to-gen2-migration",
+  "name": "@aws-amplify/migrate",
   "version": "0.0.1",
-  "type": "commonjs",
-  "main": "lib/index.js",
-  "bin": {
-    "amplify-migrator": "lib/index.js"
+  "type": "module",
+  "main": "lib/migrate.js",
+  "bin": "lib/migrate.js",
+  "imports": {
+    "#package.json": "./package.json"
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest --logHeapUsage",
+    "test": "tsx --test --test-reporter spec",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "jest": {
@@ -38,7 +39,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "jest": "^29.5.0"
+    "tsx": "^4.19.0"
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.3.9",
@@ -53,6 +54,7 @@
     "@aws-sdk/client-s3": "^3.592.0",
     "@types/node": "^20.14.2",
     "@types/unzipper": "^0.10.9",
+    "kleur": "^4.1.5",
     "typescript": "^5.4.5",
     "unzipper": "^0.12.1",
     "yargs": "^17.7.2"
