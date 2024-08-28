@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test-ci": "tsx --test --test-reporter spec --ci",
+    "test-ci": "tsx --test --test-reporter spec",
     "test": "tsx --test --test-reporter spec",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
