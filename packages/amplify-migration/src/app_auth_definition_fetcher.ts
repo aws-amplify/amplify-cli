@@ -10,6 +10,9 @@ import {
   ListIdentityProvidersCommand,
   LambdaConfigType,
   ListGroupsCommand,
+  IdentityProviderType,
+  IdentityProviderTypeType,
+  DescribeIdentityProviderCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient, DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
@@ -56,6 +59,21 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
+    const identityProvidersDetails: IdentityProviderType[] = [];
+    for (const provider of identityProviders || []) {
+      if (provider.ProviderType === IdentityProviderTypeType.SAML || provider.ProviderType === IdentityProviderTypeType.OIDC) {
+        const { IdentityProvider: providerDetails } = await this.cognitoIdentityProviderClient.send(
+          new DescribeIdentityProviderCommand({
+            UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+            ProviderName: provider.ProviderName,
+          }),
+        );
+        if (providerDetails) {
+          identityProvidersDetails.push(providerDetails);
+        }
+      }
+    }
+
     const { Groups: identityGroups } = await this.cognitoIdentityProviderClient.send(
       new ListGroupsCommand({
         UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
@@ -71,6 +89,14 @@ export class AppAuthDefinitionFetcher {
     const authTriggerConnections = await this.getAuthTriggerConnections();
 
     assert(userPool, 'User pool not found');
-    return getAuthDefinition({ userPool, identityProviders, identityGroups, webClient, authTriggerConnections, guestLogin });
+    return getAuthDefinition({
+      userPool,
+      identityProviders,
+      identityProvidersDetails,
+      identityGroups,
+      webClient,
+      authTriggerConnections,
+      guestLogin,
+    });
   };
 }

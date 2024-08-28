@@ -59,6 +59,40 @@ describe('render auth node', () => {
         assert.match(source, /logoutUrls: \[\"https:\/\/example\.com\/logout\"\]/);
       });
     });
+    describe('OIDC', () => {
+      it('renders the oidc provider', () => {
+        const rendered = renderAuthNode({
+          loginOptions: {
+            oidcLogin: [{ issuerUrl: 'https://e' }, { name: 'Sanay', issuerUrl: 'hey' }],
+            callbackURLs: ['https://example.com/callback'],
+            logoutURLs: ['https://example.com/logout'],
+          },
+        });
+        const source = printNodeArray(rendered);
+        assert.match(source, /oidc:/);
+        assert.match(source, /clientId: secret\("OIDC_CLIENT_ID_1"\)/);
+        assert.match(source, /clientSecret: secret\("OIDC_CLIENT_SECRET_1"\)/);
+        assert.match(source, /issuerUrl: \"https:\/\/e\"/);
+        assert.match(source, /issuerUrl: \"hey\"/);
+        assert.match(source, /name: "Sanay"/);
+      });
+    });
+    describe('SAML', () => {
+      it('renders the saml provider', () => {
+        const rendered = renderAuthNode({
+          loginOptions: {
+            samlLogin: { name: 'Sanay', metadata: { metadataContent: 'content', metadataType: 'URL' } },
+            callbackURLs: ['https://example.com/callback'],
+            logoutURLs: ['https://example.com/logout'],
+          },
+        });
+        const source = printNodeArray(rendered);
+        assert.match(source, /saml:/);
+        assert.match(source, /metadataContent: \"content\"/);
+        assert.match(source, /metadataType: \"URL\"/);
+        assert.match(source, /name: "Sanay"/);
+      });
+    });
   });
   describe('lambda', () => {
     it('imports defineFunction when a lambda trigger is defined', () => {
@@ -245,7 +279,6 @@ describe('render auth node', () => {
         };
         const node = renderAuthNode(authDefinition);
         const source = printNodeArray(node);
-        console.log(source);
         assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+phone:\s?true\s+\}\s+\}\)/);
       });
     });

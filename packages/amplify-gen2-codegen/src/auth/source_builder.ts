@@ -63,6 +63,29 @@ export type CustomAttributes = Partial<Record<`custom:${string}`, CustomAttribut
 
 export type Group = string;
 
+export type MetadataOptions = {
+  metadataContent: string;
+  metadataType: 'URL' | 'FILE';
+};
+
+export type SamlOptions = {
+  name?: string;
+  metadata: MetadataOptions;
+};
+
+export type OidcEndPoints = {
+  authorization?: string;
+  token?: string;
+  userInfo?: string;
+  jwksUri?: string;
+};
+
+export type OidcOptions = {
+  issuerUrl: string;
+  name?: string;
+  endpoints?: OidcEndPoints;
+};
+
 export type LoginOptions = {
   email?: boolean;
   phone?: boolean;
@@ -71,6 +94,8 @@ export type LoginOptions = {
   amazonLogin?: boolean;
   appleLogin?: boolean;
   facebookLogin?: boolean;
+  oidcLogin?: OidcOptions[];
+  samlLogin?: SamlOptions;
   callbackURLs?: string[];
   logoutURLs?: string[];
   scopes?: Scope[];
@@ -126,6 +151,9 @@ const appleSiwaKeyId = 'SIWA_KEY_ID';
 const appleSiwaPrivateKey = 'SIWA_PRIVATE_KEY';
 const appleSiwaTeamID = 'SIWA_TEAM_ID';
 
+const oidcClientID = 'OIDC_CLIENT_ID';
+const oidcClientSecret = 'OIDC_CLIENT_SECRET';
+
 function createProviderConfig(config: Record<string, string>) {
   return Object.entries(config).map(([key, value]) =>
     factory.createPropertyAssignment(
@@ -140,6 +168,22 @@ function createProviderPropertyAssignment(name: string, config: Record<string, s
     factory.createIdentifier(name),
     factory.createObjectLiteralExpression(createProviderConfig(config), true),
   );
+}
+
+function createOidcSamlPropertyAssignments(config: Record<string, string | Record<string, any>>): PropertyAssignment[] {
+  return Object.entries(config).flatMap(([key, value]) => {
+    if (typeof value === 'string') {
+      return [factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))];
+    } else if (typeof value === 'object' && value !== null) {
+      return [
+        factory.createPropertyAssignment(
+          factory.createIdentifier(key),
+          factory.createObjectLiteralExpression(createOidcSamlPropertyAssignments(value), true),
+        ),
+      ];
+    }
+    return [];
+  });
 }
 
 function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, callbackUrls?: string[], logoutUrls?: string[]) {
@@ -180,6 +224,44 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
         clientId: facebookClientID,
         clientSecret: facebookClientSecret,
       }),
+    );
+  }
+
+  if (loginOptions.samlLogin) {
+    providerAssignments.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('saml'),
+        factory.createObjectLiteralExpression(createOidcSamlPropertyAssignments(loginOptions.samlLogin), true),
+      ),
+    );
+  }
+
+  if (loginOptions.oidcLogin) {
+    providerAssignments.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('oidc'),
+        factory.createArrayLiteralExpression(
+          loginOptions.oidcLogin.map((oidc, index) =>
+            factory.createObjectLiteralExpression(
+              [
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('clientId'),
+                  factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(`${oidcClientID}_${index + 1}`)]),
+                ),
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('clientSecret'),
+                  factory.createCallExpression(secretIdentifier, undefined, [
+                    factory.createStringLiteral(`${oidcClientSecret}_${index + 1}`),
+                  ]),
+                ),
+                ...createOidcSamlPropertyAssignments(oidc),
+              ],
+              true,
+            ),
+          ),
+          true,
+        ),
+      ),
     );
   }
 
@@ -244,7 +326,14 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
   if (logInDefinition.phone === true) {
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
   }
-  if (logInDefinition.amazonLogin || logInDefinition.googleLogin || logInDefinition.facebookLogin || logInDefinition.appleLogin) {
+  if (
+    logInDefinition.amazonLogin ||
+    logInDefinition.googleLogin ||
+    logInDefinition.facebookLogin ||
+    logInDefinition.appleLogin ||
+    logInDefinition.oidcLogin ||
+    logInDefinition.samlLogin
+  ) {
     assignments.push(
       factory.createPropertyAssignment(
         factory.createIdentifier('externalProviders'),
@@ -308,11 +397,9 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions);
   defineAuthProperties.push(logInWithPropertyAssignment);
 
-  const userAttributePropertyAssignment = createUserAttributeAssignments(
-    definition.standardUserAttributes,
-    definition.customUserAttributes,
-  );
-  defineAuthProperties.push(userAttributePropertyAssignment);
+  if (definition.customUserAttributes || definition.standardUserAttributes) {
+    defineAuthProperties.push(createUserAttributeAssignments(definition.standardUserAttributes, definition.customUserAttributes));
+  }
 
   if (definition.groups?.length) {
     defineAuthProperties.push(
