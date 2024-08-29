@@ -1,6 +1,5 @@
 import yargs from 'yargs';
 import assert from 'node:assert';
-// import { TestCommandRunner } from '../../test-utils/command_runner';
 import { createGen2Command } from './gen2_command_factory';
 import { runCommandAsync } from '../../test-utils/command_runner';
 
@@ -11,7 +10,6 @@ import { runCommandAsync } from '../../test-utils/command_runner';
 describe('top level gen2 command', () => {
   const gen2Command = createGen2Command();
   const parser = yargs().command(gen2Command);
-  // const commandRunner = new TestCommandRunner(parser);
 
   it('includes gen2 subcommands in help output', async () => {
     const output = await runCommandAsync(parser, 'gen2 --help');
