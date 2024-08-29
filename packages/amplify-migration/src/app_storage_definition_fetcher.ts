@@ -3,10 +3,10 @@ import assert from 'node:assert';
 import path from 'node:path';
 import { getStorageDefinition } from '@aws-amplify/amplify-gen1-codegen-storage-adapter';
 import { BackendDownloader } from './backend_downloader.js';
-import { fileOrDirectoryExists } from './directory_exists.js';
 import { StorageRenderParameters } from '@aws-amplify/amplify-gen2-codegen';
 import { GetBucketNotificationConfigurationCommand, S3Client } from '@aws-sdk/client-s3';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { fileOrDirectoryExists } from './directory_exists';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
@@ -21,6 +21,7 @@ export class AppStorageDefinitionFetcher {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
     return JSON.parse(contents);
   };
+
   getDefinition = async (): Promise<StorageRenderParameters | undefined> => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     assert(backendEnvironment?.deploymentArtifacts);
@@ -36,9 +37,8 @@ export class AppStorageDefinitionFetcher {
       const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
       assert(await fileOrDirectoryExists(cliInputsPath));
       const cliInputs = await this.readJsonFile(cliInputsPath);
-      assert(cliInputs.bucketName);
-      const { bucketName } = cliInputs;
-      console.log(bucketName);
+      const bucketName = amplifyMeta.storage[storageName].output.BucketName;
+      assert(bucketName);
       const triggers = await this.s3Client.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
       console.log('triggers', triggers);
       const storageOptions = getStorageDefinition({

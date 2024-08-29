@@ -456,5 +456,6 @@
   "yarnrc",
   "yesno",
   "yyyymmddhhmmss",
-  "zoneinfo"
+  "zoneinfo",
+  "yargs"
 ]
