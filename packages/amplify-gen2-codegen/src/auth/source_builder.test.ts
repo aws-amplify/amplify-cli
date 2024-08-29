@@ -129,47 +129,63 @@ describe('render auth node', () => {
     });
   });
   describe('username attributes', () => {
-    const attributes: Array<keyof StandardAttributes> = [
-      'email',
-      'gender',
-      'locale',
-      'address',
-      'website',
-      'fullname',
-      'nickname',
-      'timezone',
-      'birthdate',
-      'givenName',
-      'familyName',
-      'middleName',
-      'phoneNumber',
-      'profilePage',
-      'profilePicture',
-      'lastUpdateTime',
-      'preferredUsername',
-    ];
-    for (const attribute of attributes) {
-      for (const truthiness of [true, false]) {
-        it(`renders ${attribute}: ${truthiness} individually`, () => {
-          const authDefinition: AuthDefinition = {
-            loginOptions: {
-              email: true,
-            },
-            standardUserAttributes: {
-              [attribute as Attribute]: {
-                mutable: truthiness,
-                required: truthiness,
+    describe('Standard Attributes', () => {
+      const attributes: Array<keyof StandardAttributes> = [
+        'email',
+        'gender',
+        'locale',
+        'address',
+        'website',
+        'fullname',
+        'nickname',
+        'timezone',
+        'birthdate',
+        'givenName',
+        'familyName',
+        'middleName',
+        'phoneNumber',
+        'profilePage',
+        'profilePicture',
+        'lastUpdateTime',
+        'preferredUsername',
+      ];
+      for (const attribute of attributes) {
+        for (const truthiness of [true, false]) {
+          it(`renders ${attribute}: ${truthiness} individually`, () => {
+            const authDefinition: AuthDefinition = {
+              loginOptions: {
+                email: true,
               },
-            },
-          };
-          const node = renderAuthNode(authDefinition);
-          const source = printNodeArray(node);
-          assert(source.includes(attribute));
-          assert(source.includes(`mutable: ${truthiness}`));
-          assert(source.includes(`required: ${truthiness}`));
-        });
+              standardUserAttributes: {
+                [attribute as Attribute]: {
+                  mutable: truthiness,
+                  required: truthiness,
+                },
+              },
+            };
+            const node = renderAuthNode(authDefinition);
+            const source = printNodeArray(node);
+            assert(source.includes(attribute));
+            assert(source.includes(`mutable: ${truthiness}`));
+            assert(source.includes(`required: ${truthiness}`));
+          });
+        }
       }
-    }
+    });
+    describe('Custom Attributes', () => {
+      it('renders custom attributes', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            email: true,
+          },
+          customUserAttributes: { 'custom:Test1': { dataType: 'Number', mutable: true, min: 10, max: 100 } },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert(source.includes('custom:Test1'));
+        assert(source.includes('dataType: "Number"'));
+      });
+    });
   });
   describe('groups', () => {
     it('renders groups', () => {
@@ -245,7 +261,6 @@ describe('render auth node', () => {
         };
         const node = renderAuthNode(authDefinition);
         const source = printNodeArray(node);
-        console.log(source);
         assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+phone:\s?true\s+\}\s+\}\)/);
       });
     });

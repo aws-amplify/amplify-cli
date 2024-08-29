@@ -177,52 +177,92 @@ void describe('auth codegen', () => {
       });
     }
   });
-  // Create User Attribute test taking in context the function in auth_render_adapter.ts
 
-  void describe('Sign-up User attributes', () => {
-    const mappedUserAttributeName = {
-      address: 'address',
-      birthdate: 'birthdate',
-      email: 'email',
-      family_name: 'familyName',
-      gender: 'gender',
-      given_name: 'givenName',
-      locale: 'locale',
-      middle_name: 'middleName',
-      name: 'fullname',
-      nickname: 'nickname',
-      phone_number: 'phoneNumber',
-      picture: 'profilePicture',
-      preferred_username: 'preferredUsername',
-      profile: 'profilePage',
-      zoneinfo: 'timezone',
-      updated_at: 'lastUpdateTime',
-      website: 'website',
-    };
-    for (const key in mappedUserAttributeName) {
-      const typedKey = key as keyof typeof mappedUserAttributeName;
-      const testValue = mappedUserAttributeName[typedKey];
-      void it(`sets the attribute.Name ${typedKey} to ${testValue}`, () => {
-        const result = getAuthDefinition({
-          userPool: { SchemaAttributes: [{ Name: typedKey, Required: true, Mutable: false }] },
+  void describe('User attributes', () => {
+    void describe('Sign-up Standard User Attributes', () => {
+      const mappedUserAttributeName = {
+        address: 'address',
+        birthdate: 'birthdate',
+        email: 'email',
+        family_name: 'familyName',
+        gender: 'gender',
+        given_name: 'givenName',
+        locale: 'locale',
+        middle_name: 'middleName',
+        name: 'fullname',
+        nickname: 'nickname',
+        phone_number: 'phoneNumber',
+        picture: 'profilePicture',
+        preferred_username: 'preferredUsername',
+        profile: 'profilePage',
+        zoneinfo: 'timezone',
+        updated_at: 'lastUpdateTime',
+        website: 'website',
+      };
+      for (const key in mappedUserAttributeName) {
+        const typedKey = key as keyof typeof mappedUserAttributeName;
+        const testValue = mappedUserAttributeName[typedKey];
+        void it(`sets the attribute.Name ${typedKey} to ${testValue}`, () => {
+          const result = getAuthDefinition({
+            userPool: { SchemaAttributes: [{ Name: typedKey, Required: true, Mutable: false }] },
+          });
+          assert.deepEqual(result.standardUserAttributes, {
+            [testValue as Attribute]: { required: true, mutable: false } as StandardAttribute,
+          } as StandardAttributes);
         });
-        assert.deepEqual(result.standardUserAttributes, {
-          [testValue as Attribute]: { required: true, mutable: false } as StandardAttribute,
-        } as StandardAttributes);
+      }
+      void it('sets the standard attributes to empty object if no attributes are passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+        });
+        assert.deepEqual(result.standardUserAttributes, {});
       });
-    }
+    });
+    void describe('Custom User Attributes', () => {
+      void it('sets the custom attributes', () => {
+        const result = getAuthDefinition({
+          userPool: {
+            SchemaAttributes: [
+              {
+                Name: 'custom:Test1',
+                AttributeDataType: 'Number',
+                Mutable: true,
+                NumberAttributeConstraints: { MinValue: '10', MaxValue: '100' },
+              },
+              {
+                Name: 'custom:Test2',
+                AttributeDataType: 'String',
+                Mutable: true,
+                StringAttributeConstraints: { MinLength: '10', MaxLength: '100' },
+              },
+            ],
+          },
+        });
+        assert.deepEqual(result.customUserAttributes, {
+          'custom:Test1': { dataType: 'Number', mutable: true, min: 10, max: 100 },
+          'custom:Test2': { dataType: 'String', mutable: true, minLen: 10, maxLen: 100 },
+        });
+      });
+      void it('sets the custom attributes to empty object if no custom attributes are passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+        });
+        assert.deepEqual(result.customUserAttributes, {});
+      });
+    });
   });
-  // Groups
+
   void describe('User pool Groups', () => {
-    void it('sets the group names', () => {
+    void it('sets the group names and sorts according to precedence', () => {
       const result = getAuthDefinition({
         userPool: {},
         identityGroups: [
-          { GroupName: 'group1', Precedence: 0 },
-          { GroupName: 'group2', Precedence: 1 },
+          { GroupName: 'group3', Precedence: 3 },
+          { GroupName: 'group1', Precedence: 1 },
+          { GroupName: 'group2', Precedence: 2 },
         ],
       });
-      assert.deepEqual(result.groups, ['group1', 'group2']);
+      assert.deepEqual(result.groups, ['group1', 'group2', 'group3']);
     });
     void it('sets the group names to empty array if no groups are passed', () => {
       const result = getAuthDefinition({

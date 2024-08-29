@@ -57,6 +57,53 @@ describe('BackendRenderer', () => {
       });
     });
   });
+  describe('guestLogin', () => {
+    it('Renders cfnIdentityPool accessor if guestLogin is false', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: './auth/resource.ts',
+          guestLogin: false,
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(output.includes('cfnIdentityPool'));
+    });
+    it('Does not render cfnIdentityPool accessor if guestLogin is true', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: './auth/resource.ts',
+          guestLogin: true,
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(!output.includes('cfnIdentityPool'));
+    });
+  });
+  describe('OAuth Flows', () => {
+    it('Renders cfnUserPoolClient accessor if oAuthFlows is defined', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: './auth/resource.ts',
+          oAuthFlows: ['code'],
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(output.includes('cfnUserPoolClient'));
+    });
+    it('Does not render cfnUserPoolClient accessor if oAuthFlows is undefined', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: './auth/resource.ts',
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(!output.includes('cfnUserPoolClient'));
+    });
+  });
   describe('imports', () => {
     for (const resource of ['storage', 'data', 'auth']) {
       describe(resource, () => {
