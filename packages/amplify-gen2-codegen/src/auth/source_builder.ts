@@ -48,12 +48,21 @@ export type Group = string;
 export type LoginOptions = {
   email?: boolean;
   emailOptions?: Partial<EmailOptions>;
+  googleLogin?: boolean;
+  amazonLogin?: boolean;
+  appleLogin?: boolean;
+  facebookLogin?: boolean;
+  callbackURLs?: string[];
+  logoutURLs?: string[];
+  [key: string]: boolean | Partial<EmailOptions> | string[] | undefined;
 };
 
 export type MultifactorOptions = {
   mode: UserPoolMfaConfig;
   totp?: boolean;
 };
+
+export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
 
 export type AuthTriggerEvents =
   | 'createAuthChallenge'
@@ -67,18 +76,103 @@ export type AuthTriggerEvents =
   | 'userMigration'
   | 'verifyAuthChallengeResponse';
 
-export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
-
 export interface AuthDefinition {
   loginOptions?: LoginOptions;
-  lambdaTriggers?: Partial<AuthLambdaTriggers>;
   groups?: Group[];
   mfa?: MultifactorOptions;
   userAttributes?: StandardAttributes;
   userPoolOverrides?: UserPoolOverrides;
+  lambdaTriggers?: Partial<AuthLambdaTriggers>;
 }
 
 const factory = ts.factory;
+
+const secretIdentifier = factory.createIdentifier('secret');
+const googleClientID = 'GOOGLE_CLIENT_ID';
+const googleClientSecret = 'GOOGLE_CLIENT_SECRET';
+
+const amazonClientID = 'LOGINWITHAMAZON_CLIENT_ID';
+const amazonClientSecret = 'LOGINWITHAMAZON_CLIENT_SECRET';
+
+const facebookClientID = 'FACEBOOK_CLIENT_ID';
+const facebookClientSecret = 'FACEBOOK_CLIENT_SECRET';
+
+const appleClientID = 'SIWA_CLIENT_ID';
+const appleKeyId = 'SIWA_KEY_ID';
+const applePrivateKey = 'SIWA_PRIVATE_KEY';
+const appleTeamID = 'SIWA_TEAM_ID';
+
+function createProviderConfig(config: Record<string, string>) {
+  return Object.entries(config).map(([key, value]) =>
+    factory.createPropertyAssignment(
+      factory.createIdentifier(key),
+      factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(value)]),
+    ),
+  );
+}
+
+function createProviderPropertyAssignment(name: string, config: Record<string, string>) {
+  return factory.createPropertyAssignment(
+    factory.createIdentifier(name),
+    factory.createObjectLiteralExpression(createProviderConfig(config), true),
+  );
+}
+
+function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, callbackUrls?: string[], logoutUrls?: string[]) {
+  const providerAssignments: PropertyAssignment[] = [];
+
+  if (loginOptions.googleLogin) {
+    providerAssignments.push(
+      createProviderPropertyAssignment('google', {
+        clientId: googleClientID,
+        clientSecret: googleClientSecret,
+      }),
+    );
+  }
+
+  if (loginOptions.appleLogin) {
+    providerAssignments.push(
+      createProviderPropertyAssignment('signInWithApple', {
+        clientId: appleClientID,
+        keyId: appleKeyId,
+        privateKey: applePrivateKey,
+        teamId: appleTeamID,
+      }),
+    );
+  }
+
+  if (loginOptions.amazonLogin) {
+    providerAssignments.push(
+      createProviderPropertyAssignment('loginWithAmazon', {
+        clientId: amazonClientID,
+        clientSecret: amazonClientSecret,
+      }),
+    );
+  }
+
+  if (loginOptions.facebookLogin) {
+    providerAssignments.push(
+      createProviderPropertyAssignment('facebook', {
+        clientId: facebookClientID,
+        clientSecret: facebookClientSecret,
+      }),
+    );
+  }
+
+  const properties = [
+    ...providerAssignments,
+    factory.createPropertyAssignment(
+      factory.createIdentifier('callbackUrls'),
+      factory.createArrayLiteralExpression(callbackUrls?.map((url) => factory.createStringLiteral(url))),
+    ),
+    factory.createPropertyAssignment(
+      factory.createIdentifier('logoutUrls'),
+      factory.createArrayLiteralExpression(logoutUrls?.map((url) => factory.createStringLiteral(url))),
+    ),
+  ];
+
+  return factory.createObjectLiteralExpression(properties, true);
+}
 
 function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
   const logInWith = factory.createIdentifier('loginWith');
@@ -114,6 +208,14 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
     const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments, true);
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), emailDefinitionObject));
   }
+  if (logInDefinition.amazonLogin || logInDefinition.googleLogin || logInDefinition.facebookLogin || logInDefinition.appleLogin) {
+    assignments.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('externalProviders'),
+        createExternalProvidersPropertyAssignment(logInDefinition, logInDefinition.callbackURLs, logInDefinition.logoutURLs),
+      ),
+    );
+  }
   return factory.createPropertyAssignment(logInWith, factory.createObjectLiteralExpression(assignments, true));
 }
 
@@ -136,6 +238,7 @@ const createUserAttributeAssignments = (userAttributes: StandardAttributes) => {
 };
 
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
+  const namedImports = [];
   const defineAuthProperties: Array<PropertyAssignment> = [];
 
   const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions);
@@ -156,9 +259,14 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   }
 
   const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
+  const { loginOptions } = definition;
+  if (loginOptions?.appleLogin || loginOptions?.amazonLogin || loginOptions?.googleLogin || loginOptions?.facebookLogin) {
+    namedImports.push('secret');
+  }
   if (hasFunctions) {
     assert(definition.lambdaTriggers);
     defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
+    namedImports.push('defineFunction');
   }
 
   if (definition.mfa) {
@@ -182,7 +290,7 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier('auth'),
     functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties, true),
-    additionalImportedBackendIdentifiers: hasFunctions ? ['defineFunction'] : [],
+    additionalImportedBackendIdentifiers: namedImports,
     backendFunctionConstruct: 'defineAuth',
     importedPackageName: '@aws-amplify/backend',
   });

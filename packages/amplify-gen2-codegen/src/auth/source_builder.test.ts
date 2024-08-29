@@ -4,6 +4,62 @@ import { Attribute, AuthDefinition, AuthTriggerEvents, EmailOptions, renderAuthN
 import { printNodeArray } from '../test_utils/ts_node_printer';
 
 describe('render auth node', () => {
+  describe('external providers', () => {
+    describe('Google', () => {
+      it('renders the google provider', () => {
+        const rendered = renderAuthNode({
+          loginOptions: { googleLogin: true, callbackURLs: ['https://example.com/callback'], logoutURLs: ['https://example.com/logout'] },
+        });
+        const source = printNodeArray(rendered);
+        assert.match(source, /google:/);
+        assert.match(source, /clientId: secret\("GOOGLE_CLIENT_ID"\)/);
+        assert.match(source, /clientSecret: secret\("GOOGLE_CLIENT_SECRET"\)/);
+        assert.match(source, /callbackUrls: \[\"https:\/\/example\.com\/callback\"\]/);
+        assert.match(source, /logoutUrls: \[\"https:\/\/example\.com\/logout\"\]/);
+      });
+    });
+    describe('Facebook', () => {
+      it('renders the facebook provider', () => {
+        const rendered = renderAuthNode({
+          loginOptions: { facebookLogin: true, callbackURLs: ['https://example.com/callback'], logoutURLs: ['https://example.com/logout'] },
+        });
+        const source = printNodeArray(rendered);
+        assert.match(source, /facebook:/);
+        assert.match(source, /clientId: secret\("FACEBOOK_CLIENT_ID"\)/);
+        assert.match(source, /clientSecret: secret\("FACEBOOK_CLIENT_SECRET"\)/);
+        assert.match(source, /callbackUrls: \[\"https:\/\/example\.com\/callback\"\]/);
+        assert.match(source, /logoutUrls: \[\"https:\/\/example\.com\/logout\"\]/);
+      });
+    });
+    describe('Apple', () => {
+      it('renders the apple provider', () => {
+        const rendered = renderAuthNode({
+          loginOptions: { appleLogin: true, callbackURLs: ['https://example.com/callback'], logoutURLs: ['https://example.com/logout'] },
+        });
+        const source = printNodeArray(rendered);
+        assert.match(source, /signInWithApple:/);
+        assert.match(source, /clientId: secret\("SIWA_CLIENT_ID"\)/);
+        assert.match(source, /keyId: secret\("SIWA_KEY_ID"\)/);
+        assert.match(source, /privateKey: secret\("SIWA_PRIVATE_KEY"\)/);
+        assert.match(source, /teamId: secret\("SIWA_TEAM_ID"\)/);
+        assert.match(source, /callbackUrls: \[\"https:\/\/example\.com\/callback\"\]/);
+        assert.match(source, /logoutUrls: \[\"https:\/\/example\.com\/logout\"\]/);
+      });
+    });
+    describe('Amazon', () => {
+      it('renders the amazon provider', () => {
+        const rendered = renderAuthNode({
+          loginOptions: { amazonLogin: true, callbackURLs: ['https://example.com/callback'], logoutURLs: ['https://example.com/logout'] },
+        });
+        const source = printNodeArray(rendered);
+        assert.match(source, /loginWithAmazon:/);
+        assert.match(source, /clientId: secret\("LOGINWITHAMAZON_CLIENT_ID"\)/);
+        assert.match(source, /clientSecret: secret\("LOGINWITHAMAZON_CLIENT_SECRET"\)/);
+        assert.match(source, /callbackUrls: \[\"https:\/\/example\.com\/callback\"\]/);
+        assert.match(source, /logoutUrls: \[\"https:\/\/example\.com\/logout\"\]/);
+      });
+    });
+  });
   describe('lambda', () => {
     it('imports defineFunction when a lambda trigger is defined', () => {
       const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: "console.log('hello, world!')" } } });

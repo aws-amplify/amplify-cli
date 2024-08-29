@@ -78,7 +78,6 @@ export const createGen2Renderer = ({
       userPoolOverrides: auth?.userPoolOverrides,
     };
   }
-
   if (data) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
     renderers.push(
@@ -114,7 +113,6 @@ export const createGen2Renderer = ({
 
   return new RenderPipeline(renderers);
 };
-
 export {
   Renderer,
   SendingAccount,

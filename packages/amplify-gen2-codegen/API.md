@@ -78,6 +78,13 @@ export type Lambda = {
 export type LoginOptions = {
     email?: boolean;
     emailOptions?: Partial<EmailOptions>;
+    googleLogin?: boolean;
+    amazonLogin?: boolean;
+    appleLogin?: boolean;
+    facebookLogin?: boolean;
+    callbackURLs?: string[];
+    logoutURLs?: string[];
+    [key: string]: boolean | Partial<EmailOptions> | string[] | undefined;
 };
 
 // @public (undocumented)
