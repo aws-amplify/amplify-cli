@@ -141,18 +141,12 @@ export class BackendSynthesizer {
       }
     }
 
-    if (!renderArgs.auth?.guestLogin) {
+    if (renderArgs.auth?.guestLogin === false) {
       const cfnIdentityPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnIdentityPool', 'backend.auth.resources.cfnResources.cfnIdentityPool'),
       );
       nodes.push(cfnIdentityPoolVariableStatement);
-      nodes.push(
-        this.createOverrideStatement(
-          factory.createIdentifier('cfnIdentityPool'),
-          'AllowUnauthenticatedIdentities',
-          renderArgs.auth?.guestLogin as number | string | boolean,
-        ),
-      );
+      nodes.push(this.createOverrideStatement(factory.createIdentifier('cfnIdentityPool'), 'AllowUnauthenticatedIdentities', false));
     }
 
     if (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) {

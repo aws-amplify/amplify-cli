@@ -26,6 +26,7 @@ describe('BackendRenderer', () => {
         'Policies.PasswordPolicy.RequireLowercase': true,
         'Policies.PasswordPolicy.RequireUppercase': false,
         'Policies.PasswordPolicy.TemporaryPasswordValidityDays': 10,
+        UserPoolName: 'Test_Name',
       };
       for (const [key, value] of Object.entries(testCases)) {
         it(`renders override for ${key}`, () => {
@@ -39,7 +40,11 @@ describe('BackendRenderer', () => {
             },
           });
           const output = printNodeArray(rendered);
-          assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", ${value})`));
+          if (typeof value === 'string') {
+            assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", "${value}")`));
+          } else {
+            assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", ${value})`));
+          }
         });
       }
       it('renders multiple overrides', () => {
@@ -52,7 +57,11 @@ describe('BackendRenderer', () => {
         });
         const output = printNodeArray(rendered);
         for (const [key, value] of Object.entries(testCases)) {
-          assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", ${value})`));
+          if (typeof value === 'string') {
+            assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", "${value}")`));
+          } else {
+            assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", ${value})`));
+          }
         }
       });
     });
