@@ -7,7 +7,7 @@ import { Stream } from 'node:stream';
 import unzipper from 'unzipper';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
-import { fileOrDirectoryExists } from './file_utils.js';
+import { fileOrDirectoryExists } from './file_utils';
 
 export class BackendDownloader {
   constructor(private s3Client: S3Client) {}

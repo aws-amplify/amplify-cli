@@ -1,7 +1,7 @@
 import { Argv } from 'yargs';
-import { extractSubCommands } from './extract_sub_commands.js';
-import { format } from './format.js';
-import { printer } from './printer.js';
+import { extractSubCommands } from './extract_sub_commands';
+import { format } from './format';
+import { printer } from './printer';
 
 type HandleErrorProps = {
   error?: Error;

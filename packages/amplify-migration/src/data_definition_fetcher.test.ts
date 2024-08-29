@@ -1,15 +1,14 @@
 import assert from 'node:assert';
 import { BackendEnvironment } from '@aws-sdk/client-amplify';
-import { BackendEnvironmentResolver } from './backend_environment_selector.js';
-import { DataDefinitionFetcher } from './data_definition_fetcher.js';
-import { AmplifyStackParser, AmplifyStacks } from './amplify_stack_parser.js';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { DataDefinitionFetcher } from './data_definition_fetcher';
+import { AmplifyStackParser, AmplifyStacks } from './amplify_stack_parser';
 import { Stack } from '@aws-sdk/client-cloudformation';
-import { describe, it } from 'node:test';
 
-void describe('DataDefinitionFetcher', () => {
-  void describe('if data stack is defined', () => {
-    void describe('table mapping is defined', () => {
-      void it('maps cloudformation stack output to table mapping', async () => {
+describe('DataDefinitionFetcher', () => {
+  describe('if data stack is defined', () => {
+    describe('table mapping is defined', () => {
+      it('maps cloudformation stack output to table mapping', async () => {
         const mapping = { hello: 'world' };
         const mockBackendEnvResolver: BackendEnvironmentResolver = {
           selectBackendEnvironment: async () => {
@@ -35,7 +34,7 @@ void describe('DataDefinitionFetcher', () => {
         const results = await dataDefinitionFetcher.getDefinition();
         assert(results?.tableMapping);
       });
-      void it('throws an error if the json cannot be parsed', async () => {
+      it('throws an error if the json cannot be parsed', async () => {
         const mockBackendEnvResolver: BackendEnvironmentResolver = {
           selectBackendEnvironment: async () => {
             return {
@@ -60,8 +59,8 @@ void describe('DataDefinitionFetcher', () => {
         await assert.rejects(() => dataDefinitionFetcher.getDefinition(), { message: 'Could not parse the Amplify Data table mapping' });
       });
     });
-    void describe('table mapping is not defined', () => {
-      void it('reject with table mapping assertion', async () => {
+    describe('table mapping is not defined', () => {
+      it('reject with table mapping assertion', async () => {
         const mockBackendEnvResolver: BackendEnvironmentResolver = {
           selectBackendEnvironment: async () => {
             return {
@@ -80,8 +79,8 @@ void describe('DataDefinitionFetcher', () => {
       });
     });
   });
-  void describe('if data stack is undefined', () => {
-    void it('does not reject with table mapping assertion', async () => {
+  describe('if data stack is undefined', () => {
+    it('does not reject with table mapping assertion', async () => {
       const mockBackendEnvResolver: BackendEnvironmentResolver = {
         selectBackendEnvironment: async () => {
           return {
@@ -98,7 +97,7 @@ void describe('DataDefinitionFetcher', () => {
       const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
       await assert.doesNotReject(dataDefinitionFetcher.getDefinition);
     });
-    void it('returns undefined', async () => {
+    it('returns undefined', async () => {
       const mockBackendEnvResolver: BackendEnvironmentResolver = {
         selectBackendEnvironment: async () => {
           return {

@@ -3,10 +3,9 @@ import fs from 'fs';
 import { generateCommandFailureHandler } from './error_handler.js';
 import { createMainParser } from './main_parser_factory.js';
 import { hideBin } from 'yargs/helpers';
+import { version } from '../package.json';
 
-const packageJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
-const libraryVersion = packageJson.version;
-
+const libraryVersion = version;
 const parser = createMainParser(libraryVersion);
 const errorHandler = generateCommandFailureHandler(parser);
 parser.parseAsync(hideBin(process.argv)).catch(async (e) => {

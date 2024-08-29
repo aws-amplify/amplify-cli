@@ -1,4 +1,4 @@
-import { createGen2Command } from './commands/gen2/gen2_command_factory.js';
+import { createGen2Command } from './commands/gen2/gen2_command_factory';
 import yargs, { Argv } from 'yargs';
 
 export const createMainParser = (libraryVersion: string): Argv => {

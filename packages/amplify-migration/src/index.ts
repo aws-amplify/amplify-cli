@@ -7,16 +7,16 @@ import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { S3Client } from '@aws-sdk/client-s3';
-import { BackendDownloader } from './backend_downloader.js';
-import { AppContextLogger } from './logger.js';
-import { BackendEnvironmentResolver } from './backend_environment_selector.js';
-import { Analytics, AppAnalytics } from './analytics.js';
-import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher.js';
-import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher.js';
+import { BackendDownloader } from './backend_downloader';
+import { AppContextLogger } from './logger';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { Analytics, AppAnalytics } from './analytics';
+import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
+import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
 import { AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
-import { DataDefinitionFetcher } from './data_definition_fetcher.js';
-import { AmplifyStackParser } from './amplify_stack_parser.js';
+import { DataDefinitionFetcher } from './data_definition_fetcher';
+import { AmplifyStackParser } from './amplify_stack_parser';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
