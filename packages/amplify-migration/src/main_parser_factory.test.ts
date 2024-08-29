@@ -9,7 +9,7 @@ describe('main parser', () => {
   it('includes gen2 command in help output', async () => {
     const output = await runCommandAsync(parser, '--help');
     assert.match(output, /Commands:/);
-    assert.match(output, /gen2\s+Migrates an Amplify gen1 app to a gen2 app/);
+    assert.match(output, /to-gen-2\s+Migrates an Amplify Gen1 app to a Gen2 app/);
   });
 
   it('shows version', async () => {

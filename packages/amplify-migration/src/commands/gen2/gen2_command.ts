@@ -17,8 +17,8 @@ export class Gen2Command implements CommandModule {
   readonly describe: string;
 
   constructor(private readonly startCommand: CommandModule) {
-    this.command = 'gen2';
-    this.describe = 'Migrates an Amplify gen1 app to a gen2 app';
+    this.command = 'to-gen-2';
+    this.describe = 'Migrates an Amplify Gen1 app to a Gen2 app';
   }
 
   builder = (yargs: Argv): Argv => {

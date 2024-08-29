@@ -2,7 +2,7 @@
   "name": "@aws-amplify/migrate",
   "version": "0.0.1",
   "type": "commonjs",
-  "main": "lib/migrate.js",
+  "main": "lib/index.js",
   "bin": "lib/migrate.js",
   "scripts": {
     "build": "tsc",

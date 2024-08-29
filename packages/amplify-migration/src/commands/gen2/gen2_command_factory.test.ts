@@ -12,14 +12,14 @@ describe('top level gen2 command', () => {
   const parser = yargs().command(gen2Command);
 
   it('includes gen2 subcommands in help output', async () => {
-    const output = await runCommandAsync(parser, 'gen2 --help');
+    const output = await runCommandAsync(parser, 'to-gen-2 --help');
     assert.match(output, /Commands:/);
-    assert.match(output, /Migrates an Amplify gen1 app to a gen2 app/);
+    assert.match(output, /Migrates an Amplify Gen1 app to a Gen2 app/);
   });
 
   it('fails if subcommand is not provided', async () => {
     await assert.rejects(
-      () => runCommandAsync(parser, 'gen2'),
+      () => runCommandAsync(parser, 'to-gen-2'),
       (err: Error) => {
         assert.match(err.message, /Not enough non-option arguments/);
         return true;

@@ -18,8 +18,8 @@ export class Gen2StartCommand implements CommandModule<object, Gen2StartCommandO
   readonly describe: string;
 
   constructor() {
-    this.command = 'start';
-    this.describe = 'Starts Amplify Gen2 code generation';
+    this.command = 'generate-code';
+    this.describe = 'Generates Amplify Gen2 code based on Gen1 configuration';
   }
 
   builder = (yargs: Argv): Argv => {
