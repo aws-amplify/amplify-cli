@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import fs from 'fs';
 import { generateCommandFailureHandler } from './error_handler.js';
 import { createMainParser } from './main_parser_factory.js';
 import { hideBin } from 'yargs/helpers';
