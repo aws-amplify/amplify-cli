@@ -76,6 +76,9 @@ const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> 
     };
     Object.assign(userPoolOverrides, userNamePolicy);
   }
+  if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
+    userPoolOverrides.UsernameAttributes = [];
+  }
   return userPoolOverrides;
 };
 
