@@ -139,7 +139,7 @@ export class BackendSynthesizer {
       }
     }
 
-    if (!renderArgs.auth?.guestLogin) {
+    if (renderArgs.auth?.guestLogin === false) {
       const cfnIdentityPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnIdentityPool', 'backend.auth.resources.cfnResources.cfnIdentityPool'),
       );

@@ -292,11 +292,13 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions);
   defineAuthProperties.push(logInWithPropertyAssignment);
 
-  const userAttributePropertyAssignment = createUserAttributeAssignments(
-    definition.standardUserAttributes,
-    definition.customUserAttributes,
-  );
-  defineAuthProperties.push(userAttributePropertyAssignment);
+  if (definition.standardUserAttributes || definition.customUserAttributes) {
+    const userAttributePropertyAssignment = createUserAttributeAssignments(
+      definition.standardUserAttributes,
+      definition.customUserAttributes,
+    );
+    defineAuthProperties.push(userAttributePropertyAssignment);
+  }
 
   if (definition.groups?.length) {
     defineAuthProperties.push(

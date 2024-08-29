@@ -217,7 +217,10 @@ void describe('auth codegen', () => {
     void it('sets the group names', () => {
       const result = getAuthDefinition({
         userPool: {},
-        identityGroups: [{ GroupName: 'group1' }, { GroupName: 'group2' }],
+        identityGroups: [
+          { GroupName: 'group1', Precedence: 0 },
+          { GroupName: 'group2', Precedence: 1 },
+        ],
       });
       assert.deepEqual(result.groups, ['group1', 'group2']);
     });
