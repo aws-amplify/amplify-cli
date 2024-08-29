@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { DataDefinition } from '@aws-amplify/amplify-gen2-codegen';
-import { AmplifyStackParser } from './amplify_stack_parser';
-import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { AmplifyStackParser } from './amplify_stack_parser.js';
+import { BackendEnvironmentResolver } from './backend_environment_selector.js';
 
 const dataSourceMappingOutputKey = 'DataSourceMappingOutput';
 
@@ -22,5 +22,6 @@ export class DataDefinitionFetcher {
         throw new Error('Could not parse the Amplify Data table mapping');
       }
     }
+    return undefined;
   };
 }

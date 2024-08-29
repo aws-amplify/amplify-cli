@@ -1,7 +1,10 @@
 {
   "include": ["src/**/*"],
-  "compilerOptions": { "rootDir": "src", "outDir": "lib" },
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib"
+  },
   "references": [
     {
       "path": "../amplify-gen1-codegen-auth-adapter"

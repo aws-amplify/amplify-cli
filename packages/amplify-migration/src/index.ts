@@ -7,16 +7,16 @@ import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { S3Client } from '@aws-sdk/client-s3';
-import { BackendDownloader } from './backend_downloader.js';
-import { AppContextLogger } from './logger.js';
-import { BackendEnvironmentResolver } from './backend_environment_selector.js';
-import { Analytics, AppAnalytics } from './analytics.js';
-import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher.js';
-import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher.js';
-import { $TSContext, AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
+import { BackendDownloader } from './backend_downloader';
+import { AppContextLogger } from './logger';
+import { BackendEnvironmentResolver } from './backend_environment_selector';
+import { Analytics, AppAnalytics } from './analytics';
+import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
+import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
+import { AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
-import { DataDefinitionFetcher } from './data_definition_fetcher.js';
-import { AmplifyStackParser } from './amplify_stack_parser.js';
+import { DataDefinitionFetcher } from './data_definition_fetcher';
+import { AmplifyStackParser } from './amplify_stack_parser';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -66,11 +66,11 @@ type AmplifyMeta = {
   auth: Record<string, AmplifyMetaAuth>;
 };
 
-const getFunctionPath = (context: $TSContext, functionName: string) => {
+const getFunctionPath = (functionName: string) => {
   return path.join('amplify', 'backend', 'function', functionName, 'src');
 };
 
-const getAuthTriggersConnections = async (context: $TSContext): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
+const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
   const amplifyMeta: AmplifyMeta = stateManager.getMeta();
   const resourceName = Object.keys(amplifyMeta.auth)[0];
   const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
@@ -78,7 +78,7 @@ const getAuthTriggersConnections = async (context: $TSContext): Promise<Partial<
     try {
       const triggerConnections: AuthTriggerConnection[] = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
       const connections = triggerConnections.reduce((prev, curr) => {
-        prev[curr.triggerType] = getFunctionPath(context, curr.lambdaFunctionName);
+        prev[curr.triggerType] = getFunctionPath(curr.lambdaFunctionName);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
       return connections;
@@ -94,7 +94,7 @@ const resolveAppId = (): string => {
   return meta?.providers?.awscloudformation?.AmplifyAppId;
 };
 
-export async function executeAmplifyCommand(context: $TSContext) {
+export async function execute() {
   const amplifyClient = new AmplifyClient();
   const s3Client = new S3Client();
   const cloudFormationClient = new CloudFormationClient();
@@ -108,7 +108,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
     outputDirectory: './output',
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
     authDefinitionFetcher: new AppAuthDefinitionFetcher(cognitoIdentityProviderClient, amplifyStackParser, backendEnvironmentResolver, () =>
-      getAuthTriggersConnections(context),
+      getAuthTriggersConnections(),
     ),
     dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
     analytics: new AppAnalytics(appId),
