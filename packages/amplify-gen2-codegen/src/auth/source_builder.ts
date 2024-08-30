@@ -154,6 +154,9 @@ const appleTeamID = 'SIWA_TEAM_ID';
 const oidcClientID = 'OIDC_CLIENT_ID';
 const oidcClientSecret = 'OIDC_CLIENT_SECRET';
 
+const oidcClientID = 'OIDC_CLIENT_ID';
+const oidcClientSecret = 'OIDC_CLIENT_SECRET';
+
 function createProviderConfig(config: Record<string, string>) {
   return Object.entries(config).map(([key, value]) =>
     factory.createPropertyAssignment(
