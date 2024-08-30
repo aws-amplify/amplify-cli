@@ -8,6 +8,7 @@ import {
   StandardAttributes,
   StandardAttribute,
   Attribute,
+  LoginOptions,
 } from '@aws-amplify/amplify-gen2-codegen';
 import {
   LambdaConfigType,
@@ -176,7 +177,7 @@ export const getAuthDefinition = ({
   webClient,
   authTriggerConnections,
 }: AuthSynthesizerOptions): AuthDefinition => {
-  const loginWith: any = { email: true };
+  const loginWith: LoginOptions = { email: true };
   const mapIdentityProvider = {
     [IdentityProviderTypeType.Google]: 'googleLogin',
     [IdentityProviderTypeType.SignInWithApple]: 'appleLogin',

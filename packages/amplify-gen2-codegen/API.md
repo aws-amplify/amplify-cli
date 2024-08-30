@@ -77,6 +77,7 @@ export type Lambda = {
 // @public (undocumented)
 export type LoginOptions = {
     email?: boolean;
+    phone?: boolean;
     emailOptions?: Partial<EmailOptions>;
     googleLogin?: boolean;
     amazonLogin?: boolean;
