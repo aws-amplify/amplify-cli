@@ -114,7 +114,7 @@ export async function execute() {
       cognitoIdentityProviderClient,
       amplifyStackParser,
       backendEnvironmentResolver,
-      () => getAuthTriggersConnections(context),
+      () => getAuthTriggersConnections(),
     ),
     dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
     analytics: new AppAnalytics(appId),
