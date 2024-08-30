@@ -13,6 +13,8 @@ import {
   PolicyOverrides,
   SamlOptions,
   OidcOptions,
+  LoginOptions,
+  Scope,
 } from '@aws-amplify/amplify-gen2-codegen';
 import {
   LambdaConfigType,
@@ -177,7 +179,7 @@ const getGroups = (identityGroups?: GroupType[]): string[] => {
     .filter((groupName): groupName is string => groupName !== undefined);
 };
 
-const getScopes = (scopes: string[]): string[] => {
+const getScopes = (scopes: string[]): Scope[] => {
   const mappedScopes: Record<string, string> = {
     email: 'EMAIL',
     openid: 'OPENID',
@@ -185,7 +187,7 @@ const getScopes = (scopes: string[]): string[] => {
     profile: 'PROFILE',
     'aws.cognito.signin.user.admin': 'COGNITO_ADMIN',
   };
-  return scopes.map((scope) => mappedScopes[scope] as string);
+  return scopes.map((scope) => mappedScopes[scope] as Scope);
 };
 
 /**
@@ -240,7 +242,7 @@ export const getAuthDefinition = ({
   authTriggerConnections,
   guestLogin,
 }: AuthSynthesizerOptions): AuthDefinition => {
-  const loginWith: any = { email: true };
+  const loginWith: LoginOptions = { email: true };
   const mapIdentityProvider = {
     [IdentityProviderTypeType.Google]: 'googleLogin',
     [IdentityProviderTypeType.SignInWithApple]: 'appleLogin',

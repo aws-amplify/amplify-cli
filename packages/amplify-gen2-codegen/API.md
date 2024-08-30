@@ -19,7 +19,11 @@ export type Attribute = 'address' | 'birthdate' | 'email' | 'familyName' | 'gend
 // @public (undocumented)
 export interface AuthDefinition {
     // (undocumented)
+    customUserAttributes?: CustomAttributes;
+    // (undocumented)
     groups?: Group[];
+    // (undocumented)
+    guestLogin?: boolean;
     // (undocumented)
     lambdaTriggers?: Partial<AuthLambdaTriggers>;
     // (undocumented)
@@ -27,9 +31,15 @@ export interface AuthDefinition {
     // (undocumented)
     mfa?: MultifactorOptions;
     // (undocumented)
-    userAttributes?: StandardAttributes;
+    oAuthFlows?: string[];
     // (undocumented)
-    userPoolOverrides?: UserPoolOverrides;
+    readAttributes?: string[];
+    // (undocumented)
+    standardUserAttributes?: StandardAttributes;
+    // (undocumented)
+    userPoolOverrides?: PolicyOverrides;
+    // (undocumented)
+    writeAttributes?: string[];
 }
 
 // @public (undocumented)
@@ -40,6 +50,19 @@ export type AuthTriggerEvents = 'createAuthChallenge' | 'customMessage' | 'defin
 
 // @public (undocumented)
 export const createGen2Renderer: ({ outputDir, auth, storage, data, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
+
+// @public (undocumented)
+export type CustomAttribute = {
+    readonly dataType: string | undefined;
+    readonly mutable?: boolean;
+    minLen?: number;
+    maxLen?: number;
+    min?: number;
+    max?: number;
+};
+
+// @public (undocumented)
+export type CustomAttributes = Partial<Record<`custom:${string}`, CustomAttribute>>;
 
 // @public (undocumented)
 export type DataDefinition = {
@@ -77,14 +100,18 @@ export type Lambda = {
 // @public (undocumented)
 export type LoginOptions = {
     email?: boolean;
+    phone?: boolean;
     emailOptions?: Partial<EmailOptions>;
     googleLogin?: boolean;
     amazonLogin?: boolean;
     appleLogin?: boolean;
     facebookLogin?: boolean;
+    oidcLogin?: OidcOptions[];
+    samlLogin?: SamlOptions;
     callbackURLs?: string[];
     logoutURLs?: string[];
-    [key: string]: boolean | Partial<EmailOptions> | string[] | undefined;
+    scopes?: Scope[];
+    [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | undefined;
 };
 
 // @public (undocumented)
@@ -94,10 +121,20 @@ export type MultifactorOptions = {
 };
 
 // @public (undocumented)
+export type OidcOptions = {
+    issuerUrl: string;
+    name?: string;
+    endpoints?: OidcEndPoints;
+};
+
+// @public (undocumented)
 export type PasswordPolicyPath = `Policies.PasswordPolicy.${keyof PasswordPolicyType}`;
 
 // @public (undocumented)
 export type Permission = 'read' | 'write' | 'create' | 'delete';
+
+// @public (undocumented)
+export type PolicyOverrides = Partial<Record<PasswordPolicyPath | string, string | boolean | number | string[]>>;
 
 // @public (undocumented)
 export interface Renderer {
@@ -107,6 +144,15 @@ export interface Renderer {
 
 // @public (undocumented)
 export type S3TriggerDefinition = Record<string, never>;
+
+// @public (undocumented)
+export type SamlOptions = {
+    name?: string;
+    metadata: MetadataOptions;
+};
+
+// @public (undocumented)
+export type Scope = 'PHONE' | 'EMAIL' | 'OPENID' | 'PROFILE' | 'COGNITO_ADMIN';
 
 // @public (undocumented)
 export type SendingAccount = 'COGNITO_DEFAULT' | 'DEVELOPER';
@@ -140,8 +186,10 @@ export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 // @public (undocumented)
 export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
 
-// @public (undocumented)
-export type UserPoolOverrides = Partial<Record<PasswordPolicyPath, string | number | boolean>>;
+// Warnings were encountered during analysis:
+//
+// src/auth/source_builder.ts:73:3 - (ae-forgotten-export) The symbol "MetadataOptions" needs to be exported by the entry point index.d.ts
+// src/auth/source_builder.ts:86:3 - (ae-forgotten-export) The symbol "OidcEndPoints" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

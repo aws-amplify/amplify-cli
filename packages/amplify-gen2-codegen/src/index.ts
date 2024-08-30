@@ -27,6 +27,7 @@ import {
   MultifactorOptions,
   OidcOptions,
   SamlOptions,
+  Scope,
 } from './auth/source_builder';
 import {
   StorageRenderParameters,
@@ -148,4 +149,5 @@ export {
   DataDefinition,
   SamlOptions,
   OidcOptions,
+  Scope,
 };

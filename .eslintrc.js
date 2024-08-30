@@ -1,3 +1,4 @@
+const { words } = require('lodash');
 const dictionary = require('./.eslint-dictionary.json');
 /**
  * README if you have come here because you are sick and tired of some rule being on your case all the time:
@@ -68,7 +69,7 @@ module.exports = {
       'warn',
       {
         lang: 'en_US',
-        skipWords: dictionary,
+        skipWords: dictionary.concat(['saml']), // Add 'saml' to the skipWords array
         skipIfMatch: [
           'http://[^s]*',
           '^[-\\w]+/[-\\w\\.]+$', //For MIME Types

@@ -150,10 +150,10 @@ export class BackendSynthesizer {
     }
 
     if (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) {
-      const cfnUserPoolClientvariableStatement = this.createVariableStatement(
+      const cfnUserPoolClientVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnUserPoolClient', 'backend.auth.resources.cfnResources.cfnUserPoolClient'),
       );
-      nodes.push(cfnUserPoolClientvariableStatement);
+      nodes.push(cfnUserPoolClientVariableStatement);
       if (renderArgs.auth?.oAuthFlows) {
         nodes.push(
           this.createOverrideStatement(

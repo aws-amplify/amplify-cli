@@ -99,6 +99,7 @@ export type LoginOptions = {
   callbackURLs?: string[];
   logoutURLs?: string[];
   scopes?: Scope[];
+  [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | undefined;
 };
 
 export type MultifactorOptions = {
@@ -170,7 +171,7 @@ function createProviderPropertyAssignment(name: string, config: Record<string, s
   );
 }
 
-function createOidcSamlPropertyAssignments(config: Record<string, string | Record<string, any>>): PropertyAssignment[] {
+function createOidcSamlPropertyAssignments(config: Record<string, string | MetadataOptions | OidcEndPoints>): PropertyAssignment[] {
   return Object.entries(config).flatMap(([key, value]) => {
     if (typeof value === 'string') {
       return [factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))];
