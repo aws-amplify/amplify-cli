@@ -56,4 +56,6 @@ export const Constants = {
       COGNITO: 'Cognito',
     },
   },
+  IMPORT_AUTH_PARAMS: ['AuthCognitoUserPoolId', 'authRoleArn', 'authRoleName', 'unauthRoleArn', 'unauthRoleName'],
+  AUTH_TRASH_PARAMS: ['AuthModeLastUpdated'],
 };
