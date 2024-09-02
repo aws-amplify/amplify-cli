@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.7-test-api-stable-tag-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.6...@aws-amplify/amplify-util-mock@5.10.7-test-api-stable-tag-1.0) (2024-09-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-mock
+
+
+
+
+
 ## [5.10.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.5...@aws-amplify/amplify-util-mock@5.10.6) (2024-08-06)
 
 

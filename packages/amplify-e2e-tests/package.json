@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.9.11",
+  "version": "4.9.12-test-api-stable-tag-1.0",
   "description": "",
   "repository": {
     "type": "git",
