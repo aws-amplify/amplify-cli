@@ -26,6 +26,8 @@ import {
   CustomAttributes,
   MultifactorOptions,
   OidcOptions,
+  OidcEndPoints,
+  MetadataOptions,
   SamlOptions,
   Scope,
 } from './auth/source_builder';
@@ -148,6 +150,8 @@ export {
   StorageTriggerEvent,
   DataDefinition,
   SamlOptions,
+  OidcEndPoints,
+  MetadataOptions,
   OidcOptions,
   Scope,
 };

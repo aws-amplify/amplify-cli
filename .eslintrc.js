@@ -68,7 +68,7 @@ module.exports = {
       'warn',
       {
         lang: 'en_US',
-        skipWords: dictionary.concat(['saml']), // Add 'saml' to the skipWords array
+        skipWords: dictionary,
         skipIfMatch: [
           'http://[^s]*',
           '^[-\\w]+/[-\\w\\.]+$', //For MIME Types

@@ -51,8 +51,6 @@ export type PasswordPolicyPath = `Policies.PasswordPolicy.${keyof PasswordPolicy
 
 export type PolicyOverrides = Partial<Record<PasswordPolicyPath | string, string | boolean | number | string[]>>;
 
-// export type UserPoolOverrides = Partial<Record<PasswordPolicyPath | string, string | number | boolean | string[]>>;
-
 export type EmailOptions = {
   emailVerificationBody: string;
   emailVerificationSubject: string;

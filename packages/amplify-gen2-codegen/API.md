@@ -115,9 +115,23 @@ export type LoginOptions = {
 };
 
 // @public (undocumented)
+export type MetadataOptions = {
+    metadataContent: string;
+    metadataType: 'URL' | 'FILE';
+};
+
+// @public (undocumented)
 export type MultifactorOptions = {
     mode: UserPoolMfaConfig;
     totp?: boolean;
+};
+
+// @public (undocumented)
+export type OidcEndPoints = {
+    authorization?: string;
+    token?: string;
+    userInfo?: string;
+    jwksUri?: string;
 };
 
 // @public (undocumented)
@@ -185,11 +199,6 @@ export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 
 // @public (undocumented)
 export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
-
-// Warnings were encountered during analysis:
-//
-// src/auth/source_builder.ts:73:3 - (ae-forgotten-export) The symbol "MetadataOptions" needs to be exported by the entry point index.d.ts
-// src/auth/source_builder.ts:86:3 - (ae-forgotten-export) The symbol "OidcEndPoints" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
