@@ -60,9 +60,6 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     env,
     disableCIDetection: s.disableCIDetection,
   })
-    .wait('Do you want to continue with Amplify Gen 1?')
-    .sendYes()
-    .wait('Why would you like to use Amplify Gen 1?')
     .sendCarriageReturn()
     .wait('Enter a name for the project')
     .sendLine(s.name)
