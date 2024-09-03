@@ -15,6 +15,7 @@ import {
   UserPoolMfaType,
   UserPoolType,
   UserPoolClientType,
+  SoftwareTokenMfaConfigType,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 export interface AuthTriggerConnection {
@@ -29,6 +30,8 @@ export interface AuthSynthesizerOptions {
   identityProviders?: ProviderDescription[];
   webClient?: UserPoolClientType;
   authTriggerConnections?: AuthTriggerConnectionSourceMap;
+  mfaConfig?: UserPoolMfaType;
+  totpConfig?: SoftwareTokenMfaConfigType;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -56,15 +59,18 @@ const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>)
   return policyOverrides;
 };
 
-const getMfaConfiguration = (mfa?: UserPoolMfaType): MultifactorOptions => {
+const getMfaConfiguration = (mfaConfig?: UserPoolMfaType, totpConfig?: SoftwareTokenMfaConfigType): MultifactorOptions => {
   const multifactor: MultifactorOptions = {
     mode: 'OFF',
   };
-  if (mfa === 'ON') {
-    multifactor.mode = 'ON';
-  }
-  if (mfa === 'OPTIONAL') {
+  if (mfaConfig === 'ON') {
+    multifactor.mode = 'REQUIRED';
+    multifactor.sms = true;
+    totpConfig?.Enabled ? (multifactor.totp = true) : (multifactor.totp = false);
+  } else if (mfaConfig === 'OPTIONAL') {
     multifactor.mode = 'OPTIONAL';
+    multifactor.sms = true;
+    totpConfig?.Enabled ? (multifactor.totp = true) : (multifactor.totp = false);
   }
   return multifactor;
 };
@@ -124,6 +130,8 @@ export const getAuthDefinition = ({
   identityProviders,
   webClient,
   authTriggerConnections,
+  mfaConfig,
+  totpConfig,
 }: AuthSynthesizerOptions): AuthDefinition => {
   const loginWith: LoginOptions = { email: true };
   const mapIdentityProvider = {
@@ -155,7 +163,7 @@ export const getAuthDefinition = ({
   const userPoolOverrides = getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {});
   return {
     loginOptions: loginWith,
-    mfa: getMfaConfiguration(userPool.MfaConfiguration),
+    mfa: getMfaConfiguration(mfaConfig, totpConfig),
     userPoolOverrides,
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
   };

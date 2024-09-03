@@ -96,10 +96,10 @@ describe('render auth node', () => {
       assert.doesNotMatch(source, new RegExp(`multifactor:`));
     });
     describe('totp', () => {
-      it('renders false if totp is not specified', () => {
+      it('does not render totp if totp is not specified', () => {
         const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL' } });
         const source = printNodeArray(rendered);
-        assert.match(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*totp:\\sfalse`));
+        assert.doesNotMatch(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*totp:\\strue`));
       });
       const totpStates: boolean[] = [true, false];
       for (const state of totpStates) {
@@ -110,7 +110,22 @@ describe('render auth node', () => {
         });
       }
     });
-    const modes: UserPoolMfaConfig[] = ['ON', 'OFF', 'OPTIONAL'];
+    describe('sms', () => {
+      it('does not render sms if sms is not specified', () => {
+        const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL' } });
+        const source = printNodeArray(rendered);
+        assert.doesNotMatch(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*sms:\\strue`));
+      });
+      const smsStates: boolean[] = [true, false];
+      for (const state of smsStates) {
+        it(`correctly renders sms state of ${state}`, async () => {
+          const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL', sms: state } });
+          const source = printNodeArray(rendered);
+          assert.match(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*sms:\\s${state}`));
+        });
+      }
+    });
+    const modes: UserPoolMfaConfig[] = ['REQUIRED', 'OFF', 'OPTIONAL'];
     for (const mode of modes) {
       it(`correctly renders mfa state of ${mode}`, async () => {
         const rendered = renderAuthNode({ mfa: { mode } });

@@ -30,7 +30,7 @@ export type Attribute =
 
 export type SendingAccount = 'COGNITO_DEFAULT' | 'DEVELOPER';
 
-export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
+export type UserPoolMfaConfig = 'OFF' | 'REQUIRED' | 'OPTIONAL';
 
 export type PasswordPolicyPath = `Policies.PasswordPolicy.${keyof PasswordPolicyType}`;
 
@@ -60,6 +60,7 @@ export type LoginOptions = {
 export type MultifactorOptions = {
   mode: UserPoolMfaConfig;
   totp?: boolean;
+  sms?: boolean;
 };
 
 export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
@@ -270,19 +271,32 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
   }
 
   if (definition.mfa) {
+    const multifactorProperties = [
+      factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
+    ];
+
+    if (definition.mfa.totp !== undefined) {
+      multifactorProperties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('totp'),
+          definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
+        ),
+      );
+    }
+
+    if (definition.mfa.sms !== undefined) {
+      multifactorProperties.push(
+        factory.createPropertyAssignment(
+          factory.createIdentifier('sms'),
+          definition.mfa.sms ? factory.createTrue() : factory.createFalse(),
+        ),
+      );
+    }
+
     defineAuthProperties.push(
       factory.createPropertyAssignment(
         factory.createIdentifier('multifactor'),
-        factory.createObjectLiteralExpression(
-          [
-            factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
-            factory.createPropertyAssignment(
-              factory.createIdentifier('totp'),
-              definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
-            ),
-          ],
-          true,
-        ),
+        factory.createObjectLiteralExpression(multifactorProperties, true),
       ),
     );
   }

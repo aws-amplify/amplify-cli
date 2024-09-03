@@ -9,6 +9,7 @@ import {
   DescribeUserPoolClientCommand,
   ListIdentityProvidersCommand,
   LambdaConfigType,
+  GetUserPoolMfaConfigCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 
@@ -40,6 +41,12 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
+    const { MfaConfiguration: mfaConfig, SoftwareTokenMfaConfiguration: totpConfig } = await this.cognitoIdentityProviderClient.send(
+      new GetUserPoolMfaConfigCommand({
+        UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+      }),
+    );
+
     const { UserPoolClient: webClient } = await this.cognitoIdentityProviderClient.send(
       new DescribeUserPoolClientCommand({
         UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
@@ -56,6 +63,6 @@ export class AppAuthDefinitionFetcher {
     const authTriggerConnections = await this.getAuthTriggerConnections();
 
     assert(userPool, 'User pool not found');
-    return getAuthDefinition({ userPool, identityProviders, webClient, authTriggerConnections });
+    return getAuthDefinition({ userPool, identityProviders, webClient, authTriggerConnections, mfaConfig, totpConfig });
   };
 }

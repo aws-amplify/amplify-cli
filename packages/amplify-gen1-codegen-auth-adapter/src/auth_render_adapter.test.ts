@@ -107,16 +107,31 @@ void describe('auth codegen', () => {
     });
   });
   void describe('MFA settings', () => {
-    const modes: UserPoolMfaType[] = ['ON', 'OFF', 'OPTIONAL'];
-    for (const mode of modes) {
+    const modeMap: Record<UserPoolMfaType, string> = {
+      ON: 'REQUIRED',
+      OFF: 'OFF',
+      OPTIONAL: 'OPTIONAL',
+    };
+
+    for (const mode of Object.keys(modeMap)) {
       void describe(`when ${mode} is passed to mfa`, () => {
         void it(`sets multifactor to ${mode}`, () => {
           const result = getAuthDefinition({
-            userPool: { MfaConfiguration: mode },
+            userPool: {},
+            mfaConfig: mode as UserPoolMfaType,
+            totpConfig: { Enabled: true },
           });
-          assert.deepEqual(result.mfa, {
-            mode,
-          });
+          if (mode === 'OFF') {
+            assert.deepEqual(result.mfa, {
+              mode: modeMap[mode as UserPoolMfaType],
+            });
+          } else {
+            assert.deepEqual(result.mfa, {
+              mode: modeMap[mode as UserPoolMfaType],
+              sms: true,
+              totp: true,
+            });
+          }
         });
       });
     }
