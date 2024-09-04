@@ -9,8 +9,13 @@ import {
   DescribeUserPoolClientCommand,
   ListIdentityProvidersCommand,
   LambdaConfigType,
+  ListGroupsCommand,
+  IdentityProviderType,
+  IdentityProviderTypeType,
+  DescribeIdentityProviderCommand,
   GetUserPoolMfaConfigCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityClient, DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 
 export interface AppAuthDefinitionFetcher {
@@ -19,6 +24,7 @@ export interface AppAuthDefinitionFetcher {
 
 export class AppAuthDefinitionFetcher {
   constructor(
+    private cognitoIdentityPoolClient: CognitoIdentityClient,
     private cognitoIdentityProviderClient: CognitoIdentityProviderClient,
     private stackParser: AmplifyStackParser,
     private backendEnvironmentResolver: BackendEnvironmentResolver,
@@ -60,9 +66,46 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
+    const identityProvidersDetails: IdentityProviderType[] = [];
+    for (const provider of identityProviders || []) {
+      if (provider.ProviderType === IdentityProviderTypeType.SAML || provider.ProviderType === IdentityProviderTypeType.OIDC) {
+        const { IdentityProvider: providerDetails } = await this.cognitoIdentityProviderClient.send(
+          new DescribeIdentityProviderCommand({
+            UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+            ProviderName: provider.ProviderName,
+          }),
+        );
+        if (providerDetails) {
+          identityProvidersDetails.push(providerDetails);
+        }
+      }
+    }
+
+    const { Groups: identityGroups } = await this.cognitoIdentityProviderClient.send(
+      new ListGroupsCommand({
+        UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+      }),
+    );
+
+    const { AllowUnauthenticatedIdentities: guestLogin } = await this.cognitoIdentityPoolClient.send(
+      new DescribeIdentityPoolCommand({
+        IdentityPoolId: resourcesByLogicalId['IdentityPool'].PhysicalResourceId,
+      }),
+    );
+
     const authTriggerConnections = await this.getAuthTriggerConnections();
 
     assert(userPool, 'User pool not found');
-    return getAuthDefinition({ userPool, identityProviders, webClient, authTriggerConnections, mfaConfig, totpConfig });
+    return getAuthDefinition({
+      userPool,
+      identityProviders,
+      identityProvidersDetails,
+      identityGroups,
+      webClient,
+      authTriggerConnections,
+      guestLogin,
+      mfaConfig,
+      totpConfig,
+    });
   };
 }

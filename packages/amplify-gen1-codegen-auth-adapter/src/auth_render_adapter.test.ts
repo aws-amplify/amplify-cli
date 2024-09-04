@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { IdentityProviderTypeType, LambdaConfigType, PasswordPolicyType, UserPoolMfaType } from '@aws-sdk/client-cognito-identity-provider';
 import { DEFAULT_PASSWORD_SETTINGS, getAuthDefinition } from './auth_render_adapter';
-import { AuthTriggerEvents } from '@aws-amplify/amplify-gen2-codegen';
+import { Attribute, AuthTriggerEvents, StandardAttribute, StandardAttributes } from '@aws-amplify/amplify-gen2-codegen';
 /**
  * @see https://github.com/aws-amplify/amplify-backend/blob/5d78622c7fd6fb050da11baff1295b9be0bd2eae/packages/auth-construct/src/construct.test.ts#L578
  * for examples of assertions in the cli codebase
@@ -52,6 +52,12 @@ void describe('auth codegen', () => {
     void it('loginWith contains `email: true`', () => {
       const result = getAuthDefinition({ userPool: {} });
       assert.deepEqual(result.loginOptions, { email: true });
+    });
+  });
+  void describe('`Enable users to login with phone` is selected', () => {
+    void it('loginWith contains `phone: true`', () => {
+      const result = getAuthDefinition({ userPool: { UsernameAttributes: ['phone_number'] } });
+      assert(result.loginOptions?.phone);
     });
   });
   void describe('Password policy', () => {
@@ -185,5 +191,100 @@ void describe('auth codegen', () => {
         assert.deepEqual(result.lambdaTriggers[authEventKey], { source: '' });
       });
     }
+  });
+
+  void describe('User attributes', () => {
+    void describe('Sign-up Standard User Attributes', () => {
+      const mappedUserAttributeName = {
+        address: 'address',
+        birthdate: 'birthdate',
+        email: 'email',
+        family_name: 'familyName',
+        gender: 'gender',
+        given_name: 'givenName',
+        locale: 'locale',
+        middle_name: 'middleName',
+        name: 'fullname',
+        nickname: 'nickname',
+        phone_number: 'phoneNumber',
+        picture: 'profilePicture',
+        preferred_username: 'preferredUsername',
+        profile: 'profilePage',
+        zoneinfo: 'timezone',
+        updated_at: 'lastUpdateTime',
+        website: 'website',
+      };
+      for (const key in mappedUserAttributeName) {
+        const typedKey = key as keyof typeof mappedUserAttributeName;
+        const testValue = mappedUserAttributeName[typedKey];
+        void it(`sets the attribute.Name ${typedKey} to ${testValue}`, () => {
+          const result = getAuthDefinition({
+            userPool: { SchemaAttributes: [{ Name: typedKey, Required: true, Mutable: false }] },
+          });
+          assert.deepEqual(result.standardUserAttributes, {
+            [testValue as Attribute]: { required: true, mutable: false } as StandardAttribute,
+          } as StandardAttributes);
+        });
+      }
+      void it('sets the standard attributes to empty object if no attributes are passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+        });
+        assert.deepEqual(result.standardUserAttributes, {});
+      });
+    });
+    void describe('Custom User Attributes', () => {
+      void it('sets the custom attributes', () => {
+        const result = getAuthDefinition({
+          userPool: {
+            SchemaAttributes: [
+              {
+                Name: 'custom:Test1',
+                AttributeDataType: 'Number',
+                Mutable: true,
+                NumberAttributeConstraints: { MinValue: '10', MaxValue: '100' },
+              },
+              {
+                Name: 'custom:Test2',
+                AttributeDataType: 'String',
+                Mutable: true,
+                StringAttributeConstraints: { MinLength: '10', MaxLength: '100' },
+              },
+            ],
+          },
+        });
+        assert.deepEqual(result.customUserAttributes, {
+          'custom:Test1': { dataType: 'Number', mutable: true, min: 10, max: 100 },
+          'custom:Test2': { dataType: 'String', mutable: true, minLen: 10, maxLen: 100 },
+        });
+      });
+      void it('sets the custom attributes to empty object if no custom attributes are passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+        });
+        assert.deepEqual(result.customUserAttributes, {});
+      });
+    });
+  });
+
+  void describe('User pool Groups', () => {
+    void it('sets the group names and sorts according to precedence', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityGroups: [
+          { GroupName: 'group3', Precedence: 3 },
+          { GroupName: 'group1', Precedence: 1 },
+          { GroupName: 'group2', Precedence: 2 },
+        ],
+      });
+      assert.deepEqual(result.groups, ['group1', 'group2', 'group3']);
+    });
+    void it('sets the group names to empty array if no groups are passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityGroups: [],
+      });
+      assert.deepEqual(result.groups, []);
+    });
   });
 });
