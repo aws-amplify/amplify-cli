@@ -9,6 +9,7 @@ import {
   DescribeUserPoolClientCommand,
   ListIdentityProvidersCommand,
   LambdaConfigType,
+  ListGroupsCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 
@@ -53,9 +54,15 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
+    const { Groups: identityGroups } = await this.cognitoIdentityProviderClient.send(
+      new ListGroupsCommand({
+        UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+      }),
+    );
+
     const authTriggerConnections = await this.getAuthTriggerConnections();
 
     assert(userPool, 'User pool not found');
-    return getAuthDefinition({ userPool, identityProviders, webClient, authTriggerConnections });
+    return getAuthDefinition({ userPool, identityProviders, identityGroups, webClient, authTriggerConnections });
   };
 }

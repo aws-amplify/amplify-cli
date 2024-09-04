@@ -236,5 +236,18 @@ describe('render auth node', () => {
         assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+email:\s?true\s+\}\s+\}\)/);
       });
     });
+    describe('phone', () => {
+      it('renders `phone: true`', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            phone: true,
+          },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        console.log(source);
+        assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+phone:\s?true\s+\}\s+\}\)/);
+      });
+    });
   });
 });
