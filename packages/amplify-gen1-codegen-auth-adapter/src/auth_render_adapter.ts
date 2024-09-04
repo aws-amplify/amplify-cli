@@ -7,8 +7,14 @@ import {
   MultifactorOptions,
   StandardAttributes,
   StandardAttribute,
+  CustomAttribute,
+  CustomAttributes,
   Attribute,
+  PolicyOverrides,
+  SamlOptions,
+  OidcOptions,
   LoginOptions,
+  Scope,
 } from '@aws-amplify/amplify-gen2-codegen';
 import {
   LambdaConfigType,
@@ -20,6 +26,7 @@ import {
   UserPoolClientType,
   SchemaAttributeType,
   GroupType,
+  IdentityProviderType,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 export interface AuthTriggerConnection {
@@ -32,9 +39,11 @@ export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigTy
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
   identityProviders?: ProviderDescription[];
+  identityProvidersDetails?: IdentityProviderType[];
   identityGroups?: GroupType[];
   webClient?: UserPoolClientType;
   authTriggerConnections?: AuthTriggerConnectionSourceMap;
+  guestLogin?: boolean;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -45,10 +54,8 @@ export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
   TemporaryPasswordValidityDays: 3,
 };
 
-export type PasswordPolicyOverrides = Record<PasswordPolicyPath, string | boolean | number>;
-
-const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<PasswordPolicyOverrides> => {
-  const policyOverrides: Partial<PasswordPolicyOverrides> = {};
+const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<PolicyOverrides> => {
+  const policyOverrides: Partial<PolicyOverrides> = {};
   const passwordOverridePath = (policyKey: keyof PasswordPolicyType): PasswordPolicyPath => `Policies.PasswordPolicy.${policyKey}`;
   for (const key of Object.keys(passwordPolicy)) {
     const typedKey: keyof PasswordPolicyType = key as keyof PasswordPolicyType;
@@ -60,6 +67,21 @@ const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>)
     }
   }
   return policyOverrides;
+};
+
+const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> => {
+  const userPoolOverrides: Partial<PolicyOverrides> = {};
+  Object.assign(userPoolOverrides, getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {}));
+  if (userPool.Name) {
+    const userNamePolicy: Partial<PolicyOverrides> = {
+      UserPoolName: userPool.Name,
+    };
+    Object.assign(userPoolOverrides, userNamePolicy);
+  }
+  if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
+    userPoolOverrides.UsernameAttributes = [];
+  }
+  return userPoolOverrides;
 };
 
 const getMfaConfiguration = (mfa?: UserPoolMfaType): MultifactorOptions => {
@@ -82,7 +104,7 @@ const getEmailConfig = (userPool: UserPoolType): EmailOptions => {
   };
 };
 
-const getUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined): StandardAttributes => {
+const getStandardUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined): StandardAttributes => {
   const mappedUserAttributeName = {
     address: 'address',
     birthdate: 'birthdate',
@@ -119,12 +141,53 @@ const getUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined):
   );
 };
 
+const getCustomUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined): CustomAttributes => {
+  return (
+    signupAttributes?.reduce((customAttributes: CustomAttributes, attribute: SchemaAttributeType) => {
+      if (attribute.Name !== undefined && attribute.Name.startsWith('custom:')) {
+        const customAttribute: CustomAttribute = {
+          mutable: attribute.Mutable,
+          dataType: attribute.AttributeDataType,
+        };
+
+        if (attribute.NumberAttributeConstraints && Object.keys(attribute.NumberAttributeConstraints).length > 0) {
+          customAttribute.min = Number(attribute.NumberAttributeConstraints.MinValue);
+          customAttribute.max = Number(attribute.NumberAttributeConstraints.MaxValue);
+        } else if (attribute.StringAttributeConstraints && Object.keys(attribute.StringAttributeConstraints).length > 0) {
+          customAttribute.minLen = Number(attribute.StringAttributeConstraints.MinLength);
+          customAttribute.maxLen = Number(attribute.StringAttributeConstraints.MaxLength);
+        }
+        return {
+          ...customAttributes,
+          [attribute.Name]: customAttribute,
+        };
+      }
+      return customAttributes;
+    }, {} as CustomAttributes) || {}
+  );
+};
+
 const getGroups = (identityGroups?: GroupType[]): string[] => {
   if (!identityGroups || identityGroups.length === 0) {
     return [];
   }
+  const groupsWithPrecedence = identityGroups.filter((group) => group.Precedence !== undefined);
 
-  return identityGroups.map((group) => group.GroupName).filter((groupName): groupName is string => groupName !== undefined);
+  return groupsWithPrecedence
+    .sort((a, b) => (a.Precedence || 0) - (b.Precedence || 0))
+    .map((group) => group.GroupName)
+    .filter((groupName): groupName is string => groupName !== undefined);
+};
+
+const getScopes = (scopes: string[]): Scope[] => {
+  const mappedScopes: Record<string, string> = {
+    email: 'EMAIL',
+    openid: 'OPENID',
+    phone: 'PHONE',
+    profile: 'PROFILE',
+    'aws.cognito.signin.user.admin': 'COGNITO_ADMIN',
+  };
+  return scopes.map((scope) => mappedScopes[scope] as Scope);
 };
 
 /**
@@ -173,9 +236,11 @@ const getAuthTriggers = (
 export const getAuthDefinition = ({
   userPool,
   identityProviders,
+  identityProvidersDetails,
   identityGroups,
   webClient,
   authTriggerConnections,
+  guestLogin,
 }: AuthSynthesizerOptions): AuthDefinition => {
   const loginWith: LoginOptions = { email: true };
   const mapIdentityProvider = {
@@ -191,6 +256,44 @@ export const getAuthDefinition = ({
       loginWith[loginWithProperty] = true;
     }
   }
+
+  if (identityProvidersDetails) {
+    const oidcOptions: OidcOptions[] = [];
+    let samlOptions: SamlOptions | undefined;
+
+    for (const provider of identityProvidersDetails) {
+      const { ProviderType, ProviderName, ProviderDetails } = provider;
+
+      if (ProviderType === IdentityProviderTypeType.OIDC && ProviderDetails) {
+        const { oidc_issuer, authorize_url, token_url, attributes_url, jwks_uri } = ProviderDetails;
+        const oidcOption: OidcOptions = {
+          issuerUrl: oidc_issuer,
+        };
+        if (ProviderName) oidcOption.name = ProviderName;
+        if (authorize_url && token_url && attributes_url && jwks_uri) {
+          oidcOption.endpoints = {
+            authorization: authorize_url,
+            token: token_url,
+            userInfo: attributes_url,
+            jwksUri: jwks_uri,
+          };
+        }
+        oidcOptions.push(oidcOption);
+      } else if (ProviderType === IdentityProviderTypeType.SAML && ProviderDetails) {
+        const { metadataURL, metadataContent } = ProviderDetails;
+        samlOptions = {
+          metadata: {
+            metadataContent: metadataURL || metadataContent,
+            metadataType: metadataURL ? 'URL' : 'FILE',
+          },
+        };
+        if (ProviderName) samlOptions.name = ProviderName;
+      }
+    }
+    loginWith.oidcLogin = oidcOptions;
+    loginWith.samlLogin = samlOptions;
+  }
+
   if (userPool.UsernameAttributes?.includes('phone_number')) {
     loginWith.phone = true;
   }
@@ -203,14 +306,22 @@ export const getAuthDefinition = ({
   if (webClient?.LogoutURLs) {
     loginWith.logoutURLs = webClient?.LogoutURLs;
   }
+  if (webClient?.AllowedOAuthScopes) {
+    loginWith.scopes = getScopes(webClient?.AllowedOAuthScopes);
+  }
 
-  const userPoolOverrides = getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {});
+  const userPoolOverrides = getUserPoolOverrides(userPool);
   return {
     loginOptions: loginWith,
     mfa: getMfaConfiguration(userPool.MfaConfiguration),
-    userAttributes: getUserAttributes(userPool.SchemaAttributes),
+    standardUserAttributes: getStandardUserAttributes(userPool.SchemaAttributes),
+    customUserAttributes: getCustomUserAttributes(userPool.SchemaAttributes),
     groups: getGroups(identityGroups),
     userPoolOverrides,
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
+    guestLogin,
+    oAuthFlows: webClient?.AllowedOAuthFlows,
+    readAttributes: webClient?.ReadAttributes,
+    writeAttributes: webClient?.WriteAttributes,
   };
 };
