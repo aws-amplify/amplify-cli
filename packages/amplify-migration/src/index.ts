@@ -102,7 +102,7 @@ export async function execute() {
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
   const cognitoIdentityPoolClient = new CognitoIdentityClient();
   const appId = resolveAppId();
-
+  //hi
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
 
