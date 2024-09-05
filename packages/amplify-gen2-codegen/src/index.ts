@@ -42,11 +42,14 @@ import {
 
 import { DataDefinition, generateDataSource } from './data/source_builder';
 
+import { FunctionDefinition, renderFunctions } from './function/source_builder';
+
 export interface Gen2RenderingOptions {
   outputDir: string;
   auth?: AuthDefinition;
   storage?: StorageRenderParameters;
   data?: DataDefinition;
+  functions?: FunctionDefinition[];
   fileWriter?: (content: string, path: string) => Promise<void>;
 }
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
@@ -56,6 +59,7 @@ export const createGen2Renderer = ({
   auth,
   storage,
   data,
+  functions,
   fileWriter = (content, path) => createFileWriter(path)(content),
 }: Readonly<Gen2RenderingOptions>): Renderer => {
   const ensureOutputDir = new EnsureDirectory(outputDir);
@@ -115,6 +119,32 @@ export const createGen2Renderer = ({
     };
   }
 
+  if (functions) {
+    renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'function')));
+    renderers.push(
+      new TypescriptNodeArrayRenderer(
+        async () => renderFunctions(functions),
+        (content) => fileWriter(content, path.join(outputDir, 'amplify', 'function', 'resource.ts')),
+      ),
+    );
+
+    const functionNames: string[] = [];
+    for (const func of functions) {
+      if (func.name) {
+        const splitFunctionName = func.name.split('-')[0];
+        functionNames.push(splitFunctionName);
+
+        // Create new directory for every function
+        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'function', splitFunctionName, 'src', 'handler.ts')));
+      }
+    }
+
+    backendRenderOptions.function = {
+      importFrom: './function/resource',
+      functionName: functionNames,
+    };
+  }
+
   const backendRenderer = new TypescriptNodeArrayRenderer(
     async () => backendSynthesizer.render(backendRenderOptions),
     (content) => fileWriter(content, path.join(outputDir, 'amplify', 'backend.ts')),
@@ -134,6 +164,7 @@ export {
   S3TriggerDefinition,
   PasswordPolicyPath,
   AuthDefinition,
+  FunctionDefinition,
   PolicyOverrides,
   Group,
   Attribute,
