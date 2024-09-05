@@ -23,8 +23,6 @@ export class AppFunctionsDefinitionFetcher {
     const meta = this.stateManager.getMeta();
     const functions = meta?.function as Record<string, any>;
 
-    console.log('functions -- ', functions);
-    // const functionConfigurations: FunctionConfiguration[] = [];
     const getFunctionPromises = Object.keys(functions).map((key) => {
       const functionName = key;
       return this.lambdaClient.send(
@@ -34,15 +32,7 @@ export class AppFunctionsDefinitionFetcher {
       );
     });
 
-    const functionConfigurations = (await Promise.all(getFunctionPromises)).map(
-      (functionResponse: { Configuration: any }) => functionResponse.Configuration!,
-    );
-
-    // if (configuration) {
-    //     functionConfigurations.push(configuration);
-    //   }
-
-    console.log('functionConfigurations -- ', functionConfigurations);
+    const functionConfigurations = (await Promise.all(getFunctionPromises)).map((functionResponse) => functionResponse.Configuration!);
 
     return getFunctionDefinition(functionConfigurations);
   };

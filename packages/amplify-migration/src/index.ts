@@ -125,7 +125,7 @@ export async function execute() {
       () => getAuthTriggersConnections(),
     ),
     dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
-    functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(backendEnvironmentResolver, stateManager),
+    functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(lambdaClient, backendEnvironmentResolver, stateManager),
     analytics: new AppAnalytics(appId),
     logger: new AppContextLogger(appId),
   });
