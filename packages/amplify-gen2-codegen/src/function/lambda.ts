@@ -1,4 +1,6 @@
 import ts, { ObjectLiteralElementLike, SyntaxKind } from 'typescript';
+import { FunctionDefinition, createFunctionDefinition } from './source_builder';
+
 export type Lambda = {
   source: string;
 };
@@ -7,47 +9,8 @@ const factory = ts.factory;
 
 export const defineFunctionIdentifier = 'defineFunction';
 
-export interface DefineFunctionParameter {
-  entry?: string;
-  name?: string;
-  timeoutSeconds?: string;
-  memoryMB?: number;
-  environment?: Record<string, string>;
-  runtime?: 16 | 18 | 19;
-}
-
-const createParameter = (name: string, value: ts.LiteralExpression | ts.ObjectLiteralExpression): ts.PropertyAssignment =>
-  factory.createPropertyAssignment(factory.createIdentifier(name), value);
-
-export const createDefineFunctionCall = (parameter?: DefineFunctionParameter): ts.CallExpression => {
-  const parameters: ObjectLiteralElementLike[] = [];
-  if (parameter?.entry) {
-    parameters.push(createParameter('entry', factory.createStringLiteral(parameter.entry)));
-  }
-  if (parameter?.name) {
-    parameters.push(createParameter('name', factory.createStringLiteral(parameter.name)));
-  }
-  if (parameter?.timeoutSeconds) {
-    parameters.push(createParameter('timeoutSeconds', factory.createStringLiteral(parameter.timeoutSeconds)));
-  }
-  if (parameter?.memoryMB) {
-    parameters.push(createParameter('memoryMB', factory.createNumericLiteral(parameter.memoryMB)));
-  }
-  if (parameter?.environment) {
-    parameters.push(
-      createParameter(
-        'environment',
-        factory.createObjectLiteralExpression(
-          Object.entries(parameter.environment).map(([key, value]) => {
-            return createParameter(key, factory.createStringLiteral(value));
-          }),
-        ),
-      ),
-    );
-  }
-  if (parameter?.runtime) {
-    parameters.push(createParameter('runtime', factory.createNumericLiteral(parameter.runtime)));
-  }
+export const createDefineFunctionCall = (parameter?: FunctionDefinition): ts.CallExpression => {
+  const parameters = createFunctionDefinition(parameter);
   return factory.createCallExpression(factory.createIdentifier(defineFunctionIdentifier), undefined, [
     factory.createObjectLiteralExpression(parameters),
   ]);
