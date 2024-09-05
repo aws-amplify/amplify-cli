@@ -17,6 +17,9 @@ export type AccessPatterns = {
 export type Attribute = 'address' | 'birthdate' | 'email' | 'familyName' | 'gender' | 'givenName' | 'locale' | 'middleName' | 'fullname' | 'nickname' | 'phoneNumber' | 'profilePicture' | 'preferredUsername' | 'profilePage' | 'timezone' | 'lastUpdateTime' | 'website';
 
 // @public (undocumented)
+export type AttributeMappingRule = Record<Attribute, string>;
+
+// @public (undocumented)
 export interface AuthDefinition {
     // (undocumented)
     customUserAttributes?: CustomAttributes;
@@ -108,10 +111,14 @@ export type LoginOptions = {
     facebookLogin?: boolean;
     oidcLogin?: OidcOptions[];
     samlLogin?: SamlOptions;
+    googleAttributes?: AttributeMappingRule;
+    amazonAttributes?: AttributeMappingRule;
+    appleAttributes?: AttributeMappingRule;
+    facebookAttributes?: AttributeMappingRule;
     callbackURLs?: string[];
     logoutURLs?: string[];
     scopes?: Scope[];
-    [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | undefined;
+    [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | AttributeMappingRule | undefined;
 };
 
 // @public (undocumented)
@@ -140,6 +147,7 @@ export type OidcOptions = {
     issuerUrl: string;
     name?: string;
     endpoints?: OidcEndPoints;
+    attributeMapping?: AttributeMappingRule;
 };
 
 // @public (undocumented)
@@ -164,6 +172,7 @@ export type S3TriggerDefinition = Record<string, never>;
 export type SamlOptions = {
     name?: string;
     metadata: MetadataOptions;
+    attributeMapping?: AttributeMappingRule;
 };
 
 // @public (undocumented)
