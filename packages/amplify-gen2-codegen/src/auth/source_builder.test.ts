@@ -1,6 +1,14 @@
 import { StandardAttributes } from 'aws-cdk-lib/aws-cognito';
 import assert from 'node:assert';
-import { Attribute, AuthDefinition, AuthTriggerEvents, EmailOptions, renderAuthNode, UserPoolMfaConfig } from './source_builder';
+import {
+  Attribute,
+  AttributeMappingRule,
+  AuthDefinition,
+  AuthTriggerEvents,
+  EmailOptions,
+  renderAuthNode,
+  UserPoolMfaConfig,
+} from './source_builder';
 import { printNodeArray } from '../test_utils/ts_node_printer';
 
 describe('render auth node', () => {
@@ -234,6 +242,17 @@ describe('render auth node', () => {
         assert(source.includes('custom:Test1'));
         assert(source.includes('dataType: "Number"'));
       });
+      it('does not render anything if CustomAttribute is undefined', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            email: true,
+          },
+          customUserAttributes: { 'custom:isAllowed': undefined },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert(!source.includes('custom:isAllowed'));
+      });
     });
   });
   describe('groups', () => {
@@ -312,6 +331,38 @@ describe('render auth node', () => {
         const source = printNodeArray(node);
         assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+phone:\s?true\s+\}\s+\}\)/);
       });
+    });
+    describe('OAuth scopes', () => {
+      it('renders oauth scopes', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            googleLogin: true,
+            scopes: ['EMAIL', 'OPENID'],
+          },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert.match(source, /defineAuth\(\{[\s\S]*scopes:\s\["EMAIL",\s"OPENID"\]/);
+      });
+      it('renders no oauth scopes if not passed', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {},
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert.doesNotMatch(source, /scopes:/);
+      });
+    });
+    it('renders attributeMapping if passed along with Google login', () => {
+      const authDefinition: AuthDefinition = {
+        loginOptions: {
+          googleLogin: true,
+          googleAttributes: { fullname: 'name' } as AttributeMappingRule,
+        },
+      };
+      const node = renderAuthNode(authDefinition);
+      const source = printNodeArray(node);
+      assert.match(source, /defineAuth\(\{[\s\S]*attributeMapping:\s\{[\s\S]*fullname:\s"name"/);
     });
   });
 });

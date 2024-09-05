@@ -68,16 +68,14 @@ export class AppAuthDefinitionFetcher {
 
     const identityProvidersDetails: IdentityProviderType[] = [];
     for (const provider of identityProviders || []) {
-      if (provider.ProviderType === IdentityProviderTypeType.SAML || provider.ProviderType === IdentityProviderTypeType.OIDC) {
-        const { IdentityProvider: providerDetails } = await this.cognitoIdentityProviderClient.send(
-          new DescribeIdentityProviderCommand({
-            UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
-            ProviderName: provider.ProviderName,
-          }),
-        );
-        if (providerDetails) {
-          identityProvidersDetails.push(providerDetails);
-        }
+      const { IdentityProvider: providerDetails } = await this.cognitoIdentityProviderClient.send(
+        new DescribeIdentityProviderCommand({
+          UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+          ProviderName: provider.ProviderName,
+        }),
+      );
+      if (providerDetails) {
+        identityProvidersDetails.push(providerDetails);
       }
     }
 

@@ -124,6 +124,7 @@ export type MetadataOptions = {
 export type MultifactorOptions = {
     mode: UserPoolMfaConfig;
     totp?: boolean;
+    sms?: boolean;
 };
 
 // @public (undocumented)
@@ -198,7 +199,7 @@ export interface StorageRenderParameters {
 export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 
 // @public (undocumented)
-export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
+export type UserPoolMfaConfig = 'OFF' | 'REQUIRED' | 'OPTIONAL';
 
 // (No @packageDocumentation comment for this package)
 

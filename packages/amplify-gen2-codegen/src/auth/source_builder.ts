@@ -43,6 +43,8 @@ export type Attribute =
   | 'lastUpdateTime'
   | 'website';
 
+export type AttributeMappingRule = Record<Attribute, string>;
+
 export type SendingAccount = 'COGNITO_DEFAULT' | 'DEVELOPER';
 
 export type UserPoolMfaConfig = 'OFF' | 'REQUIRED' | 'OPTIONAL';
@@ -69,6 +71,7 @@ export type MetadataOptions = {
 export type SamlOptions = {
   name?: string;
   metadata: MetadataOptions;
+  attributeMapping?: AttributeMappingRule;
 };
 
 export type OidcEndPoints = {
@@ -82,6 +85,7 @@ export type OidcOptions = {
   issuerUrl: string;
   name?: string;
   endpoints?: OidcEndPoints;
+  attributeMapping?: AttributeMappingRule;
 };
 
 export type LoginOptions = {
@@ -94,10 +98,14 @@ export type LoginOptions = {
   facebookLogin?: boolean;
   oidcLogin?: OidcOptions[];
   samlLogin?: SamlOptions;
+  googleAttributes?: AttributeMappingRule;
+  amazonAttributes?: AttributeMappingRule;
+  appleAttributes?: AttributeMappingRule;
+  facebookAttributes?: AttributeMappingRule;
   callbackURLs?: string[];
   logoutURLs?: string[];
   scopes?: Scope[];
-  [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | undefined;
+  [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | AttributeMappingRule | undefined;
 };
 
 export type MultifactorOptions = {
@@ -154,23 +162,50 @@ const appleTeamID = 'SIWA_TEAM_ID';
 const oidcClientID = 'OIDC_CLIENT_ID';
 const oidcClientSecret = 'OIDC_CLIENT_SECRET';
 
-function createProviderConfig(config: Record<string, string>) {
-  return Object.entries(config).map(([key, value]) =>
-    factory.createPropertyAssignment(
-      factory.createIdentifier(key),
-      factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(value)]),
+function createProviderConfig(config: Record<string, string>, attributeMapping: AttributeMappingRule | undefined) {
+  const properties: ts.ObjectLiteralElementLike[] = [];
+
+  Object.entries(config).map(([key, value]) =>
+    properties.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier(key),
+        factory.createCallExpression(secretIdentifier, undefined, [factory.createStringLiteral(value)]),
+      ),
     ),
   );
+
+  if (attributeMapping) {
+    const mappingProperties: ts.ObjectLiteralElementLike[] = [];
+
+    Object.entries(attributeMapping).map(([key, value]) =>
+      mappingProperties.push(factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))),
+    );
+
+    properties.push(
+      factory.createPropertyAssignment(
+        factory.createIdentifier('attributeMapping'),
+        factory.createObjectLiteralExpression(mappingProperties, true),
+      ),
+    );
+  }
+
+  return properties;
 }
 
-function createProviderPropertyAssignment(name: string, config: Record<string, string>) {
+function createProviderPropertyAssignment(
+  name: string,
+  config: Record<string, string>,
+  attributeMapping: AttributeMappingRule | undefined,
+) {
   return factory.createPropertyAssignment(
     factory.createIdentifier(name),
-    factory.createObjectLiteralExpression(createProviderConfig(config), true),
+    factory.createObjectLiteralExpression(createProviderConfig(config, attributeMapping), true),
   );
 }
 
-function createOidcSamlPropertyAssignments(config: Record<string, string | MetadataOptions | OidcEndPoints>): PropertyAssignment[] {
+function createOidcSamlPropertyAssignments(
+  config: Record<string, string | MetadataOptions | OidcEndPoints | AttributeMappingRule>,
+): PropertyAssignment[] {
   return Object.entries(config).flatMap(([key, value]) => {
     if (typeof value === 'string') {
       return [factory.createPropertyAssignment(factory.createIdentifier(key), factory.createStringLiteral(value))];
@@ -191,39 +226,55 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
 
   if (loginOptions.googleLogin) {
     providerAssignments.push(
-      createProviderPropertyAssignment('google', {
-        clientId: googleClientID,
-        clientSecret: googleClientSecret,
-      }),
+      createProviderPropertyAssignment(
+        'google',
+        {
+          clientId: googleClientID,
+          clientSecret: googleClientSecret,
+        },
+        loginOptions.googleAttributes,
+      ),
     );
   }
 
   if (loginOptions.appleLogin) {
     providerAssignments.push(
-      createProviderPropertyAssignment('signInWithApple', {
-        clientId: appleClientID,
-        keyId: appleKeyId,
-        privateKey: applePrivateKey,
-        teamId: appleTeamID,
-      }),
+      createProviderPropertyAssignment(
+        'signInWithApple',
+        {
+          clientId: appleClientID,
+          keyId: appleKeyId,
+          privateKey: applePrivateKey,
+          teamId: appleTeamID,
+        },
+        loginOptions.appleAttributes,
+      ),
     );
   }
 
   if (loginOptions.amazonLogin) {
     providerAssignments.push(
-      createProviderPropertyAssignment('loginWithAmazon', {
-        clientId: amazonClientID,
-        clientSecret: amazonClientSecret,
-      }),
+      createProviderPropertyAssignment(
+        'loginWithAmazon',
+        {
+          clientId: amazonClientID,
+          clientSecret: amazonClientSecret,
+        },
+        loginOptions.amazonAttributes,
+      ),
     );
   }
 
   if (loginOptions.facebookLogin) {
     providerAssignments.push(
-      createProviderPropertyAssignment('facebook', {
-        clientId: facebookClientID,
-        clientSecret: facebookClientSecret,
-      }),
+      createProviderPropertyAssignment(
+        'facebook',
+        {
+          clientId: facebookClientID,
+          clientSecret: facebookClientSecret,
+        },
+        loginOptions.facebookAttributes,
+      ),
     );
   }
 

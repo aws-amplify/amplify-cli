@@ -30,6 +30,7 @@ import {
   MetadataOptions,
   SamlOptions,
   Scope,
+  AttributeMappingRule,
 } from './auth/source_builder';
 import {
   StorageRenderParameters,
@@ -154,4 +155,5 @@ export {
   MetadataOptions,
   OidcOptions,
   Scope,
+  AttributeMappingRule,
 };
