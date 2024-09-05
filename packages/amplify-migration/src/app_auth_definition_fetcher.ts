@@ -11,7 +11,6 @@ import {
   LambdaConfigType,
   ListGroupsCommand,
   IdentityProviderType,
-  IdentityProviderTypeType,
   DescribeIdentityProviderCommand,
   GetUserPoolMfaConfigCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
