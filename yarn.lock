@@ -721,6 +721,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-gen2-codegen": ^0.0.1
     "@aws-sdk/client-amplify": ^3.592.0
+    "@aws-sdk/client-lambda": ^3.637.0
     jest: ^29.5.0
     typescript: ^5.4.5
   languageName: unknown
