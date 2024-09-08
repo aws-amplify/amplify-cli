@@ -143,10 +143,6 @@ export function initAndroidProjectWithProfileV12(cwd: string, settings: Partial<
     stripColors: true,
     env,
   })
-    .wait('Do you want to continue with Amplify Gen 1?')
-    .sendYes()
-    .wait('Why would you like to use Amplify Gen 1?')
-    .sendCarriageReturn()
     .wait('Enter a name for the project')
     .sendLine(s.name)
     .wait('Initialize the project with the above configuration?')
