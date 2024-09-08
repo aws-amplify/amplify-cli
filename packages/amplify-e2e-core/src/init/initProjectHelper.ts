@@ -27,6 +27,7 @@ const defaultSettings = {
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
   includeUsageDataPrompt: true,
+  includeGen2RecommendationPrompt: true,
   testingWithLatestCodebase: false,
 };
 
@@ -59,7 +60,17 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     stripColors: true,
     env,
     disableCIDetection: s.disableCIDetection,
-  })
+  });
+
+  if (s.includeGen2RecommendationPrompt) {
+    chain
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn();
+  }
+
+  chain
     .wait('Enter a name for the project')
     .sendLine(s.name)
     .wait('Initialize the project with the above configuration?')
