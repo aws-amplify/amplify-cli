@@ -8,12 +8,12 @@ import { isNewProject } from './s0-analyzeProject';
 
 export const getPreInitSetup = (recommendGen2: boolean) => {
   if (recommendGen2) {
-    return preInitSetup;
-  } else {
     return async (context) => {
       await gen2Recommendation(context);
       await preInitSetup(context);
     };
+  } else {
+    return preInitSetup;
   }
 };
 

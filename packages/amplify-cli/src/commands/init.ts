@@ -22,8 +22,8 @@ const recommendGen2 = true;
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const runStrategy = (quickstart: boolean) =>
   quickstart
-    ? [getPreInitSetup(recommendGen2), analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
-    : [getPreInitSetup(!recommendGen2), analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
+    ? [getPreInitSetup(!recommendGen2), analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [getPreInitSetup(recommendGen2), analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
 
 /**
  * entry point for the init command
