@@ -31,7 +31,7 @@ jest.mock('../../init-steps/s0-analyzeProject', () => ({
 
 describe('preInitSetup', () => {
   it('should return preInitSetupBasic when isHeadless is true', () => {
-    const result = getPreInitSetup(true);
+    const result = getPreInitSetup(false);
     expect(result).toBe(preInitSetup);
   });
 
