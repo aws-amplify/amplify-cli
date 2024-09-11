@@ -5,12 +5,10 @@ import { printNodeArray } from '../test_utils/ts_node_printer';
 describe('render function', () => {
   describe('import', () => {
     it('imports defineFunction renderFunction is defined', () => {
-      const definitions: FunctionDefinition[] = [];
-      const functionDef1: FunctionDefinition = {};
-      functionDef1.name = 'function1';
-      definitions.push(functionDef1);
+      const definition: FunctionDefinition = {};
+      definition.name = 'function1';
 
-      const rendered = renderFunctions(definitions);
+      const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
 
       assert.match(source, /import\s?\{\s?defineFunction\s?\}\s?from\s?"\@aws-amplify\/backend"/);
@@ -18,75 +16,58 @@ describe('render function', () => {
   });
   describe('does not render', () => {
     it('does not render the properties if its empty', () => {
-      const rendered = renderFunctions([{}]);
+      const rendered = renderFunctions({});
       const source = printNodeArray(rendered);
       assert.doesNotMatch(source, new RegExp(`entry:`));
     });
   });
   describe('render properties', () => {
     it('does render entry property', () => {
-      const definitions: FunctionDefinition[] = [];
-      const functionDef1: FunctionDefinition = {};
-      functionDef1.entry = 'index.handler';
+      const definition: FunctionDefinition = {};
+      definition.entry = 'index.handler';
+      definition.name = 'sayHello';
 
-      definitions.push(functionDef1);
-
-      const rendered = renderFunctions(definitions);
+      const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
       assert.match(source, /entry: /);
     });
     it('does render name property', () => {
-      const definitions: FunctionDefinition[] = [];
-      const functionDef1: FunctionDefinition = {};
-      functionDef1.name = 'function1';
+      const definition: FunctionDefinition = {};
+      definition.name = 'function1';
 
-      definitions.push(functionDef1);
-
-      const rendered = renderFunctions(definitions);
+      const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
       assert.match(source, /name: /);
     });
     it('does render runtime property', () => {
-      const definitions: FunctionDefinition[] = [];
-      const functionDef1: FunctionDefinition = {};
-      functionDef1.runtime = 'nodejs18.x';
+      const definition: FunctionDefinition = {};
+      definition.runtime = 'nodejs18.x';
 
-      definitions.push(functionDef1);
-
-      const rendered = renderFunctions(definitions);
+      const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
       assert.match(source, /runtime: 18/);
     });
     it('does render timeoutSeconds property', () => {
-      const definitions: FunctionDefinition[] = [];
-      const functionDef1: FunctionDefinition = {};
-      functionDef1.timeoutSeconds = 3;
+      const definition: FunctionDefinition = {};
+      definition.timeoutSeconds = 3;
 
-      definitions.push(functionDef1);
-
-      const rendered = renderFunctions(definitions);
+      const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
       assert.match(source, /timeoutSeconds: /);
     });
     it('does render memoryMB property', () => {
-      const definitions: FunctionDefinition[] = [];
-      const functionDef1: FunctionDefinition = {};
-      functionDef1.memoryMB = 128;
+      const definition: FunctionDefinition = {};
+      definition.memoryMB = 128;
 
-      definitions.push(functionDef1);
-
-      const rendered = renderFunctions(definitions);
+      const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
       assert.match(source, /memoryMB: /);
     });
     it('does render environment property', () => {
-      const definitions: FunctionDefinition[] = [];
-      const functionDef1: FunctionDefinition = {};
-      functionDef1.environment = { Variables: { ENV: 'dev', REGION: 'us-west-2' } };
+      const definition: FunctionDefinition = {};
+      definition.environment = { Variables: { ENV: 'dev', REGION: 'us-west-2' } };
 
-      definitions.push(functionDef1);
-
-      const rendered = renderFunctions(definitions);
+      const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
       assert.match(source, /environment: /);
     });
