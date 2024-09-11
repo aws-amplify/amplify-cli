@@ -1,8 +1,9 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';
-import { renderResourceTsFilesForFunction } from '../resource/resource';
+import { renderResourceTsFile } from '../resource/resource';
 
 export interface FunctionDefinition {
+  category?: string;
   entry?: string;
   name?: string;
   timeoutSeconds?: number;
@@ -16,30 +17,39 @@ const factory = ts.factory;
 const createParameter = (name: string, value: ts.LiteralExpression | ts.ObjectLiteralExpression): ts.PropertyAssignment =>
   factory.createPropertyAssignment(factory.createIdentifier(name), value);
 
-export function renderFunctions(definitions: FunctionDefinition[]) {
-  const defineFunctionProperties: ts.ObjectLiteralExpression[] = [];
-  const exportedVariableNames: ts.Identifier[] = [];
+export function renderFunctions(definition: FunctionDefinition) {
+  const groupsComment = [];
+  const namedImports: string[] = [];
 
-  for (const definition of definitions) {
-    const defineFunctionProperty = createFunctionDefinition(definition);
-    defineFunctionProperties.push(factory.createObjectLiteralExpression(defineFunctionProperty, true));
-    exportedVariableNames.push(factory.createIdentifier(definition?.name?.split('-')[0] || 'sayHello'));
-  }
+  groupsComment.push(
+    factory.createJSDocComment(
+      factory.createNodeArray([
+        factory.createJSDocText(
+          `Source code for this function can be found in your Amplify Gen 1 Directory.\nSee amplify/backend/function/${
+            definition.name?.split('-')[0]
+          }/src \n`,
+        ),
+      ]),
+    ),
+  );
 
-  return renderResourceTsFilesForFunction({
-    exportedVariableName: exportedVariableNames,
-    functionCallParameter: defineFunctionProperties,
+  const defineFunctionProperty = createFunctionDefinition(definition, groupsComment, namedImports);
+
+  return renderResourceTsFile({
+    exportedVariableName: factory.createIdentifier(definition?.name?.split('-')[0] || 'sayHello'),
+    functionCallParameter: factory.createObjectLiteralExpression(defineFunctionProperty, true),
     backendFunctionConstruct: 'defineFunction',
+    additionalImportedBackendIdentifiers: namedImports,
     importedPackageName: '@aws-amplify/backend',
+    postImportStatements: groupsComment,
   });
 }
 
-export function createFunctionDefinition(definition?: FunctionDefinition) {
+export function createFunctionDefinition(definition?: FunctionDefinition, groupsComment?: any[], namedImports?: string[]) {
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
 
-  if (definition?.entry && definition?.name) {
-    const entry = definition.name?.split('-')[0];
-    defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral('./' + entry + '/src/handler.ts')));
+  if (definition?.entry) {
+    defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral('./handler.ts')));
   }
   if (definition?.name) {
     defineFunctionProperties.push(createParameter('name', factory.createStringLiteral(definition.name)));
@@ -57,6 +67,19 @@ export function createFunctionDefinition(definition?: FunctionDefinition) {
         'environment',
         factory.createObjectLiteralExpression(
           Object.entries(definition.environment.Variables).map(([key, value]) => {
+            if (key == 'API_KEY') {
+              groupsComment!.push(
+                factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+                  factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret API_KEY` to set the value'),
+                ]),
+              );
+              namedImports!.push('secret');
+              return factory.createPropertyAssignment(
+                key,
+                factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral(value)]),
+              );
+            }
+
             return createParameter(key, factory.createStringLiteral(value));
           }),
         ),

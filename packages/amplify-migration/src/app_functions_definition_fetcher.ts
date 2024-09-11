@@ -21,7 +21,49 @@ export class AppFunctionsDefinitionFetcher {
     assert(backendEnvironment?.stackName);
 
     const meta = this.stateManager.getMeta();
-    const functions = meta?.function as Record<string, any>;
+    const functions = meta?.function;
+
+    const auth = meta?.auth;
+    const storageList = meta?.storage;
+
+    const functionCategoryMap = new Map<string, string>();
+
+    const authValues: any = Object.values(auth)[0];
+
+    // auth triggers
+    if (auth && authValues.dependsOn) {
+      for (const env of authValues.dependsOn) {
+        if (env.category == 'function') {
+          functionCategoryMap.set(env.resourceName, 'auth');
+        }
+      }
+    }
+
+    // s3 storage trigger
+    storageList.forEach((storage: any) => {
+      const storageObj = storageList[storage];
+      if (storageObj.dependsOn) {
+        for (const env of storageObj.dependsOn) {
+          if (env.category == 'function') {
+            functionCategoryMap.set(env.resourceName, 'storage');
+          }
+        }
+      }
+    });
+
+    // dynamodb storage trigger
+    functions.forEach((func: any) => {
+      const funcObj = functions[func];
+      if (funcObj.dependsOn) {
+        for (const env of funcObj.dependsOn) {
+          if (env.category == 'storage') {
+            functionCategoryMap.set(func, 'storage');
+          }
+        }
+      } else {
+        functionCategoryMap.set(func, 'function');
+      }
+    });
 
     const getFunctionPromises = Object.keys(functions).map((key) => {
       const functionName = key;
@@ -34,6 +76,6 @@ export class AppFunctionsDefinitionFetcher {
 
     const functionConfigurations = (await Promise.all(getFunctionPromises)).map((functionResponse) => functionResponse.Configuration!);
 
-    return getFunctionDefinition(functionConfigurations);
+    return getFunctionDefinition(functionConfigurations, functionCategoryMap);
   };
 }

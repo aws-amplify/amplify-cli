@@ -6,10 +6,8 @@ import { JsonRenderer } from './renderers/package_json';
 import { TypescriptNodeArrayRenderer } from './renderers/typescript_block_node';
 import { BackendRenderParameters, BackendSynthesizer } from './backend/synthesizer';
 import { EnsureDirectory } from './renderers/ensure_directory';
-import { Lambda } from './function/lambda';
 import {
   AuthTriggerEvents,
-  AuthLambdaTriggers,
   AuthDefinition,
   renderAuthNode,
   SendingAccount,
@@ -76,6 +74,33 @@ export const createGen2Renderer = ({
   const backendRenderOptions: BackendRenderParameters = {};
 
   const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer];
+
+  if (functions) {
+    const functionNamesAndCategory = new Map<string, string>();
+    for (const func of functions) {
+      if (func.name) {
+        const splitFunctionName = func.name.split('-')[0];
+        functionNamesAndCategory.set(splitFunctionName, func.category!);
+        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', func.category! || 'function', func.name.split('-')[0])));
+        renderers.push(
+          new TypescriptNodeArrayRenderer(
+            async () => renderFunctions(func),
+            (content) => {
+              const filePath = path.join(outputDir, 'amplify', func.category! || 'function', splitFunctionName);
+              // fileWriter('', path.join(filePath, 'handler.ts'));
+              return fileWriter(content, path.join(filePath, 'resource.ts'));
+            },
+          ),
+        );
+      }
+    }
+
+    backendRenderOptions.function = {
+      importFrom: './function/resource',
+      functionNamesAndCategories: functionNamesAndCategory,
+    };
+  }
+
   if (auth) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
@@ -119,32 +144,6 @@ export const createGen2Renderer = ({
     };
   }
 
-  if (functions) {
-    renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'function')));
-    renderers.push(
-      new TypescriptNodeArrayRenderer(
-        async () => renderFunctions(functions),
-        (content) => fileWriter(content, path.join(outputDir, 'amplify', 'function', 'resource.ts')),
-      ),
-    );
-
-    const functionNames: string[] = [];
-    for (const func of functions) {
-      if (func.name) {
-        const splitFunctionName = func.name.split('-')[0];
-        functionNames.push(splitFunctionName);
-
-        // Create new directory for every function
-        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'function', splitFunctionName, 'src', 'handler.ts')));
-      }
-    }
-
-    backendRenderOptions.function = {
-      importFrom: './function/resource',
-      functionName: functionNames,
-    };
-  }
-
   const backendRenderer = new TypescriptNodeArrayRenderer(
     async () => backendSynthesizer.render(backendRenderOptions),
     (content) => fileWriter(content, path.join(outputDir, 'amplify', 'backend.ts')),
@@ -176,8 +175,6 @@ export {
   CustomAttributes,
   MultifactorOptions,
   AuthTriggerEvents,
-  Lambda,
-  AuthLambdaTriggers,
   StorageTriggerEvent,
   DataDefinition,
   SamlOptions,
@@ -186,3 +183,6 @@ export {
   OidcOptions,
   Scope,
 };
+function func(value: FunctionDefinition, index: number, array: FunctionDefinition[]): void {
+  throw new Error('Function not implemented.');
+}

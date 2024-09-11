@@ -2,7 +2,6 @@ import ts, { PropertyAssignment } from 'typescript';
 import assert from 'node:assert';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../resource/resource';
-import { createTriggersProperty, Lambda } from '../function/lambda';
 
 export type Scope = 'PHONE' | 'EMAIL' | 'OPENID' | 'PROFILE' | 'COGNITO_ADMIN';
 
@@ -105,8 +104,6 @@ export type MultifactorOptions = {
   totp?: boolean;
 };
 
-export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
-
 export type AuthTriggerEvents =
   | 'createAuthChallenge'
   | 'customMessage'
@@ -126,7 +123,6 @@ export interface AuthDefinition {
   standardUserAttributes?: StandardAttributes;
   customUserAttributes?: CustomAttributes;
   userPoolOverrides?: PolicyOverrides;
-  lambdaTriggers?: Partial<AuthLambdaTriggers>;
   guestLogin?: boolean;
   oAuthFlows?: string[];
   readAttributes?: string[];
@@ -409,15 +405,9 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
     );
   }
 
-  const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
   const { loginOptions } = definition;
   if (loginOptions?.appleLogin || loginOptions?.amazonLogin || loginOptions?.googleLogin || loginOptions?.facebookLogin) {
     namedImports.push('secret');
-  }
-  if (hasFunctions) {
-    assert(definition.lambdaTriggers);
-    defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
-    namedImports.push('defineFunction');
   }
 
   if (definition.mfa) {

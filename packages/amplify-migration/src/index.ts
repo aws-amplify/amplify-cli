@@ -113,7 +113,6 @@ export async function execute() {
 
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
-
   await generateGen2Code({
     outputDirectory: './output',
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
