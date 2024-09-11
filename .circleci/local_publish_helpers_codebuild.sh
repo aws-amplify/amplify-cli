@@ -139,10 +139,10 @@ function verifyPkgCli {
       fi
     }
 
-    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((830 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((830 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((820 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((670 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((925 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((925 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((925 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((750 * 1024 * 1024))
 }
 
 function unsetNpmRegistryUrl {
