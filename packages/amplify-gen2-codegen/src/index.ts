@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'node:fs/promises';
+import ts from 'typescript';
 import { patchNpmPackageJson } from './npm_package/renderer';
 import { RenderPipeline, Renderer } from './render_pipeline';
 import { JsonRenderer } from './renderers/package_json';
@@ -89,8 +90,7 @@ export const createGen2Renderer = ({
             async () => renderFunctions(func),
             (content) => {
               const filePath = path.join(outputDir, 'amplify', func.category! || 'function', splitFunctionName);
-              // fileWriter('', path.join(filePath, 'handler.ts'));
-              return fileWriter(content, path.join(filePath, 'resource.ts'));
+              return fileWriter(content, path.join(filePath, 'resource.ts')).then(() => fileWriter('', path.join(filePath, 'handler.ts')));
             },
           ),
         );

@@ -40,7 +40,7 @@ export class AppFunctionsDefinitionFetcher {
     }
 
     // s3 storage trigger
-    storageList.forEach((storage: any) => {
+    Object.keys(storageList).forEach((storage) => {
       const storageObj = storageList[storage];
       if (storageObj.dependsOn) {
         for (const env of storageObj.dependsOn) {
@@ -52,7 +52,7 @@ export class AppFunctionsDefinitionFetcher {
     });
 
     // dynamodb storage trigger
-    functions.forEach((func: any) => {
+    Object.keys(functions).forEach((func) => {
       const funcObj = functions[func];
       if (funcObj.dependsOn) {
         for (const env of funcObj.dependsOn) {
