@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'node:fs/promises';
-import ts from 'typescript';
 import { patchNpmPackageJson } from './npm_package/renderer';
 import { RenderPipeline, Renderer } from './render_pipeline';
 import { JsonRenderer } from './renderers/package_json';
@@ -187,6 +186,3 @@ export {
   OidcOptions,
   Scope,
 };
-function func(value: FunctionDefinition, index: number, array: FunctionDefinition[]): void {
-  throw new Error('Function not implemented.');
-}
