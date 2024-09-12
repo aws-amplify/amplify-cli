@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { FunctionDefinition } from '@aws-amplify/amplify-gen2-codegen';
 import { getFunctionDefinition } from '@aws-amplify/amplify-gen1-codegen-function-adapter';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
-import { LambdaClient, GetFunctionCommand, FunctionConfiguration } from '@aws-sdk/client-lambda';
+import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
 import { StateManager } from '@aws-amplify/amplify-cli-core';
 
 export interface AppFunctionsDefinitionFetcher {

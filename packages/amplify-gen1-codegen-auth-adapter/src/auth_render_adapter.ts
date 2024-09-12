@@ -16,6 +16,7 @@ import {
   LoginOptions,
   Scope,
 } from '@aws-amplify/amplify-gen2-codegen';
+import { AttributeMappingRule } from '@aws-amplify/amplify-gen2-codegen/src/auth/source_builder';
 import {
   LambdaConfigType,
   IdentityProviderTypeType,
@@ -27,6 +28,7 @@ import {
   SchemaAttributeType,
   GroupType,
   IdentityProviderType,
+  SoftwareTokenMfaConfigType,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 export interface AuthTriggerConnection {
@@ -44,6 +46,8 @@ export interface AuthSynthesizerOptions {
   webClient?: UserPoolClientType;
   authTriggerConnections?: AuthTriggerConnectionSourceMap;
   guestLogin?: boolean;
+  mfaConfig?: UserPoolMfaType;
+  totpConfig?: SoftwareTokenMfaConfigType;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -84,15 +88,18 @@ const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> 
   return userPoolOverrides;
 };
 
-const getMfaConfiguration = (mfa?: UserPoolMfaType): MultifactorOptions => {
+const getMfaConfiguration = (mfaConfig?: UserPoolMfaType, totpConfig?: SoftwareTokenMfaConfigType): MultifactorOptions => {
   const multifactor: MultifactorOptions = {
     mode: 'OFF',
   };
-  if (mfa === 'ON') {
-    multifactor.mode = 'ON';
-  }
-  if (mfa === 'OPTIONAL') {
+  if (mfaConfig === 'ON') {
+    multifactor.mode = 'REQUIRED';
+    multifactor.sms = true;
+    totpConfig?.Enabled ? (multifactor.totp = true) : (multifactor.totp = false);
+  } else if (mfaConfig === 'OPTIONAL') {
     multifactor.mode = 'OPTIONAL';
+    multifactor.sms = true;
+    totpConfig?.Enabled ? (multifactor.totp = true) : (multifactor.totp = false);
   }
   return multifactor;
 };
@@ -104,26 +111,10 @@ const getEmailConfig = (userPool: UserPoolType): EmailOptions => {
   };
 };
 
-const getStandardUserAttributes = (signupAttributes: SchemaAttributeType[] | undefined): StandardAttributes => {
-  const mappedUserAttributeName = {
-    address: 'address',
-    birthdate: 'birthdate',
-    email: 'email',
-    family_name: 'familyName',
-    gender: 'gender',
-    given_name: 'givenName',
-    locale: 'locale',
-    middle_name: 'middleName',
-    name: 'fullname',
-    nickname: 'nickname',
-    phone_number: 'phoneNumber',
-    picture: 'profilePicture',
-    preferred_username: 'preferredUsername',
-    profile: 'profilePage',
-    zoneinfo: 'timezone',
-    updated_at: 'lastUpdateTime',
-    website: 'website',
-  };
+const getStandardUserAttributes = (
+  signupAttributes: SchemaAttributeType[] | undefined,
+  mappedUserAttributeName: Record<string, string>,
+): StandardAttributes => {
   return (
     signupAttributes?.reduce((standardAttributes: StandardAttributes, attribute: SchemaAttributeType) => {
       const standardAttribute: StandardAttribute = {
@@ -230,6 +221,18 @@ const getAuthTriggers = (
     return prev;
   }, {} as Partial<Record<AuthTriggerEvents, Lambda>>);
 };
+
+function filterAttributeMapping(
+  attributeMapping: Record<string, string>,
+  mappedUserAttributeName: Record<string, string>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(attributeMapping)
+      .filter(([key]) => Object.keys(mappedUserAttributeName).includes(key))
+      .map(([key, value]) => [mappedUserAttributeName[key as keyof typeof mappedUserAttributeName], value]),
+  );
+}
+
 /**
  * [getAuthDefinition] describes gen 1 auth resources in terms that can be used to generate Gen 2 code.
  */
@@ -241,20 +244,45 @@ export const getAuthDefinition = ({
   webClient,
   authTriggerConnections,
   guestLogin,
+  mfaConfig,
+  totpConfig,
 }: AuthSynthesizerOptions): AuthDefinition => {
+  const mappedUserAttributeName = {
+    address: 'address',
+    birthdate: 'birthdate',
+    email: 'email',
+    family_name: 'familyName',
+    gender: 'gender',
+    given_name: 'givenName',
+    locale: 'locale',
+    middle_name: 'middleName',
+    name: 'fullname',
+    nickname: 'nickname',
+    phone_number: 'phoneNumber',
+    picture: 'profilePicture',
+    preferred_username: 'preferredUsername',
+    profile: 'profilePage',
+    zoneinfo: 'timezone',
+    updated_at: 'lastUpdateTime',
+    website: 'website',
+  };
+
   const loginWith: LoginOptions = { email: true };
   const mapIdentityProvider = {
-    [IdentityProviderTypeType.Google]: 'googleLogin',
-    [IdentityProviderTypeType.SignInWithApple]: 'appleLogin',
-    [IdentityProviderTypeType.LoginWithAmazon]: 'amazonLogin',
-    [IdentityProviderTypeType.Facebook]: 'facebookLogin',
+    [IdentityProviderTypeType.Google]: ['googleLogin', 'googleAttributes'],
+    [IdentityProviderTypeType.SignInWithApple]: ['appleLogin', 'appleAttributes'],
+    [IdentityProviderTypeType.LoginWithAmazon]: ['amazonLogin', 'amazonAttributes'],
+    [IdentityProviderTypeType.Facebook]: ['facebookLogin', 'facebookAttributes'],
   };
-  const identityProviderSet = new Set(identityProviders?.map((idp) => idp.ProviderType));
-  for (const provider of identityProviderSet) {
-    const loginWithProperty = mapIdentityProvider[provider as keyof typeof mapIdentityProvider];
-    if (loginWithProperty != undefined) {
-      loginWith[loginWithProperty] = true;
-    }
+
+  if (identityProviders !== undefined) {
+    identityProviders.forEach((provider) => {
+      const loginWithProperty = mapIdentityProvider[provider?.ProviderType as keyof typeof mapIdentityProvider];
+      if (loginWithProperty !== undefined) {
+        const loginProperty = loginWithProperty[0];
+        (loginWith[loginProperty as keyof LoginOptions] as boolean) = true;
+      }
+    });
   }
 
   if (identityProvidersDetails) {
@@ -262,7 +290,7 @@ export const getAuthDefinition = ({
     let samlOptions: SamlOptions | undefined;
 
     for (const provider of identityProvidersDetails) {
-      const { ProviderType, ProviderName, ProviderDetails } = provider;
+      const { ProviderType, ProviderName, ProviderDetails, AttributeMapping } = provider;
 
       if (ProviderType === IdentityProviderTypeType.OIDC && ProviderDetails) {
         const { oidc_issuer, authorize_url, token_url, attributes_url, jwks_uri } = ProviderDetails;
@@ -278,6 +306,8 @@ export const getAuthDefinition = ({
             jwksUri: jwks_uri,
           };
         }
+        if (AttributeMapping)
+          oidcOption.attributeMapping = filterAttributeMapping(AttributeMapping, mappedUserAttributeName) as AttributeMappingRule;
         oidcOptions.push(oidcOption);
       } else if (ProviderType === IdentityProviderTypeType.SAML && ProviderDetails) {
         const { metadataURL, metadataContent } = ProviderDetails;
@@ -288,6 +318,13 @@ export const getAuthDefinition = ({
           },
         };
         if (ProviderName) samlOptions.name = ProviderName;
+        if (AttributeMapping)
+          samlOptions.attributeMapping = filterAttributeMapping(AttributeMapping, mappedUserAttributeName) as AttributeMappingRule;
+      } else {
+        if (AttributeMapping) {
+          const attributeOption = mapIdentityProvider[provider?.ProviderType as keyof typeof mapIdentityProvider][1];
+          loginWith[attributeOption] = filterAttributeMapping(AttributeMapping, mappedUserAttributeName);
+        }
       }
     }
     loginWith.oidcLogin = oidcOptions;
@@ -313,8 +350,8 @@ export const getAuthDefinition = ({
   const userPoolOverrides = getUserPoolOverrides(userPool);
   return {
     loginOptions: loginWith,
-    mfa: getMfaConfiguration(userPool.MfaConfiguration),
-    standardUserAttributes: getStandardUserAttributes(userPool.SchemaAttributes),
+    mfa: getMfaConfiguration(mfaConfig, totpConfig),
+    standardUserAttributes: getStandardUserAttributes(userPool.SchemaAttributes, mappedUserAttributeName),
     customUserAttributes: getCustomUserAttributes(userPool.SchemaAttributes),
     groups: getGroups(identityGroups),
     userPoolOverrides,

@@ -6,8 +6,10 @@ import { JsonRenderer } from './renderers/package_json';
 import { TypescriptNodeArrayRenderer } from './renderers/typescript_block_node';
 import { BackendRenderParameters, BackendSynthesizer } from './backend/synthesizer';
 import { EnsureDirectory } from './renderers/ensure_directory';
+import { Lambda } from './function/lambda';
 import {
   AuthTriggerEvents,
+  AuthLambdaTriggers,
   AuthDefinition,
   renderAuthNode,
   SendingAccount,
@@ -175,6 +177,8 @@ export {
   CustomAttributes,
   MultifactorOptions,
   AuthTriggerEvents,
+  Lambda,
+  AuthLambdaTriggers,
   StorageTriggerEvent,
   DataDefinition,
   SamlOptions,
