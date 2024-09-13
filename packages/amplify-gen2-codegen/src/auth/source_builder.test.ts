@@ -84,6 +84,15 @@ describe('render auth node', () => {
         assert.match(source, /issuerUrl: \"hey\"/);
         assert.match(source, /name: "Sanay"/);
       });
+      it('does not render OIDC if not passed', () => {
+        const rendered = renderAuthNode({
+          loginOptions: {
+            oidcLogin: [],
+          },
+        });
+        const source = printNodeArray(rendered);
+        assert(!source.includes('oidc:'));
+      });
     });
     describe('SAML', () => {
       it('renders the saml provider', () => {
@@ -100,16 +109,18 @@ describe('render auth node', () => {
         assert.match(source, /metadataType: \"URL\"/);
         assert.match(source, /name: "Sanay"/);
       });
+      it('does not render SAML if not passed', () => {
+        const rendered = renderAuthNode({
+          loginOptions: {},
+        });
+        const source = printNodeArray(rendered);
+        assert(!source.includes('saml:'));
+      });
     });
   });
   describe('lambda', () => {
-    it('imports defineFunction when a lambda trigger is defined', () => {
-      const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: "console.log('hello, world!')" } } });
-      const source = printNodeArray(rendered);
-      assert.match(source, /import\s?\{\s?defineAuth, defineFunction\s?\}\s?from\s?"\@aws-amplify\/backend"/);
-    });
     it('adds a triggers object when a lambda trigger is defined', () => {
-      const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: "console.log('hello, world!')" } } });
+      const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: 'amplify/backend/function/testfunction/handler.ts' } } });
       const source = printNodeArray(rendered);
       assert.match(source, /triggers: \{/);
     });
@@ -126,9 +137,9 @@ describe('render auth node', () => {
       verifyAuthChallengeResponse: true,
     };
     for (const testCase of Object.keys(testCases)) {
-      const rendered = renderAuthNode({ lambdaTriggers: { [testCase]: { source: "console.log('hello, world!')" } } });
+      const rendered = renderAuthNode({ lambdaTriggers: { [testCase]: { source: `amplify/backend/function/${testCase}/handler.ts` } } });
       const source = printNodeArray(rendered);
-      assert.match(source, new RegExp(`triggers: \\{\\s+\\/\\*[\\S\\s]*?\\*\\/\\s+${testCase}: defineFunction\\(\\{`));
+      assert.match(source, new RegExp(`triggers:\\s*{\\s*${testCase}:\\s*${testCase}\\s*}`));
     }
   });
   describe('mfa', () => {
