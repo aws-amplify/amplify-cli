@@ -10,6 +10,7 @@ import ts, {
   VariableStatement,
 } from 'typescript';
 import { PolicyOverrides } from '../auth/source_builder.js';
+import { BucketAccelerateStatus } from '@aws-sdk/client-s3';
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
@@ -25,6 +26,12 @@ export interface BackendRenderParameters {
   };
   storage?: {
     importFrom: string;
+    dynamoDB?: string;
+    accelerateConfiguration?: BucketAccelerateStatus;
+  };
+  function?: {
+    importFrom: string;
+    functionNamesAndCategories: Map<string, string>;
   };
 }
 
@@ -122,6 +129,29 @@ export class BackendSynthesizer {
       defineBackendProperties.push(storage);
     }
 
+    if (renderArgs.function) {
+      const functionIdentifiers: Identifier[] = [];
+      const functionNameCategories = renderArgs.function.functionNamesAndCategories;
+      for (const [functionName, category] of functionNameCategories) {
+        functionIdentifiers.push(factory.createIdentifier(functionName));
+        const functionProperty = factory.createShorthandPropertyAssignment(factory.createIdentifier(functionName));
+        defineBackendProperties.push(functionProperty);
+        imports.push(this.createImportStatement([factory.createIdentifier(functionName)], `./${category}/${functionName}/resource`));
+      }
+    }
+
+    if (renderArgs.storage?.dynamoDB) {
+      nodes.push(
+        factory.createThrowStatement(
+          factory.createNewExpression(factory.createIdentifier('Error'), undefined, [
+            factory.createStringLiteral(
+              `DynamoDB table ${renderArgs.storage.dynamoDB} is referenced in your Gen 1 backend and will need to be manually migrated to reference with CDK.`,
+            ),
+          ]),
+        ),
+      );
+    }
+
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));
 
     const callBackendFn = this.defineBackendCall(backendFunctionIdentifier, defineBackendProperties);
@@ -163,6 +193,7 @@ export class BackendSynthesizer {
           ),
         );
       }
+
       if (renderArgs.auth?.readAttributes) {
         nodes.push(
           this.createOverrideStatement(
@@ -173,12 +204,67 @@ export class BackendSynthesizer {
         );
       }
     }
+
     if (renderArgs.auth?.writeAttributes) {
       nodes.push(
         this.createOverrideStatement(
           factory.createIdentifier('cfnUserPoolClient'),
           'WriteAttributes',
           renderArgs.auth?.writeAttributes as string[],
+        ),
+      );
+    }
+
+    console.log(renderArgs.storage?.accelerateConfiguration);
+    if (renderArgs.storage?.accelerateConfiguration) {
+      const cfnStorageVariableStatement = this.createVariableStatement(
+        this.createVariableDeclaration('s3Bucket', 'backend.storage.resources.bucket'),
+      );
+      nodes.push(cfnStorageVariableStatement);
+      const cfnBucketDeclaration = factory.createVariableDeclaration(
+        factory.createIdentifier('cfnBucket'),
+        undefined,
+        undefined,
+        factory.createAsExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('node')),
+            factory.createIdentifier('defaultChild'),
+          ),
+          factory.createTypeReferenceNode(
+            factory.createQualifiedName(factory.createIdentifier('s3'), factory.createIdentifier('CfnBucket')),
+            undefined,
+          ),
+        ),
+      );
+
+      const cfnBucketStatement = factory.createVariableStatement(
+        undefined,
+        factory.createVariableDeclarationList([cfnBucketDeclaration], ts.NodeFlags.Const),
+      );
+
+      const accelerateConfigAssignment = factory.createExpressionStatement(
+        factory.createAssignment(
+          factory.createPropertyAccessExpression(
+            factory.createIdentifier('cfnBucket'),
+            factory.createIdentifier('accelerateConfiguration'),
+          ),
+          factory.createObjectLiteralExpression(
+            [
+              factory.createPropertyAssignment(
+                factory.createIdentifier('accelerationStatus'),
+                factory.createStringLiteral(renderArgs.storage.accelerateConfiguration),
+              ),
+            ],
+            false,
+          ),
+        ),
+      );
+      nodes.push(cfnBucketStatement, accelerateConfigAssignment);
+      imports.push(
+        factory.createImportDeclaration(
+          undefined,
+          factory.createImportClause(false, undefined, factory.createNamespaceImport(factory.createIdentifier('s3'))),
+          factory.createStringLiteral('aws-cdk-lib/aws-s3'),
         ),
       );
     }

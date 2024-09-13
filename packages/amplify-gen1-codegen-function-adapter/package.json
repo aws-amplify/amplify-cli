@@ -1,0 +1,51 @@
+{
+  "name": "@aws-amplify/amplify-gen1-codegen-function-adapter",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "lib/index.js",
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@aws-amplify/amplify-gen2-codegen": "^0.0.1",
+    "@aws-amplify/auth-construct": "^1.1.5",
+    "@aws-sdk/client-amplify": "^3.592.0",
+    "@aws-sdk/client-cognito-identity": "^3.592.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.592.0",
+    "@aws-sdk/client-lambda": "^3.637.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/templates/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  },
+  "scripts": {
+    "pretest": "mkdir -p coverage",
+    "test": "jest --logHeapUsage",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "description": ""
+}

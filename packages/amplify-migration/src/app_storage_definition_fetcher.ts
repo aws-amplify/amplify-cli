@@ -1,16 +1,29 @@
 import fs from 'node:fs/promises';
-import assert from 'node:assert';
 import path from 'node:path';
 import { getStorageDefinition } from '@aws-amplify/amplify-gen1-codegen-storage-adapter';
 import { BackendDownloader } from './backend_downloader.js';
-import { StorageRenderParameters } from '@aws-amplify/amplify-gen2-codegen';
-import { GetBucketNotificationConfigurationCommand, S3Client } from '@aws-sdk/client-s3';
+import { StorageRenderParameters, StorageTriggerEvent, Lambda } from '@aws-amplify/amplify-gen2-codegen';
+import {
+  GetBucketNotificationConfigurationCommand,
+  S3Client,
+  GetBucketNotificationConfigurationCommandOutput,
+  GetBucketAccelerateConfigurationCommand,
+} from '@aws-sdk/client-s3';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { fileOrDirectoryExists } from './directory_exists';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
 }
+
+interface StorageOutput {
+  service: string;
+  output: {
+    Name?: string;
+    BucketName?: string;
+  };
+}
+
 export class AppStorageDefinitionFetcher {
   constructor(
     private backendEnvironmentResolver: BackendEnvironmentResolver,
@@ -21,32 +34,85 @@ export class AppStorageDefinitionFetcher {
     const contents = await fs.readFile(filePath, { encoding: 'utf8' });
     return JSON.parse(contents);
   };
+  private getFunctionPath = (functionName: string) => {
+    return path.join('amplify', 'backend', 'function', functionName, 'src');
+  };
+  private getStorageTriggers = (
+    connections: GetBucketNotificationConfigurationCommandOutput,
+  ): Partial<Record<StorageTriggerEvent, Lambda>> => {
+    const triggers: Partial<Record<StorageTriggerEvent, Lambda>> = {};
+
+    if (connections.LambdaFunctionConfigurations && connections.LambdaFunctionConfigurations.length) {
+      for (const connection of connections.LambdaFunctionConfigurations) {
+        const functionName = connection.LambdaFunctionArn ? connection.LambdaFunctionArn.split(':').pop()?.split('-')[0] : '';
+        const event = connection.Events ? connection.Events[0] : '';
+
+        if (event.includes('ObjectCreated') && functionName) {
+          triggers['onUpload' as StorageTriggerEvent] = { source: this.getFunctionPath(functionName) } as Lambda;
+        } else if (event.includes('ObjectRemoved') && functionName) {
+          triggers['onDelete' as StorageTriggerEvent] = { source: this.getFunctionPath(functionName) } as Lambda;
+        }
+      }
+    }
+
+    return triggers;
+  };
 
   getDefinition = async (): Promise<StorageRenderParameters | undefined> => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
-    assert(backendEnvironment?.deploymentArtifacts);
+    if (!backendEnvironment?.deploymentArtifacts) return undefined;
+
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
 
     const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
 
-    assert(await fileOrDirectoryExists(amplifyMetaPath), 'Could not find amplify-meta.json');
+    if (!(await fileOrDirectoryExists(amplifyMetaPath))) {
+      throw new Error('Could not find amplify-meta.json');
+    }
 
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
+    let storageOptions: StorageRenderParameters | undefined = undefined;
+
     if ('storage' in amplifyMeta && Object.keys(amplifyMeta.storage).length) {
-      const storageName = Object.keys(amplifyMeta.storage)[0];
-      const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
-      assert(await fileOrDirectoryExists(cliInputsPath));
-      const cliInputs = await this.readJsonFile(cliInputsPath);
-      const bucketName = amplifyMeta.storage[storageName].output.BucketName;
-      assert(bucketName);
-      const triggers = await this.s3Client.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
-      console.log('triggers', triggers);
-      const storageOptions = getStorageDefinition({
-        cliInputs,
-        bucketName,
-      });
-      return storageOptions;
+      for (const [storageName, storage] of Object.entries(amplifyMeta.storage)) {
+        const cliInputsPath = path.join(currentCloudBackendDirectory, 'storage', storageName, 'cli-inputs.json');
+
+        if (!(await fileOrDirectoryExists(cliInputsPath))) {
+          throw new Error(`Could not find cli-inputs.json for ${storageName}`);
+        }
+
+        const cliInputs = await this.readJsonFile(cliInputsPath);
+        const storageOutput = storage as StorageOutput;
+        if (storageOutput.service === 'S3') {
+          const bucketName = storageOutput.output.BucketName;
+          if (!bucketName) throw new Error('Could not find bucket name');
+
+          const connections = await this.s3Client.send(new GetBucketNotificationConfigurationCommand({ Bucket: bucketName }));
+          const { Status: accelerateConfiguration } = await this.s3Client.send(
+            new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }),
+          );
+          const triggers = this.getStorageTriggers(connections);
+
+          const storageDefinition = getStorageDefinition({
+            cliInputs,
+            bucketName,
+            triggers,
+          });
+
+          if (!storageOptions) storageOptions = {};
+          storageOptions.accessPatterns = storageDefinition.accessPatterns;
+          storageOptions.storageIdentifier = storageDefinition.storageIdentifier;
+          storageOptions.triggers = storageDefinition.triggers;
+          storageOptions.accelerateConfiguration = accelerateConfiguration;
+        } else if (storageOutput.service === 'DynamoDB') {
+          const tableName = storageOutput.output.Name?.split('-')[0];
+          if (!tableName) throw new Error('Could not find table name');
+
+          if (!storageOptions) storageOptions = {};
+          storageOptions.dynamoDB = tableName;
+        }
+      }
     }
-    return undefined;
+    return storageOptions;
   };
 }

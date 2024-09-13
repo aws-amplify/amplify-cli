@@ -44,6 +44,7 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.3.9",
     "@aws-amplify/amplify-gen1-codegen-auth-adapter": "^0.0.1",
+    "@aws-amplify/amplify-gen1-codegen-function-adapter": "^0.0.1",
     "@aws-amplify/amplify-gen1-codegen-storage-adapter": "^0.0.1",
     "@aws-amplify/amplify-gen2-codegen": "^0.0.1",
     "@aws-sdk/client-amplify": "^3.592.0",
@@ -51,6 +52,7 @@
     "@aws-sdk/client-cloudformation": "^3.592.0",
     "@aws-sdk/client-cognito-identity": "^3.592.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.592.0",
+    "@aws-sdk/client-lambda": "^3.637.0",
     "@aws-sdk/client-s3": "^3.592.0",
     "@types/node": "^20.14.2",
     "@types/unzipper": "^0.10.9",

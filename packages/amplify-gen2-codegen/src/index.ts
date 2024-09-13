@@ -30,7 +30,6 @@ import {
   MetadataOptions,
   SamlOptions,
   Scope,
-  AttributeMappingRule,
 } from './auth/source_builder';
 import {
   StorageRenderParameters,
@@ -43,11 +42,14 @@ import {
 
 import { DataDefinition, generateDataSource } from './data/source_builder';
 
+import { FunctionDefinition, renderFunctions } from './function/source_builder';
+
 export interface Gen2RenderingOptions {
   outputDir: string;
   auth?: AuthDefinition;
   storage?: StorageRenderParameters;
   data?: DataDefinition;
+  functions?: FunctionDefinition[];
   fileWriter?: (content: string, path: string) => Promise<void>;
 }
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
@@ -57,6 +59,7 @@ export const createGen2Renderer = ({
   auth,
   storage,
   data,
+  functions,
   fileWriter = (content, path) => createFileWriter(path)(content),
 }: Readonly<Gen2RenderingOptions>): Renderer => {
   const ensureOutputDir = new EnsureDirectory(outputDir);
@@ -73,6 +76,32 @@ export const createGen2Renderer = ({
   const backendRenderOptions: BackendRenderParameters = {};
 
   const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer];
+
+  if (functions && functions.length) {
+    const functionNamesAndCategory = new Map<string, string>();
+    for (const func of functions) {
+      if (func.name) {
+        const splitFunctionName = func.name.split('-')[0];
+        functionNamesAndCategory.set(splitFunctionName, func.category ?? 'function');
+        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', func.category ?? 'function', func.name.split('-')[0])));
+        renderers.push(
+          new TypescriptNodeArrayRenderer(
+            async () => renderFunctions(func),
+            (content) => {
+              const filePath = path.join(outputDir, 'amplify', func.category ?? 'function', splitFunctionName);
+              return fileWriter(content, path.join(filePath, 'resource.ts')).then(() => fileWriter('', path.join(filePath, 'handler.ts')));
+            },
+          ),
+        );
+      }
+    }
+
+    backendRenderOptions.function = {
+      importFrom: './function/resource',
+      functionNamesAndCategories: functionNamesAndCategory,
+    };
+  }
+
   if (auth) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
@@ -90,6 +119,7 @@ export const createGen2Renderer = ({
       writeAttributes: auth?.writeAttributes,
     };
   }
+
   if (data) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
     renderers.push(
@@ -113,6 +143,8 @@ export const createGen2Renderer = ({
     );
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
+      dynamoDB: storage.dynamoDB,
+      accelerateConfiguration: storage.accelerateConfiguration,
     };
   }
 
@@ -135,6 +167,7 @@ export {
   S3TriggerDefinition,
   PasswordPolicyPath,
   AuthDefinition,
+  FunctionDefinition,
   PolicyOverrides,
   Group,
   Attribute,
@@ -155,5 +188,4 @@ export {
   MetadataOptions,
   OidcOptions,
   Scope,
-  AttributeMappingRule,
 };
