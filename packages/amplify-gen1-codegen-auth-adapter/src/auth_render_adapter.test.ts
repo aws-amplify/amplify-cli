@@ -462,7 +462,7 @@ void describe('auth codegen', () => {
       const result = getAuthDefinition({
         userPool: { Name: 'test' },
       });
-      assert.deepEqual(result.userPoolOverrides, { UserPoolName: 'test', UsernameAttributes: [] });
+      assert.deepEqual(result.userPoolOverrides, { userPoolName: 'test', usernameAttributes: [] });
     });
   });
 });
