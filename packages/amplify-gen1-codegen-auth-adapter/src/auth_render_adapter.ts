@@ -78,12 +78,12 @@ const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> 
   Object.assign(userPoolOverrides, getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {}));
   if (userPool.Name) {
     const userNamePolicy: Partial<PolicyOverrides> = {
-      UserPoolName: userPool.Name,
+      userPoolName: userPool.Name,
     };
     Object.assign(userPoolOverrides, userNamePolicy);
   }
   if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
-    userPoolOverrides.UsernameAttributes = [];
+    userPoolOverrides.usernameAttributes = [];
   }
   return userPoolOverrides;
 };

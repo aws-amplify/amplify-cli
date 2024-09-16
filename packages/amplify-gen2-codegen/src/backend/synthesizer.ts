@@ -36,10 +36,10 @@ export interface BackendRenderParameters {
 }
 
 export class BackendSynthesizer {
-  private createPropertyAccessExpression(propertyPath: string): Expression {
+  private createPropertyAccessExpression(objectIdentifier: Identifier, propertyPath: string): Expression {
     const parts = propertyPath.split('.');
-    let expression: Expression = factory.createIdentifier(parts[0]);
-    for (let i = 1; i < parts.length; i++) {
+    let expression: Expression = objectIdentifier;
+    for (let i = 0; i < parts.length; i++) {
       expression = factory.createPropertyAccessExpression(expression, factory.createIdentifier(parts[i]));
     }
     return expression;
@@ -47,7 +47,7 @@ export class BackendSynthesizer {
 
   private createVariableDeclaration(identifierName: string, propertyPath: string): VariableDeclaration {
     const identifier = factory.createIdentifier(identifierName);
-    const propertyAccessExpression = this.createPropertyAccessExpression(propertyPath);
+    const propertyAccessExpression = this.createPropertyAccessExpression(factory.createIdentifier('backend'), propertyPath);
     return factory.createVariableDeclaration(identifier, undefined, undefined, propertyAccessExpression);
   }
 
@@ -72,23 +72,34 @@ export class BackendSynthesizer {
     return factory.createCallExpression(backendFunctionIdentifier, undefined, [backendFunctionArgs]);
   }
 
-  private createOverrideStatement(
+  // private createOverrideStatement(
+  //   objectIdentifier: Identifier,
+  //   propertyName: string,
+  //   value: number | string | boolean | string[],
+  // ): ExpressionStatement {
+  //   const addOverrideIdentifier = factory.createIdentifier('addPropertyOverride');
+  //   const overrideValue = this.getOverrideValue(value);
+
+  //   return factory.createExpressionStatement(
+  //     factory.createCallExpression(factory.createPropertyAccessExpression(objectIdentifier, addOverrideIdentifier), undefined, [
+  //       factory.createStringLiteral(propertyName),
+  //       overrideValue,
+  //     ]),
+  //   );
+  // }
+
+  private setPropertyValue(
     objectIdentifier: Identifier,
-    propertyName: string,
-    value: number | string | boolean | string[],
+    propertyPath: string,
+    value: number | string | boolean | string[] | object,
   ): ExpressionStatement {
-    const addOverrideIdentifier = factory.createIdentifier('addPropertyOverride');
+    const propertyAccessExpression = this.createPropertyAccessExpression(objectIdentifier, propertyPath);
     const overrideValue = this.getOverrideValue(value);
 
-    return factory.createExpressionStatement(
-      factory.createCallExpression(factory.createPropertyAccessExpression(objectIdentifier, addOverrideIdentifier), undefined, [
-        factory.createStringLiteral(propertyName),
-        overrideValue,
-      ]),
-    );
+    return factory.createExpressionStatement(factory.createAssignment(propertyAccessExpression, overrideValue));
   }
 
-  private getOverrideValue(value: number | string | boolean | string[]): Expression {
+  private getOverrideValue(value: number | string | boolean | string[] | object): Expression {
     if (typeof value === 'number') {
       return factory.createNumericLiteral(value);
     } else if (typeof value === 'string') {
@@ -97,6 +108,13 @@ export class BackendSynthesizer {
       return factory.createArrayLiteralExpression(value.map((item) => factory.createStringLiteral(item)));
     } else if (typeof value === 'boolean') {
       return value ? factory.createTrue() : factory.createFalse();
+    } else if (typeof value === 'object' && value !== null) {
+      const properties: ts.PropertyAssignment[] = [];
+      for (const [key, val] of Object.entries(value)) {
+        const property = factory.createPropertyAssignment(factory.createIdentifier(key), this.getOverrideValue(val));
+        properties.push(property);
+      }
+      return factory.createObjectLiteralExpression(properties, true);
     }
     throw new TypeError(`Unrecognized type: ${typeof value}`);
   }
@@ -110,6 +128,16 @@ export class BackendSynthesizer {
     const imports = [];
     const defineBackendProperties = [];
     const nodes = [];
+
+    const mappedPolicyType: Record<string, string> = {
+      MinimumLength: 'minimumLength',
+      RequireUppercase: 'requireUppercase',
+      RequireLowercase: 'requireLowercase',
+      RequireNumbers: 'requireNumbers',
+      RequireSymbols: 'requireSymbols',
+      PasswordHistorySize: 'passwordHistorySize',
+      TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
+    };
 
     if (renderArgs.auth) {
       imports.push(this.createImportStatement([authFunctionIdentifier], renderArgs.auth.importFrom));
@@ -145,7 +173,7 @@ export class BackendSynthesizer {
         factory.createThrowStatement(
           factory.createNewExpression(factory.createIdentifier('Error'), undefined, [
             factory.createStringLiteral(
-              `DynamoDB table ${renderArgs.storage.dynamoDB} is referenced in your Gen 1 backend and will need to be manually migrated to reference with CDK.`,
+              `DynamoDB table \`${renderArgs.storage.dynamoDB}\` is referenced in your Gen 1 backend and will need to be manually migrated to reference with CDK.`,
             ),
           ]),
         ),
@@ -163,32 +191,49 @@ export class BackendSynthesizer {
 
     if (renderArgs.auth?.userPoolOverrides) {
       const cfnUserPoolVariableStatement = this.createVariableStatement(
-        this.createVariableDeclaration('cfnUserPool', 'backend.auth.resources.cfnResources.cfnUserPool'),
+        this.createVariableDeclaration('cfnUserPool', 'auth.resources.cfnResources.cfnUserPool'),
       );
       nodes.push(cfnUserPoolVariableStatement);
+      const policies: { passwordPolicy: Record<string, number | string | boolean | string[]> } = {
+        passwordPolicy: {},
+      };
       for (const [overridePath, value] of Object.entries(renderArgs.auth.userPoolOverrides)) {
-        nodes.push(this.createOverrideStatement(factory.createIdentifier('cfnUserPool'), overridePath, value as number | string | boolean));
+        if (overridePath.includes('PasswordPolicy')) {
+          const [_, __, policyKey] = overridePath.split('.');
+          if (value !== undefined && policyKey in mappedPolicyType) {
+            policies.passwordPolicy[mappedPolicyType[policyKey] as string] = value;
+          }
+        } else if (value) {
+          nodes.push(this.setPropertyValue(factory.createIdentifier('cfnUserPool'), overridePath, value));
+        }
       }
+      nodes.push(
+        this.setPropertyValue(
+          factory.createIdentifier('cfnUserPool'),
+          'policies',
+          policies as number | string | boolean | string[] | object,
+        ),
+      );
     }
 
     if (renderArgs.auth?.guestLogin === false) {
       const cfnIdentityPoolVariableStatement = this.createVariableStatement(
-        this.createVariableDeclaration('cfnIdentityPool', 'backend.auth.resources.cfnResources.cfnIdentityPool'),
+        this.createVariableDeclaration('cfnIdentityPool', 'auth.resources.cfnResources.cfnIdentityPool'),
       );
       nodes.push(cfnIdentityPoolVariableStatement);
-      nodes.push(this.createOverrideStatement(factory.createIdentifier('cfnIdentityPool'), 'AllowUnauthenticatedIdentities', false));
+      nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
     }
 
     if (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) {
       const cfnUserPoolClientVariableStatement = this.createVariableStatement(
-        this.createVariableDeclaration('cfnUserPoolClient', 'backend.auth.resources.cfnResources.cfnUserPoolClient'),
+        this.createVariableDeclaration('cfnUserPoolClient', 'auth.resources.cfnResources.cfnUserPoolClient'),
       );
       nodes.push(cfnUserPoolClientVariableStatement);
       if (renderArgs.auth?.oAuthFlows) {
         nodes.push(
-          this.createOverrideStatement(
+          this.setPropertyValue(
             factory.createIdentifier('cfnUserPoolClient'),
-            'AllowedOAuthFlows',
+            'allowedOAuthFlows',
             renderArgs.auth?.oAuthFlows as number | string | boolean | string[],
           ),
         );
@@ -196,9 +241,9 @@ export class BackendSynthesizer {
 
       if (renderArgs.auth?.readAttributes) {
         nodes.push(
-          this.createOverrideStatement(
+          this.setPropertyValue(
             factory.createIdentifier('cfnUserPoolClient'),
-            'ReadAttributes',
+            'readAttributes',
             renderArgs.auth?.readAttributes as number | string | boolean | string[],
           ),
         );
@@ -207,9 +252,9 @@ export class BackendSynthesizer {
 
     if (renderArgs.auth?.writeAttributes) {
       nodes.push(
-        this.createOverrideStatement(
+        this.setPropertyValue(
           factory.createIdentifier('cfnUserPoolClient'),
-          'WriteAttributes',
+          'writeAttributes',
           renderArgs.auth?.writeAttributes as string[],
         ),
       );
@@ -218,7 +263,7 @@ export class BackendSynthesizer {
     console.log(renderArgs.storage?.accelerateConfiguration);
     if (renderArgs.storage?.accelerateConfiguration) {
       const cfnStorageVariableStatement = this.createVariableStatement(
-        this.createVariableDeclaration('s3Bucket', 'backend.storage.resources.bucket'),
+        this.createVariableDeclaration('s3Bucket', 'storage.resources.bucket'),
       );
       nodes.push(cfnStorageVariableStatement);
       const cfnBucketDeclaration = factory.createVariableDeclaration(
