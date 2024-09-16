@@ -260,7 +260,6 @@ export class BackendSynthesizer {
       );
     }
 
-    console.log(renderArgs.storage?.accelerateConfiguration);
     if (renderArgs.storage?.accelerateConfiguration) {
       const cfnStorageVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('s3Bucket', 'storage.resources.bucket'),
