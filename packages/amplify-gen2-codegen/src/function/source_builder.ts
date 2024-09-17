@@ -70,7 +70,7 @@ export function createFunctionDefinition(definition?: FunctionDefinition, groups
             if (key == 'API_KEY') {
               groupsComment!.push(
                 factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-                  factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret API_KEY` to set the value'),
+                  factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret set API_KEY` to set the value'),
                 ]),
               );
               namedImports!.push('secret');

@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-gen2-codegen": "^0.0.1",
-    "@aws-sdk/client-amplify": "^3.592.0",
     "@aws-sdk/client-lambda": "^3.637.0"
   },
   "jest": {

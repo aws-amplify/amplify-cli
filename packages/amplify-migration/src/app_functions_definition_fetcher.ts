@@ -21,6 +21,7 @@ export class AppFunctionsDefinitionFetcher {
     assert(backendEnvironment?.stackName);
 
     const meta = this.stateManager.getMeta();
+
     const functions = meta?.function;
 
     const auth = meta?.auth;
@@ -60,7 +61,7 @@ export class AppFunctionsDefinitionFetcher {
             functionCategoryMap.set(func, 'storage');
           }
         }
-      } else {
+      } else if (!functionCategoryMap.get(func)) {
         functionCategoryMap.set(func, 'function');
       }
     });
