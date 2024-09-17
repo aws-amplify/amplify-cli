@@ -732,6 +732,7 @@ __metadata:
   dependencies:
     "@aws-amplify/auth-construct": ^1.1.5
     "@aws-sdk/client-cognito-identity-provider": ^3.592.0
+    "@aws-sdk/client-lambda": ^3.637.0
     "@types/node": ^20.14.2
     aws-cdk-lib: ^2.127.0
     jest: ^29.5.0
@@ -1797,6 +1798,7 @@ __metadata:
     "@aws-sdk/client-cloudformation": ^3.592.0
     "@aws-sdk/client-cognito-identity": ^3.592.0
     "@aws-sdk/client-cognito-identity-provider": ^3.592.0
+    "@aws-sdk/client-lambda": ^3.637.0
     "@aws-sdk/client-s3": ^3.592.0
     "@types/node": ^20.14.2
     "@types/unzipper": ^0.10.9
