@@ -19,7 +19,7 @@ import { AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
-import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetcher.js';
+import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetcher';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
