@@ -18,7 +18,7 @@ const createParameter = (name: string, value: ts.LiteralExpression | ts.ObjectLi
   factory.createPropertyAssignment(factory.createIdentifier(name), value);
 
 export function renderFunctions(definition: FunctionDefinition) {
-  const groupsComment = [];
+  const groupsComment: (ts.CallExpression | ts.JSDoc)[] = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineFunction');
 
@@ -47,7 +47,7 @@ export function renderFunctions(definition: FunctionDefinition) {
 
 export function createFunctionDefinition(
   definition?: FunctionDefinition,
-  groupsComment?: any[],
+  groupsComment?: (ts.CallExpression | ts.JSDoc)[],
   namedImports?: Record<string, Set<string>>,
 ) {
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
@@ -72,12 +72,17 @@ export function createFunctionDefinition(
         factory.createObjectLiteralExpression(
           Object.entries(definition.environment.Variables).map(([key, value]) => {
             if (key == 'API_KEY') {
-              groupsComment!.push(
+              groupsComment?.push(
                 factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
                   factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret API_KEY` to set the value'),
                 ]),
               );
-              namedImports!['@aws-amplify/backend'].add('secret');
+              if (namedImports && namedImports['@aws-amplify/backend']) {
+                namedImports['@aws-amplify/backend'].add('secret');
+              } else {
+                const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
+                namedImports['@aws-amplify/backend'].add('secret');
+              }
               return factory.createPropertyAssignment(
                 key,
                 factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral(value)]),
