@@ -701,7 +701,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter":
+"@aws-amplify/amplify-gen1-codegen-function-adapter@^0.0.1, @aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter"
   dependencies:
@@ -736,6 +736,7 @@ __metadata:
   dependencies:
     "@aws-amplify/auth-construct": ^1.1.5
     "@aws-sdk/client-cognito-identity-provider": ^3.592.0
+    "@aws-sdk/client-lambda": ^3.651.1
     "@types/node": ^20.14.2
     aws-cdk-lib: ^2.127.0
     jest: ^29.5.0
@@ -1793,6 +1794,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.3.9
     "@aws-amplify/amplify-gen1-codegen-auth-adapter": ^0.0.1
+    "@aws-amplify/amplify-gen1-codegen-function-adapter": ^0.0.1
     "@aws-amplify/amplify-gen1-codegen-storage-adapter": ^0.0.1
     "@aws-amplify/amplify-gen2-codegen": ^0.0.1
     "@aws-sdk/client-amplify": ^3.592.0
@@ -1800,6 +1802,7 @@ __metadata:
     "@aws-sdk/client-cloudformation": ^3.592.0
     "@aws-sdk/client-cognito-identity": ^3.592.0
     "@aws-sdk/client-cognito-identity-provider": ^3.592.0
+    "@aws-sdk/client-lambda": ^3.651.1
     "@aws-sdk/client-s3": ^3.592.0
     "@types/node": ^20.14.2
     "@types/unzipper": ^0.10.9
@@ -3090,6 +3093,60 @@ __metadata:
     "@smithy/util-waiter": ^3.1.3
     tslib: ^2.6.2
   checksum: f7ee7c736986e65bb9d9e018f7050155b89c8237830096ee6c053777c63e6b0d6724febbcd0b83c8e01ce14978183a7433cbe1898a067a7cbc8c9fa2db7df532
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-lambda@npm:^3.651.1":
+  version: 3.653.0
+  resolution: "@aws-sdk/client-lambda@npm:3.653.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/client-sso-oidc": 3.651.1
+    "@aws-sdk/client-sts": 3.651.1
+    "@aws-sdk/core": 3.651.1
+    "@aws-sdk/credential-provider-node": 3.651.1
+    "@aws-sdk/middleware-host-header": 3.649.0
+    "@aws-sdk/middleware-logger": 3.649.0
+    "@aws-sdk/middleware-recursion-detection": 3.649.0
+    "@aws-sdk/middleware-user-agent": 3.649.0
+    "@aws-sdk/region-config-resolver": 3.649.0
+    "@aws-sdk/types": 3.649.0
+    "@aws-sdk/util-endpoints": 3.649.0
+    "@aws-sdk/util-user-agent-browser": 3.649.0
+    "@aws-sdk/util-user-agent-node": 3.649.0
+    "@smithy/config-resolver": ^3.0.6
+    "@smithy/core": ^2.4.1
+    "@smithy/eventstream-serde-browser": ^3.0.7
+    "@smithy/eventstream-serde-config-resolver": ^3.0.4
+    "@smithy/eventstream-serde-node": ^3.0.6
+    "@smithy/fetch-http-handler": ^3.2.5
+    "@smithy/hash-node": ^3.0.4
+    "@smithy/invalid-dependency": ^3.0.4
+    "@smithy/middleware-content-length": ^3.0.6
+    "@smithy/middleware-endpoint": ^3.1.1
+    "@smithy/middleware-retry": ^3.0.16
+    "@smithy/middleware-serde": ^3.0.4
+    "@smithy/middleware-stack": ^3.0.4
+    "@smithy/node-config-provider": ^3.1.5
+    "@smithy/node-http-handler": ^3.2.0
+    "@smithy/protocol-http": ^4.1.1
+    "@smithy/smithy-client": ^3.3.0
+    "@smithy/types": ^3.4.0
+    "@smithy/url-parser": ^3.0.4
+    "@smithy/util-base64": ^3.0.0
+    "@smithy/util-body-length-browser": ^3.0.0
+    "@smithy/util-body-length-node": ^3.0.0
+    "@smithy/util-defaults-mode-browser": ^3.0.16
+    "@smithy/util-defaults-mode-node": ^3.0.16
+    "@smithy/util-endpoints": ^2.1.0
+    "@smithy/util-middleware": ^3.0.4
+    "@smithy/util-retry": ^3.0.4
+    "@smithy/util-stream": ^3.1.4
+    "@smithy/util-utf8": ^3.0.0
+    "@smithy/util-waiter": ^3.1.3
+    tslib: ^2.6.2
+  checksum: 6dce0bf6f2fd197f9420dedaf3ddd8db0b2fce920a6e04f63f66ab6a8f8ed16aa5e52c54435a3113cc6bad09ae5ad195e3ab9250b99f529c9e5329efb5d5135a
   languageName: node
   linkType: hard
 

@@ -5,6 +5,14 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
 import { StateManager } from '@aws-amplify/amplify-cli-core';
 
+interface AuthConfig {
+  dependsOn?: Array<{
+    category: string;
+    resourceName: string;
+  }>;
+  [key: string]: any;
+}
+
 export interface AppFunctionsDefinitionFetcher {
   getDefinition(): Promise<FunctionDefinition[] | undefined>;
 }
@@ -28,7 +36,7 @@ export class AppFunctionsDefinitionFetcher {
 
     const functionCategoryMap = new Map<string, string>();
 
-    const authValues: any = Object.values(auth)[0];
+    const authValues: AuthConfig | undefined = Object.values(auth)[0] as AuthConfig;
 
     // auth triggers
     if (auth && authValues && authValues.dependsOn) {
@@ -72,7 +80,9 @@ export class AppFunctionsDefinitionFetcher {
       );
     });
 
-    const functionConfigurations = (await Promise.all(getFunctionPromises)).map((functionResponse) => functionResponse.Configuration!);
+    const functionConfigurations = (await Promise.all(getFunctionPromises))
+      .map((functionResponse) => functionResponse.Configuration ?? null)
+      .filter((config): config is NonNullable<typeof config> => config !== null);
 
     return getFunctionDefinition(functionConfigurations, functionCategoryMap);
   };
