@@ -145,6 +145,7 @@ export const createGen2Renderer = ({
       importFrom: './storage/resource',
       dynamoDB: storage.dynamoDB,
       accelerateConfiguration: storage.accelerateConfiguration,
+      versionConfiguration: storage.versioningConfiguration,
     };
   }
 

@@ -2,7 +2,7 @@ import ts from 'typescript';
 import { getAccessPatterns } from './access';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTriggersProperty, Lambda } from '../function/lambda';
-import { BucketAccelerateStatus } from '@aws-sdk/client-s3';
+import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 const factory = ts.factory;
 
 export type S3TriggerDefinition = Record<string, never>;
@@ -26,6 +26,7 @@ export interface StorageRenderParameters {
   bucketEncryptionAlgorithm?: string;
   dynamoDB?: string;
   accelerateConfiguration?: BucketAccelerateStatus;
+  versioningConfiguration?: BucketVersioningStatus;
 }
 export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   const propertyAssignments: ts.PropertyAssignment[] = [];

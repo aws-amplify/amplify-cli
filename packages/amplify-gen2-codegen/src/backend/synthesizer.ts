@@ -10,7 +10,7 @@ import ts, {
   VariableStatement,
 } from 'typescript';
 import { PolicyOverrides } from '../auth/source_builder.js';
-import { BucketAccelerateStatus } from '@aws-sdk/client-s3';
+import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
@@ -28,6 +28,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     dynamoDB?: string;
     accelerateConfiguration?: BucketAccelerateStatus;
+    versionConfiguration?: BucketVersioningStatus;
   };
   function?: {
     importFrom: string;
@@ -71,22 +72,6 @@ export class BackendSynthesizer {
     const backendFunctionArgs = factory.createObjectLiteralExpression(properties, true);
     return factory.createCallExpression(backendFunctionIdentifier, undefined, [backendFunctionArgs]);
   }
-
-  // private createOverrideStatement(
-  //   objectIdentifier: Identifier,
-  //   propertyName: string,
-  //   value: number | string | boolean | string[],
-  // ): ExpressionStatement {
-  //   const addOverrideIdentifier = factory.createIdentifier('addPropertyOverride');
-  //   const overrideValue = this.getOverrideValue(value);
-
-  //   return factory.createExpressionStatement(
-  //     factory.createCallExpression(factory.createPropertyAccessExpression(objectIdentifier, addOverrideIdentifier), undefined, [
-  //       factory.createStringLiteral(propertyName),
-  //       overrideValue,
-  //     ]),
-  //   );
-  // }
 
   private setPropertyValue(
     objectIdentifier: Identifier,
@@ -199,7 +184,7 @@ export class BackendSynthesizer {
       };
       for (const [overridePath, value] of Object.entries(renderArgs.auth.userPoolOverrides)) {
         if (overridePath.includes('PasswordPolicy')) {
-          const [_, __, policyKey] = overridePath.split('.');
+          const policyKey = overridePath.split('.')[2];
           if (value !== undefined && policyKey in mappedPolicyType) {
             policies.passwordPolicy[mappedPolicyType[policyKey] as string] = value;
           }
@@ -260,7 +245,7 @@ export class BackendSynthesizer {
       );
     }
 
-    if (renderArgs.storage?.accelerateConfiguration) {
+    if (renderArgs.storage?.accelerateConfiguration || renderArgs.storage?.versionConfiguration) {
       const cfnStorageVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('s3Bucket', 'storage.resources.bucket'),
       );
@@ -286,24 +271,47 @@ export class BackendSynthesizer {
         factory.createVariableDeclarationList([cfnBucketDeclaration], ts.NodeFlags.Const),
       );
 
-      const accelerateConfigAssignment = factory.createExpressionStatement(
-        factory.createAssignment(
-          factory.createPropertyAccessExpression(
-            factory.createIdentifier('cfnBucket'),
-            factory.createIdentifier('accelerateConfiguration'),
+      if (renderArgs.storage?.accelerateConfiguration) {
+        const accelerateConfigAssignment = factory.createExpressionStatement(
+          factory.createAssignment(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('cfnBucket'),
+              factory.createIdentifier('accelerateConfiguration'),
+            ),
+            factory.createObjectLiteralExpression(
+              [
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('accelerationStatus'),
+                  factory.createStringLiteral(renderArgs.storage.accelerateConfiguration),
+                ),
+              ],
+              false,
+            ),
           ),
-          factory.createObjectLiteralExpression(
-            [
-              factory.createPropertyAssignment(
-                factory.createIdentifier('accelerationStatus'),
-                factory.createStringLiteral(renderArgs.storage.accelerateConfiguration),
-              ),
-            ],
-            false,
+        );
+        nodes.push(cfnBucketStatement, accelerateConfigAssignment);
+      }
+      console.log(renderArgs.storage?.versionConfiguration);
+      if (renderArgs.storage?.versionConfiguration) {
+        const versionConfigAssignment = factory.createExpressionStatement(
+          factory.createAssignment(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('cfnBucket'),
+              factory.createIdentifier('versioningConfiguration'),
+            ),
+            factory.createObjectLiteralExpression(
+              [
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('status'),
+                  factory.createStringLiteral(renderArgs.storage.versionConfiguration),
+                ),
+              ],
+              false,
+            ),
           ),
-        ),
-      );
-      nodes.push(cfnBucketStatement, accelerateConfigAssignment);
+        );
+        nodes.push(versionConfigAssignment);
+      }
       imports.push(
         factory.createImportDeclaration(
           undefined,

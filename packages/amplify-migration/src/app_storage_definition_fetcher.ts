@@ -8,6 +8,7 @@ import {
   S3Client,
   GetBucketNotificationConfigurationCommandOutput,
   GetBucketAccelerateConfigurationCommand,
+  GetBucketVersioningCommand,
 } from '@aws-sdk/client-s3';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { fileOrDirectoryExists } from './directory_exists';
@@ -91,6 +92,8 @@ export class AppStorageDefinitionFetcher {
           const { Status: accelerateConfiguration } = await this.s3Client.send(
             new GetBucketAccelerateConfigurationCommand({ Bucket: bucketName }),
           );
+          const { Status: versioningConfiguration } = await this.s3Client.send(new GetBucketVersioningCommand({ Bucket: bucketName }));
+
           const triggers = this.getStorageTriggers(connections);
 
           const storageDefinition = getStorageDefinition({
@@ -104,6 +107,7 @@ export class AppStorageDefinitionFetcher {
           storageOptions.storageIdentifier = storageDefinition.storageIdentifier;
           storageOptions.triggers = storageDefinition.triggers;
           storageOptions.accelerateConfiguration = accelerateConfiguration;
+          storageOptions.versioningConfiguration = versioningConfiguration;
         } else if (storageOutput.service === 'DynamoDB') {
           const tableName = storageOutput.output.Name?.split('-')[0];
           if (!tableName) throw new Error('Could not find table name');
