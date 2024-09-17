@@ -61,11 +61,6 @@ describe('BackendRenderer', () => {
           } else if (value) {
             assert(output.includes(`cfnUserPool.${key} = "${value}"`));
           }
-          // if (typeof value === 'string') {
-          //   assert(output.includes(`cfnUserPool.${key} = "${value}"`));
-          // } else {
-          //   assert(output.includes(`cfnUserPool.${key} = ${value}`));
-          // }
         });
       }
       it('renders multiple overrides', () => {

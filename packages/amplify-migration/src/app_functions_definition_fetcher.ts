@@ -10,7 +10,7 @@ interface AuthConfig {
     category: string;
     resourceName: string;
   }>;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface AppFunctionsDefinitionFetcher {

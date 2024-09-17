@@ -127,7 +127,6 @@ export async function execute() {
     authDefinitionFetcher: new AppAuthDefinitionFetcher(
       cognitoIdentityPoolClient,
       cognitoIdentityProviderClient,
-      // lambdaClient,
       amplifyStackParser,
       backendEnvironmentResolver,
       () => getAuthTriggersConnections(),
