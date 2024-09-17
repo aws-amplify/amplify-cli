@@ -4,13 +4,15 @@
 
 ```ts
 
+import { Lambda } from '@aws-amplify/amplify-gen2-codegen';
 import { StorageRenderParameters } from '@aws-amplify/amplify-gen2-codegen';
+import { StorageTriggerEvent } from '@aws-amplify/amplify-gen2-codegen';
 
 // @public (undocumented)
 export type CLIV1Permission = 'READ' | 'CREATE_AND_UPDATE' | 'DELETE';
 
 // @public (undocumented)
-export const getStorageDefinition: ({ bucketName, cliInputs }: StorageInputs) => StorageRenderParameters;
+export const getStorageDefinition: ({ bucketName, cliInputs, triggers }: StorageInputs) => StorageRenderParameters;
 
 // @public (undocumented)
 export type StorageCLIInputsJSON = {
@@ -28,6 +30,7 @@ export type StorageCLIInputsJSON = {
 export type StorageInputs = {
     bucketName: string;
     cliInputs: StorageCLIInputsJSON;
+    triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
 };
 
 // (No @packageDocumentation comment for this package)
