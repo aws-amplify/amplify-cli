@@ -84,15 +84,15 @@ export const createGen2Renderer = ({
   if (functions) {
     const functionNamesAndCategory = new Map<string, string>();
     for (const func of functions) {
-      if (func.name) {
+      if (func.name && func.category) {
         const splitFunctionName = func.name.split('-')[0];
-        functionNamesAndCategory.set(splitFunctionName, func.category!);
-        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', func.category! || 'function', func.name.split('-')[0])));
+        functionNamesAndCategory.set(splitFunctionName, func.category);
+        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', func.category || 'function', func.name.split('-')[0])));
         renderers.push(
           new TypescriptNodeArrayRenderer(
             async () => renderFunctions(func, appId, backendEnvironmentName),
             (content) => {
-              const filePath = path.join(outputDir, 'amplify', func.category! || 'function', splitFunctionName);
+              const filePath = path.join(outputDir, 'amplify', func.category || 'function', splitFunctionName);
               return fileWriter(content, path.join(filePath, 'resource.ts')).then(() => fileWriter('', path.join(filePath, 'handler.ts')));
             },
           ),

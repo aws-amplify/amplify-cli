@@ -18,7 +18,7 @@ const createParameter = (name: string, value: ts.LiteralExpression | ts.ObjectLi
   factory.createPropertyAssignment(factory.createIdentifier(name), value);
 
 export function renderFunctions(definition: FunctionDefinition, appId?: string, backendEnvironmentName?: string | undefined) {
-  const groupsComment = [];
+  const groupsComment: ts.Node[] = [];
   const namedImports: string[] = [];
 
   groupsComment.push(
@@ -47,7 +47,7 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
 
 export function createFunctionDefinition(
   definition?: FunctionDefinition,
-  groupsComment?: any[],
+  groupsComment?: ts.Node[],
   namedImports?: string[],
   appId?: string,
   backendEnvironmentName?: string,
@@ -76,6 +76,7 @@ export function createFunctionDefinition(
             if (key == 'API_KEY' && value.startsWith(`/amplify/${appId}/${backendEnvironmentName}`)) {
               groupsComment!.push(
                 factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+                  // eslint-disable-next-line spellcheck/spell-checker
                   factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret set API_KEY` to set the value'),
                 ]),
               );
