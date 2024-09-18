@@ -21,11 +21,12 @@ export class AppFunctionsDefinitionFetcher {
     assert(backendEnvironment?.stackName);
 
     const meta = this.stateManager.getMeta();
+    assert(meta);
 
-    const functions = meta?.function;
+    const functions = meta.function;
 
-    const auth = meta?.auth;
-    const storageList = meta?.storage;
+    const auth = meta.auth;
+    const storageList = meta.storage;
 
     const functionCategoryMap = new Map<string, string>();
 
