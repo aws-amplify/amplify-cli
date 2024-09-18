@@ -46,8 +46,8 @@ import { FunctionDefinition, renderFunctions } from './function/source_builder';
 
 export interface Gen2RenderingOptions {
   outputDir: string;
-  appId: string;
-  backendEnvironmentName: string | undefined;
+  appId?: string;
+  backendEnvironmentName?: string | undefined;
   auth?: AuthDefinition;
   storage?: StorageRenderParameters;
   data?: DataDefinition;
