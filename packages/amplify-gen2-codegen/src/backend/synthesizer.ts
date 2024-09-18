@@ -11,6 +11,7 @@ import ts, {
 } from 'typescript';
 import { PolicyOverrides } from '../auth/source_builder.js';
 import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
+import { AccessPatterns } from '../storage/source_builder.js';
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
@@ -29,6 +30,7 @@ export interface BackendRenderParameters {
     dynamoDB?: string;
     accelerateConfiguration?: BucketAccelerateStatus;
     versionConfiguration?: BucketVersioningStatus;
+    hasS3Bucket?: string | AccessPatterns | undefined;
   };
   function?: {
     importFrom: string;
@@ -136,7 +138,7 @@ export class BackendSynthesizer {
       defineBackendProperties.push(data);
     }
 
-    if (renderArgs.storage) {
+    if (renderArgs.storage?.hasS3Bucket) {
       imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
       const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
       defineBackendProperties.push(storage);

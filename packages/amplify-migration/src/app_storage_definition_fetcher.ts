@@ -42,17 +42,15 @@ export class AppStorageDefinitionFetcher {
     connections: GetBucketNotificationConfigurationCommandOutput,
   ): Partial<Record<StorageTriggerEvent, Lambda>> => {
     const triggers: Partial<Record<StorageTriggerEvent, Lambda>> = {};
+    const lambdaFunctionConfigurations = connections.LambdaFunctionConfigurations || [];
+    for (const connection of lambdaFunctionConfigurations) {
+      const functionName = connection.LambdaFunctionArn ? connection.LambdaFunctionArn.split(':').pop()?.split('-')[0] : '';
+      const event = connection.Events ? connection.Events[0] : '';
 
-    if (connections.LambdaFunctionConfigurations && connections.LambdaFunctionConfigurations.length) {
-      for (const connection of connections.LambdaFunctionConfigurations) {
-        const functionName = connection.LambdaFunctionArn ? connection.LambdaFunctionArn.split(':').pop()?.split('-')[0] : '';
-        const event = connection.Events ? connection.Events[0] : '';
-
-        if (event.includes('ObjectCreated') && functionName) {
-          triggers['onUpload' as StorageTriggerEvent] = { source: this.getFunctionPath(functionName) } as Lambda;
-        } else if (event.includes('ObjectRemoved') && functionName) {
-          triggers['onDelete' as StorageTriggerEvent] = { source: this.getFunctionPath(functionName) } as Lambda;
-        }
+      if (event.includes('ObjectCreated') && functionName) {
+        triggers['onUpload' as StorageTriggerEvent] = { source: this.getFunctionPath(functionName) } as Lambda;
+      } else if (event.includes('ObjectRemoved') && functionName) {
+        triggers['onDelete' as StorageTriggerEvent] = { source: this.getFunctionPath(functionName) } as Lambda;
       }
     }
 

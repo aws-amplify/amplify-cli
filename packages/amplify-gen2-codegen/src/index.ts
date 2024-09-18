@@ -135,18 +135,22 @@ export const createGen2Renderer = ({
   }
 
   if (storage) {
-    renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
-    renderers.push(
-      new TypescriptNodeArrayRenderer(
-        async () => renderStorage(storage),
-        (content) => fileWriter(content, path.join(outputDir, 'amplify', 'storage', 'resource.ts')),
-      ),
-    );
+    const hasS3Bucket = storage?.accessPatterns || storage?.storageIdentifier;
+    if (hasS3Bucket) {
+      renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
+      renderers.push(
+        new TypescriptNodeArrayRenderer(
+          async () => renderStorage(storage),
+          (content) => fileWriter(content, path.join(outputDir, 'amplify', 'storage', 'resource.ts')),
+        ),
+      );
+    }
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
       dynamoDB: storage.dynamoDB,
       accelerateConfiguration: storage.accelerateConfiguration,
       versionConfiguration: storage.versioningConfiguration,
+      hasS3Bucket: hasS3Bucket,
     };
   }
 

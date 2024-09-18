@@ -32,6 +32,7 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   const propertyAssignments: ts.PropertyAssignment[] = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineStorage');
+  const triggers = storageParams.triggers || {};
 
   if (storageParams.storageIdentifier) {
     propertyAssignments.push(
@@ -54,9 +55,9 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
       ),
     );
   }
-  if (storageParams.triggers && Object.keys(storageParams.triggers).length) {
-    propertyAssignments.push(createTriggersProperty(storageParams.triggers));
-    for (const value of Object.values(storageParams.triggers)) {
+  if (Object.keys(triggers).length) {
+    propertyAssignments.push(createTriggersProperty(triggers));
+    for (const value of Object.values(triggers)) {
       const functionName = value.source.split('/')[3];
       if (!namedImports[`./${functionName}/resource`]) {
         namedImports[`./${functionName}/resource`] = new Set();

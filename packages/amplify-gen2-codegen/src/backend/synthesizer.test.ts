@@ -149,7 +149,7 @@ describe('BackendRenderer', () => {
         });
         it(`imports ${resource}`, () => {
           const renderer = new BackendSynthesizer();
-          const rendered = renderer.render({ [resource]: { importFrom } });
+          const rendered = renderer.render({ [resource]: { importFrom, hasS3Bucket: 'bucket_name' } });
           const source = printNodeArray(rendered);
           assert.match(source, importRegex);
         });
@@ -169,6 +169,7 @@ describe('BackendRenderer', () => {
         const rendered = renderer.render({
           storage: {
             importFrom: 'my-storage',
+            hasS3Bucket: 'bucket_name',
           },
         });
         const output = printNodeArray(rendered);
@@ -209,7 +210,7 @@ describe('BackendRenderer', () => {
         const storageImportLocation = 'storage/resource.ts';
         const renderer = new BackendSynthesizer();
         const rendered = renderer.render({
-          storage: { importFrom: storageImportLocation },
+          storage: { importFrom: storageImportLocation, hasS3Bucket: 'bucket_name' },
         });
         const output = printNodeArray(rendered);
         const regex = getImportRegex('storage', storageImportLocation);
