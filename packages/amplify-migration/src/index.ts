@@ -25,6 +25,8 @@ interface CodegenCommandParameters {
   analytics: Analytics;
   logger: AppContextLogger;
   outputDirectory: string;
+  backendEnvironmentName: string | undefined;
+  appId: string;
   dataDefinitionFetcher: DataDefinitionFetcher;
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
@@ -37,6 +39,8 @@ const generateGen2Code = async ({
   logger,
   analytics,
   outputDirectory,
+  backendEnvironmentName,
+  appId,
   authDefinitionFetcher,
   dataDefinitionFetcher,
   storageDefinitionFetcher,
@@ -48,6 +52,8 @@ const generateGen2Code = async ({
 
   const gen2RenderOptions: Readonly<Gen2RenderingOptions> = {
     outputDir: outputDirectory,
+    appId: appId,
+    backendEnvironmentName: backendEnvironmentName,
     auth: await authDefinitionFetcher.getDefinition(),
     storage: await storageDefinitionFetcher.getDefinition(),
     data: await dataDefinitionFetcher.getDefinition(),
@@ -113,6 +119,7 @@ export async function execute() {
 
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
+  const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
   await generateGen2Code({
     outputDirectory: './output',
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
@@ -127,5 +134,7 @@ export async function execute() {
     functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(lambdaClient, backendEnvironmentResolver, stateManager),
     analytics: new AppAnalytics(appId),
     logger: new AppContextLogger(appId),
+    backendEnvironmentName: backendEnvironment?.environmentName,
+    appId: appId,
   });
 }

@@ -46,6 +46,8 @@ import { FunctionDefinition, renderFunctions } from './function/source_builder';
 
 export interface Gen2RenderingOptions {
   outputDir: string;
+  appId: string;
+  backendEnvironmentName: string | undefined;
   auth?: AuthDefinition;
   storage?: StorageRenderParameters;
   data?: DataDefinition;
@@ -56,6 +58,8 @@ const createFileWriter = (path: string) => async (content: string) => fs.writeFi
 
 export const createGen2Renderer = ({
   outputDir,
+  appId,
+  backendEnvironmentName,
   auth,
   storage,
   data,
@@ -86,7 +90,7 @@ export const createGen2Renderer = ({
         renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', func.category! || 'function', func.name.split('-')[0])));
         renderers.push(
           new TypescriptNodeArrayRenderer(
-            async () => renderFunctions(func),
+            async () => renderFunctions(func, appId, backendEnvironmentName),
             (content) => {
               const filePath = path.join(outputDir, 'amplify', func.category! || 'function', splitFunctionName);
               return fileWriter(content, path.join(filePath, 'resource.ts')).then(() => fileWriter('', path.join(filePath, 'handler.ts')));

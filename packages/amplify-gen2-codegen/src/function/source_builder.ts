@@ -17,7 +17,7 @@ const factory = ts.factory;
 const createParameter = (name: string, value: ts.LiteralExpression | ts.ObjectLiteralExpression): ts.PropertyAssignment =>
   factory.createPropertyAssignment(factory.createIdentifier(name), value);
 
-export function renderFunctions(definition: FunctionDefinition) {
+export function renderFunctions(definition: FunctionDefinition, appId?: string, backendEnvironmentName?: string | undefined) {
   const groupsComment = [];
   const namedImports: string[] = [];
 
@@ -33,7 +33,7 @@ export function renderFunctions(definition: FunctionDefinition) {
     ),
   );
 
-  const defineFunctionProperty = createFunctionDefinition(definition, groupsComment, namedImports);
+  const defineFunctionProperty = createFunctionDefinition(definition, groupsComment, namedImports, appId, backendEnvironmentName);
 
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier(definition?.name?.split('-')[0] || 'sayHello'),
@@ -45,7 +45,13 @@ export function renderFunctions(definition: FunctionDefinition) {
   });
 }
 
-export function createFunctionDefinition(definition?: FunctionDefinition, groupsComment?: any[], namedImports?: string[]) {
+export function createFunctionDefinition(
+  definition?: FunctionDefinition,
+  groupsComment?: any[],
+  namedImports?: string[],
+  appId?: string,
+  backendEnvironmentName?: string,
+) {
   const defineFunctionProperties: ObjectLiteralElementLike[] = [];
 
   if (definition?.entry) {
@@ -67,7 +73,7 @@ export function createFunctionDefinition(definition?: FunctionDefinition, groups
         'environment',
         factory.createObjectLiteralExpression(
           Object.entries(definition.environment.Variables).map(([key, value]) => {
-            if (key == 'API_KEY') {
+            if (key == 'API_KEY' && value.startsWith(`/amplify/${appId}/${backendEnvironmentName}`)) {
               groupsComment!.push(
                 factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
                   factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret set API_KEY` to set the value'),
@@ -76,7 +82,7 @@ export function createFunctionDefinition(definition?: FunctionDefinition, groups
               namedImports!.push('secret');
               return factory.createPropertyAssignment(
                 key,
-                factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral(value)]),
+                factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral('API_KEY')]),
               );
             }
 
