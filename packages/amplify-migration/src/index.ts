@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from 'node:path';
+import fs from 'node:fs/promises';
 
 import { Gen2RenderingOptions, createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 
@@ -29,6 +30,10 @@ interface CodegenCommandParameters {
 }
 
 export type AuthCliInputs = Record<string, unknown>;
+
+const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
+const AMPLIFY_DIR = 'amplify';
+const MIGRATION_DIR = '.amplify/migration';
 
 const generateGen2Code = async ({
   logger,
@@ -107,7 +112,7 @@ export async function execute() {
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
 
   await generateGen2Code({
-    outputDirectory: './output',
+    outputDirectory: TEMP_GEN_2_OUTPUT_DIR,
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
     authDefinitionFetcher: new AppAuthDefinitionFetcher(
       cognitoIdentityPoolClient,
@@ -120,4 +125,12 @@ export async function execute() {
     analytics: new AppAnalytics(appId),
     logger: new AppContextLogger(appId),
   });
+
+  // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
+  const cwd = process.cwd();
+  await fs.mkdir(MIGRATION_DIR, { recursive: true });
+  await fs.rename(AMPLIFY_DIR, `${MIGRATION_DIR}/amplify`);
+  await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
+  await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
+  await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
 }

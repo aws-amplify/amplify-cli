@@ -64,6 +64,24 @@ export const createGen2Renderer = ({
     () => ({ type: 'module' }),
     (content) => fileWriter(content, path.join(outputDir, 'amplify', 'package.json')),
   );
+  const amplifyTsConfigJson = new JsonRenderer(
+    () => ({
+      compilerOptions: {
+        target: 'es2022',
+        module: 'es2022',
+        moduleResolution: 'bundler',
+        resolveJsonModule: true,
+        esModuleInterop: true,
+        forceConsistentCasingInFileNames: true,
+        strict: true,
+        skipLibCheck: true,
+        paths: {
+          '$amplify/*': ['../.amplify/generated/*'],
+        },
+      },
+    }),
+    (content) => fileWriter(content, path.join(outputDir, 'amplify', 'tsconfig.json')),
+  );
   const jsonRenderer = new JsonRenderer(
     () => patchNpmPackageJson({}),
     (content) => fileWriter(content, path.join(outputDir, 'package.json')),
@@ -71,7 +89,7 @@ export const createGen2Renderer = ({
   const backendSynthesizer = new BackendSynthesizer();
   const backendRenderOptions: BackendRenderParameters = {};
 
-  const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer];
+  const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, amplifyTsConfigJson, jsonRenderer];
   if (auth) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
