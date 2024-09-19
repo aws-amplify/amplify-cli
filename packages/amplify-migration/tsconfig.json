@@ -13,6 +13,9 @@
       "path": "../amplify-gen1-codegen-storage-adapter"
     },
     {
+      "path": "../amplify-gen1-codegen-function-adapter"
+    },
+    {
       "path": "../amplify-gen2-codegen"
     }
   ]

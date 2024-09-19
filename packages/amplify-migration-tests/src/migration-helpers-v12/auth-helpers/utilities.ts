@@ -24,7 +24,7 @@ export const setupOgProjectWithAuth = async (
 
 const createUserPoolWithOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyWithOAuthSettings => {
   return {
-    // eslint-disable spellcheck/spell-checker
+    /* eslint-disable spellcheck/spell-checker */
     resourceName: `${projectPrefix}oares${shortId}`,
     userPoolName: `${projectPrefix}oaup${shortId}`,
     domainPrefix: `${projectPrefix}oadom${shortId}`,
@@ -43,7 +43,7 @@ const createUserPoolWithOAuthSettings = (projectPrefix: string, shortId: string)
     appleAppKeyID: '2QLZXKYJ8J',
     appleAppPrivateKey:
       '----BEGIN PRIVATE KEY----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----',
-    // eslint-enable spellcheck/spell-checker
+    /* eslint-enable spellcheck/spell-checker */
   };
 };
 

@@ -11,8 +11,8 @@ import {
   LambdaConfigType,
   ListGroupsCommand,
   IdentityProviderType,
-  IdentityProviderTypeType,
   DescribeIdentityProviderCommand,
+  GetUserPoolMfaConfigCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient, DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
@@ -46,6 +46,12 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
+    const { MfaConfiguration: mfaConfig, SoftwareTokenMfaConfiguration: totpConfig } = await this.cognitoIdentityProviderClient.send(
+      new GetUserPoolMfaConfigCommand({
+        UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+      }),
+    );
+
     const { UserPoolClient: webClient } = await this.cognitoIdentityProviderClient.send(
       new DescribeUserPoolClientCommand({
         UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
@@ -61,16 +67,14 @@ export class AppAuthDefinitionFetcher {
 
     const identityProvidersDetails: IdentityProviderType[] = [];
     for (const provider of identityProviders || []) {
-      if (provider.ProviderType === IdentityProviderTypeType.SAML || provider.ProviderType === IdentityProviderTypeType.OIDC) {
-        const { IdentityProvider: providerDetails } = await this.cognitoIdentityProviderClient.send(
-          new DescribeIdentityProviderCommand({
-            UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
-            ProviderName: provider.ProviderName,
-          }),
-        );
-        if (providerDetails) {
-          identityProvidersDetails.push(providerDetails);
-        }
+      const { IdentityProvider: providerDetails } = await this.cognitoIdentityProviderClient.send(
+        new DescribeIdentityProviderCommand({
+          UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+          ProviderName: provider.ProviderName,
+        }),
+      );
+      if (providerDetails) {
+        identityProvidersDetails.push(providerDetails);
       }
     }
 
@@ -97,6 +101,8 @@ export class AppAuthDefinitionFetcher {
       webClient,
       authTriggerConnections,
       guestLogin,
+      mfaConfig,
+      totpConfig,
     });
   };
 }

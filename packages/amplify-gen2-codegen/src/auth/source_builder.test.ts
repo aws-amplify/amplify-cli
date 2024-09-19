@@ -1,6 +1,14 @@
 import { StandardAttributes } from 'aws-cdk-lib/aws-cognito';
 import assert from 'node:assert';
-import { Attribute, AuthDefinition, AuthTriggerEvents, EmailOptions, renderAuthNode, UserPoolMfaConfig } from './source_builder';
+import {
+  Attribute,
+  AttributeMappingRule,
+  AuthDefinition,
+  AuthTriggerEvents,
+  EmailOptions,
+  renderAuthNode,
+  UserPoolMfaConfig,
+} from './source_builder';
 import { printNodeArray } from '../test_utils/ts_node_printer';
 
 describe('render auth node', () => {
@@ -76,6 +84,15 @@ describe('render auth node', () => {
         assert.match(source, /issuerUrl: \"hey\"/);
         assert.match(source, /name: "Sanay"/);
       });
+      it('does not render OIDC if not passed', () => {
+        const rendered = renderAuthNode({
+          loginOptions: {
+            oidcLogin: [],
+          },
+        });
+        const source = printNodeArray(rendered);
+        assert(!source.includes('oidc:'));
+      });
     });
     describe('SAML', () => {
       it('renders the saml provider', () => {
@@ -92,16 +109,18 @@ describe('render auth node', () => {
         assert.match(source, /metadataType: \"URL\"/);
         assert.match(source, /name: "Sanay"/);
       });
+      it('does not render SAML if not passed', () => {
+        const rendered = renderAuthNode({
+          loginOptions: {},
+        });
+        const source = printNodeArray(rendered);
+        assert(!source.includes('saml:'));
+      });
     });
   });
   describe('lambda', () => {
-    it('imports defineFunction when a lambda trigger is defined', () => {
-      const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: "console.log('hello, world!')" } } });
-      const source = printNodeArray(rendered);
-      assert.match(source, /import\s?\{\s?defineAuth, defineFunction\s?\}\s?from\s?"\@aws-amplify\/backend"/);
-    });
     it('adds a triggers object when a lambda trigger is defined', () => {
-      const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: "console.log('hello, world!')" } } });
+      const rendered = renderAuthNode({ lambdaTriggers: { preSignUp: { source: 'amplify/backend/function/testfunction/handler.ts' } } });
       const source = printNodeArray(rendered);
       assert.match(source, /triggers: \{/);
     });
@@ -118,9 +137,9 @@ describe('render auth node', () => {
       verifyAuthChallengeResponse: true,
     };
     for (const testCase of Object.keys(testCases)) {
-      const rendered = renderAuthNode({ lambdaTriggers: { [testCase]: { source: "console.log('hello, world!')" } } });
+      const rendered = renderAuthNode({ lambdaTriggers: { [testCase]: { source: `amplify/backend/function/${testCase}/handler.ts` } } });
       const source = printNodeArray(rendered);
-      assert.match(source, new RegExp(`triggers: \\{\\s+\\/\\*[\\S\\s]*?\\*\\/\\s+${testCase}: defineFunction\\(\\{`));
+      assert.match(source, new RegExp(`triggers:\\s*{\\s*${testCase}:\\s*${testCase}\\s*}`));
     }
   });
   describe('mfa', () => {
@@ -130,10 +149,10 @@ describe('render auth node', () => {
       assert.doesNotMatch(source, new RegExp(`multifactor:`));
     });
     describe('totp', () => {
-      it('renders false if totp is not specified', () => {
+      it('does not render totp if totp is not specified', () => {
         const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL' } });
         const source = printNodeArray(rendered);
-        assert.match(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*totp:\\sfalse`));
+        assert.doesNotMatch(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*totp:\\strue`));
       });
       const totpStates: boolean[] = [true, false];
       for (const state of totpStates) {
@@ -144,7 +163,22 @@ describe('render auth node', () => {
         });
       }
     });
-    const modes: UserPoolMfaConfig[] = ['ON', 'OFF', 'OPTIONAL'];
+    describe('sms', () => {
+      it('does not render sms if sms is not specified', () => {
+        const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL' } });
+        const source = printNodeArray(rendered);
+        assert.doesNotMatch(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*sms:\\strue`));
+      });
+      const smsStates: boolean[] = [true, false];
+      for (const state of smsStates) {
+        it(`correctly renders sms state of ${state}`, async () => {
+          const rendered = renderAuthNode({ mfa: { mode: 'OPTIONAL', sms: state } });
+          const source = printNodeArray(rendered);
+          assert.match(source, new RegExp(`multifactor:\\s+\\{[\\s\\S]*sms:\\s${state}`));
+        });
+      }
+    });
+    const modes: UserPoolMfaConfig[] = ['REQUIRED', 'OFF', 'OPTIONAL'];
     for (const mode of modes) {
       it(`correctly renders mfa state of ${mode}`, async () => {
         const rendered = renderAuthNode({ mfa: { mode } });
@@ -218,6 +252,17 @@ describe('render auth node', () => {
         const source = printNodeArray(node);
         assert(source.includes('custom:Test1'));
         assert(source.includes('dataType: "Number"'));
+      });
+      it('does not render anything if CustomAttribute is undefined', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            email: true,
+          },
+          customUserAttributes: { 'custom:isAllowed': undefined },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert(!source.includes('custom:isAllowed'));
       });
     });
   });
@@ -297,6 +342,38 @@ describe('render auth node', () => {
         const source = printNodeArray(node);
         assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+phone:\s?true\s+\}\s+\}\)/);
       });
+    });
+    describe('OAuth scopes', () => {
+      it('renders oauth scopes', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            googleLogin: true,
+            scopes: ['EMAIL', 'OPENID'],
+          },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert.match(source, /defineAuth\(\{[\s\S]*scopes:\s\["EMAIL",\s"OPENID"\]/);
+      });
+      it('renders no oauth scopes if not passed', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {},
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert.doesNotMatch(source, /scopes:/);
+      });
+    });
+    it('renders attributeMapping if passed along with Google login', () => {
+      const authDefinition: AuthDefinition = {
+        loginOptions: {
+          googleLogin: true,
+          googleAttributes: { fullname: 'name' } as AttributeMappingRule,
+        },
+      };
+      const node = renderAuthNode(authDefinition);
+      const source = printNodeArray(node);
+      assert.match(source, /defineAuth\(\{[\s\S]*attributeMapping:\s\{[\s\S]*fullname:\s"name"/);
     });
   });
 });

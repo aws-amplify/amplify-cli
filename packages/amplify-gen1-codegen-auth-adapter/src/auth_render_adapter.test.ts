@@ -37,6 +37,282 @@ void describe('auth codegen', () => {
       });
       assert(result.loginOptions?.facebookLogin);
     });
+    void it('contains oidc login if OIDC identityProvider type is passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityProvidersDetails: [
+          { ProviderType: IdentityProviderTypeType.OIDC, ProviderName: 'OIDC_1', ProviderDetails: { oidc_issuer: 'https://example.com' } },
+          { ProviderType: IdentityProviderTypeType.OIDC, ProviderName: 'OIDC_2', ProviderDetails: { oidc_issuer: 'https://example.com' } },
+        ],
+      });
+      assert(result.loginOptions?.oidcLogin);
+    });
+    void it('contains SAML login if SAML identityProvider type is passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityProvidersDetails: [
+          {
+            ProviderType: IdentityProviderTypeType.SAML,
+            ProviderName: 'SAML_1',
+            ProviderDetails: { metadataContent: 'https://example.com' },
+          },
+        ],
+      });
+      assert(result.loginOptions?.samlLogin);
+    });
+  });
+  void describe('OIDC and SAML providers', () => {
+    void describe('OIDC', () => {
+      void it('contains name and issuerUrl if OIDC identityProviderDetails is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.OIDC,
+              ProviderName: 'OIDC_1',
+              ProviderDetails: {
+                oidc_issuer: 'https://example.com',
+                authorize_url: 'https://example.com',
+                token_url: 'https://example.com',
+                attributes_url: 'https://example.com',
+                jwks_uri: 'https://example.com',
+              },
+            },
+            {
+              ProviderType: IdentityProviderTypeType.OIDC,
+              ProviderName: 'OIDC_2',
+              ProviderDetails: { oidc_issuer: 'https://example.com' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.oidcLogin, [
+          {
+            endpoints: {
+              authorization: 'https://example.com',
+              token: 'https://example.com',
+              userInfo: 'https://example.com',
+              jwksUri: 'https://example.com',
+            },
+            issuerUrl: 'https://example.com',
+            name: 'OIDC_1',
+          },
+          { issuerUrl: 'https://example.com', name: 'OIDC_2' },
+        ]);
+      });
+      void it('contains attributeMapping if AttributeMapping is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.OIDC,
+              ProviderName: 'OIDC_1',
+              ProviderDetails: { oidc_issuer: 'https://example.com' },
+              AttributeMapping: { name: 'name', phone_number: 'phone_number' },
+            },
+            {
+              ProviderType: IdentityProviderTypeType.OIDC,
+              ProviderName: 'OIDC_2',
+              ProviderDetails: { oidc_issuer: 'https://example.com' },
+              AttributeMapping: { name: 'name', phone_number: 'phone_number' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.oidcLogin, [
+          { issuerUrl: 'https://example.com', name: 'OIDC_1', attributeMapping: { fullname: 'name', phoneNumber: 'phone_number' } },
+          { issuerUrl: 'https://example.com', name: 'OIDC_2', attributeMapping: { fullname: 'name', phoneNumber: 'phone_number' } },
+        ]);
+      });
+    });
+    void describe('SAML', () => {
+      void it('contains metadataType URL if SAML identityProviderDetails and metadataURL is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.SAML,
+              ProviderName: 'SAML_1',
+              ProviderDetails: { metadataURL: 'https://example.com' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.samlLogin, {
+          metadata: { metadataContent: 'https://example.com', metadataType: 'URL' },
+          name: 'SAML_1',
+        });
+      });
+      void it('contains metadataType FILE if SAML identityProviderDetails and metadataContent is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.SAML,
+              ProviderName: 'SAML_1',
+              ProviderDetails: { metadataContent: 'https://example.com' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.samlLogin, {
+          metadata: { metadataContent: 'https://example.com', metadataType: 'FILE' },
+          name: 'SAML_1',
+        });
+      });
+      void it('contains attributeMapping if AttributeMapping is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.SAML,
+              ProviderName: 'SAML_1',
+              ProviderDetails: { metadataContent: 'https://example.com' },
+              AttributeMapping: { name: 'name', phone_number: 'phone_number' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.samlLogin, {
+          attributeMapping: { fullname: 'name', phoneNumber: 'phone_number' },
+          metadata: { metadataContent: 'https://example.com', metadataType: 'FILE' },
+          name: 'SAML_1',
+        });
+      });
+    });
+    void it('contains oidc login if OIDC identityProvider type is passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityProvidersDetails: [
+          { ProviderType: IdentityProviderTypeType.OIDC, ProviderName: 'OIDC_1', ProviderDetails: { oidc_issuer: 'https://example.com' } },
+          { ProviderType: IdentityProviderTypeType.OIDC, ProviderName: 'OIDC_2', ProviderDetails: { oidc_issuer: 'https://example.com' } },
+        ],
+      });
+      assert(result.loginOptions?.oidcLogin);
+    });
+    void it('contains SAML login if SAML identityProvider type is passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        identityProvidersDetails: [
+          {
+            ProviderType: IdentityProviderTypeType.SAML,
+            ProviderName: 'SAML_1',
+            ProviderDetails: { metadataContent: 'https://example.com' },
+          },
+        ],
+      });
+      assert(result.loginOptions?.samlLogin);
+    });
+  });
+  void describe('OIDC and SAML providers', () => {
+    void describe('OIDC', () => {
+      void it('contains name and issuerUrl if OIDC identityProviderDetails is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.OIDC,
+              ProviderName: 'OIDC_1',
+              ProviderDetails: {
+                oidc_issuer: 'https://example.com',
+                authorize_url: 'https://example.com',
+                token_url: 'https://example.com',
+                attributes_url: 'https://example.com',
+                jwks_uri: 'https://example.com',
+              },
+            },
+            {
+              ProviderType: IdentityProviderTypeType.OIDC,
+              ProviderName: 'OIDC_2',
+              ProviderDetails: { oidc_issuer: 'https://example.com' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.oidcLogin, [
+          {
+            endpoints: {
+              authorization: 'https://example.com',
+              token: 'https://example.com',
+              userInfo: 'https://example.com',
+              jwksUri: 'https://example.com',
+            },
+            issuerUrl: 'https://example.com',
+            name: 'OIDC_1',
+          },
+          { issuerUrl: 'https://example.com', name: 'OIDC_2' },
+        ]);
+      });
+      void it('contains attributeMapping if AttributeMapping is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.OIDC,
+              ProviderName: 'OIDC_1',
+              ProviderDetails: { oidc_issuer: 'https://example.com' },
+              AttributeMapping: { name: 'name', phone_number: 'phone_number' },
+            },
+            {
+              ProviderType: IdentityProviderTypeType.OIDC,
+              ProviderName: 'OIDC_2',
+              ProviderDetails: { oidc_issuer: 'https://example.com' },
+              AttributeMapping: { name: 'name', phone_number: 'phone_number' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.oidcLogin, [
+          { issuerUrl: 'https://example.com', name: 'OIDC_1', attributeMapping: { fullname: 'name', phoneNumber: 'phone_number' } },
+          { issuerUrl: 'https://example.com', name: 'OIDC_2', attributeMapping: { fullname: 'name', phoneNumber: 'phone_number' } },
+        ]);
+      });
+    });
+    void describe('SAML', () => {
+      void it('contains metadataType URL if SAML identityProviderDetails and metadataURL is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.SAML,
+              ProviderName: 'SAML_1',
+              ProviderDetails: { metadataURL: 'https://example.com' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.samlLogin, {
+          metadata: { metadataContent: 'https://example.com', metadataType: 'URL' },
+          name: 'SAML_1',
+        });
+      });
+      void it('contains metadataType FILE if SAML identityProviderDetails and metadataContent is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.SAML,
+              ProviderName: 'SAML_1',
+              ProviderDetails: { metadataContent: 'https://example.com' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.samlLogin, {
+          metadata: { metadataContent: 'https://example.com', metadataType: 'FILE' },
+          name: 'SAML_1',
+        });
+      });
+      void it('contains attributeMapping if AttributeMapping is passed', () => {
+        const result = getAuthDefinition({
+          userPool: {},
+          identityProvidersDetails: [
+            {
+              ProviderType: IdentityProviderTypeType.SAML,
+              ProviderName: 'SAML_1',
+              ProviderDetails: { metadataContent: 'https://example.com' },
+              AttributeMapping: { name: 'name', phone_number: 'phone_number' },
+            },
+          ],
+        });
+        assert.deepEqual(result.loginOptions?.samlLogin, {
+          attributeMapping: { fullname: 'name', phoneNumber: 'phone_number' },
+          metadata: { metadataContent: 'https://example.com', metadataType: 'FILE' },
+          name: 'SAML_1',
+        });
+      });
+    });
   });
   void describe('callback URLs and logout URLs', () => {
     void it('contains callback urls if callbackURLs array is passed', () => {
@@ -66,7 +342,7 @@ void describe('auth codegen', () => {
       for (const key in defaultPasswordPolicy) {
         const typedKey = key as keyof PasswordPolicyType;
         const testValue = defaultPasswordPolicy[typedKey];
-        void it(`does not explicitly override the value for ${typedKey} when set to the default value of ${testValue}`, () => {
+        void it(`does explicitly override the value for ${typedKey} when set to the default value of ${testValue}`, () => {
           const result = getAuthDefinition({
             userPool: {
               Policies: {
@@ -76,7 +352,7 @@ void describe('auth codegen', () => {
               },
             },
           });
-          assert(!(`Policies.PasswordPolicy.${typedKey}` in result.userPoolOverrides!));
+          assert(`Policies.PasswordPolicy.${typedKey}` in result.userPoolOverrides!);
         });
       }
     });
@@ -113,16 +389,31 @@ void describe('auth codegen', () => {
     });
   });
   void describe('MFA settings', () => {
-    const modes: UserPoolMfaType[] = ['ON', 'OFF', 'OPTIONAL'];
-    for (const mode of modes) {
+    const modeMap: Record<UserPoolMfaType, string> = {
+      ON: 'REQUIRED',
+      OFF: 'OFF',
+      OPTIONAL: 'OPTIONAL',
+    };
+
+    for (const mode of Object.keys(modeMap)) {
       void describe(`when ${mode} is passed to mfa`, () => {
         void it(`sets multifactor to ${mode}`, () => {
           const result = getAuthDefinition({
-            userPool: { MfaConfiguration: mode },
+            userPool: {},
+            mfaConfig: mode as UserPoolMfaType,
+            totpConfig: { Enabled: true },
           });
-          assert.deepEqual(result.mfa, {
-            mode,
-          });
+          if (mode === 'OFF') {
+            assert.deepEqual(result.mfa, {
+              mode: modeMap[mode as UserPoolMfaType],
+            });
+          } else {
+            assert.deepEqual(result.mfa, {
+              mode: modeMap[mode as UserPoolMfaType],
+              sms: true,
+              totp: true,
+            });
+          }
         });
       });
     }
@@ -270,6 +561,46 @@ void describe('auth codegen', () => {
         identityGroups: [],
       });
       assert.deepEqual(result.groups, []);
+    });
+  });
+  void describe('Oauth Scopes', () => {
+    void it('sets the oauth scopes', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        webClient: { AllowedOAuthScopes: ['email', 'openid', 'aws.cognito.signin.user.admin'] },
+      });
+      assert.deepEqual(result.loginOptions?.scopes, ['EMAIL', 'OPENID', 'COGNITO_ADMIN']);
+    });
+    void it('Does not render anything if no oauth scopes are passed', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        webClient: {},
+      });
+      assert(result.loginOptions?.scopes === undefined);
+    });
+  });
+  void describe('Unauthenticated Login', () => {
+    void it('sets the guestLogin to true', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        guestLogin: true,
+      });
+      assert(result.guestLogin);
+    });
+    void it('sets the guestLogin to false', () => {
+      const result = getAuthDefinition({
+        userPool: {},
+        guestLogin: false,
+      });
+      assert(!result.guestLogin);
+    });
+  });
+  void describe('UserPool Name', () => {
+    void it('sets the userPool name', () => {
+      const result = getAuthDefinition({
+        userPool: { Name: 'test' },
+      });
+      assert.deepEqual(result.userPoolOverrides, { userPoolName: 'test', usernameAttributes: [] });
     });
   });
 });
