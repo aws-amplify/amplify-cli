@@ -14,6 +14,8 @@ export const schemaPlaceholderComment = 'TODO: Add your existing graphql schema 
 
 export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArray<ts.Node> => {
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
+  const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
+  namedImports['@aws-amplify/backend'].add('defineData');
 
   if (dataDefinition?.tableMapping) {
     const tableMappingProperties: ObjectLiteralElementLike[] = [];
@@ -45,6 +47,6 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
     functionCallParameter: factory.createObjectLiteralExpression(dataRenderProperties, true),
     postExportStatements: [createTodoError('Add Gen 1 GraphQL schema')],
     backendFunctionConstruct: 'defineData',
-    importedPackageName: '@aws-amplify/backend',
+    additionalImportedBackendIdentifiers: namedImports,
   });
 };

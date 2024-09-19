@@ -9,7 +9,7 @@ const factory = ts.factory;
 
 type AccessPath = 'public/*' | 'private/{entity_id}/*' | 'protected/{entity_id}/*';
 
-type UserLevel = 'guest' | 'authenticated';
+type UserLevel = 'guest' | 'authenticated' | `entity('identity')` | `groups(['${string}'])`;
 
 const createAllowPattern = (allowIdentifier: Identifier, userLevel: UserLevel, permissions: Permission[]) => {
   return factory.createCallExpression(
@@ -27,14 +27,21 @@ export const getAccessPatterns = (accessPatterns: AccessPatterns): ts.PropertyAs
   const privatePathAccess = [];
   const protectedPathAccess = [];
 
-  if (accessPatterns.guest) {
+  if (accessPatterns.guest && accessPatterns.guest.length) {
     publicPathAccess.push(createAllowPattern(allowIdentifier, 'guest', accessPatterns.guest ?? []));
   }
-  if (accessPatterns.auth) {
+  if (accessPatterns.auth && accessPatterns.auth.length) {
     const accessPattern = createAllowPattern(allowIdentifier, 'authenticated', accessPatterns.auth ?? []);
     publicPathAccess.push(accessPattern);
     protectedPathAccess.push(accessPattern);
     privatePathAccess.push(accessPattern);
+  }
+  if (accessPatterns.groups && Object.keys(accessPatterns.groups).length) {
+    Object.entries(accessPatterns.groups).forEach(([key, value]) => {
+      publicPathAccess.push(createAllowPattern(allowIdentifier, `groups(['${key}'])`, value));
+      privatePathAccess.push(createAllowPattern(allowIdentifier, `groups(['${key}'])`, value));
+      protectedPathAccess.push(createAllowPattern(allowIdentifier, `groups(['${key}'])`, value));
+    });
   }
 
   const publicPath: AccessPath = 'public/*';
@@ -62,7 +69,7 @@ export const getAccessPatterns = (accessPatterns: AccessPatterns): ts.PropertyAs
     [factory.createParameterDeclaration(undefined, undefined, allowIdentifier)],
     undefined,
     undefined,
-    factory.createParenthesizedExpression(factory.createObjectLiteralExpression(allowAssignments)),
+    factory.createParenthesizedExpression(factory.createObjectLiteralExpression(allowAssignments, true)),
   );
   return factory.createPropertyAssignment(accessIdentifier, accessFunction);
 };

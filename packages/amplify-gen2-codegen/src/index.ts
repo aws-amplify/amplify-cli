@@ -82,18 +82,18 @@ export const createGen2Renderer = ({
 
   const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer];
 
-  if (functions) {
+  if (functions && functions.length) {
     const functionNamesAndCategory = new Map<string, string>();
     for (const func of functions) {
-      if (func.name && func.category) {
+      if (func.name) {
         const splitFunctionName = func.name.split('-')[0];
-        functionNamesAndCategory.set(splitFunctionName, func.category);
-        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', func.category || 'function', func.name.split('-')[0])));
+        functionNamesAndCategory.set(splitFunctionName, func.category ?? 'function');
+        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', func.category ?? 'function', func.name.split('-')[0])));
         renderers.push(
           new TypescriptNodeArrayRenderer(
-            async () => renderFunctions(func, appId, backendEnvironmentName),
+            async () => renderFunctions(func),
             (content) => {
-              const filePath = path.join(outputDir, 'amplify', func.category || 'function', splitFunctionName);
+              const filePath = path.join(outputDir, 'amplify', func.category ?? 'function', splitFunctionName);
               return fileWriter(content, path.join(filePath, 'resource.ts')).then(() => fileWriter('', path.join(filePath, 'handler.ts')));
             },
           ),
@@ -124,6 +124,7 @@ export const createGen2Renderer = ({
       writeAttributes: auth?.writeAttributes,
     };
   }
+
   if (data) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
     renderers.push(
@@ -138,15 +139,22 @@ export const createGen2Renderer = ({
   }
 
   if (storage) {
-    renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
-    renderers.push(
-      new TypescriptNodeArrayRenderer(
-        async () => renderStorage(storage),
-        (content) => fileWriter(content, path.join(outputDir, 'amplify', 'storage', 'resource.ts')),
-      ),
-    );
+    const hasS3Bucket = storage?.accessPatterns || storage?.storageIdentifier;
+    if (hasS3Bucket) {
+      renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'storage')));
+      renderers.push(
+        new TypescriptNodeArrayRenderer(
+          async () => renderStorage(storage),
+          (content) => fileWriter(content, path.join(outputDir, 'amplify', 'storage', 'resource.ts')),
+        ),
+      );
+    }
     backendRenderOptions.storage = {
       importFrom: './storage/resource',
+      dynamoDB: storage.dynamoDB,
+      accelerateConfiguration: storage.accelerateConfiguration,
+      versionConfiguration: storage.versioningConfiguration,
+      hasS3Bucket: hasS3Bucket,
     };
   }
 

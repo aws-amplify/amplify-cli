@@ -88,7 +88,14 @@ const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof Lambda
   const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
   if ('cognitoConfig' in authInputs && 'authTriggerConnections' in authInputs.cognitoConfig) {
     try {
-      const triggerConnections: AuthTriggerConnection[] = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
+      let triggerConnections: AuthTriggerConnection[];
+      // Check if authTriggerConnections is a valid JSON string
+      if (typeof authInputs.cognitoConfig.authTriggerConnections === 'string') {
+        triggerConnections = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
+      } else {
+        // If not a valid JSON string, assume it's an array of JSON strings
+        triggerConnections = authInputs.cognitoConfig.authTriggerConnections.map((connection: string) => JSON.parse(connection));
+      }
       const connections = triggerConnections.reduce((prev, curr) => {
         prev[curr.triggerType] = getFunctionPath(curr.lambdaFunctionName);
         return prev;
