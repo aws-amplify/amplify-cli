@@ -47,6 +47,8 @@ import { FunctionDefinition, renderFunctions } from './function/source_builder';
 
 export interface Gen2RenderingOptions {
   outputDir: string;
+  appId?: string;
+  backendEnvironmentName?: string | undefined;
   auth?: AuthDefinition;
   storage?: StorageRenderParameters;
   data?: DataDefinition;
@@ -57,6 +59,8 @@ const createFileWriter = (path: string) => async (content: string) => fs.writeFi
 
 export const createGen2Renderer = ({
   outputDir,
+  appId,
+  backendEnvironmentName,
   auth,
   storage,
   data,

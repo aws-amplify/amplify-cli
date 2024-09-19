@@ -32,6 +32,7 @@ export interface BackendRenderParameters {
     versionConfiguration?: BucketVersioningStatus;
     hasS3Bucket?: string | AccessPatterns | undefined;
   };
+
   function?: {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;

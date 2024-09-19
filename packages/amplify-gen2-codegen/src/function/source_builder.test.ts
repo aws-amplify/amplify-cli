@@ -65,7 +65,7 @@ describe('render function', () => {
     });
     it('does render environment property', () => {
       const definition: FunctionDefinition = {};
-      definition.environment = { Variables: { ENV: 'dev', REGION: 'us-west-2', API_KEY: '123456' } };
+      definition.environment = { Variables: { ENV: 'dev', REGION: 'us-west-2' } };
 
       const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);

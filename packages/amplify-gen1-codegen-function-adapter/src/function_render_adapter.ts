@@ -15,8 +15,8 @@ export const getFunctionDefinition = (
     funcDef.memoryMB = configuration?.MemorySize;
     funcDef.environment = configuration?.Environment;
     funcDef.runtime = configuration?.Runtime;
-    if (configuration.FunctionName) {
-      funcDef.category = functionCategoryMap.get(configuration.FunctionName.split('-')[0]);
+    if (configuration?.FunctionName) {
+      funcDef.category = functionCategoryMap.get(configuration?.FunctionName.split('-')[0]);
     }
 
     funcDefList.push(funcDef);

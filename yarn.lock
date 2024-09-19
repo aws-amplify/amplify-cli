@@ -706,10 +706,6 @@ __metadata:
   resolution: "@aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter"
   dependencies:
     "@aws-amplify/amplify-gen2-codegen": ^0.0.1
-    "@aws-amplify/auth-construct": ^1.1.5
-    "@aws-sdk/client-amplify": ^3.592.0
-    "@aws-sdk/client-cognito-identity": ^3.592.0
-    "@aws-sdk/client-cognito-identity-provider": ^3.592.0
     "@aws-sdk/client-lambda": ^3.637.0
     jest: ^29.5.0
     typescript: ^5.4.5
@@ -1803,7 +1799,7 @@ __metadata:
     "@aws-sdk/client-cloudformation": ^3.592.0
     "@aws-sdk/client-cognito-identity": ^3.592.0
     "@aws-sdk/client-cognito-identity-provider": ^3.592.0
-    "@aws-sdk/client-lambda": ^3.651.1
+    "@aws-sdk/client-lambda": ^3.637.0
     "@aws-sdk/client-s3": ^3.592.0
     "@types/node": ^20.14.2
     "@types/unzipper": ^0.10.9
