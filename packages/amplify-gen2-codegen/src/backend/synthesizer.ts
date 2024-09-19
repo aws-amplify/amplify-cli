@@ -26,6 +26,10 @@ export interface BackendRenderParameters {
   storage?: {
     importFrom: string;
   };
+  function?: {
+    importFrom: string;
+    functionNamesAndCategories: Map<string, string>;
+  };
 }
 
 export class BackendSynthesizer {
@@ -120,6 +124,20 @@ export class BackendSynthesizer {
       imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
       const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
       defineBackendProperties.push(storage);
+    }
+
+    if (renderArgs.function) {
+      const functionIdentifiers: Identifier[] = [];
+
+      const functionNameCategories = renderArgs.function.functionNamesAndCategories;
+      for (const [functionName, category] of functionNameCategories) {
+        functionIdentifiers.push(factory.createIdentifier(functionName));
+        const functionProperty = factory.createShorthandPropertyAssignment(factory.createIdentifier(functionName));
+        defineBackendProperties.push(functionProperty);
+        imports.push(this.createImportStatement([factory.createIdentifier(functionName)], `./${category}/${functionName}/resource`));
+      }
+
+      // imports.push(this.createImportStatement(functionIdentifiers, renderArgs.function.importFrom));
     }
 
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));

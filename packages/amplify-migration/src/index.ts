@@ -8,6 +8,7 @@ import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { S3Client } from '@aws-sdk/client-s3';
+import { LambdaClient } from '@aws-sdk/client-lambda';
 import { BackendDownloader } from './backend_downloader';
 import { AppContextLogger } from './logger';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
@@ -18,14 +19,18 @@ import { AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
+import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetcher';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
   logger: AppContextLogger;
   outputDirectory: string;
+  backendEnvironmentName: string | undefined;
+  appId: string;
   dataDefinitionFetcher: DataDefinitionFetcher;
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
+  functionsDefinitionFetcher: AppFunctionsDefinitionFetcher;
 }
 
 export type AuthCliInputs = Record<string, unknown>;
@@ -34,9 +39,12 @@ const generateGen2Code = async ({
   logger,
   analytics,
   outputDirectory,
+  backendEnvironmentName,
+  appId,
   authDefinitionFetcher,
   dataDefinitionFetcher,
   storageDefinitionFetcher,
+  functionsDefinitionFetcher,
 }: CodegenCommandParameters) => {
   logger.log(`Getting info for Amplify app`);
 
@@ -44,9 +52,12 @@ const generateGen2Code = async ({
 
   const gen2RenderOptions: Readonly<Gen2RenderingOptions> = {
     outputDir: outputDirectory,
+    appId: appId,
+    backendEnvironmentName: backendEnvironmentName,
     auth: await authDefinitionFetcher.getDefinition(),
     storage: await storageDefinitionFetcher.getDefinition(),
     data: await dataDefinitionFetcher.getDefinition(),
+    functions: await functionsDefinitionFetcher.getDefinition(),
   };
 
   const pipeline = createGen2Renderer(gen2RenderOptions);
@@ -101,11 +112,14 @@ export async function execute() {
   const cloudFormationClient = new CloudFormationClient();
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
   const cognitoIdentityPoolClient = new CognitoIdentityClient();
+  const lambdaClient = new LambdaClient({
+    region: stateManager.getCurrentRegion(),
+  });
   const appId = resolveAppId();
 
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
-
+  const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
   await generateGen2Code({
     outputDirectory: './output',
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
@@ -117,7 +131,10 @@ export async function execute() {
       () => getAuthTriggersConnections(),
     ),
     dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
+    functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(lambdaClient, backendEnvironmentResolver, stateManager),
     analytics: new AppAnalytics(appId),
     logger: new AppContextLogger(appId),
+    backendEnvironmentName: backendEnvironment?.environmentName,
+    appId: appId,
   });
 }

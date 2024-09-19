@@ -4,7 +4,9 @@
 
 ```ts
 
+import { EnvironmentResponse } from '@aws-sdk/client-lambda';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
+import { Runtime } from '@aws-sdk/client-lambda';
 
 // @public (undocumented)
 export type AccessPatterns = {
@@ -15,6 +17,9 @@ export type AccessPatterns = {
 
 // @public (undocumented)
 export type Attribute = 'address' | 'birthdate' | 'email' | 'familyName' | 'gender' | 'givenName' | 'locale' | 'middleName' | 'fullname' | 'nickname' | 'phoneNumber' | 'profilePicture' | 'preferredUsername' | 'profilePage' | 'timezone' | 'lastUpdateTime' | 'website';
+
+// @public (undocumented)
+export type AttributeMappingRule = Record<Attribute, string>;
 
 // @public (undocumented)
 export interface AuthDefinition {
@@ -49,7 +54,7 @@ export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
 export type AuthTriggerEvents = 'createAuthChallenge' | 'customMessage' | 'defineAuthChallenge' | 'postAuthentication' | 'postConfirmation' | 'preAuthentication' | 'preSignUp' | 'preTokenGeneration' | 'userMigration' | 'verifyAuthChallengeResponse';
 
 // @public (undocumented)
-export const createGen2Renderer: ({ outputDir, auth, storage, data, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
+export const createGen2Renderer: ({ outputDir, appId, backendEnvironmentName, auth, storage, data, functions, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
 
 // @public (undocumented)
 export type CustomAttribute = {
@@ -76,13 +81,37 @@ export type EmailOptions = {
 };
 
 // @public (undocumented)
+export interface FunctionDefinition {
+    // (undocumented)
+    category?: string;
+    // (undocumented)
+    entry?: string;
+    // (undocumented)
+    environment?: EnvironmentResponse;
+    // (undocumented)
+    memoryMB?: number;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    runtime?: Runtime | string;
+    // (undocumented)
+    timeoutSeconds?: number;
+}
+
+// @public (undocumented)
 export interface Gen2RenderingOptions {
     // (undocumented)
+    appId?: string;
+    // (undocumented)
     auth?: AuthDefinition;
+    // (undocumented)
+    backendEnvironmentName?: string | undefined;
     // (undocumented)
     data?: DataDefinition;
     // (undocumented)
     fileWriter?: (content: string, path: string) => Promise<void>;
+    // (undocumented)
+    functions?: FunctionDefinition[];
     // (undocumented)
     outputDir: string;
     // (undocumented)
@@ -108,10 +137,14 @@ export type LoginOptions = {
     facebookLogin?: boolean;
     oidcLogin?: OidcOptions[];
     samlLogin?: SamlOptions;
+    googleAttributes?: AttributeMappingRule;
+    amazonAttributes?: AttributeMappingRule;
+    appleAttributes?: AttributeMappingRule;
+    facebookAttributes?: AttributeMappingRule;
     callbackURLs?: string[];
     logoutURLs?: string[];
     scopes?: Scope[];
-    [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | undefined;
+    [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | AttributeMappingRule | undefined;
 };
 
 // @public (undocumented)
@@ -124,6 +157,7 @@ export type MetadataOptions = {
 export type MultifactorOptions = {
     mode: UserPoolMfaConfig;
     totp?: boolean;
+    sms?: boolean;
 };
 
 // @public (undocumented)
@@ -139,6 +173,7 @@ export type OidcOptions = {
     issuerUrl: string;
     name?: string;
     endpoints?: OidcEndPoints;
+    attributeMapping?: AttributeMappingRule;
 };
 
 // @public (undocumented)
@@ -163,6 +198,7 @@ export type S3TriggerDefinition = Record<string, never>;
 export type SamlOptions = {
     name?: string;
     metadata: MetadataOptions;
+    attributeMapping?: AttributeMappingRule;
 };
 
 // @public (undocumented)
@@ -198,7 +234,7 @@ export interface StorageRenderParameters {
 export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 
 // @public (undocumented)
-export type UserPoolMfaConfig = 'OFF' | 'ON' | 'OPTIONAL';
+export type UserPoolMfaConfig = 'OFF' | 'REQUIRED' | 'OPTIONAL';
 
 // (No @packageDocumentation comment for this package)
 

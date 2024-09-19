@@ -30,6 +30,7 @@ import {
   MetadataOptions,
   SamlOptions,
   Scope,
+  AttributeMappingRule,
 } from './auth/source_builder';
 import {
   StorageRenderParameters,
@@ -42,20 +43,28 @@ import {
 
 import { DataDefinition, generateDataSource } from './data/source_builder';
 
+import { FunctionDefinition, renderFunctions } from './function/source_builder';
+
 export interface Gen2RenderingOptions {
   outputDir: string;
+  appId?: string;
+  backendEnvironmentName?: string | undefined;
   auth?: AuthDefinition;
   storage?: StorageRenderParameters;
   data?: DataDefinition;
+  functions?: FunctionDefinition[];
   fileWriter?: (content: string, path: string) => Promise<void>;
 }
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
 
 export const createGen2Renderer = ({
   outputDir,
+  appId,
+  backendEnvironmentName,
   auth,
   storage,
   data,
+  functions,
   fileWriter = (content, path) => createFileWriter(path)(content),
 }: Readonly<Gen2RenderingOptions>): Renderer => {
   const ensureOutputDir = new EnsureDirectory(outputDir);
@@ -72,6 +81,32 @@ export const createGen2Renderer = ({
   const backendRenderOptions: BackendRenderParameters = {};
 
   const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer];
+
+  if (functions) {
+    const functionNamesAndCategory = new Map<string, string>();
+    for (const func of functions) {
+      if (func.name && func.category) {
+        const splitFunctionName = func.name.split('-')[0];
+        functionNamesAndCategory.set(splitFunctionName, func.category);
+        renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', func.category || 'function', func.name.split('-')[0])));
+        renderers.push(
+          new TypescriptNodeArrayRenderer(
+            async () => renderFunctions(func, appId, backendEnvironmentName),
+            (content) => {
+              const filePath = path.join(outputDir, 'amplify', func.category || 'function', splitFunctionName);
+              return fileWriter(content, path.join(filePath, 'resource.ts')).then(() => fileWriter('', path.join(filePath, 'handler.ts')));
+            },
+          ),
+        );
+      }
+    }
+
+    backendRenderOptions.function = {
+      importFrom: './function/resource',
+      functionNamesAndCategories: functionNamesAndCategory,
+    };
+  }
+
   if (auth) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'auth')));
     renderers.push(
@@ -134,6 +169,7 @@ export {
   S3TriggerDefinition,
   PasswordPolicyPath,
   AuthDefinition,
+  FunctionDefinition,
   PolicyOverrides,
   Group,
   Attribute,
@@ -154,4 +190,5 @@ export {
   MetadataOptions,
   OidcOptions,
   Scope,
+  AttributeMappingRule,
 };
