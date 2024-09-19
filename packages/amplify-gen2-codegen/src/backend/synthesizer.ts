@@ -294,7 +294,7 @@ export class BackendSynthesizer {
         );
         nodes.push(cfnBucketStatement, accelerateConfigAssignment);
       }
-      console.log(renderArgs.storage?.versionConfiguration);
+      
       if (renderArgs.storage?.versionConfiguration) {
         const versionConfigAssignment = factory.createExpressionStatement(
           factory.createAssignment(
