@@ -64,9 +64,6 @@ const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>)
   for (const key of Object.keys(passwordPolicy)) {
     const typedKey: keyof PasswordPolicyType = key as keyof PasswordPolicyType;
     if (passwordPolicy[typedKey] !== undefined) {
-      if (passwordPolicy[typedKey] === DEFAULT_PASSWORD_SETTINGS[typedKey]) {
-        continue;
-      }
       policyOverrides[passwordOverridePath(typedKey)] = passwordPolicy[typedKey];
     }
   }

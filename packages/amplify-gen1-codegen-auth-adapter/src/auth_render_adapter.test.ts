@@ -204,7 +204,7 @@ void describe('auth codegen', () => {
       for (const key in defaultPasswordPolicy) {
         const typedKey = key as keyof PasswordPolicyType;
         const testValue = defaultPasswordPolicy[typedKey];
-        void it(`does not explicitly override the value for ${typedKey} when set to the default value of ${testValue}`, () => {
+        void it(`does explicitly override the value for ${typedKey} when set to the default value of ${testValue}`, () => {
           const result = getAuthDefinition({
             userPool: {
               Policies: {
@@ -214,7 +214,7 @@ void describe('auth codegen', () => {
               },
             },
           });
-          assert(!(`Policies.PasswordPolicy.${typedKey}` in result.userPoolOverrides!));
+          assert(`Policies.PasswordPolicy.${typedKey}` in result.userPoolOverrides!);
         });
       }
     });
