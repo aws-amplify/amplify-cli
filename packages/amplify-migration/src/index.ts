@@ -58,6 +58,7 @@ const generateGen2Code = async ({
     storage: await storageDefinitionFetcher.getDefinition(),
     data: await dataDefinitionFetcher.getDefinition(),
     functions: await functionsDefinitionFetcher.getDefinition(),
+    unsupportedCategories: unsupportedCategories(),
   };
 
   const pipeline = createGen2Renderer(gen2RenderOptions);
@@ -88,13 +89,21 @@ const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof Lambda
   const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
   if ('cognitoConfig' in authInputs && 'authTriggerConnections' in authInputs.cognitoConfig) {
     try {
-      const triggerConnections: AuthTriggerConnection[] = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
+      let triggerConnections: AuthTriggerConnection[];
+      // Check if authTriggerConnections is a valid JSON string
+      if (typeof authInputs.cognitoConfig.authTriggerConnections === 'string') {
+        triggerConnections = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
+      } else {
+        // If not a valid JSON string, assume it's an array of JSON strings
+        triggerConnections = authInputs.cognitoConfig.authTriggerConnections.map((connection: string) => JSON.parse(connection));
+      }
       const connections = triggerConnections.reduce((prev, curr) => {
         prev[curr.triggerType] = getFunctionPath(curr.lambdaFunctionName);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
       return connections;
     } catch (e) {
+      console.log('error -- ', e);
       throw new Error('Error parsing auth trigger connections');
     }
   }
@@ -104,6 +113,25 @@ const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof Lambda
 const resolveAppId = (): string => {
   const meta = stateManager.getMeta();
   return meta?.providers?.awscloudformation?.AmplifyAppId;
+};
+
+const unsupportedCategories = (): string[] => {
+  const unsupportedCategories: string[] = ['geo', 'analytics', 'predictions', 'notifications', 'interactions', 'custom'];
+
+  const meta = stateManager.getMeta();
+  const categories = Object.keys(meta);
+  const unsupportedCategoriesList = categories.filter((category) => unsupportedCategories.includes(category));
+
+  const apiList = meta?.api;
+  if (apiList) {
+    Object.keys(apiList).forEach((api) => {
+      const apiObj = apiList[api];
+      if (apiObj.service == 'API Gateway') {
+        unsupportedCategoriesList.push('api');
+      }
+    });
+  }
+  return unsupportedCategoriesList;
 };
 
 export async function execute() {
@@ -120,6 +148,7 @@ export async function execute() {
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
   const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
+
   await generateGen2Code({
     outputDirectory: './output',
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
