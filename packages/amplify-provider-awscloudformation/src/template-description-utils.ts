@@ -88,7 +88,7 @@ export function getDefaultTemplateDescription(context: $TSContext, category: str
     createdBy: deploymentTypeDescription,
     createdWith: cliVersion,
     stackType: stackTypeDescription,
-    metadata: {},
+    metadata: { whyContinueWithGen1: context?.exeInfo?.projectConfig?.whyContinueWithGen1 || '' },
   };
 
   return JSON.stringify(descriptionJson);
