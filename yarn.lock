@@ -588,7 +588,7 @@ __metadata:
     jest-environment-node: ^26.6.2
     lodash: ^4.17.21
     node-fetch: ^2.6.7
-    node-pty: beta
+    node-pty: ^1.0.0
     retimer: 2.0.0
     rimraf: ^3.0.0
     semver: ^7.5.4
@@ -15404,7 +15404,7 @@ __metadata:
     lodash: ^4.17.21
     moment: ^2.24.0
     node-fetch: ^2.6.7
-    node-pty: beta
+    node-pty: ^1.0.0
     openpgp: ^5.10.2
     rimraf: ^3.0.0
     title-case: ^3.0.3
@@ -26752,12 +26752,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.14.0":
-  version: 2.15.0
-  resolution: "nan@npm:2.15.0"
+"nan@npm:^2.17.0":
+  version: 2.20.0
+  resolution: "nan@npm:2.20.0"
   dependencies:
     node-gyp: latest
-  checksum: 797924e8dd64c32d571f322f998d5aa5a732012a23315976456017ea37515b21a808020995d7f48b716476b7e9a6a1ba9cce43bee30399016b9ac7257454ea04
+  checksum: 75775309a21ad179a55250d62ce47322c33ca03d8ddb5ad4c555bd820dd72484b3c59253dd9f41cc68dd63453ef04017407fbd081a549bc030d977079bb798b7
   languageName: node
   linkType: hard
 
@@ -26941,14 +26941,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-node-pty@beta:
-  version: 0.11.0-beta19
-  resolution: "node-pty@npm:0.11.0-beta19"
+"node-pty@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "node-pty@npm:1.0.0"
   dependencies:
-    nan: ^2.14.0
-  peerDependencies:
-    node-gyp: ^8.3.0
-  checksum: e6e50fa854a404b9e0ef9b621df7c30b5b6f92defed6692b7a63955bd2de7910a5d9f3b2024ed30cdcac5b276deea9bf0826542d0197d0e372dbe399c2b4571b
+    nan: ^2.17.0
+    node-gyp: latest
+  checksum: c308686826eb2f7616735f4c71e6e41ff630346b14319972dbdf9711640bc6975ce21eab66a47b7ce9a88c70308fe81bfd9840127388d5fa26c52afbad255871
   languageName: node
   linkType: hard
 
