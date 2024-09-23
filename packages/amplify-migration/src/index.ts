@@ -103,7 +103,6 @@ const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof Lambda
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
       return connections;
     } catch (e) {
-      console.log('error -- ', e);
       throw new Error('Error parsing auth trigger connections');
     }
   }
