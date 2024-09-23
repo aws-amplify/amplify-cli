@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/migrate",
-  "version": "0.1.0-gen2-migrations-test.0",
+  "version": "0.1.0-gen2-migration-test.0",
   "type": "commonjs",
   "main": "lib/index.js",
   "bin": "lib/migrate.js",

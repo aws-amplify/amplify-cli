@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-gen2-migration-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-gen2-migrations-test.0...@aws-amplify/migrate@0.1.0-gen2-migration-test.0) (2024-09-23)
+
+
+### Bug Fixes
+
+* **migrate:** add README ([51b0d66](https://github.com/aws-amplify/amplify-cli/commit/51b0d666292ae766b7b36ec3f171cb0f281674fc))
+
+
+
+
+
 # 0.1.0-gen2-migrations-test.0 (2024-09-23)
 
 
