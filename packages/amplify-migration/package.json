@@ -4,6 +4,9 @@
   "type": "commonjs",
   "main": "lib/index.js",
   "bin": "lib/migrate.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "test": "jest --logHeapUsage",

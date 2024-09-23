@@ -33,6 +33,9 @@
     ],
     "collectCoverage": true
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "exit 0",
     "pretest": "mkdir -p coverage",

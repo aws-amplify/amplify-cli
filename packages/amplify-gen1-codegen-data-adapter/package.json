@@ -38,6 +38,9 @@
     ],
     "collectCoverage": true
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "pretest": "mkdir -p coverage",
     "test": "jest --logHeapUsage",

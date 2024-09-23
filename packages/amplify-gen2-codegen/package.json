@@ -33,6 +33,9 @@
     ],
     "collectCoverage": true
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "",
   "license": "Apache-2.0",
   "description": "",
