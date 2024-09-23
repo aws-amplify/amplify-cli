@@ -31,7 +31,7 @@ export interface BackendRenderParameters {
     functionNamesAndCategories: Map<string, string>;
   };
   unsupportedCategories?: {
-    categories?: string[];
+    categories?: Map<string, string>;
   };
 }
 
@@ -108,7 +108,7 @@ export class BackendSynthesizer {
     const backendFunctionIdentifier = factory.createIdentifier('defineBackend');
 
     const imports = [];
-    const errors = [];
+    const errors: ts.CallExpression[] = [];
     const defineBackendProperties = [];
     const nodes = [];
 
@@ -146,13 +146,22 @@ export class BackendSynthesizer {
 
     if (renderArgs.unsupportedCategories && renderArgs.unsupportedCategories.categories) {
       const categories = renderArgs.unsupportedCategories.categories;
-      console.log('unsupported categories -- ', categories);
-      errors.push(
-        factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-          // eslint-disable-next-line spellcheck/spell-checker
-          factory.createStringLiteral(`Categories ${categories.join(', ')} are unsupported`),
-        ]),
-      );
+
+      for (const [key, value] of categories) {
+        if (key == 'custom') {
+          errors.push(
+            factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+              factory.createStringLiteral(`Category ${key} has changed, learn more ${value}`),
+            ]),
+          );
+        } else {
+          errors.push(
+            factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+              factory.createStringLiteral(`Category ${key} is unsupported, please follow ${value}`),
+            ]),
+          );
+        }
+      }
     }
 
     const callBackendFn = this.defineBackendCall(backendFunctionIdentifier, defineBackendProperties);

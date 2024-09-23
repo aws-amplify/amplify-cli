@@ -52,7 +52,7 @@ export interface Gen2RenderingOptions {
   storage?: StorageRenderParameters;
   data?: DataDefinition;
   functions?: FunctionDefinition[];
-  unsupportedCategories?: string[];
+  unsupportedCategories?: Map<string, string>;
   fileWriter?: (content: string, path: string) => Promise<void>;
 }
 const createFileWriter = (path: string) => async (content: string) => fs.writeFile(path, content);
@@ -83,8 +83,7 @@ export const createGen2Renderer = ({
 
   const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, jsonRenderer];
 
-  if (unsupportedCategories && unsupportedCategories?.length >= 1) {
-    console.log('inside unsupported ctageories: -- ', unsupportedCategories);
+  if (unsupportedCategories && unsupportedCategories?.size >= 1) {
     backendRenderOptions.unsupportedCategories = {
       categories: unsupportedCategories,
     };

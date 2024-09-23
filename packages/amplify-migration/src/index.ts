@@ -115,22 +115,40 @@ const resolveAppId = (): string => {
   return meta?.providers?.awscloudformation?.AmplifyAppId;
 };
 
-const unsupportedCategories = (): string[] => {
-  const unsupportedCategories: string[] = ['geo', 'analytics', 'predictions', 'notifications', 'interactions', 'custom'];
+const unsupportedCategories = (): Map<string, string> => {
+  const unsupportedCategories = new Map<string, string>();
+
+  unsupportedCategories.set('geo', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/geo/');
+  unsupportedCategories.set('analytics', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/analytics/');
+  unsupportedCategories.set('predictions', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/predictions/');
+  unsupportedCategories.set('notifications', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/in-app-messaging/');
+  unsupportedCategories.set('interactions', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/interactions/');
+  unsupportedCategories.set('custom', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/custom-resources/');
+  unsupportedCategories.set('api', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/');
 
   const meta = stateManager.getMeta();
   const categories = Object.keys(meta);
-  const unsupportedCategoriesList = categories.filter((category) => unsupportedCategories.includes(category));
 
-  const apiList = meta?.api;
-  if (apiList) {
-    Object.keys(apiList).forEach((api) => {
-      const apiObj = apiList[api];
-      if (apiObj.service == 'API Gateway') {
-        unsupportedCategoriesList.push('api');
+  const unsupportedCategoriesList = new Map<string, string>();
+
+  categories.forEach((category) => {
+    if (category == 'api') {
+      const apiList = meta?.api;
+      if (apiList) {
+        Object.keys(apiList).forEach((api) => {
+          const apiObj = apiList[api];
+          if (apiObj.service == 'API Gateway') {
+            unsupportedCategoriesList.set(category, unsupportedCategories.get(category)!);
+          }
+        });
       }
-    });
-  }
+    } else {
+      if (unsupportedCategories.has(category)) {
+        unsupportedCategoriesList.set(category, unsupportedCategories.get(category)!);
+      }
+    }
+  });
+
   return unsupportedCategoriesList;
 };
 
