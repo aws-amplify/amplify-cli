@@ -5,7 +5,6 @@ import { buildTypeKeyMap, ServiceName } from '@aws-amplify/amplify-category-func
 import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from '@aws-amplify/amplify-cli-core';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
-import glob from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
 import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
