@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.10...@aws-amplify/amplify-migration-tests@6.4.0-gen2-migrations-test.0) (2024-09-23)
+
+
+### Features
+
+* fixed lint ([0ed8fbe](https://github.com/aws-amplify/amplify-cli/commit/0ed8fbe2347c2f67cc022f06b671bea8ceb82538))
+
+
+
+
+
 ## [6.3.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.9...@aws-amplify/amplify-migration-tests@6.3.10) (2024-08-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests

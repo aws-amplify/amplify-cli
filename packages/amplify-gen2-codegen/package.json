@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-gen2-codegen",
-  "version": "0.0.1",
+  "version": "0.1.0-gen2-migrations-test.0",
   "main": "lib/index.js",
   "type": "commonjs",
   "scripts": {

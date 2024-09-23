@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/migrate",
-  "version": "0.0.1",
+  "version": "0.1.0-gen2-migrations-test.0",
   "type": "commonjs",
   "main": "lib/index.js",
   "bin": "lib/migrate.js",
@@ -46,10 +46,10 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.3.9",
-    "@aws-amplify/amplify-gen1-codegen-auth-adapter": "^0.0.1",
-    "@aws-amplify/amplify-gen1-codegen-function-adapter": "^0.0.1",
-    "@aws-amplify/amplify-gen1-codegen-storage-adapter": "^0.0.1",
-    "@aws-amplify/amplify-gen2-codegen": "^0.0.1",
+    "@aws-amplify/amplify-gen1-codegen-auth-adapter": "0.1.0-gen2-migrations-test.0",
+    "@aws-amplify/amplify-gen1-codegen-function-adapter": "0.1.0-gen2-migrations-test.0",
+    "@aws-amplify/amplify-gen1-codegen-storage-adapter": "0.1.0-gen2-migrations-test.0",
+    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migrations-test.0",
     "@aws-sdk/client-amplify": "^3.592.0",
     "@aws-sdk/client-amplifybackend": "^3.592.0",
     "@aws-sdk/client-cloudformation": "^3.592.0",

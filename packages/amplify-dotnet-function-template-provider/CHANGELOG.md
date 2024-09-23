@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.11-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.6.10...@aws-amplify/amplify-dotnet-function-template-provider@2.6.11-gen2-migrations-test.0) (2024-09-23)
+
+**Note:** Version bump only for package @aws-amplify/amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [2.6.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.6.9...@aws-amplify/amplify-dotnet-function-template-provider@2.6.10) (2024-08-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-dotnet-function-template-provider

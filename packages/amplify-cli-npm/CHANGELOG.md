@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.13.0-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.12.6...@aws-amplify/cli@12.13.0-gen2-migrations-test.0) (2024-09-23)
+
+
+### Bug Fixes
+
+* **migrate:** update amplify-cli-npm ([eb8e0ae](https://github.com/aws-amplify/amplify-cli/commit/eb8e0aec70bd2667820f89bc55d9a4bafdc21df4))
+
+
+### Features
+
+* bump version ([db50139](https://github.com/aws-amplify/amplify-cli/commit/db50139bf37c15ed5310af3752a0567e6221b269))
+* bump version ([67cf6b9](https://github.com/aws-amplify/amplify-cli/commit/67cf6b9198a58280aedb6bf59a83460828118131))
+
+
+
+
+
 ## [12.12.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.12.5...@aws-amplify/cli@12.12.6) (2024-08-06)
 
 **Note:** Version bump only for package @aws-amplify/cli
