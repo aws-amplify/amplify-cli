@@ -19,6 +19,9 @@ export type AccessPatterns = {
 export type Attribute = 'address' | 'birthdate' | 'email' | 'familyName' | 'gender' | 'givenName' | 'locale' | 'middleName' | 'fullname' | 'nickname' | 'phoneNumber' | 'profilePicture' | 'preferredUsername' | 'profilePage' | 'timezone' | 'lastUpdateTime' | 'website';
 
 // @public (undocumented)
+export type AttributeMappingRule = Record<Attribute, string>;
+
+// @public (undocumented)
 export interface AuthDefinition {
     // (undocumented)
     customUserAttributes?: CustomAttributes;
@@ -232,10 +235,6 @@ export type StorageTriggerEvent = 'onDelete' | 'onUpload';
 
 // @public (undocumented)
 export type UserPoolMfaConfig = 'OFF' | 'REQUIRED' | 'OPTIONAL';
-
-// Warnings were encountered during analysis:
-//
-// src/auth/source_builder.ts:101:3 - (ae-forgotten-export) The symbol "AttributeMappingRule" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
