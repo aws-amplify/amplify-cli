@@ -1,8 +1,7 @@
 import ts from 'typescript';
 const factory = ts.factory;
 export type ResourceTsParameters = {
-  additionalImportedBackendIdentifiers?: string[];
-  importedPackageName: string;
+  additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
   backendFunctionConstruct: string;
   functionCallParameter: ts.ObjectLiteralExpression;
   exportedVariableName: ts.Identifier;
@@ -10,16 +9,15 @@ export type ResourceTsParameters = {
   postExportStatements?: ts.Node[];
 };
 export function renderResourceTsFile({
-  additionalImportedBackendIdentifiers = [],
+  additionalImportedBackendIdentifiers = {},
   backendFunctionConstruct,
-  importedPackageName,
   functionCallParameter,
   exportedVariableName,
   postImportStatements,
   postExportStatements,
 }: ResourceTsParameters): ts.NodeArray<ts.Node> {
   const backendFunctionIdentifier = factory.createIdentifier(backendFunctionConstruct);
-  const importStatement = renderImportStatements(backendFunctionIdentifier, additionalImportedBackendIdentifiers, importedPackageName);
+  const importStatements = renderImportStatements(additionalImportedBackendIdentifiers);
   const functionCall = factory.createCallExpression(backendFunctionIdentifier, undefined, [functionCallParameter]);
   const exportedVariable = factory.createVariableDeclaration(exportedVariableName, undefined, undefined, functionCall);
   const exportStatement = factory.createVariableStatement(
@@ -27,12 +25,11 @@ export function renderResourceTsFile({
     factory.createVariableDeclarationList([exportedVariable], ts.NodeFlags.Const),
   );
 
-  return factory.createNodeArray([importStatement, ...(postImportStatements ?? []), exportStatement, ...(postExportStatements ?? [])]);
+  return factory.createNodeArray([...importStatements, ...(postImportStatements ?? []), exportStatement, ...(postExportStatements ?? [])]);
 }
 
 export type ResourceTsParametersList = {
-  additionalImportedBackendIdentifiers?: string[];
-  importedPackageName: string;
+  additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
   backendFunctionConstruct: string;
   functionCallParameter: ts.ObjectLiteralExpression[];
   exportedVariableName: ts.Identifier[];
@@ -41,44 +38,43 @@ export type ResourceTsParametersList = {
 };
 
 export function renderResourceTsFilesForFunction({
-  additionalImportedBackendIdentifiers = [],
+  additionalImportedBackendIdentifiers = {},
   backendFunctionConstruct,
-  importedPackageName,
   functionCallParameter,
   exportedVariableName,
   postImportStatements,
   postExportStatements,
 }: ResourceTsParametersList): ts.NodeArray<ts.Node> {
-  const backendFunctionIdentifier = factory.createIdentifier(backendFunctionConstruct);
-
-  const importStatement = renderImportStatements(backendFunctionIdentifier, additionalImportedBackendIdentifiers, importedPackageName);
+  const importStatements = renderImportStatements(additionalImportedBackendIdentifiers);
   const exportStatements = renderExportStatementsForFunctions(backendFunctionConstruct, functionCallParameter, exportedVariableName);
 
   return factory.createNodeArray([
-    importStatement,
+    ...importStatements,
     ...(postImportStatements ?? []),
     ...(exportStatements ?? []),
     ...(postExportStatements ?? []),
   ]);
 }
 
-function renderImportStatements(
-  backendFunctionIdentifier: ts.Identifier,
-  additionalImportedBackendIdentifiers: string[],
-  importedPackageName: string,
-) {
-  const importSpecifiers = [factory.createImportSpecifier(false, undefined, backendFunctionIdentifier)].concat(
-    additionalImportedBackendIdentifiers.map((importedFunctionName) =>
-      factory.createImportSpecifier(false, undefined, factory.createIdentifier(importedFunctionName)),
-    ),
-  );
-  const importStatement = ts.factory.createImportDeclaration(
-    undefined,
-    factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
-    factory.createStringLiteral(importedPackageName),
-  );
+function renderImportStatements(additionalImportedBackendIdentifiers: Record<string, Set<string>>) {
+  const importStatements: ts.ImportDeclaration[] = [];
+  for (const [packageName, identifiers] of Object.entries(additionalImportedBackendIdentifiers)) {
+    const importSpecifiers: ts.ImportSpecifier[] = [];
 
-  return importStatement;
+    identifiers.forEach((identifier) => {
+      importSpecifiers.push(factory.createImportSpecifier(false, undefined, factory.createIdentifier(identifier)));
+    });
+
+    const importStatement = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(false, undefined, factory.createNamedImports(importSpecifiers)),
+      factory.createStringLiteral(packageName),
+    );
+
+    importStatements.push(importStatement);
+  }
+
+  return importStatements;
 }
 
 function renderExportStatementsForFunctions(

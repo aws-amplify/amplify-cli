@@ -221,7 +221,20 @@ function createOidcSamlPropertyAssignments(
   });
 }
 
-function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, callbackUrls?: string[], logoutUrls?: string[]) {
+function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
+  return secretVariables.map((secret) =>
+    factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+      factory.createStringLiteral(`Secrets need to be reset, use \`npx ampx sandbox secret ${secret}\` to set the value`),
+    ]),
+  );
+}
+
+function createExternalProvidersPropertyAssignment(
+  loginOptions: LoginOptions,
+  callbackUrls?: string[],
+  logoutUrls?: string[],
+  secretErrors?: ts.Node[],
+) {
   const providerAssignments: PropertyAssignment[] = [];
 
   if (loginOptions.googleLogin) {
@@ -235,6 +248,7 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
         loginOptions.googleAttributes,
       ),
     );
+    secretErrors?.push(...createSecretErrorStatements([googleClientID, googleClientSecret]));
   }
 
   if (loginOptions.appleLogin) {
@@ -250,6 +264,7 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
         loginOptions.appleAttributes,
       ),
     );
+    secretErrors?.push(...createSecretErrorStatements([appleClientID, appleKeyId, applePrivateKey, appleTeamID]));
   }
 
   if (loginOptions.amazonLogin) {
@@ -263,6 +278,7 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
         loginOptions.amazonAttributes,
       ),
     );
+    secretErrors?.push(...createSecretErrorStatements([amazonClientID, amazonClientSecret]));
   }
 
   if (loginOptions.facebookLogin) {
@@ -276,6 +292,7 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
         loginOptions.facebookAttributes,
       ),
     );
+    secretErrors?.push(...createSecretErrorStatements([facebookClientID, facebookClientSecret]));
   }
 
   if (loginOptions.samlLogin) {
@@ -314,6 +331,7 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
         ),
       ),
     );
+    secretErrors?.push(...createSecretErrorStatements([oidcClientID, oidcClientSecret]));
   }
 
   if (loginOptions.scopes) {
@@ -340,7 +358,7 @@ function createExternalProvidersPropertyAssignment(loginOptions: LoginOptions, c
   return factory.createObjectLiteralExpression(properties, true);
 }
 
-function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
+function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}, secretErrors: ts.Node[]) {
   const logInWith = factory.createIdentifier('loginWith');
   const assignments: ts.ObjectLiteralElementLike[] = [];
   if (logInDefinition.email === true) {
@@ -388,7 +406,7 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}) {
     assignments.push(
       factory.createPropertyAssignment(
         factory.createIdentifier('externalProviders'),
-        createExternalProvidersPropertyAssignment(logInDefinition, logInDefinition.callbackURLs, logInDefinition.logoutURLs),
+        createExternalProvidersPropertyAssignment(logInDefinition, logInDefinition.callbackURLs, logInDefinition.logoutURLs, secretErrors),
       ),
     );
   }
@@ -442,10 +460,12 @@ const createUserAttributeAssignments = (
 };
 
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
-  const namedImports = [];
+  const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
+  namedImports['@aws-amplify/backend'].add('defineAuth');
   const defineAuthProperties: Array<PropertyAssignment> = [];
+  const secretErrors: ts.Node[] = [];
 
-  const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions);
+  const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions, secretErrors);
   defineAuthProperties.push(logInWithPropertyAssignment);
 
   if (definition.customUserAttributes || definition.standardUserAttributes) {
@@ -463,14 +483,27 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
 
   const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
   const { loginOptions } = definition;
-  if (loginOptions?.appleLogin || loginOptions?.amazonLogin || loginOptions?.googleLogin || loginOptions?.facebookLogin) {
-    namedImports.push('secret');
+  if (
+    loginOptions?.appleLogin ||
+    loginOptions?.amazonLogin ||
+    loginOptions?.googleLogin ||
+    loginOptions?.facebookLogin ||
+    (loginOptions?.oidcLogin && loginOptions.oidcLogin.length > 0) ||
+    loginOptions?.samlLogin
+  ) {
+    namedImports['@aws-amplify/backend'].add('secret');
   }
   if (hasFunctions) {
     assert(definition.lambdaTriggers);
     defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
+    for (const value of Object.values(definition.lambdaTriggers)) {
+      const functionName = value.source.split('/')[3];
+      if (!namedImports[`./${functionName}/resource`]) {
+        namedImports[`./${functionName}/resource`] = new Set();
+      }
+      namedImports[`./${functionName}/resource`].add(functionName);
+    }
   }
-
   if (definition.mfa) {
     const multifactorProperties = [
       factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
@@ -507,6 +540,6 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
     functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties, true),
     additionalImportedBackendIdentifiers: namedImports,
     backendFunctionConstruct: 'defineAuth',
-    importedPackageName: '@aws-amplify/backend',
+    postImportStatements: secretErrors,
   });
 }

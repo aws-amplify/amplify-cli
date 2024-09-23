@@ -2,6 +2,7 @@ import ts from 'typescript';
 import { getAccessPatterns } from './access';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTriggersProperty, Lambda } from '../function/lambda';
+import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 const factory = ts.factory;
 
 export type S3TriggerDefinition = Record<string, never>;
@@ -23,9 +24,15 @@ export interface StorageRenderParameters {
   storageIdentifier?: string;
   lambdas?: S3TriggerDefinition[];
   bucketEncryptionAlgorithm?: string;
+  dynamoDB?: string;
+  accelerateConfiguration?: BucketAccelerateStatus;
+  versioningConfiguration?: BucketVersioningStatus;
 }
 export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   const propertyAssignments: ts.PropertyAssignment[] = [];
+  const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
+  namedImports['@aws-amplify/backend'].add('defineStorage');
+  const triggers = storageParams.triggers || {};
 
   if (storageParams.storageIdentifier) {
     propertyAssignments.push(
@@ -48,15 +55,22 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
       ),
     );
   }
-  if (storageParams.triggers) {
-    propertyAssignments.push(createTriggersProperty(storageParams.triggers));
+  if (Object.keys(triggers).length) {
+    propertyAssignments.push(createTriggersProperty(triggers));
+    for (const value of Object.values(triggers)) {
+      const functionName = value.source.split('/')[3];
+      if (!namedImports[`./${functionName}/resource`]) {
+        namedImports[`./${functionName}/resource`] = new Set();
+      }
+      namedImports[`./${functionName}/resource`].add(functionName);
+    }
   }
   const storageArgs = factory.createObjectLiteralExpression(propertyAssignments);
   return renderResourceTsFile({
-    importedPackageName: '@aws-amplify/backend',
     backendFunctionConstruct: 'defineStorage',
     exportedVariableName: factory.createIdentifier('storage'),
     functionCallParameter: storageArgs,
     postImportStatements: groupsComment,
+    additionalImportedBackendIdentifiers: namedImports,
   });
 };

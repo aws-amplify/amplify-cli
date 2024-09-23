@@ -64,9 +64,6 @@ const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>)
   for (const key of Object.keys(passwordPolicy)) {
     const typedKey: keyof PasswordPolicyType = key as keyof PasswordPolicyType;
     if (passwordPolicy[typedKey] !== undefined) {
-      if (passwordPolicy[typedKey] === DEFAULT_PASSWORD_SETTINGS[typedKey]) {
-        continue;
-      }
       policyOverrides[passwordOverridePath(typedKey)] = passwordPolicy[typedKey];
     }
   }
@@ -78,12 +75,12 @@ const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> 
   Object.assign(userPoolOverrides, getPasswordPolicyOverrides(userPool.Policies?.PasswordPolicy ?? {}));
   if (userPool.Name) {
     const userNamePolicy: Partial<PolicyOverrides> = {
-      UserPoolName: userPool.Name,
+      userPoolName: userPool.Name,
     };
     Object.assign(userPoolOverrides, userNamePolicy);
   }
   if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
-    userPoolOverrides.UsernameAttributes = [];
+    userPoolOverrides.usernameAttributes = [];
   }
   return userPoolOverrides;
 };

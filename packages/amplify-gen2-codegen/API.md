@@ -4,6 +4,8 @@
 
 ```ts
 
+import { BucketAccelerateStatus } from '@aws-sdk/client-s3';
+import { BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { EnvironmentResponse } from '@aws-sdk/client-lambda';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
 import { Runtime } from '@aws-sdk/client-lambda';
@@ -219,15 +221,21 @@ export type StandardAttributes = Partial<Record<Attribute, StandardAttribute>>;
 // @public (undocumented)
 export interface StorageRenderParameters {
     // (undocumented)
+    accelerateConfiguration?: BucketAccelerateStatus;
+    // (undocumented)
     accessPatterns?: AccessPatterns;
     // (undocumented)
     bucketEncryptionAlgorithm?: string;
+    // (undocumented)
+    dynamoDB?: string;
     // (undocumented)
     lambdas?: S3TriggerDefinition[];
     // (undocumented)
     storageIdentifier?: string;
     // (undocumented)
     triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
+    // (undocumented)
+    versioningConfiguration?: BucketVersioningStatus;
 }
 
 // @public (undocumented)

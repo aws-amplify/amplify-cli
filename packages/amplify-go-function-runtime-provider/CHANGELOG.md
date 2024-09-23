@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.48-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.47...amplify-go-function-runtime-provider@2.3.48-gen2-migrations-test.0) (2024-09-23)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
 ## [2.3.47](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@2.3.46...amplify-go-function-runtime-provider@2.3.47) (2024-08-02)
 
 

@@ -5,6 +5,14 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
 import { StateManager } from '@aws-amplify/amplify-cli-core';
 
+interface AuthConfig {
+  dependsOn?: Array<{
+    category: string;
+    resourceName: string;
+  }>;
+  [key: string]: unknown;
+}
+
 export interface AppFunctionsDefinitionFetcher {
   getDefinition(): Promise<FunctionDefinition[] | undefined>;
 }
@@ -21,19 +29,17 @@ export class AppFunctionsDefinitionFetcher {
     assert(backendEnvironment?.stackName);
 
     const meta = this.stateManager.getMeta();
-    assert(meta);
+    const functions = meta?.function ?? {};
 
-    const functions = meta.function;
-
-    const auth = meta.auth;
-    const storageList = meta.storage;
+    const auth = meta?.auth;
+    const storageList = meta?.storage ?? {};
 
     const functionCategoryMap = new Map<string, string>();
 
-    const authValues: any = Object.values(auth)[0];
+    const authValues: AuthConfig | undefined = Object.values(auth)[0] as AuthConfig;
 
     // auth triggers
-    if (auth && authValues.dependsOn) {
+    if (auth && authValues && authValues.dependsOn) {
       for (const env of authValues.dependsOn) {
         if (env.category == 'function') {
           functionCategoryMap.set(env.resourceName, 'auth');
@@ -62,8 +68,6 @@ export class AppFunctionsDefinitionFetcher {
             functionCategoryMap.set(func, 'storage');
           }
         }
-      } else if (!functionCategoryMap.get(func)) {
-        functionCategoryMap.set(func, 'function');
       }
     });
 
@@ -76,7 +80,9 @@ export class AppFunctionsDefinitionFetcher {
       );
     });
 
-    const functionConfigurations = (await Promise.all(getFunctionPromises)).map((functionResponse) => functionResponse.Configuration!);
+    const functionConfigurations = (await Promise.all(getFunctionPromises))
+      .map((functionResponse) => functionResponse.Configuration ?? null)
+      .filter((config): config is NonNullable<typeof config> => config !== null);
 
     return getFunctionDefinition(functionConfigurations, functionCategoryMap);
   };

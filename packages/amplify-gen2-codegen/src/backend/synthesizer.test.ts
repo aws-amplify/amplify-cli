@@ -26,7 +26,16 @@ describe('BackendRenderer', () => {
         'Policies.PasswordPolicy.RequireLowercase': true,
         'Policies.PasswordPolicy.RequireUppercase': false,
         'Policies.PasswordPolicy.TemporaryPasswordValidityDays': 10,
-        UserPoolName: 'Test_Name',
+        userPoolName: 'Test_Name',
+      };
+      const mappedPolicyType: Record<string, string> = {
+        MinimumLength: 'minimumLength',
+        RequireUppercase: 'requireUppercase',
+        RequireLowercase: 'requireLowercase',
+        RequireNumbers: 'requireNumbers',
+        RequireSymbols: 'requireSymbols',
+        PasswordHistorySize: 'passwordHistorySize',
+        TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
       };
       for (const [key, value] of Object.entries(testCases)) {
         it(`renders override for ${key}`, () => {
@@ -40,10 +49,17 @@ describe('BackendRenderer', () => {
             },
           });
           const output = printNodeArray(rendered);
-          if (typeof value === 'string') {
-            assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", "${value}")`));
-          } else {
-            assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", ${value})`));
+          if (key.includes('PasswordPolicy')) {
+            const policyKey = key.split('.')[2];
+            if (value !== undefined && policyKey in mappedPolicyType) {
+              if (typeof value === 'string') assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:"${value}"}}`));
+            } else if (typeof value === 'number') {
+              assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:${value}}}`));
+            } else if (typeof value === 'boolean') {
+              assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:${value}}}`));
+            }
+          } else if (value) {
+            assert(output.includes(`cfnUserPool.${key} = "${value}"`));
           }
         });
       }
@@ -57,10 +73,17 @@ describe('BackendRenderer', () => {
         });
         const output = printNodeArray(rendered);
         for (const [key, value] of Object.entries(testCases)) {
-          if (typeof value === 'string') {
-            assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", "${value}")`));
-          } else {
-            assert(output.includes(`cfnUserPool.addPropertyOverride("${key}", ${value})`));
+          if (key.includes('PasswordPolicy')) {
+            const policyKey = key.split('.')[2];
+            if (value !== undefined && policyKey in mappedPolicyType) {
+              if (typeof value === 'string') assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:"${value}"}}`));
+            } else if (typeof value === 'number') {
+              assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:${value}}}`));
+            } else if (typeof value === 'boolean') {
+              assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:${value}}}`));
+            }
+          } else if (value) {
+            assert(output.includes(`cfnUserPool.${key} = "${value}"`));
           }
         }
       });
@@ -126,7 +149,7 @@ describe('BackendRenderer', () => {
         });
         it(`imports ${resource}`, () => {
           const renderer = new BackendSynthesizer();
-          const rendered = renderer.render({ [resource]: { importFrom } });
+          const rendered = renderer.render({ [resource]: { importFrom, hasS3Bucket: 'bucket_name' } });
           const source = printNodeArray(rendered);
           assert.match(source, importRegex);
         });
@@ -146,6 +169,7 @@ describe('BackendRenderer', () => {
         const rendered = renderer.render({
           storage: {
             importFrom: 'my-storage',
+            hasS3Bucket: 'bucket_name',
           },
         });
         const output = printNodeArray(rendered);
@@ -186,7 +210,7 @@ describe('BackendRenderer', () => {
         const storageImportLocation = 'storage/resource.ts';
         const renderer = new BackendSynthesizer();
         const rendered = renderer.render({
-          storage: { importFrom: storageImportLocation },
+          storage: { importFrom: storageImportLocation, hasS3Bucket: 'bucket_name' },
         });
         const output = printNodeArray(rendered);
         const regex = getImportRegex('storage', storageImportLocation);
