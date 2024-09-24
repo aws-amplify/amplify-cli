@@ -26,7 +26,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.13.0-gen1-migration-0924.0",
+    "@aws-amplify/amplify-category-api": "5.13.0-gen1-migration-0924.0",
     "@aws-amplify/amplify-cli-core": "4.4.0-gen2-migrations-test.0",
     "@aws-amplify/amplify-environment-parameters": "1.9.16-gen2-migrations-test.0",
     "fs-extra": "^8.1.0",
