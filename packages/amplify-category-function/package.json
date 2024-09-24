@@ -38,7 +38,7 @@
     "folder-hash": "^4.0.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
-    "graphql-transformer-core": "^8.2.13",
+    "graphql-transformer-core": "^8.2.14-gen1-migration-0924.0",
     "inquirer": "^7.3.3",
     "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",
