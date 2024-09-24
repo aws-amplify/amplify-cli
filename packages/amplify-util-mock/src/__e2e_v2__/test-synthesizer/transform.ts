@@ -23,6 +23,7 @@ export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersF
     replaceTableUponGsiUpdate: false,
     subscriptionsInheritPrimaryAuth: false,
     allowGen1Patterns: true,
+    enableGen2Migration: false,
   },
 };
 
