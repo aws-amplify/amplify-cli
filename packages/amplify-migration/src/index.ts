@@ -128,7 +128,7 @@ const unsupportedCategories = (): Map<string, string> => {
   unsupportedCategories.set('notifications', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/in-app-messaging/');
   unsupportedCategories.set('interactions', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/interactions/');
   unsupportedCategories.set('custom', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/custom-resources/');
-  unsupportedCategories.set('api', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/');
+  unsupportedCategories.set('rest api', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/');
 
   const meta = stateManager.getMeta();
   const categories = Object.keys(meta);
@@ -142,7 +142,7 @@ const unsupportedCategories = (): Map<string, string> => {
         Object.keys(apiList).forEach((api) => {
           const apiObj = apiList[api];
           if (apiObj.service == 'API Gateway') {
-            unsupportedCategoriesList.set(category, unsupportedCategories.get(category)!);
+            unsupportedCategoriesList.set('rest api', unsupportedCategories.get('rest api')!);
           }
         });
       }
