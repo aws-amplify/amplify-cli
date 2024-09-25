@@ -148,7 +148,7 @@ const unsupportedCategories = (): Map<string, string> => {
         });
       }
     } else {
-      if (unsupportedCategories.has(category)) {
+      if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
         unsupportedCategoriesList.set(category, unsupportedCategories.get(category)!);
       }
     }
