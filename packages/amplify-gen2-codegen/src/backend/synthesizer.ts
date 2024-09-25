@@ -37,9 +37,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
   };
-  unsupportedCategories?: {
-    categories?: Map<string, string>;
-  };
+  unsupportedCategories?: Map<string, string>;
 }
 
 export class BackendSynthesizer {
@@ -174,8 +172,8 @@ export class BackendSynthesizer {
 
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));
 
-    if (renderArgs.unsupportedCategories && renderArgs.unsupportedCategories.categories) {
-      const categories = renderArgs.unsupportedCategories.categories;
+    if (renderArgs.unsupportedCategories) {
+      const categories = renderArgs.unsupportedCategories;
 
       for (const [key, value] of categories) {
         if (key == 'custom') {

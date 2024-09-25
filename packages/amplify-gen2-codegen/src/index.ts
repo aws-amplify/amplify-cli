@@ -102,10 +102,8 @@ export const createGen2Renderer = ({
 
   const renderers: Renderer[] = [ensureOutputDir, ensureAmplifyDirectory, amplifyPackageJson, amplifyTsConfigJson, jsonRenderer];
 
-  if (unsupportedCategories && unsupportedCategories?.size >= 1) {
-    backendRenderOptions.unsupportedCategories = {
-      categories: unsupportedCategories,
-    };
+  if (unsupportedCategories && unsupportedCategories.size >= 1) {
+    backendRenderOptions.unsupportedCategories = unsupportedCategories;
   }
 
   if (functions && functions.length) {

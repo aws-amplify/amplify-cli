@@ -50,6 +50,7 @@
     "@aws-amplify/amplify-gen1-codegen-function-adapter": "0.1.0-gen2-migrations-test.0",
     "@aws-amplify/amplify-gen1-codegen-storage-adapter": "0.1.0-gen2-migrations-test.0",
     "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migrations-test.0",
+    "@aws-amplify/cli-internal": "12.13.0-gen2-migration-test.0",
     "@aws-sdk/client-amplify": "^3.592.0",
     "@aws-sdk/client-amplifybackend": "^3.592.0",
     "@aws-sdk/client-cloudformation": "^3.592.0",

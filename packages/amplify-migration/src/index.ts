@@ -121,14 +121,15 @@ const resolveAppId = (): string => {
 
 const unsupportedCategories = (): Map<string, string> => {
   const unsupportedCategories = new Map<string, string>();
+  const urlPrefix = 'https://docs.amplify.aws/react/build-a-backend/add-aws-services';
 
-  unsupportedCategories.set('geo', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/geo/');
-  unsupportedCategories.set('analytics', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/analytics/');
-  unsupportedCategories.set('predictions', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/predictions/');
-  unsupportedCategories.set('notifications', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/in-app-messaging/');
-  unsupportedCategories.set('interactions', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/interactions/');
-  unsupportedCategories.set('custom', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/custom-resources/');
-  unsupportedCategories.set('rest api', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/');
+  unsupportedCategories.set('geo', `${urlPrefix}/geo/`);
+  unsupportedCategories.set('analytics', `${urlPrefix}/analytics/`);
+  unsupportedCategories.set('predictions', `${urlPrefix}/predictions/`);
+  unsupportedCategories.set('notifications', `${urlPrefix}/in-app-messaging/`);
+  unsupportedCategories.set('interactions', `${urlPrefix}/interactions/`);
+  unsupportedCategories.set('custom', `${urlPrefix}/custom-resources/`);
+  unsupportedCategories.set('rest api', `${urlPrefix}/rest-api/`);
 
   const meta = stateManager.getMeta();
   const categories = Object.keys(meta);

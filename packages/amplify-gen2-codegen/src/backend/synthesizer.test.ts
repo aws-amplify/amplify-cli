@@ -140,13 +140,11 @@ describe('BackendRenderer', () => {
     it('Renders error statement if unsupported categories are present', () => {
       const renderer = new BackendSynthesizer();
       const rendered = renderer.render({
-        unsupportedCategories: {
-          categories: new Map([
-            ['rest api', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/'],
-            ['geo', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/geo/'],
-            ['predictions', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/predictions/'],
-          ]),
-        },
+        unsupportedCategories: new Map([
+          ['rest api', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/'],
+          ['geo', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/geo/'],
+          ['predictions', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/predictions/'],
+        ]),
       });
       const output = printNodeArray(rendered);
       assert(
