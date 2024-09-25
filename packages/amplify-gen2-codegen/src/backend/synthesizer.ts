@@ -37,6 +37,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
   };
+  unsupportedCategories?: Map<string, string>;
 }
 
 export class BackendSynthesizer {
@@ -114,6 +115,7 @@ export class BackendSynthesizer {
     const backendFunctionIdentifier = factory.createIdentifier('defineBackend');
 
     const imports = [];
+    const errors: ts.CallExpression[] = [];
     const defineBackendProperties = [];
     const nodes = [];
 
@@ -169,6 +171,26 @@ export class BackendSynthesizer {
     }
 
     imports.push(this.createImportStatement([backendFunctionIdentifier], '@aws-amplify/backend'));
+
+    if (renderArgs.unsupportedCategories) {
+      const categories = renderArgs.unsupportedCategories;
+
+      for (const [key, value] of categories) {
+        if (key == 'custom') {
+          errors.push(
+            factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+              factory.createStringLiteral(`Category ${key} has changed, learn more ${value}`),
+            ]),
+          );
+        } else {
+          errors.push(
+            factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+              factory.createStringLiteral(`Category ${key} is unsupported, please follow ${value}`),
+            ]),
+          );
+        }
+      }
+    }
 
     const callBackendFn = this.defineBackendCall(backendFunctionIdentifier, defineBackendProperties);
     const backendVariable = factory.createVariableDeclaration('backend', undefined, undefined, callBackendFn);
@@ -323,6 +345,6 @@ export class BackendSynthesizer {
         ),
       );
     }
-    return factory.createNodeArray([...imports, backendStatement, ...nodes], true);
+    return factory.createNodeArray([...imports, ...errors, backendStatement, ...nodes], true);
   }
 }
