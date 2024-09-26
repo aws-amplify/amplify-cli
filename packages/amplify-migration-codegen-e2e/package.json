@@ -1,10 +1,10 @@
 {
   "name": "@aws-amplify/amplify-migration-e2e",
   "private": true,
-  "version": "0.1.0-gen2-migrations-test.0",
+  "version": "0.1.0-gen2-migration-test-alpha.0",
   "main": "index.js",
   "dependencies": {
-    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migrations-test.0"
+    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migration-test-alpha.0"
   },
   "devDependencies": {
     "jest": "^29.5.0",

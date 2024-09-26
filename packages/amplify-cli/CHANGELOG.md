@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.13.0-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migration-test.0...@aws-amplify/cli-internal@12.13.0-gen2-migration-test-alpha.0) (2024-09-26)
+
+
+### Bug Fixes
+
+* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
+
+
+
+
+
 # [12.13.0-gen2-migration-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migrations-test.0...@aws-amplify/cli-internal@12.13.0-gen2-migration-test.0) (2024-09-23)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

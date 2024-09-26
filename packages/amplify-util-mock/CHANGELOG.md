@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.7-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.7-gen2-migrations-test.0...@aws-amplify/amplify-util-mock@5.10.7-gen2-migration-test-alpha.0) (2024-09-26)
+
+
+### Bug Fixes
+
+* missed some pins ([5543630](https://github.com/aws-amplify/amplify-cli/commit/554363023bcf5f874fc485c6a9f566df9b504b77))
+
+
+
+
+
 ## [5.10.7-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.6...@aws-amplify/amplify-util-mock@5.10.7-gen2-migrations-test.0) (2024-09-23)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

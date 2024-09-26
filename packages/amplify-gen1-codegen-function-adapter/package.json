@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-gen1-codegen-function-adapter",
-  "version": "0.1.0-gen2-migrations-test.0",
+  "version": "0.1.0-gen2-migration-test-alpha.0",
   "type": "commonjs",
   "main": "lib/index.js",
   "devDependencies": {
@@ -8,7 +8,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migrations-test.0",
+    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migration-test-alpha.0",
     "@aws-sdk/client-lambda": "^3.637.0"
   },
   "jest": {
