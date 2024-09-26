@@ -23,19 +23,19 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
       tableMappingProperties.push(
         factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
       );
-      tableMappingProperties.push(
-        factory.createPropertyAssignment(
-          factory.createIdentifier(importedModelsKey),
-          factory.createArrayLiteralExpression(
-            Object.keys(dataDefinition.tableMapping).map((tableName) => factory.createStringLiteral(tableName)),
-          ),
-        ),
-      );
     }
     dataRenderProperties.push(
       factory.createPropertyAssignment(
         importedAmplifyDynamoDBTableMapKeyName,
         factory.createObjectLiteralExpression(tableMappingProperties),
+      ),
+    );
+    dataRenderProperties.push(
+      factory.createPropertyAssignment(
+        importedModelsKey,
+        factory.createArrayLiteralExpression(
+          Object.keys(dataDefinition.tableMapping).map((tableName) => factory.createStringLiteral(tableName)),
+        ),
       ),
     );
   }
