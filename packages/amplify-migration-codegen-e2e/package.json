@@ -4,10 +4,15 @@
   "version": "0.1.0-gen2-migration-test-alpha.0",
   "main": "index.js",
   "dependencies": {
-    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migration-test-alpha.0"
+    "@aws-amplify/amplify-cli-core": "4.4.0-gen2-migration-test-alpha.0",
+    "@aws-amplify/amplify-e2e-core": "5.5.11-gen2-migration-test-alpha.0",
+    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migration-test-alpha.0",
+    "@aws-sdk/client-cloudcontrol": "^3.658.1",
+    "fs-extra": "^8.1.0"
   },
   "devDependencies": {
     "jest": "^29.5.0",
+    "ts-node": "^10.4.0",
     "typescript": "^5.4.5"
   },
   "jest": {
@@ -39,7 +44,8 @@
   "scripts": {
     "build": "exit 0",
     "pretest": "mkdir -p coverage",
-    "test": "jest --logHeapUsage"
+    "e2e-migration": "yarn setup-profile && jest --verbose --config=jest.config.js",
+    "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "author": "",
   "license": "Apache-2.0",
