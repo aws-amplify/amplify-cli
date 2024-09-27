@@ -391,7 +391,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-cli-core@4.4.0-gen2-migration-test-alpha.0, @aws-amplify/amplify-cli-core@workspace:^, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
+"@aws-amplify/amplify-cli-core@4.4.0-gen2-migration-test-alpha.0, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core"
   dependencies:
@@ -835,9 +835,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-migration-e2e@workspace:packages/amplify-migration-codegen-e2e"
   dependencies:
-    "@aws-amplify/amplify-cli-core": "workspace:^"
+    "@aws-amplify/amplify-cli-core": 4.4.0-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-e2e-core": 5.5.11-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-gen2-codegen": 0.1.0-gen2-migration-test-alpha.0
     "@aws-sdk/client-cloudcontrol": ^3.658.1
+    fs-extra: ^8.1.0
     jest: ^29.5.0
     ts-node: ^10.4.0
     typescript: ^5.4.5
