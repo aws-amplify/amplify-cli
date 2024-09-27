@@ -134,7 +134,7 @@ function removeNestedJsonKeys<T extends Record<string, unknown>>(obj: T, keysToR
       current = current[part] as Record<string, unknown>;
     }
     const lastPart = parts[parts.length - 1];
-    if (current && current !== null && lastPart in current) {
+    if (current && lastPart in current) {
       delete current[lastPart];
     }
   });
