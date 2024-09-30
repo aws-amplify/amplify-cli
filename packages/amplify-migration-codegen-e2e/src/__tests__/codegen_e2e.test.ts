@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { createNewProjectDir } from '@aws-amplify/amplify-e2e-core';
-import { cleanupProjects, setupGen1Project, assertGen1Setup, migrateCodegen, deployGen2Project, assertGen2Resources } from '../helpers';
+import { cleanupProjects, setupGen1Project, assertGen1Setup, migrateCodegen, deployGen2Sandbox, assertUserPoolResource } from '../helpers';
 
 void describe('Migration Codegen E2E tests', () => {
   let projRoot: string;
@@ -17,7 +17,7 @@ void describe('Migration Codegen E2E tests', () => {
     await setupGen1Project(projRoot, 'CodegenTest');
     const { gen1UserPoolId, gen1Region } = await assertGen1Setup(projRoot);
     await migrateCodegen(projRoot);
-    await deployGen2Project(projRoot);
-    await assertGen2Resources(projRoot, gen1UserPoolId, gen1Region);
+    await deployGen2Sandbox(projRoot);
+    await assertUserPoolResource(projRoot, gen1UserPoolId, gen1Region);
   });
 });

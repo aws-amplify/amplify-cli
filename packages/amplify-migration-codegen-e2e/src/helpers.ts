@@ -16,7 +16,7 @@ import { CloudControlClient, GetResourceCommand } from '@aws-sdk/client-cloudcon
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
-export async function getResourceDetails(typeName: string, identifier: string, region: string) {
+async function getResourceDetails(typeName: string, identifier: string, region: string) {
   const client = new CloudControlClient({ region });
   const command = new GetResourceCommand({
     TypeName: typeName,
@@ -32,7 +32,7 @@ export async function getResourceDetails(typeName: string, identifier: string, r
   }
 }
 
-export function deployGen2CDK(cwd: string) {
+function runGen2SandboxCommand(cwd: string) {
   try {
     npmInstall(cwd);
   } catch (error) {
@@ -47,7 +47,7 @@ export function deployGen2CDK(cwd: string) {
   }).runAsync();
 }
 
-export function migrateCommand(cwd: string) {
+function runCodegenCommand(cwd: string) {
   return spawn(getNpxPath(), ['@aws-amplify/migrate', 'to-gen-2', 'generate-code'], {
     cwd,
     stripColors: true,
@@ -56,7 +56,7 @@ export function migrateCommand(cwd: string) {
   }).runAsync();
 }
 
-export function deleteGen2Project(cwd: string) {
+function deleteGen2Sandbox(cwd: string) {
   return spawn(getNpxPath(), ['ampx', 'sandbox', 'delete'], {
     cwd,
     stripColors: true,
@@ -84,18 +84,15 @@ export async function assertGen1Setup(projRoot: string) {
   return { gen1UserPoolId, gen1Region };
 }
 
-export async function assertGen2Resources(projRoot: string, gen1UserPoolId: string, gen1Region: string) {
+export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, gen1Region: string) {
   let gen1Resource = await getResourceDetails('AWS::Cognito::UserPool', gen1UserPoolId, gen1Region);
+  gen1Resource = removeNestedJsonKeys(gen1Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
   gen1Resource = removeNestedJsonKeys(gen1Resource, [
     'UserPoolTags',
     'VerificationMessageTemplate.EmailMessage',
     'VerificationMessageTemplate.EmailSubject',
-    'ProviderURL',
-    'ProviderName',
-    'UserPoolId',
     'EmailVerificationSubject',
-    'Arn',
     'AccountRecoverySetting',
     'EmailVerificationMessage',
   ]);
@@ -103,6 +100,7 @@ export async function assertGen2Resources(projRoot: string, gen1UserPoolId: stri
   const gen2UserPoolId = gen2Meta.auth.user_pool_id;
   const gen2Region = gen2Meta.auth.aws_region;
   let gen2Resource = await getResourceDetails('AWS::Cognito::UserPool', gen2UserPoolId, gen2Region);
+  gen2Resource = removeNestedJsonKeys(gen2Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
   gen2Resource = removeNestedJsonKeys(gen2Resource, [
     'UserPoolTags',
@@ -110,11 +108,7 @@ export async function assertGen2Resources(projRoot: string, gen1UserPoolId: stri
     'VerificationMessageTemplate.SmsMessage',
     'VerificationMessageTemplate.EmailSubject',
     'SmsVerificationMessage',
-    'ProviderURL',
-    'ProviderName',
-    'UserPoolId',
     'EmailVerificationSubject',
-    'Arn',
     'AccountRecoverySetting',
     'EmailVerificationMessage',
   ]);
@@ -141,23 +135,23 @@ function removeNestedJsonKeys<T extends Record<string, unknown>>(obj: T, keysToR
   return result;
 }
 
-export const getProjectOutputsPath = (projectRoot: string) => path.join(projectRoot, 'amplify_outputs.json');
+const getProjectOutputsPath = (projectRoot: string) => path.join(projectRoot, 'amplify_outputs.json');
 
-export const getProjectOutputs = (projectRoot: string): $TSAny => {
+const getProjectOutputs = (projectRoot: string): $TSAny => {
   const metaFilePath: string = getProjectOutputsPath(projectRoot);
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 };
 
 export async function migrateCodegen(projRoot: string) {
-  await assert.doesNotReject(migrateCommand(projRoot), 'Codegen failed');
+  await assert.doesNotReject(runCodegenCommand(projRoot), 'Codegen failed');
 }
 
-export async function deployGen2Project(projRoot: string) {
-  await assert.doesNotReject(deployGen2CDK(projRoot), 'Gen2 CDK deployment failed');
+export async function deployGen2Sandbox(projRoot: string) {
+  await assert.doesNotReject(runGen2SandboxCommand(projRoot), 'Gen2 CDK deployment failed');
 }
 
 export async function cleanupProjects(cwd: string) {
   await deleteGen1Project(path.join(cwd, '.amplify', 'migration'));
-  await deleteGen2Project(cwd);
+  await deleteGen2Sandbox(cwd);
   deleteProjectDir(cwd);
 }
