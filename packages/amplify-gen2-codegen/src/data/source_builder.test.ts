@@ -27,5 +27,13 @@ describe('Data Category code generation', () => {
       const array = source.match(/importedModels:\s+\[(.*?)\]/);
       assert.deepEqual(tables, array?.[1].replaceAll('"', '').split(', '));
     });
+    it('has each each key in defineData', () => {
+      const tableMapping = { Todo: 'my-todo-mapping' };
+      const source = printNodeArray(generateDataSource({ tableMapping }));
+      assert.match(
+        source,
+        /defineData\({\n\s+importedAmplifyDynamoDBTableMap: \{\s+Todo: ['"]my-todo-mapping['"] },\n\s+importedModels:\s+\[.*?\],\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
+      );
+    });
   });
 });
