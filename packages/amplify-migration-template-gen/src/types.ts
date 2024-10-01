@@ -14,22 +14,22 @@ export enum CFNFunction {
 }
 
 export type CFNConditionFunction =
-  | { [CFNFunction.Equals]: [any, any] }
-  | { [CFNFunction.Not]: [any] }
+  | { [CFNFunction.Equals]: [string | object, string | object] }
+  | { [CFNFunction.Not]: [string | object] }
   | {
-      [CFNFunction.Or]: [any, any];
+      [CFNFunction.Or]: [string | object, string | object];
     }
-  | { [CFNFunction.And]: [any, any] };
+  | { [CFNFunction.And]: [string | object, string | object] };
 
 export interface CFNResource {
   Type: string;
-  Properties: Record<string, any>;
+  Properties: Record<string, string | number | object>;
   DependsOn?: string[];
 }
 
 export interface CFNParameter {
   Type: string;
-  Default?: any;
+  Default?: string;
   Description?: string;
   NoEcho?: boolean;
 }
@@ -85,7 +85,5 @@ export enum CFN_S3_TYPE {
 export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE;
 
 export type AWS_RESOURCE_ATTRIBUTES = 'Arn';
-
-export type CFN_USER_POOL_DOMAIN_PROPS = { UserPoolId: string; Domain: string };
 
 export type CFN_CATEGORY_TYPE = CFN_AUTH_TYPE | CFN_S3_TYPE;
