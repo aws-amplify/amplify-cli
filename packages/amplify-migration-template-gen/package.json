@@ -1,0 +1,49 @@
+{
+  "name": "@aws-amplify/migrate-template-gen",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "lib/index.js",
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.592.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/__tests__/"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/templates/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "pretest": "mkdir -p coverage",
+    "test": "jest --logHeapUsage",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "description": ""
+}
