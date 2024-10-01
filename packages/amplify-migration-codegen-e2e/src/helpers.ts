@@ -6,13 +6,15 @@ import {
   amplifyPushAuth,
   getProjectMeta,
   getUserPool,
+  npmInstall,
+  getNpxPath,
+  nspawn as spawn,
 } from '@aws-amplify/amplify-e2e-core';
-import { npmInstall, getNpxPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import path from 'node:path';
-import assert from 'node:assert';
 import { CloudControlClient, GetResourceCommand } from '@aws-sdk/client-cloudcontrol';
+import { unset } from 'lodash';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
@@ -22,23 +24,12 @@ async function getResourceDetails(typeName: string, identifier: string, region: 
     TypeName: typeName,
     Identifier: identifier,
   });
-
-  try {
-    const response = await client.send(command);
-    return JSON.parse(response.ResourceDescription.Properties);
-  } catch (error) {
-    console.error('Error fetching resource details:', error);
-    throw error;
-  }
+  const response = await client.send(command);
+  return JSON.parse(response.ResourceDescription.Properties);
 }
 
-function runGen2SandboxCommand(cwd: string) {
-  try {
-    npmInstall(cwd);
-  } catch (error) {
-    console.error('Failed to install dependencies:', error);
-    throw error;
-  }
+export function runGen2SandboxCommand(cwd: string) {
+  npmInstall(cwd);
   return spawn(getNpxPath(), ['ampx', 'sandbox', '--once'], {
     cwd,
     stripColors: true,
@@ -47,7 +38,7 @@ function runGen2SandboxCommand(cwd: string) {
   }).runAsync();
 }
 
-function runCodegenCommand(cwd: string) {
+export function runCodegenCommand(cwd: string) {
   return spawn(getNpxPath(), ['@aws-amplify/migrate', 'to-gen-2', 'generate-code'], {
     cwd,
     stripColors: true,
@@ -69,7 +60,7 @@ function deleteGen2Sandbox(cwd: string) {
     .runAsync();
 }
 
-export async function setupGen1Project(projRoot: string, projectName: string) {
+export async function setupAndPushGen1Project(projRoot: string, projectName: string) {
   await initJSProjectWithProfile(projRoot, { name: projectName, disableAmplifyAppCreation: false });
   await addAuthWithDefault(projRoot);
   await amplifyPushAuth(projRoot);
@@ -85,10 +76,10 @@ export async function assertGen1Setup(projRoot: string) {
 }
 
 export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, gen1Region: string) {
-  let gen1Resource = await getResourceDetails('AWS::Cognito::UserPool', gen1UserPoolId, gen1Region);
-  gen1Resource = removeNestedJsonKeys(gen1Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn']);
+  const gen1Resource = await getResourceDetails('AWS::Cognito::UserPool', gen1UserPoolId, gen1Region);
+  removeProperties(gen1Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
-  gen1Resource = removeNestedJsonKeys(gen1Resource, [
+  removeProperties(gen1Resource, [
     'UserPoolTags',
     'VerificationMessageTemplate.EmailMessage',
     'VerificationMessageTemplate.EmailSubject',
@@ -99,10 +90,10 @@ export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: s
   const gen2Meta = getProjectOutputs(projRoot);
   const gen2UserPoolId = gen2Meta.auth.user_pool_id;
   const gen2Region = gen2Meta.auth.aws_region;
-  let gen2Resource = await getResourceDetails('AWS::Cognito::UserPool', gen2UserPoolId, gen2Region);
-  gen2Resource = removeNestedJsonKeys(gen2Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn']);
+  const gen2Resource = await getResourceDetails('AWS::Cognito::UserPool', gen2UserPoolId, gen2Region);
+  removeProperties(gen2Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
-  gen2Resource = removeNestedJsonKeys(gen2Resource, [
+  removeProperties(gen2Resource, [
     'UserPoolTags',
     'VerificationMessageTemplate.EmailMessage',
     'VerificationMessageTemplate.SmsMessage',
@@ -115,24 +106,8 @@ export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: s
   expect(gen2Resource).toEqual(gen1Resource);
 }
 
-function removeNestedJsonKeys<T extends Record<string, unknown>>(obj: T, keysToRemove: string[]): T {
-  const result = { ...obj };
-  keysToRemove.forEach((path) => {
-    const parts = path.split('.');
-    let current: Record<string, unknown> = result;
-    for (let i = 0; i < parts.length - 1; i++) {
-      const part = parts[i];
-      if (current[part] === undefined || current[part] === null) {
-        return; // Path doesn't exist, nothing to delete
-      }
-      current = current[part] as Record<string, unknown>;
-    }
-    const lastPart = parts[parts.length - 1];
-    if (current && lastPart in current) {
-      delete current[lastPart];
-    }
-  });
-  return result;
+function removeProperties(obj: Record<string, unknown>, propertiesToRemove: string[]) {
+  propertiesToRemove.forEach((prop) => unset(obj, prop));
 }
 
 const getProjectOutputsPath = (projectRoot: string) => path.join(projectRoot, 'amplify_outputs.json');
@@ -141,14 +116,6 @@ const getProjectOutputs = (projectRoot: string): $TSAny => {
   const metaFilePath: string = getProjectOutputsPath(projectRoot);
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 };
-
-export async function migrateCodegen(projRoot: string) {
-  await assert.doesNotReject(runCodegenCommand(projRoot), 'Codegen failed');
-}
-
-export async function deployGen2Sandbox(projRoot: string) {
-  await assert.doesNotReject(runGen2SandboxCommand(projRoot), 'Gen2 CDK deployment failed');
-}
 
 export async function cleanupProjects(cwd: string) {
   await deleteGen1Project(path.join(cwd, '.amplify', 'migration'));

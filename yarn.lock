@@ -841,6 +841,7 @@ __metadata:
     "@aws-sdk/client-cloudcontrol": ^3.658.1
     fs-extra: ^8.1.0
     jest: ^29.5.0
+    lodash: ^4.17.21
     ts-node: ^10.4.0
     typescript: ^5.4.5
   languageName: unknown
