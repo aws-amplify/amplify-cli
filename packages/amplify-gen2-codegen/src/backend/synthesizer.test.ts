@@ -136,6 +136,34 @@ describe('BackendRenderer', () => {
       assert(!output.includes('cfnUserPoolClient'));
     });
   });
+  describe('errors for unsupported categories', () => {
+    it('Renders error statement if unsupported categories are present', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        unsupportedCategories: new Map([
+          ['rest api', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/'],
+          ['geo', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/geo/'],
+          ['predictions', 'https://docs.amplify.aws/react/build-a-backend/add-aws-services/predictions/'],
+        ]),
+      });
+      const output = printNodeArray(rendered);
+      assert(
+        output.includes(
+          'throw new Error("Category rest api is unsupported, please follow https://docs.amplify.aws/react/build-a-backend/add-aws-services/rest-api/")',
+        ),
+      );
+      assert(
+        output.includes(
+          'throw new Error("Category geo is unsupported, please follow https://docs.amplify.aws/react/build-a-backend/add-aws-services/geo/")',
+        ),
+      );
+      assert(
+        output.includes(
+          'throw new Error("Category predictions is unsupported, please follow https://docs.amplify.aws/react/build-a-backend/add-aws-services/predictions/")',
+        ),
+      );
+    });
+  });
   describe('imports', () => {
     for (const resource of ['storage', 'data', 'auth']) {
       describe(resource, () => {

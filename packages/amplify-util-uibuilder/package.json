@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.14.13-gen2-migrations-test.0",
+  "version": "1.14.13-gen2-migration-test-alpha.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -14,8 +14,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "^5.12.5",
-    "@aws-amplify/amplify-cli-core": "4.4.0-gen2-migrations-test.0",
+    "@aws-amplify/amplify-category-api": "5.13.0-gen1-migration-0924.0",
+    "@aws-amplify/amplify-cli-core": "4.4.0-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "@aws-amplify/codegen-ui": "2.14.2",
     "@aws-amplify/codegen-ui-react": "2.14.2",

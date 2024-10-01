@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-gen2-migration-test.0...@aws-amplify/migrate@0.1.0-gen2-migration-test-alpha.0) (2024-09-26)
+
+
+### Bug Fixes
+
+* check for empty objects ([c3f3a58](https://github.com/aws-amplify/amplify-cli/commit/c3f3a58ec1095b7051e701aa4f9e94ce0e45513a))
+
+
+### Features
+
+* add error for unsupported categories ([a22772d](https://github.com/aws-amplify/amplify-cli/commit/a22772d54c65ff59dffd5721e17ec4501c16d759))
+* unsupported categories codegen ([94552fd](https://github.com/aws-amplify/amplify-cli/commit/94552fdeaca3ffdede0182adbef9a37885bff621))
+* unsupported categories codegen ([1e8d175](https://github.com/aws-amplify/amplify-cli/commit/1e8d17585157a460ae8cf1f53546b270893e2b99))
+
+
+
+
+
+# [0.1.0-gen2-migration-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-gen2-migrations-test.0...@aws-amplify/migrate@0.1.0-gen2-migration-test.0) (2024-09-23)
+
+
+### Bug Fixes
+
+* **migrate:** add README ([51b0d66](https://github.com/aws-amplify/amplify-cli/commit/51b0d666292ae766b7b36ec3f171cb0f281674fc))
+
+
+
+
+
 # 0.1.0-gen2-migrations-test.0 (2024-09-23)
 
 

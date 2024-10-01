@@ -63,6 +63,7 @@ const generateGen2Code = async ({
     storage: await storageDefinitionFetcher.getDefinition(),
     data: await dataDefinitionFetcher.getDefinition(),
     functions: await functionsDefinitionFetcher.getDefinition(),
+    unsupportedCategories: unsupportedCategories(),
   };
 
   const pipeline = createGen2Renderer(gen2RenderOptions);
@@ -118,6 +119,44 @@ const resolveAppId = (): string => {
   return meta?.providers?.awscloudformation?.AmplifyAppId;
 };
 
+const unsupportedCategories = (): Map<string, string> => {
+  const unsupportedCategories = new Map<string, string>();
+  const urlPrefix = 'https://docs.amplify.aws/react/build-a-backend/add-aws-services';
+
+  unsupportedCategories.set('geo', `${urlPrefix}/geo/`);
+  unsupportedCategories.set('analytics', `${urlPrefix}/analytics/`);
+  unsupportedCategories.set('predictions', `${urlPrefix}/predictions/`);
+  unsupportedCategories.set('notifications', `${urlPrefix}/in-app-messaging/`);
+  unsupportedCategories.set('interactions', `${urlPrefix}/interactions/`);
+  unsupportedCategories.set('custom', `${urlPrefix}/custom-resources/`);
+  unsupportedCategories.set('rest api', `${urlPrefix}/rest-api/`);
+
+  const meta = stateManager.getMeta();
+  const categories = Object.keys(meta);
+
+  const unsupportedCategoriesList = new Map<string, string>();
+
+  categories.forEach((category) => {
+    if (category == 'api') {
+      const apiList = meta?.api;
+      if (apiList) {
+        Object.keys(apiList).forEach((api) => {
+          const apiObj = apiList[api];
+          if (apiObj.service == 'API Gateway') {
+            unsupportedCategoriesList.set('rest api', unsupportedCategories.get('rest api')!);
+          }
+        });
+      }
+    } else {
+      if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
+        unsupportedCategoriesList.set(category, unsupportedCategories.get(category)!);
+      }
+    }
+  });
+
+  return unsupportedCategoriesList;
+};
+
 export async function execute() {
   const amplifyClient = new AmplifyClient();
   const s3Client = new S3Client();
@@ -132,6 +171,7 @@ export async function execute() {
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
   const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
+
   await generateGen2Code({
     outputDirectory: TEMP_GEN_2_OUTPUT_DIR,
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
