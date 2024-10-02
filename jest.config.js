@@ -11,6 +11,7 @@ module.exports = {
     'packages/amplify-e2e-core/',
     'packages/amplify-e2e-tests/',
     'packages/amplify-console-integration-tests/',
+    'packages/amplify-migration-codegen-e2e/src/__tests__',
     'packages/graphql-transformers-e2e-tests/',
     'packages/amplify-util-mock/src/__e2e__/',
     'packages/amplify-ui-tests/',
