@@ -13,18 +13,25 @@ export enum CFNFunction {
   If = 'Fn::If',
 }
 
+export type CFNIntrinsicFunctionCondition = {
+  Condition: string;
+};
+
+export type CFNConditionFunctionStatement = string | object | CFNConditionFunction | CFNIntrinsicFunctionCondition;
+
 export type CFNConditionFunction =
-  | { [CFNFunction.Equals]: [string | object, string | object] }
-  | { [CFNFunction.Not]: [string | object] }
+  | { [CFNFunction.Equals]: [CFNConditionFunctionStatement, CFNConditionFunctionStatement] }
+  | { [CFNFunction.Not]: [CFNConditionFunctionStatement] }
   | {
-      [CFNFunction.Or]: [string | object, string | object];
+      [CFNFunction.Or]: [CFNConditionFunctionStatement, CFNConditionFunctionStatement];
     }
-  | { [CFNFunction.And]: [string | object, string | object] };
+  | { [CFNFunction.And]: [CFNConditionFunctionStatement, CFNConditionFunctionStatement] };
 
 export interface CFNResource {
   Type: string;
   Properties: Record<string, string | number | object>;
   DependsOn?: string[];
+  Condition?: string;
 }
 
 export interface CFNParameter {
