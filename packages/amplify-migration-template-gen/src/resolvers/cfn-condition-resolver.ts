@@ -122,7 +122,6 @@ class CFNConditionResolver {
       default:
         throw new Error(`Invalid ${fnType} condition`);
     }
-    assert(result !== undefined);
     return result;
   }
 
