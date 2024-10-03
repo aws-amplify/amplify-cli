@@ -4,6 +4,7 @@ import assert from 'node:assert';
 
 class CfnParameterResolver {
   constructor(private readonly template: CFNTemplate) {}
+
   public resolve(parameters: Parameter[]) {
     if (!parameters.length) return this.template;
     let templateString = JSON.stringify(this.template);
