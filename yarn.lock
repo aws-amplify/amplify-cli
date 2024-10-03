@@ -815,7 +815,7 @@ __metadata:
     "@types/lodash.throttle": ^4.1.6
     "@types/node": ^18.16.0
     "@types/uuid": ^8.0.0
-    amplify-codegen: ^4.9.4
+    amplify-codegen: ^4.9.7
     archiver: ^5.3.0
     aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
@@ -902,7 +902,7 @@ __metadata:
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
-    amplify-codegen: ^4.9.4
+    amplify-codegen: ^4.9.7
     amplify-dynamodb-simulator: 2.9.19
     amplify-nodejs-function-runtime-provider: 2.5.24
     amplify-storage-simulator: 1.11.3
@@ -953,7 +953,7 @@ __metadata:
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
     "@types/tiny-async-pool": ^2.0.0
-    amplify-codegen: ^4.9.4
+    amplify-codegen: ^4.9.7
     aws-sdk: ^2.1464.0
     fs-extra: ^8.1.0
     node-fetch: ^2.6.7
@@ -1020,9 +1020,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/appsync-modelgen-plugin@npm:2.12.3, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
-  version: 2.12.3
-  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.12.3"
+"@aws-amplify/appsync-modelgen-plugin@npm:2.13.2, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
+  version: 2.13.2
+  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.13.2"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^1.18.8
     "@graphql-codegen/visitor-plugin-common": ^1.22.0
@@ -1036,7 +1036,7 @@ __metadata:
     ts-dedent: ^1.1.0
   peerDependencies:
     graphql: ^15.5.0
-  checksum: 6a072a3b219a58d2978bfef12837dacaaf2f0d69302753cbc2abf9acf38fdb355e8db0e936737e8927aa73052e345bd2387246928b41a3d194a695ce39520e16
+  checksum: b60c630f05390f69d59fa25ac9688259992eb2712a29c47fad63fb22418d1e284cbf1b4b0e7d05445e72f712f9a55bbc080568fade0f717303f9e31d042b2f0f
   languageName: node
   linkType: hard
 
@@ -1123,7 +1123,7 @@ __metadata:
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
-    amplify-codegen: ^4.9.4
+    amplify-codegen: ^4.9.7
     amplify-dotnet-function-runtime-provider: 2.0.29
     amplify-go-function-runtime-provider: 2.3.47
     amplify-headless-interface: 1.17.7
@@ -1335,11 +1335,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-generator@npm:0.4.4":
-  version: 0.4.4
-  resolution: "@aws-amplify/graphql-generator@npm:0.4.4"
+"@aws-amplify/graphql-generator@npm:0.4.7":
+  version: 0.4.7
+  resolution: "@aws-amplify/graphql-generator@npm:0.4.7"
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin": 2.12.3
+    "@aws-amplify/appsync-modelgen-plugin": 2.13.2
     "@aws-amplify/graphql-directives": ^1.0.1
     "@aws-amplify/graphql-docs-generator": 4.2.1
     "@aws-amplify/graphql-types-generator": 3.6.0
@@ -1347,7 +1347,7 @@ __metadata:
     "@graphql-tools/apollo-engine-loader": ^8.0.0
     graphql: ^15.5.0
     prettier: ^1.19.1
-  checksum: 370cc7ed2c8f871afa47100f559e1e8973eb74baf56dfe0bb370580b0c1b8113f18cbcb65a729b821547dd66989e35d1712b08ad21709468828d329ba01aa1b3
+  checksum: c6c4f01ac20f54c21311b67a1458076b7c966d4a1ceb071275def9995ddea402a32078b58243bf123d54adc588d0ffdbfa2e244468b96afbfdb5507b84b4b1cd
   languageName: node
   linkType: hard
 
@@ -13646,13 +13646,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-codegen@npm:^4.9.4":
-  version: 4.9.4
-  resolution: "amplify-codegen@npm:4.9.4"
+"amplify-codegen@npm:^4.9.7":
+  version: 4.9.7
+  resolution: "amplify-codegen@npm:4.9.7"
   dependencies:
     "@aws-amplify/graphql-directives": ^1.0.1
     "@aws-amplify/graphql-docs-generator": 4.2.1
-    "@aws-amplify/graphql-generator": 0.4.4
+    "@aws-amplify/graphql-generator": 0.4.7
     "@aws-amplify/graphql-types-generator": 3.6.0
     "@graphql-codegen/core": 2.6.6
     chalk: ^3.0.0
@@ -13670,7 +13670,7 @@ __metadata:
   peerDependencies:
     "@aws-amplify/amplify-cli-core": "*"
     graphql-transformer-core: ^8.0.0
-  checksum: 6a4e03e4ab4d1d82d1256e293dd7cbc7f84dc0d3bf6d7b3d5d27e1f5398a3d728f7d961d96cd93a2ee0d814d84c63bcf5d5ce112f7f33ce3c88f4a1f4680b271
+  checksum: b7ab8badf1d3694861cd892d4bb68e3df6cd02647774d1a797a1e302dd072cb0763235759da6cb489b4854b0e6696340019efc3dabfe0e819b5977388aae9108
   languageName: node
   linkType: hard
 
