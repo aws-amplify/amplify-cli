@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.12.7-12.12.7-hotfix-rc-20241004-attempt-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.12.6...@aws-amplify/cli@12.12.7-12.12.7-hotfix-rc-20241004-attempt-2.0) (2024-10-04)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [12.12.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.12.5...@aws-amplify/cli@12.12.6) (2024-08-06)
 
 **Note:** Version bump only for package @aws-amplify/cli

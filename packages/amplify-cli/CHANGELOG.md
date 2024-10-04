@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.12.7-12.12.7-hotfix-rc-20241004-attempt-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.6...@aws-amplify/cli-internal@12.12.7-12.12.7-hotfix-rc-20241004-attempt-2.0) (2024-10-04)
+
+
+### Bug Fixes
+
+* prevent init if local files belong to other app ([#13954](https://github.com/aws-amplify/amplify-cli/issues/13954)) ([1943fb7](https://github.com/aws-amplify/amplify-cli/commit/1943fb786813a030cb835a69213512b321e357f5))
+
+
+
+
+
 ## [12.12.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.5...@aws-amplify/cli-internal@12.12.6) (2024-08-06)
 
 

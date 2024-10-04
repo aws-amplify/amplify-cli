@@ -1073,7 +1073,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.12.6, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.12.7-12.12.7-hotfix-rc-20241004-attempt-2.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1173,7 +1173,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.12.6
+    "@aws-amplify/cli-internal": 12.12.7-12.12.7-hotfix-rc-20241004-attempt-2.0
     "@types/tar": ^6.1.1
     axios: ^1.6.7
     rimraf: ^3.0.2

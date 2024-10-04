@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "12.12.6",
+  "version": "12.12.7-12.12.7-hotfix-rc-20241004-attempt-2.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
