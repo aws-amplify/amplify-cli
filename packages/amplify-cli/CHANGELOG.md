@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.13.0-rc.7ab8faef1e2ce0c.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.6...@aws-amplify/cli-internal@12.13.0-rc.7ab8faef1e2ce0c.0) (2024-10-04)
+
+
+### Features
+
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
+
+
+
+
+
 ## [12.12.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.5...@aws-amplify/cli-internal@12.12.6) (2024-08-06)
 
 
