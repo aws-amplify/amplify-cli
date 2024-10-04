@@ -11,7 +11,7 @@ import {
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
-import { getPreInitSetup } from '../../init-steps/preInitSetup';
+import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
@@ -137,9 +137,7 @@ describe('amplify init:', () => {
           },
         },
       };
-      const recommendGen2 = true;
-      const step = getPreInitSetup(!recommendGen2);
-      await step(context as unknown as $TSContext);
+      await preInitSetup(context as unknown as $TSContext);
       expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
       expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });
       expect(execSync).toBeCalledWith('yarn install', { stdio: 'inherit' });

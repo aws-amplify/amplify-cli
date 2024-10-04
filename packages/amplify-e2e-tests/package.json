@@ -57,7 +57,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "node-fetch": "^2.6.7",
-    "node-pty": "^1.0.0",
+    "node-pty": "beta",
     "rimraf": "^3.0.0",
     "title-case": "^3.0.3",
     "upper-case": "^2.0.2",

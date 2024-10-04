@@ -37,11 +37,7 @@ describe('v12: amplify migration test auth', () => {
 
   describe('...uses user groups and role mappings', () => {
     it('...maintains correct role mapping when updated with latest version', async () => {
-      await initJSProjectWithProfile(projRoot1, {
-        name: 'authTest',
-        disableAmplifyAppCreation: false,
-        includeGen2RecommendationPrompt: false,
-      });
+      await initJSProjectWithProfile(projRoot1, { name: 'authTest', disableAmplifyAppCreation: false });
       await addAuthWithGroups(projRoot1);
       await amplifyPushAuth(projRoot1);
 

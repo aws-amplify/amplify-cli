@@ -3,19 +3,6 @@ import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { isNewProject } from './s0-analyzeProject';
-
-export const getPreInitSetup = (recommendGen2: boolean) => {
-  if (recommendGen2) {
-    return async (context) => {
-      await gen2Recommendation(context);
-      await preInitSetup(context);
-    };
-  } else {
-    return preInitSetup;
-  }
-};
 
 /**
  * Executes before init
@@ -32,42 +19,6 @@ export const preInitSetup = async (context: $TSContext): Promise<$TSContext> => 
     await installPackage();
     await setLocalEnvDefaults(context);
   }
-  return context;
-};
-
-/**
- * recommend using Gen 2 or continue with Gen 1.
- * ask for why they are using Gen 1 and store the answer in project-config
- */
-export const gen2Recommendation = async (context: $TSContext): Promise<$TSContext> => {
-  if (!isNewProject(context)) {
-    return context;
-  }
-  printer.warn(
-    'For new projects, we recommend starting with AWS Amplify Gen 2, our new code-first developer experience. Get started at https://docs.amplify.aws/react/start/quickstart/',
-  );
-
-  const continueWithGen1 = await prompter.confirmContinue('Do you want to continue with Amplify Gen 1?');
-
-  if (!continueWithGen1) {
-    process.exit(0);
-  }
-
-  const whyContinueWithGen1 = await prompter.pick(
-    'Why would you like to use Amplify Gen 1?',
-    [
-      'I am a current Gen 1 user',
-      'Gen 2 is missing features I need from Gen 1',
-      'I find the Gen 1 CLI easier to use',
-      'Prefer not to answer',
-    ],
-    { initial: 3 },
-  );
-
-  context.exeInfo.projectConfig = {
-    whyContinueWithGen1,
-  };
-
   return context;
 };
 

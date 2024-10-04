@@ -152,7 +152,6 @@ export const analyzeProject = async (context: $TSContext): Promise<$TSContext> =
 const setProjectConfig = (context: $TSContext, projectName: string): void => {
   context.exeInfo.isNewProject = isNewProject(context);
   context.exeInfo.projectConfig = {
-    ...context.exeInfo.projectConfig,
     projectName,
     version: amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION,
   };
@@ -326,7 +325,7 @@ const isNewEnv = (envName: string): boolean => {
   return !allEnvs.includes(envName);
 };
 
-export const isNewProject = (context: $TSContext): boolean => {
+const isNewProject = (context: $TSContext): boolean => {
   let newProject = true;
   const projectPath = process.cwd();
   const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);

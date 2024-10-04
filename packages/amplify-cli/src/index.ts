@@ -257,4 +257,5 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
   }
 };
 
-// bump version to 12.13.0
+// bump version to 12.12.0
+//

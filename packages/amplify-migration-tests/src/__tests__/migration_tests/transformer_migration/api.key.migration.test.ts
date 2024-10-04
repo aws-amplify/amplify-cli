@@ -28,7 +28,6 @@ describe('amplify key force push', () => {
     await initJSProjectWithProfile(projRoot, {
       name: 'gqlkeymigration',
       includeUsageDataPrompt: false,
-      includeGen2RecommendationPrompt: false,
     });
   });
 
