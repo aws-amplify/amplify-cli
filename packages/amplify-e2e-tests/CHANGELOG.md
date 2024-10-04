@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.12-hotfix-rc-20241004-attempt-3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.11...amplify-e2e-tests@4.9.12-hotfix-rc-20241004-attempt-3.0) (2024-10-04)
+
+
+### Bug Fixes
+
+* update message when expecting s3 to throw ([de45143](https://github.com/aws-amplify/amplify-cli/commit/de45143f83b92781c6412da9a49257ab5f94eeab))
+
+
+
+
+
 ## [4.9.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.10...amplify-e2e-tests@4.9.11) (2024-08-02)
 
 **Note:** Version bump only for package amplify-e2e-tests

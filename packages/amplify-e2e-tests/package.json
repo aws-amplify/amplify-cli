@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.9.11",
+  "version": "4.9.12-hotfix-rc-20241004-attempt-3.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "amplify-dynamodb-simulator": "2.9.19",
     "amplify-headless-interface": "1.17.7",
-    "amplify-storage-simulator": "1.11.3",
+    "amplify-storage-simulator": "1.11.4-hotfix-rc-20241004-attempt-3.0",
     "aws-amplify": "^5.3.16",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.129.0",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.4-hotfix-rc-20241004-attempt-3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.3...amplify-storage-simulator@1.11.4-hotfix-rc-20241004-attempt-3.0) (2024-10-04)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
 ## [1.11.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.1...amplify-storage-simulator@1.11.3) (2023-11-08)
 
 

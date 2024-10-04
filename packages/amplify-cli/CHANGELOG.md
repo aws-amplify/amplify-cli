@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.12.7-hotfix-rc-20241004-attempt-3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.6...@aws-amplify/cli-internal@12.12.7-hotfix-rc-20241004-attempt-3.0) (2024-10-04)
+
+
+### Bug Fixes
+
+* avoid copying node_modules folder for increased performance ([24c8f85](https://github.com/aws-amplify/amplify-cli/commit/24c8f853cbadb96659efe7befaf07be0c15b7794))
+* prevent init if local files belong to other app ([#13954](https://github.com/aws-amplify/amplify-cli/issues/13954)) ([d79627c](https://github.com/aws-amplify/amplify-cli/commit/d79627c816e46ebddde16bb1f870f6955a2aec22))
+
+
+
+
+
 ## [12.12.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.5...@aws-amplify/cli-internal@12.12.6) (2024-08-06)
 
 

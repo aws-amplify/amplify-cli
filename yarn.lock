@@ -100,7 +100,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-appsync-simulator@2.16.5, @aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator":
+"@aws-amplify/amplify-appsync-simulator@2.16.6-hotfix-rc-20241004-attempt-3.0, @aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator"
   dependencies:
@@ -334,14 +334,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.26.23, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@2.26.24-hotfix-rc-20241004-attempt-3.0, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.13
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-hotfix-rc-20241004-attempt-3.0
     aws-sdk: ^2.1464.0
     chalk: ^4.1.1
     fs-extra: ^8.1.0
@@ -795,7 +795,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-provider-awscloudformation@8.10.13, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
+"@aws-amplify/amplify-provider-awscloudformation@8.10.14-hotfix-rc-20241004-attempt-3.0, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation"
   dependencies:
@@ -868,18 +868,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-mock@5.10.6, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
+"@aws-amplify/amplify-util-mock@5.10.7-hotfix-rc-20241004-attempt-3.0, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock"
   dependencies:
-    "@aws-amplify/amplify-appsync-simulator": 2.16.5
+    "@aws-amplify/amplify-appsync-simulator": 2.16.6-hotfix-rc-20241004-attempt-3.0
     "@aws-amplify/amplify-category-function": 5.7.10
     "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-opensearch-simulator": 1.7.15
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.13
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-hotfix-rc-20241004-attempt-3.0
     "@aws-amplify/graphql-auth-transformer": ^3.6.4
     "@aws-amplify/graphql-default-value-transformer": ^2.3.12
     "@aws-amplify/graphql-function-transformer": ^2.1.26
@@ -904,7 +904,7 @@ __metadata:
     amplify-codegen: ^4.9.7
     amplify-dynamodb-simulator: 2.9.19
     amplify-nodejs-function-runtime-provider: 2.5.24
-    amplify-storage-simulator: 1.11.3
+    amplify-storage-simulator: 1.11.4-hotfix-rc-20241004-attempt-3.0
     aws-appsync: ^4.1.4
     aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
@@ -938,7 +938,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-uibuilder@1.14.12, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
+"@aws-amplify/amplify-util-uibuilder@1.14.13-hotfix-rc-20241004-attempt-3.0, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
@@ -1072,7 +1072,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.12.6, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.12.7-hotfix-rc-20241004-attempt-3.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1085,7 +1085,7 @@ __metadata:
     "@aws-amplify/amplify-category-geo": 3.5.15
     "@aws-amplify/amplify-category-hosting": 3.5.37
     "@aws-amplify/amplify-category-interactions": 5.1.29
-    "@aws-amplify/amplify-category-notifications": 2.26.23
+    "@aws-amplify/amplify-category-notifications": 2.26.24-hotfix-rc-20241004-attempt-3.0
     "@aws-amplify/amplify-category-predictions": 5.5.15
     "@aws-amplify/amplify-category-storage": 5.5.15
     "@aws-amplify/amplify-cli-core": 4.3.10
@@ -1103,11 +1103,11 @@ __metadata:
     "@aws-amplify/amplify-go-function-template-provider": 1.4.8
     "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.10
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.13
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-hotfix-rc-20241004-attempt-3.0
     "@aws-amplify/amplify-python-function-template-provider": 1.4.7
     "@aws-amplify/amplify-util-import": 2.8.3
-    "@aws-amplify/amplify-util-mock": 5.10.6
-    "@aws-amplify/amplify-util-uibuilder": 1.14.12
+    "@aws-amplify/amplify-util-mock": 5.10.7-hotfix-rc-20241004-attempt-3.0
+    "@aws-amplify/amplify-util-uibuilder": 1.14.13-hotfix-rc-20241004-attempt-3.0
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@types/archiver": ^5.3.1
     "@types/columnify": ^1.5.1
@@ -1172,7 +1172,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.12.6
+    "@aws-amplify/cli-internal": 12.12.7-hotfix-rc-20241004-attempt-3.0
     "@types/tar": ^6.1.1
     axios: ^1.6.7
     rimraf: ^3.0.2
@@ -13722,7 +13722,7 @@ __metadata:
     "@types/ws": ^7.4.4
     amplify-dynamodb-simulator: 2.9.19
     amplify-headless-interface: 1.17.7
-    amplify-storage-simulator: 1.11.3
+    amplify-storage-simulator: 1.11.4-hotfix-rc-20241004-attempt-3.0
     aws-amplify: ^5.3.16
     aws-appsync: ^4.1.1
     aws-cdk-lib: ~2.129.0
@@ -13844,7 +13844,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-storage-simulator@1.11.3, amplify-storage-simulator@workspace:packages/amplify-storage-simulator":
+"amplify-storage-simulator@1.11.4-hotfix-rc-20241004-attempt-3.0, amplify-storage-simulator@workspace:packages/amplify-storage-simulator":
   version: 0.0.0-use.local
   resolution: "amplify-storage-simulator@workspace:packages/amplify-storage-simulator"
   dependencies:

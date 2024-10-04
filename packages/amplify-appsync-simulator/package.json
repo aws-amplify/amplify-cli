@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.16.5",
+  "version": "2.16.6-hotfix-rc-20241004-attempt-3.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
