@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.14.12",
+  "version": "1.14.13-hotfix-rc-20241004.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
