@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-mock",
-  "version": "5.10.6",
+  "version": "5.10.7-rc.91436e81f46ad4e.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-appsync-simulator": "2.16.5",
+    "@aws-amplify/amplify-appsync-simulator": "2.16.6-rc.91436e81f46ad4e.0",
     "@aws-amplify/amplify-category-function": "5.7.10",
     "@aws-amplify/amplify-cli-core": "4.3.10",
     "@aws-amplify/amplify-environment-parameters": "1.9.15",
