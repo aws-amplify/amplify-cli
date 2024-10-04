@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.6-rc.33c10fdd6b3b536.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.16.5...@aws-amplify/amplify-appsync-simulator@2.16.6-rc.33c10fdd6b3b536.0) (2024-10-04)
+
+
+### Bug Fixes
+
+* remove node-ip dependency ([#13877](https://github.com/aws-amplify/amplify-cli/issues/13877)) ([5e9cd5e](https://github.com/aws-amplify/amplify-cli/commit/5e9cd5ee0ee851f10ecbaef80817a19a7b3e04a1))
+
+
+
+
+
 ## [2.16.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.16.4...@aws-amplify/amplify-appsync-simulator@2.16.5) (2024-08-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
