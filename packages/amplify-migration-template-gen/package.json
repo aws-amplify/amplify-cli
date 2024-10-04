@@ -38,7 +38,7 @@
   },
   "scripts": {
     "pretest": "mkdir -p coverage",
-    "test": "jest --logHeapUsagemig",
+    "test": "jest --logHeapUsage",
     "build": "tsc",
     "watch": "tsc -w",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
