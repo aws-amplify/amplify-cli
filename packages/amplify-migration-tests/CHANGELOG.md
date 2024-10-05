@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.10...@aws-amplify/amplify-migration-tests@6.4.0) (2024-10-05)
+
+
+### Features
+
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
+
+
+
+
+
 ## [6.3.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.9...@aws-amplify/amplify-migration-tests@6.3.10) (2024-08-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests
