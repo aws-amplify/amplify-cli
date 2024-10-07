@@ -1,7 +1,5 @@
 import { TemplateGenerator } from './template-generator';
 import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStackResourcesOutput } from '@aws-sdk/client-cloudformation';
-// import MigrationReadMeGenerator from './migration-readme-generator';
-// import CategoryTemplateGenerator from './category-template-generator';
 import fs from 'node:fs/promises';
 
 const mockCfnClientSendMock = jest.fn();
