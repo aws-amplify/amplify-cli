@@ -1,4 +1,4 @@
-import { CloudFormationClient, DescribeStacksCommand, GetTemplateCommand, Stack, Parameter, Output } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, DescribeStacksCommand, GetTemplateCommand, Stack } from '@aws-sdk/client-cloudformation';
 import assert from 'node:assert';
 import { CFN_CATEGORY_TYPE, CFNChangeTemplateWithParams, CFNResource, CFNStackRefactorTemplates, CFNTemplate } from './types';
 import CFNConditionResolver from './resolvers/cfn-condition-resolver';
