@@ -56,7 +56,7 @@ export interface CFNChangeTemplate {
 }
 
 export interface CFNChangeTemplateWithParams extends CFNChangeTemplate {
-  params: Parameter[] | undefined;
+  parameters: Parameter[] | undefined;
 }
 
 export interface CFNStackRefactorTemplates {

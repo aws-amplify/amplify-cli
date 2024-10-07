@@ -11,7 +11,7 @@ class CfnParameterResolver {
     const parametersFromTemplate = this.template.Parameters;
     for (const { ParameterKey, ParameterValue } of parameters) {
       assert(ParameterKey);
-      assert(ParameterValue);
+      if (!ParameterValue) continue;
       const { Type: parameterType, NoEcho } = parametersFromTemplate[ParameterKey];
       if (NoEcho) continue;
       // All parameter values referenced by Ref are coerced to strings. List/Comma delimited are converted to arrays before coercing to string.
