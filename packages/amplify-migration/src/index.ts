@@ -75,10 +75,10 @@ const generateGen2Code = async ({
 
   try {
     await pipeline.render();
-    await analytics.logEvent('finishedMigration');
+    await analytics.logEvent('finishedCodegen');
     await usageData.emitSuccess();
   } catch (e) {
-    await analytics.logEvent('failedMigration');
+    await analytics.logEvent('failedCodegen');
     await usageData.emitError(e);
   }
 };
