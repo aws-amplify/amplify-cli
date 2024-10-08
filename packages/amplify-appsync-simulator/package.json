@@ -39,7 +39,7 @@
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
-    "express": "^4.20.0",
+    "express": "^5.0.0",
     "get-port": "^5.1.1",
     "graphql": "^15.5.0",
     "graphql-iso-date": "^3.6.1",
@@ -60,7 +60,7 @@
   "devDependencies": {
     "@aws-amplify/amplify-graphiql-explorer": "2.6.0",
     "@types/cors": "^2.8.6",
-    "@types/express": "^4.17.3",
+    "@types/express": "^5.0.0",
     "@types/node": "^12.12.6",
     "@types/ws": "^8.2.2",
     "jose": "^5.2.0"
