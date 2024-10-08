@@ -198,6 +198,7 @@ const oldGen2Template = {
     },
   },
 };
+
 const newGen2Template: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
   Description: 'Test template',
@@ -231,6 +232,7 @@ const newGen2Template: CFNTemplate = {
     },
   },
 };
+
 const gen1Params: Parameter[] = [
   {
     ParameterKey: 'Environment',
@@ -293,6 +295,14 @@ const refactoredGen2Template: CFNTemplate = {
   },
 };
 
+const oldGen1TemplateWithoutS3Bucket = JSON.parse(JSON.stringify(oldGen1Template)) as CFNTemplate;
+delete oldGen1TemplateWithoutS3Bucket.Resources[GEN1_S3_BUCKET_LOGICAL_ID];
+delete oldGen1TemplateWithoutS3Bucket.Resources[GEN1_ANOTHER_S3_BUCKET_LOGICAL_ID];
+
+const oldGen2TemplateWithoutS3Bucket = JSON.parse(JSON.stringify(oldGen2Template)) as CFNTemplate;
+delete oldGen2TemplateWithoutS3Bucket.Resources[GEN2_S3_BUCKET_LOGICAL_ID];
+delete oldGen2TemplateWithoutS3Bucket.Resources[GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID];
+
 const generateDescribeStacksResponse = (command: DescribeStacksCommand): DescribeStacksOutput => ({
   Stacks: [
     {
@@ -341,9 +351,6 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
     },
   };
 });
-
-const oldGen1TemplateWithoutS3Bucket = JSON.parse(JSON.stringify(oldGen1Template)) as CFNTemplate;
-delete oldGen1TemplateWithoutS3Bucket.Resources[GEN1_S3_BUCKET_LOGICAL_ID];
 
 describe('CategoryTemplateGenerator', () => {
   const s3TemplateGenerator = new CategoryTemplateGenerator(
@@ -416,7 +423,7 @@ describe('CategoryTemplateGenerator', () => {
     );
   });
 
-  it('should throw error when there are no resources to move', async () => {
+  it('should throw error when there are no resources to move in Gen1 stack', async () => {
     const sendFailureMock = (command: any) => {
       if (command instanceof DescribeStacksCommand) {
         return Promise.resolve(generateDescribeStacksResponse(command));
@@ -431,6 +438,33 @@ describe('CategoryTemplateGenerator', () => {
       return Promise.resolve({});
     };
     mockCfnClientSendMock.mockImplementationOnce(sendFailureMock).mockImplementationOnce(sendFailureMock);
-    await expect(noGen1ResourcesToMoveS3TemplateGenerator.generateGen1PreProcessTemplate()).rejects.toThrowError();
+    await expect(noGen1ResourcesToMoveS3TemplateGenerator.generateGen1PreProcessTemplate()).rejects.toThrowError(
+      'No resources to move in Gen1 stack.',
+    );
+  });
+
+  it('should throw error when there are no resources to move in Gen2 stack', async () => {
+    const sendFailureMock = (command: any) => {
+      if (command instanceof DescribeStacksCommand) {
+        return Promise.resolve(generateDescribeStacksResponse(command));
+      } else if (command instanceof GetTemplateCommand) {
+        return Promise.resolve({
+          TemplateBody:
+            command.input.StackName === GEN1_CATEGORY_STACK_ID
+              ? JSON.stringify(oldGen1Template)
+              : JSON.stringify(oldGen2TemplateWithoutS3Bucket),
+        });
+      }
+      return Promise.resolve({});
+    };
+    mockCfnClientSendMock
+      .mockImplementationOnce(sendFailureMock)
+      .mockImplementationOnce(sendFailureMock)
+      .mockImplementationOnce(sendFailureMock)
+      .mockImplementationOnce(sendFailureMock);
+    await noGen1ResourcesToMoveS3TemplateGenerator.generateGen1PreProcessTemplate();
+    await expect(noGen1ResourcesToMoveS3TemplateGenerator.generateGen2ResourceRemovalTemplate()).rejects.toThrowError(
+      'No resources to remove in Gen2 stack.',
+    );
   });
 });
