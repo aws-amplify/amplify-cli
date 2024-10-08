@@ -7,6 +7,7 @@ import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper'
 import { IStackSynthesizer } from 'aws-cdk-lib';
 import { AmplifyError, AmplifyFault, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { Construct } from 'constructs';
+import { Condition } from 'aws-cdk-lib/aws-stepfunctions';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -109,6 +110,19 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
             Condition: {
               Bool: {
                 'aws:SecureTransport': false,
+              },
+            },
+          },
+        ],
+        OwnershipStatement: [
+          {
+            Action: 's3:*',
+            Effect: 'Deny',
+            Principal: '*',
+            Resource: [`arn:aws:s3:::${bucketName}/*`, `arn:aws:s3:::${bucketName}`],
+            Condition: {
+              StringEquals: {
+                's3:ResourceAccount': ['', undefined],
               },
             },
           },
