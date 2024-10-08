@@ -16,7 +16,7 @@ class CFNConditionResolver {
   public resolve(parameters: Parameter[]) {
     if (!this.conditions || Object.keys(this.conditions).length === 0) return this.template;
 
-    const clonedGen1Template = JSON.parse(JSON.stringify(this.template)) as CFNTemplate;
+    const clonedTemplate = JSON.parse(JSON.stringify(this.template)) as CFNTemplate;
     const conditionValueMap = new Map<string, boolean>();
     Object.entries(this.conditions).forEach(([conditionKey, conditionValue]) => {
       const fnType = Object.keys(conditionValue)[0];
@@ -28,9 +28,9 @@ class CFNConditionResolver {
       }
     });
 
-    this.resolveConditionInResources(clonedGen1Template.Resources, conditionValueMap);
+    this.resolveConditionInResources(clonedTemplate.Resources, conditionValueMap);
 
-    return clonedGen1Template;
+    return clonedTemplate;
   }
 
   private resolveCondition(

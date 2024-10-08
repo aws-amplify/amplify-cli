@@ -7,7 +7,8 @@ class CfnParameterResolver {
 
   public resolve(parameters: Parameter[]) {
     if (!parameters.length) return this.template;
-    let templateString = JSON.stringify(this.template);
+    const clonedGen1Template = JSON.parse(JSON.stringify(this.template)) as CFNTemplate;
+    let templateString = JSON.stringify(clonedGen1Template);
     const parametersFromTemplate = this.template.Parameters;
     for (const { ParameterKey, ParameterValue } of parameters) {
       assert(ParameterKey);

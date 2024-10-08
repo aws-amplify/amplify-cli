@@ -1,6 +1,13 @@
 import CategoryTemplateGenerator from './category-template-generator';
 import { CFN_S3_TYPE, CFNTemplate } from './types';
-import { CloudFormationClient, DescribeStacksCommand, GetTemplateCommand, Parameter } from '@aws-sdk/client-cloudformation';
+import {
+  CloudFormationClient,
+  DescribeStacksCommand,
+  DescribeStacksOutput,
+  GetTemplateCommand,
+  GetTemplateOutput,
+  Parameter,
+} from '@aws-sdk/client-cloudformation';
 
 const mockCfnClientSendMock = jest.fn();
 
@@ -230,6 +237,7 @@ const gen1Params: Parameter[] = [
     ParameterValue: 'dev',
   },
 ];
+
 const refactoredGen1Template: CFNTemplate = {
   ...newGen1Template,
   Resources: {
@@ -285,6 +293,37 @@ const refactoredGen2Template: CFNTemplate = {
   },
 };
 
+const generateDescribeStacksResponse = (command: DescribeStacksCommand): DescribeStacksOutput => ({
+  Stacks: [
+    {
+      StackId: command.input.StackName,
+      StackName: command.input.StackName,
+      Capabilities: ['CAPABILITY_NAMED_IAM'],
+      Tags: [
+        {
+          Key: 'amplify:category-stack',
+          Value: 'amplify-testauth-dev-12345-auth-ABCDE',
+        },
+      ],
+      CreationTime: new Date(),
+      LastUpdatedTime: new Date(),
+      StackStatus: 'CREATE_COMPLETE',
+      Parameters: gen1Params,
+      Outputs: [
+        {
+          OutputKey: 'BucketNameOutputRef',
+          OutputValue: 'my-test-bucket-dev',
+          Description: 'My bucket',
+        },
+      ],
+    },
+  ],
+});
+
+const generateGetTemplateResponse = (command: GetTemplateCommand): GetTemplateOutput => ({
+  TemplateBody: command.input.StackName === GEN1_CATEGORY_STACK_ID ? JSON.stringify(oldGen1Template) : JSON.stringify(oldGen2Template),
+});
+
 jest.mock('@aws-sdk/client-cloudformation', () => {
   return {
     ...jest.requireActual('@aws-sdk/client-cloudformation'),
@@ -292,37 +331,9 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
       return {
         send: mockCfnClientSendMock.mockImplementation((command) => {
           if (command instanceof DescribeStacksCommand) {
-            return Promise.resolve({
-              Stacks: [
-                {
-                  StackId: command.input.StackName,
-                  Capabilities: ['CAPABILITY_NAMED_IAM'],
-                  Tags: [
-                    {
-                      Key: 'amplify:category-stack',
-                      Value: 'amplify-testauth-dev-12345-auth-ABCDE',
-                    },
-                  ],
-                  CreationTime: new Date(),
-                  LastUpdatedTime: new Date(),
-                  DeletionTime: null,
-                  StackStatus: 'CREATE_COMPLETE',
-                  Parameters: gen1Params,
-                  Outputs: [
-                    {
-                      OutputKey: 'BucketNameOutputRef',
-                      OutputValue: 'my-test-bucket-dev',
-                      Description: 'My bucket',
-                    },
-                  ],
-                },
-              ],
-            });
+            return Promise.resolve(generateDescribeStacksResponse(command));
           } else if (command instanceof GetTemplateCommand) {
-            return Promise.resolve({
-              TemplateBody:
-                command.input.StackName === GEN1_CATEGORY_STACK_ID ? JSON.stringify(oldGen1Template) : JSON.stringify(oldGen2Template),
-            });
+            return Promise.resolve(generateGetTemplateResponse(command));
           }
           return Promise.resolve({});
         }),
@@ -330,6 +341,9 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
     },
   };
 });
+
+const oldGen1TemplateWithoutS3Bucket = JSON.parse(JSON.stringify(oldGen1Template)) as CFNTemplate;
+delete oldGen1TemplateWithoutS3Bucket.Resources[GEN1_S3_BUCKET_LOGICAL_ID];
 
 describe('CategoryTemplateGenerator', () => {
   const s3TemplateGenerator = new CategoryTemplateGenerator(
@@ -350,6 +364,15 @@ describe('CategoryTemplateGenerator', () => {
     [CFN_S3_TYPE.Bucket],
     // decide which resources to move based on resource properties
     (resourcesToMove, resourceEntry) => resourcesToMove.includes(CFN_S3_TYPE.Bucket) && resourceEntry[0] === GEN1_S3_BUCKET_LOGICAL_ID,
+  );
+
+  const noGen1ResourcesToMoveS3TemplateGenerator = new CategoryTemplateGenerator(
+    GEN1_CATEGORY_STACK_ID,
+    GEN2_CATEGORY_STACK_ID,
+    'us-east-1',
+    '12345',
+    new CloudFormationClient(),
+    [CFN_S3_TYPE.Bucket],
   );
 
   it('should preprocess gen1 template prior to refactor', async () => {
@@ -391,5 +414,23 @@ describe('CategoryTemplateGenerator', () => {
         [GEN1_ANOTHER_S3_BUCKET_LOGICAL_ID, GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID],
       ]),
     );
+  });
+
+  it('should throw error when there are no resources to move', async () => {
+    const sendFailureMock = (command: any) => {
+      if (command instanceof DescribeStacksCommand) {
+        return Promise.resolve(generateDescribeStacksResponse(command));
+      } else if (command instanceof GetTemplateCommand) {
+        return Promise.resolve({
+          TemplateBody:
+            command.input.StackName === GEN1_CATEGORY_STACK_ID
+              ? JSON.stringify(oldGen1TemplateWithoutS3Bucket)
+              : JSON.stringify(oldGen2Template),
+        });
+      }
+      return Promise.resolve({});
+    };
+    mockCfnClientSendMock.mockImplementationOnce(sendFailureMock).mockImplementationOnce(sendFailureMock);
+    await expect(noGen1ResourcesToMoveS3TemplateGenerator.generateGen1PreProcessTemplate()).rejects.toThrowError();
   });
 });

@@ -39,6 +39,8 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
         );
       }),
     );
+    // validate empty resources
+    if (this.gen1ResourcesToMove.size === 0) throw new Error('No resources to move in Gen1 stack.');
     const logicalResourceIds = [...this.gen1ResourcesToMove.keys()];
     const gen1ParametersResolvedTemplate = new CfnParameterResolver(oldGen1Template).resolve(Parameters);
     const gen1TemplateWithOutputsResolved = new CfnOutputResolver(gen1ParametersResolvedTemplate, this.region, this.accountId).resolve(
@@ -58,7 +60,6 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     this.gen2DescribeStacksResponse = await this.describeStack(this.gen2StackId);
     assert(this.gen2DescribeStacksResponse);
     const { Parameters, Outputs } = this.gen2DescribeStacksResponse;
-    assert(Parameters);
     assert(Outputs);
     const oldGen2Template = await this.readTemplate(this.gen2StackId);
     this.gen2ResourcesToRemove = new Map(
@@ -66,6 +67,8 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
         this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type),
       ),
     );
+    // validate empty resources
+    if (this.gen2ResourcesToRemove.size === 0) throw new Error('No resources to remove in Gen2 stack.');
     const updatedGen2Template = this.removeGen2ResourcesFromGen2Stack(oldGen2Template, [...this.gen2ResourcesToRemove.keys()]);
     return {
       oldTemplate: oldGen2Template,
