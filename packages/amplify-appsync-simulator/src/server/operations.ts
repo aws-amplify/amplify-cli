@@ -38,15 +38,15 @@ export class OperationServer {
     try {
       const deletedItems = await this.simulatorContext.clearData();
       console.log('DB data cleared');
-      return response.status(200).send({ message: `Successfully deleted ${JSON.stringify(deletedItems)} tables` });
+      response.status(200).send({ message: `Successfully deleted ${JSON.stringify(deletedItems)} tables` });
     } catch (e) {
       console.error(`Error clearing DB data. Error: ${e.message}`);
-      return response.status(500).send({ message: e.message });
+      response.status(500).send({ message: e.message });
     }
   };
 
   private handleAPIInfoRequest = (request: express.Request, response: express.Response) => {
-    return response.send(this.simulatorContext.appSyncConfig);
+    response.send(this.simulatorContext.appSyncConfig);
   };
 
   private handleRequest = async (request: express.Request, response: express.Response) => {
@@ -56,7 +56,7 @@ export class OperationServer {
       try {
         requestAuthorizationMode = getAuthorizationMode(headers, this.simulatorContext.appSyncConfig);
       } catch (e) {
-        return response.status(401).send({
+        response.status(401).send({
           errors: [
             {
               errorType: 'UnauthorizedException',
@@ -70,7 +70,7 @@ export class OperationServer {
       const doc = parse(query);
 
       if (!this.simulatorContext.schema) {
-        return response.send({
+        response.send({
           data: null,
           error: 'No schema available',
         });
@@ -92,17 +92,17 @@ export class OperationServer {
         case 'query':
         case 'mutation': {
           const gqlResult = await runQueryOrMutation(this.simulatorContext.schema, doc, variables, operationName, context);
-          return response.send(gqlResult);
+          response.send(gqlResult);
+          break;
         }
         case 'subscription': {
           const subscriptionResult = await runSubscription(this.simulatorContext.schema, doc, variables, operationName, context);
           if ((subscriptionResult as ExecutionResult).errors) {
-            return response.send(subscriptionResult);
+            response.send(subscriptionResult);
           }
           throw new Error(
             `Subscription request is only supported in realtime url. Send requests to ${REALTIME_SUBSCRIPTION_PATH} path instead`,
           );
-          break;
         }
 
         default:
@@ -110,7 +110,7 @@ export class OperationServer {
       }
     } catch (e) {
       console.log('Error while executing GraphQL statement', e);
-      return response.send({
+      response.send({
         errorMessage: e.message,
       });
     }
