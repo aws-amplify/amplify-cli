@@ -120,18 +120,34 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
       const gen2ResourceLogicalId = gen1ToGen2ResourceLogicalIdMapping.get(resourceToRefactor);
       assert(gen2ResourceLogicalId);
       resources[gen2ResourceLogicalId] = resolvedGen1Template.Resources[resourceToRefactor];
+      // replace Gen1 dependency with Gen2 counterparts for Gen1 resources being moved over to Gen2
+      const dependencies = resources[gen2ResourceLogicalId].DependsOn;
+      if (!dependencies) continue;
+      resources[gen2ResourceLogicalId].DependsOn =
+        dependencies?.map((dependency) => {
+          if (gen1ToGen2ResourceLogicalIdMapping.has(dependency)) {
+            const gen2DependencyName = gen1ToGen2ResourceLogicalIdMapping.get(dependency);
+            assert(gen2DependencyName);
+            return gen2DependencyName;
+          } else return dependency;
+        }) ?? [];
     }
     return gen2Template;
   }
 
   private buildGen1ToGen2ResourceLogicalIdMapping(gen1ResourceMap: Map<string, CFNResource>, gen2ResourceMap: Map<string, CFNResource>) {
+    const clonedGen1ResourceMap = new Map(gen1ResourceMap);
+    const clonedGen2ResourceMap = new Map(gen2ResourceMap);
     const gen1ToGen2ResourceLogicalIdMapping = new Map<string, string>();
-    for (const [gen1ResourceLogicalId, gen1Resource] of gen1ResourceMap) {
-      for (const [gen2ResourceLogicalId, gen2Resource] of gen2ResourceMap) {
+    for (const [gen1ResourceLogicalId, gen1Resource] of clonedGen1ResourceMap) {
+      for (const [gen2ResourceLogicalId, gen2Resource] of clonedGen2ResourceMap) {
         if (gen2Resource.Type !== gen1Resource.Type) {
           continue;
         }
         gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen2ResourceLogicalId);
+        clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
+        clonedGen2ResourceMap.delete(gen2ResourceLogicalId);
+        break;
       }
     }
     return gen1ToGen2ResourceLogicalIdMapping;
@@ -161,13 +177,15 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const gen1StackOutputs = this.gen1DescribeStacksResponse?.Outputs;
     assert(gen1StackOutputs);
     const gen1ToGen2ResourceLogicalIdMapping = this.buildGen1ToGen2ResourceLogicalIdMapping(gen1ResourcesToMove, gen2ResourcesToRemove);
+    const clonedGen1Template = JSON.parse(JSON.stringify(gen1Template));
+    const clonedGen2Template = JSON.parse(JSON.stringify(gen2Template));
     const gen2TemplateForRefactor = this.addGen1ResourcesToGen2Stack(
-      gen1Template,
+      clonedGen1Template,
       gen1LogicalResourceIds,
       gen1ToGen2ResourceLogicalIdMapping,
-      gen2Template,
+      clonedGen2Template,
     );
-    const gen1TemplateForRefactor = this.removeGen1ResourcesFromGen1Stack(gen1Template, gen1LogicalResourceIds);
+    const gen1TemplateForRefactor = this.removeGen1ResourcesFromGen1Stack(clonedGen1Template, gen1LogicalResourceIds);
     return {
       sourceTemplate: gen1TemplateForRefactor,
       destinationTemplate: gen2TemplateForRefactor,
