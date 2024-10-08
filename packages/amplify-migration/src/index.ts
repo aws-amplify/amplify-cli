@@ -1,22 +1,26 @@
 #!/usr/bin/env node
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import assert from 'node:assert';
+import { v4 as uuid } from 'uuid';
 
 import { Gen2RenderingOptions, createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 
+import { UsageData, getProjectSettings } from '@aws-amplify/cli-internal';
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { S3Client } from '@aws-sdk/client-s3';
 import { LambdaClient } from '@aws-sdk/client-lambda';
+import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { BackendDownloader } from './backend_downloader';
 import { AppContextLogger } from './logger';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { Analytics, AppAnalytics } from './analytics';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
-import { AmplifyCategories, stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyCategories, IUsageData, stateManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
@@ -67,11 +71,15 @@ const generateGen2Code = async ({
   };
 
   const pipeline = createGen2Renderer(gen2RenderOptions);
+  const usageData = await getUsageDataMetric();
+
   try {
     await pipeline.render();
-    await analytics.logEvent('finishedMigration');
+    await analytics.logEvent('finishedCodegen');
+    await usageData.emitSuccess();
   } catch (e) {
-    await analytics.logEvent('failedMigration');
+    await analytics.logEvent('failedCodegen');
+    await usageData.emitError(e);
   }
 };
 
@@ -86,6 +94,33 @@ type AmplifyMeta = {
 
 const getFunctionPath = (functionName: string) => {
   return path.join('amplify', 'backend', 'function', functionName, 'src');
+};
+
+const getUsageDataMetric = async (): Promise<IUsageData> => {
+  const usageData = UsageData.Instance;
+  const accountId = await getAccountId();
+  assert(accountId);
+
+  usageData.init(
+    uuid(),
+    '',
+    {
+      command: 'to-gen-2',
+      argv: process.argv,
+    },
+    accountId,
+    getProjectSettings(),
+    Date.now(),
+  );
+
+  return usageData;
+};
+
+const getAccountId = async (): Promise<string | undefined> => {
+  const stsClient = new STSClient();
+  const callerIdentityResult = await stsClient.send(new GetCallerIdentityCommand());
+  const accountId = callerIdentityResult.Account;
+  return accountId;
 };
 
 const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {

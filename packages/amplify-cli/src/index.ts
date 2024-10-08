@@ -36,6 +36,7 @@ import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-vers
 import { init as initErrorHandler, handleException, handleUnhandledRejection } from './amplify-exception-handler';
 
 export { UsageData } from './domain/amplify-usageData';
+export { getProjectSettings } from './context-manager';
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
 // https://github.com/SBoudrias/Inquirer.js/issues/887
