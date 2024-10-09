@@ -1822,6 +1822,7 @@ __metadata:
     "@aws-amplify/amplify-gen1-codegen-function-adapter": ^0.1.0-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-gen1-codegen-storage-adapter": ^0.1.0-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-gen2-codegen": ^0.1.0-gen2-migration-test-alpha.0
+    "@aws-amplify/cli-internal": 12.13.0-gen2-migration-test-alpha.0
     "@aws-amplify/migrate-template-gen": 0.0.1
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-amplifybackend": ^3.592.0
@@ -1837,6 +1838,7 @@ __metadata:
     kleur: ^4.1.5
     typescript: ^5.4.5
     unzipper: ^0.12.1
+    uuid: ^8.3.2
     yargs: ^17.7.2
   bin:
     migrate: lib/migrate.js

@@ -26,7 +26,7 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
     factory.createJSDocComment(
       factory.createNodeArray([
         factory.createJSDocText(
-          `Source code for this function can be found in your Amplify Gen 1 Directory.\nSee amplify/backend/function/${
+          `Source code for this function can be found in your Amplify Gen 1 Directory.\nSee .amplify/migration/amplify/backend/function/${
             definition.name?.split('-')[0]
           }/src \n`,
         ),

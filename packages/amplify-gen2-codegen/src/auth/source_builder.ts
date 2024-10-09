@@ -224,7 +224,7 @@ function createOidcSamlPropertyAssignments(
 function createSecretErrorStatements(secretVariables: string[]): ts.Node[] {
   return secretVariables.map((secret) =>
     factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-      factory.createStringLiteral(`Secrets need to be reset, use \`npx ampx sandbox secret ${secret}\` to set the value`),
+      factory.createStringLiteral(`Secrets need to be reset, use \`npx ampx sandbox secret set ${secret}\` to set the value`),
     ]),
   );
 }
