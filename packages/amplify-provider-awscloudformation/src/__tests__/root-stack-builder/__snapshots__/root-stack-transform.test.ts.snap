@@ -131,6 +131,45 @@ exports[`Root stack template tests Generated root stack template during init 1`]
           "Ref": "DeploymentBucketName",
         },
         "PolicyDocument": {
+          OwnershipStatement: [
+            {
+              Action: 's3:*',
+              Condition: {
+                StringNotEquals: {
+                  's3:ResourceAccount': {
+                    "Ref": "AWS:AccountId",
+                  },
+                },
+              },
+              Effect: 'Deny',
+              Principal: '*',
+              Resource: {
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "DeploymentBucketName",
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "DeploymentBucketName",
+                      },
+                    ],
+                  ],
+                },
+              }
+            },
+          ],
           "Statement": [
             {
               "Action": "s3:*",
