@@ -167,7 +167,7 @@ exports[`Root stack template tests Generated root stack template during init 1`]
                     ],
                   ],
                 },
-              ]
+              ],
             },
             ],
           "Statement": [

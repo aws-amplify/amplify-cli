@@ -146,7 +146,7 @@ exports[`Check RootStack Template generates root stack Template 1`] = `
                     ],
                   ],
                 },
-              ]
+              ],
             },
             ],
           "Statement": [
