@@ -116,7 +116,8 @@ aws cloudformation update-stack \\
  --stack-name amplify-mygen2app-test-sandbox-12345-auth-ABCDE \\
  --template-body file://test/step2-gen2ResourcesRemovalStackTemplate.json \\
  --parameters '[{"ParameterKey":"authSelections","ParameterValue":"identityPoolAndUserPool"}]' \\
- --capabilities CAPABILITY_NAMED_IAM
+ --capabilities CAPABILITY_NAMED_IAM \\
+ --tags '[]'
  \`\`\`
 
 \`\`\`

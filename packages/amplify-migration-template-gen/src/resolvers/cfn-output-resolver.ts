@@ -23,30 +23,29 @@ class CfnOutputResolver {
     assert(stackTemplateOutputs);
     let stackTemplateResourcesString = JSON.stringify(stackTemplateResources);
 
-    for (const logicalResourceId of logicalResourceIds) {
-      Object.entries(stackTemplateOutputs).forEach(([outputKey, outputValue]) => {
-        const value = outputValue.Value;
-        const stackOutputValue = stackOutputs?.find((op) => op.OutputKey === outputKey)?.OutputValue;
-        assert(stackOutputValue);
+    Object.entries(stackTemplateOutputs).forEach(([outputKey, outputValue]) => {
+      const value = outputValue.Value;
+      const stackOutputValue = stackOutputs?.find((op) => op.OutputKey === outputKey)?.OutputValue;
+      assert(stackOutputValue);
 
-        // Replace logicalId references using stack output values
-        if (typeof value === 'object' && REF in value && value[REF] === logicalResourceId) {
-          const outputRegexp = new RegExp(`{"${REF}":"${logicalResourceId}"}`, 'g');
-          stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(outputRegexp, `"${stackOutputValue}"`);
+      // Replace logicalId references using stack output values
+      if (typeof value === 'object' && REF in value) {
+        const logicalResourceId = value[REF] as string;
+        const outputRegexp = new RegExp(`{"${REF}":"${logicalResourceId}"}`, 'g');
+        stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(outputRegexp, `"${stackOutputValue}"`);
 
-          // Replace Fn:GetAtt references using stack output values
-          const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["${logicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
-          const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp).next();
-          const resourceType = this.template.Resources[logicalResourceId].Type as CFN_RESOURCE_TYPES;
-          if (!fnGetAttRegExpResult.done) {
-            const attributeName = fnGetAttRegExpResult.value.groups?.AttributeName;
-            assert(attributeName);
-            const resource = this.getResourceAttribute(attributeName as AWS_RESOURCE_ATTRIBUTES, resourceType, stackOutputValue);
-            stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExp, this.buildFnGetAttReplace(resource));
-          }
+        // Replace Fn:GetAtt references using stack output values
+        const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["${logicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
+        const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp).next();
+        const resourceType = this.template.Resources[logicalResourceId].Type as CFN_RESOURCE_TYPES;
+        if (!fnGetAttRegExpResult.done) {
+          const attributeName = fnGetAttRegExpResult.value.groups?.AttributeName;
+          assert(attributeName);
+          const resource = this.getResourceAttribute(attributeName as AWS_RESOURCE_ATTRIBUTES, resourceType, stackOutputValue);
+          stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExp, this.buildFnGetAttReplace(resource));
         }
-      });
-    }
+      }
+    });
 
     clonedStackTemplate.Resources = JSON.parse(stackTemplateResourcesString);
     Object.entries(clonedStackTemplate.Outputs).forEach(([outputKey]) => {

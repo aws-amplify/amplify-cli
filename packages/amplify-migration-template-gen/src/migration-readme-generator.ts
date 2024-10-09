@@ -94,7 +94,8 @@ aws cloudformation update-stack \\
  --stack-name ${this.gen2CategoryStackName} \\
  --template-body file://${step2FileNamePath} \\
  --parameters '${paramsString}' \\
- --capabilities CAPABILITY_NAMED_IAM
+ --capabilities CAPABILITY_NAMED_IAM \\
+ --tags '[]'
  \`\`\`
 
 \`\`\`
