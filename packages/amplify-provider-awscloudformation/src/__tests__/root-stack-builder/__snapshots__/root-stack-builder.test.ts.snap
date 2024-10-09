@@ -110,19 +110,19 @@ exports[`Check RootStack Template generates root stack Template 1`] = `
           "Ref": "DeploymentBucketName",
         },
         "PolicyDocument": {
-          OwnershipStatement: [
+          "OwnershipStatement": [
             {
-              Action: 's3:*',
-              Condition: {
-                StringNotEquals: {
-                  's3:ResourceAccount': {
+              "Action": "s3:*",
+              "Condition": {
+                "StringNotEquals": {
+                  "s3:ResourceAccount": {
                     "Ref": "AWS:AccountId",
                   },
                 },
               },
-              Effect: 'Deny',
-              Principal: '*',
-              Resource: {
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": {
                 {
                   "Fn::Join": [
                     "",
@@ -148,7 +148,7 @@ exports[`Check RootStack Template generates root stack Template 1`] = `
                 },
               }
             },
-          ],
+            ],
           "Statement": [
             {
               "Action": "s3:*",
