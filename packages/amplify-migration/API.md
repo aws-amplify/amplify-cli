@@ -10,6 +10,9 @@ export type AuthCliInputs = Record<string, unknown>;
 // @public (undocumented)
 export function execute(): Promise<void>;
 
+// @public (undocumented)
+export function generateTemplates(fromStack: string, toStack: string): Promise<void>;
+
 // (No @packageDocumentation comment for this package)
 
 ```
