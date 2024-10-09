@@ -137,13 +137,13 @@ exports[`Root stack template tests Generated root stack template during init 1`]
               "Condition": {
                 "StringNotEquals": {
                   "s3:ResourceAccount": {
-                    "Ref": "AWS:AccountId",
+                    "Ref": "AWS::AccountId",
                   },
                 },
               },
               "Effect": "Deny",
               "Principal": "*",
-              "Resource": {
+              "Resource": [
                 {
                   "Fn::Join": [
                     "",
@@ -167,7 +167,7 @@ exports[`Root stack template tests Generated root stack template during init 1`]
                     ],
                   ],
                 },
-              }
+              ]
             },
             ],
           "Statement": [
