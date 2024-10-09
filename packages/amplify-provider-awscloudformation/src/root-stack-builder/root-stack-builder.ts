@@ -113,6 +113,19 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
             },
           },
         ],
+        OwnershipStatement: [
+          {
+            Action: 's3:*',
+            Effect: 'Deny',
+            Principal: '*',
+            Resource: [`arn:aws:s3:::${bucketName}/*`, `arn:aws:s3:::${bucketName}`],
+            Condition: {
+              StringNotEquals: {
+                's3:ResourceAccount': cdk.Stack.of(this).account,
+              },
+            },
+          },
+        ],
       },
     });
 
