@@ -39,7 +39,7 @@
     "amplify-dynamodb-simulator": "2.9.19",
     "amplify-headless-interface": "1.17.7",
     "amplify-storage-simulator": "1.11.4",
-    "aws-amplify": "^5.3.16",
+    "aws-amplify": "^6.6.4",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.129.0",
     "aws-sdk": "^2.1464.0",

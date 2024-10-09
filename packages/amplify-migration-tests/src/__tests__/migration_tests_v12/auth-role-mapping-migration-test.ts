@@ -19,7 +19,7 @@ import {
   updateHeadlessAuth,
 } from '@aws-amplify/amplify-e2e-core';
 import { initJSProjectWithProfileV12 } from '../../migration-helpers-v12/init';
-import { Auth } from 'aws-amplify';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { UpdateAuthRequest } from 'amplify-headless-interface';
 
@@ -76,11 +76,11 @@ describe('amplify auth group mapping', () => {
 
     // Check that user 1 can interact with S3 bucket
     await signInUser(username1, password1);
-    const user1Credentials = await Auth.currentCredentials();
+    const { credentials: user1Credentials } = await fetchAuthSession();
 
     const s3Client1 = new S3Client({
       region,
-      credentials: Auth.essentialCredentials(user1Credentials),
+      credentials: user1Credentials,
     });
     await s3Client1.send(
       new PutObjectCommand({
@@ -102,10 +102,10 @@ describe('amplify auth group mapping', () => {
 
     // Check that user 2 does not have permissions to interact with S3 bucket
     await signInUser(username2, password2);
-    const user2Credentials = await Auth.currentCredentials();
+    const { credentials: user2Credentials } = await fetchAuthSession();
     const s3Client2 = new S3Client({
       region,
-      credentials: Auth.essentialCredentials(user2Credentials),
+      credentials: user2Credentials,
     });
     await expect(
       s3Client2.send(

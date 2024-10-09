@@ -1,4 +1,5 @@
-import { Amplify, Auth } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
+import { confirmSignIn, signIn, signOut } from 'aws-amplify/auth';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import fs from 'fs-extra';
@@ -8,6 +9,7 @@ import { getUserPoolClients } from './sdk-calls';
 import { AddAuthUserPoolOnlyWithOAuthSettings } from '../categories';
 
 const tempPassword = 'tempPassword1@';
+const email = 'username@amazon.com';
 
 //setupUser will add user to a cognito group and make its status to be "CONFIRMED",
 //if groupName is specified, add the user to the group.
@@ -22,7 +24,7 @@ export async function setupUser(
   await cognitoClient
     .adminCreateUser({
       UserPoolId: userPoolId,
-      UserAttributes: [{ Name: 'email', Value: 'username@amazon.com' }],
+      UserAttributes: [{ Name: 'email', Value: email }],
       Username: username,
       MessageAction: 'SUPPRESS',
       TemporaryPassword: tempPassword,
@@ -121,12 +123,12 @@ export function getConfiguredAppsyncClientIAMAuth(url: string, region: string) {
 }
 
 export async function signInUser(username: string, password: string) {
-  const user = await Auth.signIn(username, password);
+  const user = await signIn({ username, password });
   return user;
 }
 
 export async function signOutUser(): Promise<void> {
-  await Auth.signOut({ global: true });
+  await signOut({ global: true });
 }
 
 export function configureAmplify(projectDir: string) {
@@ -175,10 +177,14 @@ export function getApiKey(projectDir: string): string {
 }
 
 export async function authenticateUser(username: string, tempPassword: string, password: string) {
-  const signinResult = await Auth.signIn(username, tempPassword);
-  if (signinResult.challengeName === 'NEW_PASSWORD_REQUIRED') {
-    const { requiredAttributes } = signinResult.challengeParam; // the array of required attributes, e.g [‘email’, ‘phone_number’]
-    await Auth.completeNewPassword(signinResult, password, requiredAttributes);
+  const { nextStep } = await signIn({ username, password: tempPassword });
+  if (nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+    await confirmSignIn({
+      challengeResponse: password,
+      options: {
+        userAttributes: { email: email },
+      },
+    });
   }
 }
 

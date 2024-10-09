@@ -31,7 +31,7 @@
     "@aws-cdk/cloudformation-diff": "~2.68.0",
     "@aws-sdk/client-s3": "^3.303.0",
     "amplify-headless-interface": "1.17.7",
-    "aws-amplify": "^5.3.16",
+    "aws-amplify": "^6.6.4",
     "aws-cdk-lib": "~2.129.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",

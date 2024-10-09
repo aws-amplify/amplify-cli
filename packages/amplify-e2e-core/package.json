@@ -26,7 +26,7 @@
     "@aws-sdk/client-sts": "^3.303.0",
     "@aws-sdk/credential-providers": "^3.303.0",
     "amplify-headless-interface": "1.17.7",
-    "aws-amplify": "^5.3.16",
+    "aws-amplify": "^6.6.4",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1464.0",
     "chalk": "^4.1.1",
