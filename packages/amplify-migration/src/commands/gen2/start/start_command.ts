@@ -1,5 +1,5 @@
 import { Argv, CommandModule } from 'yargs';
-import { execute } from '../../../';
+import { execute } from '../../../command-handlers';
 
 export type Gen2StartCommandOptions = Record<string, never>;
 

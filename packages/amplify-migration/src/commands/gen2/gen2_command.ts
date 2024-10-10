@@ -16,18 +16,13 @@ export class Gen2Command implements CommandModule {
    */
   readonly describe: string;
 
-  constructor(private readonly startCommand: CommandModule) {
+  constructor(private readonly subCommands: CommandModule[]) {
     this.command = 'to-gen-2';
     this.describe = 'Migrates an Amplify Gen1 app to a Gen2 app';
   }
 
   builder = (yargs: Argv): Argv => {
-    return yargs
-      .version(false)
-      .command(this.startCommand as unknown as CommandModule)
-      .demandCommand()
-      .strictCommands()
-      .recommendCommands();
+    return yargs.version(false).command(this.subCommands).demandCommand().strictCommands().recommendCommands();
   };
   handler = (): Promise<void> => {
     // CommandModule requires handler implementation. But this is never called if top level command

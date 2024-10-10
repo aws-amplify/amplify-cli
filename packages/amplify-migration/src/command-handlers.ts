@@ -25,6 +25,9 @@ import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-ad
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
 import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetcher';
+import { TemplateGenerator } from '@aws-amplify/migrate-template-gen';
+import { printer } from './printer';
+import { format } from './format';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -37,8 +40,6 @@ interface CodegenCommandParameters {
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
   functionsDefinitionFetcher: AppFunctionsDefinitionFetcher;
 }
-
-export type AuthCliInputs = Record<string, unknown>;
 
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
@@ -232,4 +233,17 @@ export async function execute() {
   await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
   await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
   await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
+}
+
+export async function generateTemplates(fromStack: string, toStack: string) {
+  const cfnClient = new CloudFormationClient();
+  const accountId = await getAccountId();
+  assert(accountId);
+  const templateGenerator = new TemplateGenerator(fromStack, toStack, accountId, cfnClient);
+  await templateGenerator.generate();
+  printer.print(
+    format.success(
+      `Generated CloudFormation templates and .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`,
+    ),
+  );
 }
