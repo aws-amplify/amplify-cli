@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/migrate-template-gen",
-  "version": "0.0.1",
+  "version": "0.1.0-gen2-migrations-alpha.0",
   "type": "commonjs",
   "main": "lib/index.js",
   "devDependencies": {

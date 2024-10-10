@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.13.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migration-test-alpha.0...@aws-amplify/cli-internal@12.13.0-gen2-migrations-alpha.0) (2024-10-10)
+
+
+### Bug Fixes
+
+* add usage data metrics for codegen ([ffc8041](https://github.com/aws-amplify/amplify-cli/commit/ffc8041041c6d1b66589c537e93f05a7453e5bc9))
+* updated yarn.lock and API.md ([c45f8a7](https://github.com/aws-amplify/amplify-cli/commit/c45f8a73dea1a4b4c418b5b2ea3b5ab32b760547))
+
+
+
+
+
 # [12.13.0-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migration-test.0...@aws-amplify/cli-internal@12.13.0-gen2-migration-test-alpha.0) (2024-09-26)
 
 

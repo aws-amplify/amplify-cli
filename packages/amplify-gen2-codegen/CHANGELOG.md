@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migration-test-alpha.0...@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migrations-alpha.0) (2024-10-10)
+
+
+### Bug Fixes
+
+* add usage data metrics for codegen ([ffc8041](https://github.com/aws-amplify/amplify-cli/commit/ffc8041041c6d1b66589c537e93f05a7453e5bc9))
+* move importedModels key up to defineData ([#13943](https://github.com/aws-amplify/amplify-cli/issues/13943)) ([9bae7d4](https://github.com/aws-amplify/amplify-cli/commit/9bae7d460b70f3ab799d56531d2d3927a8a10f83))
+
+
+
+
+
 # [0.1.0-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migrations-test.0...@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migration-test-alpha.0) (2024-09-26)
 
 

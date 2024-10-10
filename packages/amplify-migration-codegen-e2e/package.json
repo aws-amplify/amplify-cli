@@ -1,12 +1,12 @@
 {
   "name": "@aws-amplify/amplify-migration-e2e",
   "private": true,
-  "version": "0.1.0-gen2-migration-test-alpha.0",
+  "version": "0.1.0-gen2-migrations-alpha.0",
   "main": "index.js",
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.4.0-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-e2e-core": "5.5.11-gen2-migration-test-alpha.0",
-    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migration-test-alpha.0",
+    "@aws-amplify/amplify-gen2-codegen": "0.1.0-gen2-migrations-alpha.0",
     "@aws-sdk/client-appsync": "^3.666.0",
     "@aws-sdk/client-cloudcontrol": "^3.658.1",
     "execa": "^5.1.1",

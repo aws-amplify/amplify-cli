@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-gen2-migration-test-alpha.0...@aws-amplify/migrate@0.1.0-gen2-migrations-alpha.0) (2024-10-10)
+
+
+### Bug Fixes
+
+* add usage data metrics for codegen ([ffc8041](https://github.com/aws-amplify/amplify-cli/commit/ffc8041041c6d1b66589c537e93f05a7453e5bc9))
+* **migrate:** package and lock files ([efec79b](https://github.com/aws-amplify/amplify-cli/commit/efec79b285bbf5291d1223a1ff0efa448594dafc))
+* **migrate:** rename index to command handler ([a479625](https://github.com/aws-amplify/amplify-cli/commit/a479625b705a9b26e30cb58aeca9cdc9c285642d))
+* **migrate:** update api md for generate templates ([4b4ccaa](https://github.com/aws-amplify/amplify-cli/commit/4b4ccaa560b4e4af1c35115acfb21f1a5cab4b9a))
+
+
+### Features
+
+* **migrate-template-gen:** add readme generator ([ebd02ef](https://github.com/aws-amplify/amplify-cli/commit/ebd02efb22f187c163db694f4eabd584a43d9873))
+* **migrate:** add generate templates command ([54b918b](https://github.com/aws-amplify/amplify-cli/commit/54b918b0c97da846baf9f1d715253299fe598930))
+
+
+
+
+
 # [0.1.0-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-gen2-migration-test.0...@aws-amplify/migrate@0.1.0-gen2-migration-test-alpha.0) (2024-09-26)
 
 
