@@ -41,8 +41,6 @@ interface CodegenCommandParameters {
   functionsDefinitionFetcher: AppFunctionsDefinitionFetcher;
 }
 
-export type AuthCliInputs = Record<string, unknown>;
-
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
 const MIGRATION_DIR = '.amplify/migration';

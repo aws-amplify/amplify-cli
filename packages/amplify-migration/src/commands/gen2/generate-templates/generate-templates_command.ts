@@ -1,5 +1,5 @@
 import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs';
-import { generateTemplates } from '../../../';
+import { generateTemplates } from '../../../command-handlers';
 import assert from 'node:assert';
 
 export interface GenerateTemplatesCommandOptions {

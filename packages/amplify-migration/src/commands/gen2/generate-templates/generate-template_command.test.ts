@@ -4,8 +4,8 @@ import yargs, { CommandModule } from 'yargs';
 import assert from 'node:assert';
 
 const mockHandler = jest.fn();
-jest.mock('../../../index', () => ({
-  ...jest.requireActual('../../../index'),
+jest.mock('../../../command-handlers', () => ({
+  ...jest.requireActual('../../../command-handlers'),
   generateTemplates: (from: string, to: string) => mockHandler(from, to),
 }));
 

@@ -3,8 +3,8 @@ import { runCommandAsync } from '../../../test-utils/command_runner';
 import yargs from 'yargs';
 
 const mockHandler = jest.fn();
-jest.mock('../../../index', () => ({
-  ...jest.requireActual('../../../index'),
+jest.mock('../../../command-handlers', () => ({
+  ...jest.requireActual('../../../command-handlers'),
   execute: () => mockHandler(),
 }));
 
