@@ -7,7 +7,7 @@ import {
   describeCloudFormationStack,
 } from '@aws-amplify/amplify-e2e-core';
 import { getProjectOutputs } from './projectOutputs';
-import { getAppSyncDataSource, getResourceDetails } from './sdk-calls';
+import { getAppSyncDataSource, getResourceDetails } from './sdk_calls';
 import { removeProperties } from '.';
 
 export async function assertGen1Setup(projRoot: string) {
@@ -92,12 +92,7 @@ export async function assertStorageResource(projRoot: string, gen1BucketName: st
   expect(gen2Resource).toEqual(gen1Resource);
 }
 
-export async function assertFunctionResource(
-  projRoot: string,
-  gen2StackName: string | unknown,
-  gen1FunctionName: string,
-  gen1Region: string,
-) {
+export async function assertFunctionResource(projRoot: string, gen2StackName: string, gen1FunctionName: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Lambda::Function', gen1FunctionName, gen1Region);
   removeProperties(gen1Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
   // TODO: remove below line after Tags inconsistency is fixed
@@ -105,7 +100,7 @@ export async function assertFunctionResource(
 
   const gen2Meta = getProjectOutputs(projRoot);
   const gen2Region = gen2Meta.auth.aws_region;
-  const outputs = (await describeCloudFormationStack(gen2StackName as string, gen2Region)).Outputs;
+  const outputs = (await describeCloudFormationStack(gen2StackName, gen2Region)).Outputs;
   const gen2FunctionName = JSON.parse(outputs?.find((output) => output.OutputKey === 'definedFunctions')?.OutputValue ?? '[]')[0];
   const gen2Resource = await getResourceDetails('AWS::Lambda::Function', gen2FunctionName, gen2Region);
   removeProperties(gen2Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
@@ -115,7 +110,7 @@ export async function assertFunctionResource(
   expect(gen2Resource).toEqual(gen1Resource);
 }
 
-export async function assertDataResource(projRoot: string, gen2StackName: string | unknown, gen1GraphqlApiId: string, gen1Region: string) {
+export async function assertDataResource(projRoot: string, gen2StackName: string, gen1GraphqlApiId: string, gen1Region: string) {
   const gen1Resource = await getAppSyncApi(gen1GraphqlApiId, gen1Region);
   const gen1DataSource = (await getAppSyncDataSource(gen1GraphqlApiId, 'TodoTable', gen1Region)) as Record<string, unknown>;
   removeProperties(gen1DataSource, ['dataSourceArn', 'serviceRoleArn']);
@@ -125,7 +120,7 @@ export async function assertDataResource(projRoot: string, gen2StackName: string
 
   const gen2Meta = getProjectOutputs(projRoot);
   const gen2Region = gen2Meta.data.aws_region;
-  const outputs = (await describeCloudFormationStack(gen2StackName as string, gen2Region)).Outputs;
+  const outputs = (await describeCloudFormationStack(gen2StackName, gen2Region)).Outputs;
   const gen2GraphqlApiId = outputs?.find((output) => output.OutputKey === 'awsAppsyncApiId')?.OutputValue ?? '';
   const gen2Resource = await getAppSyncApi(gen2GraphqlApiId, gen2Region);
   const gen2DataSource = (await getAppSyncDataSource(gen2GraphqlApiId, 'TodoTable', gen1Region)) as Record<string, unknown>;

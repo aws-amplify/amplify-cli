@@ -2,7 +2,7 @@ import path from 'node:path';
 import assert from 'node:assert';
 import { createNewProjectDir } from '@aws-amplify/amplify-e2e-core';
 import { createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
-import { copyFunctionFile } from '../function-utils';
+import { copyFunctionFile } from '../function_utils';
 import { copyGen1Schema } from '../api-utils';
 import { cleanupProjects, setupAndPushGen1Project, runCodegenCommand, runGen2SandboxCommand } from '..';
 import { assertGen1Setup, assertUserPoolResource, assertStorageResource, assertFunctionResource, assertDataResource } from '../assertions';
@@ -38,7 +38,7 @@ void describe('Codegen E2E tests', () => {
     void it('should init a project & add auth, function, storage, api with defaults & perform full migration codegen flow', async () => {
       await setupAndPushGen1Project(projRoot, projName);
       const { gen1UserPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region } = await assertGen1Setup(projRoot);
-      await assert.doesNotReject(runCodegenCommand(projRoot), 'Codegen failed');
+      await runCodegenCommand(projRoot);
       await copyFunctionFile(projRoot, gen1FunctionName);
       await copyGen1Schema(projRoot, projName);
       const gen2StackName = await runGen2SandboxCommand(projRoot);

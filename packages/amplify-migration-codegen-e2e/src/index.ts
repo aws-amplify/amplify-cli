@@ -18,8 +18,9 @@ import {
 import { updatePackageDependency } from './updatePackageJson';
 import path from 'node:path';
 import { unset } from 'lodash';
+import execa from 'execa';
 
-export * from './sdk-calls';
+export * from './sdk_calls';
 export * from './assertions';
 export * from './projectOutputs';
 export * from './updatePackageJson';
@@ -40,39 +41,34 @@ export async function setupAndPushGen1Project(projRoot: string, projName: string
 }
 
 export function runCodegenCommand(cwd: string) {
-  return spawn(getNpxPath(), ['@aws-amplify/migrate', 'to-gen-2', 'generate-code'], {
+  const processResult = execa.sync(getNpxPath(), ['@aws-amplify/migrate', 'to-gen-2', 'generate-code'], {
     cwd,
-    stripColors: true,
-    noOutputTimeout: pushTimeoutMS,
     env: { ...process.env, npm_config_user_agent: 'npm' },
-  }).runAsync();
+    encoding: 'utf-8',
+  });
+  if (processResult.exitCode !== 0) {
+    throw new Error(`Codegen command exit code: ${processResult.exitCode}, message: ${processResult.stderr}`);
+  }
 }
 
-export async function runGen2SandboxCommand(cwd: string) {
+export function runGen2SandboxCommand(cwd: string) {
   updatePackageDependency(cwd, '@aws-amplify/backend', '0.0.0-test-20241003180022');
   npmInstall(cwd);
-  return new Promise((resolve, reject) => {
-    let stackName: string;
-    spawn(getNpxPath(), ['ampx', 'sandbox', '--once'], {
-      cwd,
-      stripColors: true,
-      noOutputTimeout: pushTimeoutMS,
-      env: { ...process.env, npm_config_user_agent: 'npm' },
-    })
-      .wait(/arn:aws:cloudformation:.*:stack\/([^/]+)\//, (data) => {
-        const match = data.match(/arn:aws:cloudformation:.*:stack\/([^/]+)\//);
-        if (match) {
-          stackName = match[1];
-        }
-      })
-      .run((err: Error) => {
-        if (!err && stackName) {
-          resolve(stackName);
-        } else {
-          reject(err);
-        }
-      });
+  const processResult = execa.sync(getNpxPath(), ['ampx', 'sandbox', '--once'], {
+    cwd,
+    env: { ...process.env, npm_config_user_agent: 'npm' },
+    encoding: 'utf-8',
   });
+  if (processResult.exitCode === 0) {
+    const match = processResult.stdout.match(/arn:aws:cloudformation:.*:stack\/([^/]+)\//);
+    if (match) {
+      return match[1];
+    } else {
+      throw new Error('Stack name not found in the command output');
+    }
+  } else {
+    throw new Error(`Sandbox command exit code: ${processResult.exitCode}, message: ${processResult.stderr}`);
+  }
 }
 
 function deleteGen2Sandbox(cwd: string) {
