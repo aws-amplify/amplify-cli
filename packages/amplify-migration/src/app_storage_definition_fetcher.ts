@@ -2,16 +2,18 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { getStorageDefinition } from '@aws-amplify/amplify-gen1-codegen-storage-adapter';
 import { BackendDownloader } from './backend_downloader.js';
-import { StorageRenderParameters, StorageTriggerEvent, Lambda } from '@aws-amplify/amplify-gen2-codegen';
+import { StorageRenderParameters, StorageTriggerEvent, Lambda, ServerSideEncryptionConfiguration } from '@aws-amplify/amplify-gen2-codegen';
 import {
   GetBucketNotificationConfigurationCommand,
   S3Client,
   GetBucketNotificationConfigurationCommandOutput,
   GetBucketAccelerateConfigurationCommand,
   GetBucketVersioningCommand,
+  GetBucketEncryptionCommand,
 } from '@aws-sdk/client-s3';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { fileOrDirectoryExists } from './directory_exists';
+import { ServerResponse } from 'node:http';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
@@ -92,6 +94,10 @@ export class AppStorageDefinitionFetcher {
           );
           const { Status: versioningConfiguration } = await this.s3Client.send(new GetBucketVersioningCommand({ Bucket: bucketName }));
 
+          const { ServerSideEncryptionConfiguration: serverSideEncryptionByDefault } = await this.s3Client.send(
+            new GetBucketEncryptionCommand({ Bucket: bucketName }),
+          );
+
           const triggers = this.getStorageTriggers(connections);
 
           const storageDefinition = getStorageDefinition({
@@ -106,6 +112,16 @@ export class AppStorageDefinitionFetcher {
           storageOptions.triggers = storageDefinition.triggers;
           storageOptions.accelerateConfiguration = accelerateConfiguration;
           storageOptions.versioningConfiguration = versioningConfiguration;
+          storageOptions.bucketName = bucketName;
+
+          if (serverSideEncryptionByDefault && serverSideEncryptionByDefault.Rules && serverSideEncryptionByDefault.Rules[0]) {
+            const serverSideEncryptionConf: ServerSideEncryptionConfiguration = {
+              serverSideEncryptionByDefault: serverSideEncryptionByDefault.Rules[0].ApplyServerSideEncryptionByDefault!,
+              bucketKeyEnabled: serverSideEncryptionByDefault.Rules[0].BucketKeyEnabled!,
+            };
+
+            storageOptions.bucketEncryptionAlgorithm = serverSideEncryptionConf;
+          }
         } else if (storageOutput.service === 'DynamoDB') {
           const tableName = storageOutput.output.Name?.split('-')[0];
           if (!tableName) throw new Error('Could not find table name');

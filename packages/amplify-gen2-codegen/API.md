@@ -9,6 +9,7 @@ import { BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { EnvironmentResponse } from '@aws-sdk/client-lambda';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
 import { Runtime } from '@aws-sdk/client-lambda';
+import { ServerSideEncryptionByDefault } from '@aws-sdk/client-s3';
 
 // @public (undocumented)
 export type AccessPatterns = {
@@ -212,6 +213,12 @@ export type Scope = 'PHONE' | 'EMAIL' | 'OPENID' | 'PROFILE' | 'COGNITO_ADMIN';
 export type SendingAccount = 'COGNITO_DEFAULT' | 'DEVELOPER';
 
 // @public (undocumented)
+export type ServerSideEncryptionConfiguration = {
+    serverSideEncryptionByDefault: ServerSideEncryptionByDefault;
+    bucketKeyEnabled: boolean;
+};
+
+// @public (undocumented)
 export type StandardAttribute = {
     readonly mutable?: boolean;
     readonly required?: boolean;
@@ -227,7 +234,9 @@ export interface StorageRenderParameters {
     // (undocumented)
     accessPatterns?: AccessPatterns;
     // (undocumented)
-    bucketEncryptionAlgorithm?: string;
+    bucketEncryptionAlgorithm?: ServerSideEncryptionConfiguration;
+    // (undocumented)
+    bucketName?: string;
     // (undocumented)
     dynamoDB?: string;
     // (undocumented)
