@@ -13,7 +13,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { fileOrDirectoryExists } from './directory_exists';
-import { ServerResponse } from 'node:http';
 
 export interface AppStorageDefinitionFetcher {
   getDefinition(): Promise<ReturnType<typeof getStorageDefinition> | undefined>;
