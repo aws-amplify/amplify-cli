@@ -143,7 +143,8 @@ class TemplateGenerator {
         newGen1Template,
         newGen2Template,
       );
-      await migrationReadMeGenerator.renderStep3(sourceTemplate, destinationTemplate, logicalIdMapping);
+      await migrationReadMeGenerator.renderStep3(sourceTemplate, destinationTemplate, logicalIdMapping, newGen1Template, newGen2Template);
+      await migrationReadMeGenerator.renderStep4();
     }
   }
 }

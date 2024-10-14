@@ -145,7 +145,7 @@ aws cloudformation describe-stacks \\
 
   // should render step3
   it('should render step3', async () => {
-    await migrationReadMeGenerator.renderStep3(oldStackTemplate, newStackTemplate, logicalIdMapping);
+    await migrationReadMeGenerator.renderStep3(oldStackTemplate, newStackTemplate, logicalIdMapping, oldStackTemplate, newStackTemplate);
     expect(fs.appendFile).toHaveBeenCalledWith(
       'test/MIGRATION_README.md',
       `### STEP 3: CREATE AND EXECUTE CLOUDFORMATION STACK REFACTOR FOR auth CATEGORY
@@ -167,28 +167,80 @@ aws s3 cp test/step3-destinationTemplate.json s3://$BUCKET_NAME
 3.b) Create stack refactor
 \`\`\`
 aws cloudformation create-stack-refactor  --stack-definitions StackName=amplify-testauth-dev-12345-auth-ABCDE,TemplateURL=s3://$BUCKET_NAME/step3-sourceTemplate.json  StackName=amplify-mygen2app-test-sandbox-12345-auth-ABCDE,TemplateURL=s3://$BUCKET_NAME/step3-destinationTemplate.json  --resource-mappings  '[{\"Source\":{\"StackName\":\"amplify-testauth-dev-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen1FooUserPool\"},\"Destination\":{\"StackName\":\"amplify-mygen2app-test-sandbox-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen2FooUserPool\"}}]'
- \`\`\`
+\`\`\`
  
 \`\`\`
 export STACK_REFACTOR_ID=<<REFACTOR-ID-FROM-CREATE-STACK-REFACTOR_CALL>>
 \`\`\`
   
 3.c) Describe stack refactor to check for creation status
- \`\`\`
+\`\`\`
  aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
-  \`\`\`
+\`\`\`
  
 3.d) Execute stack refactor
- \`\`\`
+\`\`\`
  aws cloudformation execute-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
- \`\`\`
+\`\`\`
  
 3.e) Describe stack refactor to check for execution status
- \`\`\`
+\`\`\`
  aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
-  \`\`\`
+\`\`\`
+
+#### Rollback step for refactor:
+\`\`\`
+aws s3 cp test/step3-sourceTemplate-rollback.json s3://$BUCKET_NAME
+\`\`\`
+
+\`\`\`
+aws s3 cp test/step3-destinationTemplate-rollback.json s3://$BUCKET_NAME
+\`\`\`
+
+\`\`\`
+ aws cloudformation create-stack-refactor  --stack-definitions StackName=amplify-testauth-dev-12345-auth-ABCDE,TemplateURL=s3://$BUCKET_NAME/step3-sourceTemplate-rollback.json  StackName=amplify-mygen2app-test-sandbox-12345-auth-ABCDE,TemplateURL=s3://$BUCKET_NAME/step3-destinationTemplate-rollback.json  --resource-mappings  '[{\"Source\":{\"StackName\":\"amplify-mygen2app-test-sandbox-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen2FooUserPool\"},\"Destination\":{\"StackName\":\"amplify-testauth-dev-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen1FooUserPool\"}}]'
+\`\`\`
+
+\`\`\`
+export STACK_REFACTOR_ID=<<REFACTOR-ID-FROM-CREATE-STACK-REFACTOR_CALL>>
+\`\`\`
+
+Describe stack refactor to check for creation status
+\`\`\`
+ aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
+\`\`\`
+
+Execute stack refactor
+\`\`\`
+ aws cloudformation execute-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
+\`\`\`
+
+Describe stack refactor to check for execution status
+\`\`\`
+ aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
+\`\`\`
  `,
       { encoding: 'utf8' },
+    );
+  });
+
+  it('should render step4', async () => {
+    await migrationReadMeGenerator.renderStep4();
+    expect(fs.appendFile).toHaveBeenCalledWith(
+      'test/MIGRATION_README.md',
+      `### STEP 4: REDEPLOY GEN2 APPLICATION
+This step will remove the hardcoded references from the template and replace them with resource references (where applicable).
+
+4.a) Only applicable to Storage category: Uncomment the following line in \`amplify/backend.ts\` file to instruct CDK to use the gen1 S3 bucket
+\`\`\`
+s3Bucket.bucketName = YOUR_GEN1_BUCKET_NAME;
+\`\`\`
+
+4.b) Deploy sandbox using the below command or trigger a CI/CD build via hosting by committing this file to your Git repository
+\`\`\`
+npx ampx sandbox
+\`\`\`
+`,
     );
   });
 });

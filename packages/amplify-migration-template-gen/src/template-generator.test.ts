@@ -10,6 +10,7 @@ const mockReadMeInitialize = jest.fn();
 const mockReadMeRenderStep1 = jest.fn();
 const mockReadMeRenderStep2 = jest.fn();
 const mockReadMeRenderStep3 = jest.fn();
+const mockReadMeRenderStep4 = jest.fn();
 
 const NUM_CATEGORIES_TO_REFACTOR = 2;
 const GEN1_ROOT_STACK_NAME = 'amplify-gen1-dev-12345';
@@ -27,6 +28,7 @@ jest.mock('./migration-readme-generator', () => {
       renderStep1: mockReadMeRenderStep1,
       renderStep2: mockReadMeRenderStep2,
       renderStep3: mockReadMeRenderStep3,
+      renderStep4: mockReadMeRenderStep4,
     };
   };
 });
