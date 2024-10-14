@@ -2,7 +2,7 @@ import ts from 'typescript';
 import { getAccessPatterns } from './access';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTriggersProperty, Lambda } from '../function/lambda';
-import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
+import { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionByDefault } from '@aws-sdk/client-s3';
 const factory = ts.factory;
 
 export type S3TriggerDefinition = Record<string, never>;
@@ -18,12 +18,18 @@ export type AccessPatterns = {
   groups?: Record<string, Permission[]>;
 };
 
+export type ServerSideEncryptionConfiguration = {
+  serverSideEncryptionByDefault: ServerSideEncryptionByDefault;
+  bucketKeyEnabled: boolean;
+};
+
 export interface StorageRenderParameters {
+  bucketName?: string;
   triggers?: Partial<Record<StorageTriggerEvent, Lambda>>;
   accessPatterns?: AccessPatterns;
   storageIdentifier?: string;
   lambdas?: S3TriggerDefinition[];
-  bucketEncryptionAlgorithm?: string;
+  bucketEncryptionAlgorithm?: ServerSideEncryptionConfiguration;
   dynamoDB?: string;
   accelerateConfiguration?: BucketAccelerateStatus;
   versioningConfiguration?: BucketVersioningStatus;
@@ -55,6 +61,7 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
       ),
     );
   }
+
   if (Object.keys(triggers).length) {
     propertyAssignments.push(createTriggersProperty(triggers));
     for (const value of Object.values(triggers)) {

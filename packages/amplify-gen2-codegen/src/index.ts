@@ -39,6 +39,7 @@ import {
   Permission,
   S3TriggerDefinition,
   StorageTriggerEvent,
+  ServerSideEncryptionConfiguration,
 } from './storage/source_builder.js';
 
 import { DataDefinition, generateDataSource } from './data/source_builder';
@@ -179,6 +180,8 @@ export const createGen2Renderer = ({
       accelerateConfiguration: storage.accelerateConfiguration,
       versionConfiguration: storage.versioningConfiguration,
       hasS3Bucket: hasS3Bucket,
+      bucketEncryptionAlgorithm: storage.bucketEncryptionAlgorithm,
+      bucketName: storage.bucketName,
     };
   }
 
@@ -223,4 +226,5 @@ export {
   OidcOptions,
   Scope,
   AttributeMappingRule,
+  ServerSideEncryptionConfiguration,
 };

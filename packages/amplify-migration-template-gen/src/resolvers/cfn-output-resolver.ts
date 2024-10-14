@@ -37,12 +37,14 @@ class CfnOutputResolver {
         // Replace Fn:GetAtt references using stack output values
         const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["${logicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
         const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp).next();
-        const resourceType = this.template.Resources[logicalResourceId].Type as CFN_RESOURCE_TYPES;
         if (!fnGetAttRegExpResult.done) {
+          const resourceType = this.template.Resources[logicalResourceId].Type as CFN_RESOURCE_TYPES;
           const attributeName = fnGetAttRegExpResult.value.groups?.AttributeName;
           assert(attributeName);
           const resource = this.getResourceAttribute(attributeName as AWS_RESOURCE_ATTRIBUTES, resourceType, stackOutputValue);
-          stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExp, this.buildFnGetAttReplace(resource));
+          if (resource) {
+            stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExp, this.buildFnGetAttReplace(resource));
+          }
         }
       }
     });
@@ -69,7 +71,7 @@ class CfnOutputResolver {
     attributeName: AWS_RESOURCE_ATTRIBUTES,
     resourceType: CFN_RESOURCE_TYPES,
     resourceIdentifier: string,
-  ): Record<string, string> {
+  ): Record<string, string> | undefined {
     switch (attributeName) {
       case 'Arn': {
         switch (resourceType) {
@@ -82,11 +84,11 @@ class CfnOutputResolver {
               Arn: `arn:aws:cognito-idp:${this.region}:${this.accountId}:userpool/${resourceIdentifier}`,
             };
           default:
-            throw new Error(`getResourceAttribute not implemented for ${resourceType}`);
+            return undefined;
         }
       }
       default:
-        throw new Error(`getResourceAttribute not implemented for ${attributeName}`);
+        return undefined;
     }
   }
 

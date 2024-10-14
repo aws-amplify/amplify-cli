@@ -27,6 +27,10 @@ describe('CFNOutputResolver', () => {
         Description: 'User pool',
         Value: { Ref: 'MyUserPoolClient' },
       },
+      LambdaRole: {
+        Description: 'Lambda execution role',
+        Value: { Ref: 'TestLambdaRole' },
+      },
     },
     Resources: {
       MyS3Bucket: {
@@ -82,6 +86,33 @@ describe('CFNOutputResolver', () => {
           UserPoolId: { Ref: 'MyUserPool' },
         },
       },
+      TestLambda: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          FunctionName: 'TestLambda',
+          Handler: 'index.handler',
+          Role: { 'Fn::GetAtt': ['TestLambdaRole', 'Arn'] },
+          Code: {
+            ZipFile: 'exports.handler = function() {}',
+          },
+          Runtime: 'nodejs14.x',
+        },
+      },
+      TestLambdaRole: {
+        Type: 'AWS::IAM::Role',
+        Properties: {
+          RoleName: 'TestLambdaRole',
+          AssumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {},
+              },
+            ],
+          },
+        },
+      },
     },
   };
   const expectedTemplate: CFNTemplate = {
@@ -108,6 +139,10 @@ describe('CFNOutputResolver', () => {
       MyUserPoolClientOutputRef: {
         Description: 'User pool',
         Value: 'test-userpoolclientid',
+      },
+      LambdaRole: {
+        Description: 'Lambda execution role',
+        Value: 'lambda-exec-role',
       },
     },
     Resources: {
@@ -164,6 +199,33 @@ describe('CFNOutputResolver', () => {
           UserPoolId: 'test-userpoolid',
         },
       },
+      TestLambda: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          FunctionName: 'TestLambda',
+          Handler: 'index.handler',
+          Role: { 'Fn::GetAtt': ['TestLambdaRole', 'Arn'] },
+          Code: {
+            ZipFile: 'exports.handler = function() {}',
+          },
+          Runtime: 'nodejs14.x',
+        },
+      },
+      TestLambdaRole: {
+        Type: 'AWS::IAM::Role',
+        Properties: {
+          RoleName: 'TestLambdaRole',
+          AssumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {},
+              },
+            ],
+          },
+        },
+      },
     },
   };
   it('should resolve output references', () => {
@@ -186,6 +248,10 @@ describe('CFNOutputResolver', () => {
           {
             OutputKey: 'MyUserPoolClientOutputRef',
             OutputValue: 'test-userpoolclientid',
+          },
+          {
+            OutputKey: 'LambdaRole',
+            OutputValue: 'lambda-exec-role',
           },
         ],
       ),
