@@ -177,7 +177,7 @@ describe('BackendRenderer', () => {
         });
         it(`imports ${resource}`, () => {
           const renderer = new BackendSynthesizer();
-          const rendered = renderer.render({ [resource]: { importFrom, hasS3Bucket: 'bucket_name' } });
+          const rendered = renderer.render({ [resource]: { importFrom, hasS3Bucket: 'bucket_name', bucketName: 'testBucket' } });
           const source = printNodeArray(rendered);
           assert.match(source, importRegex);
         });
@@ -198,6 +198,7 @@ describe('BackendRenderer', () => {
           storage: {
             importFrom: 'my-storage',
             hasS3Bucket: 'bucket_name',
+            bucketName: 'testBucket',
           },
         });
         const output = printNodeArray(rendered);
@@ -238,7 +239,11 @@ describe('BackendRenderer', () => {
         const storageImportLocation = 'storage/resource.ts';
         const renderer = new BackendSynthesizer();
         const rendered = renderer.render({
-          storage: { importFrom: storageImportLocation, hasS3Bucket: 'bucket_name' },
+          storage: {
+            importFrom: storageImportLocation,
+            hasS3Bucket: 'bucket_name',
+            bucketName: 'testBucket',
+          },
         });
         const output = printNodeArray(rendered);
         const regex = getImportRegex('storage', storageImportLocation);
@@ -256,6 +261,52 @@ describe('BackendRenderer', () => {
         const regex = getImportRegex('auth', authImportLocation);
         assert.match(output, regex);
       });
+    });
+  });
+  describe('renders storage overrides', () => {
+    it('renders s3 bucket name', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        storage: {
+          importFrom: 'my-storage',
+          bucketName: 'testBucket',
+          hasS3Bucket: 'bucket-name',
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(output.includes('bucketName'));
+    });
+    it('renders s3 bucket encryption algorithm', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        storage: {
+          importFrom: 'my-storage',
+          bucketName: 'testBucket',
+          hasS3Bucket: 'bucket-name',
+          bucketEncryptionAlgorithm: {
+            serverSideEncryptionByDefault: {
+              SSEAlgorithm: 'AES256',
+              KMSMasterKeyID: 'key-id',
+            },
+            bucketKeyEnabled: true,
+          },
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(output.includes('bucketEncryption'));
+      assert(output.includes('sseAlgorithm'));
+    });
+    it('renders s3 deletion policy', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        storage: {
+          importFrom: 'my-storage',
+          bucketName: 'testBucket',
+          hasS3Bucket: 'bucket-name',
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(output.includes('applyRemovalPolicy'));
     });
   });
 });
