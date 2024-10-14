@@ -3,10 +3,25 @@ import assert from 'node:assert';
 import { createNewProjectDir } from '@aws-amplify/amplify-e2e-core';
 import { createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 import { copyFunctionFile } from '../function_utils';
-import { copyGen1Schema } from '../api-utils';
-import { cleanupProjects, setupAndPushGen1Project, runCodegenCommand, runGen2SandboxCommand } from '..';
-import { assertGen1Setup, assertUserPoolResource, assertStorageResource, assertFunctionResource, assertDataResource } from '../assertions';
-
+import { copyGen1Schema } from '../api_utils';
+import {
+  cleanupProjects,
+  setupAndPushDefaultGen1Project,
+  setupAndPushAuthWithMaxOptionsGen1Project,
+  setupAndPushStorageWithMaxOptionsGen1Project,
+  runCodegenCommand,
+  runGen2SandboxCommand,
+} from '..';
+import {
+  assertStorageWithMaxOptionsGen1Setup,
+  assertAuthWithMaxOptionsGen1Setup,
+  assertDefaultGen1Setup,
+  assertUserPoolResource,
+  assertStorageResource,
+  assertFunctionResource,
+  assertDataResource,
+} from '../assertions';
+import { removeErrorThrowsFromAuthResourceFile } from '../auth_utils';
 void describe('Codegen E2E tests', () => {
   void describe('render pipeline', () => {
     void it('renders a project with no parameters', async () => {
@@ -36,16 +51,33 @@ void describe('Codegen E2E tests', () => {
     });
 
     void it('should init a project & add auth, function, storage, api with defaults & perform full migration codegen flow', async () => {
-      await setupAndPushGen1Project(projRoot, projName);
-      const { gen1UserPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region } = await assertGen1Setup(projRoot);
+      await setupAndPushDefaultGen1Project(projRoot, projName);
+      const { gen1UserPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region } = await assertDefaultGen1Setup(projRoot);
       await runCodegenCommand(projRoot);
-      await copyFunctionFile(projRoot, gen1FunctionName);
+      await copyFunctionFile(projRoot, 'function', gen1FunctionName);
       await copyGen1Schema(projRoot, projName);
       const gen2StackName = await runGen2SandboxCommand(projRoot);
       await assertUserPoolResource(projRoot, gen1UserPoolId, gen1Region);
       await assertStorageResource(projRoot, gen1BucketName, gen1Region);
       await assertFunctionResource(projRoot, gen2StackName, gen1FunctionName, gen1Region);
       await assertDataResource(projRoot, gen2StackName, gen1GraphqlApiId, gen1Region);
+    });
+    void it('should init a project where all possible auth options are selected and perform full migration codegen flow ', async () => {
+      await setupAndPushAuthWithMaxOptionsGen1Project(projRoot, projName);
+      const { gen1UserPoolId, gen1FunctionName, gen1Region } = await assertAuthWithMaxOptionsGen1Setup(projRoot);
+      await runCodegenCommand(projRoot);
+      await copyFunctionFile(projRoot, 'auth', gen1FunctionName);
+      await removeErrorThrowsFromAuthResourceFile(projRoot);
+      const gen2StackName = await runGen2SandboxCommand(projRoot);
+      await assertUserPoolResource(projRoot, gen1UserPoolId, gen1Region);
+      await assertFunctionResource(projRoot, gen2StackName, gen1FunctionName, gen1Region);
+    });
+    void it('should init a project where default auth, all possible s3 bucket resource options are selected and perform full migration codegen flow ', async () => {
+      await setupAndPushStorageWithMaxOptionsGen1Project(projRoot, projName);
+      const { gen1BucketName, gen1Region } = await assertStorageWithMaxOptionsGen1Setup(projRoot);
+      await runCodegenCommand(projRoot);
+      await runGen2SandboxCommand(projRoot);
+      await assertStorageResource(projRoot, gen1BucketName, gen1Region);
     });
   });
 });
