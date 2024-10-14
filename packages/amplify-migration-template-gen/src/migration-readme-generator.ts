@@ -129,12 +129,25 @@ aws cloudformation describe-stacks \\
    * @param destinationTemplate
    * @param logicalIdMapping
    */
-  async renderStep3(sourceTemplate: CFNTemplate, destinationTemplate: CFNTemplate, logicalIdMapping: Map<string, string>): Promise<void> {
+  async renderStep3(
+    sourceTemplate: CFNTemplate,
+    destinationTemplate: CFNTemplate,
+    logicalIdMapping: Map<string, string>,
+    oldSourceTemplate: CFNTemplate,
+    oldDestinationTemplate: CFNTemplate,
+  ): Promise<void> {
     const sourceTemplateFileName = 'step3-sourceTemplate.json';
     const destinationTemplateFileName = 'step3-destinationTemplate.json';
-    const step2SourceTemplateFileNamePath = `${this.path}/${sourceTemplateFileName}`;
-    const step2DestinationTemplateFileNamePath = `${this.path}/${destinationTemplateFileName}`;
+    const rollbackSourceTemplateFileName = 'step3-sourceTemplate-rollback.json';
+    const rollbackDestinationTemplateFileName = 'step3-destinationTemplate-rollback.json';
+
+    const step3SourceTemplateFileNamePath = `${this.path}/${sourceTemplateFileName}`;
+    const step3DestinationTemplateFileNamePath = `${this.path}/${destinationTemplateFileName}`;
+    const step3RollbackSourceTemplateFileNamePath = `${this.path}/${rollbackSourceTemplateFileName}`;
+    const step3RollbackDestinationTemplateFileNamePath = `${this.path}/${rollbackDestinationTemplateFileName}`;
+
     const resourceMappings: ResourceMapping[] = [];
+    const rollbackResourceMappings: ResourceMapping[] = [];
     for (const [gen1LogicalId, gen2LogicalId] of logicalIdMapping) {
       resourceMappings.push({
         Source: {
@@ -144,6 +157,16 @@ aws cloudformation describe-stacks \\
         Destination: {
           StackName: this.gen2CategoryStackName,
           LogicalResourceId: gen2LogicalId,
+        },
+      });
+      rollbackResourceMappings.push({
+        Source: {
+          StackName: this.gen2CategoryStackName,
+          LogicalResourceId: gen2LogicalId,
+        },
+        Destination: {
+          StackName: this.gen1CategoryStackName,
+          LogicalResourceId: gen1LogicalId,
         },
       });
     }
@@ -158,11 +181,11 @@ export BUCKET_NAME=<<YOUR_BUCKET_NAME>>
 \`\`\`
 
 \`\`\`
-aws s3 cp ${step2SourceTemplateFileNamePath} s3://$BUCKET_NAME
+aws s3 cp ${step3SourceTemplateFileNamePath} s3://$BUCKET_NAME
 \`\`\`
 
 \`\`\`
-aws s3 cp ${step2DestinationTemplateFileNamePath} s3://$BUCKET_NAME
+aws s3 cp ${step3DestinationTemplateFileNamePath} s3://$BUCKET_NAME
 \`\`\`
 
 3.b) Create stack refactor
@@ -172,31 +195,88 @@ aws cloudformation create-stack-refactor \
  StackName=${this.gen2CategoryStackName},TemplateURL=s3://$BUCKET_NAME/${destinationTemplateFileName} \
  --resource-mappings \
  '${JSON.stringify(resourceMappings)}'
- \`\`\`
+\`\`\`
  
 \`\`\`
 export STACK_REFACTOR_ID=<<REFACTOR-ID-FROM-CREATE-STACK-REFACTOR_CALL>>
 \`\`\`
   
 3.c) Describe stack refactor to check for creation status
- \`\`\`
+\`\`\`
  aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
-  \`\`\`
+\`\`\`
  
 3.d) Execute stack refactor
- \`\`\`
+\`\`\`
  aws cloudformation execute-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
- \`\`\`
+\`\`\`
  
 3.e) Describe stack refactor to check for execution status
- \`\`\`
+\`\`\`
  aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
-  \`\`\`
+\`\`\`
+
+#### Rollback step for refactor:
+\`\`\`
+aws s3 cp ${step3RollbackSourceTemplateFileNamePath} s3://$BUCKET_NAME
+\`\`\`
+
+\`\`\`
+aws s3 cp ${step3RollbackDestinationTemplateFileNamePath} s3://$BUCKET_NAME
+\`\`\`
+
+\`\`\`
+ aws cloudformation create-stack-refactor \
+ --stack-definitions StackName=${this.gen1CategoryStackName},TemplateURL=s3://$BUCKET_NAME/${rollbackSourceTemplateFileName} \
+ StackName=${this.gen2CategoryStackName},TemplateURL=s3://$BUCKET_NAME/${rollbackDestinationTemplateFileName} \
+ --resource-mappings \
+ '${JSON.stringify(rollbackResourceMappings)}'
+\`\`\`
+
+\`\`\`
+export STACK_REFACTOR_ID=<<REFACTOR-ID-FROM-CREATE-STACK-REFACTOR_CALL>>
+\`\`\`
+
+Describe stack refactor to check for creation status
+\`\`\`
+ aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
+\`\`\`
+
+Execute stack refactor
+\`\`\`
+ aws cloudformation execute-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
+\`\`\`
+
+Describe stack refactor to check for execution status
+\`\`\`
+ aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
+\`\`\`
  `,
       { encoding: 'utf8' },
     );
-    await fs.writeFile(step2SourceTemplateFileNamePath, JSON.stringify(sourceTemplate, null, 2), { encoding: 'utf8' });
-    await fs.writeFile(step2DestinationTemplateFileNamePath, JSON.stringify(destinationTemplate, null, 2), { encoding: 'utf8' });
+    await fs.writeFile(step3SourceTemplateFileNamePath, JSON.stringify(sourceTemplate, null, 2), { encoding: 'utf8' });
+    await fs.writeFile(step3DestinationTemplateFileNamePath, JSON.stringify(destinationTemplate, null, 2), { encoding: 'utf8' });
+    await fs.writeFile(step3RollbackSourceTemplateFileNamePath, JSON.stringify(oldSourceTemplate, null, 2), { encoding: 'utf8' });
+    await fs.writeFile(step3RollbackDestinationTemplateFileNamePath, JSON.stringify(oldDestinationTemplate, null, 2), { encoding: 'utf8' });
+  }
+
+  async renderStep4() {
+    await fs.appendFile(
+      this.migrationReadMePath,
+      `### STEP 4: REDEPLOY GEN2 APPLICATION
+This step will remove the hardcoded references from the template and replace them with resource references (where applicable).
+
+4.a) Only applicable to Storage category: Uncomment the following line in \`amplify/backend.ts\` file to instruct CDK to use the gen1 S3 bucket
+\`\`\`
+s3Bucket.bucketName = YOUR_GEN1_BUCKET_NAME;
+\`\`\`
+
+4.b) Deploy sandbox using the below command or trigger a CI/CD build via hosting by committing this file to your Git repository
+\`\`\`
+npx ampx sandbox
+\`\`\`
+`,
+    );
   }
 
   private extractStackNameFromId(stackId: string): string {

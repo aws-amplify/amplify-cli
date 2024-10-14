@@ -11,7 +11,8 @@ import ts, {
 } from 'typescript';
 import { PolicyOverrides } from '../auth/source_builder.js';
 import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
-import { AccessPatterns } from '../storage/source_builder.js';
+import { AccessPatterns, ServerSideEncryptionConfiguration } from '../storage/source_builder.js';
+import assert from 'assert';
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
@@ -31,6 +32,8 @@ export interface BackendRenderParameters {
     accelerateConfiguration?: BucketAccelerateStatus;
     versionConfiguration?: BucketVersioningStatus;
     hasS3Bucket?: string | AccessPatterns | undefined;
+    bucketEncryptionAlgorithm?: ServerSideEncryptionConfiguration;
+    bucketName?: string;
   };
 
   function?: {
@@ -143,6 +146,7 @@ export class BackendSynthesizer {
 
     if (renderArgs.storage?.hasS3Bucket) {
       imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
+      imports.push(this.createImportStatement([factory.createIdentifier('RemovalPolicy')], 'aws-cdk-lib'));
       const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
       defineBackendProperties.push(storage);
     }
@@ -270,37 +274,47 @@ export class BackendSynthesizer {
       );
     }
 
-    if (renderArgs.storage?.accelerateConfiguration || renderArgs.storage?.versionConfiguration) {
+    if (renderArgs.storage && renderArgs.storage.hasS3Bucket) {
+      assert(renderArgs.storage.bucketName);
       const cfnStorageVariableStatement = this.createVariableStatement(
-        this.createVariableDeclaration('s3Bucket', 'storage.resources.bucket'),
+        this.createVariableDeclaration('s3Bucket', 'storage.resources.cfnResources.cfnBucket'),
       );
       nodes.push(cfnStorageVariableStatement);
-      const cfnBucketDeclaration = factory.createVariableDeclaration(
-        factory.createIdentifier('cfnBucket'),
-        undefined,
-        undefined,
-        factory.createAsExpression(
-          factory.createPropertyAccessExpression(
-            factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('node')),
-            factory.createIdentifier('defaultChild'),
-          ),
-          factory.createTypeReferenceNode(
-            factory.createQualifiedName(factory.createIdentifier('s3'), factory.createIdentifier('CfnBucket')),
-            undefined,
-          ),
+
+      const bucketNameAssignment = factory.createExpressionStatement(
+        factory.createAssignment(
+          factory.createPropertyAccessExpression(factory.createIdentifier('// s3Bucket'), factory.createIdentifier('bucketName')),
+          factory.createStringLiteral(renderArgs.storage.bucketName),
         ),
       );
 
-      const cfnBucketStatement = factory.createVariableStatement(
+      nodes.push(bucketNameAssignment);
+
+      const removalPolicyAssignment = factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('applyRemovalPolicy')),
         undefined,
-        factory.createVariableDeclarationList([cfnBucketDeclaration], ts.NodeFlags.Const),
+        [
+          factory.createIdentifier('RemovalPolicy.RETAIN'),
+          factory.createObjectLiteralExpression(
+            [factory.createPropertyAssignment(factory.createIdentifier('applyToUpdateReplacePolicy'), factory.createTrue())],
+            false,
+          ),
+        ],
       );
 
+      nodes.push(removalPolicyAssignment);
+    }
+
+    if (
+      renderArgs.storage?.accelerateConfiguration ||
+      renderArgs.storage?.versionConfiguration ||
+      renderArgs.storage?.bucketEncryptionAlgorithm
+    ) {
       if (renderArgs.storage?.accelerateConfiguration) {
         const accelerateConfigAssignment = factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(
-              factory.createIdentifier('cfnBucket'),
+              factory.createIdentifier('s3Bucket'),
               factory.createIdentifier('accelerateConfiguration'),
             ),
             factory.createObjectLiteralExpression(
@@ -314,14 +328,14 @@ export class BackendSynthesizer {
             ),
           ),
         );
-        nodes.push(cfnBucketStatement, accelerateConfigAssignment);
+        nodes.push(accelerateConfigAssignment);
       }
 
       if (renderArgs.storage?.versionConfiguration) {
         const versionConfigAssignment = factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(
-              factory.createIdentifier('cfnBucket'),
+              factory.createIdentifier('s3Bucket'),
               factory.createIdentifier('versioningConfiguration'),
             ),
             factory.createObjectLiteralExpression(
@@ -337,6 +351,58 @@ export class BackendSynthesizer {
         );
         nodes.push(versionConfigAssignment);
       }
+
+      if (renderArgs.storage?.bucketEncryptionAlgorithm) {
+        const bucketEncryptionAssignment = factory.createExpressionStatement(
+          factory.createAssignment(
+            factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketEncryption')),
+            factory.createObjectLiteralExpression(
+              [
+                factory.createPropertyAssignment(
+                  factory.createIdentifier('serverSideEncryptionConfiguration'),
+                  factory.createArrayLiteralExpression(
+                    [
+                      factory.createObjectLiteralExpression(
+                        [
+                          factory.createPropertyAssignment(
+                            factory.createIdentifier('serverSideEncryptionByDefault'),
+                            factory.createObjectLiteralExpression(
+                              [
+                                factory.createPropertyAssignment(
+                                  factory.createIdentifier('sseAlgorithm'),
+                                  factory.createStringLiteral(
+                                    renderArgs.storage.bucketEncryptionAlgorithm.serverSideEncryptionByDefault.SSEAlgorithm!,
+                                  ),
+                                ),
+                                factory.createPropertyAssignment(
+                                  factory.createIdentifier('kmsMasterKeyId'),
+                                  factory.createStringLiteral(
+                                    renderArgs.storage.bucketEncryptionAlgorithm.serverSideEncryptionByDefault.KMSMasterKeyID!,
+                                  ),
+                                ),
+                              ],
+                              true,
+                            ),
+                          ),
+                          factory.createPropertyAssignment(
+                            factory.createIdentifier('bucketKeyEnabled'),
+                            renderArgs.storage.bucketEncryptionAlgorithm.bucketKeyEnabled! ? factory.createTrue() : factory.createFalse(),
+                          ),
+                        ],
+                        true,
+                      ),
+                    ],
+                    true,
+                  ),
+                ),
+              ],
+              true,
+            ),
+          ),
+        );
+        nodes.push(bucketEncryptionAssignment);
+      }
+
       imports.push(
         factory.createImportDeclaration(
           undefined,
