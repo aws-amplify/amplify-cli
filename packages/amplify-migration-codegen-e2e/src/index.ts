@@ -125,6 +125,10 @@ export function removeProperties(obj: Record<string, unknown>, propertiesToRemov
 }
 
 export function removeErrorThrows(content: string): string {
-  const errorRegex = /throw new Error\([^)]*\)/g;
-  return content.replace(errorRegex, '');
+  const lines = content.split('\n');
+  const result = lines.filter((line) => {
+    const trimmedLine = line.trim();
+    return !trimmedLine.startsWith('throw new Error(');
+  });
+  return result.join('\n');
 }
