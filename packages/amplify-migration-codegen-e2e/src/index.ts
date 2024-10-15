@@ -34,7 +34,7 @@ export * from './updatePackageJson';
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
 export async function setupAndPushDefaultGen1Project(projRoot: string, projName: string) {
-  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false });
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
   await addAuthWithDefault(projRoot);
   await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
   await functionBuild(projRoot);
@@ -47,7 +47,7 @@ export async function setupAndPushDefaultGen1Project(projRoot: string, projName:
 }
 
 export async function setupAndPushAuthWithMaxOptionsGen1Project(projRoot: string, projName: string) {
-  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false });
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
   await addAuthWithGroupTrigger(projRoot);
   await updateAuthAddUserGroups(projRoot, ['Admins', 'Users']);
   await updateAuthToAddSignInSignOutUrlAfterPull(projRoot, {
@@ -61,7 +61,7 @@ export async function setupAndPushAuthWithMaxOptionsGen1Project(projRoot: string
 }
 
 export async function setupAndPushStorageWithMaxOptionsGen1Project(projRoot: string, projName: string) {
-  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false });
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
   await addAuthWithDefault(projRoot);
   await addS3WithTrigger(projRoot);
   await amplifyPushAuth(projRoot);
@@ -125,6 +125,6 @@ export function removeProperties(obj: Record<string, unknown>, propertiesToRemov
 }
 
 export function removeErrorThrows(content: string): string {
-  const errorRegex = /throw new Error\(["'].*?["']\);?\s*/g;
+  const errorRegex = /throw\s+new\s+Error\s*\([^)]*\)\s*;?/g;
   return content.replace(errorRegex, '');
 }
