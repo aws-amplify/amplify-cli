@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.14.13-gen2-migration-test-alpha.0",
+  "version": "1.14.13",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "@aws-amplify/amplify-prompts": "2.8.6",
     "@aws-amplify/codegen-ui": "2.14.2",
     "@aws-amplify/codegen-ui-react": "2.14.2",
-    "amplify-codegen": "^4.9.4",
+    "amplify-codegen": "^4.9.7",
     "aws-sdk": "^2.1464.0",
     "fs-extra": "^8.1.0",
     "node-fetch": "^2.6.7",

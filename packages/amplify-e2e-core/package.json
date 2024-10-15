@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-e2e-core",
-  "version": "5.5.11-gen2-migration-test-alpha.0",
+  "version": "5.6.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
     "jest-environment-node": "^26.6.2",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
-    "node-pty": "beta",
+    "node-pty": "^1.0.0",
     "retimer": "2.0.0",
     "rimraf": "^3.0.0",
     "semver": "^7.5.4",

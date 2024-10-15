@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-provider-awscloudformation",
-  "version": "8.10.14-gen2-migration-test-alpha.0",
+  "version": "8.11.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -34,10 +34,10 @@
     "@aws-amplify/amplify-environment-parameters": "1.9.16-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "@aws-amplify/amplify-util-import": "2.8.3",
-    "@aws-amplify/cli-extensibility-helper": "3.0.35-gen2-migration-test-alpha.0",
-    "@aws-amplify/graphql-transformer-core": "2.10.0-gen1-migration-0924.0",
-    "@aws-amplify/graphql-transformer-interfaces": "3.11.0-gen1-migration-0924.0",
-    "amplify-codegen": "^4.9.4",
+    "@aws-amplify/cli-extensibility-helper": "3.0.34",
+    "@aws-amplify/graphql-transformer-core": "^2.9.3",
+    "@aws-amplify/graphql-transformer-interfaces": "^3.10.1",
+    "amplify-codegen": "^4.9.7",
     "archiver": "^5.3.0",
     "aws-cdk-lib": "~2.129.0",
     "aws-sdk": "^2.1464.0",

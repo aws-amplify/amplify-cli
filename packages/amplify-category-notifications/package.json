@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-notifications",
-  "version": "2.26.24-gen2-migration-test-alpha.0",
+  "version": "2.26.24",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "@aws-amplify/amplify-cli-core": "4.4.0-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-environment-parameters": "1.9.16-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-prompts": "2.8.6",
-    "@aws-amplify/amplify-provider-awscloudformation": "8.10.14-gen2-migration-test-alpha.0",
+    "@aws-amplify/amplify-provider-awscloudformation": "8.11.0",
     "aws-sdk": "^2.1464.0",
     "chalk": "^4.1.1",
     "fs-extra": "^8.1.0",

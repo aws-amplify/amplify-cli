@@ -140,7 +140,7 @@ function verifyPkgCli {
     }
 
     verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((830 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((830 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((835 * 1024 * 1024))
     verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((820 * 1024 * 1024))
     verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((670 * 1024 * 1024))
 }
@@ -323,7 +323,7 @@ function checkPackageVersionsInLocalNpmRegistry {
 
     if [[ $cli_internal_version != $cli_version ]]; then
         echo "Versions did not match."
-        echo "Manual fix: add a proper conventional commit that touches the amplify-cli-npm package to correct its version bump. For example https://github.com/aws-amplify/amplify-cli/commit/6f14792d1db424aa428ec4836fed7d6dd5cccfd0"
+        echo "Manual fix: add a proper conventional commit that touches the amplify-cli-npm package to correct its version bump. For example https://github.com/aws-amplify/amplify-cli/pull/13759/commits/15dcd96feae925ff26ca51abfb4a0477890af745"
         exit 1
     else
         echo "Versions matched."
