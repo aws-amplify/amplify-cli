@@ -3,15 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.11.16-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.16-gen2-migrations-test.0...@aws-amplify/amplify-console-integration-tests@2.11.16-gen2-migration-test-alpha.0) (2024-09-26)
-
-**Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
-
-
-
-
-
-## [2.11.16-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.15...@aws-amplify/amplify-console-integration-tests@2.11.16-gen2-migrations-test.0) (2024-09-23)
+## [2.11.16](https://github.com/aws-amplify/amplify-console-integration-tests/compare/@aws-amplify/amplify-console-integration-tests@2.11.15...@aws-amplify/amplify-console-integration-tests@2.11.16) (2024-10-05)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-integration-tests
 
