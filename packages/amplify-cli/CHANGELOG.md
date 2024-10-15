@@ -3,44 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [12.13.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migration-test-alpha.0...@aws-amplify/cli-internal@12.13.0-gen2-migrations-alpha.0) (2024-10-10)
+# [12.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.6...@aws-amplify/cli-internal@12.13.0) (2024-10-05)
 
 
 ### Bug Fixes
 
-* add usage data metrics for codegen ([ffc8041](https://github.com/aws-amplify/amplify-cli/commit/ffc8041041c6d1b66589c537e93f05a7453e5bc9))
-* updated yarn.lock and API.md ([c45f8a7](https://github.com/aws-amplify/amplify-cli/commit/c45f8a73dea1a4b4c418b5b2ea3b5ab32b760547))
-
-
-
-
-
-# [12.13.0-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migration-test.0...@aws-amplify/cli-internal@12.13.0-gen2-migration-test-alpha.0) (2024-09-26)
-
-
-### Bug Fixes
-
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
-
-
-
-
-
-# [12.13.0-gen2-migration-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migrations-test.0...@aws-amplify/cli-internal@12.13.0-gen2-migration-test.0) (2024-09-23)
-
-**Note:** Version bump only for package @aws-amplify/cli-internal
-
-
-
-
-
-# [12.13.0-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.6...@aws-amplify/cli-internal@12.13.0-gen2-migrations-test.0) (2024-09-23)
+* avoid copying node_modules folder for increased performance ([24c8f85](https://github.com/aws-amplify/amplify-cli/commit/24c8f853cbadb96659efe7befaf07be0c15b7794))
+* prevent init if local files belong to other app ([#13954](https://github.com/aws-amplify/amplify-cli/issues/13954)) ([d79627c](https://github.com/aws-amplify/amplify-cli/commit/d79627c816e46ebddde16bb1f870f6955a2aec22))
 
 
 ### Features
 
-* **cli:** initial migration merge ([#13856](https://github.com/aws-amplify/amplify-cli/issues/13856)) ([ebe5cd0](https://github.com/aws-amplify/amplify-cli/commit/ebe5cd046cfb18c38ffdce17610ed3a133cc9d44))
-* **migrate:** make as an independent executable ([0aeffb9](https://github.com/aws-amplify/amplify-cli/commit/0aeffb96b9fad75549d76d19778725eb522ad64e))
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
 
 
 
