@@ -1,4 +1,5 @@
 import { getProjectSchema } from '@aws-amplify/amplify-e2e-core';
+import { removeErrorThrows } from './index';
 import * as fs from 'fs-extra';
 import path from 'node:path';
 
@@ -14,8 +15,7 @@ export function copyGen1Schema(projRoot: string, projName: string) {
   const schemaRegex = /"TODO: Add your existing graphql schema here"/;
   const updatedContent = dataResourceContent.replace(schemaRegex, `\`${gen1Schema.trim()}\``);
 
-  const errorRegex = /throw new Error\("TODO: Add Gen 1 GraphQL schema"\);?\s*/;
-  const finalContent = updatedContent.replace(errorRegex, '');
+  const finalContent = removeErrorThrows(updatedContent);
 
   fs.writeFileSync(dataResourcePath, finalContent, 'utf-8');
 

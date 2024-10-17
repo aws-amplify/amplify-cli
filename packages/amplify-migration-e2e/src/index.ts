@@ -4,7 +4,6 @@ import {
   initJSProjectWithProfile,
   addAuthWithDefault,
   amplifyPush,
-  npmInstall,
   getNpxPath,
   nspawn as spawn,
   addS3WithGuestAccess,
@@ -14,8 +13,12 @@ import {
   updateApiSchema,
   amplifyPushForce,
   addFeatureFlag,
+  amplifyPushAuth,
+  addAuthWithGroupTrigger,
+  updateAuthAddUserGroups,
+  updateAuthToAddSignInSignOutUrlAfterPull,
+  addS3WithTrigger,
 } from '@aws-amplify/amplify-e2e-core';
-import { updatePackageDependency } from './updatePackageJson';
 import path from 'node:path';
 import { unset } from 'lodash';
 import execa from 'execa';
@@ -27,8 +30,8 @@ export * from './updatePackageJson';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
-export async function setupAndPushGen1Project(projRoot: string, projName: string) {
-  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false });
+export async function setupAndPushDefaultGen1Project(projRoot: string, projName: string) {
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
   await addAuthWithDefault(projRoot);
   await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
   await functionBuild(projRoot);
@@ -38,6 +41,27 @@ export async function setupAndPushGen1Project(projRoot: string, projName: string
   await amplifyPush(projRoot);
   await addFeatureFlag(projRoot, 'graphqltransformer', 'enablegen2migration', true);
   await amplifyPushForce(projRoot);
+}
+
+export async function setupAndPushAuthWithMaxOptionsGen1Project(projRoot: string, projName: string) {
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
+  await addAuthWithGroupTrigger(projRoot);
+  await updateAuthAddUserGroups(projRoot, ['Admins', 'Users']);
+  await updateAuthToAddSignInSignOutUrlAfterPull(projRoot, {
+    signinUrl: 'https://signin1.com/',
+    signoutUrl: 'https://signout1.com/',
+    testingWithLatestCodebase: true,
+    updateSigninUrl: 'https://updatesignin1.com/',
+    updateSignoutUrl: 'https://updatesignout1.com/',
+  });
+  await amplifyPushAuth(projRoot);
+}
+
+export async function setupAndPushStorageWithMaxOptionsGen1Project(projRoot: string, projName: string) {
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
+  await addAuthWithDefault(projRoot);
+  await addS3WithTrigger(projRoot);
+  await amplifyPushAuth(projRoot);
 }
 
 export function runCodegenCommand(cwd: string) {
@@ -51,9 +75,7 @@ export function runCodegenCommand(cwd: string) {
   }
 }
 
-export function runGen2SandboxCommand(cwd: string) {
-  updatePackageDependency(cwd, '@aws-amplify/backend', '0.0.0-test-20241003180022');
-  npmInstall(cwd);
+export async function runGen2SandboxCommand(cwd: string) {
   const processResult = execa.sync(getNpxPath(), ['ampx', 'sandbox', '--once'], {
     cwd,
     env: { ...process.env, npm_config_user_agent: 'npm' },
@@ -92,4 +114,13 @@ export async function cleanupProjects(cwd: string) {
 
 export function removeProperties(obj: Record<string, unknown>, propertiesToRemove: string[]) {
   propertiesToRemove.forEach((prop) => unset(obj, prop));
+}
+
+export function removeErrorThrows(content: string): string {
+  const lines = content.split('\n');
+  const result = lines.filter((line) => {
+    const trimmedLine = line.trim();
+    return !trimmedLine.startsWith('throw new Error(');
+  });
+  return result.join('\n');
 }
