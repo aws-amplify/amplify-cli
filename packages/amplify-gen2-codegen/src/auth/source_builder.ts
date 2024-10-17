@@ -58,6 +58,10 @@ export type EmailOptions = {
   emailVerificationSubject: string;
 };
 
+export type PhoneOptions = {
+  verificationMessage: string;
+};
+
 export type StandardAttributes = Partial<Record<Attribute, StandardAttribute>>;
 export type CustomAttributes = Partial<Record<`custom:${string}`, CustomAttribute>>;
 
@@ -90,7 +94,7 @@ export type OidcOptions = {
 
 export type LoginOptions = {
   email?: boolean;
-  phone?: boolean;
+  phone?: boolean | Partial<PhoneOptions>;
   emailOptions?: Partial<EmailOptions>;
   googleLogin?: boolean;
   amazonLogin?: boolean;
@@ -105,7 +109,16 @@ export type LoginOptions = {
   callbackURLs?: string[];
   logoutURLs?: string[];
   scopes?: Scope[];
-  [key: string]: boolean | Partial<EmailOptions> | string[] | Scope[] | OidcOptions[] | SamlOptions | AttributeMappingRule | undefined;
+  [key: string]:
+    | boolean
+    | Partial<EmailOptions>
+    | Partial<PhoneOptions>
+    | string[]
+    | Scope[]
+    | OidcOptions[]
+    | SamlOptions
+    | AttributeMappingRule
+    | undefined;
 };
 
 export type MultifactorOptions = {
@@ -361,9 +374,8 @@ function createExternalProvidersPropertyAssignment(
 function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}, secretErrors: ts.Node[]) {
   const logInWith = factory.createIdentifier('loginWith');
   const assignments: ts.ObjectLiteralElementLike[] = [];
-  if (logInDefinition.email === true) {
-    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
-  } else if (typeof logInDefinition.emailOptions === 'object') {
+
+  if (typeof logInDefinition.emailOptions === 'object') {
     const emailDefinitionAssignments: ts.ObjectLiteralElementLike[] = [];
 
     if (logInDefinition.emailOptions?.emailVerificationSubject) {
@@ -391,10 +403,33 @@ function createLogInWithPropertyAssignment(logInDefinition: LoginOptions = {}, s
     }
     const emailDefinitionObject = factory.createObjectLiteralExpression(emailDefinitionAssignments, true);
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), emailDefinitionObject));
+  } else if (logInDefinition.email === true) {
+    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('email'), factory.createTrue()));
   }
-  if (logInDefinition.phone === true) {
+
+  if (typeof logInDefinition.phone === 'object') {
+    const phoneOptionAssignments: ts.ObjectLiteralElementLike[] = [];
+    if (logInDefinition.phone?.verificationMessage) {
+      phoneOptionAssignments.push(
+        factory.createPropertyAssignment(
+          'verificationMessage',
+          factory.createArrowFunction(
+            undefined,
+            undefined,
+            [],
+            undefined,
+            undefined,
+            factory.createStringLiteral(logInDefinition.phone.verificationMessage),
+          ),
+        ),
+      );
+    }
+    const phoneObject = factory.createObjectLiteralExpression(phoneOptionAssignments, true);
+    assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), phoneObject));
+  } else if (logInDefinition.phone === true) {
     assignments.push(factory.createPropertyAssignment(factory.createIdentifier('phone'), factory.createTrue()));
   }
+
   if (
     logInDefinition.amazonLogin ||
     logInDefinition.googleLogin ||

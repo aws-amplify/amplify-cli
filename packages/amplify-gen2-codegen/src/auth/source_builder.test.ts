@@ -332,6 +332,19 @@ describe('render auth node', () => {
       });
     });
     describe('phone', () => {
+      it('renders phone options', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            phone: {
+              verificationMessage: 'My Verification Message',
+            },
+          },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert.match(source, /phone:\s*{\s*verificationMessage:\s*\(\)\s*=>\s*"My Verification Message"\s*}/);
+      });
+
       it('renders `phone: true`', () => {
         const authDefinition: AuthDefinition = {
           loginOptions: {
