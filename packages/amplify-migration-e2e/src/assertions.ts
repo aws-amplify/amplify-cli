@@ -91,11 +91,11 @@ export async function assertDefaultGen1Setup(projRoot: string) {
   const gen1Region = gen1Meta.providers.awscloudformation.Region;
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
   const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
+  assert.doesNotMatch(gen1FunctionName, /PostConfirmation/);
   const { gen1BucketName } = await assertStorage(gen1Meta, gen1Region);
   const { gen1GraphqlApiId } = await assertAPI(gen1Meta, gen1Region);
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
-
   return { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region };
 }
 
@@ -104,6 +104,7 @@ export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {
   const gen1Region = gen1Meta.providers.awscloudformation.Region;
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
   const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
+  assert.match(gen1FunctionName, /PostConfirmation/);
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
   await assertUserPoolGroups(gen1Meta);
@@ -116,15 +117,16 @@ export async function assertStorageWithMaxOptionsGen1Setup(projRoot: string) {
   const gen1Region = gen1Meta.providers.awscloudformation.Region;
   const { gen1BucketName } = await assertStorage(gen1Meta, gen1Region);
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
+  const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
+  assert.match(gen1FunctionName, /S3Trigger/);
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
 
   return { gen1UserPoolId, gen1ClientIds, gen1BucketName, gen1IdentityPoolId, gen1Region };
 }
 
-export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, gen1Region: string, projType?: string) {
+async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Cognito::UserPool', gen1UserPoolId, gen1Region);
-  if (projType) assert(gen1Resource.LambdaConfig.PostConfirmation);
   removeProperties(gen1Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn', 'LambdaConfig.PostConfirmation']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
   removeProperties(gen1Resource, [
@@ -139,7 +141,7 @@ export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: s
   const gen2UserPoolId = gen2Meta.auth.user_pool_id;
   const gen2Region = gen2Meta.auth.aws_region;
   const gen2Resource = await getResourceDetails('AWS::Cognito::UserPool', gen2UserPoolId, gen2Region);
-  if (projType) assert(gen2Resource.LambdaConfig.PostConfirmation);
+  if (gen1Resource.LambdaConfig.PostConfirmation) assert(gen2Resource.LambdaConfig.PostConfirmation);
   removeProperties(gen2Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn', 'LambdaConfig.PostConfirmation']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
   removeProperties(gen2Resource, [
@@ -155,7 +157,7 @@ export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: s
   expect(gen2Resource).toEqual(gen1Resource);
 }
 
-export async function assertUserPoolClientsResource(projRoot: string, gen1UserPoolId: string, gen1ClientIds: $TSAny[], gen1Region: string) {
+async function assertUserPoolClientsResource(projRoot: string, gen1UserPoolId: string, gen1ClientIds: $TSAny[], gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Cognito::UserPoolClient', `${gen1UserPoolId}|${gen1ClientIds[1]}`, gen1Region);
   removeProperties(gen1Resource, ['Name', 'ClientName', 'UserPoolId', 'ClientId']);
   // TODO: remove below line after all the inconsistencies are fixed
@@ -188,7 +190,7 @@ export async function assertUserPoolClientsResource(projRoot: string, gen1UserPo
   expect(gen2Resource).toEqual(gen1Resource);
 }
 
-export async function assertIdentityPoolResource(projRoot: string, gen1IdentityPoolId: string, gen1Region: string) {
+async function assertIdentityPoolResource(projRoot: string, gen1IdentityPoolId: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Cognito::IdentityPool', gen1IdentityPoolId, gen1Region);
   removeProperties(gen1Resource, ['CognitoIdentityProviders', 'Id', 'IdentityPoolName', 'IdentityPoolTags', 'Name']);
   // TODO: remove below line after SupportedLoginProviders inconsistency is fixed
@@ -203,12 +205,20 @@ export async function assertIdentityPoolResource(projRoot: string, gen1IdentityP
   expect(gen2Resource).toEqual(gen1Resource);
 }
 
-export async function assertStorageResource(projRoot: string, gen1BucketName: string, gen1Region: string, projType?: string) {
+export async function assertAuthResource(
+  projRoot: string,
+  gen1UserPoolId: string,
+  gen1ClientIds: $TSAny[],
+  gen1IdentityPoolId: string,
+  gen1Region: string,
+) {
+  await assertUserPoolResource(projRoot, gen1UserPoolId, gen1Region);
+  await assertUserPoolClientsResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1Region);
+  await assertIdentityPoolResource(projRoot, gen1IdentityPoolId, gen1Region);
+}
+
+export async function assertStorageResource(projRoot: string, gen1BucketName: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::S3::Bucket', gen1BucketName, gen1Region);
-  if (projType) {
-    assert(gen1Resource.NotificationConfiguration.LambdaConfigurations[0].Function);
-    assert(gen1Resource.NotificationConfiguration.LambdaConfigurations[1].Function);
-  }
   removeProperties(gen1Resource, [
     'DualStackDomainName',
     'DomainName',
@@ -227,7 +237,7 @@ export async function assertStorageResource(projRoot: string, gen1BucketName: st
   const gen2BucketName = gen2Meta.storage.bucket_name;
   const gen2Region = gen2Meta.storage.aws_region;
   const gen2Resource = await getResourceDetails('AWS::S3::Bucket', gen2BucketName, gen2Region);
-  if (projType) {
+  if (gen1Resource.NotificationConfiguration) {
     assert(gen2Resource.NotificationConfiguration.LambdaConfigurations[0].Function);
     assert(gen2Resource.NotificationConfiguration.LambdaConfigurations[1].Function);
   }
@@ -248,7 +258,6 @@ export async function assertStorageResource(projRoot: string, gen1BucketName: st
 
 export async function assertFunctionResource(projRoot: string, gen2StackName: string, gen1FunctionName: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Lambda::Function', gen1FunctionName, gen1Region);
-  assert(gen1Resource.FunctionName);
   removeProperties(gen1Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
   // TODO: remove below line after Tags inconsistency is fixed
   removeProperties(gen1Resource, ['Tags']);

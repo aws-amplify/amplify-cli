@@ -16,12 +16,10 @@ import {
   assertStorageWithMaxOptionsGen1Setup,
   assertAuthWithMaxOptionsGen1Setup,
   assertDefaultGen1Setup,
-  assertUserPoolResource,
+  assertAuthResource,
   assertStorageResource,
   assertFunctionResource,
   assertDataResource,
-  assertIdentityPoolResource,
-  assertUserPoolClientsResource,
 } from '../assertions';
 import { removeErrorThrowsFromAuthResourceFile } from '../auth_utils';
 import { updatePackageDependency } from '../updatePackageJson';
@@ -62,14 +60,13 @@ void describe('Codegen E2E tests', () => {
       await runCodegenCommand(projRoot);
       await copyFunctionFile(projRoot, 'function', gen1FunctionName);
       await copyGen1Schema(projRoot, projName);
+      // TODO: replace below line with correct package version
       await updatePackageDependency(projRoot, '@aws-amplify/backend', '0.0.0-test-20241003180022');
       await npmInstall(projRoot);
       const gen2StackName = await runGen2SandboxCommand(projRoot);
-      await assertUserPoolResource(projRoot, gen1UserPoolId, gen1Region);
-      await assertUserPoolClientsResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1Region);
+      await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
       await assertStorageResource(projRoot, gen1BucketName, gen1Region);
       await assertFunctionResource(projRoot, gen2StackName, gen1FunctionName, gen1Region);
-      await assertIdentityPoolResource(projRoot, gen1IdentityPoolId, gen1Region);
       await assertDataResource(projRoot, gen2StackName, gen1GraphqlApiId, gen1Region);
     });
 
@@ -81,14 +78,13 @@ void describe('Codegen E2E tests', () => {
       await runCodegenCommand(projRoot);
       await copyFunctionFile(projRoot, 'auth', gen1FunctionName);
       await removeErrorThrowsFromAuthResourceFile(projRoot);
+      // TODO: replace below line with correct package version
       await updatePackageDependency(projRoot, '@aws-amplify/backend', '0.0.0-test-20241003180022');
       await npmInstall(projRoot);
       await toggleSandboxSecrets(projRoot, 'set');
       const gen2StackName = await runGen2SandboxCommand(projRoot);
       await toggleSandboxSecrets(projRoot, 'remove');
-      await assertUserPoolResource(projRoot, gen1UserPoolId, gen1Region, 'maxAuthOptions');
-      await assertUserPoolClientsResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1Region);
-      await assertIdentityPoolResource(projRoot, gen1IdentityPoolId, gen1Region);
+      await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
       await assertFunctionResource(projRoot, gen2StackName, gen1FunctionName, gen1Region);
     });
 
@@ -98,13 +94,12 @@ void describe('Codegen E2E tests', () => {
         projRoot,
       );
       await runCodegenCommand(projRoot);
+      // TODO: replace below line with correct package version
       await updatePackageDependency(projRoot, '@aws-amplify/backend', '0.0.0-test-20241003180022');
       await npmInstall(projRoot);
       await runGen2SandboxCommand(projRoot);
-      await assertUserPoolResource(projRoot, gen1UserPoolId, gen1Region);
-      await assertUserPoolClientsResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1Region);
-      await assertStorageResource(projRoot, gen1BucketName, gen1Region, 'maxStorageOptions');
-      await assertIdentityPoolResource(projRoot, gen1IdentityPoolId, gen1Region);
+      await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
+      await assertStorageResource(projRoot, gen1BucketName, gen1Region);
     });
   });
 });
