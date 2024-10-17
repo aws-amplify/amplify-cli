@@ -1,6 +1,6 @@
 import { getNpxPath, nspawn as spawn, getSocialProviders } from '@aws-amplify/amplify-e2e-core';
 
-export async function sandboxSecrets(cwd: string, option: string) {
+export async function toggleSandboxSecrets(cwd: string, option: string) {
   const socialProviders = getSocialProviders(true);
   const secretsToSet = {
     FACEBOOK_CLIENT_ID: socialProviders.FACEBOOK_APP_ID,

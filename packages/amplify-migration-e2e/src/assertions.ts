@@ -8,21 +8,35 @@ import {
   getUserPoolClients,
 } from '@aws-amplify/amplify-e2e-core';
 import { getProjectOutputs } from './projectOutputs';
-import { getAppSyncDataSource, getResourceDetails } from './sdk_calls';
+import { getAppSyncDataSource, getIdentityPool, getResourceDetails } from './sdk_calls';
 import { removeProperties } from '.';
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
-
-async function getMeta(projRoot: string) {
-  const gen1Meta = getProjectMeta(projRoot);
-  const gen1Region = gen1Meta.providers.awscloudformation.Region;
-  return { gen1Meta, gen1Region };
-}
+import assert from 'node:assert';
 
 async function assertUserPool(gen1Meta: $TSAny, gen1Region: string) {
   const { UserPoolId: gen1UserPoolId } = Object.keys(gen1Meta.auth).map((key) => gen1Meta.auth[key])[0].output;
   const cloudUserPool = await getUserPool(gen1UserPoolId, gen1Region);
   expect(cloudUserPool.UserPool).toBeDefined();
   return { gen1UserPoolId };
+}
+
+async function assertUserPoolClients(gen1Meta: $TSAny, gen1Region: string) {
+  const {
+    UserPoolId: userPoolId,
+    AppClientIDWeb: appClientIdWeb,
+    AppClientID: appClientId,
+  } = Object.keys(gen1Meta.auth).map((key) => gen1Meta.auth[key])[0].output;
+  const gen1ClientIds = [appClientIdWeb, appClientId];
+  const clients = await getUserPoolClients(userPoolId, gen1ClientIds, gen1Region);
+  expect(clients).toHaveLength(2);
+  return { gen1ClientIds };
+}
+
+async function assertIdentityPool(gen1Meta: $TSAny, gen1Region: string) {
+  const { IdentityPoolId: gen1IdentityPoolId } = Object.keys(gen1Meta.auth).map((key) => gen1Meta.auth[key])[0].output;
+  const cloudIdentityPool = await getIdentityPool(gen1IdentityPoolId, gen1Region);
+  expect(cloudIdentityPool).toBeDefined();
+  return { gen1IdentityPoolId };
 }
 
 async function assertFunction(gen1Meta: $TSAny, gen1Region: string) {
@@ -59,30 +73,7 @@ async function assertAPI(gen1Meta: $TSAny, gen1Region: string) {
   return { gen1GraphqlApiId };
 }
 
-export async function assertDefaultGen1Setup(projRoot: string) {
-  const { gen1Meta, gen1Region } = await getMeta(projRoot);
-  const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
-  const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
-  const { gen1BucketName } = await assertStorage(gen1Meta, gen1Region);
-  const { gen1GraphqlApiId } = await assertAPI(gen1Meta, gen1Region);
-
-  return { gen1UserPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region };
-}
-
-export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {
-  const { gen1Meta, gen1Region } = await getMeta(projRoot);
-  const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
-  const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
-
-  const {
-    UserPoolId: userPoolId,
-    AppClientIDWeb: appClientIdWeb,
-    AppClientID: appClientId,
-  } = Object.keys(gen1Meta.auth).map((key) => gen1Meta.auth[key])[0].output;
-  const clientIds = [appClientIdWeb, appClientId];
-  const clients = await getUserPoolClients(userPoolId, clientIds, gen1Region);
-  expect(clients).toHaveLength(2);
-
+async function assertUserPoolGroups(gen1Meta: $TSAny) {
   const { userPoolGroups } = gen1Meta.auth;
   expect(userPoolGroups.service).toEqual('Cognito-UserPool-Groups');
   expect(userPoolGroups.providerPlugin).toEqual('awscloudformation');
@@ -93,19 +84,47 @@ export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {
   expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientIDWeb');
   expect(userPoolGroups.dependsOn[0].attributes).toContain('AppClientID');
   expect(userPoolGroups.dependsOn[0].attributes).toContain('IdentityPoolId');
+}
 
-  return { gen1UserPoolId, gen1FunctionName, gen1Region };
+export async function assertDefaultGen1Setup(projRoot: string) {
+  const gen1Meta = getProjectMeta(projRoot);
+  const gen1Region = gen1Meta.providers.awscloudformation.Region;
+  const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
+  const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
+  const { gen1BucketName } = await assertStorage(gen1Meta, gen1Region);
+  const { gen1GraphqlApiId } = await assertAPI(gen1Meta, gen1Region);
+  const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
+  const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
+
+  return { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region };
+}
+
+export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {
+  const gen1Meta = getProjectMeta(projRoot);
+  const gen1Region = gen1Meta.providers.awscloudformation.Region;
+  const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
+  const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
+  const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
+  const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
+  await assertUserPoolGroups(gen1Meta);
+
+  return { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1Region };
 }
 
 export async function assertStorageWithMaxOptionsGen1Setup(projRoot: string) {
-  const { gen1Meta, gen1Region } = await getMeta(projRoot);
+  const gen1Meta = getProjectMeta(projRoot);
+  const gen1Region = gen1Meta.providers.awscloudformation.Region;
   const { gen1BucketName } = await assertStorage(gen1Meta, gen1Region);
-  return { gen1BucketName, gen1Region };
+  const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
+  const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
+  const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
+
+  return { gen1UserPoolId, gen1ClientIds, gen1BucketName, gen1IdentityPoolId, gen1Region };
 }
 
-export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, gen1Region: string) {
+export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, gen1Region: string, projType?: string) {
   const gen1Resource = await getResourceDetails('AWS::Cognito::UserPool', gen1UserPoolId, gen1Region);
-  console.log(gen1Resource);
+  if (projType) assert(gen1Resource.LambdaConfig.PostConfirmation);
   removeProperties(gen1Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn', 'LambdaConfig.PostConfirmation']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
   removeProperties(gen1Resource, [
@@ -120,7 +139,7 @@ export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: s
   const gen2UserPoolId = gen2Meta.auth.user_pool_id;
   const gen2Region = gen2Meta.auth.aws_region;
   const gen2Resource = await getResourceDetails('AWS::Cognito::UserPool', gen2UserPoolId, gen2Region);
-  console.log(gen2Resource);
+  if (projType) assert(gen2Resource.LambdaConfig.PostConfirmation);
   removeProperties(gen2Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn', 'LambdaConfig.PostConfirmation']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
   removeProperties(gen2Resource, [
@@ -136,8 +155,60 @@ export async function assertUserPoolResource(projRoot: string, gen1UserPoolId: s
   expect(gen2Resource).toEqual(gen1Resource);
 }
 
-export async function assertStorageResource(projRoot: string, gen1BucketName: string, gen1Region: string) {
+export async function assertUserPoolClientsResource(projRoot: string, gen1UserPoolId: string, gen1ClientIds: $TSAny[], gen1Region: string) {
+  const gen1Resource = await getResourceDetails('AWS::Cognito::UserPoolClient', `${gen1UserPoolId}|${gen1ClientIds[1]}`, gen1Region);
+  removeProperties(gen1Resource, ['Name', 'ClientName', 'UserPoolId', 'ClientId']);
+  // TODO: remove below line after all the inconsistencies are fixed
+  removeProperties(gen1Resource, [
+    'CallbackURLs',
+    'AllowedOAuthScopes',
+    'TokenValidityUnits',
+    'AllowedOAuthFlowsUserPoolClient',
+    'SupportedIdentityProviders',
+    'AllowedOAuthFlows',
+    'ExplicitAuthFlows',
+  ]);
+  const gen2Meta = getProjectOutputs(projRoot);
+  const gen2ClientId = gen2Meta.auth.user_pool_client_id;
+  const gen2UserPoolId = gen2Meta.auth.user_pool_id;
+  const gen2Region = gen2Meta.auth.aws_region;
+  const gen2Resource = await getResourceDetails('AWS::Cognito::UserPoolClient', `${gen2UserPoolId}|${gen2ClientId}`, gen2Region);
+  removeProperties(gen2Resource, ['Name', 'ClientName', 'UserPoolId', 'ClientId']);
+  // TODO: remove below line after all the inconsistencies are fixed
+  removeProperties(gen2Resource, [
+    'CallbackURLs',
+    'AllowedOAuthScopes',
+    'TokenValidityUnits',
+    'AllowedOAuthFlowsUserPoolClient',
+    'SupportedIdentityProviders',
+    'AllowedOAuthFlows',
+    'ExplicitAuthFlows',
+    'PreventUserExistenceErrors',
+  ]);
+  expect(gen2Resource).toEqual(gen1Resource);
+}
+
+export async function assertIdentityPoolResource(projRoot: string, gen1IdentityPoolId: string, gen1Region: string) {
+  const gen1Resource = await getResourceDetails('AWS::Cognito::IdentityPool', gen1IdentityPoolId, gen1Region);
+  removeProperties(gen1Resource, ['CognitoIdentityProviders', 'Id', 'IdentityPoolName', 'IdentityPoolTags', 'Name']);
+  // TODO: remove below line after SupportedLoginProviders inconsistency is fixed
+  removeProperties(gen1Resource, ['SupportedLoginProviders']);
+  const gen2Meta = getProjectOutputs(projRoot);
+  const gen2IdentityPoolId = gen2Meta.auth.identity_pool_id;
+  const gen2Region = gen2Meta.auth.aws_region;
+  const gen2Resource = await getResourceDetails('AWS::Cognito::IdentityPool', gen2IdentityPoolId, gen2Region);
+  removeProperties(gen2Resource, ['CognitoIdentityProviders', 'Id', 'IdentityPoolName', 'IdentityPoolTags', 'Name']);
+  // TODO: remove below line after SupportedLoginProviders inconsistency is fixed
+  removeProperties(gen2Resource, ['SupportedLoginProviders']);
+  expect(gen2Resource).toEqual(gen1Resource);
+}
+
+export async function assertStorageResource(projRoot: string, gen1BucketName: string, gen1Region: string, projType?: string) {
   const gen1Resource = await getResourceDetails('AWS::S3::Bucket', gen1BucketName, gen1Region);
+  if (projType) {
+    assert(gen1Resource.NotificationConfiguration.LambdaConfigurations[0].Function);
+    assert(gen1Resource.NotificationConfiguration.LambdaConfigurations[1].Function);
+  }
   removeProperties(gen1Resource, [
     'DualStackDomainName',
     'DomainName',
@@ -156,6 +227,10 @@ export async function assertStorageResource(projRoot: string, gen1BucketName: st
   const gen2BucketName = gen2Meta.storage.bucket_name;
   const gen2Region = gen2Meta.storage.aws_region;
   const gen2Resource = await getResourceDetails('AWS::S3::Bucket', gen2BucketName, gen2Region);
+  if (projType) {
+    assert(gen2Resource.NotificationConfiguration.LambdaConfigurations[0].Function);
+    assert(gen2Resource.NotificationConfiguration.LambdaConfigurations[1].Function);
+  }
   removeProperties(gen2Resource, [
     'DualStackDomainName',
     'DomainName',
@@ -173,6 +248,7 @@ export async function assertStorageResource(projRoot: string, gen1BucketName: st
 
 export async function assertFunctionResource(projRoot: string, gen2StackName: string, gen1FunctionName: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Lambda::Function', gen1FunctionName, gen1Region);
+  assert(gen1Resource.FunctionName);
   removeProperties(gen1Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
   // TODO: remove below line after Tags inconsistency is fixed
   removeProperties(gen1Resource, ['Tags']);
@@ -182,6 +258,7 @@ export async function assertFunctionResource(projRoot: string, gen2StackName: st
   const outputs = (await describeCloudFormationStack(gen2StackName, gen2Region)).Outputs;
   const gen2FunctionName = JSON.parse(outputs?.find((output) => output.OutputKey === 'definedFunctions')?.OutputValue ?? '[]')[0];
   const gen2Resource = await getResourceDetails('AWS::Lambda::Function', gen2FunctionName, gen2Region);
+  assert(gen2Resource.FunctionName);
   removeProperties(gen2Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
   // TODO: remove below line after Environment.Variables.AMPLIFY_SSM_ENV_CONFIG, Tags inconsistency is fixed
   removeProperties(gen2Resource, ['Environment.Variables.AMPLIFY_SSM_ENV_CONFIG', 'Tags']);

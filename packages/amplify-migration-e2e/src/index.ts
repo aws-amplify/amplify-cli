@@ -4,7 +4,6 @@ import {
   initJSProjectWithProfile,
   addAuthWithDefault,
   amplifyPush,
-  npmInstall,
   getNpxPath,
   nspawn as spawn,
   addS3WithGuestAccess,
@@ -20,8 +19,6 @@ import {
   updateAuthToAddSignInSignOutUrlAfterPull,
   addS3WithTrigger,
 } from '@aws-amplify/amplify-e2e-core';
-import { sandboxSecrets } from './secrets';
-import { updatePackageDependency } from './updatePackageJson';
 import path from 'node:path';
 import { unset } from 'lodash';
 import execa from 'execa';
@@ -79,17 +76,12 @@ export function runCodegenCommand(cwd: string) {
 }
 
 export async function runGen2SandboxCommand(cwd: string) {
-  updatePackageDependency(cwd, '@aws-amplify/backend', '0.0.0-test-20241003180022');
-  npmInstall(cwd);
-  await sandboxSecrets(cwd, 'set');
   const processResult = execa.sync(getNpxPath(), ['ampx', 'sandbox', '--once'], {
     cwd,
     env: { ...process.env, npm_config_user_agent: 'npm' },
     encoding: 'utf-8',
   });
-  await sandboxSecrets(cwd, 'remove');
   if (processResult.exitCode === 0) {
-    console.log(processResult.stdout);
     const match = processResult.stdout.match(/arn:aws:cloudformation:.*:stack\/([^/]+)\//);
     if (match) {
       return match[1];
