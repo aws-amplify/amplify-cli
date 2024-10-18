@@ -432,8 +432,8 @@ describe('test resource export', () => {
     if (packagedResources.some((r) => r.service === 'ElasticContainer')) {
       expect(fs_mock.copy).nthCalledWith(
         copyCount++,
-        path.join(__dirname, '../../../', 'resources', 'custom-resource-pipeline-awaiter.zip'),
-        path.join(exportPath, 'amplify-auxiliary-files', 'custom-resource-pipeline-awaiter.zip'),
+        path.join(__dirname, '../../../', 'resources', 'custom-resource-pipeline-awaiter-18.zip'),
+        path.join(exportPath, 'amplify-auxiliary-files', 'custom-resource-pipeline-awaiter-18.zip'),
         {
           overwrite: true,
           preserveTimestamps: true,

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.16.4",
+  "version": "2.16.5",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.3.9",
+    "@aws-amplify/amplify-cli-core": "4.3.10",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
@@ -39,12 +39,11 @@
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
-    "express": "^4.17.3",
+    "express": "^4.20.0",
     "get-port": "^5.1.1",
     "graphql": "^15.5.0",
     "graphql-iso-date": "^3.6.1",
     "graphql-subscriptions": "^1.1.0",
-    "ip": "^1.1.9",
     "js-string-escape": "^1.0.1",
     "jwt-decode": "^2.2.0",
     "libphonenumber-js": "1.9.47",

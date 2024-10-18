@@ -75,14 +75,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-app@5.0.35, @aws-amplify/amplify-app@workspace:packages/amplify-app":
+"@aws-amplify/amplify-app@5.0.36, @aws-amplify/amplify-app@workspace:packages/amplify-app":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-app@workspace:packages/amplify-app"
   dependencies:
     "@aws-amplify/amplify-frontend-android": 3.5.8
     "@aws-amplify/amplify-frontend-flutter": 1.4.7
-    "@aws-amplify/amplify-frontend-ios": 3.7.6
-    "@aws-amplify/amplify-frontend-javascript": 3.10.17
+    "@aws-amplify/amplify-frontend-ios": 3.7.7
+    "@aws-amplify/amplify-frontend-javascript": 3.10.18
     "@types/glob": ^7.1.1
     chalk: ^4.1.1
     execa: ^5.1.1
@@ -100,11 +100,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-appsync-simulator@2.16.4, @aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator":
+"@aws-amplify/amplify-appsync-simulator@2.16.5, @aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-appsync-simulator@workspace:packages/amplify-appsync-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-graphiql-explorer": 2.6.0
     "@aws-amplify/amplify-prompts": 2.8.6
     "@graphql-tools/schema": ^8.3.1
@@ -118,12 +118,11 @@ __metadata:
     chalk: ^4.1.1
     cors: ^2.8.5
     dataloader: ^2.0.0
-    express: ^4.17.3
+    express: ^4.20.0
     get-port: ^5.1.1
     graphql: ^15.5.0
     graphql-iso-date: ^3.6.1
     graphql-subscriptions: ^1.1.0
-    ip: ^1.1.9
     jose: ^5.2.0
     js-string-escape: ^1.0.1
     jwt-decode: ^2.2.0
@@ -140,25 +139,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-analytics@5.0.35, @aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics":
+"@aws-amplify/amplify-category-analytics@5.0.36, @aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-analytics@workspace:packages/amplify-category-analytics"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-prompts": 2.8.6
     fs-extra: ^8.1.0
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.12.3":
-  version: 5.12.3
-  resolution: "@aws-amplify/amplify-category-api@npm:5.12.3"
+"@aws-amplify/amplify-category-api@npm:^5.12.5":
+  version: 5.12.5
+  resolution: "@aws-amplify/amplify-category-api@npm:5.12.5"
   dependencies:
-    "@aws-amplify/graphql-auth-transformer": 3.6.3
+    "@aws-amplify/graphql-auth-transformer": 3.6.4
     "@aws-amplify/graphql-schema-generator": 0.9.3
-    "@aws-amplify/graphql-transformer": 1.6.3
+    "@aws-amplify/graphql-transformer": 1.6.4
     "@aws-amplify/graphql-transformer-core": 2.9.3
     "@aws-amplify/graphql-transformer-interfaces": 3.10.1
     "@aws-amplify/graphql-transformer-migrator": 2.2.27
@@ -203,20 +202,20 @@ __metadata:
     amplify-util-headless-input: ^1.9.18
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: 8ada6a1bbf379594c7e77865cc08f403de3ce88bc1e4bfc2ec1468e456212c71f46d545c3003cf8f492506c91d094a0c319b67b08623aadf49720b95a81066c3
+  checksum: 39d0097ae37b5700210a69f8902dd65c1a663a147dc888aa2cd2580d9177a677925fbe3a83455dd8ed034a2d25613cb2acf1cca3e6f568e3ef53ae0f5dca1872
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-category-auth@3.7.14, @aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth":
+"@aws-amplify/amplify-category-auth@3.7.15, @aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-auth@workspace:packages/amplify-category-auth"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/amplify-util-import": 2.8.3
-    "@aws-amplify/cli-extensibility-helper": 3.0.33
+    "@aws-amplify/cli-extensibility-helper": 3.0.34
     "@aws-sdk/client-cognito-identity-provider": ^3.303.0
     "@aws-sdk/client-iam": ^3.303.0
     "@types/mime-types": ^2.1.1
@@ -242,11 +241,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-custom@3.1.23, @aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom":
+"@aws-amplify/amplify-category-custom@3.1.24, @aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-custom@workspace:packages/amplify-category-custom"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-prompts": 2.8.6
     "@types/lodash": ^4.14.149
     aws-cdk-lib: ~2.129.0
@@ -260,12 +259,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-function@5.7.9, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
+"@aws-amplify/amplify-category-function@5.7.10, @aws-amplify/amplify-category-function@workspace:packages/amplify-category-function":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-function@workspace:packages/amplify-category-function"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-prompts": 2.8.6
     "@types/folder-hash": ^4.0.1
@@ -288,11 +287,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-geo@3.5.14, @aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo":
+"@aws-amplify/amplify-category-geo@3.5.15, @aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-geo@workspace:packages/amplify-category-geo"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-sdk/client-location": ^3.303.0
     ajv: ^6.12.6
@@ -307,11 +306,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-hosting@3.5.36, @aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting":
+"@aws-amplify/amplify-category-hosting@3.5.37, @aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-hosting@workspace:packages/amplify-category-hosting"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-prompts": 2.8.6
     chalk: ^4.1.1
     fs-extra: ^8.1.0
@@ -323,11 +322,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-interactions@5.1.28, @aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions":
+"@aws-amplify/amplify-category-interactions@5.1.29, @aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-interactions@workspace:packages/amplify-category-interactions"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-prompts": 2.8.6
     fs-extra: ^8.1.0
     fuzzy: ^0.1.3
@@ -335,14 +334,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.26.21, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@2.26.23, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.11
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.13
     aws-sdk: ^2.1464.0
     chalk: ^4.1.1
     fs-extra: ^8.1.0
@@ -353,11 +352,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-predictions@5.5.14, @aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions":
+"@aws-amplify/amplify-category-predictions@5.5.15, @aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-predictions@workspace:packages/amplify-category-predictions"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-sdk/client-rekognition": ^3.303.0
     aws-sdk: ^2.1464.0
@@ -367,15 +366,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-storage@5.5.14, @aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage":
+"@aws-amplify/amplify-category-storage@5.5.15, @aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-storage@workspace:packages/amplify-category-storage"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/amplify-util-import": 2.8.3
-    "@aws-amplify/cli-extensibility-helper": 3.0.33
+    "@aws-amplify/cli-extensibility-helper": 3.0.34
     amplify-headless-interface: 1.17.7
     amplify-util-headless-input: 1.9.18
     aws-cdk-lib: ~2.129.0
@@ -392,7 +391,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-cli-core@4.3.9, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
+"@aws-amplify/amplify-cli-core@4.3.10, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core"
   dependencies:
@@ -462,12 +461,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-console-hosting@2.5.33, @aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting":
+"@aws-amplify/amplify-console-hosting@2.5.34, @aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-console-hosting@workspace:packages/amplify-console-hosting"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     archiver: ^5.3.0
     chalk: ^4.1.1
     cli-table3: ^0.6.0
@@ -485,8 +484,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-console-integration-tests@workspace:packages/amplify-console-integration-tests"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-e2e-core": 5.5.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-e2e-core": 5.5.10
     "@types/ini": ^1.3.30
     aws-sdk: ^2.1464.0
     dotenv: ^8.2.0
@@ -501,13 +500,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-container-hosting@2.8.10, @aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting":
+"@aws-amplify/amplify-container-hosting@2.8.12, @aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.12.3
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-category-api": ^5.12.5
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     fs-extra: ^8.1.0
     inquirer: ^7.3.3
     mime-types: ^2.1.26
@@ -515,11 +514,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-dotnet-function-template-provider@2.6.9, @aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider":
+"@aws-amplify/amplify-dotnet-function-template-provider@2.6.10, @aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-dotnet-function-template-provider@workspace:packages/amplify-dotnet-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@types/inquirer": ^6.5.0
     "@types/lodash": ^4.14.149
@@ -528,11 +527,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-e2e-core@5.5.9, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
+"@aws-amplify/amplify-e2e-core@5.5.10, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-sdk/client-sts": ^3.303.0
     "@aws-sdk/credential-providers": ^3.303.0
     "@types/glob": ^7.1.1
@@ -550,7 +549,7 @@ __metadata:
     jest-environment-node: ^26.6.2
     lodash: ^4.17.21
     node-fetch: ^2.6.7
-    node-pty: beta
+    node-pty: ^1.0.0
     retimer: 2.0.0
     rimraf: ^3.0.0
     semver: ^7.5.4
@@ -560,11 +559,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-environment-parameters@1.9.14, @aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters":
+"@aws-amplify/amplify-environment-parameters@1.9.15, @aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-environment-parameters@workspace:packages/amplify-environment-parameters"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     ajv: ^6.12.6
     aws-sdk: ^2.1464.0
     lodash: ^4.17.21
@@ -593,11 +592,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-ios@3.7.6, @aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios":
+"@aws-amplify/amplify-frontend-ios@3.7.7, @aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-ios@workspace:packages/amplify-frontend-ios"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     execa: ^5.1.1
     fs-extra: ^8.1.0
     graphql-config: ^2.2.1
@@ -605,11 +604,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-frontend-javascript@3.10.17, @aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript":
+"@aws-amplify/amplify-frontend-javascript@3.10.18, @aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-frontend-javascript@workspace:packages/amplify-frontend-javascript"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@babel/core": ^7.23.2
     "@babel/plugin-transform-modules-commonjs": 7.10.4
     chalk: ^4.1.1
@@ -728,8 +727,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-migration-tests@workspace:packages/amplify-migration-tests"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-e2e-core": 5.5.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-e2e-core": 5.5.10
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@aws-sdk/client-s3": ^3.303.0
     amplify-headless-interface: 1.17.7
@@ -747,11 +746,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-nodejs-function-template-provider@2.10.9, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
+"@aws-amplify/amplify-nodejs-function-template-provider@2.10.10, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-prompts": 2.8.6
     "@types/fs-extra": ^8.0.1
@@ -762,11 +761,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-opensearch-simulator@1.7.14, @aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator":
+"@aws-amplify/amplify-opensearch-simulator@1.7.15, @aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-opensearch-simulator@workspace:packages/amplify-opensearch-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-prompts": 2.8.6
     "@types/node": ^12.12.6
     "@types/openpgp": ^4.4.19
@@ -796,17 +795,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-provider-awscloudformation@8.10.11, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
+"@aws-amplify/amplify-provider-awscloudformation@8.10.13, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation"
   dependencies:
-    "@aws-amplify/amplify-category-custom": 3.1.23
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-category-custom": 3.1.24
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-cli-logger": 1.3.8
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/amplify-util-import": 2.8.3
-    "@aws-amplify/cli-extensibility-helper": 3.0.33
+    "@aws-amplify/cli-extensibility-helper": 3.0.34
     "@aws-amplify/graphql-transformer-core": ^2.9.3
     "@aws-amplify/graphql-transformer-interfaces": ^3.10.1
     "@types/columnify": ^1.5.0
@@ -815,7 +814,7 @@ __metadata:
     "@types/lodash.throttle": ^4.1.6
     "@types/node": ^18.16.0
     "@types/uuid": ^8.0.0
-    amplify-codegen: ^4.9.4
+    amplify-codegen: ^4.9.7
     archiver: ^5.3.0
     aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
@@ -869,28 +868,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-mock@5.10.4, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
+"@aws-amplify/amplify-util-mock@5.10.6, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock"
   dependencies:
-    "@aws-amplify/amplify-appsync-simulator": 2.16.4
-    "@aws-amplify/amplify-category-function": 5.7.9
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-appsync-simulator": 2.16.5
+    "@aws-amplify/amplify-category-function": 5.7.10
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
-    "@aws-amplify/amplify-opensearch-simulator": 1.7.14
+    "@aws-amplify/amplify-opensearch-simulator": 1.7.15
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.11
-    "@aws-amplify/graphql-auth-transformer": ^3.6.3
-    "@aws-amplify/graphql-default-value-transformer": ^2.3.11
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.13
+    "@aws-amplify/graphql-auth-transformer": ^3.6.4
+    "@aws-amplify/graphql-default-value-transformer": ^2.3.12
     "@aws-amplify/graphql-function-transformer": ^2.1.26
     "@aws-amplify/graphql-http-transformer": ^2.1.26
-    "@aws-amplify/graphql-index-transformer": ^2.4.7
-    "@aws-amplify/graphql-maps-to-transformer": ^3.4.21
-    "@aws-amplify/graphql-model-transformer": ^2.11.2
+    "@aws-amplify/graphql-index-transformer": ^2.4.8
+    "@aws-amplify/graphql-maps-to-transformer": ^3.4.22
+    "@aws-amplify/graphql-model-transformer": ^2.11.3
     "@aws-amplify/graphql-predictions-transformer": ^2.1.26
-    "@aws-amplify/graphql-relational-transformer": ^2.5.9
-    "@aws-amplify/graphql-searchable-transformer": ^2.7.7
+    "@aws-amplify/graphql-relational-transformer": ^2.5.10
+    "@aws-amplify/graphql-searchable-transformer": ^2.7.8
     "@aws-amplify/graphql-transformer": ^1.1.0
     "@aws-amplify/graphql-transformer-core": ^2.9.3
     "@aws-amplify/graphql-transformer-interfaces": ^3.10.1
@@ -902,9 +901,9 @@ __metadata:
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
-    amplify-codegen: ^4.9.4
-    amplify-dynamodb-simulator: 2.9.18
-    amplify-nodejs-function-runtime-provider: 2.5.23
+    amplify-codegen: ^4.9.7
+    amplify-dynamodb-simulator: 2.9.19
+    amplify-nodejs-function-runtime-provider: 2.5.24
     amplify-storage-simulator: 1.11.3
     aws-appsync: ^4.1.4
     aws-cdk-lib: ~2.129.0
@@ -939,12 +938,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-uibuilder@1.14.10, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
+"@aws-amplify/amplify-util-uibuilder@1.14.12, @aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.12.3
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-category-api": ^5.12.5
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
     "@aws-amplify/codegen-ui": 2.14.2
@@ -953,7 +952,7 @@ __metadata:
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
     "@types/tiny-async-pool": ^2.0.0
-    amplify-codegen: ^4.9.4
+    amplify-codegen: ^4.9.7
     aws-sdk: ^2.1464.0
     fs-extra: ^8.1.0
     node-fetch: ^2.6.7
@@ -1020,9 +1019,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/appsync-modelgen-plugin@npm:2.12.3, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
-  version: 2.12.3
-  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.12.3"
+"@aws-amplify/appsync-modelgen-plugin@npm:2.13.2, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
+  version: 2.13.2
+  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.13.2"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^1.18.8
     "@graphql-codegen/visitor-plugin-common": ^1.22.0
@@ -1036,7 +1035,7 @@ __metadata:
     ts-dedent: ^1.1.0
   peerDependencies:
     graphql: ^15.5.0
-  checksum: 6a072a3b219a58d2978bfef12837dacaaf2f0d69302753cbc2abf9acf38fdb355e8db0e936737e8927aa73052e345bd2387246928b41a3d194a695ce39520e16
+  checksum: b60c630f05390f69d59fa25ac9688259992eb2712a29c47fad63fb22418d1e284cbf1b4b0e7d05445e72f712f9a55bbc080568fade0f717303f9e31d042b2f0f
   languageName: node
   linkType: hard
 
@@ -1063,52 +1062,52 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/cli-extensibility-helper@3.0.33, @aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper":
+"@aws-amplify/cli-extensibility-helper@3.0.34, @aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-extensibility-helper@workspace:packages/amplify-cli-extensibility-helper"
   dependencies:
-    "@aws-amplify/amplify-category-custom": 3.1.23
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-category-custom": 3.1.24
+    "@aws-amplify/amplify-cli-core": 4.3.10
     aws-cdk-lib: ~2.129.0
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.12.4, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.12.6, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
-    "@aws-amplify/amplify-app": 5.0.35
-    "@aws-amplify/amplify-category-analytics": 5.0.35
-    "@aws-amplify/amplify-category-api": ^5.12.3
-    "@aws-amplify/amplify-category-auth": 3.7.14
-    "@aws-amplify/amplify-category-custom": 3.1.23
-    "@aws-amplify/amplify-category-function": 5.7.9
-    "@aws-amplify/amplify-category-geo": 3.5.14
-    "@aws-amplify/amplify-category-hosting": 3.5.36
-    "@aws-amplify/amplify-category-interactions": 5.1.28
-    "@aws-amplify/amplify-category-notifications": 2.26.21
-    "@aws-amplify/amplify-category-predictions": 5.5.14
-    "@aws-amplify/amplify-category-storage": 5.5.14
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-app": 5.0.36
+    "@aws-amplify/amplify-category-analytics": 5.0.36
+    "@aws-amplify/amplify-category-api": ^5.12.5
+    "@aws-amplify/amplify-category-auth": 3.7.15
+    "@aws-amplify/amplify-category-custom": 3.1.24
+    "@aws-amplify/amplify-category-function": 5.7.10
+    "@aws-amplify/amplify-category-geo": 3.5.15
+    "@aws-amplify/amplify-category-hosting": 3.5.37
+    "@aws-amplify/amplify-category-interactions": 5.1.29
+    "@aws-amplify/amplify-category-notifications": 2.26.23
+    "@aws-amplify/amplify-category-predictions": 5.5.15
+    "@aws-amplify/amplify-category-storage": 5.5.15
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-cli-logger": 1.3.8
     "@aws-amplify/amplify-cli-shared-interfaces": 1.2.5
-    "@aws-amplify/amplify-console-hosting": 2.5.33
-    "@aws-amplify/amplify-container-hosting": 2.8.10
-    "@aws-amplify/amplify-dotnet-function-template-provider": 2.6.9
-    "@aws-amplify/amplify-environment-parameters": 1.9.14
+    "@aws-amplify/amplify-console-hosting": 2.5.34
+    "@aws-amplify/amplify-container-hosting": 2.8.12
+    "@aws-amplify/amplify-dotnet-function-template-provider": 2.6.10
+    "@aws-amplify/amplify-environment-parameters": 1.9.15
     "@aws-amplify/amplify-frontend-android": 3.5.8
     "@aws-amplify/amplify-frontend-flutter": 1.4.7
-    "@aws-amplify/amplify-frontend-ios": 3.7.6
-    "@aws-amplify/amplify-frontend-javascript": 3.10.17
+    "@aws-amplify/amplify-frontend-ios": 3.7.7
+    "@aws-amplify/amplify-frontend-javascript": 3.10.18
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-go-function-template-provider": 1.4.8
-    "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.9
+    "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.10
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.11
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.13
     "@aws-amplify/amplify-python-function-template-provider": 1.4.7
     "@aws-amplify/amplify-util-import": 2.8.3
-    "@aws-amplify/amplify-util-mock": 5.10.4
-    "@aws-amplify/amplify-util-uibuilder": 1.14.10
+    "@aws-amplify/amplify-util-mock": 5.10.6
+    "@aws-amplify/amplify-util-uibuilder": 1.14.12
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@types/archiver": ^5.3.1
     "@types/columnify": ^1.5.1
@@ -1123,14 +1122,14 @@ __metadata:
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
-    amplify-codegen: ^4.9.4
-    amplify-dotnet-function-runtime-provider: 2.0.28
-    amplify-go-function-runtime-provider: 2.3.46
+    amplify-codegen: ^4.9.7
+    amplify-dotnet-function-runtime-provider: 2.0.29
+    amplify-go-function-runtime-provider: 2.3.47
     amplify-headless-interface: 1.17.7
-    amplify-java-function-runtime-provider: 2.3.46
+    amplify-java-function-runtime-provider: 2.3.47
     amplify-java-function-template-provider: 1.5.24
-    amplify-nodejs-function-runtime-provider: 2.5.23
-    amplify-python-function-runtime-provider: 2.4.46
+    amplify-nodejs-function-runtime-provider: 2.5.24
+    amplify-python-function-runtime-provider: 2.4.47
     aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
     chalk: ^4.1.1
@@ -1173,7 +1172,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.12.4
+    "@aws-amplify/cli-internal": 12.12.6
     "@types/tar": ^6.1.1
     axios: ^1.6.7
     rimraf: ^3.0.2
@@ -1262,13 +1261,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-auth-transformer@npm:3.6.3, @aws-amplify/graphql-auth-transformer@npm:^3.6.3":
-  version: 3.6.3
-  resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.3"
+"@aws-amplify/graphql-auth-transformer@npm:3.6.4, @aws-amplify/graphql-auth-transformer@npm:^3.6.4":
+  version: 3.6.4
+  resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.4"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.0
-    "@aws-amplify/graphql-model-transformer": 2.11.2
-    "@aws-amplify/graphql-relational-transformer": 2.5.9
+    "@aws-amplify/graphql-model-transformer": 2.11.3
+    "@aws-amplify/graphql-relational-transformer": 2.5.10
     "@aws-amplify/graphql-transformer-core": 2.9.3
     "@aws-amplify/graphql-transformer-interfaces": 3.10.1
     graphql: ^15.5.0
@@ -1279,13 +1278,13 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: 69e26bbddfd88f24dca06f0c39720f30188ce028ffddf40b3197cc5d85fa141cc909ce875123c32fad017ee1f0433ff3368056e1c0426653f11161f4b106679d
+  checksum: 6d8184376fd055eb1b3111717bef6f0d6d11402da0389aab483bd95c112d128e1cec7224b13ff578e28d52d73c61aaa0a59d8d1684470a94eb610833d1310a6f
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-default-value-transformer@npm:2.3.11, @aws-amplify/graphql-default-value-transformer@npm:^2.3.11":
-  version: 2.3.11
-  resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.11"
+"@aws-amplify/graphql-default-value-transformer@npm:2.3.12, @aws-amplify/graphql-default-value-transformer@npm:^2.3.12":
+  version: 2.3.12
+  resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.12"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.0
     "@aws-amplify/graphql-transformer-core": 2.9.3
@@ -1294,7 +1293,7 @@ __metadata:
     graphql-mapping-template: 4.20.16
     graphql-transformer-common: 4.31.1
     libphonenumber-js: 1.9.47
-  checksum: 815b76ae43ebce61f0e8f6ccb4fcd7966477c123f03a81bd3627d91cb28ecc9d67caa5b1105dfc595d5f7957bd92a3f4fb9dee65d6ecbffb62168d0ff26f11db
+  checksum: 30bbe4a3883b56f4ccb7bbb6dccc7931fadcee5719bd317b9ffe0f6e907db9bec44f56f87d063dd9a9c35140d950490c06d6865f43634bd6235a9a9b33b4042c
   languageName: node
   linkType: hard
 
@@ -1335,11 +1334,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-generator@npm:0.4.4":
-  version: 0.4.4
-  resolution: "@aws-amplify/graphql-generator@npm:0.4.4"
+"@aws-amplify/graphql-generator@npm:0.4.7":
+  version: 0.4.7
+  resolution: "@aws-amplify/graphql-generator@npm:0.4.7"
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin": 2.12.3
+    "@aws-amplify/appsync-modelgen-plugin": 2.13.2
     "@aws-amplify/graphql-directives": ^1.0.1
     "@aws-amplify/graphql-docs-generator": 4.2.1
     "@aws-amplify/graphql-types-generator": 3.6.0
@@ -1347,7 +1346,7 @@ __metadata:
     "@graphql-tools/apollo-engine-loader": ^8.0.0
     graphql: ^15.5.0
     prettier: ^1.19.1
-  checksum: 370cc7ed2c8f871afa47100f559e1e8973eb74baf56dfe0bb370580b0c1b8113f18cbcb65a729b821547dd66989e35d1712b08ad21709468828d329ba01aa1b3
+  checksum: c6c4f01ac20f54c21311b67a1458076b7c966d4a1ceb071275def9995ddea402a32078b58243bf123d54adc588d0ffdbfa2e244468b96afbfdb5507b84b4b1cd
   languageName: node
   linkType: hard
 
@@ -1368,12 +1367,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-index-transformer@npm:2.4.7, @aws-amplify/graphql-index-transformer@npm:^2.4.7":
-  version: 2.4.7
-  resolution: "@aws-amplify/graphql-index-transformer@npm:2.4.7"
+"@aws-amplify/graphql-index-transformer@npm:2.4.8, @aws-amplify/graphql-index-transformer@npm:^2.4.8":
+  version: 2.4.8
+  resolution: "@aws-amplify/graphql-index-transformer@npm:2.4.8"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.0
-    "@aws-amplify/graphql-model-transformer": 2.11.2
+    "@aws-amplify/graphql-model-transformer": 2.11.3
     "@aws-amplify/graphql-transformer-core": 2.9.3
     "@aws-amplify/graphql-transformer-interfaces": 3.10.1
     graphql: ^15.5.0
@@ -1382,13 +1381,13 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: 30cef613f196c0a0a70fba2a1e87f836f551883175fb75843eb1ae2b3bca79315c5cec3e46de413a1f37271c4df4428809af829d149b20dda6c954df4f218184
+  checksum: f979497d1c8eacda40db04a3a71a7dbbecded076890bb69485b5d2e6ef3340c1aaf751a01e50377e4c4f8039fa9aa9464a1978c1bad6ea8e8915595ee567634d
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-maps-to-transformer@npm:3.4.21, @aws-amplify/graphql-maps-to-transformer@npm:^3.4.21":
-  version: 3.4.21
-  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.4.21"
+"@aws-amplify/graphql-maps-to-transformer@npm:3.4.22, @aws-amplify/graphql-maps-to-transformer@npm:^3.4.22":
+  version: 3.4.22
+  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.4.22"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.0
     "@aws-amplify/graphql-transformer-core": 2.9.3
@@ -1398,13 +1397,13 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: 4e884f491cb10cea40191792c191715718df0bd521f9e82cc273c24ea7467db2688ec8e367ad78a79e6029e30467ab419f5fb08403c046da5ef9d5cfa82ac9d4
+  checksum: 1e9ecc8c6f025001c62ec5c1f3e0ef6f397dbe8152e15f9cfb661c3a88b970f1b7d23808de5fcb13781cab0f8d0299c6d7338cc67f7c03c66b47a962332f2224
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-model-transformer@npm:2.11.2, @aws-amplify/graphql-model-transformer@npm:^2.11.2":
-  version: 2.11.2
-  resolution: "@aws-amplify/graphql-model-transformer@npm:2.11.2"
+"@aws-amplify/graphql-model-transformer@npm:2.11.3, @aws-amplify/graphql-model-transformer@npm:^2.11.3":
+  version: 2.11.3
+  resolution: "@aws-amplify/graphql-model-transformer@npm:2.11.3"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.0
     "@aws-amplify/graphql-transformer-core": 2.9.3
@@ -1415,7 +1414,7 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: 8fdb9c7edb2109eeb9887e3c86efe9c04ec33b179487a5a637cc059485ce703c8695299527854893792383a53c8c57328030176e0946b8431630cbee1da3cf32
+  checksum: b853347b46f30a6d9160f69c2fc890628db4b015c13ba58afed5646d2a4f9734b7967e6f5b6f24511cb52d51183a5c1f8a7ec20135740186e21c79aef0738f02
   languageName: node
   linkType: hard
 
@@ -1436,13 +1435,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-relational-transformer@npm:2.5.9, @aws-amplify/graphql-relational-transformer@npm:^2.5.9":
-  version: 2.5.9
-  resolution: "@aws-amplify/graphql-relational-transformer@npm:2.5.9"
+"@aws-amplify/graphql-relational-transformer@npm:2.5.10, @aws-amplify/graphql-relational-transformer@npm:^2.5.10":
+  version: 2.5.10
+  resolution: "@aws-amplify/graphql-relational-transformer@npm:2.5.10"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.0
-    "@aws-amplify/graphql-index-transformer": 2.4.7
-    "@aws-amplify/graphql-model-transformer": 2.11.2
+    "@aws-amplify/graphql-index-transformer": 2.4.8
+    "@aws-amplify/graphql-model-transformer": 2.11.3
     "@aws-amplify/graphql-transformer-core": 2.9.3
     "@aws-amplify/graphql-transformer-interfaces": 3.10.1
     graphql: ^15.5.0
@@ -1452,7 +1451,7 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: 789db8328f76122d590cec07abdfa038adbbf526c90e3a8c54af5d8c93f0e5abb08d2be79cff3b3dee4b86378af5e3cdb479168f2271fd7fa2770ce3b1a17125
+  checksum: d4e7563187cae816ae968bcf3758419762c520c9fa8c3a9ce8a93fb92c43067fdaf01783779d5ac201a6ed7abdf2716df6975b6c68111d7a6b15c8d8647401ae
   languageName: node
   linkType: hard
 
@@ -1480,12 +1479,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-searchable-transformer@npm:2.7.7, @aws-amplify/graphql-searchable-transformer@npm:^2.7.7":
-  version: 2.7.7
-  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.7"
+"@aws-amplify/graphql-searchable-transformer@npm:2.7.8, @aws-amplify/graphql-searchable-transformer@npm:^2.7.8":
+  version: 2.7.8
+  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.8"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.0
-    "@aws-amplify/graphql-model-transformer": 2.11.2
+    "@aws-amplify/graphql-model-transformer": 2.11.3
     "@aws-amplify/graphql-transformer-core": 2.9.3
     "@aws-amplify/graphql-transformer-interfaces": 3.10.1
     graphql: ^15.5.0
@@ -1494,16 +1493,16 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: ac7fa7c592b022ee4b669dd71fff2b02ba965356d7f2edbe1dceac2e77ed15e39741933a0a8fc44153b1bd5957f41bacfbcdc4a36ddc4eda68f8ce644249b829
+  checksum: 3121ad806031935a8f0b452ccc3ea1b90d8700a04b85e8cc45f8241bfaf4c0e44127318d5de6511683dd183ca5aae5ca1c2eaf68066326cffca08a4f54ee89e9
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-sql-transformer@npm:0.3.7":
-  version: 0.3.7
-  resolution: "@aws-amplify/graphql-sql-transformer@npm:0.3.7"
+"@aws-amplify/graphql-sql-transformer@npm:0.3.8":
+  version: 0.3.8
+  resolution: "@aws-amplify/graphql-sql-transformer@npm:0.3.8"
   dependencies:
     "@aws-amplify/graphql-directives": 1.1.0
-    "@aws-amplify/graphql-model-transformer": 2.11.2
+    "@aws-amplify/graphql-model-transformer": 2.11.3
     "@aws-amplify/graphql-transformer-core": 2.9.3
     "@aws-amplify/graphql-transformer-interfaces": 3.10.1
     graphql: ^15.5.0
@@ -1512,7 +1511,7 @@ __metadata:
   peerDependencies:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: 986590ea3ca5d69a0c1f30b72fd6e363bf8cca3a2fe213f0dc082972154b813ce1b5fc575c074eed36350d41b766b937e9e488fd8db1728e8fbb3f92d89d11fa
+  checksum: 5a919f48da2b1777ddd30a7f4f3e08751266213e3eeda96eddbe6b58360a61d0bc90c6449ea48ce34dba87796aaa0a6a67b1cadde30600a0e2c9f21c09775a81
   languageName: node
   linkType: hard
 
@@ -1568,27 +1567,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer@npm:1.6.3, @aws-amplify/graphql-transformer@npm:^1.1.0":
-  version: 1.6.3
-  resolution: "@aws-amplify/graphql-transformer@npm:1.6.3"
+"@aws-amplify/graphql-transformer@npm:1.6.4, @aws-amplify/graphql-transformer@npm:^1.1.0":
+  version: 1.6.4
+  resolution: "@aws-amplify/graphql-transformer@npm:1.6.4"
   dependencies:
-    "@aws-amplify/graphql-auth-transformer": 3.6.3
-    "@aws-amplify/graphql-default-value-transformer": 2.3.11
+    "@aws-amplify/graphql-auth-transformer": 3.6.4
+    "@aws-amplify/graphql-default-value-transformer": 2.3.12
     "@aws-amplify/graphql-function-transformer": 2.1.26
     "@aws-amplify/graphql-http-transformer": 2.1.26
-    "@aws-amplify/graphql-index-transformer": 2.4.7
-    "@aws-amplify/graphql-maps-to-transformer": 3.4.21
-    "@aws-amplify/graphql-model-transformer": 2.11.2
+    "@aws-amplify/graphql-index-transformer": 2.4.8
+    "@aws-amplify/graphql-maps-to-transformer": 3.4.22
+    "@aws-amplify/graphql-model-transformer": 2.11.3
     "@aws-amplify/graphql-predictions-transformer": 2.1.26
-    "@aws-amplify/graphql-relational-transformer": 2.5.9
-    "@aws-amplify/graphql-searchable-transformer": 2.7.7
-    "@aws-amplify/graphql-sql-transformer": 0.3.7
+    "@aws-amplify/graphql-relational-transformer": 2.5.10
+    "@aws-amplify/graphql-searchable-transformer": 2.7.8
+    "@aws-amplify/graphql-sql-transformer": 0.3.8
     "@aws-amplify/graphql-transformer-core": 2.9.3
     "@aws-amplify/graphql-transformer-interfaces": 3.10.1
   peerDependencies:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: dbc6c592b5f2b3ff61516983da730af1f06cf96b5f7ca3d332e7c61de0150bf97fbe17468b1685a33bbd794253dc33da785e489fa7f61aa2523501173c7a5093
+  checksum: 77ac2c48f4e881d26529c7fb8d21eaf0a99980566fb8ff3e765e592b47d100b45858b18a3337c332dd7b594991ba341ccdc36463acbeb8ef8bfbba67b5bb6370
   languageName: node
   linkType: hard
 
@@ -9509,14 +9508,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/gen-mapping@npm:^0.3.0, @jridgewell/gen-mapping@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@jridgewell/gen-mapping@npm:0.3.2"
+"@jridgewell/gen-mapping@npm:^0.3.0, @jridgewell/gen-mapping@npm:^0.3.2, @jridgewell/gen-mapping@npm:^0.3.5":
+  version: 0.3.5
+  resolution: "@jridgewell/gen-mapping@npm:0.3.5"
   dependencies:
-    "@jridgewell/set-array": ^1.0.1
+    "@jridgewell/set-array": ^1.2.1
     "@jridgewell/sourcemap-codec": ^1.4.10
-    "@jridgewell/trace-mapping": ^0.3.9
-  checksum: 82685c8735c63fe388badee45e2970a6bc83eed1c84d46d8652863bafeca22a6c6cc15812f5999a4535366f4668ccc9ba6d5c67dfb72e846fa8a063806f10afd
+    "@jridgewell/trace-mapping": ^0.3.24
+  checksum: 1be4fd4a6b0f41337c4f5fdf4afc3bd19e39c3691924817108b82ffcb9c9e609c273f936932b9fba4b3a298ce2eb06d9bff4eb1cc3bd81c4f4ee1b4917e25feb
   languageName: node
   linkType: hard
 
@@ -9527,20 +9526,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/set-array@npm:^1.0.1":
-  version: 1.1.2
-  resolution: "@jridgewell/set-array@npm:1.1.2"
-  checksum: bc7ab4c4c00470de4e7562ecac3c0c84f53e7ee8a711e546d67c47da7febe7c45cd67d4d84ee3c9b2c05ae8e872656cdded8a707a283d30bd54fbc65aef821ab
+"@jridgewell/set-array@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@jridgewell/set-array@npm:1.2.1"
+  checksum: 2a5aa7b4b5c3464c895c802d8ae3f3d2b92fcbe84ad12f8d0bfbb1f5ad006717e7577ee1fd2eac00c088abe486c7adb27976f45d2941ff6b0b92b2c3302c60f4
   languageName: node
   linkType: hard
 
-"@jridgewell/source-map@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@jridgewell/source-map@npm:0.3.2"
+"@jridgewell/source-map@npm:^0.3.3":
+  version: 0.3.6
+  resolution: "@jridgewell/source-map@npm:0.3.6"
   dependencies:
-    "@jridgewell/gen-mapping": ^0.3.0
-    "@jridgewell/trace-mapping": ^0.3.9
-  checksum: 1540da323456878281c8e03fc4edc444ea151aa441eb38a43d84d39df8fec9446e375202cd999b54637f4627e42e2a38b3ab07195e5e49616fc6b7eee1b7119f
+    "@jridgewell/gen-mapping": ^0.3.5
+    "@jridgewell/trace-mapping": ^0.3.25
+  checksum: 6a4ecc713ed246ff8e5bdcc1ef7c49aaa93f7463d948ba5054dda18b02dcc6a055e2828c577bcceee058f302ce1fc95595713d44f5c45e43d459f88d267f2f04
   languageName: node
   linkType: hard
 
@@ -9561,13 +9560,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/trace-mapping@npm:^0.3.12, @jridgewell/trace-mapping@npm:^0.3.15, @jridgewell/trace-mapping@npm:^0.3.17, @jridgewell/trace-mapping@npm:^0.3.18, @jridgewell/trace-mapping@npm:^0.3.9":
-  version: 0.3.20
-  resolution: "@jridgewell/trace-mapping@npm:0.3.20"
+"@jridgewell/trace-mapping@npm:^0.3.12, @jridgewell/trace-mapping@npm:^0.3.15, @jridgewell/trace-mapping@npm:^0.3.17, @jridgewell/trace-mapping@npm:^0.3.18, @jridgewell/trace-mapping@npm:^0.3.20, @jridgewell/trace-mapping@npm:^0.3.24, @jridgewell/trace-mapping@npm:^0.3.25, @jridgewell/trace-mapping@npm:^0.3.9":
+  version: 0.3.25
+  resolution: "@jridgewell/trace-mapping@npm:0.3.25"
   dependencies:
     "@jridgewell/resolve-uri": ^3.1.0
     "@jridgewell/sourcemap-codec": ^1.4.14
-  checksum: 0ea0b2675cf513ec44dc25605616a3c9b808b9832e74b5b63c44260d66b58558bba65764f81928fc1033ead911f8718dca1134049c3e7a93937faf436671df31
+  checksum: 3d1ce6ebc69df9682a5a8896b414c6537e428a1d68b02fcc8363b04284a8ca0df04d0ee3013132252ab14f2527bc13bea6526a912ecb5658f0e39fd2860b4df4
   languageName: node
   linkType: hard
 
@@ -10683,7 +10682,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/commons@npm:^1.6.0, @sinonjs/commons@npm:^1.7.0, @sinonjs/commons@npm:^1.8.3":
+"@sinonjs/commons@npm:^1.7.0":
   version: 1.8.3
   resolution: "@sinonjs/commons@npm:1.8.3"
   dependencies:
@@ -10701,12 +10700,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/fake-timers@npm:>=5, @sinonjs/fake-timers@npm:^10.0.2":
+"@sinonjs/commons@npm:^3.0.0, @sinonjs/commons@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@sinonjs/commons@npm:3.0.1"
+  dependencies:
+    type-detect: 4.0.8
+  checksum: 1227a7b5bd6c6f9584274db996d7f8cee2c8c350534b9d0141fc662eaf1f292ea0ae3ed19e5e5271c8fd390d27e492ca2803acd31a1978be2cdc6be0da711403
+  languageName: node
+  linkType: hard
+
+"@sinonjs/fake-timers@npm:^10.0.2":
   version: 10.0.2
   resolution: "@sinonjs/fake-timers@npm:10.0.2"
   dependencies:
     "@sinonjs/commons": ^2.0.0
   checksum: 24555ed94053319fa18d4efa0923b295a445a00d2515d260b9e4e2b5943bd8b5b55fee85baabb2819a13ca1f57dbc1949265a350f592eef9e2535ec9de711ebc
+  languageName: node
+  linkType: hard
+
+"@sinonjs/fake-timers@npm:^11.2.2":
+  version: 11.3.1
+  resolution: "@sinonjs/fake-timers@npm:11.3.1"
+  dependencies:
+    "@sinonjs/commons": ^3.0.1
+  checksum: c4f96ea7c3ab0e1a5fc1e2e1201e984a9302841a9fb10059120ce3b6789dae0f851c8827cf16b052a6f87db9a098cdd36f7067246e7a9b71da1d5a2c3d3a9f3d
   languageName: node
   linkType: hard
 
@@ -10728,30 +10745,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/fake-timers@npm:^9.1.2":
-  version: 9.1.2
-  resolution: "@sinonjs/fake-timers@npm:9.1.2"
+"@sinonjs/samsam@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@sinonjs/samsam@npm:8.0.0"
   dependencies:
-    "@sinonjs/commons": ^1.7.0
-  checksum: d9187f9130f03272562ff9845867299c6f7cf15157bbb3e6aca4a1f06d885b0eef54259d0ad41e2f8043dc530b4db730b6c9415b169033e7ba8fed0ad449ceec
-  languageName: node
-  linkType: hard
-
-"@sinonjs/samsam@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "@sinonjs/samsam@npm:6.1.1"
-  dependencies:
-    "@sinonjs/commons": ^1.6.0
+    "@sinonjs/commons": ^2.0.0
     lodash.get: ^4.4.2
     type-detect: ^4.0.8
-  checksum: 1eab31ec5d8d047bbdb2ba6c9680299efbee88663390949e7621e504545ffdd1d1eae4231c4e58b594ca7300033ba60332129c1c4d7c5c0f6d909e5d1327b991
+  checksum: c1654ad72ecd9efd4a57d756c492c1c17a197c3138da57b75ba1729562001ed1b3b9c656cce1bd1d91640bc86eb4185a72eced528d176fff09a3a01de28cdcc6
   languageName: node
   linkType: hard
 
-"@sinonjs/text-encoding@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "@sinonjs/text-encoding@npm:0.7.1"
-  checksum: a55d2aa35f30efcafc8ca57841ee9a6c963e969be3ace0a9576f772790fedd36c22be5687df0ad55e1c5ce1961e05c496f2981f5ad3491802bd9212d91ca03e2
+"@sinonjs/text-encoding@npm:^0.7.2":
+  version: 0.7.3
+  resolution: "@sinonjs/text-encoding@npm:0.7.3"
+  checksum: b112d1e97af7f99fbdc63c7dbcd35d6a60764dfec85cfcfff532e55cce8ecd8453f9fa2139e70aea47142c940fd90cd201d19f370b9a0141700d8a6de3116815
   languageName: node
   linkType: hard
 
@@ -12170,26 +12178,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint-scope@npm:^3.7.3":
-  version: 3.7.3
-  resolution: "@types/eslint-scope@npm:3.7.3"
-  dependencies:
-    "@types/eslint": "*"
-    "@types/estree": "*"
-  checksum: 3084e2619be57ca318dfddc2557fef855d63ea378d42b6b355216ea3e3aed82ce6adbfa6b620bff1d67aefa95245c5b41e998338bc307c948f8cbf08840b9bb2
-  languageName: node
-  linkType: hard
-
-"@types/eslint@npm:*":
-  version: 8.4.1
-  resolution: "@types/eslint@npm:8.4.1"
-  dependencies:
-    "@types/estree": "*"
-    "@types/json-schema": "*"
-  checksum: 3ba1ddb8d2362316bafe65f90aa41ce23f923f8ae6a131e382540a7c0d8ad5f04117e6aba788392717a616bd6e2589a1d954630c49edb364d28dc8eeb5214890
-  languageName: node
-  linkType: hard
-
 "@types/eslint@npm:^7.28.2":
   version: 7.29.0
   resolution: "@types/eslint@npm:7.29.0"
@@ -12200,10 +12188,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/estree@npm:*, @types/estree@npm:^0.0.51":
-  version: 0.0.51
-  resolution: "@types/estree@npm:0.0.51"
-  checksum: a70c60d5e634e752fcd45b58c9c046ef22ad59ede4bc93ad5193c7e3b736ebd6bcd788ade59d9c3b7da6eeb0939235f011d4c59bb4fc04d8c346b76035099dd1
+"@types/estree@npm:*, @types/estree@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@types/estree@npm:1.0.5"
+  checksum: b3b0e334288ddb407c7b3357ca67dbee75ee22db242ca7c56fe27db4e1a31989cb8af48a84dd401deb787fe10cc6b2ab1ee82dc4783be87ededbe3d53c79c70d
   languageName: node
   linkType: hard
 
@@ -13078,154 +13066,154 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webassemblyjs/ast@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/ast@npm:1.11.1"
+"@webassemblyjs/ast@npm:1.12.1, @webassemblyjs/ast@npm:^1.12.1":
+  version: 1.12.1
+  resolution: "@webassemblyjs/ast@npm:1.12.1"
   dependencies:
-    "@webassemblyjs/helper-numbers": 1.11.1
-    "@webassemblyjs/helper-wasm-bytecode": 1.11.1
-  checksum: 6f75b09f17a29e704d2343967c53128cda7c84af2d192a3146de1b53cafaedfe568eca0804bd6c1acc72e1269477ae22d772de1dcf605cdb0adf9768f31d88d7
+    "@webassemblyjs/helper-numbers": 1.11.6
+    "@webassemblyjs/helper-wasm-bytecode": 1.11.6
+  checksum: ba7f2b96c6e67e249df6156d02c69eb5f1bd18d5005303cdc42accb053bebbbde673826e54db0437c9748e97abd218366a1d13fa46859b23cde611b6b409998c
   languageName: node
   linkType: hard
 
-"@webassemblyjs/floating-point-hex-parser@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/floating-point-hex-parser@npm:1.11.1"
-  checksum: 9644d9f7163d25aa301cf3be246e35cca9c472b70feda0593b1a43f30525c68d70bfb4b7f24624cd8e259579f1dee32ef28670adaeb3ab1314ffb52a25b831d5
+"@webassemblyjs/floating-point-hex-parser@npm:1.11.6":
+  version: 1.11.6
+  resolution: "@webassemblyjs/floating-point-hex-parser@npm:1.11.6"
+  checksum: 37fe26f89e18e4ca0e7d89cfe3b9f17cfa327d7daf906ae01400416dbb2e33c8a125b4dc55ad7ff405e5fcfb6cf0d764074c9bc532b9a31a71e762be57d2ea0a
   languageName: node
   linkType: hard
 
-"@webassemblyjs/helper-api-error@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/helper-api-error@npm:1.11.1"
-  checksum: 23e6f24100eb21779cd4dcc7c4231fd511622545a7638b195098bcfee79decb54a7e2b3295a12056c3042af7a5d8d62d4023a9194c9cba0311acb304ea20a292
+"@webassemblyjs/helper-api-error@npm:1.11.6":
+  version: 1.11.6
+  resolution: "@webassemblyjs/helper-api-error@npm:1.11.6"
+  checksum: a681ed51863e4ff18cf38d223429f414894e5f7496856854d9a886eeddcee32d7c9f66290f2919c9bb6d2fc2b2fae3f989b6a1e02a81e829359738ea0c4d371a
   languageName: node
   linkType: hard
 
-"@webassemblyjs/helper-buffer@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/helper-buffer@npm:1.11.1"
-  checksum: ab662fc94a017538c538836387492567ed9f23fe4485a86de1834d61834e4327c24659830e1ecd2eea7690ce031a148b59c4724873dc5d3c0bdb71605c7d01af
+"@webassemblyjs/helper-buffer@npm:1.12.1":
+  version: 1.12.1
+  resolution: "@webassemblyjs/helper-buffer@npm:1.12.1"
+  checksum: 0270724afb4601237410f7fd845ab58ccda1d5456a8783aadfb16eaaf3f2c9610c28e4a5bcb6ad880cde5183c82f7f116d5ccfc2310502439d33f14b6888b48a
   languageName: node
   linkType: hard
 
-"@webassemblyjs/helper-numbers@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/helper-numbers@npm:1.11.1"
+"@webassemblyjs/helper-numbers@npm:1.11.6":
+  version: 1.11.6
+  resolution: "@webassemblyjs/helper-numbers@npm:1.11.6"
   dependencies:
-    "@webassemblyjs/floating-point-hex-parser": 1.11.1
-    "@webassemblyjs/helper-api-error": 1.11.1
+    "@webassemblyjs/floating-point-hex-parser": 1.11.6
+    "@webassemblyjs/helper-api-error": 1.11.6
     "@xtuc/long": 4.2.2
-  checksum: 8cc7ced66dad8f968a68fbad551ba50562993cefa1add67b31ca6462bb986f7b21b5d7c6444c05dd39312126e10ac48def025dec6277ce0734665191e05acde7
+  checksum: c7d5afc0ff3bd748339b466d8d2f27b908208bf3ff26b2e8e72c39814479d486e0dca6f3d4d776fd9027c1efe05b5c0716c57a23041eb34473892b2731c33af3
   languageName: node
   linkType: hard
 
-"@webassemblyjs/helper-wasm-bytecode@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/helper-wasm-bytecode@npm:1.11.1"
-  checksum: f14e2bd836fed1420fe7507919767de16346a013bbac97b6b6794993594f37b5f0591d824866a7b32f47524cef8a4a300e5f914952ff2b0ff28659714400c793
+"@webassemblyjs/helper-wasm-bytecode@npm:1.11.6":
+  version: 1.11.6
+  resolution: "@webassemblyjs/helper-wasm-bytecode@npm:1.11.6"
+  checksum: 79d2bebdd11383d142745efa32781249745213af8e022651847382685ca76709f83e1d97adc5f0d3c2b8546bf02864f8b43a531fdf5ca0748cb9e4e0ef2acaa5
   languageName: node
   linkType: hard
 
-"@webassemblyjs/helper-wasm-section@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/helper-wasm-section@npm:1.11.1"
+"@webassemblyjs/helper-wasm-section@npm:1.12.1":
+  version: 1.12.1
+  resolution: "@webassemblyjs/helper-wasm-section@npm:1.12.1"
   dependencies:
-    "@webassemblyjs/ast": 1.11.1
-    "@webassemblyjs/helper-buffer": 1.11.1
-    "@webassemblyjs/helper-wasm-bytecode": 1.11.1
-    "@webassemblyjs/wasm-gen": 1.11.1
-  checksum: e2da4192a843e96c8bf5156cea23193c9dbe12a1440c9c109d3393828f46753faab75fac78ecfe965aa7988723ad9b0b12f3ca0b9e4de75294980e67515460af
+    "@webassemblyjs/ast": 1.12.1
+    "@webassemblyjs/helper-buffer": 1.12.1
+    "@webassemblyjs/helper-wasm-bytecode": 1.11.6
+    "@webassemblyjs/wasm-gen": 1.12.1
+  checksum: 0546350724d285ae3c26e6fc444be4c3b5fb824f3be0ec8ceb474179dc3f4430336dd2e36a44b3e3a1a6815960e5eec98cd9b3a8ec66dc53d86daedd3296a6a2
   languageName: node
   linkType: hard
 
-"@webassemblyjs/ieee754@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/ieee754@npm:1.11.1"
+"@webassemblyjs/ieee754@npm:1.11.6":
+  version: 1.11.6
+  resolution: "@webassemblyjs/ieee754@npm:1.11.6"
   dependencies:
     "@xtuc/ieee754": ^1.2.0
-  checksum: 13d6a6ca2e9f35265f10b549cb8354f31a307a7480bbf76c0f4bc8b02e13d5556fb29456cef3815db490effc602c59f98cb0505090ca9e29d7dc61539762a065
+  checksum: 59de0365da450322c958deadade5ec2d300c70f75e17ae55de3c9ce564deff5b429e757d107c7ec69bd0ba169c6b6cc2ff66293ab7264a7053c829b50ffa732f
   languageName: node
   linkType: hard
 
-"@webassemblyjs/leb128@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/leb128@npm:1.11.1"
+"@webassemblyjs/leb128@npm:1.11.6":
+  version: 1.11.6
+  resolution: "@webassemblyjs/leb128@npm:1.11.6"
   dependencies:
     "@xtuc/long": 4.2.2
-  checksum: e505edb5de61f13c6c66c57380ae16e95db9d7c43a41ac132e298426bcead9c90622e3d3035fb63df09d0eeabafd471be35ba583fca72ac2e776ab537dda6883
+  checksum: cb344fc04f1968209804de4da018679c5d4708a03b472a33e0fa75657bb024978f570d3ccf9263b7f341f77ecaa75d0e051b9cd4b7bb17a339032cfd1c37f96e
   languageName: node
   linkType: hard
 
-"@webassemblyjs/utf8@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/utf8@npm:1.11.1"
-  checksum: a7c13c7c82d525fe774f51a4fc1da058b0e2c73345eed9e2d6fbeb96ba50c1942daf97e0ff394e7a4d0f26b705f9587cb14681870086d51f02abc78ff6ce3703
+"@webassemblyjs/utf8@npm:1.11.6":
+  version: 1.11.6
+  resolution: "@webassemblyjs/utf8@npm:1.11.6"
+  checksum: 14d6c24751a89ad9d801180b0d770f30a853c39f035a15fbc96266d6ac46355227abd27a3fd2eeaa97b4294ced2440a6b012750ae17bafe1a7633029a87b6bee
   languageName: node
   linkType: hard
 
-"@webassemblyjs/wasm-edit@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/wasm-edit@npm:1.11.1"
+"@webassemblyjs/wasm-edit@npm:^1.12.1":
+  version: 1.12.1
+  resolution: "@webassemblyjs/wasm-edit@npm:1.12.1"
   dependencies:
-    "@webassemblyjs/ast": 1.11.1
-    "@webassemblyjs/helper-buffer": 1.11.1
-    "@webassemblyjs/helper-wasm-bytecode": 1.11.1
-    "@webassemblyjs/helper-wasm-section": 1.11.1
-    "@webassemblyjs/wasm-gen": 1.11.1
-    "@webassemblyjs/wasm-opt": 1.11.1
-    "@webassemblyjs/wasm-parser": 1.11.1
-    "@webassemblyjs/wast-printer": 1.11.1
-  checksum: 10bef22579f96f8c0934aa9fbf6f0d9110563f9c1a510100a84fdfa3dbd9126fdc10bfc12e7ce3ace0ba081e6789eac533c81698faab75859b3a41e97b5ab3bc
+    "@webassemblyjs/ast": 1.12.1
+    "@webassemblyjs/helper-buffer": 1.12.1
+    "@webassemblyjs/helper-wasm-bytecode": 1.11.6
+    "@webassemblyjs/helper-wasm-section": 1.12.1
+    "@webassemblyjs/wasm-gen": 1.12.1
+    "@webassemblyjs/wasm-opt": 1.12.1
+    "@webassemblyjs/wasm-parser": 1.12.1
+    "@webassemblyjs/wast-printer": 1.12.1
+  checksum: 972f5e6c522890743999e0ed45260aae728098801c6128856b310dd21f1ee63435fc7b518e30e0ba1cdafd0d1e38275829c1e4451c3536a1d9e726e07a5bba0b
   languageName: node
   linkType: hard
 
-"@webassemblyjs/wasm-gen@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/wasm-gen@npm:1.11.1"
+"@webassemblyjs/wasm-gen@npm:1.12.1":
+  version: 1.12.1
+  resolution: "@webassemblyjs/wasm-gen@npm:1.12.1"
   dependencies:
-    "@webassemblyjs/ast": 1.11.1
-    "@webassemblyjs/helper-wasm-bytecode": 1.11.1
-    "@webassemblyjs/ieee754": 1.11.1
-    "@webassemblyjs/leb128": 1.11.1
-    "@webassemblyjs/utf8": 1.11.1
-  checksum: 4e49a19e302e19a2a2438e87ae85805acf39a7d93f9ac0ab65620ae395894937ceb762fa328acbe259d2e60d252cbb87a40ec2b4c088f3149be23fa69ddbf855
+    "@webassemblyjs/ast": 1.12.1
+    "@webassemblyjs/helper-wasm-bytecode": 1.11.6
+    "@webassemblyjs/ieee754": 1.11.6
+    "@webassemblyjs/leb128": 1.11.6
+    "@webassemblyjs/utf8": 1.11.6
+  checksum: 1e257288177af9fa34c69cab94f4d9036ebed611f77f3897c988874e75182eeeec759c79b89a7a49dd24624fc2d3d48d5580b62b67c4a1c9bfbdcd266b281c16
   languageName: node
   linkType: hard
 
-"@webassemblyjs/wasm-opt@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/wasm-opt@npm:1.11.1"
+"@webassemblyjs/wasm-opt@npm:1.12.1":
+  version: 1.12.1
+  resolution: "@webassemblyjs/wasm-opt@npm:1.12.1"
   dependencies:
-    "@webassemblyjs/ast": 1.11.1
-    "@webassemblyjs/helper-buffer": 1.11.1
-    "@webassemblyjs/wasm-gen": 1.11.1
-    "@webassemblyjs/wasm-parser": 1.11.1
-  checksum: af7fd6bcb942baafda3b8cc1e574062d01c582aaa12d4f0ea62ff8e83ce1317f06a79c16313a3bc98625e1226d0fc49ba90edac18c21a64c75e9cd114306f07a
+    "@webassemblyjs/ast": 1.12.1
+    "@webassemblyjs/helper-buffer": 1.12.1
+    "@webassemblyjs/wasm-gen": 1.12.1
+    "@webassemblyjs/wasm-parser": 1.12.1
+  checksum: 992a45e1f1871033c36987459436ab4e6430642ca49328e6e32a13de9106fe69ae6c0ac27d7050efd76851e502d11cd1ac0e06b55655dfa889ad82f11a2712fb
   languageName: node
   linkType: hard
 
-"@webassemblyjs/wasm-parser@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/wasm-parser@npm:1.11.1"
+"@webassemblyjs/wasm-parser@npm:1.12.1, @webassemblyjs/wasm-parser@npm:^1.12.1":
+  version: 1.12.1
+  resolution: "@webassemblyjs/wasm-parser@npm:1.12.1"
   dependencies:
-    "@webassemblyjs/ast": 1.11.1
-    "@webassemblyjs/helper-api-error": 1.11.1
-    "@webassemblyjs/helper-wasm-bytecode": 1.11.1
-    "@webassemblyjs/ieee754": 1.11.1
-    "@webassemblyjs/leb128": 1.11.1
-    "@webassemblyjs/utf8": 1.11.1
-  checksum: 5a7e8ad36176347f3bc9aee15860a7002b608c181012128ea3e5a1199649d6722e05e029fdf2a73485f2ab3e2f7386b3e0dce46ff9cfd1918417a4ee1151f21e
+    "@webassemblyjs/ast": 1.12.1
+    "@webassemblyjs/helper-api-error": 1.11.6
+    "@webassemblyjs/helper-wasm-bytecode": 1.11.6
+    "@webassemblyjs/ieee754": 1.11.6
+    "@webassemblyjs/leb128": 1.11.6
+    "@webassemblyjs/utf8": 1.11.6
+  checksum: e85cec1acad07e5eb65b92d37c8e6ca09c6ca50d7ca58803a1532b452c7321050a0328c49810c337cc2dfd100c5326a54d5ebd1aa5c339ebe6ef10c250323a0e
   languageName: node
   linkType: hard
 
-"@webassemblyjs/wast-printer@npm:1.11.1":
-  version: 1.11.1
-  resolution: "@webassemblyjs/wast-printer@npm:1.11.1"
+"@webassemblyjs/wast-printer@npm:1.12.1":
+  version: 1.12.1
+  resolution: "@webassemblyjs/wast-printer@npm:1.12.1"
   dependencies:
-    "@webassemblyjs/ast": 1.11.1
+    "@webassemblyjs/ast": 1.12.1
     "@xtuc/long": 4.2.2
-  checksum: cede13c53a176198f949e7f0edf921047c524472b2e4c99edfe829d20e168b4037395479325635b4a3662ea7b4b59be4555ea3bb6050c61b823c68abdb435c74
+  checksum: 39bf746eb7a79aa69953f194943bbc43bebae98bd7cadd4d8bc8c0df470ca6bf9d2b789effaa180e900fab4e2691983c1f7d41571458bd2a26267f2f0c73705a
   languageName: node
   linkType: hard
 
@@ -13379,12 +13367,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-import-assertions@npm:^1.7.6":
-  version: 1.8.0
-  resolution: "acorn-import-assertions@npm:1.8.0"
+"acorn-import-attributes@npm:^1.9.5":
+  version: 1.9.5
+  resolution: "acorn-import-attributes@npm:1.9.5"
   peerDependencies:
     acorn: ^8
-  checksum: ad8e177a177dcda35a91cca2dc54a7cf6958211c14af2b48e4685a5e752d4782779d367e1d5e275700ad5767834d0063edf2ba85aeafb98d7398f8ebf957e7f5
+  checksum: 5926eaaead2326d5a86f322ff1b617b0f698aa61dc719a5baa0e9d955c9885cc71febac3fb5bacff71bbf2c4f9c12db2056883c68c53eb962c048b952e1e013d
   languageName: node
   linkType: hard
 
@@ -13431,12 +13419,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.4.1, acorn@npm:^8.5.0, acorn@npm:^8.7.0, acorn@npm:^8.7.1":
-  version: 8.8.2
-  resolution: "acorn@npm:8.8.2"
+"acorn@npm:^8.4.1, acorn@npm:^8.7.0, acorn@npm:^8.7.1, acorn@npm:^8.8.2":
+  version: 8.12.1
+  resolution: "acorn@npm:8.12.1"
   bin:
     acorn: bin/acorn
-  checksum: b5c54e736af5ed753911c6752fafd02d0a74cf4d55be606bd81fe71faba4f986dc090952329931ac2aba165803fd0005c59eeef08f9c6c689e8dc420031f3df0
+  checksum: 51fb26cd678f914e13287e886da2d7021f8c2bc0ccc95e03d3e0447ee278dd3b40b9c57dc222acd5881adcf26f3edc40901a4953403232129e3876793cd17386
   languageName: node
   linkType: hard
 
@@ -13646,13 +13634,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-codegen@npm:^4.9.4":
-  version: 4.9.4
-  resolution: "amplify-codegen@npm:4.9.4"
+"amplify-codegen@npm:^4.9.7":
+  version: 4.9.7
+  resolution: "amplify-codegen@npm:4.9.7"
   dependencies:
     "@aws-amplify/graphql-directives": ^1.0.1
     "@aws-amplify/graphql-docs-generator": 4.2.1
-    "@aws-amplify/graphql-generator": 0.4.4
+    "@aws-amplify/graphql-generator": 0.4.7
     "@aws-amplify/graphql-types-generator": 3.6.0
     "@graphql-codegen/core": 2.6.6
     chalk: ^3.0.0
@@ -13670,15 +13658,15 @@ __metadata:
   peerDependencies:
     "@aws-amplify/amplify-cli-core": "*"
     graphql-transformer-core: ^8.0.0
-  checksum: 6a4e03e4ab4d1d82d1256e293dd7cbc7f84dc0d3bf6d7b3d5d27e1f5398a3d728f7d961d96cd93a2ee0d814d84c63bcf5d5ce112f7f33ce3c88f4a1f4680b271
+  checksum: b7ab8badf1d3694861cd892d4bb68e3df6cd02647774d1a797a1e302dd072cb0763235759da6cb489b4854b0e6696340019efc3dabfe0e819b5977388aae9108
   languageName: node
   linkType: hard
 
-"amplify-dotnet-function-runtime-provider@2.0.28, amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider":
+"amplify-dotnet-function-runtime-provider@2.0.29, amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-dotnet-function-runtime-provider@workspace:packages/amplify-dotnet-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-prompts": 2.8.6
     "@types/node": ^12.12.6
@@ -13690,11 +13678,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-dynamodb-simulator@2.9.18, amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator":
+"amplify-dynamodb-simulator@2.9.19, amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator":
   version: 0.0.0-use.local
   resolution: "amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     aws-sdk: ^2.1464.0
     detect-port: ^1.3.0
     execa: ^5.1.1
@@ -13715,10 +13703,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "amplify-e2e-tests@workspace:packages/amplify-e2e-tests"
   dependencies:
-    "@aws-amplify/amplify-category-auth": 3.7.14
-    "@aws-amplify/amplify-cli-core": 4.3.9
-    "@aws-amplify/amplify-e2e-core": 5.5.9
-    "@aws-amplify/amplify-opensearch-simulator": 1.7.14
+    "@aws-amplify/amplify-category-auth": 3.7.15
+    "@aws-amplify/amplify-cli-core": 4.3.10
+    "@aws-amplify/amplify-e2e-core": 5.5.10
+    "@aws-amplify/amplify-opensearch-simulator": 1.7.15
     "@aws-amplify/graphql-transformer-core": ^2.9.3
     "@aws-sdk/client-appsync": ^3.303.0
     "@aws-sdk/client-dynamodb": ^3.303.0
@@ -13732,7 +13720,7 @@ __metadata:
     "@types/node": ^18.16.1
     "@types/openpgp": ^4.4.18
     "@types/ws": ^7.4.4
-    amplify-dynamodb-simulator: 2.9.18
+    amplify-dynamodb-simulator: 2.9.19
     amplify-headless-interface: 1.17.7
     amplify-storage-simulator: 1.11.3
     aws-amplify: ^5.3.16
@@ -13754,7 +13742,7 @@ __metadata:
     lodash: ^4.17.21
     moment: ^2.24.0
     node-fetch: ^2.6.7
-    node-pty: beta
+    node-pty: ^1.0.0
     openpgp: ^5.10.2
     rimraf: ^3.0.0
     title-case: ^3.0.3
@@ -13767,11 +13755,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-go-function-runtime-provider@2.3.46, amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider":
+"amplify-go-function-runtime-provider@2.3.47, amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-go-function-runtime-provider@workspace:packages/amplify-go-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@types/archiver": ^5.1.1
     "@types/node": ^12.12.6
@@ -13797,11 +13785,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-java-function-runtime-provider@2.3.46, amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider":
+"amplify-java-function-runtime-provider@2.3.47, amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-java-function-runtime-provider@workspace:packages/amplify-java-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
@@ -13822,11 +13810,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-nodejs-function-runtime-provider@2.5.23, amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider":
+"amplify-nodejs-function-runtime-provider@2.5.24, amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-nodejs-function-runtime-provider@workspace:packages/amplify-nodejs-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@types/exit": ^0.1.31
     "@types/node": ^12.12.6
@@ -13839,11 +13827,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-python-function-runtime-provider@2.4.46, amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider":
+"amplify-python-function-runtime-provider@2.4.47, amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider":
   version: 0.0.0-use.local
   resolution: "amplify-python-function-runtime-provider@workspace:packages/amplify-python-function-runtime-provider"
   dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.9
+    "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@types/fs-extra": ^8.0.1
     "@types/node": ^12.12.6
@@ -13871,7 +13859,7 @@ __metadata:
     body-parser: ^1.19.2
     cors: ^2.8.5
     etag: ^1.8.1
-    express: ^4.17.3
+    express: ^4.20.0
     fs-extra: ^8.1.0
     glob: ^7.2.0
     object-to-xml: ^2.0.0
@@ -14301,6 +14289,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"array-buffer-byte-length@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "array-buffer-byte-length@npm:1.0.1"
+  dependencies:
+    call-bind: ^1.0.5
+    is-array-buffer: ^3.0.4
+  checksum: f5cdf54527cd18a3d2852ddf73df79efec03829e7373a8322ef5df2b4ef546fb365c19c71d6b42d641cb6bfe0f1a2f19bc0ece5b533295f86d7c3d522f228917
+  languageName: node
+  linkType: hard
+
 "array-differ@npm:^3.0.0":
   version: 3.0.0
   resolution: "array-differ@npm:3.0.0"
@@ -14376,6 +14374,22 @@ __metadata:
     es-abstract: ^1.19.2
     es-shim-unscopables: ^1.0.0
   checksum: f837de45bd1f22eb0aaf5fd79324e18a1461d6cf93edc4d48ef4695587cb5bf051c1e3de87477fbd7bb70fe6c71c8d11f10ea3c8c797553709ad1d11e649d120
+  languageName: node
+  linkType: hard
+
+"arraybuffer.prototype.slice@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "arraybuffer.prototype.slice@npm:1.0.3"
+  dependencies:
+    array-buffer-byte-length: ^1.0.1
+    call-bind: ^1.0.5
+    define-properties: ^1.2.1
+    es-abstract: ^1.22.3
+    es-errors: ^1.2.1
+    get-intrinsic: ^1.2.3
+    is-array-buffer: ^3.0.4
+    is-shared-array-buffer: ^1.0.2
+  checksum: d32754045bcb2294ade881d45140a5e52bda2321b9e98fa514797b7f0d252c4c5ab0d1edb34112652c62fa6a9398def568da63a4d7544672229afea283358c36
   languageName: node
   linkType: hard
 
@@ -14515,10 +14529,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"available-typed-arrays@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "available-typed-arrays@npm:1.0.5"
-  checksum: c4df567ca72d2754a6cbad20088f5f98b1065b3360178169fa9b44ea101af62c0f423fc3854fa820fd6895b6b9171b8386e71558203103ff8fc2ad503fdcc660
+"available-typed-arrays@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "available-typed-arrays@npm:1.0.7"
+  dependencies:
+    possible-typed-array-names: ^1.0.0
+  checksum: d07226ef4f87daa01bd0fe80f8f310982e345f372926da2e5296aecc25c41cab440916bbaa4c5e1034b453af3392f67df5961124e4b586df1e99793a1374bdb2
   languageName: node
   linkType: hard
 
@@ -14626,13 +14642,13 @@ __metadata:
   linkType: hard
 
 "aws-sdk-mock@npm:^5.8.0":
-  version: 5.8.0
-  resolution: "aws-sdk-mock@npm:5.8.0"
+  version: 5.9.0
+  resolution: "aws-sdk-mock@npm:5.9.0"
   dependencies:
     aws-sdk: ^2.1231.0
-    sinon: ^14.0.1
+    sinon: ^17.0.0
     traverse: ^0.6.6
-  checksum: b6ce833d436ca53618da8e90a6c391c6983c9e61382e086f9448f8937a842ad38750d832d4b2a33e9e938ff8bab9d5141e08cd911ccdd28758d1dedc83b2ded9
+  checksum: 2cc6a82acc2a97cc716c41ddeb86fd482c813a0c2eea2e50047b6c19a54b602859d6f41f1e9163d8371bdd7141ffa2dcbb15d4d64d49a34443f1277e4b4568bb
   languageName: node
   linkType: hard
 
@@ -14676,13 +14692,13 @@ __metadata:
   linkType: hard
 
 "axios@npm:^1.0.0, axios@npm:^1.6.5, axios@npm:^1.6.7":
-  version: 1.6.7
-  resolution: "axios@npm:1.6.7"
+  version: 1.7.4
+  resolution: "axios@npm:1.7.4"
   dependencies:
-    follow-redirects: ^1.15.4
+    follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 131bf8e62eee48ca4bd84e6101f211961bf6a21a33b95e5dfb3983d5a2fe50d9fffde0b57668d7ce6f65063d3dc10f2212cbcb554f75cfca99da1c73b210358d
+  checksum: 5ea1a93140ca1d49db25ef8e1bd8cfc59da6f9220159a944168860ad15a2743ea21c5df2967795acb15cbe81362f5b157fdebbea39d53117ca27658bab9f7f17
   languageName: node
   linkType: hard
 
@@ -15169,9 +15185,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-parser@npm:1.20.2, body-parser@npm:^1.19.2":
-  version: 1.20.2
-  resolution: "body-parser@npm:1.20.2"
+"body-parser@npm:1.20.3, body-parser@npm:^1.19.2":
+  version: 1.20.3
+  resolution: "body-parser@npm:1.20.3"
   dependencies:
     bytes: 3.1.2
     content-type: ~1.0.5
@@ -15181,11 +15197,11 @@ __metadata:
     http-errors: 2.0.0
     iconv-lite: 0.4.24
     on-finished: 2.4.1
-    qs: 6.11.0
+    qs: 6.13.0
     raw-body: 2.5.2
     type-is: ~1.6.18
     unpipe: 1.0.0
-  checksum: 06f1438fff388a2e2354c96aa3ea8147b79bfcb1262dfcc2aae68ec13723d01d5781680657b74e9f83c808266d5baf52804032fbde2b7382b89bd8cdb273ace9
+  checksum: 0a9a93b7518f222885498dcecaad528cf010dd109b071bf471c93def4bfe30958b83e03496eb9c1ad4896db543d999bb62be1a3087294162a88cfa1b42c16310
   languageName: node
   linkType: hard
 
@@ -15307,7 +15323,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"braces@npm:^3.0.2, braces@npm:~3.0.2":
+"braces@npm:^3.0.3, braces@npm:~3.0.2":
   version: 3.0.3
   resolution: "braces@npm:3.0.3"
   dependencies:
@@ -15403,17 +15419,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.0.0, browserslist@npm:^4.14.5, browserslist@npm:^4.18.1, browserslist@npm:^4.20.2, browserslist@npm:^4.21.4, browserslist@npm:^4.21.9":
-  version: 4.22.1
-  resolution: "browserslist@npm:4.22.1"
+"browserslist@npm:^4.0.0, browserslist@npm:^4.18.1, browserslist@npm:^4.20.2, browserslist@npm:^4.21.10, browserslist@npm:^4.21.4, browserslist@npm:^4.21.9":
+  version: 4.23.3
+  resolution: "browserslist@npm:4.23.3"
   dependencies:
-    caniuse-lite: ^1.0.30001541
-    electron-to-chromium: ^1.4.535
-    node-releases: ^2.0.13
-    update-browserslist-db: ^1.0.13
+    caniuse-lite: ^1.0.30001646
+    electron-to-chromium: ^1.5.4
+    node-releases: ^2.0.18
+    update-browserslist-db: ^1.1.0
   bin:
     browserslist: cli.js
-  checksum: 6810f2d63f171d0b7b8d38cf091708e00cb31525501810a507839607839320d66e657293b0aa3d7f051ecbc025cb07390a90c037682c1d05d12604991e41050b
+  checksum: 3063bfdf812815346447f4796c8f04601bf5d62003374305fd323c2a463e42776475bcc5309264e39bcf9a8605851e53560695991a623be988138b3ff8c66642
   languageName: node
   linkType: hard
 
@@ -15626,13 +15642,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"call-bind@npm:^1.0.0, call-bind@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "call-bind@npm:1.0.2"
+"call-bind@npm:^1.0.2, call-bind@npm:^1.0.5, call-bind@npm:^1.0.6, call-bind@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "call-bind@npm:1.0.7"
   dependencies:
-    function-bind: ^1.1.1
-    get-intrinsic: ^1.0.2
-  checksum: 74ba3f31e715456e22e451d8d098779b861eba3c7cac0d9b510049aced70d75c231ba05071f97e1812c98e34e2bee734c0c6126653e0088c2d9819ca047f4073
+    es-define-property: ^1.0.0
+    es-errors: ^1.3.0
+    function-bind: ^1.1.2
+    get-intrinsic: ^1.2.4
+    set-function-length: ^1.2.1
+  checksum: a3ded2e423b8e2a265983dba81c27e125b48eefb2655e7dfab6be597088da3d47c47976c24bc51b8fd9af1061f8f87b4ab78a314f3c77784b2ae2ba535ad8b8d
   languageName: node
   linkType: hard
 
@@ -15714,10 +15733,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001317, caniuse-lite@npm:^1.0.30001541":
-  version: 1.0.30001563
-  resolution: "caniuse-lite@npm:1.0.30001563"
-  checksum: a8b367d43e0307ec243d8df8515d563fa3de895e9698eec4539037aed400da81e0df737164da2a6b7104ab6e75b4ea63db0adebcaabe326f2792841980259256
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001317, caniuse-lite@npm:^1.0.30001646":
+  version: 1.0.30001655
+  resolution: "caniuse-lite@npm:1.0.30001655"
+  checksum: fff0c0c3ffcba89828bfa6b99f118e82c064f46f15bb8655b9f2a352a3f552ccac0b87a9fe9532f8c5a29e284aae5579791e196480ec717d11ef1d1a1c2e3ff9
   languageName: node
   linkType: hard
 
@@ -17455,6 +17474,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"data-view-buffer@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "data-view-buffer@npm:1.0.1"
+  dependencies:
+    call-bind: ^1.0.6
+    es-errors: ^1.3.0
+    is-data-view: ^1.0.1
+  checksum: 8984119e59dbed906a11fcfb417d7d861936f16697a0e7216fe2c6c810f6b5e8f4a5281e73f2c28e8e9259027190ac4a33e2a65fdd7fa86ac06b76e838918583
+  languageName: node
+  linkType: hard
+
+"data-view-byte-length@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "data-view-byte-length@npm:1.0.1"
+  dependencies:
+    call-bind: ^1.0.7
+    es-errors: ^1.3.0
+    is-data-view: ^1.0.1
+  checksum: b7d9e48a0cf5aefed9ab7d123559917b2d7e0d65531f43b2fd95b9d3a6b46042dd3fca597c42bba384e66b70d7ad66ff23932f8367b241f53d93af42cfe04ec2
+  languageName: node
+  linkType: hard
+
+"data-view-byte-offset@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "data-view-byte-offset@npm:1.0.0"
+  dependencies:
+    call-bind: ^1.0.6
+    es-errors: ^1.3.0
+    is-data-view: ^1.0.1
+  checksum: 21b0d2e53fd6e20cc4257c873bf6d36d77bd6185624b84076c0a1ddaa757b49aaf076254006341d35568e89f52eecd1ccb1a502cfb620f2beca04f48a6a62a8f
+  languageName: node
+  linkType: hard
+
 "dataloader@npm:^2.0.0":
   version: 2.0.0
   resolution: "dataloader@npm:2.0.0"
@@ -17611,6 +17663,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"define-data-property@npm:^1.0.1, define-data-property@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "define-data-property@npm:1.1.4"
+  dependencies:
+    es-define-property: ^1.0.0
+    es-errors: ^1.3.0
+    gopd: ^1.0.1
+  checksum: dea0606d1483eb9db8d930d4eac62ca0fa16738b0b3e07046cddfacf7d8c868bbe13fa0cb263eb91c7d0d527960dc3f2f2471a69ed7816210307f6744fe62e37
+  languageName: node
+  linkType: hard
+
 "define-lazy-prop@npm:^2.0.0":
   version: 2.0.0
   resolution: "define-lazy-prop@npm:2.0.0"
@@ -17618,13 +17681,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"define-properties@npm:^1.1.3, define-properties@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "define-properties@npm:1.1.4"
+"define-properties@npm:^1.1.3, define-properties@npm:^1.2.0, define-properties@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "define-properties@npm:1.2.1"
   dependencies:
+    define-data-property: ^1.0.1
     has-property-descriptors: ^1.0.0
     object-keys: ^1.1.1
-  checksum: 1e09acd814c3761f2355d9c8a18fbc2b5d2e1073e1302245c134e96aacbff51b152e2a6f5f5db23af3c43e26f4e3a0d42f569aa4135f49046246c934bfb8e1dc
+  checksum: 88a152319ffe1396ccc6ded510a3896e77efac7a1bfbaa174a7b00414a1747377e0bb525d303794a47cf30e805c2ec84e575758512c6e44a993076d29fd4e6c3
   languageName: node
   linkType: hard
 
@@ -17846,10 +17910,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^5.0.0, diff@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "diff@npm:5.1.0"
-  checksum: 77a0d9beb9ed54796154ac2511872288432124ac90a1cabb1878783c9b4d81f1847f3b746a0630b1e836181461d2c76e1e6b95559bef86ed16294d114862e364
+"diff@npm:^5.1.0":
+  version: 5.2.0
+  resolution: "diff@npm:5.2.0"
+  checksum: aed0941f206fe261ecb258dc8d0ceea8abbde3ace5827518ff8d302f0fc9cc81ce116c4d8f379151171336caf0516b79e01abdc1ed1201b6440d895a66689eb4
   languageName: node
   linkType: hard
 
@@ -18076,9 +18140,9 @@ __metadata:
   linkType: hard
 
 "dset@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "dset@npm:3.1.2"
-  checksum: a10d5f214ccd53e7d2e79215473256b74cb98fd3f20ad4f4684ab575b19bac71e5dda524d6febcf42854062e3f575a2dbfca4d53d2ffb9ae238eecdcc97a095b
+  version: 3.1.4
+  resolution: "dset@npm:3.1.4"
+  checksum: b67bbd28dd8a539e90c15ffb61100eb64ef995c5270a124d4f99bbb53f4d82f55a051b731ba81f3215dd9dce2b4c8d69927dc20b3be1c5fc88bab159467aa438
   languageName: node
   linkType: hard
 
@@ -18136,16 +18200,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.4.535":
-  version: 1.4.561
-  resolution: "electron-to-chromium@npm:1.4.561"
-  checksum: 7105ce4bf35193fb333fca39d07e54e646a9f20b341cf88eb4c1caed67ff3980381bbafc6f54b4a61e433092c28c85df61d482d3e11dec74ff1f4a0590fa9bec
+"electron-to-chromium@npm:^1.5.4":
+  version: 1.5.13
+  resolution: "electron-to-chromium@npm:1.5.13"
+  checksum: 1d88ac39447e1d718c4296f92fe89836df4688daf2d362d6c49108136795f05a56dd9c950f1c6715e0395fa037c3b5f5ea686c543fdc90e6d74a005877c45022
   languageName: node
   linkType: hard
 
 "elliptic@npm:^6.5.3, elliptic@npm:^6.5.4":
-  version: 6.5.4
-  resolution: "elliptic@npm:6.5.4"
+  version: 6.5.7
+  resolution: "elliptic@npm:6.5.7"
   dependencies:
     bn.js: ^4.11.9
     brorand: ^1.1.0
@@ -18154,7 +18218,7 @@ __metadata:
     inherits: ^2.0.4
     minimalistic-assert: ^1.0.1
     minimalistic-crypto-utils: ^1.0.1
-  checksum: 5f361270292c3b27cf0843e84526d11dec31652f03c2763c6c2b8178548175ff5eba95341dd62baff92b2265d1af076526915d8af6cc9cb7559c44a62f8ca6e2
+  checksum: 799959b6c54ea3564e8961f35abdf8c77e37617f3051614b05ab1fb6a04ddb65bd1caa75ed1bae375b15dda312a0f79fed26ebe76ecf05c5a7af244152a601b8
   languageName: node
   linkType: hard
 
@@ -18200,6 +18264,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"encodeurl@npm:~2.0.0":
+  version: 2.0.0
+  resolution: "encodeurl@npm:2.0.0"
+  checksum: 5d317306acb13e6590e28e27924c754163946a2480de11865c991a3a7eed4315cd3fba378b543ca145829569eefe9b899f3d84bb09870f675ae60bc924b01ceb
+  languageName: node
+  linkType: hard
+
 "encoding@npm:^0.1.13":
   version: 0.1.13
   resolution: "encoding@npm:0.1.13"
@@ -18218,13 +18289,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.10.0, enhanced-resolve@npm:^5.12.0":
-  version: 5.13.0
-  resolution: "enhanced-resolve@npm:5.13.0"
+"enhanced-resolve@npm:^5.12.0, enhanced-resolve@npm:^5.17.1":
+  version: 5.17.1
+  resolution: "enhanced-resolve@npm:5.17.1"
   dependencies:
     graceful-fs: ^4.2.4
     tapable: ^2.2.0
-  checksum: 9aa28d0aeb5b6a5bc2340884ac9f90a3fa96e5514ad3f5fb318089843668581a96bdeddfd743fbd8b9407d16e82dd60cf6151fc1af8dd17a43490e0f9093950c
+  checksum: 81a0515675eca17efdba2cf5bad87abc91a528fc1191aad50e275e74f045b41506167d420099022da7181c8d787170ea41e4a11a0b10b7a16f6237daecb15370
   languageName: node
   linkType: hard
 
@@ -18306,41 +18377,100 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-abstract@npm:^1.17.2, es-abstract@npm:^1.18.5, es-abstract@npm:^1.19.0, es-abstract@npm:^1.19.1, es-abstract@npm:^1.19.2, es-abstract@npm:^1.19.5":
-  version: 1.20.1
-  resolution: "es-abstract@npm:1.20.1"
+"es-abstract@npm:^1.17.2, es-abstract@npm:^1.19.0, es-abstract@npm:^1.19.1, es-abstract@npm:^1.19.2, es-abstract@npm:^1.22.1, es-abstract@npm:^1.22.3, es-abstract@npm:^1.23.0":
+  version: 1.23.3
+  resolution: "es-abstract@npm:1.23.3"
   dependencies:
-    call-bind: ^1.0.2
+    array-buffer-byte-length: ^1.0.1
+    arraybuffer.prototype.slice: ^1.0.3
+    available-typed-arrays: ^1.0.7
+    call-bind: ^1.0.7
+    data-view-buffer: ^1.0.1
+    data-view-byte-length: ^1.0.1
+    data-view-byte-offset: ^1.0.0
+    es-define-property: ^1.0.0
+    es-errors: ^1.3.0
+    es-object-atoms: ^1.0.0
+    es-set-tostringtag: ^2.0.3
     es-to-primitive: ^1.2.1
-    function-bind: ^1.1.1
-    function.prototype.name: ^1.1.5
-    get-intrinsic: ^1.1.1
-    get-symbol-description: ^1.0.0
-    has: ^1.0.3
-    has-property-descriptors: ^1.0.0
+    function.prototype.name: ^1.1.6
+    get-intrinsic: ^1.2.4
+    get-symbol-description: ^1.0.2
+    globalthis: ^1.0.3
+    gopd: ^1.0.1
+    has-property-descriptors: ^1.0.2
+    has-proto: ^1.0.3
     has-symbols: ^1.0.3
-    internal-slot: ^1.0.3
-    is-callable: ^1.2.4
-    is-negative-zero: ^2.0.2
+    hasown: ^2.0.2
+    internal-slot: ^1.0.7
+    is-array-buffer: ^3.0.4
+    is-callable: ^1.2.7
+    is-data-view: ^1.0.1
+    is-negative-zero: ^2.0.3
     is-regex: ^1.1.4
-    is-shared-array-buffer: ^1.0.2
+    is-shared-array-buffer: ^1.0.3
     is-string: ^1.0.7
+    is-typed-array: ^1.1.13
     is-weakref: ^1.0.2
-    object-inspect: ^1.12.0
+    object-inspect: ^1.13.1
     object-keys: ^1.1.1
-    object.assign: ^4.1.2
-    regexp.prototype.flags: ^1.4.3
-    string.prototype.trimend: ^1.0.5
-    string.prototype.trimstart: ^1.0.5
+    object.assign: ^4.1.5
+    regexp.prototype.flags: ^1.5.2
+    safe-array-concat: ^1.1.2
+    safe-regex-test: ^1.0.3
+    string.prototype.trim: ^1.2.9
+    string.prototype.trimend: ^1.0.8
+    string.prototype.trimstart: ^1.0.8
+    typed-array-buffer: ^1.0.2
+    typed-array-byte-length: ^1.0.1
+    typed-array-byte-offset: ^1.0.2
+    typed-array-length: ^1.0.6
     unbox-primitive: ^1.0.2
-  checksum: 1598f86d4e778032ef2be6ca573202689e08f8262121aff7fdb54682d9170465d49a10197db0704d4b71249ab95a1804f1666a19ac839f271c120d4662889060
+    which-typed-array: ^1.1.15
+  checksum: d27e9afafb225c6924bee9971a7f25f20c314f2d6cb93a63cada4ac11dcf42040896a6c22e5fb8f2a10767055ed4ddf400be3b1eb12297d281726de470b75666
   languageName: node
   linkType: hard
 
-"es-module-lexer@npm:^0.9.0":
-  version: 0.9.3
-  resolution: "es-module-lexer@npm:0.9.3"
-  checksum: be77d73aee709fdc68d22b9938da81dfee3bc45e8d601629258643fe5bfdab253d6e2540035e035cfa8cf52a96366c1c19b46bcc23b4507b1d44e5907d2e7f6c
+"es-define-property@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "es-define-property@npm:1.0.0"
+  dependencies:
+    get-intrinsic: ^1.2.4
+  checksum: 6bf3191feb7ea2ebda48b577f69bdfac7a2b3c9bcf97307f55fd6ef1bbca0b49f0c219a935aca506c993d8c5d8bddd937766cb760cd5e5a1071351f2df9f9aa4
+  languageName: node
+  linkType: hard
+
+"es-errors@npm:^1.2.1, es-errors@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "es-errors@npm:1.3.0"
+  checksum: 0a61325670072f98d8ae3b914edab3559b6caa980f08054a3b872052640d91da01d38df55df797fcc916389d77fc92b8d5906cf028f4db46d7e3003abecbca85
+  languageName: node
+  linkType: hard
+
+"es-module-lexer@npm:^1.2.1":
+  version: 1.5.4
+  resolution: "es-module-lexer@npm:1.5.4"
+  checksum: 300a469488c2f22081df1e4c8398c78db92358496e639b0df7f89ac6455462aaf5d8893939087c1a1cbcbf20eed4610c70e0bcb8f3e4b0d80a5d2611c539408c
+  languageName: node
+  linkType: hard
+
+"es-object-atoms@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "es-object-atoms@npm:1.0.0"
+  dependencies:
+    es-errors: ^1.3.0
+  checksum: 1fed3d102eb27ab8d983337bb7c8b159dd2a1e63ff833ec54eea1311c96d5b08223b433060ba240541ca8adba9eee6b0a60cdbf2f80634b784febc9cc8b687b4
+  languageName: node
+  linkType: hard
+
+"es-set-tostringtag@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "es-set-tostringtag@npm:2.0.3"
+  dependencies:
+    get-intrinsic: ^1.2.4
+    has-tostringtag: ^1.0.2
+    hasown: ^2.0.1
+  checksum: f22aff1585eb33569c326323f0b0d175844a1f11618b86e193b386f8be0ea9474cfbe46df39c45d959f7aa8f6c06985dc51dd6bce5401645ec5a74c4ceaa836a
   languageName: node
   linkType: hard
 
@@ -18364,10 +18494,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"escalade@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "escalade@npm:3.1.1"
-  checksum: afd02e6ca91ffa813e1108b5e7756566173d6bc0d1eb951cb44d6b21702ec17c1cf116cfe75d4a2b02e05acb0b808a7a9387d0d1ca5cf9c04ad03a8445c3e46d
+"escalade@npm:^3.1.1, escalade@npm:^3.1.2":
+  version: 3.2.0
+  resolution: "escalade@npm:3.2.0"
+  checksum: ced4dd3a78e15897ed3be74e635110bbf3b08877b0a41be50dcb325ee0e0b5f65fc2d50e9845194d7c4633f327e2e1c6cce00a71b617c5673df0374201d67f65
   languageName: node
   linkType: hard
 
@@ -19147,42 +19277,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.17.3":
-  version: 4.19.2
-  resolution: "express@npm:4.19.2"
+"express@npm:^4.17.3, express@npm:^4.20.0":
+  version: 4.20.0
+  resolution: "express@npm:4.20.0"
   dependencies:
     accepts: ~1.3.8
     array-flatten: 1.1.1
-    body-parser: 1.20.2
+    body-parser: 1.20.3
     content-disposition: 0.5.4
     content-type: ~1.0.4
     cookie: 0.6.0
     cookie-signature: 1.0.6
     debug: 2.6.9
     depd: 2.0.0
-    encodeurl: ~1.0.2
+    encodeurl: ~2.0.0
     escape-html: ~1.0.3
     etag: ~1.8.1
     finalhandler: 1.2.0
     fresh: 0.5.2
     http-errors: 2.0.0
-    merge-descriptors: 1.0.1
+    merge-descriptors: 1.0.3
     methods: ~1.1.2
     on-finished: 2.4.1
     parseurl: ~1.3.3
-    path-to-regexp: 0.1.7
+    path-to-regexp: 0.1.10
     proxy-addr: ~2.0.7
     qs: 6.11.0
     range-parser: ~1.2.1
     safe-buffer: 5.2.1
-    send: 0.18.0
-    serve-static: 1.15.0
+    send: 0.19.0
+    serve-static: 1.16.0
     setprototypeof: 1.2.0
     statuses: 2.0.1
     type-is: ~1.6.18
     utils-merge: 1.0.1
     vary: ~1.1.2
-  checksum: e82e2662ea9971c1407aea9fc3c16d6b963e55e3830cd0ef5e00b533feda8b770af4e3be630488ef8a752d7c75c4fcefb15892868eeaafe7353cb9e3e269fdcb
+  checksum: 626e440e9feffa3f82ebce5e7dc0ad7a74fa96079994f30048cce450f4855a258abbcabf021f691aeb72154867f0d28440a8498c62888805faf667a829fb65aa
   languageName: node
   linkType: hard
 
@@ -19304,36 +19434,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:4.1.2":
-  version: 4.1.2
-  resolution: "fast-xml-parser@npm:4.1.2"
+"fast-xml-parser@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "fast-xml-parser@npm:4.4.1"
   dependencies:
     strnum: ^1.0.5
   bin:
     fxparser: src/cli/cli.js
-  checksum: fdc599b28d6ff64ee3727209387cfbcfaa2c696bc8dca5e218876a6098b8df52c56fa899cc33b3ffc5ffa36de2ebbb308fe6794930b217e80dd5985fcab432bd
-  languageName: node
-  linkType: hard
-
-"fast-xml-parser@npm:4.2.5":
-  version: 4.2.5
-  resolution: "fast-xml-parser@npm:4.2.5"
-  dependencies:
-    strnum: ^1.0.5
-  bin:
-    fxparser: src/cli/cli.js
-  checksum: f422349189b70660238eff9e48c57a0b9e5142f4c442bd79f50049847006341fe8dbcaac899c54e219034f63249fdba4512542ec54ef4dec24fcf9f54ad20d42
-  languageName: node
-  linkType: hard
-
-"fast-xml-parser@npm:^4.2.5":
-  version: 4.3.4
-  resolution: "fast-xml-parser@npm:4.3.4"
-  dependencies:
-    strnum: ^1.0.5
-  bin:
-    fxparser: src/cli/cli.js
-  checksum: 1e44cad5f14efa9971fe2df6246e6656c22bccf8e8c1d3545a63c446e67ab23e9f615ecba0c4b103ea1126ee4344d9cc9672bd6409f728330131c3ba76827715
+  checksum: 7f334841fe41bfb0bf5d920904ccad09cefc4b5e61eaf4c225bf1e1bb69ee77ef2147d8942f783ee8249e154d1ca8a858e10bda78a5d78b8bed3f48dcee9bf33
   languageName: node
   linkType: hard
 
@@ -19600,10 +19708,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"foreach@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "foreach@npm:2.0.5"
-  checksum: 63a99bf2528dd709e243f99865221eee8e94f19e0d996673363b954f0555a6eb1f5bac253e53644b1f6d7d05c118e46eda9e9528a3520a37b75164c8138f5207
+"for-each@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "for-each@npm:0.3.3"
+  dependencies:
+    is-callable: ^1.1.3
+  checksum: 22330d8a2db728dbf003ec9182c2d421fbcd2969b02b4f97ec288721cda63eb28f2c08585ddccd0f77cb2930af8d958005c9e72f47141dc51816127a118f39aa
   languageName: node
   linkType: hard
 
@@ -19865,22 +19975,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"function-bind@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "function-bind@npm:1.1.1"
-  checksum: 60b74b2407e1942e1ed7f8c284f8ef714d0689dcfce5319985a5b7da3fc727f40b4a59ec72dc55aa83365ad7b8fa4fac3a30d93c850a2b452f29ae03dbc10a1e
+"function-bind@npm:^1.1.1, function-bind@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "function-bind@npm:1.1.2"
+  checksum: d8680ee1e5fcd4c197e4ac33b2b4dce03c71f4d91717292785703db200f5c21f977c568d28061226f9b5900cbcd2c84463646134fd5337e7925e0942bc3f46d5
   languageName: node
   linkType: hard
 
-"function.prototype.name@npm:^1.1.5":
-  version: 1.1.5
-  resolution: "function.prototype.name@npm:1.1.5"
+"function.prototype.name@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "function.prototype.name@npm:1.1.6"
   dependencies:
     call-bind: ^1.0.2
-    define-properties: ^1.1.3
-    es-abstract: ^1.19.0
-    functions-have-names: ^1.2.2
-  checksum: b75fb8c5261f03a54f7cb53a8c99e0c40297efc3cf750c51d3a2e56f6741701c14eda51986d30c24063136a4c32d1643df9d1dd2f2a14b64fa011edd3e7117ae
+    define-properties: ^1.2.0
+    es-abstract: ^1.22.1
+    functions-have-names: ^1.2.3
+  checksum: 9eae11294905b62cb16874adb4fc687927cda3162285e0ad9612e6a1d04934005d46907362ea9cdb7428edce05a2f2c3dabc3b2d21e9fd343e9bb278230ad94b
   languageName: node
   linkType: hard
 
@@ -19891,7 +20001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"functions-have-names@npm:^1.2.2":
+"functions-have-names@npm:^1.2.3":
   version: 1.2.3
   resolution: "functions-have-names@npm:1.2.3"
   checksum: 33e77fd29bddc2d9bb78ab3eb854c165909201f88c75faa8272e35899e2d35a8a642a15e7420ef945e1f64a9670d6aa3ec744106b2aa42be68ca5114025954ca
@@ -19960,14 +20070,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-intrinsic@npm:^1.0.2, get-intrinsic@npm:^1.1.0, get-intrinsic@npm:^1.1.1":
-  version: 1.1.2
-  resolution: "get-intrinsic@npm:1.1.2"
+"get-intrinsic@npm:^1.1.1, get-intrinsic@npm:^1.1.3, get-intrinsic@npm:^1.2.1, get-intrinsic@npm:^1.2.3, get-intrinsic@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "get-intrinsic@npm:1.2.4"
   dependencies:
-    function-bind: ^1.1.1
-    has: ^1.0.3
+    es-errors: ^1.3.0
+    function-bind: ^1.1.2
+    has-proto: ^1.0.1
     has-symbols: ^1.0.3
-  checksum: f69a8e8758bab0a1a53853c347a6f4e22618352100339e6aa8f4cef46731a50e848d23dfe47c03c08beeed870b8777663e5dbfa9d53ebb2541754238118d81ad
+    hasown: ^2.0.0
+  checksum: 0a9b82c16696ed6da5e39b1267104475c47e3a9bdbe8b509dfe1710946e38a87be70d759f4bb3cda042d76a41ef47fe769660f3b7c0d1f68750299344ffb15b7
   languageName: node
   linkType: hard
 
@@ -20036,13 +20148,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-symbol-description@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "get-symbol-description@npm:1.0.0"
+"get-symbol-description@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "get-symbol-description@npm:1.0.2"
   dependencies:
-    call-bind: ^1.0.2
-    get-intrinsic: ^1.1.1
-  checksum: 23bc3b44c221cdf7669a88230c62f4b9e30393b61eb21ba4400cb3e346801bd8f95fe4330ee78dbae37aecd874646d53e3e76a17a654d0c84c77f6690526d6bb
+    call-bind: ^1.0.5
+    es-errors: ^1.3.0
+    get-intrinsic: ^1.2.4
+  checksum: 867be6d63f5e0eb026cb3b0ef695ec9ecf9310febb041072d2e142f260bd91ced9eeb426b3af98791d1064e324e653424afa6fd1af17dee373bea48ae03162bc
   languageName: node
   linkType: hard
 
@@ -20318,6 +20431,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"globalthis@npm:^1.0.3":
+  version: 1.0.4
+  resolution: "globalthis@npm:1.0.4"
+  dependencies:
+    define-properties: ^1.2.1
+    gopd: ^1.0.1
+  checksum: 9d156f313af79d80b1566b93e19285f481c591ad6d0d319b4be5e03750d004dde40a39a0f26f7e635f9007a3600802f53ecd85a759b86f109e80a5f705e01846
+  languageName: node
+  linkType: hard
+
 "globalyzer@npm:0.1.0":
   version: 0.1.0
   resolution: "globalyzer@npm:0.1.0"
@@ -20359,6 +20482,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gopd@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "gopd@npm:1.0.1"
+  dependencies:
+    get-intrinsic: ^1.1.3
+  checksum: 505c05487f7944c552cee72087bf1567debb470d4355b1335f2c262d218ebbff805cd3715448fe29b4b380bae6912561d0467233e4165830efd28da241418c63
+  languageName: node
+  linkType: hard
+
 "got@npm:^11.8.5":
   version: 11.8.6
   resolution: "got@npm:11.8.6"
@@ -20378,10 +20510,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:4.2.10, graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.15, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6, graceful-fs@npm:^4.2.9, graceful-fs@npm:~4.2.9":
+"graceful-fs@npm:4.2.10":
   version: 4.2.10
   resolution: "graceful-fs@npm:4.2.10"
   checksum: 4223a833e38e1d0d2aea630c2433cfb94ddc07dfc11d511dbd6be1d16688c5be848acc31f9a5d0d0ddbfb56d2ee5a6ae0278aceeb0ca6a13f27e06b9956fb952
+  languageName: node
+  linkType: hard
+
+"graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.15, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.11, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6, graceful-fs@npm:^4.2.9, graceful-fs@npm:~4.2.9":
+  version: 4.2.11
+  resolution: "graceful-fs@npm:4.2.11"
+  checksum: 386d011a553e02bc594ac2ca0bd6d9e4c22d7fa8cfbfc448a6d148c59ea881b092db9dbe3547ae4b88e55f1b01f7c4a2ecc53b310c042793e63aa44cf6c257f2
   languageName: node
   linkType: hard
 
@@ -20807,12 +20946,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"has-property-descriptors@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "has-property-descriptors@npm:1.0.0"
+"has-property-descriptors@npm:^1.0.0, has-property-descriptors@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "has-property-descriptors@npm:1.0.2"
   dependencies:
-    get-intrinsic: ^1.1.1
-  checksum: d4ca882b6960d6257bd28baa3ddfa21f068d260411004a093b30ca357c740e11e985771c85216a6d1eef4161e862657f48c4758ec8ab515223b3895200ad164b
+    es-define-property: ^1.0.0
+  checksum: 253c1f59e80bb476cf0dde8ff5284505d90c3bdb762983c3514d36414290475fe3fd6f574929d84de2a8eec00d35cf07cb6776205ff32efd7c50719125f00236
+  languageName: node
+  linkType: hard
+
+"has-proto@npm:^1.0.1, has-proto@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "has-proto@npm:1.0.3"
+  checksum: 35a6989f81e9f8022c2f4027f8b48a552de714938765d019dbea6bb547bd49ce5010a3c7c32ec6ddac6e48fc546166a3583b128f5a7add8b058a6d8b4afec205
   languageName: node
   linkType: hard
 
@@ -20823,12 +20969,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"has-tostringtag@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "has-tostringtag@npm:1.0.0"
+"has-tostringtag@npm:^1.0.0, has-tostringtag@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "has-tostringtag@npm:1.0.2"
   dependencies:
-    has-symbols: ^1.0.2
-  checksum: 1cdba76b7d13f65198a92b8ca1560ba40edfa09e85d182bf436d928f3588a9ebd260451d569f0ed1b849c4bf54f49c862aa0d0a77f9552b1855bb6deb526c011
+    has-symbols: ^1.0.3
+  checksum: a8b166462192bafe3d9b6e420a1d581d93dd867adb61be223a17a8d6dad147aa77a8be32c961bb2f27b3ef893cae8d36f564ab651f5e9b7938ae86f74027c48c
   languageName: node
   linkType: hard
 
@@ -20880,6 +21026,15 @@ __metadata:
     inherits: ^2.0.3
     minimalistic-assert: ^1.0.1
   checksum: 41ada59494eac5332cfc1ce6b7ebdd7b88a3864a6d6b08a3ea8ef261332ed60f37f10877e0c825aaa4bddebf164fbffa618286aeeec5296675e2671cbfa746c4
+  languageName: node
+  linkType: hard
+
+"hasown@npm:^2.0.0, hasown@npm:^2.0.1, hasown@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "hasown@npm:2.0.2"
+  dependencies:
+    function-bind: ^1.1.2
+  checksum: 3769d434703b8ac66b209a4cca0737519925bbdb61dd887f93a16372b14694c63ff4e797686d87c90f08168e81082248b9b028bad60d4da9e0d1148766f56eb9
   languageName: node
   linkType: hard
 
@@ -21588,14 +21743,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"internal-slot@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "internal-slot@npm:1.0.3"
+"internal-slot@npm:^1.0.3, internal-slot@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "internal-slot@npm:1.0.7"
   dependencies:
-    get-intrinsic: ^1.1.0
-    has: ^1.0.3
+    es-errors: ^1.3.0
+    hasown: ^2.0.0
     side-channel: ^1.0.4
-  checksum: bb41342a474c1b607458b0c716c742d779a6ed9dfaf7986e5d20d1e7f55b7f3676e4d9f416bc253af4fd78d367e1f83e586f74840302bcf2e60c424f9284dde5
+  checksum: f8b294a4e6ea3855fc59551bbf35f2b832cf01fd5e6e2a97f5c201a071cc09b49048f856e484b67a6c721da5e55736c5b6ddafaf19e2dbeb4a3ff1821680de6c
   languageName: node
   linkType: hard
 
@@ -21625,7 +21780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip@npm:^1.1.8, ip@npm:^1.1.9":
+"ip@npm:^1.1.8":
   version: 1.1.9
   resolution: "ip@npm:1.1.9"
   checksum: 5af58bfe2110c9978acfd77a2ffcdf9d33a6ce1c72f49edbaf16958f7a8eb979b5163e43bb18938caf3aaa55cdacde4e470874c58ca3b4b112ea7a30461a0c27
@@ -21670,6 +21825,16 @@ __metadata:
     call-bind: ^1.0.2
     has-tostringtag: ^1.0.0
   checksum: 5ff1f341ee4475350adfc14b2328b38962564b7c2076be2f5bac7bd9b61779efba99b9f844a7b82ba7654adccf8e8eb19d1bb0cc6d1c1a085e498f6793d4328f
+  languageName: node
+  linkType: hard
+
+"is-array-buffer@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "is-array-buffer@npm:3.0.4"
+  dependencies:
+    call-bind: ^1.0.2
+    get-intrinsic: ^1.2.1
+  checksum: 42a49d006cc6130bc5424eae113e948c146f31f9d24460fc0958f855d9d810e6fd2e4519bf19aab75179af9c298ea6092459d8cafdec523cd19e529b26eab860
   languageName: node
   linkType: hard
 
@@ -21722,10 +21887,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-callable@npm:^1.1.4, is-callable@npm:^1.2.4":
-  version: 1.2.4
-  resolution: "is-callable@npm:1.2.4"
-  checksum: bda3c67128741129d61e1cb7ca89025ca56b39bf3564657989567c9f6d1e20d6f5579750d3c1fa8887903c6dc669fbc695e33a1363e7c5ec944077e39d24f73d
+"is-callable@npm:^1.1.3, is-callable@npm:^1.1.4, is-callable@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "is-callable@npm:1.2.7"
+  checksum: ceebaeb9d92e8adee604076971dd6000d38d6afc40bb843ea8e45c5579b57671c3f3b50d7f04869618242c6cee08d1b67806a8cb8edaaaf7c0748b3720d6066f
   languageName: node
   linkType: hard
 
@@ -21766,6 +21931,15 @@ __metadata:
   dependencies:
     has: ^1.0.3
   checksum: 21f78f05de2f261339c10da0a68a25f7671a1864bc4e19fbfb7aeb9486a8ced98f5192f3226af8f696c6c1b545029307df850e384799a574953d6676ae20fefc
+  languageName: node
+  linkType: hard
+
+"is-data-view@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "is-data-view@npm:1.0.1"
+  dependencies:
+    is-typed-array: ^1.1.13
+  checksum: a3e6ec84efe303da859107aed9b970e018e2bee7ffcb48e2f8096921a493608134240e672a2072577e5f23a729846241d9634806e8a0e51d9129c56d5f65442d
   languageName: node
   linkType: hard
 
@@ -21894,10 +22068,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-negative-zero@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "is-negative-zero@npm:2.0.2"
-  checksum: eda024c158f70f2017f3415e471b818d314da5ef5be68f801b16314d4a4b6304a74cbed778acf9e2f955bb9c1c5f2935c1be0c7c99e1ad12286f45366217b6a3
+"is-negative-zero@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "is-negative-zero@npm:2.0.3"
+  checksum: bcdcf6b8b9714063ffcfa9929c575ac69bfdabb8f4574ff557dfc086df2836cf07e3906f5bbc4f2a5c12f8f3ba56af640c843cdfc74da8caed86c7c7d66fd08e
   languageName: node
   linkType: hard
 
@@ -22043,12 +22217,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-shared-array-buffer@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "is-shared-array-buffer@npm:1.0.2"
+"is-shared-array-buffer@npm:^1.0.2, is-shared-array-buffer@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "is-shared-array-buffer@npm:1.0.3"
   dependencies:
-    call-bind: ^1.0.2
-  checksum: cfeee6f171f1b13e6cbc6f3b6cc44e192b93df39f3fcb31aa66ffb1d2df3b91e05664311659f9701baba62f5e98c83b0673c628e7adc30f55071c4874fcdccec
+    call-bind: ^1.0.7
+  checksum: adc11ab0acbc934a7b9e5e9d6c588d4ec6682f6fea8cda5180721704fa32927582ede5b123349e32517fdadd07958973d24716c80e7ab198970c47acc09e59c7
   languageName: node
   linkType: hard
 
@@ -22102,16 +22276,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-typed-array@npm:^1.1.3, is-typed-array@npm:^1.1.7":
-  version: 1.1.8
-  resolution: "is-typed-array@npm:1.1.8"
+"is-typed-array@npm:^1.1.13, is-typed-array@npm:^1.1.3":
+  version: 1.1.13
+  resolution: "is-typed-array@npm:1.1.13"
   dependencies:
-    available-typed-arrays: ^1.0.5
-    call-bind: ^1.0.2
-    es-abstract: ^1.18.5
-    foreach: ^2.0.5
-    has-tostringtag: ^1.0.0
-  checksum: 31e0561cfc03b3e167b61f011de4eff12cda6a7d8a5f3e92e67c9043776e27df32f2ba4e690246711465ed1bef1917e7bdb09f68cc68b24666d2a3e7c5437af9
+    which-typed-array: ^1.1.14
+  checksum: fa5cb97d4a80e52c2cc8ed3778e39f175a1a2ae4ddf3adae3187d69586a1fd57cfa0b095db31f66aa90331e9e3da79184cea9c6abdcd1abc722dc3c3edd51cca
   languageName: node
   linkType: hard
 
@@ -22197,6 +22367,13 @@ __metadata:
   version: 1.0.0
   resolution: "isarray@npm:1.0.0"
   checksum: 18b5be6669be53425f0b84098732670ed4e727e3af33bc7f948aac01782110eb9a18b3b329c5323bcdd3acdaae547ee077d3951317e7f133bff7105264b3003d
+  languageName: node
+  linkType: hard
+
+"isarray@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "isarray@npm:2.0.5"
+  checksum: 4199f14a7a13da2177c66c31080008b7124331956f47bca57dd0b6ea9f11687aa25e565a2c7a2b519bc86988d10398e3049a1f5df13c9f6b7664154690ae79fd
   languageName: node
   linkType: hard
 
@@ -23479,10 +23656,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"just-extend@npm:^4.0.2":
-  version: 4.2.1
-  resolution: "just-extend@npm:4.2.1"
-  checksum: ab01b807ae064eee016001df7e958fab9d878a6e2e32119f5f5a94e986daca9d940aa6176889f04c2658e6e3edd75000d7bab1a2376d473ccb20ae571f4b8cbc
+"just-extend@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "just-extend@npm:6.2.0"
+  checksum: d41cbdb6d85b986d4deaf2144d81d4f7266cd408fc95189d046d63f610c2dc486b141aeb6ef319c2d76fe904d45a6bb31f19b098ff0427c35688e0c383fc0511
   languageName: node
   linkType: hard
 
@@ -24445,10 +24622,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"merge-descriptors@npm:1.0.1":
-  version: 1.0.1
-  resolution: "merge-descriptors@npm:1.0.1"
-  checksum: b67d07bd44cfc45cebdec349bb6e1f7b077ee2fd5beb15d1f7af073849208cb6f144fe403e29a36571baf3f4e86469ac39acf13c318381e958e186b2766f54ec
+"merge-descriptors@npm:1.0.3":
+  version: 1.0.3
+  resolution: "merge-descriptors@npm:1.0.3"
+  checksum: 866b7094afd9293b5ea5dcd82d71f80e51514bed33b4c4e9f516795dc366612a4cbb4dc94356e943a8a6914889a914530badff27f397191b9b75cda20b6bae93
   languageName: node
   linkType: hard
 
@@ -24486,12 +24663,12 @@ __metadata:
   linkType: hard
 
 "micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:~4.0.0":
-  version: 4.0.5
-  resolution: "micromatch@npm:4.0.5"
+  version: 4.0.8
+  resolution: "micromatch@npm:4.0.8"
   dependencies:
-    braces: ^3.0.2
+    braces: ^3.0.3
     picomatch: ^2.3.1
-  checksum: 3d6505b20f9fa804af5d8c596cb1c5e475b9b0cd05f652c5b56141cf941bd72adaeb7a436fda344235cef93a7f29b7472efc779fcdb83b478eab0867b95cdeff
+  checksum: 166fa6eb926b9553f32ef81f5f531d27b4ce7da60e5baf8c021d043b27a388fb95e46a8038d5045877881e673f8134122b59624d5cecbd16eb50a42e7a6b5ca8
   languageName: node
   linkType: hard
 
@@ -25021,12 +25198,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.14.0":
-  version: 2.15.0
-  resolution: "nan@npm:2.15.0"
+"nan@npm:^2.17.0":
+  version: 2.20.0
+  resolution: "nan@npm:2.20.0"
   dependencies:
     node-gyp: latest
-  checksum: 797924e8dd64c32d571f322f998d5aa5a732012a23315976456017ea37515b21a808020995d7f48b716476b7e9a6a1ba9cce43bee30399016b9ac7257454ea04
+  checksum: 75775309a21ad179a55250d62ce47322c33ca03d8ddb5ad4c555bd820dd72484b3c59253dd9f41cc68dd63453ef04017407fbd081a549bc030d977079bb798b7
   languageName: node
   linkType: hard
 
@@ -25090,16 +25267,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nise@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "nise@npm:5.1.1"
+"nise@npm:^5.1.5":
+  version: 5.1.9
+  resolution: "nise@npm:5.1.9"
   dependencies:
-    "@sinonjs/commons": ^1.8.3
-    "@sinonjs/fake-timers": ">=5"
-    "@sinonjs/text-encoding": ^0.7.1
-    just-extend: ^4.0.2
-    path-to-regexp: ^1.7.0
-  checksum: 06695980f590bc626974f758f5faa02f29daf432e7f2b2720591890b007e2542e6e5d46755be4a5941ba4fa91a5bfdaca8f28fe1e0409d0463678d194389214d
+    "@sinonjs/commons": ^3.0.0
+    "@sinonjs/fake-timers": ^11.2.2
+    "@sinonjs/text-encoding": ^0.7.2
+    just-extend: ^6.2.0
+    path-to-regexp: ^6.2.1
+  checksum: a44318e6de738b34a1f51b4b478f97f5b40a5a27175be4bf13f6e5b8e67aa70d0b3f51c77a966d6617fccdc3b436c675a89be57424833e6d8a290367faa66b28
   languageName: node
   linkType: hard
 
@@ -25210,21 +25387,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-node-pty@beta:
-  version: 0.11.0-beta19
-  resolution: "node-pty@npm:0.11.0-beta19"
+"node-pty@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "node-pty@npm:1.0.0"
   dependencies:
-    nan: ^2.14.0
-  peerDependencies:
-    node-gyp: ^8.3.0
-  checksum: e6e50fa854a404b9e0ef9b621df7c30b5b6f92defed6692b7a63955bd2de7910a5d9f3b2024ed30cdcac5b276deea9bf0826542d0197d0e372dbe399c2b4571b
+    nan: ^2.17.0
+    node-gyp: latest
+  checksum: c308686826eb2f7616735f4c71e6e41ff630346b14319972dbdf9711640bc6975ce21eab66a47b7ce9a88c70308fe81bfd9840127388d5fa26c52afbad255871
   languageName: node
   linkType: hard
 
-"node-releases@npm:^2.0.13":
-  version: 2.0.13
-  resolution: "node-releases@npm:2.0.13"
-  checksum: 2fb44bf70fc949d27f3a48a7fd1a9d1d603ddad4ccd091f26b3fb8b1da976605d919330d7388ccd55ca2ade0dc8b2e12841ba19ef249c8bb29bf82532d401af7
+"node-releases@npm:^2.0.18":
+  version: 2.0.18
+  resolution: "node-releases@npm:2.0.18"
+  checksum: 786ac9db9d7226339e1dc84bbb42007cb054a346bd9257e6aa154d294f01bc6a6cddb1348fa099f079be6580acbb470e3c048effd5f719325abd0179e566fd27
   languageName: node
   linkType: hard
 
@@ -25743,10 +25919,10 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"object-inspect@npm:^1.12.0, object-inspect@npm:^1.9.0":
-  version: 1.12.3
-  resolution: "object-inspect@npm:1.12.3"
-  checksum: 752bb5f4dc595e214157ea8f442adb77bdb850ace762b078d151d8b6486331ab12364997a89ee6509be1023b15adf2b3774437a7105f8a5043dfda11ed622411
+"object-inspect@npm:^1.13.1":
+  version: 1.13.2
+  resolution: "object-inspect@npm:1.13.2"
+  checksum: b97835b4c91ec37b5fd71add84f21c3f1047d1d155d00c0fcd6699516c256d4fcc6ff17a1aced873197fe447f91a3964178fd2a67a1ee2120cdaf60e81a050b4
   languageName: node
   linkType: hard
 
@@ -25768,15 +25944,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"object.assign@npm:^4.1.0, object.assign@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "object.assign@npm:4.1.2"
+"object.assign@npm:^4.1.0, object.assign@npm:^4.1.2, object.assign@npm:^4.1.5":
+  version: 4.1.5
+  resolution: "object.assign@npm:4.1.5"
   dependencies:
-    call-bind: ^1.0.0
-    define-properties: ^1.1.3
-    has-symbols: ^1.0.1
+    call-bind: ^1.0.5
+    define-properties: ^1.2.1
+    has-symbols: ^1.0.3
     object-keys: ^1.1.1
-  checksum: ee0e796fad8952f05644d11632f046dc4b424f9a41d3816e11a612163b12a873c800456be9acdaec6221b72590ab5267e5fe4bf4cf1c67f88b05f82f133ac829
+  checksum: 60108e1fa2706f22554a4648299b0955236c62b3685c52abf4988d14fffb0e7731e00aa8c6448397e3eb63d087dcc124a9f21e1980f36d0b2667f3c18bacd469
   languageName: node
   linkType: hard
 
@@ -26485,19 +26661,17 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:0.1.7":
-  version: 0.1.7
-  resolution: "path-to-regexp@npm:0.1.7"
-  checksum: 50a1ddb1af41a9e68bd67ca8e331a705899d16fb720a1ea3a41e310480948387daf603abb14d7b0826c58f10146d49050a1291ba6a82b78a382d1c02c0b8f905
+"path-to-regexp@npm:0.1.10":
+  version: 0.1.10
+  resolution: "path-to-regexp@npm:0.1.10"
+  checksum: 34196775b9113ca6df88e94c8d83ba82c0e1a2063dd33bfe2803a980da8d49b91db8104f49d5191b44ea780d46b8670ce2b7f4a5e349b0c48c6779b653f1afe4
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^1.7.0":
-  version: 1.8.0
-  resolution: "path-to-regexp@npm:1.8.0"
-  dependencies:
-    isarray: 0.0.1
-  checksum: 7b25d6f27a8de03f49406d16195450f5ced694398adea1510b0f949d9660600d1769c5c6c83668583b7e6b503f3caf1ede8ffc08135dbe3e982f034f356fbb5c
+"path-to-regexp@npm:^6.2.1":
+  version: 6.2.2
+  resolution: "path-to-regexp@npm:6.2.2"
+  checksum: 4b60852d3501fd05ca9dd08c70033d73844e5eca14e41f499f069afa8364f780f15c5098002f93bd42af8b3514de62ac6e82a53b5662de881d2b08c9ef21ea6b
   languageName: node
   linkType: hard
 
@@ -26645,10 +26819,10 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"picocolors@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "picocolors@npm:1.0.0"
-  checksum: 20a5b249e331c14479d94ec6817a182fd7a5680debae82705747b2db7ec50009a5f6648d0621c561b0572703f84dbef0858abcbd5856d3c5511426afcb1961f7
+"picocolors@npm:^1.0.0, picocolors@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "picocolors@npm:1.0.1"
+  checksum: c63cdad2bf812ef0d66c8db29583802355d4ca67b9285d846f390cc15c2f6ccb94e8cb7eb6a6e97fc5990a6d3ad4ae42d86c84d3146e667c739a4234ed50d400
   languageName: node
   linkType: hard
 
@@ -26703,9 +26877,9 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"pkg-fetch@https://github.com/aws-amplify/pkg-fetch#ad4a21feb533d338bf951e7ba28cea7256aedeff":
-  version: 3.4.2
-  resolution: "pkg-fetch@https://github.com/aws-amplify/pkg-fetch.git#commit=ad4a21feb533d338bf951e7ba28cea7256aedeff"
+"pkg-fetch@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "pkg-fetch@npm:3.5.2"
   dependencies:
     chalk: ^4.1.2
     fs-extra: ^9.1.0
@@ -26717,7 +26891,7 @@ node-pty@beta:
     yargs: ^16.2.0
   bin:
     pkg-fetch: lib-es5/bin.js
-  checksum: 24e2b385b6510538b4253aba62f243f7a1783fa544970c0712bcc3dd3c10159f7eab741f8dfaf409afed5ed8e0c334ea2c046ffbd11b93901c41847142a34b5e
+  checksum: 8105cf28178e0b325417a9dee6ec0f0f124ba7fe3608d8ad86628ef2f2a12d1490550a007d5be42e34f0c8573dcb9655737b4d07a177ce4ee278e762ccb42b9e
   languageName: node
   linkType: hard
 
@@ -26773,6 +26947,13 @@ node-pty@beta:
   version: 8.0.0
   resolution: "pluralize@npm:8.0.0"
   checksum: 2044cfc34b2e8c88b73379ea4a36fc577db04f651c2909041b054c981cd863dd5373ebd030123ab058d194ae615d3a97cfdac653991e499d10caf592e8b3dc33
+  languageName: node
+  linkType: hard
+
+"possible-typed-array-names@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "possible-typed-array-names@npm:1.0.0"
+  checksum: d9aa22d31f4f7680e20269db76791b41c3a32c01a373e25f8a4813b4d45f7456bfc2b6d68f752dc4aab0e0bb0721cb3d76fb678c9101cb7a16316664bc2c73fd
   languageName: node
   linkType: hard
 
@@ -28059,6 +28240,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
+"qs@npm:6.13.0":
+  version: 6.13.0
+  resolution: "qs@npm:6.13.0"
+  dependencies:
+    side-channel: ^1.0.6
+  checksum: 62372cdeec24dc83a9fb240b7533c0fdcf0c5f7e0b83343edd7310f0ab4c8205a5e7c56406531f2e47e1b4878a3821d652be4192c841de5b032ca83619d8f860
+  languageName: node
+  linkType: hard
+
 "qs@npm:~6.5.2":
   version: 6.5.3
   resolution: "qs@npm:6.5.3"
@@ -28618,14 +28808,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"regexp.prototype.flags@npm:^1.3.1, regexp.prototype.flags@npm:^1.4.3":
-  version: 1.4.3
-  resolution: "regexp.prototype.flags@npm:1.4.3"
+"regexp.prototype.flags@npm:^1.3.1, regexp.prototype.flags@npm:^1.5.2":
+  version: 1.5.2
+  resolution: "regexp.prototype.flags@npm:1.5.2"
   dependencies:
-    call-bind: ^1.0.2
-    define-properties: ^1.1.3
-    functions-have-names: ^1.2.2
-  checksum: 5d797c7fb95f72a52dd9685a485faf0af3c55a4d1f2fafc1153a7be3df036cc3274b195b3ae051ee3d896a01960b446d726206e0d9a90b749e90d93445bb781f
+    call-bind: ^1.0.6
+    define-properties: ^1.2.1
+    es-errors: ^1.3.0
+    set-function-name: ^2.0.1
+  checksum: 0f3fc4f580d9c349f8b560b012725eb9c002f36daa0041b3fbf6f4238cb05932191a4d7d5db3b5e2caa336d5150ad0402ed2be81f711f9308fe7e1a9bf9bd552
   languageName: node
   linkType: hard
 
@@ -29075,8 +29266,8 @@ node-pty@beta:
   linkType: hard
 
 "rollup@npm:^2.43.1":
-  version: 2.70.2
-  resolution: "rollup@npm:2.70.2"
+  version: 2.79.2
+  resolution: "rollup@npm:2.79.2"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -29084,7 +29275,7 @@ node-pty@beta:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: 8ee99b255cf802608d67e0c55251bbfd4127fd9f3ee6b3c4e09d10f2a91c764064b8210beca0cf9b397421b34c5ec119ba13a0873b0e05d566c6c90f4abb990a
+  checksum: bc3746c988d903c2211266ddc539379d53d92689b9cc5c2b4e3ae161689de9af491957a567c629b6cc81f48d0928a7591fc4c383fba68a48d2966c9fb8a2bce9
   languageName: node
   linkType: hard
 
@@ -29122,6 +29313,18 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
+"safe-array-concat@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "safe-array-concat@npm:1.1.2"
+  dependencies:
+    call-bind: ^1.0.7
+    get-intrinsic: ^1.2.4
+    has-symbols: ^1.0.3
+    isarray: ^2.0.5
+  checksum: 12f9fdb01c8585e199a347eacc3bae7b5164ae805cdc8c6707199dbad5b9e30001a50a43c4ee24dc9ea32dbb7279397850e9208a7e217f4d8b1cf5d90129dec9
+  languageName: node
+  linkType: hard
+
 "safe-buffer@npm:5.1.2, safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
   version: 5.1.2
   resolution: "safe-buffer@npm:5.1.2"
@@ -29133,6 +29336,17 @@ node-pty@beta:
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
   checksum: 6501914237c0a86e9675d4e51d89ca3c21ffd6a31642efeba25ad65720bce6921c9e7e974e5be91a786b25aa058b5303285d3c15dbabf983a919f5f630d349f3
+  languageName: node
+  linkType: hard
+
+"safe-regex-test@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "safe-regex-test@npm:1.0.3"
+  dependencies:
+    call-bind: ^1.0.6
+    es-errors: ^1.3.0
+    is-regex: ^1.1.4
+  checksum: 900bf7c98dc58f08d8523b7012b468e4eb757afa624f198902c0643d7008ba777b0bdc35810ba0b758671ce887617295fb742b3f3968991b178ceca54cb07603
   languageName: node
   linkType: hard
 
@@ -29242,14 +29456,14 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^3.0.0, schema-utils@npm:^3.1.0, schema-utils@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "schema-utils@npm:3.1.1"
+"schema-utils@npm:^3.0.0, schema-utils@npm:^3.1.1, schema-utils@npm:^3.2.0":
+  version: 3.3.0
+  resolution: "schema-utils@npm:3.3.0"
   dependencies:
     "@types/json-schema": ^7.0.8
     ajv: ^6.12.5
     ajv-keywords: ^3.5.2
-  checksum: 55a8da802a5f8f0ce6f68b6a139f3261cb423bd23795766da866a0f5738fc40303370fbe0c3eeba60b2a91c569ad7ce5318fea455f8fe866098c5a3a6b9050b0
+  checksum: fafdbde91ad8aa1316bc543d4b61e65ea86970aebbfb750bfb6d8a6c287a23e415e0e926c2498696b242f63af1aab8e585252637fabe811fd37b604351da6500
   languageName: node
   linkType: hard
 
@@ -29351,9 +29565,9 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"send@npm:0.18.0":
-  version: 0.18.0
-  resolution: "send@npm:0.18.0"
+"send@npm:^0.19.0":
+  version: 0.19.0
+  resolution: "send@npm:0.19.0"
   dependencies:
     debug: 2.6.9
     depd: 2.0.0
@@ -29368,7 +29582,7 @@ node-pty@beta:
     on-finished: 2.4.1
     range-parser: ~1.2.1
     statuses: 2.0.1
-  checksum: 0eb134d6a51fc13bbcb976a1f4214ea1e33f242fae046efc311e80aff66c7a43603e26a79d9d06670283a13000e51be6e0a2cb80ff0942eaf9f1cd30b7ae736a
+  checksum: ea3f8a67a8f0be3d6bf9080f0baed6d2c51d11d4f7b4470de96a5029c598a7011c497511ccc28968b70ef05508675cebff27da9151dd2ceadd60be4e6cf845e3
   languageName: node
   linkType: hard
 
@@ -29408,7 +29622,7 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"serialize-javascript@npm:^6.0.0, serialize-javascript@npm:^6.0.1":
+"serialize-javascript@npm:^6.0.1":
   version: 6.0.1
   resolution: "serialize-javascript@npm:6.0.1"
   dependencies:
@@ -29432,15 +29646,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"serve-static@npm:1.15.0, serve-static@npm:^1.14.2":
-  version: 1.15.0
-  resolution: "serve-static@npm:1.15.0"
+"serve-static@npm:1.16.0, serve-static@npm:^1.14.2":
+  version: 1.16.0
+  resolution: "serve-static@npm:1.16.0"
   dependencies:
     encodeurl: ~1.0.2
     escape-html: ~1.0.3
     parseurl: ~1.3.3
     send: 0.18.0
-  checksum: fa9f0e21a540a28f301258dfe1e57bb4f81cd460d28f0e973860477dd4acef946a1f41748b5bd41c73b621bea2029569c935faa38578fd34cd42a9b4947088ba
+  checksum: d7a5beca08cc55f92998d8b87c111dd842d642404231c90c11f504f9650935da4599c13256747b0a988442a59851343271fe8e1946e03e92cd79c447b5f3ae01
   languageName: node
   linkType: hard
 
@@ -29448,6 +29662,32 @@ node-pty@beta:
   version: 2.0.0
   resolution: "set-blocking@npm:2.0.0"
   checksum: 9f8c1b2d800800d0b589de1477c753492de5c1548d4ade52f57f1d1f5e04af5481554d75ce5e5c43d4004b80a3eb714398d6907027dc0534177b7539119f4454
+  languageName: node
+  linkType: hard
+
+"set-function-length@npm:^1.2.1":
+  version: 1.2.2
+  resolution: "set-function-length@npm:1.2.2"
+  dependencies:
+    define-data-property: ^1.1.4
+    es-errors: ^1.3.0
+    function-bind: ^1.1.2
+    get-intrinsic: ^1.2.4
+    gopd: ^1.0.1
+    has-property-descriptors: ^1.0.2
+  checksum: 82850e62f412a258b71e123d4ed3873fa9377c216809551192bb6769329340176f109c2eeae8c22a8d386c76739855f78e8716515c818bcaef384b51110f0f3c
+  languageName: node
+  linkType: hard
+
+"set-function-name@npm:^2.0.1":
+  version: 2.0.2
+  resolution: "set-function-name@npm:2.0.2"
+  dependencies:
+    define-data-property: ^1.1.4
+    es-errors: ^1.3.0
+    functions-have-names: ^1.2.3
+    has-property-descriptors: ^1.0.2
+  checksum: fce59f90696c450a8523e754abb305e2b8c73586452619c2bad5f7bf38c7b6b4651895c9db895679c5bef9554339cf3ef1c329b66ece3eda7255785fbe299316
   languageName: node
   linkType: hard
 
@@ -29589,14 +29829,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"side-channel@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "side-channel@npm:1.0.4"
+"side-channel@npm:^1.0.4, side-channel@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "side-channel@npm:1.0.6"
   dependencies:
-    call-bind: ^1.0.0
-    get-intrinsic: ^1.0.2
-    object-inspect: ^1.9.0
-  checksum: 054a5d23ee35054b2c4609b9fd2a0587760737782b5d765a9c7852264710cc39c6dcb56a9bbd6c12cd84071648aea3edb2359d2f6e560677eedadce511ac1da5
+    call-bind: ^1.0.7
+    es-errors: ^1.3.0
+    get-intrinsic: ^1.2.4
+    object-inspect: ^1.13.1
+  checksum: d2afd163dc733cc0a39aa6f7e39bf0c436293510dbccbff446733daeaf295857dbccf94297092ec8c53e2503acac30f0b78830876f0485991d62a90e9cad305f
   languageName: node
   linkType: hard
 
@@ -29672,17 +29913,17 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"sinon@npm:^14.0.1":
-  version: 14.0.1
-  resolution: "sinon@npm:14.0.1"
+"sinon@npm:^17.0.0":
+  version: 17.0.1
+  resolution: "sinon@npm:17.0.1"
   dependencies:
-    "@sinonjs/commons": ^1.8.3
-    "@sinonjs/fake-timers": ^9.1.2
-    "@sinonjs/samsam": ^6.1.1
-    diff: ^5.0.0
-    nise: ^5.1.1
+    "@sinonjs/commons": ^3.0.0
+    "@sinonjs/fake-timers": ^11.2.2
+    "@sinonjs/samsam": ^8.0.0
+    diff: ^5.1.0
+    nise: ^5.1.5
     supports-color: ^7.2.0
-  checksum: 085ca6f1c89ee7ba8a5020ff1518551dd27a27a817850cabe4287ba66c25ad9b62228d2d7be8385004744507314591d2b3a34fd23a91c5c819c107dd424cad9c
+  checksum: 63e678bd58a959ebf69ddadb5410e9c31bd161b848b9dbec5f34f7e1485a8681810cd27d37bde072b68915b41b498f30bb5fb890c73e7a51dc281d1b1d573cfb
   languageName: node
   linkType: hard
 
@@ -30236,25 +30477,37 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"string.prototype.trimend@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "string.prototype.trimend@npm:1.0.5"
+"string.prototype.trim@npm:^1.2.9":
+  version: 1.2.9
+  resolution: "string.prototype.trim@npm:1.2.9"
   dependencies:
-    call-bind: ^1.0.2
-    define-properties: ^1.1.4
-    es-abstract: ^1.19.5
-  checksum: efcb7d4e943366efde2786be9abf7a79ac9e427bb184aeb4c532ce81d7cb94e1a4d323b256f706dafe6ed5a4ee3d6025a65ec4337d47d07014802be5bcdd4864
+    call-bind: ^1.0.7
+    define-properties: ^1.2.1
+    es-abstract: ^1.23.0
+    es-object-atoms: ^1.0.0
+  checksum: dcef1a0fb61d255778155006b372dff8cc6c4394bc39869117e4241f41a2c52899c0d263ffc7738a1f9e61488c490b05c0427faa15151efad721e1a9fb2663c2
   languageName: node
   linkType: hard
 
-"string.prototype.trimstart@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "string.prototype.trimstart@npm:1.0.5"
+"string.prototype.trimend@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "string.prototype.trimend@npm:1.0.8"
   dependencies:
-    call-bind: ^1.0.2
-    define-properties: ^1.1.4
-    es-abstract: ^1.19.5
-  checksum: c42d2f7732a98d9402aabcfb6ac05e4e36bbc429f5aa98bd199b5e55162b19b87db941ed68382c68ec6527a200a3d01cb3d4c16f668296c383e63693d8493772
+    call-bind: ^1.0.7
+    define-properties: ^1.2.1
+    es-object-atoms: ^1.0.0
+  checksum: 0a0b54c17c070551b38e756ae271865ac6cc5f60dabf2e7e343cceae7d9b02e1a1120a824e090e79da1b041a74464e8477e2da43e2775c85392be30a6f60963c
+  languageName: node
+  linkType: hard
+
+"string.prototype.trimstart@npm:^1.0.8":
+  version: 1.0.8
+  resolution: "string.prototype.trimstart@npm:1.0.8"
+  dependencies:
+    call-bind: ^1.0.7
+    define-properties: ^1.2.1
+    es-object-atoms: ^1.0.0
+  checksum: d53af1899959e53c83b64a5fd120be93e067da740e7e75acb433849aa640782fb6c7d4cd5b84c954c84413745a3764df135a8afeb22908b86a835290788d8366
   languageName: node
   linkType: hard
 
@@ -30710,15 +30963,15 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:^5.1.3, terser-webpack-plugin@npm:^5.2.5":
-  version: 5.3.1
-  resolution: "terser-webpack-plugin@npm:5.3.1"
+"terser-webpack-plugin@npm:^5.2.5, terser-webpack-plugin@npm:^5.3.10":
+  version: 5.3.10
+  resolution: "terser-webpack-plugin@npm:5.3.10"
   dependencies:
+    "@jridgewell/trace-mapping": ^0.3.20
     jest-worker: ^27.4.5
     schema-utils: ^3.1.1
-    serialize-javascript: ^6.0.0
-    source-map: ^0.6.1
-    terser: ^5.7.2
+    serialize-javascript: ^6.0.1
+    terser: ^5.26.0
   peerDependencies:
     webpack: ^5.1.0
   peerDependenciesMeta:
@@ -30728,21 +30981,21 @@ node-pty@beta:
       optional: true
     uglify-js:
       optional: true
-  checksum: e23d849d40b1f062c839ba56b2c8af4837d8edf57fc8cbe2ebce7983476d20c687bdb201d38f1f001c3e40c800f7d7826397434ea36aab4f0fad671218902b6c
+  checksum: 66d1ed3174542560911cf96f4716aeea8d60e7caab212291705d50072b6ba844c7391442541b13c848684044042bea9ec87512b8506528c12854943da05faf91
   languageName: node
   linkType: hard
 
-"terser@npm:^5.0.0, terser@npm:^5.10.0, terser@npm:^5.7.2":
-  version: 5.14.2
-  resolution: "terser@npm:5.14.2"
+"terser@npm:^5.0.0, terser@npm:^5.10.0, terser@npm:^5.26.0":
+  version: 5.31.6
+  resolution: "terser@npm:5.31.6"
   dependencies:
-    "@jridgewell/source-map": ^0.3.2
-    acorn: ^8.5.0
+    "@jridgewell/source-map": ^0.3.3
+    acorn: ^8.8.2
     commander: ^2.20.0
     source-map-support: ~0.5.20
   bin:
     terser: bin/terser
-  checksum: d83b2610ed60840a4ea84fb5b497a501730f55dfa92b8e018a5464b843d4fa23a8fbb0dfd5c28993abca1822c971047c291c6b8aca92af2d1fea074d2cad6a8c
+  checksum: b17d02b65a52a5041430572b3c514475820f5e7590fa93773c0f5b4be601ccf3f6d745bf5a79f3ee58187cf85edf61c24ddf4345783839fccb44c9c8fa9b427e
   languageName: node
   linkType: hard
 
@@ -30956,9 +31209,13 @@ node-pty@beta:
   linkType: hard
 
 "traverse@npm:^0.6.6":
-  version: 0.6.6
-  resolution: "traverse@npm:0.6.6"
-  checksum: 72b2c95463e991063cfa3603dc80e8ca35cae4bf1a736e5b6df3a50226dca341777699f702b55f61b9a329e7be0a76fb77d994f4981f49de98bb02065ca1e7d9
+  version: 0.6.9
+  resolution: "traverse@npm:0.6.9"
+  dependencies:
+    gopd: ^1.0.1
+    typedarray.prototype.slice: ^1.0.3
+    which-typed-array: ^1.1.15
+  checksum: 6809ef684b04cd6985a4470f93bf794ad417f04bb1c43a6b1166fe1c94506118c7a7a87c34545fe15918f4e1fe29ced7a5813d8455932042f4ccc5981634139d
   languageName: node
   linkType: hard
 
@@ -31315,12 +31572,78 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
+"typed-array-buffer@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "typed-array-buffer@npm:1.0.2"
+  dependencies:
+    call-bind: ^1.0.7
+    es-errors: ^1.3.0
+    is-typed-array: ^1.1.13
+  checksum: 9e043eb38e1b4df4ddf9dde1aa64919ae8bb909571c1cc4490ba777d55d23a0c74c7d73afcdd29ec98616d91bb3ae0f705fad4421ea147e1daf9528200b562da
+  languageName: node
+  linkType: hard
+
+"typed-array-byte-length@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "typed-array-byte-length@npm:1.0.1"
+  dependencies:
+    call-bind: ^1.0.7
+    for-each: ^0.3.3
+    gopd: ^1.0.1
+    has-proto: ^1.0.3
+    is-typed-array: ^1.1.13
+  checksum: fcebeffb2436c9f355e91bd19e2368273b88c11d1acc0948a2a306792f1ab672bce4cfe524ab9f51a0505c9d7cd1c98eff4235c4f6bfef6a198f6cfc4ff3d4f3
+  languageName: node
+  linkType: hard
+
+"typed-array-byte-offset@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "typed-array-byte-offset@npm:1.0.2"
+  dependencies:
+    available-typed-arrays: ^1.0.7
+    call-bind: ^1.0.7
+    for-each: ^0.3.3
+    gopd: ^1.0.1
+    has-proto: ^1.0.3
+    is-typed-array: ^1.1.13
+  checksum: d2628bc739732072e39269389a758025f75339de2ed40c4f91357023c5512d237f255b633e3106c461ced41907c1bf9a533c7e8578066b0163690ca8bc61b22f
+  languageName: node
+  linkType: hard
+
+"typed-array-length@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "typed-array-length@npm:1.0.6"
+  dependencies:
+    call-bind: ^1.0.7
+    for-each: ^0.3.3
+    gopd: ^1.0.1
+    has-proto: ^1.0.3
+    is-typed-array: ^1.1.13
+    possible-typed-array-names: ^1.0.0
+  checksum: 74253d7dc488eb28b6b2711cf31f5a9dcefc9c41b0681fd1c178ed0a1681b4468581a3626d39cd4df7aee3d3927ab62be06aa9ca74e5baf81827f61641445b77
+  languageName: node
+  linkType: hard
+
 "typedarray-to-buffer@npm:^3.1.5":
   version: 3.1.5
   resolution: "typedarray-to-buffer@npm:3.1.5"
   dependencies:
     is-typedarray: ^1.0.0
   checksum: 4ac5b7a93d604edabf3ac58d3a2f7e07487e9f6e98195a080e81dbffdc4127817f470f219d794a843b87052cedef102b53ac9b539855380b8c2172054b7d5027
+  languageName: node
+  linkType: hard
+
+"typedarray.prototype.slice@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "typedarray.prototype.slice@npm:1.0.3"
+  dependencies:
+    call-bind: ^1.0.7
+    define-properties: ^1.2.1
+    es-abstract: ^1.23.0
+    es-errors: ^1.3.0
+    typed-array-buffer: ^1.0.2
+    typed-array-byte-offset: ^1.0.2
+  checksum: 6ac110a8b58a1ccb086242f09d1ce9c7ba2885924e816364a7879083b983d4096f19aab6f9aa8c0ce5ddd3d8ae3f3ba5581e10fa6838880f296a0c54c26f424b
   languageName: node
   linkType: hard
 
@@ -31651,17 +31974,17 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"update-browserslist-db@npm:^1.0.13":
-  version: 1.0.13
-  resolution: "update-browserslist-db@npm:1.0.13"
+"update-browserslist-db@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "update-browserslist-db@npm:1.1.0"
   dependencies:
-    escalade: ^3.1.1
-    picocolors: ^1.0.0
+    escalade: ^3.1.2
+    picocolors: ^1.0.1
   peerDependencies:
     browserslist: ">= 4.21.0"
   bin:
     update-browserslist-db: cli.js
-  checksum: e52b8b521c78ce1e0c775f356cd16a9c22c70d25f3e01180839c407a5dc787fb05a13f67560cbaf316770d26fa99f78f1acd711b1b54a4f35d4820d4ea7136e6
+  checksum: a7452de47785842736fb71547651c5bbe5b4dc1e3722ccf48a704b7b34e4dcf633991eaa8e4a6a517ffb738b3252eede3773bef673ef9021baa26b056d63a5b9
   languageName: node
   linkType: hard
 
@@ -32011,13 +32334,13 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"watchpack@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "watchpack@npm:2.4.0"
+"watchpack@npm:^2.4.1":
+  version: 2.4.2
+  resolution: "watchpack@npm:2.4.2"
   dependencies:
     glob-to-regexp: ^0.4.1
     graceful-fs: ^4.1.2
-  checksum: c5e35f9fb9338d31d2141d9835643c0f49b5f9c521440bb648181059e5940d93dd8ed856aa8a33fbcdd4e121dad63c7e8c15c063cf485429cd9d427be197fe62
+  checksum: ec60a5f0e9efaeca0102fd9126346b3b2d523e01c34030d3fddf5813a7125765121ebdc2552981136dcd2c852deb1af0b39340f2fcc235f292db5399d0283577
   languageName: node
   linkType: hard
 
@@ -32169,39 +32492,38 @@ node-pty@beta:
   linkType: hard
 
 "webpack@npm:^5.64.4":
-  version: 5.76.0
-  resolution: "webpack@npm:5.76.0"
+  version: 5.94.0
+  resolution: "webpack@npm:5.94.0"
   dependencies:
-    "@types/eslint-scope": ^3.7.3
-    "@types/estree": ^0.0.51
-    "@webassemblyjs/ast": 1.11.1
-    "@webassemblyjs/wasm-edit": 1.11.1
-    "@webassemblyjs/wasm-parser": 1.11.1
+    "@types/estree": ^1.0.5
+    "@webassemblyjs/ast": ^1.12.1
+    "@webassemblyjs/wasm-edit": ^1.12.1
+    "@webassemblyjs/wasm-parser": ^1.12.1
     acorn: ^8.7.1
-    acorn-import-assertions: ^1.7.6
-    browserslist: ^4.14.5
+    acorn-import-attributes: ^1.9.5
+    browserslist: ^4.21.10
     chrome-trace-event: ^1.0.2
-    enhanced-resolve: ^5.10.0
-    es-module-lexer: ^0.9.0
+    enhanced-resolve: ^5.17.1
+    es-module-lexer: ^1.2.1
     eslint-scope: 5.1.1
     events: ^3.2.0
     glob-to-regexp: ^0.4.1
-    graceful-fs: ^4.2.9
+    graceful-fs: ^4.2.11
     json-parse-even-better-errors: ^2.3.1
     loader-runner: ^4.2.0
     mime-types: ^2.1.27
     neo-async: ^2.6.2
-    schema-utils: ^3.1.0
+    schema-utils: ^3.2.0
     tapable: ^2.1.1
-    terser-webpack-plugin: ^5.1.3
-    watchpack: ^2.4.0
+    terser-webpack-plugin: ^5.3.10
+    watchpack: ^2.4.1
     webpack-sources: ^3.2.3
   peerDependenciesMeta:
     webpack-cli:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 0a287f725a0873dadd35c2318a651356934c9fd69ae2bcaaa4a177f8e65184fb2fd2c09434cb632673bcb8274f0c246d243f0b008720143f19d52ea43e06a038
+  checksum: b4d1b751f634079bd177a89eef84d80fa5bb8d6fc15d72ab40fc2b9ca5167a79b56585e1a849e9e27e259803ee5c4365cb719e54af70a43c06358ec268ff4ebf
   languageName: node
   linkType: hard
 
@@ -32289,17 +32611,16 @@ node-pty@beta:
   languageName: node
   linkType: hard
 
-"which-typed-array@npm:^1.1.2":
-  version: 1.1.7
-  resolution: "which-typed-array@npm:1.1.7"
+"which-typed-array@npm:^1.1.14, which-typed-array@npm:^1.1.15, which-typed-array@npm:^1.1.2":
+  version: 1.1.15
+  resolution: "which-typed-array@npm:1.1.15"
   dependencies:
-    available-typed-arrays: ^1.0.5
-    call-bind: ^1.0.2
-    es-abstract: ^1.18.5
-    foreach: ^2.0.5
-    has-tostringtag: ^1.0.0
-    is-typed-array: ^1.1.7
-  checksum: 3b22173c483037c672a2a82cf19dbbd9446bf34cf8d0a5b8f8eefdcda85f821a0f8352cdf1a8c6181b40b6cc55be58f53e90eb18523e96b6cef1bf0633454d7d
+    available-typed-arrays: ^1.0.7
+    call-bind: ^1.0.7
+    for-each: ^0.3.3
+    gopd: ^1.0.1
+    has-tostringtag: ^1.0.2
+  checksum: 4465d5348c044032032251be54d8988270e69c6b7154f8fcb2a47ff706fe36f7624b3a24246b8d9089435a8f4ec48c1c1025c5d6b499456b9e5eff4f48212983
   languageName: node
   linkType: hard
 

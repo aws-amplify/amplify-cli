@@ -110,7 +110,6 @@ function _build {
 function _saveBuild {
     _lsOut
     storeCache $CODEBUILD_SRC_DIR repo-windows
-    storeCache $HOME/AppData/Local/Yarn/Cache/v6 .cache-windows
 }
 function _install_packaged_cli_win {
     echo Install Amplify Packaged CLI to PATH

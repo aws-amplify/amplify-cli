@@ -5,13 +5,24 @@ import { Server, createServer } from 'http';
 import { createServer as createHttpsServer } from 'https';
 import { readFileSync } from 'fs';
 import { fromEvent } from 'promise-toolbox';
-import { address as getLocalIpAddress } from 'ip';
 import { AppSyncSimulatorSubscriptionServer } from './websocket-subscription';
 import getPort from 'get-port';
 import { REALTIME_SUBSCRIPTION_PATH } from './subscription/websocket-server/server';
+import os from 'os';
 
 const BASE_PORT = 8900;
 const MAX_PORT = 9999;
+
+function getLocalIpAddress(): string {
+  const interfaces = os.networkInterfaces();
+  const internalAddresses = Object.keys(interfaces)
+    .map((nic) => {
+      const addresses = interfaces[nic].filter((details) => details.internal);
+      return addresses.length ? addresses[0].address : undefined;
+    })
+    .filter(Boolean);
+  return internalAddresses.length ? internalAddresses[0] : '127.0.0.1';
+}
 
 export class AppSyncSimulatorServer {
   private _operationServer: OperationServer;

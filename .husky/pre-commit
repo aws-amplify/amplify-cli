@@ -8,7 +8,7 @@ NC='\033[0m' # No color
 
 echo "${GREEN}Running pre-commit hook${NC}"
 echo "${CYAN}Running yarn prettier staged files${NC}"
-git diff --name-only --cached --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' | xargs yarn prettier --write
+git diff --name-only --cached --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' | xargs --no-run-if-empty yarn prettier --write
 echo "${CYAN}Running yarn lint-staged${NC}"
 yarn lint-fix
 echo "${CYAN}Running yarn stage prettified files${NC}"

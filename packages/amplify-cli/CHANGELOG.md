@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.12.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.5...@aws-amplify/cli-internal@12.12.6) (2024-08-06)
+
+
+### Bug Fixes
+
+* update awaiter s3 key ([#13872](https://github.com/aws-amplify/amplify-cli/issues/13872)) ([dacfab7](https://github.com/aws-amplify/amplify-cli/commit/dacfab73fcc53586b873f99e149d44c390b2d76f))
+
+
+
+
+
+## [12.12.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.4...@aws-amplify/cli-internal@12.12.5) (2024-08-02)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 ## [12.12.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.3...@aws-amplify/cli-internal@12.12.4) (2024-06-27)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

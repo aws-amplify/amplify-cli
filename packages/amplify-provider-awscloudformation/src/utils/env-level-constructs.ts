@@ -32,7 +32,7 @@ export const createEnvLevelConstructs = async (context: $TSContext): Promise<voi
   context.amplify.updateProviderAmplifyMeta(providerName, updatedMeta);
 
   if (hasContainers) {
-    const containerResourcesFilenames = ['custom-resource-pipeline-awaiter.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
+    const containerResourcesFilenames = ['custom-resource-pipeline-awaiter-18.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
     for (const file of containerResourcesFilenames) {
       await uploadResourceFile(context, file);
     }
