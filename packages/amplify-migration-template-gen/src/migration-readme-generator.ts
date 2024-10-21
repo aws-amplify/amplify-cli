@@ -48,6 +48,7 @@ aws cloudformation update-stack \\
  --template-body file://${step1FileNamePath} \\
  --parameters '${paramsString}' \\
  --capabilities CAPABILITY_NAMED_IAM
+ --tags '[]'
  \`\`\`
  
 \`\`\`
