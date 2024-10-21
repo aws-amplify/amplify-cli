@@ -80,7 +80,7 @@
     "aws-appsync": "^4.1.4",
     "aws-cdk-lib": "~2.129.0",
     "aws-sdk": "^2.1464.0",
-    "aws-sdk-mock": "^5.8.0",
+    "aws-sdk-mock": "^6.2.0",
     "axios": "^1.6.7",
     "constructs": "^10.0.5",
     "graphql": "^15.5.0",
