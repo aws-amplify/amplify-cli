@@ -74,6 +74,7 @@ aws cloudformation update-stack \\
  --template-body file://test/step1-gen1PreProcessUpdateStackTemplate.json \\
  --parameters '[{"ParameterKey":"authSelections","ParameterValue":"identityPoolAndUserPool"}]' \\
  --capabilities CAPABILITY_NAMED_IAM
+ --tags '[]'
  \`\`\`
  
 \`\`\`
