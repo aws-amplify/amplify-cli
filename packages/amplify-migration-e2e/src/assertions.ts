@@ -88,6 +88,7 @@ async function assertUserPoolGroups(gen1Meta: $TSAny) {
 
 export async function assertDefaultGen1Setup(projRoot: string) {
   const gen1Meta = getProjectMeta(projRoot);
+  const gen1StackName = gen1Meta.providers.awscloudformation.StackName;
   const gen1Region = gen1Meta.providers.awscloudformation.Region;
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
   const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
@@ -96,7 +97,16 @@ export async function assertDefaultGen1Setup(projRoot: string) {
   const { gen1GraphqlApiId } = await assertAPI(gen1Meta, gen1Region);
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
-  return { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region };
+  return {
+    gen1StackName,
+    gen1UserPoolId,
+    gen1ClientIds,
+    gen1IdentityPoolId,
+    gen1FunctionName,
+    gen1BucketName,
+    gen1GraphqlApiId,
+    gen1Region,
+  };
 }
 
 export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {

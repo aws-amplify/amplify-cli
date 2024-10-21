@@ -27,6 +27,7 @@ export * from './sdk_calls';
 export * from './assertions';
 export * from './projectOutputs';
 export * from './updatePackageJson';
+export * from './templategen';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
