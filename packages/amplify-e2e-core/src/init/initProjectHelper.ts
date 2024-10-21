@@ -27,6 +27,7 @@ const defaultSettings = {
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
   includeUsageDataPrompt: true,
+  includeGen2RecommendationPrompt: true,
   testingWithLatestCodebase: false,
 };
 
@@ -59,7 +60,17 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     stripColors: true,
     env,
     disableCIDetection: s.disableCIDetection,
-  })
+  });
+
+  if (s.includeGen2RecommendationPrompt) {
+    chain
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn();
+  }
+
+  chain
     .wait('Enter a name for the project')
     .sendLine(s.name)
     .wait('Initialize the project with the above configuration?')
@@ -115,6 +126,10 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       stripColors: true,
       env,
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -171,6 +186,10 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       stripColors: true,
       env,
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -205,6 +224,10 @@ export function initIosProjectWithXcode(cwd: string): Promise<void> {
     cwd,
     stripColors: true,
   })
+    .wait('Do you want to continue with Amplify Gen 1?')
+    .sendYes()
+    .wait('Why would you like to use Amplify Gen 1?')
+    .sendCarriageReturn()
     .wait('Enter a name for the project')
     .sendCarriageReturn()
     .wait('Initialize the project with the above configuration?')
@@ -237,6 +260,10 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -286,6 +313,10 @@ export function initProjectWithAccessKey(
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
