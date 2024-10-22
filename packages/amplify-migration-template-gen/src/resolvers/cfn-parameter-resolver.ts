@@ -38,10 +38,6 @@ class CfnParameterResolver {
       const paramRegexp = new RegExp(`{"Ref":"${ParameterKey}"}`, 'g');
       templateString = templateString.replaceAll(paramRegexp, resolvedParameterValue);
     }
-    // remove stack name pseudo param from template
-    if (this.stackName) {
-      delete clonedParametersFromTemplate[CFN_PSEUDO_PARAMETERS_REF.StackName];
-    }
     return JSON.parse(templateString);
   }
 }
