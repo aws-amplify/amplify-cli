@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { CATEGORY, CFNTemplate, ResourceMapping } from './types';
 import { Parameter } from '@aws-sdk/client-cloudformation';
+import extractStackNameFromId from './cfn-stack-name-extractor';
 
 interface MigrationReadMeGeneratorOptions {
   path: string;
@@ -19,8 +20,8 @@ class MigrationReadmeGenerator {
   constructor({ path, category, gen1CategoryStackId, gen2CategoryStackId }: MigrationReadMeGeneratorOptions) {
     this.path = path;
     this.category = category;
-    this.gen1CategoryStackName = this.extractStackNameFromId(gen1CategoryStackId);
-    this.gen2CategoryStackName = this.extractStackNameFromId(gen2CategoryStackId);
+    this.gen1CategoryStackName = extractStackNameFromId(gen1CategoryStackId);
+    this.gen2CategoryStackName = extractStackNameFromId(gen2CategoryStackId);
     this.migrationReadMePath = `${this.path}/MIGRATION_README.md`;
   }
 
@@ -278,10 +279,6 @@ npx ampx sandbox
 \`\`\`
 `,
     );
-  }
-
-  private extractStackNameFromId(stackId: string): string {
-    return stackId.split('/')[1];
   }
 }
 

@@ -1,5 +1,5 @@
 import CategoryTemplateGenerator from './category-template-generator';
-import { CFN_S3_TYPE, CFNTemplate } from './types';
+import { CFN_PSEUDO_PARAMETERS_REF, CFN_S3_TYPE, CFNTemplate } from './types';
 import {
   CloudFormationClient,
   DescribeStacksCommand,
@@ -37,7 +37,7 @@ const oldGen1Template: CFNTemplate = {
     [GEN1_S3_BUCKET_LOGICAL_ID]: {
       Type: CFN_S3_TYPE.Bucket,
       Properties: {
-        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', { Ref: 'Environment' }]] },
+        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', { Ref: 'Environment' }, { Ref: CFN_PSEUDO_PARAMETERS_REF.StackName }]] },
       },
     },
     MyS3BucketPolicy: {
@@ -84,7 +84,7 @@ const newGen1Template: CFNTemplate = {
     [GEN1_S3_BUCKET_LOGICAL_ID]: {
       Type: CFN_S3_TYPE.Bucket,
       Properties: {
-        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev']] },
+        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', 'amplify-testauth-dev-12345-auth-ABCDE']] },
       },
     },
     MyS3BucketPolicy: {
@@ -131,7 +131,7 @@ const newGen1TemplateWithPredicate: CFNTemplate = {
     [GEN1_S3_BUCKET_LOGICAL_ID]: {
       Type: CFN_S3_TYPE.Bucket,
       Properties: {
-        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev']] },
+        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', 'amplify-testauth-dev-12345-auth-ABCDE']] },
       },
     },
     MyS3BucketPolicy: {
@@ -282,7 +282,7 @@ const refactoredGen2Template: CFNTemplate = {
     [GEN2_S3_BUCKET_LOGICAL_ID]: {
       Type: CFN_S3_TYPE.Bucket,
       Properties: {
-        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev']] },
+        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', 'amplify-testauth-dev-12345-auth-ABCDE']] },
       },
     },
     [GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID]: {
