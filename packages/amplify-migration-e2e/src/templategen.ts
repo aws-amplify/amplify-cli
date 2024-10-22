@@ -1,8 +1,22 @@
 import execa from 'execa';
 import path from 'node:path';
 import * as fs from 'fs-extra';
-import { getNpxPath, retry } from '@aws-amplify/amplify-e2e-core';
+import { getNpxPath, retry, RetrySettings } from '@aws-amplify/amplify-e2e-core';
 import { runGen2SandboxCommand } from '.';
+
+export type EnvVariableAction = 'SET' | 'DELETE';
+export type RefactorCategory = 'auth' | 'storage';
+
+const RETRY_CONFIG: RetrySettings = {
+  times: 50,
+  delayMS: 1000, // 1 second
+  timeoutMS: 1000 * 60 * 5, // 5 minutes
+  stopOnError: true,
+};
+
+const STATUS_COMPLETE = 'COMPLETE';
+const STATUS_IN_PROGRESS = 'IN_PROGRESS';
+const STATUS_FAILED = 'FAILED';
 
 export function runTemplategenCommand(cwd: string, gen1StackName: string, gen2StackName: string) {
   const parentDir = path.resolve(cwd, '..');
@@ -29,8 +43,12 @@ function uncommentBucketNameLineFromBackendFile(projRoot: string) {
   fs.writeFileSync(backendFilePath, updatedBackendFileContent);
 }
 
-function setEnvVariable(name: string, value: string) {
-  process.env[name] = value;
+function toggleEnvVariable(name: string, option: EnvVariableAction, value?: string) {
+  if (option === 'SET') {
+    process.env[name] = value;
+  } else if (option === 'DELETE') {
+    delete process.env[name];
+  }
 }
 
 function extractContent(readmeContent: string, startRegex: string, endRegex: string) {
@@ -105,13 +123,9 @@ async function executeStep1(cwd: string, commands: string[]) {
   await executeCommand(commands[0], cwd);
   await retry(
     () => assertStepCompletion(commands[1]),
-    (status) => status.includes('COMPLETE') && !status.includes('IN_PROGRESS'),
-    {
-      times: 50,
-      delayMS: 1000, // 1 second
-      timeoutMS: 1000 * 60 * 5, // 5 minutes
-    },
-    (status) => status.includes('FAILED'),
+    (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
+    RETRY_CONFIG,
+    (status) => status.includes(STATUS_FAILED),
   );
 }
 
@@ -119,46 +133,34 @@ async function executeStep2(cwd: string, commands: string[]) {
   await executeCommand(commands[0], cwd);
   await retry(
     () => assertStepCompletion(commands[1]),
-    (status) => status.includes('COMPLETE') && !status.includes('IN_PROGRESS'),
-    {
-      times: 50,
-      delayMS: 1000, // 1 second
-      timeoutMS: 1000 * 60 * 5, // 5 minutes
-    },
-    (status) => status.includes('FAILED'),
+    (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
+    RETRY_CONFIG,
+    (status) => status.includes(STATUS_FAILED),
   );
 }
 
 async function executeStep3(cwd: string, commands: string[], bucketName: string) {
-  setEnvVariable('BUCKET_NAME', bucketName);
+  toggleEnvVariable('BUCKET_NAME', 'SET', bucketName);
   await executeCommand(commands[1], cwd);
   await executeCommand(commands[2], cwd);
   const stackRefactorId = await executeCreateStackRefactorCallCommand(commands[3], cwd);
-  setEnvVariable('STACK_REFACTOR_ID', stackRefactorId);
+  toggleEnvVariable('STACK_REFACTOR_ID', 'SET', stackRefactorId);
   await retry(
     () => assertRefactorStepCompletion(commands[5]),
-    (status) => status.includes('COMPLETE') && !status.includes('IN_PROGRESS'),
-    {
-      times: 50,
-      delayMS: 1000, // 1 second
-      timeoutMS: 1000 * 60 * 5, // 5 minutes
-    },
-    (status) => status.includes('FAILED'),
+    (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
+    RETRY_CONFIG,
+    (status) => status.includes(STATUS_FAILED),
   );
   await executeCommand(commands[6], cwd);
   await retry(
     () => assertRefactorStepCompletion(commands[7]),
-    (status) => status.includes('COMPLETE') && !status.includes('IN_PROGRESS'),
-    {
-      times: 50,
-      delayMS: 1000, // 1 second
-      timeoutMS: 1000 * 60 * 5, // 5 minutes
-    },
-    (status) => status.includes('FAILED'),
+    (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
+    RETRY_CONFIG,
+    (status) => status.includes(STATUS_FAILED),
   );
 }
 
-export async function stackRefactor(projRoot: string, category: string, bucketName: string) {
+export async function stackRefactor(projRoot: string, category: RefactorCategory, bucketName: string) {
   const readmeFilePath = path.join(projRoot, '.amplify', 'migration', 'templates', category, 'MIGRATION_README.md');
   const readmeContent = fs.readFileSync(readmeFilePath, 'utf-8');
   const { step1Commands, step2commands, step3Commands } = getCommandsFromReadme(readmeContent);
@@ -172,4 +174,7 @@ export async function stackRefactor(projRoot: string, category: string, bucketNa
   }
 
   await runGen2SandboxCommand(projRoot);
+
+  toggleEnvVariable('BUCKET_NAME', 'DELETE');
+  toggleEnvVariable('STACK_REFACTOR_ID', 'DELETE');
 }

@@ -36,7 +36,7 @@ void describe('Templategen E2E tests', () => {
       await copyFunctionFile(projRoot, 'function', gen1FunctionName);
       await copyGen1Schema(projRoot, projName);
       // TODO: replace below line with correct package version
-      await updatePackageDependency(projRoot, '@aws-amplify/backend', '0.0.0-test-20241003180022');
+      await updatePackageDependency(projRoot, '@aws-amplify/backend');
       await npmInstall(projRoot);
       const gen2StackName = await runGen2SandboxCommand(projRoot);
       assert(gen2StackName);
