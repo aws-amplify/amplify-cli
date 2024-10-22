@@ -5,6 +5,7 @@ import CFNConditionResolver from './resolvers/cfn-condition-resolver';
 import CfnParameterResolver from './resolvers/cfn-parameter-resolver';
 import CfnOutputResolver from './resolvers/cfn-output-resolver';
 import CfnDependencyResolver from './resolvers/cfn-dependency-resolver';
+import extractStackNameFromId from './cfn-stack-name-extractor';
 
 class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
   private gen1DescribeStacksResponse: Stack | undefined;
@@ -42,7 +43,9 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     // validate empty resources
     if (this.gen1ResourcesToMove.size === 0) throw new Error('No resources to move in Gen1 stack.');
     const logicalResourceIds = [...this.gen1ResourcesToMove.keys()];
-    const gen1ParametersResolvedTemplate = new CfnParameterResolver(oldGen1Template).resolve(Parameters);
+    const gen1ParametersResolvedTemplate = new CfnParameterResolver(oldGen1Template, extractStackNameFromId(this.gen1StackId)).resolve(
+      Parameters,
+    );
     const gen1TemplateWithOutputsResolved = new CfnOutputResolver(gen1ParametersResolvedTemplate, this.region, this.accountId).resolve(
       logicalResourceIds,
       Outputs,

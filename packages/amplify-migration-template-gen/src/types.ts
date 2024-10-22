@@ -94,3 +94,7 @@ export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE;
 export type AWS_RESOURCE_ATTRIBUTES = 'Arn';
 
 export type CFN_CATEGORY_TYPE = CFN_AUTH_TYPE | CFN_S3_TYPE;
+
+export enum CFN_PSEUDO_PARAMETERS_REF {
+  StackName = 'AWS::StackName',
+}
