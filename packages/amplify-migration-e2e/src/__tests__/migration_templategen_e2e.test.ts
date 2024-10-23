@@ -43,7 +43,7 @@ void describe('Templategen E2E tests', () => {
       const gen2StackName = await runGen2SandboxCommand(projRoot);
       assert(gen2StackName);
       await runTemplategenCommand(projRoot, gen1StackName, gen2StackName);
-      // await stackRefactor(projRoot, 'auth', bucketName);
+      await stackRefactor(projRoot, 'auth', bucketName);
       await stackRefactor(projRoot, 'storage', bucketName);
     });
   });
