@@ -2,7 +2,7 @@ import { readJsonFile } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import path from 'node:path';
 
-export function updatePackageDependency(cwd: string, dependencyName: string, version: string) {
+export function updatePackageDependency(cwd: string, dependencyName: string, version = '0.0.0-test-20241018150827') {
   const packageJsonPath = path.join(cwd, 'package.json');
   const packageJson = readJsonFile(packageJsonPath);
 

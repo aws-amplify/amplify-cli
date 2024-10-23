@@ -61,7 +61,7 @@ void describe('Codegen E2E tests', () => {
       await copyFunctionFile(projRoot, 'function', gen1FunctionName);
       await copyGen1Schema(projRoot, projName);
       // TODO: replace below line with correct package version
-      await updatePackageDependency(projRoot, '@aws-amplify/backend', '0.0.0-test-20241003180022');
+      await updatePackageDependency(projRoot, '@aws-amplify/backend');
       await npmInstall(projRoot);
       const gen2StackName = await runGen2SandboxCommand(projRoot);
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
@@ -79,7 +79,7 @@ void describe('Codegen E2E tests', () => {
       await copyFunctionFile(projRoot, 'auth', gen1FunctionName);
       await removeErrorThrowsFromAuthResourceFile(projRoot);
       // TODO: replace below line with correct package version
-      await updatePackageDependency(projRoot, '@aws-amplify/backend', '0.0.0-test-20241003180022');
+      await updatePackageDependency(projRoot, '@aws-amplify/backend');
       await npmInstall(projRoot);
       await toggleSandboxSecrets(projRoot, 'set');
       const gen2StackName = await runGen2SandboxCommand(projRoot);
@@ -95,7 +95,7 @@ void describe('Codegen E2E tests', () => {
       );
       await runCodegenCommand(projRoot);
       // TODO: replace below line with correct package version
-      await updatePackageDependency(projRoot, '@aws-amplify/backend', '0.0.0-test-20241003180022');
+      await updatePackageDependency(projRoot, '@aws-amplify/backend');
       await npmInstall(projRoot);
       await runGen2SandboxCommand(projRoot);
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
