@@ -73,7 +73,7 @@ aws cloudformation update-stack \\
  --stack-name amplify-testauth-dev-12345-auth-ABCDE \\
  --template-body file://test/step1-gen1PreProcessUpdateStackTemplate.json \\
  --parameters '[{"ParameterKey":"authSelections","ParameterValue":"identityPoolAndUserPool"}]' \\
- --capabilities CAPABILITY_NAMED_IAM
+ --capabilities CAPABILITY_NAMED_IAM \\
  --tags '[]'
  \`\`\`
  
