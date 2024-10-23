@@ -13,14 +13,14 @@ import { removeProperties } from '.';
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import assert from 'node:assert';
 
-async function assertUserPool(gen1Meta: $TSAny, gen1Region: string) {
+export async function assertUserPool(gen1Meta: $TSAny, gen1Region: string) {
   const { UserPoolId: gen1UserPoolId } = Object.keys(gen1Meta.auth).map((key) => gen1Meta.auth[key])[0].output;
   const cloudUserPool = await getUserPool(gen1UserPoolId, gen1Region);
   expect(cloudUserPool.UserPool).toBeDefined();
   return { gen1UserPoolId };
 }
 
-async function assertUserPoolClients(gen1Meta: $TSAny, gen1Region: string) {
+export async function assertUserPoolClients(gen1Meta: $TSAny, gen1Region: string) {
   const {
     UserPoolId: userPoolId,
     AppClientIDWeb: appClientIdWeb,
@@ -32,7 +32,7 @@ async function assertUserPoolClients(gen1Meta: $TSAny, gen1Region: string) {
   return { gen1ClientIds };
 }
 
-async function assertIdentityPool(gen1Meta: $TSAny, gen1Region: string) {
+export async function assertIdentityPool(gen1Meta: $TSAny, gen1Region: string) {
   const { IdentityPoolId: gen1IdentityPoolId } = Object.keys(gen1Meta.auth).map((key) => gen1Meta.auth[key])[0].output;
   const cloudIdentityPool = await getIdentityPool(gen1IdentityPoolId, gen1Region);
   expect(cloudIdentityPool).toBeDefined();
@@ -48,7 +48,7 @@ async function assertFunction(gen1Meta: $TSAny, gen1Region: string) {
   return { gen1FunctionName };
 }
 
-async function assertStorage(gen1Meta: $TSAny, gen1Region: string) {
+export async function assertStorage(gen1Meta: $TSAny, gen1Region: string) {
   const { BucketName: gen1BucketName } = Object.keys(gen1Meta.storage).map((key) => gen1Meta.storage[key])[0].output;
   expect(gen1BucketName).toBeDefined();
   const bucketExists = await checkIfBucketExists(gen1BucketName, gen1Region);
@@ -88,6 +88,7 @@ async function assertUserPoolGroups(gen1Meta: $TSAny) {
 
 export async function assertDefaultGen1Setup(projRoot: string) {
   const gen1Meta = getProjectMeta(projRoot);
+  const gen1StackName = gen1Meta.providers.awscloudformation.StackName;
   const gen1Region = gen1Meta.providers.awscloudformation.Region;
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
   const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
@@ -96,7 +97,16 @@ export async function assertDefaultGen1Setup(projRoot: string) {
   const { gen1GraphqlApiId } = await assertAPI(gen1Meta, gen1Region);
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
-  return { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region };
+  return {
+    gen1StackName,
+    gen1UserPoolId,
+    gen1ClientIds,
+    gen1IdentityPoolId,
+    gen1FunctionName,
+    gen1BucketName,
+    gen1GraphqlApiId,
+    gen1Region,
+  };
 }
 
 export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {
