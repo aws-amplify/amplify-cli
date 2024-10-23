@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.1-disable-modelgen.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.0...@aws-amplify/amplify-provider-awscloudformation@8.11.1-disable-modelgen.0) (2024-10-23)
+
+
+### Bug Fixes
+
+* **cli:** disable model codegen call if ds disabled ([32a6875](https://github.com/aws-amplify/amplify-cli/commit/32a68756a2a4736c05e2df13a17424a166079329))
+
+
+
+
+
 # [8.11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.13...@aws-amplify/amplify-provider-awscloudformation@8.11.0) (2024-10-05)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.8-disable-modelgen.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.7...@aws-amplify/amplify-util-mock@5.10.8-disable-modelgen.0) (2024-10-23)
+
+
+### Bug Fixes
+
+* bump versions ([#13985](https://github.com/aws-amplify/amplify-cli/issues/13985)) ([65c4d3a](https://github.com/aws-amplify/amplify-cli/commit/65c4d3af9ad17e48f99acf7ee904ee97d2dcfcb1))
+
+
+
+
+
 ## [5.10.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.6...@aws-amplify/amplify-util-mock@5.10.7) (2024-10-05)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

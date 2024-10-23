@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.16.6",
+  "version": "2.16.7-disable-modelgen.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
