@@ -22,6 +22,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     userPoolOverrides?: PolicyOverrides;
     guestLogin?: boolean;
+    identityPoolName?: string;
     oAuthFlows?: string[];
     readAttributes?: string[];
     writeAttributes?: string[];
@@ -83,7 +84,7 @@ export class BackendSynthesizer {
   private setPropertyValue(
     objectIdentifier: Identifier,
     propertyPath: string,
-    value: number | string | boolean | string[] | object,
+    value: number | string | boolean | string[] | object | undefined,
   ): ExpressionStatement {
     const propertyAccessExpression = this.createPropertyAccessExpression(objectIdentifier, propertyPath);
     const overrideValue = this.getOverrideValue(value);
@@ -91,7 +92,7 @@ export class BackendSynthesizer {
     return factory.createExpressionStatement(factory.createAssignment(propertyAccessExpression, overrideValue));
   }
 
-  private getOverrideValue(value: number | string | boolean | string[] | object): Expression {
+  private getOverrideValue(value: number | string | boolean | string[] | object | undefined): Expression {
     if (typeof value === 'number') {
       return factory.createNumericLiteral(value);
     } else if (typeof value === 'string') {
@@ -107,6 +108,8 @@ export class BackendSynthesizer {
         properties.push(property);
       }
       return factory.createObjectLiteralExpression(properties, true);
+    } else if (value === undefined) {
+      return factory.createIdentifier('undefined');
     }
     throw new TypeError(`Unrecognized type: ${typeof value}`);
   }
@@ -217,7 +220,7 @@ export class BackendSynthesizer {
           if (value !== undefined && policyKey in mappedPolicyType) {
             policies.passwordPolicy[mappedPolicyType[policyKey] as string] = value;
           }
-        } else if (value) {
+        } else {
           nodes.push(this.setPropertyValue(factory.createIdentifier('cfnUserPool'), overridePath, value));
         }
       }
@@ -230,12 +233,19 @@ export class BackendSynthesizer {
       );
     }
 
-    if (renderArgs.auth?.guestLogin === false) {
+    if (renderArgs.auth?.guestLogin === false || renderArgs.auth?.identityPoolName) {
       const cfnIdentityPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnIdentityPool', 'auth.resources.cfnResources.cfnIdentityPool'),
       );
       nodes.push(cfnIdentityPoolVariableStatement);
-      nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
+      if (renderArgs.auth?.identityPoolName) {
+        nodes.push(
+          this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'identityPoolName', renderArgs.auth.identityPoolName),
+        );
+      }
+      if (renderArgs.auth?.guestLogin === false) {
+        nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
+      }
     }
 
     if (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) {
