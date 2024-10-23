@@ -1,5 +1,6 @@
 import { $TSAny, $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
+import { isDataStoreEnabled } from 'graphql-transformer-core';
 import _ from 'lodash';
 import * as path from 'path';
 import { S3 } from './aws-utils/aws-s3';
@@ -25,6 +26,12 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
   const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
 
   if (!appId) {
+    return;
+  }
+
+  const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName));
+
+  if (!isDSEnabled) {
     return;
   }
 
