@@ -33,6 +33,8 @@ export interface AuthDefinition {
     // (undocumented)
     guestLogin?: boolean;
     // (undocumented)
+    identityPoolName?: string;
+    // (undocumented)
     lambdaTriggers?: Partial<AuthLambdaTriggers>;
     // (undocumented)
     loginOptions?: LoginOptions;
