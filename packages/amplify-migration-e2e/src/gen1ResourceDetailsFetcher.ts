@@ -11,6 +11,7 @@ async function getGen1AuthResourceDetails(projRoot: string) {
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [gen1ClientIdWeb, gen1ClientId] = gen1ClientIds;
   const gen1ResourceIds = [gen1UserPoolId, gen1IdentityPoolId, gen1ClientIdWeb];
 
