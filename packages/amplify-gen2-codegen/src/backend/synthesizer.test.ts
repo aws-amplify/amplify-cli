@@ -27,6 +27,7 @@ describe('BackendRenderer', () => {
         'Policies.PasswordPolicy.RequireUppercase': false,
         'Policies.PasswordPolicy.TemporaryPasswordValidityDays': 10,
         userPoolName: 'Test_Name',
+        userNameAttributes: undefined,
       };
       const mappedPolicyType: Record<string, string> = {
         MinimumLength: 'minimumLength',
@@ -58,7 +59,9 @@ describe('BackendRenderer', () => {
             } else if (typeof value === 'boolean') {
               assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:${value}}}`));
             }
-          } else if (value) {
+          } else if (value === undefined) {
+            assert(output.includes(`cfnUserPool.${key} = ${value}`));
+          } else {
             assert(output.includes(`cfnUserPool.${key} = "${value}"`));
           }
         });
@@ -102,6 +105,31 @@ describe('BackendRenderer', () => {
       assert(output.includes('cfnIdentityPool'));
     });
     it('Does not render cfnIdentityPool accessor if guestLogin is true', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: './auth/resource.ts',
+          guestLogin: true,
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(!output.includes('cfnIdentityPool'));
+    });
+  });
+  describe('Identity Pool Name', () => {
+    it('Renders cfnIdentityPool accessor if identityPoolName is defined', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: './auth/resource.ts',
+          identityPoolName: 'Test_Name',
+          guestLogin: true,
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(output.includes('cfnIdentityPool'));
+    });
+    it('Does not render cfnIdentityPool accessor if identityPoolName is undefined and guestLogin is true', () => {
       const renderer = new BackendSynthesizer();
       const rendered = renderer.render({
         auth: {

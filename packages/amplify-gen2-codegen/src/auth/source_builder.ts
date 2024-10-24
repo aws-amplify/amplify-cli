@@ -137,6 +137,7 @@ export interface AuthDefinition {
   userPoolOverrides?: PolicyOverrides;
   lambdaTriggers?: Partial<AuthLambdaTriggers>;
   guestLogin?: boolean;
+  identityPoolName?: string;
   oAuthFlows?: string[];
   readAttributes?: string[];
   writeAttributes?: string[];

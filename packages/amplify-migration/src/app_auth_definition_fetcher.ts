@@ -84,7 +84,7 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
-    const { AllowUnauthenticatedIdentities: guestLogin } = await this.cognitoIdentityPoolClient.send(
+    const { AllowUnauthenticatedIdentities: guestLogin, IdentityPoolName: identityPoolName } = await this.cognitoIdentityPoolClient.send(
       new DescribeIdentityPoolCommand({
         IdentityPoolId: resourcesByLogicalId['IdentityPool'].PhysicalResourceId,
       }),
@@ -95,6 +95,7 @@ export class AppAuthDefinitionFetcher {
     assert(userPool, 'User pool not found');
     return getAuthDefinition({
       userPool,
+      identityPoolName,
       identityProviders,
       identityProvidersDetails,
       identityGroups,

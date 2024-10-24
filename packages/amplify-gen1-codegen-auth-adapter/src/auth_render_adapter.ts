@@ -40,6 +40,7 @@ export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigTy
 
 export interface AuthSynthesizerOptions {
   userPool: UserPoolType;
+  identityPoolName?: string;
   identityProviders?: ProviderDescription[];
   identityProvidersDetails?: IdentityProviderType[];
   identityGroups?: GroupType[];
@@ -80,7 +81,7 @@ const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> 
     Object.assign(userPoolOverrides, userNamePolicy);
   }
   if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
-    userPoolOverrides.usernameAttributes = [];
+    userPoolOverrides.usernameAttributes = undefined;
   }
   return userPoolOverrides;
 };
@@ -118,7 +119,7 @@ const getStandardUserAttributes = (
         required: attribute.Required,
         mutable: attribute.Mutable,
       };
-      if (attribute.Name !== undefined && attribute.Name in mappedUserAttributeName) {
+      if (attribute.Name !== undefined && attribute.Name in mappedUserAttributeName && attribute.Required) {
         return {
           ...standardAttributes,
           [mappedUserAttributeName[attribute.Name as keyof typeof mappedUserAttributeName] as Attribute]: standardAttribute,
@@ -235,6 +236,7 @@ function filterAttributeMapping(
  */
 export const getAuthDefinition = ({
   userPool,
+  identityPoolName,
   identityProviders,
   identityProvidersDetails,
   identityGroups,
@@ -354,6 +356,7 @@ export const getAuthDefinition = ({
     userPoolOverrides,
     lambdaTriggers: getAuthTriggers(userPool.LambdaConfig ?? {}, authTriggerConnections ?? {}),
     guestLogin,
+    identityPoolName,
     oAuthFlows: webClient?.AllowedOAuthFlows,
     readAttributes: webClient?.ReadAttributes,
     writeAttributes: webClient?.WriteAttributes,

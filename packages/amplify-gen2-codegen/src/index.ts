@@ -144,6 +144,7 @@ export const createGen2Renderer = ({
       importFrom: './auth/resource',
       userPoolOverrides: auth?.userPoolOverrides,
       guestLogin: auth?.guestLogin,
+      identityPoolName: auth?.identityPoolName,
       oAuthFlows: auth?.oAuthFlows,
       readAttributes: auth?.readAttributes,
       writeAttributes: auth?.writeAttributes,
