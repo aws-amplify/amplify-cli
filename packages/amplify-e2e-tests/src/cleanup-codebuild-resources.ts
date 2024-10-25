@@ -264,7 +264,7 @@ const deleteOrphanedOidcProviders = async (account: AWSAccountInfo): Promise<voi
       // these seem to be the only offending resources at this time, but we can add more later
       if (provider.Arn.endsWith('oidc-provider/accounts.google.com')) {
         console.log('OIDC PROVIDER:', provider.Arn);
-        await iamClient.deleteOpenIDConnectProvider({ OpenIDConnectProviderArn: provider.Arn });
+        await iamClient.deleteOpenIDConnectProvider({ OpenIDConnectProviderArn: provider.Arn }).promise();
       }
     }
   }
