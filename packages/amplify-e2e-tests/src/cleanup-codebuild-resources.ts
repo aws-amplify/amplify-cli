@@ -254,6 +254,23 @@ const getOrphanAppSyncApis = async (account: AWSAccountInfo, region: string): Pr
 };
 
 /**
+ * Get all OIDC providers in the account that match
+ */
+const deleteOrphanedOidcProviders = async (account: AWSAccountInfo): Promise<void> => {
+  const iamClient = new IAM(getAWSConfig(account));
+  const response = await iamClient.listOpenIDConnectProviders().promise();
+  if (response.OpenIDConnectProviderList) {
+    for (const provider of response.OpenIDConnectProviderList) {
+      // these seem to be the only offending resources at this time, but we can add more later
+      if (provider.Arn.endsWith('oidc-provider/accounts.google.com')) {
+        console.log('OIDC PROVIDER:', provider.Arn);
+        await iamClient.deleteOpenIDConnectProvider({ OpenIDConnectProviderArn: provider.Arn });
+      }
+    }
+  }
+};
+
+/**
  * Get the relevant AWS config object for a given account and region.
  */
 const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string) => ({
@@ -1041,6 +1058,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
 
   generateReport(staleResources);
   await deleteResources(account, accountIndex, staleResources);
+  await deleteOrphanedOidcProviders(account);
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
 };
 
