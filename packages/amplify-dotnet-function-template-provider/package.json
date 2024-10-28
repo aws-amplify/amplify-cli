@@ -27,7 +27,7 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.3.10",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
-    "graphql-transformer-core": "^8.2.13"
+    "graphql-transformer-core": "^9.0.1"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
