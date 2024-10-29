@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import { getNpxPath, retry, RetrySettings } from '@aws-amplify/amplify-e2e-core';
 import { runGen2SandboxCommand } from './sandbox';
 import { getCommandsFromReadme } from './migrationReadmeParser';
-import { toggleEnvVariable } from './envVariables';
+import { envVariable } from './envVariables';
 import { getGen1ResourceDetails } from './gen1ResourceDetailsFetcher';
 import { getGen2ResourceDetails } from './gen2ResourceDetailsFetcher';
 
@@ -89,11 +89,11 @@ async function executeStep2(cwd: string, commands: string[]) {
 }
 
 async function executeStep3(cwd: string, commands: string[], bucketName: string) {
-  toggleEnvVariable('BUCKET_NAME', 'SET', bucketName);
+  envVariable.set('BUCKET_NAME', bucketName);
   await executeCommand(commands[1], cwd);
   await executeCommand(commands[2], cwd);
   const stackRefactorId = await executeCreateStackRefactorCallCommand(commands[3], cwd);
-  toggleEnvVariable('STACK_REFACTOR_ID', 'SET', stackRefactorId);
+  envVariable.set('STACK_REFACTOR_ID', stackRefactorId);
   await retry(
     () => assertRefactorStepCompletion(commands[5]),
     (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
@@ -107,6 +107,8 @@ async function executeStep3(cwd: string, commands: string[], bucketName: string)
     RETRY_CONFIG,
     (status) => status.includes(STATUS_FAILED),
   );
+  envVariable.delete('BUCKET_NAME');
+  envVariable.delete('STACK_REFACTOR_ID');
 }
 
 async function assertStepCompletion(command: string) {
@@ -133,9 +135,6 @@ export async function stackRefactor(projRoot: string, category: RefactorCategory
   if (category === 'storage') await uncommentS3BucketLineFromBackendFile(projRoot);
 
   await runGen2SandboxCommand(projRoot);
-
-  toggleEnvVariable('BUCKET_NAME', 'DELETE');
-  toggleEnvVariable('STACK_REFACTOR_ID', 'DELETE');
 
   const { gen2ResourceIds, gen2ResourceDetails } = await getGen2ResourceDetails(projRoot, category);
   assert.deepEqual(gen1ResourceIds, gen2ResourceIds);

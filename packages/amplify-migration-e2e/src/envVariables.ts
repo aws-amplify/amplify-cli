@@ -1,9 +1,8 @@
-type EnvVariableAction = 'SET' | 'DELETE';
-
-export function toggleEnvVariable(name: string, option: EnvVariableAction, value?: string) {
-  if (option === 'SET') {
+export const envVariable = {
+  set: (name: string, value: string): void => {
     process.env[name] = value;
-  } else if (option === 'DELETE') {
+  },
+  delete: (name: string): void => {
     delete process.env[name];
-  }
-}
+  },
+};

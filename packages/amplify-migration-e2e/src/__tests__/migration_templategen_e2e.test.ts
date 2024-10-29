@@ -1,6 +1,6 @@
 import path from 'node:path';
 import assert from 'node:assert';
-import { createNewProjectDir, npmInstall, deleteS3Bucket } from '@aws-amplify/amplify-e2e-core';
+import { createNewProjectDir, npmInstall, deleteS3Bucket, generateRandomShortId } from '@aws-amplify/amplify-e2e-core';
 import { assertDefaultGen1Setup } from '../assertions';
 import { setupAndPushDefaultGen1Project, runCodegenCommand, runGen2SandboxCommand, cleanupProjects } from '..';
 import { copyFunctionFile } from '../function_utils';
@@ -18,8 +18,8 @@ void describe('Templategen E2E tests', () => {
     beforeEach(async () => {
       const baseDir = process.env.INIT_CWD ?? process.cwd();
       projRoot = await createNewProjectDir('templategen_e2e_flow_test', path.join(baseDir, '..', '..'));
-      projName = `test${Math.floor(Math.random() * 1000000)}`;
-      bucketName = `testbucket${Math.floor(Math.random() * 1000000)}`;
+      projName = `test${generateRandomShortId()}`;
+      bucketName = `testbucket${generateRandomShortId()}`;
     });
 
     afterEach(async () => {
@@ -35,10 +35,7 @@ void describe('Templategen E2E tests', () => {
       await runCodegenCommand(projRoot);
       await copyFunctionFile(projRoot, 'function', gen1FunctionName);
       await copyGen1Schema(projRoot, projName);
-
-      // TODO: replace below line with correct package version
       await updatePackageDependency(projRoot, '@aws-amplify/backend');
-
       await npmInstall(projRoot);
       const gen2StackName = await runGen2SandboxCommand(projRoot);
       assert(gen2StackName);

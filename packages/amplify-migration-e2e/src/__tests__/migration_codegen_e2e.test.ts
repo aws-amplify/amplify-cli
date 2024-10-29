@@ -1,6 +1,6 @@
 import path from 'node:path';
 import assert from 'node:assert';
-import { createNewProjectDir, npmInstall } from '@aws-amplify/amplify-e2e-core';
+import { createNewProjectDir, generateRandomShortId, npmInstall } from '@aws-amplify/amplify-e2e-core';
 import { createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 import { copyFunctionFile } from '../function_utils';
 import { copyGen1Schema } from '../api_utils';
@@ -46,7 +46,7 @@ void describe('Codegen E2E tests', () => {
     beforeEach(async () => {
       const baseDir = process.env.INIT_CWD ?? process.cwd();
       projRoot = await createNewProjectDir('codegen_e2e_flow_test', path.join(baseDir, '..', '..'));
-      projName = `test${Math.floor(Math.random() * 1000000)}`;
+      projName = `test${generateRandomShortId()}`;
     });
 
     afterEach(async () => {
@@ -60,10 +60,7 @@ void describe('Codegen E2E tests', () => {
       await runCodegenCommand(projRoot);
       await copyFunctionFile(projRoot, 'function', gen1FunctionName);
       await copyGen1Schema(projRoot, projName);
-
-      // TODO: replace below line with correct package version
       await updatePackageDependency(projRoot, '@aws-amplify/backend');
-
       await npmInstall(projRoot);
       const gen2StackName = await runGen2SandboxCommand(projRoot);
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
@@ -80,10 +77,7 @@ void describe('Codegen E2E tests', () => {
       await runCodegenCommand(projRoot);
       await copyFunctionFile(projRoot, 'auth', gen1FunctionName);
       await removeErrorThrowsFromAuthResourceFile(projRoot);
-
-      // TODO: replace below line with correct package version
       await updatePackageDependency(projRoot, '@aws-amplify/backend');
-
       await npmInstall(projRoot);
       await toggleSandboxSecrets(projRoot, 'set');
       const gen2StackName = await runGen2SandboxCommand(projRoot);
@@ -98,10 +92,7 @@ void describe('Codegen E2E tests', () => {
         projRoot,
       );
       await runCodegenCommand(projRoot);
-
-      // TODO: replace below line with correct package version
       await updatePackageDependency(projRoot, '@aws-amplify/backend');
-
       await npmInstall(projRoot);
       await runGen2SandboxCommand(projRoot);
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
