@@ -87,7 +87,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
     "graphql": "^15.5.0",
-    "graphql-transformer-core": "^9.0.1",
+    "graphql-transformer-core": "^9.0.2",
     "gunzip-maybe": "^1.4.2",
     "hidefile": "^3.0.0",
     "ini": "^1.3.5",
