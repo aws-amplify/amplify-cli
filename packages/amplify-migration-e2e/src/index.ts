@@ -5,7 +5,6 @@ import {
   addAuthWithDefault,
   amplifyPush,
   getNpxPath,
-  nspawn as spawn,
   addS3WithGuestAccess,
   addFunction,
   functionBuild,
@@ -22,13 +21,15 @@ import {
 import path from 'node:path';
 import { unset } from 'lodash';
 import execa from 'execa';
+import { deleteGen2Sandbox } from './sandbox';
 
 export * from './sdk_calls';
 export * from './assertions';
 export * from './projectOutputs';
 export * from './updatePackageJson';
+export * from './sandbox';
 
-const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
+export const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
 export async function setupAndPushDefaultGen1Project(projRoot: string, projName: string) {
   await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
@@ -73,37 +74,6 @@ export function runCodegenCommand(cwd: string) {
   if (processResult.exitCode !== 0) {
     throw new Error(`Codegen command exit code: ${processResult.exitCode}, message: ${processResult.stderr}`);
   }
-}
-
-export async function runGen2SandboxCommand(cwd: string) {
-  const processResult = execa.sync(getNpxPath(), ['ampx', 'sandbox', '--once'], {
-    cwd,
-    env: { ...process.env, npm_config_user_agent: 'npm' },
-    encoding: 'utf-8',
-  });
-  if (processResult.exitCode === 0) {
-    const match = processResult.stdout.match(/arn:aws:cloudformation:.*:stack\/([^/]+)\//);
-    if (match) {
-      return match[1];
-    } else {
-      throw new Error('Stack name not found in the command output');
-    }
-  } else {
-    throw new Error(`Sandbox command exit code: ${processResult.exitCode}, message: ${processResult.stderr}`);
-  }
-}
-
-function deleteGen2Sandbox(cwd: string) {
-  return spawn(getNpxPath(), ['ampx', 'sandbox', 'delete'], {
-    cwd,
-    stripColors: true,
-    noOutputTimeout: pushTimeoutMS,
-    env: { ...process.env, npm_config_user_agent: 'npm' },
-  })
-    .wait("Are you sure you want to delete all the resources in your sandbox environment (This can't be undone)?")
-    .sendConfirmYes()
-    .wait('Finished deleting.')
-    .runAsync();
 }
 
 export async function cleanupProjects(cwd: string) {
