@@ -61,7 +61,7 @@ export function getStackRefactorCommandsFromReadme(readmeContent: string) {
   const step1Commands = extractCommands(step1Content);
   const step2commands = extractCommands(step2Content);
   const step3Commands = extractCommands(step3Content);
-  // Pop first command from step3Commands
+  // Pop first command from step3Commands to keep it consistent with step3RollbackCommands
   step3Commands.shift();
   return { step1Commands, step2commands, step3Commands };
 }
