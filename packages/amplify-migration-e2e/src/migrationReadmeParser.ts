@@ -1,3 +1,7 @@
+import path from 'node:path';
+import * as fs from 'fs-extra';
+import { RefactorCategory } from './templategen';
+
 function extractContent(readmeContent: string, startRegex: string, endRegex: string) {
   const pattern = new RegExp(`${startRegex}([\\s\\S]*?)${endRegex}`, 'i');
   const match = readmeContent.match(pattern);
@@ -24,6 +28,12 @@ function extractCommands(readmeContent: string) {
   return commands;
 }
 
+export function readMigrationReadmeFile(projRoot: string, category: RefactorCategory, encoding: BufferEncoding = 'utf8') {
+  const readmeFilePath = path.join(projRoot, '.amplify', 'migration', 'templates', category, 'MIGRATION_README.md');
+  const readmeContent = fs.readFileSync(readmeFilePath, encoding);
+  return readmeContent;
+}
+
 /**
  * Sample from the README file for STEP 1:
  *
@@ -44,12 +54,24 @@ function extractCommands(readmeContent: string) {
  *  --stack-name my-auth-stack-name
  * ```
  */
-export function getCommandsFromReadme(readmeContent: string) {
+export function getStackRefactorCommandsFromReadme(readmeContent: string) {
   const step1Content = extractContent(readmeContent, '### STEP 1', '#### Rollback step');
   const step2Content = extractContent(readmeContent, '### STEP 2', '#### Rollback step');
   const step3Content = extractContent(readmeContent, '### STEP 3', '#### Rollback step');
   const step1Commands = extractCommands(step1Content);
   const step2commands = extractCommands(step2Content);
   const step3Commands = extractCommands(step3Content);
+  // Pop first command from step3Commands to keep it consistent with step3RollbackCommands
+  step3Commands.shift();
   return { step1Commands, step2commands, step3Commands };
+}
+
+export function getRollbackCommandsFromReadme(readmeContent: string) {
+  const step1Content = extractContent(readmeContent, '#### Rollback step', '### STEP 2');
+  const step2Content = extractContent(readmeContent, '### STEP 2[\\s\\S]*?#### Rollback step', '### STEP 3');
+  const step3Content = extractContent(readmeContent, '#### Rollback step for refactor:', '### STEP 4');
+  const step1RollbackCommands = extractCommands(step1Content);
+  const step2RollbackCommands = extractCommands(step2Content);
+  const step3RollbackCommands = extractCommands(step3Content);
+  return { step1RollbackCommands, step2RollbackCommands, step3RollbackCommands };
 }

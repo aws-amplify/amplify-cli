@@ -76,9 +76,9 @@ export function runCodegenCommand(cwd: string) {
   }
 }
 
-export async function cleanupProjects(cwd: string) {
+export async function cleanupProjects(cwd: string, projName: string) {
   await deleteGen1Project(path.join(cwd, '.amplify', 'migration'));
-  await deleteGen2Sandbox(cwd);
+  await deleteGen2Sandbox(cwd, projName);
   deleteProjectDir(cwd);
 }
 

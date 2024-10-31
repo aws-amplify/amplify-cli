@@ -2,12 +2,13 @@ import assert from 'node:assert';
 import execa from 'execa';
 import path from 'node:path';
 import * as fs from 'fs-extra';
-import { getNpxPath, retry, RetrySettings } from '@aws-amplify/amplify-e2e-core';
+import { getNpxPath, readJsonFile, retry, RetrySettings } from '@aws-amplify/amplify-e2e-core';
 import { runGen2SandboxCommand } from './sandbox';
-import { getCommandsFromReadme } from './migrationReadmeParser';
+import { getRollbackCommandsFromReadme, getStackRefactorCommandsFromReadme, readMigrationReadmeFile } from './migrationReadmeParser';
 import { envVariable } from './envVariables';
 import { getGen1ResourceDetails } from './gen1ResourceDetailsFetcher';
 import { getGen2ResourceDetails } from './gen2ResourceDetailsFetcher';
+import { removeProperties } from '.';
 
 export type RefactorCategory = 'auth' | 'storage';
 
@@ -18,8 +19,9 @@ const RETRY_CONFIG: RetrySettings = {
   stopOnError: true,
 };
 
-const STATUS_COMPLETE = 'COMPLETE';
-const STATUS_IN_PROGRESS = 'IN_PROGRESS';
+const STATUS_AVAILABLE = 'AVAILABLE';
+const STATUS_EXECUTE_COMPLETE = 'EXECUTE_COMPLETE';
+const STATUS_UPDATE_COMPLETE = 'UPDATE_COMPLETE';
 const STATUS_FAILED = 'FAILED';
 
 export function runTemplategenCommand(cwd: string, gen1StackName: string, gen2StackName: string) {
@@ -72,7 +74,7 @@ async function executeStep1(cwd: string, commands: string[]) {
   await executeCommand(commands[0], cwd);
   await retry(
     () => assertStepCompletion(commands[1]),
-    (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
+    (status) => status === STATUS_UPDATE_COMPLETE,
     RETRY_CONFIG,
     (status) => status.includes(STATUS_FAILED),
   );
@@ -82,7 +84,7 @@ async function executeStep2(cwd: string, commands: string[]) {
   await executeCommand(commands[0], cwd);
   await retry(
     () => assertStepCompletion(commands[1]),
-    (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
+    (status) => status === STATUS_UPDATE_COMPLETE,
     RETRY_CONFIG,
     (status) => status.includes(STATUS_FAILED),
   );
@@ -90,22 +92,22 @@ async function executeStep2(cwd: string, commands: string[]) {
 
 async function executeStep3(cwd: string, commands: string[], bucketName: string) {
   envVariable.set('BUCKET_NAME', bucketName);
+  await executeCommand(commands[0], cwd);
   await executeCommand(commands[1], cwd);
-  await executeCommand(commands[2], cwd);
-  const stackRefactorId = await executeCreateStackRefactorCallCommand(commands[3], cwd);
+  const stackRefactorId = await executeCreateStackRefactorCallCommand(commands[2], cwd);
   envVariable.set('STACK_REFACTOR_ID', stackRefactorId);
   await retry(
-    () => assertRefactorStepCompletion(commands[5]),
-    (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
+    () => assertRefactorStepCompletion(commands[4]),
+    (processResult) => processResult.ExecutionStatus === STATUS_AVAILABLE || processResult.ExecutionStatus === STATUS_EXECUTE_COMPLETE,
     RETRY_CONFIG,
-    (status) => status.includes(STATUS_FAILED),
+    (processResult) => processResult.Status.includes(STATUS_FAILED),
   );
-  await executeCommand(commands[6], cwd);
+  await executeCommand(commands[5], cwd);
   await retry(
-    () => assertRefactorStepCompletion(commands[7]),
-    (status) => status.includes(STATUS_COMPLETE) && !status.includes(STATUS_IN_PROGRESS),
+    () => assertRefactorStepCompletion(commands[6]),
+    (processResult) => processResult.ExecutionStatus === STATUS_AVAILABLE || processResult.ExecutionStatus === STATUS_EXECUTE_COMPLETE,
     RETRY_CONFIG,
-    (status) => status.includes(STATUS_FAILED),
+    (processResult) => processResult.Status.includes(STATUS_FAILED),
   );
   envVariable.delete('BUCKET_NAME');
   envVariable.delete('STACK_REFACTOR_ID');
@@ -118,25 +120,60 @@ async function assertStepCompletion(command: string) {
 
 async function assertRefactorStepCompletion(command: string) {
   const processResult = JSON.parse(await executeCommand(command));
-  return processResult.Status;
+  return processResult;
 }
 
-export async function stackRefactor(projRoot: string, category: RefactorCategory, bucketName: string) {
-  const { gen1ResourceIds, gen1ResourceDetails } = await getGen1ResourceDetails(projRoot, category);
+async function takeTemplateSnapshot(projectRoot: string, category: RefactorCategory, templateName: string) {
+  const templateFilePath = path.join(projectRoot, '.amplify', 'migration', 'templates', category, templateName);
+  const templateFileContent = readJsonFile(templateFilePath);
+  return templateFileContent;
+}
 
-  const readmeFilePath = path.join(projRoot, '.amplify', 'migration', 'templates', category, 'MIGRATION_README.md');
-  const readmeContent = fs.readFileSync(readmeFilePath, 'utf-8');
-  const { step1Commands, step2commands, step3Commands } = getCommandsFromReadme(readmeContent);
-
+export async function executeStackRefactorSteps(projRoot: string, category: RefactorCategory, bucketName: string) {
+  const readmeContent = readMigrationReadmeFile(projRoot, category);
+  const { step1Commands, step2commands, step3Commands } = getStackRefactorCommandsFromReadme(readmeContent);
   await executeStep1(projRoot, step1Commands);
   await executeStep2(projRoot, step2commands);
   await executeStep3(projRoot, step3Commands, bucketName);
+}
+
+export async function stackRefactor(projRoot: string, projName: string, category: RefactorCategory, bucketName: string) {
+  const { gen1ResourceIds, gen1ResourceDetails } = await getGen1ResourceDetails(projRoot, category);
+
+  // Remove properties that can safely differ between Gen1 and Gen2
+  // This ensures accurate comparison of resources
+  removeProperties(gen1ResourceDetails, ['CorsConfiguration.CorsRules[0].Id', 'Tags']);
+
+  await executeStackRefactorSteps(projRoot, category, bucketName);
 
   if (category === 'storage') await uncommentS3BucketLineFromBackendFile(projRoot);
 
-  await runGen2SandboxCommand(projRoot);
+  await runGen2SandboxCommand(projRoot, projName);
 
   const { gen2ResourceIds, gen2ResourceDetails } = await getGen2ResourceDetails(projRoot, category);
+
+  // Remove tags from Gen2 resources to ensure accurate comparison
+  // Tags can differ due to sandbox environment but don't affect functionality
+  removeProperties(gen2ResourceDetails, ['Tags']);
+
   assert.deepEqual(gen1ResourceIds, gen2ResourceIds);
   assert.deepEqual(gen1ResourceDetails, gen2ResourceDetails);
+}
+
+export async function rollbackStackRefactor(projRoot: string, category: RefactorCategory, bucketName: string) {
+  const sourceTemplateBeforeStackRefactor = await takeTemplateSnapshot(projRoot, category, 'step3-sourceTemplate.json');
+  const destinationTemplateBeforeStackRefactor = await takeTemplateSnapshot(projRoot, category, 'step3-destinationTemplate.json');
+
+  const readmeContent = readMigrationReadmeFile(projRoot, category);
+  const { step1RollbackCommands, step2RollbackCommands, step3RollbackCommands } = getRollbackCommandsFromReadme(readmeContent);
+
+  await executeStep3(projRoot, step3RollbackCommands, bucketName);
+  await executeStep2(projRoot, step2RollbackCommands);
+  await executeStep1(projRoot, step1RollbackCommands);
+
+  const sourceTemplateAfterStackRefactor = await takeTemplateSnapshot(projRoot, 'storage', 'step3-sourceTemplate.json');
+  const destinationTemplateAfterStackRefactor = await takeTemplateSnapshot(projRoot, 'storage', 'step3-destinationTemplate.json');
+
+  assert.deepStrictEqual(sourceTemplateBeforeStackRefactor, sourceTemplateAfterStackRefactor);
+  assert.deepStrictEqual(destinationTemplateBeforeStackRefactor, destinationTemplateAfterStackRefactor);
 }

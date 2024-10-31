@@ -50,7 +50,7 @@ void describe('Codegen E2E tests', () => {
     });
 
     afterEach(async () => {
-      await cleanupProjects(projRoot);
+      await cleanupProjects(projRoot, projName);
     });
 
     void it('should init a project & add auth, function, storage, api with defaults & perform full migration codegen flow', async () => {
@@ -62,7 +62,7 @@ void describe('Codegen E2E tests', () => {
       await copyGen1Schema(projRoot, projName);
       await updatePackageDependency(projRoot, '@aws-amplify/backend');
       await npmInstall(projRoot);
-      const gen2StackName = await runGen2SandboxCommand(projRoot);
+      const gen2StackName = await runGen2SandboxCommand(projRoot, projName);
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
       await assertStorageResource(projRoot, gen1BucketName, gen1Region);
       await assertFunctionResource(projRoot, gen2StackName, gen1FunctionName, gen1Region);
@@ -79,9 +79,9 @@ void describe('Codegen E2E tests', () => {
       await removeErrorThrowsFromAuthResourceFile(projRoot);
       await updatePackageDependency(projRoot, '@aws-amplify/backend');
       await npmInstall(projRoot);
-      await toggleSandboxSecrets(projRoot, 'set');
-      const gen2StackName = await runGen2SandboxCommand(projRoot);
-      await toggleSandboxSecrets(projRoot, 'remove');
+      await toggleSandboxSecrets(projRoot, projName, 'set');
+      const gen2StackName = await runGen2SandboxCommand(projRoot, projName);
+      await toggleSandboxSecrets(projRoot, projName, 'remove');
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
       await assertFunctionResource(projRoot, gen2StackName, gen1FunctionName, gen1Region);
     });
@@ -94,7 +94,7 @@ void describe('Codegen E2E tests', () => {
       await runCodegenCommand(projRoot);
       await updatePackageDependency(projRoot, '@aws-amplify/backend');
       await npmInstall(projRoot);
-      await runGen2SandboxCommand(projRoot);
+      await runGen2SandboxCommand(projRoot, projName);
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
       await assertStorageResource(projRoot, gen1BucketName, gen1Region);
     });

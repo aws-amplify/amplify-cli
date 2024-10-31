@@ -2,8 +2,8 @@ import { getNpxPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
 import { pushTimeoutMS } from '.';
 import execa from 'execa';
 
-export async function runGen2SandboxCommand(cwd: string) {
-  const processResult = execa.sync(getNpxPath(), ['ampx', 'sandbox', '--once'], {
+export async function runGen2SandboxCommand(cwd: string, identifier: string) {
+  const processResult = execa.sync(getNpxPath(), ['ampx', 'sandbox', '--identifier', identifier, '--once'], {
     cwd,
     env: { ...process.env, npm_config_user_agent: 'npm' },
     encoding: 'utf-8',
@@ -20,8 +20,8 @@ export async function runGen2SandboxCommand(cwd: string) {
   }
 }
 
-export function deleteGen2Sandbox(cwd: string) {
-  return spawn(getNpxPath(), ['ampx', 'sandbox', 'delete'], {
+export function deleteGen2Sandbox(cwd: string, identifier: string) {
+  return spawn(getNpxPath(), ['ampx', 'sandbox', 'delete', '--identifier', identifier], {
     cwd,
     stripColors: true,
     noOutputTimeout: pushTimeoutMS,
