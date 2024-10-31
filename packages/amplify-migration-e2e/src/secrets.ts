@@ -1,6 +1,6 @@
 import { getNpxPath, nspawn as spawn, getSocialProviders } from '@aws-amplify/amplify-e2e-core';
 
-export async function toggleSandboxSecrets(cwd: string, option: string) {
+export async function toggleSandboxSecrets(cwd: string, identifier: string, option: string) {
   const socialProviders = getSocialProviders(true);
   const secretsToSet = {
     FACEBOOK_CLIENT_ID: socialProviders.FACEBOOK_APP_ID,
@@ -17,7 +17,7 @@ export async function toggleSandboxSecrets(cwd: string, option: string) {
 
   for (const [secretName, secretValue] of Object.entries(secretsToSet)) {
     if (secretValue) {
-      const spawnProcess = await spawn(getNpxPath(), ['ampx', 'sandbox', 'secret', option, secretName], {
+      const spawnProcess = await spawn(getNpxPath(), ['ampx', 'sandbox', 'secret', option, secretName, '--identifier', identifier], {
         cwd,
         stripColors: true,
         env: { ...process.env, npm_config_user_agent: 'npm' },

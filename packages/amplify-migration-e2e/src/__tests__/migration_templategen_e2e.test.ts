@@ -7,7 +7,7 @@ import { copyFunctionFile } from '../function_utils';
 import { copyGen1Schema } from '../api_utils';
 import { updatePackageDependency } from '../updatePackageJson';
 import { createS3Bucket } from '../sdk_calls';
-import { runTemplategenCommand, stackRefactor } from '../templategen';
+import { executeStackRefactorSteps, rollbackStackRefactor, runTemplategenCommand, stackRefactor } from '../templategen';
 
 void describe('Templategen E2E tests', () => {
   void describe('Full Migration Templategen Flow', () => {
@@ -23,7 +23,7 @@ void describe('Templategen E2E tests', () => {
     });
 
     afterEach(async () => {
-      await cleanupProjects(projRoot);
+      await cleanupProjects(projRoot, projName);
       await deleteS3Bucket(bucketName);
     });
 
@@ -37,11 +37,32 @@ void describe('Templategen E2E tests', () => {
       await copyGen1Schema(projRoot, projName);
       await updatePackageDependency(projRoot, '@aws-amplify/backend');
       await npmInstall(projRoot);
-      const gen2StackName = await runGen2SandboxCommand(projRoot);
+      const gen2StackName = await runGen2SandboxCommand(projRoot, projName);
       assert(gen2StackName);
       await runTemplategenCommand(projRoot, gen1StackName, gen2StackName);
-      await stackRefactor(projRoot, 'auth', bucketName);
-      await stackRefactor(projRoot, 'storage', bucketName);
+      await stackRefactor(projRoot, projName, 'auth', bucketName);
+      await stackRefactor(projRoot, projName, 'storage', bucketName);
+    });
+
+    void it('should init a project & add auth, function, storage, api with defaults & perform migration templategen flow and rollback to the original state', async () => {
+      await setupAndPushDefaultGen1Project(projRoot, projName);
+      const { gen1StackName, gen1FunctionName, gen1Region } = await assertDefaultGen1Setup(projRoot);
+      await createS3Bucket(bucketName, gen1Region);
+      assert(gen1StackName);
+      await runCodegenCommand(projRoot);
+      await copyFunctionFile(projRoot, 'function', gen1FunctionName);
+      await copyGen1Schema(projRoot, projName);
+      await updatePackageDependency(projRoot, '@aws-amplify/backend');
+      await npmInstall(projRoot);
+      const gen2StackName = await runGen2SandboxCommand(projRoot, projName);
+      assert(gen2StackName);
+      await runTemplategenCommand(projRoot, gen1StackName, gen2StackName);
+
+      await executeStackRefactorSteps(projRoot, 'auth', bucketName);
+      await executeStackRefactorSteps(projRoot, 'storage', bucketName);
+
+      await rollbackStackRefactor(projRoot, 'auth', bucketName);
+      await rollbackStackRefactor(projRoot, 'storage', bucketName);
     });
   });
 });
