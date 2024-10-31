@@ -139,6 +139,9 @@ export async function executeStackRefactorSteps(projRoot: string, category: Refa
 
 export async function stackRefactor(projRoot: string, projName: string, category: RefactorCategory, bucketName: string) {
   const { gen1ResourceIds, gen1ResourceDetails } = await getGen1ResourceDetails(projRoot, category);
+
+  // Remove properties that can safely differ between Gen1 and Gen2
+  // This ensures accurate comparison of resources
   removeProperties(gen1ResourceDetails, ['CorsConfiguration.CorsRules[0].Id', 'Tags']);
 
   await executeStackRefactorSteps(projRoot, category, bucketName);
@@ -148,7 +151,11 @@ export async function stackRefactor(projRoot: string, projName: string, category
   await runGen2SandboxCommand(projRoot, projName);
 
   const { gen2ResourceIds, gen2ResourceDetails } = await getGen2ResourceDetails(projRoot, category);
+
+  // Remove tags from Gen2 resources to ensure accurate comparison
+  // Tags can differ due to sandbox environment but don't affect functionality
   removeProperties(gen2ResourceDetails, ['Tags']);
+
   assert.deepEqual(gen1ResourceIds, gen2ResourceIds);
   assert.deepEqual(gen1ResourceDetails, gen2ResourceDetails);
 }
