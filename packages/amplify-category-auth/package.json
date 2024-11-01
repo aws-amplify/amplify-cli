@@ -52,7 +52,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "3.624.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.303.0",
     "@aws-sdk/client-iam": "3.624.0",
     "@types/mime-types": "^2.1.1",
     "cloudform-types": "^4.2.0",

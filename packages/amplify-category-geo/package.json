@@ -39,7 +39,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@aws-sdk/client-location": "3.624.0"
+    "@aws-sdk/client-location": "^3.303.0"
   },
   "jest": {
     "collectCoverage": true,
