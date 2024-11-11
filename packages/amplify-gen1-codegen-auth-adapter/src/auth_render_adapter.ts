@@ -16,7 +16,7 @@ import {
   LoginOptions,
   Scope,
 } from '@aws-amplify/amplify-gen2-codegen';
-import { AttributeMappingRule } from '@aws-amplify/amplify-gen2-codegen/src/auth/source_builder';
+import { AttributeMappingRule, ReferenceAuth } from '@aws-amplify/amplify-gen2-codegen/src/auth/source_builder';
 import {
   LambdaConfigType,
   IdentityProviderTypeType,
@@ -46,6 +46,7 @@ export interface AuthSynthesizerOptions {
   identityGroups?: GroupType[];
   webClient?: UserPoolClientType;
   authTriggerConnections?: AuthTriggerConnectionSourceMap;
+  referenceAuth?: ReferenceAuth;
   guestLogin?: boolean;
   mfaConfig?: UserPoolMfaType;
   totpConfig?: SoftwareTokenMfaConfigType;
@@ -243,6 +244,7 @@ export const getAuthDefinition = ({
   webClient,
   authTriggerConnections,
   guestLogin,
+  referenceAuth,
   mfaConfig,
   totpConfig,
 }: AuthSynthesizerOptions): AuthDefinition => {
@@ -360,5 +362,6 @@ export const getAuthDefinition = ({
     oAuthFlows: webClient?.AllowedOAuthFlows,
     readAttributes: webClient?.ReadAttributes,
     writeAttributes: webClient?.WriteAttributes,
+    referenceAuth,
   };
 };

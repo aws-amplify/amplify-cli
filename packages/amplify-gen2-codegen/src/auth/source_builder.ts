@@ -128,6 +128,15 @@ export type AuthTriggerEvents =
   | 'userMigration'
   | 'verifyAuthChallengeResponse';
 
+export type ReferenceAuth = {
+  userPoolId?: string;
+  identityPoolId?: string;
+  authRoleArn?: string;
+  unauthRoleArn?: string;
+  userPoolClientId?: string;
+  groups?: Record<string, string>;
+};
+
 export interface AuthDefinition {
   loginOptions?: LoginOptions;
   groups?: Group[];
@@ -141,6 +150,7 @@ export interface AuthDefinition {
   oAuthFlows?: string[];
   readAttributes?: string[];
   writeAttributes?: string[];
+  referenceAuth?: ReferenceAuth;
 }
 
 const factory = ts.factory;
@@ -462,85 +472,114 @@ const createUserAttributeAssignments = (
 
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
   const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
-  namedImports['@aws-amplify/backend'].add('defineAuth');
-  const defineAuthProperties: Array<PropertyAssignment> = [];
   const secretErrors: ts.Node[] = [];
-
-  const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions, secretErrors);
-  defineAuthProperties.push(logInWithPropertyAssignment);
-
-  if (definition.customUserAttributes || definition.standardUserAttributes) {
-    defineAuthProperties.push(createUserAttributeAssignments(definition.standardUserAttributes, definition.customUserAttributes));
-  }
-
-  if (definition.groups?.length) {
-    defineAuthProperties.push(
-      factory.createPropertyAssignment(
-        factory.createIdentifier('groups'),
-        factory.createArrayLiteralExpression(definition.groups.map((g) => factory.createStringLiteral(g))),
-      ),
-    );
-  }
-
-  const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
-  const { loginOptions } = definition;
-  if (
-    loginOptions?.appleLogin ||
-    loginOptions?.amazonLogin ||
-    loginOptions?.googleLogin ||
-    loginOptions?.facebookLogin ||
-    (loginOptions?.oidcLogin && loginOptions.oidcLogin.length > 0) ||
-    loginOptions?.samlLogin
-  ) {
-    namedImports['@aws-amplify/backend'].add('secret');
-  }
-  if (hasFunctions) {
-    assert(definition.lambdaTriggers);
-    defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
-    for (const value of Object.values(definition.lambdaTriggers)) {
-      const functionName = value.source.split('/')[3];
-      if (!namedImports[`./${functionName}/resource`]) {
-        namedImports[`./${functionName}/resource`] = new Set();
+  let backendFunctionConstruct: string;
+  let functionCallParameter: ts.ObjectLiteralExpression;
+  const refAuth = definition.referenceAuth;
+  if (refAuth) {
+    const referenceAuthProperties: Array<PropertyAssignment> = [];
+    backendFunctionConstruct = 'referenceAuth';
+    namedImports['@aws-amplify/backend'].add('referenceAuth');
+    for (const [key, value] of Object.entries(refAuth)) {
+      if (value) {
+        referenceAuthProperties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier(key),
+            typeof value === 'object'
+              ? factory.createObjectLiteralExpression(
+                  Object.entries(value).map(([_key, _value]) =>
+                    factory.createPropertyAssignment(factory.createIdentifier(_key), factory.createStringLiteral(_value)),
+                  ),
+                  true,
+                )
+              : factory.createStringLiteral(value),
+          ),
+        );
       }
-      namedImports[`./${functionName}/resource`].add(functionName);
     }
-  }
-  if (definition.mfa) {
-    const multifactorProperties = [
-      factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
-    ];
+    functionCallParameter = factory.createObjectLiteralExpression(referenceAuthProperties, true);
+  } else {
+    namedImports['@aws-amplify/backend'].add('defineAuth');
+    const defineAuthProperties: Array<PropertyAssignment> = [];
+    backendFunctionConstruct = 'defineAuth';
 
-    if (definition.mfa.totp !== undefined) {
-      multifactorProperties.push(
+    const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions, secretErrors);
+    defineAuthProperties.push(logInWithPropertyAssignment);
+
+    if (definition.customUserAttributes || definition.standardUserAttributes) {
+      defineAuthProperties.push(createUserAttributeAssignments(definition.standardUserAttributes, definition.customUserAttributes));
+    }
+
+    if (definition.groups?.length) {
+      defineAuthProperties.push(
         factory.createPropertyAssignment(
-          factory.createIdentifier('totp'),
-          definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
+          factory.createIdentifier('groups'),
+          factory.createArrayLiteralExpression(definition.groups.map((g) => factory.createStringLiteral(g))),
         ),
       );
     }
 
-    if (definition.mfa.sms !== undefined) {
-      multifactorProperties.push(
+    const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
+    const { loginOptions } = definition;
+    if (
+      loginOptions?.appleLogin ||
+      loginOptions?.amazonLogin ||
+      loginOptions?.googleLogin ||
+      loginOptions?.facebookLogin ||
+      (loginOptions?.oidcLogin && loginOptions.oidcLogin.length > 0) ||
+      loginOptions?.samlLogin
+    ) {
+      namedImports['@aws-amplify/backend'].add('secret');
+    }
+    if (hasFunctions) {
+      assert(definition.lambdaTriggers);
+      defineAuthProperties.push(createTriggersProperty(definition.lambdaTriggers));
+      for (const value of Object.values(definition.lambdaTriggers)) {
+        const functionName = value.source.split('/')[3];
+        if (!namedImports[`./${functionName}/resource`]) {
+          namedImports[`./${functionName}/resource`] = new Set();
+        }
+        namedImports[`./${functionName}/resource`].add(functionName);
+      }
+    }
+    if (definition.mfa) {
+      const multifactorProperties = [
+        factory.createPropertyAssignment(factory.createIdentifier('mode'), factory.createStringLiteral(definition.mfa.mode)),
+      ];
+
+      if (definition.mfa.totp !== undefined) {
+        multifactorProperties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('totp'),
+            definition.mfa.totp ? factory.createTrue() : factory.createFalse(),
+          ),
+        );
+      }
+
+      if (definition.mfa.sms !== undefined) {
+        multifactorProperties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier('sms'),
+            definition.mfa.sms ? factory.createTrue() : factory.createFalse(),
+          ),
+        );
+      }
+
+      defineAuthProperties.push(
         factory.createPropertyAssignment(
-          factory.createIdentifier('sms'),
-          definition.mfa.sms ? factory.createTrue() : factory.createFalse(),
+          factory.createIdentifier('multifactor'),
+          factory.createObjectLiteralExpression(multifactorProperties, true),
         ),
       );
     }
-
-    defineAuthProperties.push(
-      factory.createPropertyAssignment(
-        factory.createIdentifier('multifactor'),
-        factory.createObjectLiteralExpression(multifactorProperties, true),
-      ),
-    );
+    functionCallParameter = factory.createObjectLiteralExpression(defineAuthProperties, true);
   }
 
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier('auth'),
-    functionCallParameter: factory.createObjectLiteralExpression(defineAuthProperties, true),
+    functionCallParameter,
     additionalImportedBackendIdentifiers: namedImports,
-    backendFunctionConstruct: 'defineAuth',
+    backendFunctionConstruct,
     postImportStatements: secretErrors,
   });
 }

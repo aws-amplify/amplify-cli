@@ -148,6 +148,7 @@ export const createGen2Renderer = ({
       oAuthFlows: auth?.oAuthFlows,
       readAttributes: auth?.readAttributes,
       writeAttributes: auth?.writeAttributes,
+      referenceAuth: auth?.referenceAuth,
     };
   }
 

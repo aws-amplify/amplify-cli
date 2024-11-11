@@ -6,6 +6,7 @@ import {
   AuthDefinition,
   AuthTriggerEvents,
   EmailOptions,
+  ReferenceAuth,
   renderAuthNode,
   UserPoolMfaConfig,
 } from './source_builder';
@@ -374,6 +375,126 @@ describe('render auth node', () => {
       const node = renderAuthNode(authDefinition);
       const source = printNodeArray(node);
       assert.match(source, /defineAuth\(\{[\s\S]*attributeMapping:\s\{[\s\S]*fullname:\s"name"/);
+    });
+    describe('phone', () => {
+      it('renders `phone: true`', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            phone: true,
+          },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+phone:\s?true\s+\}\s+\}\)/);
+      });
+    });
+    describe('OAuth scopes', () => {
+      it('renders oauth scopes', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {
+            googleLogin: true,
+            scopes: ['EMAIL', 'OPENID'],
+          },
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert.match(source, /defineAuth\(\{[\s\S]*scopes:\s\["EMAIL",\s"OPENID"\]/);
+      });
+      it('renders no oauth scopes if not passed', () => {
+        const authDefinition: AuthDefinition = {
+          loginOptions: {},
+        };
+        const node = renderAuthNode(authDefinition);
+        const source = printNodeArray(node);
+        assert.doesNotMatch(source, /scopes:/);
+      });
+    });
+    it('renders attributeMapping if passed along with Google login', () => {
+      const authDefinition: AuthDefinition = {
+        loginOptions: {
+          googleLogin: true,
+          googleAttributes: { fullname: 'name' } as AttributeMappingRule,
+        },
+      };
+      const node = renderAuthNode(authDefinition);
+      const source = printNodeArray(node);
+      assert.match(source, /defineAuth\(\{[\s\S]*attributeMapping:\s\{[\s\S]*fullname:\s"name"/);
+    });
+  });
+  describe('reference auth', () => {
+    it(`renders successfully for imported userpool`, () => {
+      const referenceAuthProps: ReferenceAuth = {
+        userPoolId: 'userPoolId',
+        userPoolClientId: 'userPoolClientId',
+        groups: {
+          Admin: 'AdminRoleARN',
+          ReadOnly: 'ReadOnlyRoleARN',
+        },
+      };
+      const authDefinition: AuthDefinition = {
+        referenceAuth: referenceAuthProps,
+      };
+      const node = renderAuthNode(authDefinition);
+      const source = printNodeArray(node);
+      assert.match(source, /referenceAuth/);
+      assert.match(source, /userPoolId: "userPoolId"/);
+      assert.match(source, /userPoolClientId: "userPoolClientId"/);
+      assert.match(source, /groups:/);
+      assert.match(source, /Admin: "AdminRoleARN"/);
+      assert.match(source, /ReadOnly: "ReadOnlyRoleARN"/);
+      assert.doesNotMatch(source, /identityPoolId: "identityPoolId"/);
+      assert.doesNotMatch(source, /authRoleArn: "authRoleArn"/);
+      assert.doesNotMatch(source, /unauthRoleArn: "unauthRoleArn"/);
+    });
+
+    it(`renders successfully for imported identity pool`, () => {
+      const referenceAuthProps: ReferenceAuth = {
+        identityPoolId: 'identityPoolId',
+        authRoleArn: 'authRoleArn',
+        unauthRoleArn: 'unauthRoleArn',
+      };
+      const authDefinition: AuthDefinition = {
+        referenceAuth: referenceAuthProps,
+      };
+      const node = renderAuthNode(authDefinition);
+      const source = printNodeArray(node);
+      assert.match(source, /referenceAuth/);
+      assert.match(source, /identityPoolId: "identityPoolId"/);
+      assert.match(source, /authRoleArn: "authRoleArn"/);
+      assert.match(source, /unauthRoleArn: "unauthRoleArn"/);
+      assert.doesNotMatch(source, /userPoolId: "userPoolId"/);
+      assert.doesNotMatch(source, /userPoolClientId: "userPoolClientId"/);
+      assert.doesNotMatch(source, /groups:/);
+      assert.doesNotMatch(source, /Admin: "AdminRoleARN"/);
+      assert.doesNotMatch(source, /ReadOnly: "ReadOnlyRoleARN"/);
+    });
+
+    it(`renders successfully for imported userpool and identity pool`, () => {
+      const referenceAuthProps: ReferenceAuth = {
+        userPoolId: 'userPoolId',
+        userPoolClientId: 'userPoolClientId',
+        identityPoolId: 'identityPoolId',
+        authRoleArn: 'authRoleArn',
+        unauthRoleArn: 'unauthRoleArn',
+        groups: {
+          Admin: 'AdminRoleARN',
+          ReadOnly: 'ReadOnlyRoleARN',
+        },
+      };
+      const authDefinition: AuthDefinition = {
+        referenceAuth: referenceAuthProps,
+      };
+      const node = renderAuthNode(authDefinition);
+      const source = printNodeArray(node);
+      assert.match(source, /referenceAuth/);
+      assert.match(source, /userPoolId: "userPoolId"/);
+      assert.match(source, /userPoolClientId: "userPoolClientId"/);
+      assert.match(source, /identityPoolId: "identityPoolId"/);
+      assert.match(source, /authRoleArn: "authRoleArn"/);
+      assert.match(source, /unauthRoleArn: "unauthRoleArn"/);
+      assert.match(source, /groups:/);
+      assert.match(source, /Admin: "AdminRoleARN"/);
+      assert.match(source, /ReadOnly: "ReadOnlyRoleARN"/);
     });
   });
 });

@@ -1,0 +1,838 @@
+{
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"AmplifySandbox\",\"createdWith\":\"1.3.1\",\"stackType\":\"auth-Cognito\",\"metadata\":{}}",
+  "Resources": {
+    "SecretFetcherResourceProviderLambdaServiceRole5ABAF823": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/SecretFetcherResourceProviderLambda/ServiceRole/Resource"
+      }
+    },
+    "SecretFetcherResourceProviderLambdaServiceRoleDefaultPolicyD52F71CB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ssm:GetParameter",
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:ssm:*:*:parameter/amplify/mygen2app/rjabhi-sandbox-a7ef9235a4/*",
+                "arn:aws:ssm:*:*:parameter/amplify/shared/my-gen2-app/*"
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "SecretFetcherResourceProviderLambdaServiceRoleDefaultPolicyD52F71CB",
+        "Roles": [
+          {
+            "Ref": "SecretFetcherResourceProviderLambdaServiceRole5ABAF823"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/SecretFetcherResourceProviderLambda/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "SecretFetcherResourceProviderLambda1ECC380E": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "7030e6070d15a14e086f45c2b3244fd1c4e437a570d01e6bc71d38b2fe98aa1f.zip"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "SecretFetcherResourceProviderLambdaServiceRole5ABAF823",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 10
+      },
+      "DependsOn": [
+        "SecretFetcherResourceProviderLambdaServiceRoleDefaultPolicyD52F71CB",
+        "SecretFetcherResourceProviderLambdaServiceRole5ABAF823"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/SecretFetcherResourceProviderLambda/Resource",
+        "aws:asset:path": "asset.7030e6070d15a14e086f45c2b3244fd1c4e437a570d01e6bc71d38b2fe98aa1f",
+        "aws:asset:is-bundled": true,
+        "aws:asset:property": "Code"
+      }
+    },
+    "SecretFetcherResourceProviderframeworkonEventServiceRoleA7B78041": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/SecretFetcherResourceProvider/framework-onEvent/ServiceRole/Resource"
+      }
+    },
+    "SecretFetcherResourceProviderframeworkonEventServiceRoleDefaultPolicy38F3A916": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SecretFetcherResourceProviderLambda1ECC380E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "SecretFetcherResourceProviderLambda1ECC380E",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "SecretFetcherResourceProviderframeworkonEventServiceRoleDefaultPolicy38F3A916",
+        "Roles": [
+          {
+            "Ref": "SecretFetcherResourceProviderframeworkonEventServiceRoleA7B78041"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/SecretFetcherResourceProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "SecretFetcherResourceProviderframeworkonEvent960CF056": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "4dc48ffba382f93077a1e6824599bbd4ceb6f91eb3d9442eca3b85bdb1a20b1e.zip"
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/SecretFetcherResourceProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "SecretFetcherResourceProviderLambda1ECC380E",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Role": {
+          "Fn::GetAtt": [
+            "SecretFetcherResourceProviderframeworkonEventServiceRoleA7B78041",
+            "Arn"
+          ]
+        },
+        "Runtime": {
+          "Fn::FindInMap": [
+            "LatestNodeRuntimeMap",
+            {
+              "Ref": "AWS::Region"
+            },
+            "value"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ],
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "SecretFetcherResourceProviderframeworkonEventServiceRoleDefaultPolicy38F3A916",
+        "SecretFetcherResourceProviderframeworkonEventServiceRoleA7B78041"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/SecretFetcherResourceProvider/framework-onEvent/Resource",
+        "aws:asset:path": "asset.4dc48ffba382f93077a1e6824599bbd4ceb6f91eb3d9442eca3b85bdb1a20b1e",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "FACEBOOKCLIENTIDSecretFetcherResource": {
+      "Type": "Custom::SecretFetcherResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "SecretFetcherResourceProviderframeworkonEvent960CF056",
+            "Arn"
+          ]
+        },
+        "namespace": "my-gen2-app",
+        "name": "rjabhi",
+        "type": "sandbox",
+        "secretName": "FACEBOOK_CLIENT_ID",
+        "secretLastUpdated": "1727477216522"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/FACEBOOK_CLIENT_IDSecretFetcherResource/Default"
+      }
+    },
+    "FACEBOOKCLIENTSECRETSecretFetcherResource": {
+      "Type": "Custom::SecretFetcherResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "SecretFetcherResourceProviderframeworkonEvent960CF056",
+            "Arn"
+          ]
+        },
+        "namespace": "my-gen2-app",
+        "name": "rjabhi",
+        "type": "sandbox",
+        "secretName": "FACEBOOK_CLIENT_SECRET",
+        "secretLastUpdated": "1727477216522"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/FACEBOOK_CLIENT_SECRETSecretFetcherResource/Default"
+      }
+    },
+    "amplifyAuthFacebookIDP7CB5B5CC": {
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
+      "Properties": {
+        "AttributeMapping": {
+          "email": "email"
+        },
+        "ProviderDetails": {
+          "client_id": {
+            "Fn::GetAtt": [
+              "FACEBOOKCLIENTIDSecretFetcherResource",
+              "secretValue"
+            ]
+          },
+          "client_secret": {
+            "Fn::GetAtt": [
+              "FACEBOOKCLIENTSECRETSecretFetcherResource",
+              "secretValue"
+            ]
+          },
+          "authorize_scopes": "public_profile"
+        },
+        "ProviderName": "Facebook",
+        "ProviderType": "Facebook",
+        "UserPoolId": "[object Object]"
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/amplifyAuth/FacebookIDP/Resource"
+      }
+    },
+    "amplifyAuthauthenticatedUserRoleD8DA3689": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "[object Object]"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/amplifyAuth/authenticatedUserRole/Resource"
+      }
+    },
+    "amplifyAuthunauthenticatedUserRole2B524D9E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "cognito-identity.amazonaws.com:aud": "[object Object]"
+                },
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "amplify:deployment-type",
+            "Value": "sandbox"
+          },
+          {
+            "Key": "amplify:friendly-name",
+            "Value": "amplifyAuth"
+          },
+          {
+            "Key": "created-by",
+            "Value": "amplify"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/amplifyAuth/unauthenticatedUserRole/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/11RQW7CQAx8C/fFDaD2DqmQeihCoJ6jZdeASbJGsQNCUf5ebQJp1NOM7fHIGs9h9pFAMrF3mTqfTws6QLNBUfR7tS439i5ZU9jy4G0W2ONFYNPBug5OiYMhW0Kz4wJNegwdbrkg94hlz1oji8yKoAosIxhZwKp2OerKCpreHpr0GAbXF2mN41MgZWh+BKstcxGNB/4in1xaCuPRs/MqvzwGJX1sK76Rx2ptHR6Y8/HKf82wnBaEQcfSv86w9DxtXMc4lqrWnUsM2rZmh8J15dB0OezVniicjKtFucyq51BgOCA9hm97vUZR2okGgxj2iKccPPWBxTfBRd5u8wRm75BMLkI0reqgVCLsevwFXhK6UfkBAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "amplify-mygen2app-rjabhi-sandbox-a7ef9235a4/auth/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Mappings": {
+    "LatestNodeRuntimeMap": {
+      "af-south-1": {
+        "value": "nodejs20.x"
+      },
+      "ap-east-1": {
+        "value": "nodejs20.x"
+      },
+      "ap-northeast-1": {
+        "value": "nodejs20.x"
+      },
+      "ap-northeast-2": {
+        "value": "nodejs20.x"
+      },
+      "ap-northeast-3": {
+        "value": "nodejs20.x"
+      },
+      "ap-south-1": {
+        "value": "nodejs20.x"
+      },
+      "ap-south-2": {
+        "value": "nodejs20.x"
+      },
+      "ap-southeast-1": {
+        "value": "nodejs20.x"
+      },
+      "ap-southeast-2": {
+        "value": "nodejs20.x"
+      },
+      "ap-southeast-3": {
+        "value": "nodejs20.x"
+      },
+      "ap-southeast-4": {
+        "value": "nodejs20.x"
+      },
+      "ap-southeast-5": {
+        "value": "nodejs20.x"
+      },
+      "ap-southeast-7": {
+        "value": "nodejs20.x"
+      },
+      "ca-central-1": {
+        "value": "nodejs20.x"
+      },
+      "ca-west-1": {
+        "value": "nodejs20.x"
+      },
+      "cn-north-1": {
+        "value": "nodejs18.x"
+      },
+      "cn-northwest-1": {
+        "value": "nodejs18.x"
+      },
+      "eu-central-1": {
+        "value": "nodejs20.x"
+      },
+      "eu-central-2": {
+        "value": "nodejs20.x"
+      },
+      "eu-isoe-west-1": {
+        "value": "nodejs18.x"
+      },
+      "eu-north-1": {
+        "value": "nodejs20.x"
+      },
+      "eu-south-1": {
+        "value": "nodejs20.x"
+      },
+      "eu-south-2": {
+        "value": "nodejs20.x"
+      },
+      "eu-west-1": {
+        "value": "nodejs20.x"
+      },
+      "eu-west-2": {
+        "value": "nodejs20.x"
+      },
+      "eu-west-3": {
+        "value": "nodejs20.x"
+      },
+      "il-central-1": {
+        "value": "nodejs20.x"
+      },
+      "me-central-1": {
+        "value": "nodejs20.x"
+      },
+      "me-south-1": {
+        "value": "nodejs20.x"
+      },
+      "mx-central-1": {
+        "value": "nodejs20.x"
+      },
+      "sa-east-1": {
+        "value": "nodejs20.x"
+      },
+      "us-east-1": {
+        "value": "nodejs20.x"
+      },
+      "us-east-2": {
+        "value": "nodejs20.x"
+      },
+      "us-gov-east-1": {
+        "value": "nodejs18.x"
+      },
+      "us-gov-west-1": {
+        "value": "nodejs18.x"
+      },
+      "us-iso-east-1": {
+        "value": "nodejs18.x"
+      },
+      "us-iso-west-1": {
+        "value": "nodejs18.x"
+      },
+      "us-isob-east-1": {
+        "value": "nodejs18.x"
+      },
+      "us-west-1": {
+        "value": "nodejs20.x"
+      },
+      "us-west-2": {
+        "value": "nodejs20.x"
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-3"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-4"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "il-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "us-west-2"
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "amplifymygen2apprjabhisandboxa7ef9235a4authamplifyAuthUserPool35006F41Ref": {
+      "Value": "[object Object]"
+    },
+    "amplifymygen2apprjabhisandboxa7ef9235a4authamplifyAuthUserPoolAppClient2FF46763Ref": {
+      "Value": "[object Object]"
+    },
+    "amplifymygen2apprjabhisandboxa7ef9235a4authamplifyAuthIdentityPoolE649E272Ref": {
+      "Value": "[object Object]"
+    },
+    "amplifymygen2apprjabhisandboxa7ef9235a4authamplifyAuthUserPoolUserPoolDomain922BB047Ref": {
+      "Value": "[object Object]"
+    },
+    "amplifymygen2apprjabhisandboxa7ef9235a4authamplifyAuthauthenticatedUserRole25B64256Ref": {
+      "Value": {
+        "Ref": "amplifyAuthauthenticatedUserRoleD8DA3689"
+      }
+    }
+  }
+}
