@@ -59,7 +59,7 @@ export class AppAuthDefinitionFetcher {
         AppClientIDWeb: userPoolClientId,
         IdentityPoolId: identityPoolId,
       } = Object.keys(amplifyMeta.auth).map((key) => amplifyMeta.auth[key])[0].output;
-      if (!userPoolId || !userPoolClientId || !identityPoolId) {
+      if (!userPoolId && !userPoolClientId && !identityPoolId) {
         throw new Error('No user pool or identity pool found for import.');
       }
 
