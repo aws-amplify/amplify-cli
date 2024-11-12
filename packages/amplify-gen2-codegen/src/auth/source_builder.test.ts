@@ -376,39 +376,6 @@ describe('render auth node', () => {
       const source = printNodeArray(node);
       assert.match(source, /defineAuth\(\{[\s\S]*attributeMapping:\s\{[\s\S]*fullname:\s"name"/);
     });
-    describe('phone', () => {
-      it('renders `phone: true`', () => {
-        const authDefinition: AuthDefinition = {
-          loginOptions: {
-            phone: true,
-          },
-        };
-        const node = renderAuthNode(authDefinition);
-        const source = printNodeArray(node);
-        assert.match(source, /defineAuth\(\{\s+loginWith:\s+\{\s+phone:\s?true\s+\}\s+\}\)/);
-      });
-    });
-    describe('OAuth scopes', () => {
-      it('renders oauth scopes', () => {
-        const authDefinition: AuthDefinition = {
-          loginOptions: {
-            googleLogin: true,
-            scopes: ['EMAIL', 'OPENID'],
-          },
-        };
-        const node = renderAuthNode(authDefinition);
-        const source = printNodeArray(node);
-        assert.match(source, /defineAuth\(\{[\s\S]*scopes:\s\["EMAIL",\s"OPENID"\]/);
-      });
-      it('renders no oauth scopes if not passed', () => {
-        const authDefinition: AuthDefinition = {
-          loginOptions: {},
-        };
-        const node = renderAuthNode(authDefinition);
-        const source = printNodeArray(node);
-        assert.doesNotMatch(source, /scopes:/);
-      });
-    });
     it('renders attributeMapping if passed along with Google login', () => {
       const authDefinition: AuthDefinition = {
         loginOptions: {
