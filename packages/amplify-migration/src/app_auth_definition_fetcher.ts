@@ -53,61 +53,62 @@ export class AppAuthDefinitionFetcher {
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
     const isImported = Object.keys(amplifyMeta.auth).map((key) => amplifyMeta.auth[key])[0].serviceType === 'imported';
 
-    if (isImported) {
-      const {
-        UserPoolId: userPoolId,
-        AppClientIDWeb: userPoolClientId,
-        IdentityPoolId: identityPoolId,
-      } = Object.keys(amplifyMeta.auth).map((key) => amplifyMeta.auth[key])[0].output;
-      if (!userPoolId && !userPoolClientId && !identityPoolId) {
-        throw new Error('No user pool or identity pool found for import.');
-      }
-
-      let authRoleArn: string | undefined;
-      let unauthRoleArn: string | undefined;
-      let groups: Record<string, string> | undefined;
-
-      if (identityPoolId) {
-        const { Roles } = await this.cognitoIdentityPoolClient.send(
-          new GetIdentityPoolRolesCommand({
-            IdentityPoolId: identityPoolId,
-          }),
-        );
-        if (Roles) {
-          authRoleArn = Roles.authenticated;
-          unauthRoleArn = Roles.unauthenticated;
-        }
-      }
-
-      if (userPoolId) {
-        const { Groups } = await this.cognitoIdentityProviderClient.send(
-          new ListGroupsCommand({
-            UserPoolId: userPoolId,
-          }),
-        );
-
-        if (Groups && Groups.length > 0) {
-          groups = Groups.reduce((acc: Record<string, string>, { GroupName, RoleArn }) => {
-            assert(GroupName);
-            assert(RoleArn);
-            return {
-              ...acc,
-              [GroupName]: RoleArn,
-            };
-          }, {});
-        }
-      }
-
-      return {
-        userPoolId,
-        userPoolClientId,
-        identityPoolId,
-        unauthRoleArn,
-        authRoleArn,
-        groups,
-      };
+    if (!isImported) {
+      return undefined;
     }
-    return undefined;
+
+    const {
+      UserPoolId: userPoolId,
+      AppClientIDWeb: userPoolClientId,
+      IdentityPoolId: identityPoolId,
+    } = Object.keys(amplifyMeta.auth).map((key) => amplifyMeta.auth[key])[0].output;
+    if (!userPoolId && !userPoolClientId && !identityPoolId) {
+      throw new Error('No user pool or identity pool found for import.');
+    }
+
+    let authRoleArn: string | undefined;
+    let unauthRoleArn: string | undefined;
+    let groups: Record<string, string> | undefined;
+
+    if (identityPoolId) {
+      const { Roles } = await this.cognitoIdentityPoolClient.send(
+        new GetIdentityPoolRolesCommand({
+          IdentityPoolId: identityPoolId,
+        }),
+      );
+      if (Roles) {
+        authRoleArn = Roles.authenticated;
+        unauthRoleArn = Roles.unauthenticated;
+      }
+    }
+
+    if (userPoolId) {
+      const { Groups } = await this.cognitoIdentityProviderClient.send(
+        new ListGroupsCommand({
+          UserPoolId: userPoolId,
+        }),
+      );
+
+      if (Groups && Groups.length > 0) {
+        groups = Groups.reduce((acc: Record<string, string>, { GroupName, RoleArn }) => {
+          assert(GroupName);
+          assert(RoleArn);
+          return {
+            ...acc,
+            [GroupName]: RoleArn,
+          };
+        }, {});
+      }
+    }
+
+    return {
+      userPoolId,
+      userPoolClientId,
+      identityPoolId,
+      unauthRoleArn,
+      authRoleArn,
+      groups,
+    };
   };
 
   getDefinition = async (): Promise<AuthDefinition | undefined> => {
