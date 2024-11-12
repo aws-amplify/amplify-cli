@@ -44,6 +44,10 @@ export interface AuthDefinition {
     oAuthFlows?: string[];
     // (undocumented)
     readAttributes?: string[];
+    // Warning: (ae-forgotten-export) The symbol "ReferenceAuth" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    referenceAuth?: ReferenceAuth;
     // (undocumented)
     standardUserAttributes?: StandardAttributes;
     // (undocumented)
