@@ -33,15 +33,20 @@ export const run = async (context: $TSContext): Promise<void> => {
   constructExeInfo(context);
   checkForNestedProject();
 
-  const projectPath = process.cwd();
-  if (stateManager.metaFileExists(projectPath)) {
-    const inputAppId = context.exeInfo?.inputParams?.amplify?.appId;
-    const appId = getAmplifyAppId();
-    if (inputAppId && appId && inputAppId !== appId) {
-      throw new AmplifyError('InvalidAmplifyAppIdError', {
-        message: `Amplify appId mismatch.`,
-        resolution: `You are currently working in the amplify project with Id ${appId}`,
-      });
+  // Opt-out mechanism for customers that are using old app backend environments with existing apps intentionally
+  const { AMPLIFY_SKIP_APP_ID_MISMATCH_CHECK } = process.env;
+  if (AMPLIFY_SKIP_APP_ID_MISMATCH_CHECK !== 'true') {
+    // check for appId mismatch
+    const projectPath = process.cwd();
+    if (stateManager.metaFileExists(projectPath)) {
+      const inputAppId = context.exeInfo?.inputParams?.amplify?.appId;
+      const appId = getAmplifyAppId();
+      if (inputAppId && appId && inputAppId !== appId) {
+        throw new AmplifyError('InvalidAmplifyAppIdError', {
+          message: `Amplify appId mismatch.`,
+          resolution: `You are currently working in the amplify project with Id ${appId}`,
+        });
+      }
     }
   }
 
