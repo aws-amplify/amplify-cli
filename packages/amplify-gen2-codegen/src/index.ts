@@ -31,6 +31,7 @@ import {
   SamlOptions,
   Scope,
   AttributeMappingRule,
+  ReferenceAuth,
 } from './auth/source_builder';
 import {
   StorageRenderParameters,
@@ -229,4 +230,5 @@ export {
   Scope,
   AttributeMappingRule,
   ServerSideEncryptionConfiguration,
+  ReferenceAuth,
 };

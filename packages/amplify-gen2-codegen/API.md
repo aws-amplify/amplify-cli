@@ -44,8 +44,6 @@ export interface AuthDefinition {
     oAuthFlows?: string[];
     // (undocumented)
     readAttributes?: string[];
-    // Warning: (ae-forgotten-export) The symbol "ReferenceAuth" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     referenceAuth?: ReferenceAuth;
     // (undocumented)
@@ -195,6 +193,16 @@ export type Permission = 'read' | 'write' | 'create' | 'delete';
 
 // @public (undocumented)
 export type PolicyOverrides = Partial<Record<PasswordPolicyPath | string, string | boolean | number | string[]>>;
+
+// @public (undocumented)
+export type ReferenceAuth = {
+    userPoolId?: string;
+    identityPoolId?: string;
+    authRoleArn?: string;
+    unauthRoleArn?: string;
+    userPoolClientId?: string;
+    groups?: Record<string, string>;
+};
 
 // @public (undocumented)
 export interface Renderer {
