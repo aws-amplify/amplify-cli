@@ -388,12 +388,12 @@ export class BackendSynthesizer {
                                     renderArgs.storage.bucketEncryptionAlgorithm.serverSideEncryptionByDefault.SSEAlgorithm!,
                                   ),
                                 ),
-                                // factory.createPropertyAssignment(
-                                //   factory.createIdentifier('kmsMasterKeyId'),
-                                //   factory.createStringLiteral(
-                                //     renderArgs.storage.bucketEncryptionAlgorithm.serverSideEncryptionByDefault.KMSMasterKeyID!,
-                                //   ),
-                                // ),
+                                factory.createPropertyAssignment(
+                                  factory.createIdentifier('kmsMasterKeyId'),
+                                  factory.createStringLiteral(
+                                    renderArgs.storage.bucketEncryptionAlgorithm.serverSideEncryptionByDefault.KMSMasterKeyID!,
+                                  ),
+                                ),
                               ],
                               true,
                             ),
