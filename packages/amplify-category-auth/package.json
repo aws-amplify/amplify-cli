@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.7.15",
+  "version": "3.7.16-app-id-mismatch-opt-out.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",

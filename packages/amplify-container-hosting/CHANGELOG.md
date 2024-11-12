@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.13-app-id-mismatch-opt-out.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.8.12...@aws-amplify/amplify-container-hosting@2.8.13-app-id-mismatch-opt-out.0) (2024-11-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-container-hosting
+
+
+
+
+
 ## [2.8.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.8.11...@aws-amplify/amplify-container-hosting@2.8.12) (2024-08-06)
 
 

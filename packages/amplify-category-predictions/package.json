@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-predictions",
-  "version": "5.5.15",
+  "version": "5.5.16-app-id-mismatch-opt-out.0",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",

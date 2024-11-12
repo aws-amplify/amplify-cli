@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-uibuilder",
-  "version": "1.14.13",
+  "version": "1.14.14-app-id-mismatch-opt-out.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
