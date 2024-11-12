@@ -472,8 +472,6 @@ const createUserAttributeAssignments = (
 
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
   const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
-  const secretErrors: ts.Node[] = [];
-  let backendFunctionConstruct: string;
   const refAuth = definition.referenceAuth;
   if (refAuth) {
     const referenceAuthProperties: Array<PropertyAssignment> = [];
@@ -500,12 +498,12 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
       functionCallParameter: factory.createObjectLiteralExpression(referenceAuthProperties, true),
       additionalImportedBackendIdentifiers: namedImports,
       backendFunctionConstruct: 'referenceAuth',
-      postImportStatements: secretErrors,
     });
   }
 
   namedImports['@aws-amplify/backend'].add('defineAuth');
   const defineAuthProperties: Array<PropertyAssignment> = [];
+  const secretErrors: ts.Node[] = [];
 
   const logInWithPropertyAssignment = createLogInWithPropertyAssignment(definition.loginOptions, secretErrors);
   defineAuthProperties.push(logInWithPropertyAssignment);
