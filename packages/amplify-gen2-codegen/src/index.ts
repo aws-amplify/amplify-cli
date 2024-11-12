@@ -31,6 +31,7 @@ import {
   SamlOptions,
   Scope,
   AttributeMappingRule,
+  ReferenceAuth,
 } from './auth/source_builder';
 import {
   StorageRenderParameters,
@@ -148,6 +149,7 @@ export const createGen2Renderer = ({
       oAuthFlows: auth?.oAuthFlows,
       readAttributes: auth?.readAttributes,
       writeAttributes: auth?.writeAttributes,
+      referenceAuth: auth?.referenceAuth,
     };
   }
 
@@ -228,4 +230,5 @@ export {
   Scope,
   AttributeMappingRule,
   ServerSideEncryptionConfiguration,
+  ReferenceAuth,
 };

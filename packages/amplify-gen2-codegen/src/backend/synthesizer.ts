@@ -9,7 +9,7 @@ import ts, {
   ImportDeclaration,
   VariableStatement,
 } from 'typescript';
-import { PolicyOverrides } from '../auth/source_builder.js';
+import { PolicyOverrides, ReferenceAuth } from '../auth/source_builder.js';
 import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../storage/source_builder.js';
 import assert from 'assert';
@@ -26,6 +26,7 @@ export interface BackendRenderParameters {
     oAuthFlows?: string[];
     readAttributes?: string[];
     writeAttributes?: string[];
+    referenceAuth?: ReferenceAuth;
   };
   storage?: {
     importFrom: string;
@@ -206,7 +207,7 @@ export class BackendSynthesizer {
       factory.createVariableDeclarationList([backendVariable], ts.NodeFlags.Const),
     );
 
-    if (renderArgs.auth?.userPoolOverrides) {
+    if (renderArgs.auth?.userPoolOverrides && !renderArgs?.auth?.referenceAuth) {
       const cfnUserPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnUserPool', 'auth.resources.cfnResources.cfnUserPool'),
       );
@@ -233,7 +234,7 @@ export class BackendSynthesizer {
       );
     }
 
-    if (renderArgs.auth?.guestLogin === false || renderArgs.auth?.identityPoolName) {
+    if (renderArgs.auth?.guestLogin === false || (renderArgs.auth?.identityPoolName && !renderArgs?.auth?.referenceAuth)) {
       const cfnIdentityPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnIdentityPool', 'auth.resources.cfnResources.cfnIdentityPool'),
       );
@@ -248,7 +249,10 @@ export class BackendSynthesizer {
       }
     }
 
-    if (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) {
+    if (
+      (renderArgs.auth?.oAuthFlows || renderArgs.auth?.readAttributes || renderArgs.auth?.writeAttributes) &&
+      !renderArgs?.auth?.referenceAuth
+    ) {
       const cfnUserPoolClientVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnUserPoolClient', 'auth.resources.cfnResources.cfnUserPoolClient'),
       );
@@ -274,7 +278,7 @@ export class BackendSynthesizer {
       }
     }
 
-    if (renderArgs.auth?.writeAttributes) {
+    if (renderArgs.auth?.writeAttributes && !renderArgs?.auth?.referenceAuth) {
       nodes.push(
         this.setPropertyValue(
           factory.createIdentifier('cfnUserPoolClient'),

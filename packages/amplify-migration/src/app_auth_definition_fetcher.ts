@@ -14,8 +14,12 @@ import {
   DescribeIdentityProviderCommand,
   GetUserPoolMfaConfigCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { CognitoIdentityClient, DescribeIdentityPoolCommand } from '@aws-sdk/client-cognito-identity';
+import { CognitoIdentityClient, DescribeIdentityPoolCommand, GetIdentityPoolRolesCommand } from '@aws-sdk/client-cognito-identity';
 import { getAuthDefinition } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
+import { fileOrDirectoryExists } from './directory_exists';
+import { BackendDownloader } from './backend_downloader.js';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 
 export interface AppAuthDefinitionFetcher {
   getDefinition(): Promise<AuthDefinition | undefined>;
@@ -28,9 +32,93 @@ export class AppAuthDefinitionFetcher {
     private stackParser: AmplifyStackParser,
     private backendEnvironmentResolver: BackendEnvironmentResolver,
     private getAuthTriggerConnections: AuthTriggerConnectionsFetcher,
+    private ccbFetcher: BackendDownloader,
   ) {}
 
+  private readJsonFile = async (filePath: string) => {
+    const contents = await fs.readFile(filePath, { encoding: 'utf8' });
+    return JSON.parse(contents);
+  };
+
+  private getReferenceAuth = async () => {
+    const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
+    if (!backendEnvironment?.deploymentArtifacts) return undefined;
+    const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
+    const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
+
+    if (!(await fileOrDirectoryExists(amplifyMetaPath))) {
+      throw new Error('Could not find amplify-meta.json');
+    }
+
+    const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
+    const isImported = Object.keys(amplifyMeta.auth).map((key) => amplifyMeta.auth[key])[0].serviceType === 'imported';
+
+    if (!isImported) {
+      return undefined;
+    }
+
+    const {
+      UserPoolId: userPoolId,
+      AppClientIDWeb: userPoolClientId,
+      IdentityPoolId: identityPoolId,
+    } = Object.keys(amplifyMeta.auth).map((key) => amplifyMeta.auth[key])[0].output;
+    if (!userPoolId && !userPoolClientId && !identityPoolId) {
+      throw new Error('No user pool or identity pool found for import.');
+    }
+
+    let authRoleArn: string | undefined;
+    let unauthRoleArn: string | undefined;
+    let groups: Record<string, string> | undefined;
+
+    if (identityPoolId) {
+      const { Roles } = await this.cognitoIdentityPoolClient.send(
+        new GetIdentityPoolRolesCommand({
+          IdentityPoolId: identityPoolId,
+        }),
+      );
+      if (Roles) {
+        authRoleArn = Roles.authenticated;
+        unauthRoleArn = Roles.unauthenticated;
+      }
+    }
+
+    if (userPoolId) {
+      const { Groups } = await this.cognitoIdentityProviderClient.send(
+        new ListGroupsCommand({
+          UserPoolId: userPoolId,
+        }),
+      );
+
+      if (Groups && Groups.length > 0) {
+        groups = Groups.reduce((acc: Record<string, string>, { GroupName, RoleArn }) => {
+          assert(GroupName);
+          assert(RoleArn);
+          return {
+            ...acc,
+            [GroupName]: RoleArn,
+          };
+        }, {});
+      }
+    }
+
+    return {
+      userPoolId,
+      userPoolClientId,
+      identityPoolId,
+      unauthRoleArn,
+      authRoleArn,
+      groups,
+    };
+  };
+
   getDefinition = async (): Promise<AuthDefinition | undefined> => {
+    const referenceAuth = await this.getReferenceAuth();
+    if (referenceAuth) {
+      return {
+        referenceAuth,
+      };
+    }
+
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     assert(backendEnvironment?.stackName);
     const stackResources = await this.stackParser.getAllStackResources(backendEnvironment.stackName);

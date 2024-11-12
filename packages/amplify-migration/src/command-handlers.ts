@@ -207,6 +207,7 @@ export async function execute() {
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
   const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
+  const ccbFetcher = new BackendDownloader(s3Client);
 
   await generateGen2Code({
     outputDirectory: TEMP_GEN_2_OUTPUT_DIR,
@@ -217,6 +218,7 @@ export async function execute() {
       amplifyStackParser,
       backendEnvironmentResolver,
       () => getAuthTriggersConnections(),
+      ccbFetcher,
     ),
     dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
     functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(lambdaClient, backendEnvironmentResolver, stateManager),

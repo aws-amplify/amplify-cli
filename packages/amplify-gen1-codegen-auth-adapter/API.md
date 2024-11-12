@@ -9,6 +9,7 @@ import { GroupType } from '@aws-sdk/client-cognito-identity-provider';
 import { IdentityProviderType } from '@aws-sdk/client-cognito-identity-provider';
 import { LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { ProviderDescription } from '@aws-sdk/client-cognito-identity-provider';
+import { ReferenceAuth } from '@aws-amplify/amplify-gen2-codegen/src/auth/source_builder';
 import { SoftwareTokenMfaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolMfaType } from '@aws-sdk/client-cognito-identity-provider';
@@ -31,6 +32,8 @@ export interface AuthSynthesizerOptions {
     // (undocumented)
     mfaConfig?: UserPoolMfaType;
     // (undocumented)
+    referenceAuth?: ReferenceAuth;
+    // (undocumented)
     totpConfig?: SoftwareTokenMfaConfigType;
     // (undocumented)
     userPool: UserPoolType;
@@ -50,7 +53,7 @@ export interface AuthTriggerConnection {
 export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigType, string>>;
 
 // @public (undocumented)
-export const getAuthDefinition: ({ userPool, identityPoolName, identityProviders, identityProvidersDetails, identityGroups, webClient, authTriggerConnections, guestLogin, mfaConfig, totpConfig, }: AuthSynthesizerOptions) => AuthDefinition;
+export const getAuthDefinition: ({ userPool, identityPoolName, identityProviders, identityProvidersDetails, identityGroups, webClient, authTriggerConnections, guestLogin, referenceAuth, mfaConfig, totpConfig, }: AuthSynthesizerOptions) => AuthDefinition;
 
 // (No @packageDocumentation comment for this package)
 

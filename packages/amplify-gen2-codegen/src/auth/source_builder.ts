@@ -128,6 +128,15 @@ export type AuthTriggerEvents =
   | 'userMigration'
   | 'verifyAuthChallengeResponse';
 
+export type ReferenceAuth = {
+  userPoolId?: string;
+  identityPoolId?: string;
+  authRoleArn?: string;
+  unauthRoleArn?: string;
+  userPoolClientId?: string;
+  groups?: Record<string, string>;
+};
+
 export interface AuthDefinition {
   loginOptions?: LoginOptions;
   groups?: Group[];
@@ -141,6 +150,7 @@ export interface AuthDefinition {
   oAuthFlows?: string[];
   readAttributes?: string[];
   writeAttributes?: string[];
+  referenceAuth?: ReferenceAuth;
 }
 
 const factory = ts.factory;
@@ -462,6 +472,35 @@ const createUserAttributeAssignments = (
 
 export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node> {
   const namedImports: { [importedPackageName: string]: Set<string> } = { '@aws-amplify/backend': new Set() };
+  const refAuth = definition.referenceAuth;
+  if (refAuth) {
+    const referenceAuthProperties: Array<PropertyAssignment> = [];
+    namedImports['@aws-amplify/backend'].add('referenceAuth');
+    for (const [key, value] of Object.entries(refAuth)) {
+      if (value) {
+        referenceAuthProperties.push(
+          factory.createPropertyAssignment(
+            factory.createIdentifier(key),
+            typeof value === 'object'
+              ? factory.createObjectLiteralExpression(
+                  Object.entries(value).map(([_key, _value]) =>
+                    factory.createPropertyAssignment(factory.createIdentifier(_key), factory.createStringLiteral(_value)),
+                  ),
+                  true,
+                )
+              : factory.createStringLiteral(value),
+          ),
+        );
+      }
+    }
+    return renderResourceTsFile({
+      exportedVariableName: factory.createIdentifier('auth'),
+      functionCallParameter: factory.createObjectLiteralExpression(referenceAuthProperties, true),
+      additionalImportedBackendIdentifiers: namedImports,
+      backendFunctionConstruct: 'referenceAuth',
+    });
+  }
+
   namedImports['@aws-amplify/backend'].add('defineAuth');
   const defineAuthProperties: Array<PropertyAssignment> = [];
   const secretErrors: ts.Node[] = [];

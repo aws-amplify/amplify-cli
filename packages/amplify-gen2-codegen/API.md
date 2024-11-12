@@ -45,6 +45,8 @@ export interface AuthDefinition {
     // (undocumented)
     readAttributes?: string[];
     // (undocumented)
+    referenceAuth?: ReferenceAuth;
+    // (undocumented)
     standardUserAttributes?: StandardAttributes;
     // (undocumented)
     userPoolOverrides?: PolicyOverrides;
@@ -191,6 +193,16 @@ export type Permission = 'read' | 'write' | 'create' | 'delete';
 
 // @public (undocumented)
 export type PolicyOverrides = Partial<Record<PasswordPolicyPath | string, string | boolean | number | string[]>>;
+
+// @public (undocumented)
+export type ReferenceAuth = {
+    userPoolId?: string;
+    identityPoolId?: string;
+    authRoleArn?: string;
+    unauthRoleArn?: string;
+    userPoolClientId?: string;
+    groups?: Record<string, string>;
+};
 
 // @public (undocumented)
 export interface Renderer {
