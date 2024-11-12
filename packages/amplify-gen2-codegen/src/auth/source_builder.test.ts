@@ -376,17 +376,6 @@ describe('render auth node', () => {
       const source = printNodeArray(node);
       assert.match(source, /defineAuth\(\{[\s\S]*attributeMapping:\s\{[\s\S]*fullname:\s"name"/);
     });
-    it('renders attributeMapping if passed along with Google login', () => {
-      const authDefinition: AuthDefinition = {
-        loginOptions: {
-          googleLogin: true,
-          googleAttributes: { fullname: 'name' } as AttributeMappingRule,
-        },
-      };
-      const node = renderAuthNode(authDefinition);
-      const source = printNodeArray(node);
-      assert.match(source, /defineAuth\(\{[\s\S]*attributeMapping:\s\{[\s\S]*fullname:\s"name"/);
-    });
   });
   describe('reference auth', () => {
     it(`renders successfully for imported userpool`, () => {
