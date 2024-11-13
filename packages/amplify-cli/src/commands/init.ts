@@ -44,7 +44,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       if (inputAppId && appId && inputAppId !== appId) {
         throw new AmplifyError('InvalidAmplifyAppIdError', {
           message: `Amplify appId mismatch.`,
-          resolution: `You are currently working in the amplify project with Id ${appId}`,
+          resolution: `You are currently working in the amplify project with Id ${appId}. If this is intentional, you may bypass this protection by setting the environment variable AMPLIFY_SKIP_APP_ID_MISMATCH_CHECK to true.`,
         });
       }
     }
