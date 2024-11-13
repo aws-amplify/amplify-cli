@@ -151,9 +151,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.12.7":
-  version: 5.12.7
-  resolution: "@aws-amplify/amplify-category-api@npm:5.12.7"
+"@aws-amplify/amplify-category-api@npm:^5.12.8":
+  version: 5.12.8
+  resolution: "@aws-amplify/amplify-category-api@npm:5.12.8"
   dependencies:
     "@aws-amplify/graphql-auth-transformer": 3.6.6
     "@aws-amplify/graphql-schema-generator": ^0.9.4
@@ -202,7 +202,7 @@ __metadata:
     amplify-util-headless-input: ^1.9.18
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: 4d86e52571f98a100f7b59b9077794fa12d98e3c1f2f2b7e1cccb84f0057c28250bb455d0a51bdee65b288e20614ab31f95b54e7517d4822e751f48db5139a6e
+  checksum: a6895986b59a16fef6931fa876896f84a0a642e91e05549fa1cea8e2b810db75cea1402ef0aea478b5801951af770026a234b63141557ba8e4de627fe086d4a6
   languageName: node
   linkType: hard
 
@@ -504,7 +504,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.12.7
+    "@aws-amplify/amplify-category-api": ^5.12.8
     "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-environment-parameters": 1.9.15
     fs-extra: ^8.1.0
@@ -814,7 +814,7 @@ __metadata:
     "@types/lodash.throttle": ^4.1.6
     "@types/node": ^18.16.0
     "@types/uuid": ^8.0.0
-    amplify-codegen: ^4.10.0
+    amplify-codegen: ^4.10.1
     archiver: ^5.3.0
     aws-cdk-lib: ~2.129.0
     aws-sdk: ^2.1464.0
@@ -901,7 +901,7 @@ __metadata:
     "@types/node": ^12.12.6
     "@types/semver": ^7.1.0
     "@types/which": ^1.3.2
-    amplify-codegen: ^4.10.0
+    amplify-codegen: ^4.10.1
     amplify-dynamodb-simulator: 2.9.19
     amplify-nodejs-function-runtime-provider: 2.5.24
     amplify-storage-simulator: 1.11.4
@@ -942,7 +942,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.12.7
+    "@aws-amplify/amplify-category-api": ^5.12.8
     "@aws-amplify/amplify-cli-core": 4.3.10
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
@@ -952,7 +952,7 @@ __metadata:
     "@types/jest": ^29.5.1
     "@types/semver": ^7.1.0
     "@types/tiny-async-pool": ^2.0.0
-    amplify-codegen: ^4.10.0
+    amplify-codegen: ^4.10.1
     aws-sdk: ^2.1464.0
     fs-extra: ^8.1.0
     node-fetch: ^2.6.7
@@ -1019,9 +1019,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/appsync-modelgen-plugin@npm:2.14.0, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
-  version: 2.14.0
-  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.14.0"
+"@aws-amplify/appsync-modelgen-plugin@npm:2.15.0, @aws-amplify/appsync-modelgen-plugin@npm:^2.6.0":
+  version: 2.15.0
+  resolution: "@aws-amplify/appsync-modelgen-plugin@npm:2.15.0"
   dependencies:
     "@graphql-codegen/plugin-helpers": ^3.1.1
     "@graphql-codegen/visitor-plugin-common": ^1.22.0
@@ -1035,7 +1035,7 @@ __metadata:
     ts-dedent: ^1.1.0
   peerDependencies:
     graphql: ^15.5.0
-  checksum: 71bc9d38f470a4981d782b84daa44002fd9d21c74cbd90d30a8c73d24ee8b7e857f2369abdf09caf99e165383526b1d3bd3c822a5f2ca3b5ebc741eb795da588
+  checksum: 86a8cf94329f5fe602112e0ff7898bd0d5c5de57b4e35354e3b2303f605161a38fef843d3eb383c019036f7e4b09c160c746dbedcb83ec85a0b61e0db179fe3d
   languageName: node
   linkType: hard
 
@@ -1078,7 +1078,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-app": 5.0.36
     "@aws-amplify/amplify-category-analytics": 5.0.36
-    "@aws-amplify/amplify-category-api": ^5.12.7
+    "@aws-amplify/amplify-category-api": ^5.12.8
     "@aws-amplify/amplify-category-auth": 3.7.15
     "@aws-amplify/amplify-category-custom": 3.1.24
     "@aws-amplify/amplify-category-function": 5.7.10
@@ -1122,7 +1122,7 @@ __metadata:
     "@types/tar-fs": ^2.0.0
     "@types/treeify": ^1.0.0
     "@types/update-notifier": ^5.1.0
-    amplify-codegen: ^4.10.0
+    amplify-codegen: ^4.10.1
     amplify-dotnet-function-runtime-provider: 2.0.29
     amplify-go-function-runtime-provider: 2.3.47
     amplify-headless-interface: 1.17.7
@@ -1334,11 +1334,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-generator@npm:0.5.0":
-  version: 0.5.0
-  resolution: "@aws-amplify/graphql-generator@npm:0.5.0"
+"@aws-amplify/graphql-generator@npm:0.5.1":
+  version: 0.5.1
+  resolution: "@aws-amplify/graphql-generator@npm:0.5.1"
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin": 2.14.0
+    "@aws-amplify/appsync-modelgen-plugin": 2.15.0
     "@aws-amplify/graphql-directives": ^1.0.1
     "@aws-amplify/graphql-docs-generator": 4.2.1
     "@aws-amplify/graphql-types-generator": 3.6.0
@@ -1349,7 +1349,7 @@ __metadata:
     "@graphql-tools/utils": ^9.2.1
     graphql: ^15.5.0
     prettier: ^1.19.1
-  checksum: 16708c25dc7076371686b13fab42db0c010f7123f75ebda4d669b67a17c8a39a0a201f17717a2e21f4566856da0a105ca3c0d17e89cc305eaccd7835dbd7009c
+  checksum: 3bb2619bc1a156962d86c85078e8fbe8ab5d72e0dab10d6e69be75ae44c940496861b0b48274230c7f543cf5585483aeef05ef9d3dff4e0c0ffc85e92a37509e
   languageName: node
   linkType: hard
 
@@ -11656,13 +11656,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-codegen@npm:^4.10.0":
-  version: 4.10.0
-  resolution: "amplify-codegen@npm:4.10.0"
+"amplify-codegen@npm:^4.10.1":
+  version: 4.10.1
+  resolution: "amplify-codegen@npm:4.10.1"
   dependencies:
     "@aws-amplify/graphql-directives": ^1.0.1
     "@aws-amplify/graphql-docs-generator": 4.2.1
-    "@aws-amplify/graphql-generator": 0.5.0
+    "@aws-amplify/graphql-generator": 0.5.1
     "@aws-amplify/graphql-types-generator": 3.6.0
     "@graphql-codegen/core": ^2.6.6
     chalk: ^3.0.0
@@ -11680,7 +11680,7 @@ __metadata:
   peerDependencies:
     "@aws-amplify/amplify-cli-core": "*"
     graphql-transformer-core: ^8.0.0
-  checksum: 1116eef7b090d2af05fdfe142c90f9893b3db88f46fe9b6a7fdd524d67b61130bd35679f48c55fed8b6dc79f0896440c52c40a7876653d2c0868e50fc68b35cd
+  checksum: 3016f564641a928ee902f4a9d8c152ae25e33d82d4f72c3630c6d22713ced8af9324e052414c8c5b281007b1d022e182ac14aa43f71cbabf332ef35ab9492e9a
   languageName: node
   linkType: hard
 
