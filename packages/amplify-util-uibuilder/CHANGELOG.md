@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.14-rc.46b3b71d99f4572.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.13...@aws-amplify/amplify-util-uibuilder@1.14.14-rc.46b3b71d99f4572.0) (2024-11-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
 ## [1.14.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.12...@aws-amplify/amplify-util-uibuilder@1.14.13) (2024-10-05)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder

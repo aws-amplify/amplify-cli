@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.13.1-rc.46b3b71d99f4572.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0...@aws-amplify/cli-internal@12.13.1-rc.46b3b71d99f4572.0) (2024-11-14)
+
+
+### Bug Fixes
+
+* add opt-out for appId mismatch check during init ([#14013](https://github.com/aws-amplify/amplify-cli/issues/14013)) ([87a6b4c](https://github.com/aws-amplify/amplify-cli/commit/87a6b4c66b064e73f520355cd7b563090f87b6cb))
+
+
+
+
+
 # [12.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.6...@aws-amplify/cli-internal@12.13.0) (2024-10-05)
 
 
