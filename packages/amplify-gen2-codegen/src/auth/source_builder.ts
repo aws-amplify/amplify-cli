@@ -484,7 +484,7 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
             typeof value === 'object'
               ? factory.createObjectLiteralExpression(
                   Object.entries(value).map(([_key, _value]) =>
-                    factory.createPropertyAssignment(factory.createIdentifier(_key), factory.createStringLiteral(_value)),
+                    factory.createPropertyAssignment(factory.createStringLiteral(_key), factory.createStringLiteral(_value)),
                   ),
                   true,
                 )
