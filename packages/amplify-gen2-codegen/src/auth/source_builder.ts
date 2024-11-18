@@ -1,6 +1,6 @@
 import ts, { PropertyAssignment } from 'typescript';
 import assert from 'node:assert';
-import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
+import { PasswordPolicyType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTriggersProperty, Lambda } from '../function/lambda';
 
@@ -151,6 +151,7 @@ export interface AuthDefinition {
   readAttributes?: string[];
   writeAttributes?: string[];
   referenceAuth?: ReferenceAuth;
+  userPoolClient?: UserPoolClientType;
 }
 
 const factory = ts.factory;

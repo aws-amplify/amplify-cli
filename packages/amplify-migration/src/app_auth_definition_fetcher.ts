@@ -147,6 +147,13 @@ export class AppAuthDefinitionFetcher {
       }),
     );
 
+    const { UserPoolClient: userPoolClient } = await this.cognitoIdentityProviderClient.send(
+      new DescribeUserPoolClientCommand({
+        UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
+        ClientId: resourcesByLogicalId['UserPoolClient'].PhysicalResourceId,
+      }),
+    );
+
     const { Providers: identityProviders } = await this.cognitoIdentityProviderClient.send(
       new ListIdentityProvidersCommand({
         UserPoolId: resourcesByLogicalId['UserPool'].PhysicalResourceId,
@@ -192,6 +199,7 @@ export class AppAuthDefinitionFetcher {
       guestLogin,
       mfaConfig,
       totpConfig,
+      userPoolClient,
     });
   };
 }

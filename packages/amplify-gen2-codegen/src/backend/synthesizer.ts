@@ -12,6 +12,7 @@ import ts, {
 import { PolicyOverrides, ReferenceAuth } from '../auth/source_builder.js';
 import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../storage/source_builder.js';
+import { UserPoolClientType, OAuthFlowType, ExplicitAuthFlowsType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -27,6 +28,7 @@ export interface BackendRenderParameters {
     readAttributes?: string[];
     writeAttributes?: string[];
     referenceAuth?: ReferenceAuth;
+    userPoolClient?: UserPoolClientType;
   };
   storage?: {
     importFrom: string;
@@ -46,6 +48,11 @@ export interface BackendRenderParameters {
 }
 
 export class BackendSynthesizer {
+  private importDurationFlag = false;
+  private oAuthFlag = false;
+  private readWriteAttributeFlag = false;
+  private supportedIdentityProviderFlag = false;
+
   private createPropertyAccessExpression(objectIdentifier: Identifier, propertyPath: string): Expression {
     const parts = propertyPath.split('.');
     let expression: Expression = objectIdentifier;
@@ -113,6 +120,291 @@ export class BackendSynthesizer {
       return factory.createIdentifier('undefined');
     }
     throw new TypeError(`Unrecognized type: ${typeof value}`);
+  }
+
+  private createBooleanPropertyAssignment(identifier: string, condition: any) {
+    return factory.createPropertyAssignment(
+      factory.createIdentifier(identifier),
+      condition ?? null ? factory.createTrue() : factory.createFalse(),
+    );
+  }
+
+  private createListPropertyAssignment(identifier: string, listAttribute: string[]) {
+    return factory.createPropertyAssignment(
+      factory.createIdentifier(identifier),
+      factory.createArrayLiteralExpression(listAttribute.map((attribute) => factory.createStringLiteral(attribute))),
+    );
+  }
+
+  private createEnumListPropertyAssignment(identifier: string, enumIdentifier: string, listAttribute: string[]) {
+    return factory.createPropertyAssignment(
+      factory.createIdentifier(identifier),
+      factory.createArrayLiteralExpression(
+        listAttribute.map((attribute) =>
+          factory.createPropertyAccessExpression(factory.createIdentifier(enumIdentifier), factory.createIdentifier(attribute)),
+        ),
+        true,
+      ),
+    );
+  }
+
+  private createNumericPropertyAssignment(identifier: string, numericLiteral: number) {
+    return factory.createPropertyAssignment(factory.createIdentifier(identifier), factory.createNumericLiteral(numericLiteral));
+  }
+
+  private createDurationPropertyAssignment(identifier: string, numericLiteral: number, durationUnit: string) {
+    const duration = factory.createCallExpression(factory.createIdentifier(`Duration.${durationUnit}`), undefined, [
+      factory.createNumericLiteral(numericLiteral),
+    ]);
+    return factory.createPropertyAssignment(factory.createIdentifier(identifier), duration);
+  }
+
+  private createStringPropertyAssignment(identifier: string, stringLiteral: string) {
+    return factory.createPropertyAssignment(factory.createIdentifier(identifier), factory.createStringLiteral(stringLiteral));
+  }
+
+  private addRemovalPolicyAssigment(identifier: string) {
+    return factory.createCallExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier(identifier), factory.createIdentifier('applyRemovalPolicy')),
+      undefined,
+      [
+        factory.createIdentifier('RemovalPolicy.RETAIN'),
+        factory.createObjectLiteralExpression(
+          [factory.createPropertyAssignment(factory.createIdentifier('applyToUpdateReplacePolicy'), factory.createTrue())],
+          false,
+        ),
+      ],
+    );
+  }
+
+  private createUserPoolAssignment(userPoolClient: UserPoolClientType, imports: any[]) {
+    const userPoolAtrributesMap = new Map<string, string>();
+    userPoolAtrributesMap.set('ClientName', 'userPoolClientName');
+    userPoolAtrributesMap.set('ClientSecret', 'generateSecret');
+    userPoolAtrributesMap.set('ReadAttributes', 'readAttributes');
+    userPoolAtrributesMap.set('WriteAttributes', 'writeAttributes');
+    userPoolAtrributesMap.set('RefreshTokenValidity', 'refreshTokenValidity');
+    userPoolAtrributesMap.set('AccessTokenValidity', 'accessTokenValidity');
+    userPoolAtrributesMap.set('IdTokenValidity', 'idTokenValidity');
+    userPoolAtrributesMap.set('RefreshToken', 'refreshToken');
+    userPoolAtrributesMap.set('AccessToken', 'accessToken');
+    userPoolAtrributesMap.set('IdToken', 'idToken');
+    userPoolAtrributesMap.set('AllowedOAuthScopes', 'scopes');
+    userPoolAtrributesMap.set('CallbackURLs', 'callbackUrls');
+    userPoolAtrributesMap.set('LogoutURLs', 'logoutUrls');
+    userPoolAtrributesMap.set('DefaultRedirectURI', 'defaultRedirectUri');
+    userPoolAtrributesMap.set('AllowedOAuthFlowsUserPoolClient', 'disableOAuth');
+    userPoolAtrributesMap.set('EnableTokenRevocation', 'enableTokenRevocation');
+    userPoolAtrributesMap.set('EnablePropagateAdditionalUserContextData', 'enablePropagateAdditionalUserContextData');
+    userPoolAtrributesMap.set('SupportedIdentityProviders', 'supportedIdentityProviders');
+    userPoolAtrributesMap.set('AuthSessionValidity', 'authSessionValidity');
+    userPoolAtrributesMap.set('ExplicitAuthFlows', 'authFlows');
+    userPoolAtrributesMap.set('AllowedOAuthFlows', 'flows');
+
+    const test = factory.createCallExpression(
+      factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
+      undefined,
+      [factory.createStringLiteral(userPoolClient.UserPoolId!), this.createNestedObjectExpression(userPoolClient, userPoolAtrributesMap)],
+    );
+
+    if (this.importDurationFlag) {
+      imports.push(this.createImportStatement([factory.createIdentifier('Duration')], 'aws-cdk-lib'));
+    }
+
+    if (this.readWriteAttributeFlag || this.oAuthFlag || this.supportedIdentityProviderFlag) {
+      const identifiers = [
+        ...(this.readWriteAttributeFlag ? [factory.createIdentifier('ClientAttributes')] : []),
+        ...(this.oAuthFlag ? [factory.createIdentifier('OAuthScope')] : []),
+        ...(this.supportedIdentityProviderFlag ? [factory.createIdentifier('UserPoolClientIdentityProvider')] : []),
+      ];
+
+      if (identifiers.length > 0) {
+        imports.push(this.createImportStatement(identifiers, 'aws-cdk-lib/aws-cognito'));
+      }
+    }
+
+    return test;
+  }
+
+  private createNestedObjectExpression(object: Record<string, any>, map: Map<string, string>): ts.ObjectLiteralExpression {
+    const objectLiterals = [];
+
+    for (const [key, value] of Object.entries(object)) {
+      if (typeof value == 'boolean' && map.has(key)) {
+        objectLiterals.push(this.createBooleanPropertyAssignment(map.get(key)!, value));
+      } else if (typeof value == 'string' && map.has(key)) {
+        if (!this.oAuthFlag && key == 'DefaultRedirectURI') {
+          this.oAuthFlag = true;
+          objectLiterals.push(this.createOAuthObjectExpression(object, map));
+        } else if (key == 'ClientSecret') {
+          objectLiterals.push(this.createBooleanPropertyAssignment(map.get(key)!, value));
+        } else if (key != 'DefaultRedirectURI') {
+          objectLiterals.push(this.createStringPropertyAssignment(map.get(key)!, value));
+        }
+      } else if (typeof value == 'number' && map.has(key)) {
+        if (['IdTokenValidity', 'RefreshTokenValidity', 'AccessTokenValidity', 'AuthSessionValidity'].includes(key)) {
+          // convert it to Duration
+          this.importDurationFlag = true;
+          if (key == 'IdTokenValidity') {
+            let durationUnit = 'hours';
+            if (object['TokenValidityUnits'] && object['TokenValidityUnits'].IdToken) {
+              durationUnit = object['TokenValidityUnits'].IdToken;
+            }
+            objectLiterals.push(this.createDurationPropertyAssignment(map.get(key)!, value, durationUnit));
+          } else if (key == 'RefreshTokenValidity') {
+            let durationUnit = 'days';
+            if (object['TokenValidityUnits'] && object['TokenValidityUnits'].RefreshToken) {
+              durationUnit = object['TokenValidityUnits'].RefreshToken;
+            }
+            objectLiterals.push(this.createDurationPropertyAssignment(map.get(key)!, value, durationUnit));
+          } else if (key == 'AccessTokenValidity') {
+            let durationUnit = 'hours';
+            if (object['TokenValidityUnits'] && object['TokenValidityUnits'].AccessToken) {
+              durationUnit = object['TokenValidityUnits'].AccessToken;
+            }
+            objectLiterals.push(this.createDurationPropertyAssignment(map.get(key)!, value, durationUnit));
+          } else if (key == 'AuthSessionValidity') {
+            objectLiterals.push(this.createDurationPropertyAssignment(map.get(key)!, value, 'minutes'));
+          }
+        } else {
+          objectLiterals.push(this.createNumericPropertyAssignment(map.get(key)!, value));
+        }
+      } else if (Array.isArray(value) && map.has(key)) {
+        if (key == 'ReadAttributes' || key == 'WriteAttributes') {
+          objectLiterals.push(this.createReadWriteAttributes(map.get(key)!, value));
+        } else if (key == 'SupportedIdentityProviders') {
+          this.supportedIdentityProviderFlag = true;
+          objectLiterals.push(this.createEnumListPropertyAssignment(map.get(key)!, 'UserPoolClientIdentityProvider', value));
+        } else if (!this.oAuthFlag && key == 'AllowedOAuthFlows') {
+          this.oAuthFlag = true;
+          objectLiterals.push(this.createOAuthObjectExpression(object, map));
+        } else if (key == 'ExplicitAuthFlows') {
+          objectLiterals.push(
+            factory.createPropertyAssignment(factory.createIdentifier(map.get(key)!), this.createAuthFlowsObjectExpression(value)),
+          );
+        } else if (!this.oAuthFlag && key == 'AllowedOAuthScopes') {
+          this.oAuthFlag = true;
+          objectLiterals.push(this.createOAuthObjectExpression(object, map));
+        } else {
+          if (!this.oAuthFlag && (key == 'CallbackURLs' || key == 'LogoutURLs')) {
+            this.oAuthFlag = true;
+            objectLiterals.push(this.createOAuthObjectExpression(object, map));
+          } else if (key != 'CallbackURLs' && key != 'LogoutURLs' && key != 'AllowedOAuthScopes') {
+            objectLiterals.push(this.createListPropertyAssignment(map.get(key)!, value));
+          }
+        }
+      } else if (map.has(key) && typeof value == 'object') {
+        objectLiterals.push(factory.createPropertyAssignment(factory.createIdentifier(key), this.createNestedObjectExpression(value, map)));
+      }
+    }
+    return factory.createObjectLiteralExpression(objectLiterals, true);
+  }
+
+  private createReadWriteAttributes(identifier: string, attributes: string[]) {
+    const standardAttrMap = new Map<string, string>();
+    standardAttrMap.set('address', 'address');
+    standardAttrMap.set('birthdate', 'birthdate');
+    standardAttrMap.set('email', 'email');
+    standardAttrMap.set('family_name', 'familyName');
+    standardAttrMap.set('gender', 'gender');
+    standardAttrMap.set('given_name', 'givenName');
+    standardAttrMap.set('locale', 'locale');
+    standardAttrMap.set('middle_name', 'middleName');
+    standardAttrMap.set('name', 'fullname');
+    standardAttrMap.set('nickname', 'nickname');
+    standardAttrMap.set('phone_number', 'phoneNumber');
+    standardAttrMap.set('picture', 'profilePicture');
+    standardAttrMap.set('preferred_username', 'preferredUsername');
+    standardAttrMap.set('profile', 'profilePage');
+    standardAttrMap.set('updated_at', 'lastUpdateTime');
+    standardAttrMap.set('website', 'website');
+    standardAttrMap.set('zoneinfo', 'timezone');
+    standardAttrMap.set('email_verified', 'emailVerified');
+    standardAttrMap.set('phone_number_verified', 'phoneNumberVerified');
+
+    this.readWriteAttributeFlag = true;
+    const standardAttributes = attributes.filter((attribute) => !attribute.startsWith('custom:'));
+    const standardAttributesLiterals: ts.PropertyAssignment[] = [];
+    standardAttributes.forEach((attribute) => {
+      if (standardAttrMap.has(attribute)) {
+        standardAttributesLiterals.push(
+          factory.createPropertyAssignment(factory.createIdentifier(standardAttrMap.get(attribute)!), factory.createTrue()),
+        );
+      }
+    });
+
+    let clientAttributes = factory.createCallExpression(
+      factory.createPropertyAccessExpression(
+        factory.createIdentifier('new ClientAttributes()'),
+        factory.createIdentifier('withStandardAttributes'),
+      ),
+      undefined,
+      [factory.createObjectLiteralExpression(standardAttributesLiterals, true)],
+    );
+
+    const customAttributes = attributes.filter((attribute) => attribute.startsWith('custom:'));
+
+    if (customAttributes) {
+      clientAttributes = factory.createCallExpression(
+        factory.createPropertyAccessExpression(clientAttributes, factory.createIdentifier('withCustomAttributes')),
+        undefined,
+        customAttributes.map((attr) => factory.createStringLiteral(attr)),
+      );
+    }
+
+    return factory.createPropertyAssignment(factory.createIdentifier(identifier), clientAttributes);
+  }
+
+  private mapOAuthScopes(scopes: string[]) {
+    const scopeMap = new Map<string, string>();
+    scopeMap.set('phone', 'PHONE');
+    scopeMap.set('email', 'EMAIL');
+    scopeMap.set('openid', 'OPENID');
+    scopeMap.set('profile', 'PROFILE');
+
+    const scopesList: string[] = [];
+    scopes.forEach((scope) => {
+      if (scopeMap.has(scope)) {
+        scopesList.push(scopeMap.get(scope)!);
+      }
+    });
+    return scopesList;
+  }
+
+  private createOAuthObjectExpression(object: Record<string, any>, map: Map<string, string>) {
+    const oAuthLiterals = [];
+
+    for (const [key, value] of Object.entries(object)) {
+      if (key == 'AllowedOAuthFlows') {
+        oAuthLiterals.push(
+          factory.createPropertyAssignment(factory.createIdentifier('flows'), this.createOAuthFlowsObjectExpression(value)),
+        );
+      } else if (key == 'AllowedOAuthScopes') {
+        oAuthLiterals.push(this.createEnumListPropertyAssignment('scopes', 'OAuthScope', this.mapOAuthScopes(value)));
+      } else if (key == 'CallbackURLs' || key == 'LogoutURLs') {
+        oAuthLiterals.push(this.createListPropertyAssignment(map.get(key)!, value));
+      } else if (key == 'DefaultRedirectURI') {
+        oAuthLiterals.push(this.createStringPropertyAssignment(map.get(key)!, value));
+      }
+    }
+    return factory.createPropertyAssignment(factory.createIdentifier('oAuth'), factory.createObjectLiteralExpression(oAuthLiterals, true));
+  }
+
+  private createOAuthFlowsObjectExpression(value: string[]) {
+    return factory.createObjectLiteralExpression([
+      this.createBooleanPropertyAssignment('authorizationCodeGrant', value.includes(OAuthFlowType.code)),
+      this.createBooleanPropertyAssignment('implicitCodeGrant', value.includes(OAuthFlowType.implicit)),
+      this.createBooleanPropertyAssignment('clientCredentials', value.includes(OAuthFlowType.client_credentials)),
+    ]);
+  }
+
+  private createAuthFlowsObjectExpression(value: string[]) {
+    return factory.createObjectLiteralExpression([
+      this.createBooleanPropertyAssignment('adminUserPassword', value.includes(ExplicitAuthFlowsType.ALLOW_ADMIN_USER_PASSWORD_AUTH)),
+      this.createBooleanPropertyAssignment('custom', value.includes(ExplicitAuthFlowsType.ALLOW_CUSTOM_AUTH)),
+      this.createBooleanPropertyAssignment('userPassword', value.includes(ExplicitAuthFlowsType.ALLOW_USER_PASSWORD_AUTH)),
+      this.createBooleanPropertyAssignment('userSrp', value.includes(ExplicitAuthFlowsType.ALLOW_USER_SRP_AUTH)),
+    ]);
   }
 
   render(renderArgs: BackendRenderParameters): NodeArray<Node> {
@@ -232,6 +524,7 @@ export class BackendSynthesizer {
           policies as number | string | boolean | string[] | object,
         ),
       );
+      nodes.push(this.addRemovalPolicyAssigment('cfnUserPool'));
     }
 
     if (renderArgs.auth?.guestLogin === false || (renderArgs.auth?.identityPoolName && !renderArgs?.auth?.referenceAuth)) {
@@ -247,6 +540,7 @@ export class BackendSynthesizer {
       if (renderArgs.auth?.guestLogin === false) {
         nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
       }
+      nodes.push(this.addRemovalPolicyAssigment('cfnIdentityPool'));
     }
 
     if (
@@ -288,6 +582,12 @@ export class BackendSynthesizer {
       );
     }
 
+    if (renderArgs.auth?.userPoolClient) {
+      const userPoolVariableStatement = this.createVariableStatement(this.createVariableDeclaration('userPool', 'auth.resources.userPool'));
+      nodes.push(userPoolVariableStatement);
+      nodes.push(this.createUserPoolAssignment(renderArgs.auth?.userPoolClient, imports));
+    }
+
     if (renderArgs.storage && renderArgs.storage.hasS3Bucket) {
       assert(renderArgs.storage.bucketName);
       const cfnStorageVariableStatement = this.createVariableStatement(
@@ -303,20 +603,7 @@ export class BackendSynthesizer {
       );
 
       nodes.push(bucketNameAssignment);
-
-      const removalPolicyAssignment = factory.createCallExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('applyRemovalPolicy')),
-        undefined,
-        [
-          factory.createIdentifier('RemovalPolicy.RETAIN'),
-          factory.createObjectLiteralExpression(
-            [factory.createPropertyAssignment(factory.createIdentifier('applyToUpdateReplacePolicy'), factory.createTrue())],
-            false,
-          ),
-        ],
-      );
-
-      nodes.push(removalPolicyAssignment);
+      nodes.push(this.addRemovalPolicyAssigment('s3Bucket'));
     }
 
     if (
@@ -332,12 +619,7 @@ export class BackendSynthesizer {
               factory.createIdentifier('accelerateConfiguration'),
             ),
             factory.createObjectLiteralExpression(
-              [
-                factory.createPropertyAssignment(
-                  factory.createIdentifier('accelerationStatus'),
-                  factory.createStringLiteral(renderArgs.storage.accelerateConfiguration),
-                ),
-              ],
+              [this.createStringPropertyAssignment('accelerationStatus', renderArgs.storage.accelerateConfiguration)],
               false,
             ),
           ),
@@ -353,12 +635,7 @@ export class BackendSynthesizer {
               factory.createIdentifier('versioningConfiguration'),
             ),
             factory.createObjectLiteralExpression(
-              [
-                factory.createPropertyAssignment(
-                  factory.createIdentifier('status'),
-                  factory.createStringLiteral(renderArgs.storage.versionConfiguration),
-                ),
-              ],
+              [this.createStringPropertyAssignment('status', renderArgs.storage.versionConfiguration)],
               false,
             ),
           ),
@@ -367,6 +644,12 @@ export class BackendSynthesizer {
       }
 
       if (renderArgs.storage?.bucketEncryptionAlgorithm) {
+        const serverSideEncryptionByDefaultMap = new Map<any, any>();
+        serverSideEncryptionByDefaultMap.set('SSEAlgorithm', 'sseAlgorithm');
+        serverSideEncryptionByDefaultMap.set('KMSMasterKeyID', 'kmsMasterKeyId');
+        serverSideEncryptionByDefaultMap.set('bucketKeyEnabled', 'bucketKeyEnabled');
+        serverSideEncryptionByDefaultMap.set('serverSideEncryptionByDefault', 'serverSideEncryptionByDefault');
+
         const bucketEncryptionAssignment = factory.createExpressionStatement(
           factory.createAssignment(
             factory.createPropertyAccessExpression(factory.createIdentifier('s3Bucket'), factory.createIdentifier('bucketEncryption')),
@@ -375,37 +658,7 @@ export class BackendSynthesizer {
                 factory.createPropertyAssignment(
                   factory.createIdentifier('serverSideEncryptionConfiguration'),
                   factory.createArrayLiteralExpression(
-                    [
-                      factory.createObjectLiteralExpression(
-                        [
-                          factory.createPropertyAssignment(
-                            factory.createIdentifier('serverSideEncryptionByDefault'),
-                            factory.createObjectLiteralExpression(
-                              [
-                                factory.createPropertyAssignment(
-                                  factory.createIdentifier('sseAlgorithm'),
-                                  factory.createStringLiteral(
-                                    renderArgs.storage.bucketEncryptionAlgorithm.serverSideEncryptionByDefault.SSEAlgorithm!,
-                                  ),
-                                ),
-                                factory.createPropertyAssignment(
-                                  factory.createIdentifier('kmsMasterKeyId'),
-                                  factory.createStringLiteral(
-                                    renderArgs.storage.bucketEncryptionAlgorithm.serverSideEncryptionByDefault.KMSMasterKeyID!,
-                                  ),
-                                ),
-                              ],
-                              true,
-                            ),
-                          ),
-                          factory.createPropertyAssignment(
-                            factory.createIdentifier('bucketKeyEnabled'),
-                            renderArgs.storage.bucketEncryptionAlgorithm.bucketKeyEnabled! ? factory.createTrue() : factory.createFalse(),
-                          ),
-                        ],
-                        true,
-                      ),
-                    ],
+                    [this.createNestedObjectExpression(renderArgs.storage.bucketEncryptionAlgorithm, serverSideEncryptionByDefaultMap)],
                     true,
                   ),
                 ),
@@ -425,6 +678,7 @@ export class BackendSynthesizer {
         ),
       );
     }
+
     return factory.createNodeArray([...imports, ...errors, backendStatement, ...nodes], true);
   }
 }
