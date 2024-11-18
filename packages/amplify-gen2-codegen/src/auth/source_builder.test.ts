@@ -396,8 +396,8 @@ describe('render auth node', () => {
       assert.match(source, /userPoolId: "userPoolId"/);
       assert.match(source, /userPoolClientId: "userPoolClientId"/);
       assert.match(source, /groups:/);
-      assert.match(source, /Admin: "AdminRoleARN"/);
-      assert.match(source, /ReadOnly: "ReadOnlyRoleARN"/);
+      assert.match(source, /"Admin": "AdminRoleARN"/);
+      assert.match(source, /"ReadOnly": "ReadOnlyRoleARN"/);
       assert.doesNotMatch(source, /identityPoolId: "identityPoolId"/);
       assert.doesNotMatch(source, /authRoleArn: "authRoleArn"/);
       assert.doesNotMatch(source, /unauthRoleArn: "unauthRoleArn"/);
@@ -421,8 +421,8 @@ describe('render auth node', () => {
       assert.doesNotMatch(source, /userPoolId: "userPoolId"/);
       assert.doesNotMatch(source, /userPoolClientId: "userPoolClientId"/);
       assert.doesNotMatch(source, /groups:/);
-      assert.doesNotMatch(source, /Admin: "AdminRoleARN"/);
-      assert.doesNotMatch(source, /ReadOnly: "ReadOnlyRoleARN"/);
+      assert.doesNotMatch(source, /"Admin": "AdminRoleARN"/);
+      assert.doesNotMatch(source, /"ReadOnly": "ReadOnlyRoleARN"/);
     });
 
     it(`renders successfully for imported userpool and identity pool`, () => {
@@ -434,7 +434,7 @@ describe('render auth node', () => {
         unauthRoleArn: 'unauthRoleArn',
         groups: {
           Admin: 'AdminRoleARN',
-          ReadOnly: 'ReadOnlyRoleARN',
+          'Read-Only': 'ReadOnlyRoleARN',
         },
       };
       const authDefinition: AuthDefinition = {
@@ -449,8 +449,8 @@ describe('render auth node', () => {
       assert.match(source, /authRoleArn: "authRoleArn"/);
       assert.match(source, /unauthRoleArn: "unauthRoleArn"/);
       assert.match(source, /groups:/);
-      assert.match(source, /Admin: "AdminRoleARN"/);
-      assert.match(source, /ReadOnly: "ReadOnlyRoleARN"/);
+      assert.match(source, /"Admin": "AdminRoleARN"/);
+      assert.match(source, /"Read-Only": "ReadOnlyRoleARN"/);
     });
   });
 });
