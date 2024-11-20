@@ -147,7 +147,7 @@ FROM tools AS runtimes
 
 #****************     .NET-CORE     *******************************************************
 
-ENV DOTNET_8_SDK_VERSION="8.0.11"
+ENV DOTNET_8_SDK_VERSION="8.0.404"
 ENV DOTNET_ROOT="/root/.dotnet"
 
 # Add .NET Core 6 Global Tools install folder to PATH
