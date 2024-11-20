@@ -147,11 +147,11 @@ FROM tools AS runtimes
 
 #****************     .NET-CORE     *******************************************************
 
-ENV DOTNET_6_SDK_VERSION="6.0.405"
+ENV DOTNET_8_SDK_VERSION="8.0.11"
 ENV DOTNET_ROOT="/root/.dotnet"
 
 # Add .NET Core 6 Global Tools install folder to PATH
-RUN  /usr/local/bin/dotnet-install.sh -v $DOTNET_6_SDK_VERSION \
+RUN  /usr/local/bin/dotnet-install.sh -v $DOTNET_8_SDK_VERSION \
      && dotnet --list-sdks \
      && rm -rf /tmp/*
 
@@ -165,8 +165,10 @@ RUN set -ex \
     && rm -rf warmup \
     && rm -rf /tmp/NuGetScratch
 
-RUN dotnet tool install -g amazon.lambda.tools && \
-    dotnet tool install -g amazon.lambda.testtool-6.0
+# https://www.nuget.org/packages/Amazon.Lambda.Tools
+# https://www.nuget.org/packages/Amazon.Lambda.TestTool-8.0
+RUN dotnet tool install -g Amazon.Lambda.Tools --version 5.12.0 && \
+    dotnet tool install -g Amazon.Lambda.TestTool-8.0 --version 0.16.0
 
 # Install Powershell Core
 # See instructions at https://docs.microsoft.com/en-us/powershell/scripting/setup/installing-powershell-core-on-linux
