@@ -178,33 +178,36 @@ export class BackendSynthesizer {
   }
 
   private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: any[]) {
-    const userPoolAtrributesMap = new Map<string, string>();
-    userPoolAtrributesMap.set('ClientName', 'userPoolClientName');
-    userPoolAtrributesMap.set('ClientSecret', 'generateSecret');
-    userPoolAtrributesMap.set('ReadAttributes', 'readAttributes');
-    userPoolAtrributesMap.set('WriteAttributes', 'writeAttributes');
-    userPoolAtrributesMap.set('RefreshTokenValidity', 'refreshTokenValidity');
-    userPoolAtrributesMap.set('AccessTokenValidity', 'accessTokenValidity');
-    userPoolAtrributesMap.set('IdTokenValidity', 'idTokenValidity');
-    userPoolAtrributesMap.set('RefreshToken', 'refreshToken');
-    userPoolAtrributesMap.set('AccessToken', 'accessToken');
-    userPoolAtrributesMap.set('IdToken', 'idToken');
-    userPoolAtrributesMap.set('AllowedOAuthScopes', 'scopes');
-    userPoolAtrributesMap.set('CallbackURLs', 'callbackUrls');
-    userPoolAtrributesMap.set('LogoutURLs', 'logoutUrls');
-    userPoolAtrributesMap.set('DefaultRedirectURI', 'defaultRedirectUri');
-    userPoolAtrributesMap.set('AllowedOAuthFlowsUserPoolClient', 'disableOAuth');
-    userPoolAtrributesMap.set('EnableTokenRevocation', 'enableTokenRevocation');
-    userPoolAtrributesMap.set('EnablePropagateAdditionalUserContextData', 'enablePropagateAdditionalUserContextData');
-    userPoolAtrributesMap.set('SupportedIdentityProviders', 'supportedIdentityProviders');
-    userPoolAtrributesMap.set('AuthSessionValidity', 'authSessionValidity');
-    userPoolAtrributesMap.set('ExplicitAuthFlows', 'authFlows');
-    userPoolAtrributesMap.set('AllowedOAuthFlows', 'flows');
+    const userPoolClientAttributesMap = new Map<string, string>();
+    userPoolClientAttributesMap.set('ClientName', 'userPoolClientName');
+    userPoolClientAttributesMap.set('ClientSecret', 'generateSecret');
+    userPoolClientAttributesMap.set('ReadAttributes', 'readAttributes');
+    userPoolClientAttributesMap.set('WriteAttributes', 'writeAttributes');
+    userPoolClientAttributesMap.set('RefreshTokenValidity', 'refreshTokenValidity');
+    userPoolClientAttributesMap.set('AccessTokenValidity', 'accessTokenValidity');
+    userPoolClientAttributesMap.set('IdTokenValidity', 'idTokenValidity');
+    userPoolClientAttributesMap.set('RefreshToken', 'refreshToken');
+    userPoolClientAttributesMap.set('AccessToken', 'accessToken');
+    userPoolClientAttributesMap.set('IdToken', 'idToken');
+    userPoolClientAttributesMap.set('AllowedOAuthScopes', 'scopes');
+    userPoolClientAttributesMap.set('CallbackURLs', 'callbackUrls');
+    userPoolClientAttributesMap.set('LogoutURLs', 'logoutUrls');
+    userPoolClientAttributesMap.set('DefaultRedirectURI', 'defaultRedirectUri');
+    userPoolClientAttributesMap.set('AllowedOAuthFlowsUserPoolClient', 'disableOAuth');
+    userPoolClientAttributesMap.set('EnableTokenRevocation', 'enableTokenRevocation');
+    userPoolClientAttributesMap.set('EnablePropagateAdditionalUserContextData', 'enablePropagateAdditionalUserContextData');
+    userPoolClientAttributesMap.set('SupportedIdentityProviders', 'supportedIdentityProviders');
+    userPoolClientAttributesMap.set('AuthSessionValidity', 'authSessionValidity');
+    userPoolClientAttributesMap.set('ExplicitAuthFlows', 'authFlows');
+    userPoolClientAttributesMap.set('AllowedOAuthFlows', 'flows');
 
     const test = factory.createCallExpression(
       factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
       undefined,
-      [factory.createStringLiteral(userPoolClient.UserPoolId!), this.createNestedObjectExpression(userPoolClient, userPoolAtrributesMap)],
+      [
+        factory.createStringLiteral(userPoolClient.UserPoolId!),
+        this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap),
+      ],
     );
 
     if (this.importDurationFlag) {
