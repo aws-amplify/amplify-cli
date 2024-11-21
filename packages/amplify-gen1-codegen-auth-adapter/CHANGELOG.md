@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-gen2-migrations-alpha.0...@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-alpha.0) (2024-11-21)
+
+
+### Bug Fixes
+
+* include only required userAttributes and generate identityPoolName in backend file ([76f1bf8](https://github.com/aws-amplify/amplify-cli/commit/76f1bf8bdbc9135bf0f9c983fd2f5448a169af42))
+* resolve api extract errors ([1ee4481](https://github.com/aws-amplify/amplify-cli/commit/1ee4481b45ee1ce24b1f0c521459095888e0b59e))
+* update API.md file for gen1-gen2 codegen ([2531475](https://github.com/aws-amplify/amplify-cli/commit/2531475bb5b65ab3d2a9cdf63b97f81a0916069b))
+
+
+### Features
+
+* ref auth codegen ([d6b1f28](https://github.com/aws-amplify/amplify-cli/commit/d6b1f288299c03d8809ccb3bcf8b74129c850e56))
+
+
+
+
+
 # [0.1.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-gen2-migration-test-alpha.0...@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-gen2-migrations-alpha.0) (2024-10-10)
 
 **Note:** Version bump only for package @aws-amplify/amplify-gen1-codegen-auth-adapter

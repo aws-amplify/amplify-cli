@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-gen2-migrations-alpha.0...@aws-amplify/migrate-template-gen@0.1.0-alpha.0) (2024-11-21)
+
+
+### Bug Fixes
+
+* **migrate-template-gen:** resolve stack name pseudo ref ([5caaf0e](https://github.com/aws-amplify/amplify-cli/commit/5caaf0eb77b22355cb57d71af7f29d2b017fd39d))
+* **migrate-template-gen:** typo in step1 command ([003bc2d](https://github.com/aws-amplify/amplify-cli/commit/003bc2d60383dfeb406b76ca7ee14df352191e31))
+* **migrate-template-gen:** update gen1 stack with empty tags to support refactor ([8a5c406](https://github.com/aws-amplify/amplify-cli/commit/8a5c4069d041df9e7903abb767a8bd544dd23933))
+* remove delete pseudo param ([2b85032](https://github.com/aws-amplify/amplify-cli/commit/2b85032b06555788869938b7552823da59a627c2))
+
+
+### Features
+
+* **migrate-template-gen:** add rollback step for refactor ([5ec3cf9](https://github.com/aws-amplify/amplify-cli/commit/5ec3cf96582a8a7669ec1305cee73aec9e9099c1))
+
+
+
+
+
 # 0.1.0-gen2-migrations-alpha.0 (2024-10-10)
 
 

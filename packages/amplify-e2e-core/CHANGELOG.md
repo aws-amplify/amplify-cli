@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.5.11-gen2-migration-test-alpha.0...@aws-amplify/amplify-e2e-core@5.6.0-alpha.0) (2024-11-21)
+
+
+### Features
+
+* add category specific codegen integration tests ([70033b2](https://github.com/aws-amplify/amplify-cli/commit/70033b2d38b21f6c0216fe59c4b7281b1effb628))
+
+
+
+
+
 ## [5.5.11-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.5.11-gen2-migrations-test.0...@aws-amplify/amplify-e2e-core@5.5.11-gen2-migration-test-alpha.0) (2024-09-26)
 
 

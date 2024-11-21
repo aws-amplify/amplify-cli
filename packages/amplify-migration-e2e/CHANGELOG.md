@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-gen2-migrations-alpha.0...@aws-amplify/amplify-migration-e2e@0.1.0-alpha.0) (2024-11-21)
+
+
+### Bug Fixes
+
+* add function comments for better readability ([b9326c0](https://github.com/aws-amplify/amplify-cli/commit/b9326c076be9d1e35fa659e97fae92b3ea8732d1))
+* add necessary comment for removal of fields from resource property ([bd7aa34](https://github.com/aws-amplify/amplify-cli/commit/bd7aa34ecd6f607bb1f9a5892b3cda4fe6a1ce43))
+* add necessary comments ([f0e6b9e](https://github.com/aws-amplify/amplify-cli/commit/f0e6b9e2cbda85fedaa5f9a50e55f2c458273b0f))
+* remove typo comments ([07949c4](https://github.com/aws-amplify/amplify-cli/commit/07949c43fcb60d03a07dcfabf7a1995460ad623c))
+* resolve lint errors ([d8066c2](https://github.com/aws-amplify/amplify-cli/commit/d8066c2405159bf5375947ae3634d98960be4d6e))
+
+
+### Features
+
+* add identitypool and userpoolclient resource assertions ([dbf44b4](https://github.com/aws-amplify/amplify-cli/commit/dbf44b417f56692be3608d684dc8f31f985b6df8))
+* add identitypool and userpoolclient resource assertions ([b18d35f](https://github.com/aws-amplify/amplify-cli/commit/b18d35fd9b76e7419d9bba591aaa6273ece69f80))
+* added tests for rollback commands of templategen command ([7098ec9](https://github.com/aws-amplify/amplify-cli/commit/7098ec950ba335658ddc4739f7ddc88534d534aa))
+* templategen command e2e integration tests ([8f2ede1](https://github.com/aws-amplify/amplify-cli/commit/8f2ede1045f09f7ab5d21d0bc91eb6eee6455761))
+
+
+
+
+
 # [0.1.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-gen2-migration-test-alpha.0...@aws-amplify/amplify-migration-e2e@0.1.0-gen2-migrations-alpha.0) (2024-10-10)
 
 

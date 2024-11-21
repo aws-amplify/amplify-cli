@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-gen2-migrations-alpha.0...@aws-amplify/migrate@0.1.0-alpha.0) (2024-11-21)
+
+
+### Bug Fixes
+
+* import auth validation condition ([a76b71b](https://github.com/aws-amplify/amplify-cli/commit/a76b71bdf8eca2bc10a42bd4d90cbea1971141ed))
+* include only required userAttributes and generate identityPoolName in backend file ([76f1bf8](https://github.com/aws-amplify/amplify-cli/commit/76f1bf8bdbc9135bf0f9c983fd2f5448a169af42))
+* invert isImported condition ([2739aec](https://github.com/aws-amplify/amplify-cli/commit/2739aec0dd923537d8bf704bb63944f4756cc2c9))
+* remove duplicate code and .amplify dir ([822bc58](https://github.com/aws-amplify/amplify-cli/commit/822bc5844aa59f22068b4dcb6b09766a5de3ad52))
+* updated storage codegen to include encryption and removal policy ([94299ce](https://github.com/aws-amplify/amplify-cli/commit/94299ced6bd550675ecd87d9087fbca190cce740))
+
+
+### Features
+
+* ref auth codegen ([d6b1f28](https://github.com/aws-amplify/amplify-cli/commit/d6b1f288299c03d8809ccb3bcf8b74129c850e56))
+
+
+
+
+
 # [0.1.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-gen2-migration-test-alpha.0...@aws-amplify/migrate@0.1.0-gen2-migrations-alpha.0) (2024-10-10)
 
 

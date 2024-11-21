@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-mock",
-  "version": "5.10.7-gen2-migration-test-alpha.0",
+  "version": "5.10.7-alpha.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "@aws-amplify/amplify-environment-parameters": "1.9.16-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.16-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-prompts": "2.8.6",
-    "@aws-amplify/amplify-provider-awscloudformation": "8.10.14-gen2-migration-test-alpha.0",
+    "@aws-amplify/amplify-provider-awscloudformation": "8.10.14-alpha.0",
     "@hapi/topo": "^5.0.0",
     "amplify-codegen": "^4.9.4",
     "amplify-dynamodb-simulator": "2.9.20-gen2-migration-test-alpha.0",

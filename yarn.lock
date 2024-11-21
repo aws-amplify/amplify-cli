@@ -334,14 +334,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.26.24-gen2-migration-test-alpha.0, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@2.26.24-alpha.0, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.0-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-environment-parameters": 1.9.16-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-alpha.0
     aws-sdk: ^2.1464.0
     chalk: ^4.1.1
     fs-extra: ^8.1.0
@@ -524,7 +524,7 @@ __metadata:
   resolution: "@aws-amplify/amplify-console-integration-tests@workspace:packages/amplify-console-integration-tests"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.0-gen2-migration-test-alpha.0
-    "@aws-amplify/amplify-e2e-core": 5.5.11-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-e2e-core": 5.6.0-alpha.0
     "@types/ini": ^1.3.30
     aws-sdk: ^2.1464.0
     dotenv: ^8.2.0
@@ -566,7 +566,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-e2e-core@5.5.11-gen2-migration-test-alpha.0, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
+"@aws-amplify/amplify-e2e-core@5.6.0-alpha.0, @aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-e2e-core@workspace:packages/amplify-e2e-core"
   dependencies:
@@ -672,11 +672,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-gen2-migrations-alpha.0, @aws-amplify/amplify-gen1-codegen-auth-adapter@workspace:packages/amplify-gen1-codegen-auth-adapter":
+"@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-alpha.0, @aws-amplify/amplify-gen1-codegen-auth-adapter@workspace:packages/amplify-gen1-codegen-auth-adapter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-auth-adapter@workspace:packages/amplify-gen1-codegen-auth-adapter"
   dependencies:
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-gen2-migrations-alpha.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-alpha.0
     "@aws-amplify/auth-construct": ^1.1.5
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-cognito-identity": ^3.592.0
@@ -690,7 +690,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-data-adapter@workspace:packages/amplify-gen1-codegen-data-adapter"
   dependencies:
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-gen2-migrations-alpha.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-alpha.0
     "@aws-amplify/auth-construct": ^1.1.5
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-cloudformation": ^3.592.0
@@ -701,22 +701,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-gen2-migrations-alpha.0, @aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter":
+"@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-alpha.0, @aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter"
   dependencies:
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-gen2-migrations-alpha.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-alpha.0
     "@aws-sdk/client-lambda": ^3.637.0
     jest: ^29.5.0
     typescript: ^5.4.5
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-gen1-codegen-storage-adapter@0.1.0-gen2-migrations-alpha.0, @aws-amplify/amplify-gen1-codegen-storage-adapter@workspace:packages/amplify-gen1-codegen-storage-adapter":
+"@aws-amplify/amplify-gen1-codegen-storage-adapter@0.1.0-alpha.0, @aws-amplify/amplify-gen1-codegen-storage-adapter@workspace:packages/amplify-gen1-codegen-storage-adapter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-storage-adapter@workspace:packages/amplify-gen1-codegen-storage-adapter"
   dependencies:
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-gen2-migrations-alpha.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-alpha.0
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-cognito-identity": ^3.592.0
     "@aws-sdk/client-cognito-identity-provider": ^3.592.0
@@ -726,7 +726,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migrations-alpha.0, @aws-amplify/amplify-gen2-codegen@workspace:packages/amplify-gen2-codegen":
+"@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.0, @aws-amplify/amplify-gen2-codegen@workspace:packages/amplify-gen2-codegen":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen2-codegen@workspace:packages/amplify-gen2-codegen"
   dependencies:
@@ -836,8 +836,8 @@ __metadata:
   resolution: "@aws-amplify/amplify-migration-e2e@workspace:packages/amplify-migration-e2e"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.0-gen2-migration-test-alpha.0
-    "@aws-amplify/amplify-e2e-core": 5.5.11-gen2-migration-test-alpha.0
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-gen2-migrations-alpha.0
+    "@aws-amplify/amplify-e2e-core": 5.6.0-alpha.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-alpha.0
     "@aws-sdk/client-appsync": ^3.666.0
     "@aws-sdk/client-cloudcontrol": ^3.658.1
     "@aws-sdk/client-cognito-identity": ^3.670.0
@@ -856,7 +856,7 @@ __metadata:
   resolution: "@aws-amplify/amplify-migration-tests@workspace:packages/amplify-migration-tests"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.0-gen2-migration-test-alpha.0
-    "@aws-amplify/amplify-e2e-core": 5.5.11-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-e2e-core": 5.6.0-alpha.0
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@aws-sdk/client-s3": ^3.303.0
     amplify-headless-interface: 1.17.7
@@ -923,7 +923,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-provider-awscloudformation@8.10.14-gen2-migration-test-alpha.0, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
+"@aws-amplify/amplify-provider-awscloudformation@8.10.14-alpha.0, @aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-provider-awscloudformation@workspace:packages/amplify-provider-awscloudformation"
   dependencies:
@@ -996,7 +996,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-util-mock@5.10.7-gen2-migration-test-alpha.0, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
+"@aws-amplify/amplify-util-mock@5.10.7-alpha.0, @aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-mock@workspace:packages/amplify-util-mock"
   dependencies:
@@ -1007,7 +1007,7 @@ __metadata:
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-opensearch-simulator": 1.7.16-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-alpha.0
     "@aws-amplify/graphql-auth-transformer": 3.6.6-gen1-migration-0924.0
     "@aws-amplify/graphql-default-value-transformer": 2.3.14-gen1-migration-0924.0
     "@aws-amplify/graphql-function-transformer": 2.1.27-gen1-migration-0924.0
@@ -1236,7 +1236,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@12.13.0-gen2-migrations-alpha.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.13.0-alpha.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1249,7 +1249,7 @@ __metadata:
     "@aws-amplify/amplify-category-geo": 3.5.16-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-category-hosting": 3.5.38-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-category-interactions": 5.1.30-gen2-migration-test-alpha.0
-    "@aws-amplify/amplify-category-notifications": 2.26.24-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-category-notifications": 2.26.24-alpha.0
     "@aws-amplify/amplify-category-predictions": 5.5.16-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-category-storage": 5.5.16-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-cli-core": 4.4.0-gen2-migration-test-alpha.0
@@ -1267,10 +1267,10 @@ __metadata:
     "@aws-amplify/amplify-go-function-template-provider": 1.4.8
     "@aws-amplify/amplify-nodejs-function-template-provider": 2.10.11-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-provider-awscloudformation": 8.10.14-alpha.0
     "@aws-amplify/amplify-python-function-template-provider": 1.4.7
     "@aws-amplify/amplify-util-import": 2.8.3
-    "@aws-amplify/amplify-util-mock": 5.10.7-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-util-mock": 5.10.7-alpha.0
     "@aws-amplify/amplify-util-uibuilder": 1.14.13-gen2-migration-test-alpha.0
     "@aws-cdk/cloudformation-diff": ~2.68.0
     "@types/archiver": ^5.3.1
@@ -1336,7 +1336,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.13.0-gen2-migrations-alpha.0
+    "@aws-amplify/cli-internal": 12.13.0-alpha.0
     "@types/tar": ^6.1.1
     axios: ^1.6.7
     rimraf: ^3.0.2
@@ -1807,7 +1807,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/migrate-template-gen@0.1.0-gen2-migrations-alpha.0, @aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen":
+"@aws-amplify/migrate-template-gen@0.1.0-alpha.0, @aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen"
   dependencies:
@@ -1822,12 +1822,12 @@ __metadata:
   resolution: "@aws-amplify/migrate@workspace:packages/amplify-migration"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.3.10
-    "@aws-amplify/amplify-gen1-codegen-auth-adapter": 0.1.0-gen2-migrations-alpha.0
-    "@aws-amplify/amplify-gen1-codegen-function-adapter": 0.1.0-gen2-migrations-alpha.0
-    "@aws-amplify/amplify-gen1-codegen-storage-adapter": 0.1.0-gen2-migrations-alpha.0
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-gen2-migrations-alpha.0
-    "@aws-amplify/cli-internal": 12.13.0-gen2-migrations-alpha.0
-    "@aws-amplify/migrate-template-gen": 0.1.0-gen2-migrations-alpha.0
+    "@aws-amplify/amplify-gen1-codegen-auth-adapter": 0.1.0-alpha.0
+    "@aws-amplify/amplify-gen1-codegen-function-adapter": 0.1.0-alpha.0
+    "@aws-amplify/amplify-gen1-codegen-storage-adapter": 0.1.0-alpha.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-alpha.0
+    "@aws-amplify/cli-internal": 12.13.0-alpha.0
+    "@aws-amplify/migrate-template-gen": 0.1.0-alpha.0
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-amplifybackend": ^3.592.0
     "@aws-sdk/client-cloudformation": ^3.592.0
@@ -15941,7 +15941,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-category-auth": 3.7.16-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-cli-core": 4.4.0-gen2-migration-test-alpha.0
-    "@aws-amplify/amplify-e2e-core": 5.5.11-gen2-migration-test-alpha.0
+    "@aws-amplify/amplify-e2e-core": 5.6.0-alpha.0
     "@aws-amplify/amplify-opensearch-simulator": 1.7.16-gen2-migration-test-alpha.0
     "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0924.0
     "@aws-sdk/client-appsync": ^3.303.0

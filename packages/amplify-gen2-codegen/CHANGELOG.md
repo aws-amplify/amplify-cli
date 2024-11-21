@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migrations-alpha.0...@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.0) (2024-11-21)
+
+
+### Bug Fixes
+
+* api md export ([1f5d7ee](https://github.com/aws-amplify/amplify-cli/commit/1f5d7ee2c01bcd4dbf1741ead5bcc8c5089db717))
+* delete codegen e2e package ([71cc41b](https://github.com/aws-amplify/amplify-cli/commit/71cc41bbfe62cbede225b31b5fd6ad37ce986b58))
+* include only required userAttributes and generate identityPoolName in backend file ([76f1bf8](https://github.com/aws-amplify/amplify-cli/commit/76f1bf8bdbc9135bf0f9c983fd2f5448a169af42))
+* prefer early return instead of else block with nesting ([72d178b](https://github.com/aws-amplify/amplify-cli/commit/72d178bcdf10b660ff53f90ca9bb3c24dd460344))
+* ref auth - set group name prop as a string to accomodate hyphenated chars ([785ae3a](https://github.com/aws-amplify/amplify-cli/commit/785ae3aadf560c2b9adc4be7a465ecb42c5ab0ff))
+* remove duplicate code and .amplify dir ([822bc58](https://github.com/aws-amplify/amplify-cli/commit/822bc5844aa59f22068b4dcb6b09766a5de3ad52))
+* remove duplicate test ([3e445d5](https://github.com/aws-amplify/amplify-cli/commit/3e445d512ba1e299d319d13007d573c3e82a4a33))
+* remove unused vars ([fdeb8dd](https://github.com/aws-amplify/amplify-cli/commit/fdeb8dd8395ab9fbfdb3d1946cf9470e4ca21153))
+* resolve api extract errors ([1ee4481](https://github.com/aws-amplify/amplify-cli/commit/1ee4481b45ee1ce24b1f0c521459095888e0b59e))
+* update API.md file for gen1-gen2 codegen ([2531475](https://github.com/aws-amplify/amplify-cli/commit/2531475bb5b65ab3d2a9cdf63b97f81a0916069b))
+* updated storage codegen to include encryption and removal policy ([94299ce](https://github.com/aws-amplify/amplify-cli/commit/94299ced6bd550675ecd87d9087fbca190cce740))
+
+
+### Features
+
+* ref auth codegen ([d6b1f28](https://github.com/aws-amplify/amplify-cli/commit/d6b1f288299c03d8809ccb3bcf8b74129c850e56))
+
+
+
+
+
 # [0.1.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migration-test-alpha.0...@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migrations-alpha.0) (2024-10-10)
 
 
