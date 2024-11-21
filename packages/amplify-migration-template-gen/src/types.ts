@@ -98,3 +98,7 @@ export type CFN_CATEGORY_TYPE = CFN_AUTH_TYPE | CFN_S3_TYPE;
 export enum CFN_PSEUDO_PARAMETERS_REF {
   StackName = 'AWS::StackName',
 }
+
+export enum CFNStackStatus {
+  UPDATE_COMPLETE = 'UPDATE_COMPLETE',
+}
