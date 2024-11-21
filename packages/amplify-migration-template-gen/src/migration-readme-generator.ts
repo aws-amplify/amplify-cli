@@ -29,102 +29,6 @@ class MigrationReadmeGenerator {
     await fs.writeFile(this.migrationReadMePath, `## Stack refactor steps for ${this.category} category\n`, { encoding: 'utf8' });
   }
 
-  //   /**
-  //    * Resolves outputs and dependencies to prepare for refactor
-  //    * @param oldGen1StackTemplate
-  //    * @param newGen1StackTemplate
-  //    * @param parameters
-  //    */
-  //   async renderStep1(oldGen1StackTemplate: CFNTemplate, newGen1StackTemplate: CFNTemplate, parameters: Parameter[]): Promise<void> {
-  //     const step1FileNamePath = `${this.path}/step1-gen1PreProcessUpdateStackTemplate.json`;
-  //     const step1RollbackFileNamePath = `${this.path}/step1-gen1PreProcessUpdateStackTemplate-rollback.json`;
-  //     const paramsString = JSON.stringify(parameters);
-  //     await fs.appendFile(
-  //       this.migrationReadMePath,
-  //       `### STEP 1: UPDATE GEN-1 ${this.category.toUpperCase()} STACK
-  // It is a non-disruptive update since the template only replaces resource references with their resolved values. This is a required step to execute cloudformation stack refactor later.
-  // \`\`\`
-  // aws cloudformation update-stack \\
-  //  --stack-name ${this.gen1CategoryStackName} \\
-  //  --template-body file://${step1FileNamePath} \\
-  //  --parameters '${paramsString}' \\
-  //  --capabilities CAPABILITY_NAMED_IAM \\
-  //  --tags '[]'
-  //  \`\`\`
-  //
-  // \`\`\`
-  // aws cloudformation describe-stacks \\
-  //  --stack-name ${this.gen1CategoryStackName}
-  //  \`\`\`
-  //
-  //  #### Rollback step:
-  //  \`\`\`
-  //  aws cloudformation update-stack \\
-  //  --stack-name ${this.gen1CategoryStackName} \\
-  //  --template-body file://${step1RollbackFileNamePath} \\
-  //  --parameters '${paramsString}' \\
-  //  --capabilities CAPABILITY_NAMED_IAM
-  //  \`\`\`
-  //
-  // \`\`\`
-  // aws cloudformation describe-stacks \\
-  //  --stack-name ${this.gen1CategoryStackName}
-  //  \`\`\`
-  //  `,
-  //       { encoding: 'utf8' },
-  //     );
-  //     await fs.writeFile(step1FileNamePath, JSON.stringify(newGen1StackTemplate, null, 2), { encoding: 'utf8' });
-  //     await fs.writeFile(step1RollbackFileNamePath, JSON.stringify(oldGen1StackTemplate, null, 2), { encoding: 'utf8' });
-  //   }
-  //
-  //   /**
-  //    * Removes Gen2 resources from Gen2 stack to prepare for refactor
-  //    * @param oldGen2StackTemplate
-  //    * @param newGen2StackTemplate
-  //    * @param parameters
-  //    */
-  //   async renderStep2(oldGen2StackTemplate: CFNTemplate, newGen2StackTemplate: CFNTemplate, parameters: Parameter[] = []): Promise<void> {
-  //     const step2FileNamePath = `${this.path}/step2-gen2ResourcesRemovalStackTemplate.json`;
-  //     const step2RollbackFileNamePath = `${this.path}/step2-gen2ResourcesRemovalStackTemplate-rollback.json`;
-  //     const paramsString = JSON.stringify(parameters);
-  //     await fs.appendFile(
-  //       this.migrationReadMePath,
-  //       `### STEP 2: REMOVE GEN-2 ${this.category.toUpperCase()} STACK RESOURCES
-  // This step is required since we will eventually replace gen-2 resources with gen-1 resources as part of Step 3 (refactor).
-  // \`\`\`
-  // aws cloudformation update-stack \\
-  //  --stack-name ${this.gen2CategoryStackName} \\
-  //  --template-body file://${step2FileNamePath} \\
-  //  --parameters '${paramsString}' \\
-  //  --capabilities CAPABILITY_NAMED_IAM \\
-  //  --tags '[]'
-  //  \`\`\`
-  //
-  // \`\`\`
-  // aws cloudformation describe-stacks \\
-  //  --stack-name ${this.gen2CategoryStackName}
-  //  \`\`\`
-  //
-  //  #### Rollback step:
-  //  \`\`\`
-  //  aws cloudformation update-stack \\
-  //  --stack-name ${this.gen2CategoryStackName} \\
-  //  --template-body file://${step2RollbackFileNamePath} \\
-  //  --parameters '${paramsString}' \\
-  //  --capabilities CAPABILITY_NAMED_IAM
-  //  \`\`\`
-  //
-  // \`\`\`
-  // aws cloudformation describe-stacks \\
-  //  --stack-name ${this.gen2CategoryStackName}
-  //  \`\`\`
-  //  `,
-  //       { encoding: 'utf8' },
-  //     );
-  //     await fs.writeFile(step2FileNamePath, JSON.stringify(newGen2StackTemplate, null, 2), { encoding: 'utf8' });
-  //     await fs.writeFile(step2RollbackFileNamePath, JSON.stringify(oldGen2StackTemplate, null, 2), { encoding: 'utf8' });
-  //   }
-
   /**
    * Creates and executes Stack refactor operation for the given category
    * @param sourceTemplate
@@ -143,10 +47,10 @@ class MigrationReadmeGenerator {
     const rollbackSourceTemplateFileName = 'step3-sourceTemplate-rollback.json';
     const rollbackDestinationTemplateFileName = 'step3-destinationTemplate-rollback.json';
 
-    const step3SourceTemplateFileNamePath = `${this.path}/${sourceTemplateFileName}`;
-    const step3DestinationTemplateFileNamePath = `${this.path}/${destinationTemplateFileName}`;
-    const step3RollbackSourceTemplateFileNamePath = `${this.path}/${rollbackSourceTemplateFileName}`;
-    const step3RollbackDestinationTemplateFileNamePath = `${this.path}/${rollbackDestinationTemplateFileName}`;
+    const step1SourceTemplateFileNamePath = `${this.path}/${sourceTemplateFileName}`;
+    const step1DestinationTemplateFileNamePath = `${this.path}/${destinationTemplateFileName}`;
+    const step1RollbackSourceTemplateFileNamePath = `${this.path}/${rollbackSourceTemplateFileName}`;
+    const step1RollbackDestinationTemplateFileNamePath = `${this.path}/${rollbackDestinationTemplateFileName}`;
 
     const resourceMappings: ResourceMapping[] = [];
     const rollbackResourceMappings: ResourceMapping[] = [];
@@ -183,11 +87,11 @@ export BUCKET_NAME=<<YOUR_BUCKET_NAME>>
 \`\`\`
 
 \`\`\`
-aws s3 cp ${step3SourceTemplateFileNamePath} s3://$BUCKET_NAME
+aws s3 cp ${step1SourceTemplateFileNamePath} s3://$BUCKET_NAME
 \`\`\`
 
 \`\`\`
-aws s3 cp ${step3DestinationTemplateFileNamePath} s3://$BUCKET_NAME
+aws s3 cp ${step1DestinationTemplateFileNamePath} s3://$BUCKET_NAME
 \`\`\`
 
 1.b) Create stack refactor
@@ -220,11 +124,11 @@ export STACK_REFACTOR_ID=<<REFACTOR-ID-FROM-CREATE-STACK-REFACTOR_CALL>>
 
 #### Rollback step for refactor:
 \`\`\`
-aws s3 cp ${step3RollbackSourceTemplateFileNamePath} s3://$BUCKET_NAME
+aws s3 cp ${step1RollbackSourceTemplateFileNamePath} s3://$BUCKET_NAME
 \`\`\`
 
 \`\`\`
-aws s3 cp ${step3RollbackDestinationTemplateFileNamePath} s3://$BUCKET_NAME
+aws s3 cp ${step1RollbackDestinationTemplateFileNamePath} s3://$BUCKET_NAME
 \`\`\`
 
 \`\`\`
@@ -256,10 +160,10 @@ Describe stack refactor to check for execution status
  `,
       { encoding: 'utf8' },
     );
-    await fs.writeFile(step3SourceTemplateFileNamePath, JSON.stringify(sourceTemplate, null, 2), { encoding: 'utf8' });
-    await fs.writeFile(step3DestinationTemplateFileNamePath, JSON.stringify(destinationTemplate, null, 2), { encoding: 'utf8' });
-    await fs.writeFile(step3RollbackSourceTemplateFileNamePath, JSON.stringify(oldSourceTemplate, null, 2), { encoding: 'utf8' });
-    await fs.writeFile(step3RollbackDestinationTemplateFileNamePath, JSON.stringify(oldDestinationTemplate, null, 2), { encoding: 'utf8' });
+    await fs.writeFile(step1SourceTemplateFileNamePath, JSON.stringify(sourceTemplate, null, 2), { encoding: 'utf8' });
+    await fs.writeFile(step1DestinationTemplateFileNamePath, JSON.stringify(destinationTemplate, null, 2), { encoding: 'utf8' });
+    await fs.writeFile(step1RollbackSourceTemplateFileNamePath, JSON.stringify(oldSourceTemplate, null, 2), { encoding: 'utf8' });
+    await fs.writeFile(step1RollbackDestinationTemplateFileNamePath, JSON.stringify(oldDestinationTemplate, null, 2), { encoding: 'utf8' });
   }
 
   async renderStep2() {
