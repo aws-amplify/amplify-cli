@@ -177,7 +177,7 @@ export class BackendSynthesizer {
     );
   }
 
-  private createUserPoolAssignment(userPoolClient: UserPoolClientType, imports: any[]) {
+  private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: any[]) {
     const userPoolAtrributesMap = new Map<string, string>();
     userPoolAtrributesMap.set('ClientName', 'userPoolClientName');
     userPoolAtrributesMap.set('ClientSecret', 'generateSecret');
@@ -226,22 +226,22 @@ export class BackendSynthesizer {
     return test;
   }
 
-  private createNestedObjectExpression(object: Record<string, any>, map: Map<string, string>): ts.ObjectLiteralExpression {
+  private createNestedObjectExpression(object: Record<string, any>, gen2PropertyMap: Map<string, string>): ts.ObjectLiteralExpression {
     const objectLiterals = [];
 
     for (const [key, value] of Object.entries(object)) {
-      if (typeof value == 'boolean' && map.has(key)) {
-        objectLiterals.push(this.createBooleanPropertyAssignment(map.get(key)!, value));
-      } else if (typeof value == 'string' && map.has(key)) {
+      if (typeof value == 'boolean' && gen2PropertyMap.has(key)) {
+        objectLiterals.push(this.createBooleanPropertyAssignment(gen2PropertyMap.get(key)!, value));
+      } else if (typeof value == 'string' && gen2PropertyMap.has(key)) {
         if (!this.oAuthFlag && key == 'DefaultRedirectURI') {
           this.oAuthFlag = true;
-          objectLiterals.push(this.createOAuthObjectExpression(object, map));
+          objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
         } else if (key == 'ClientSecret') {
-          objectLiterals.push(this.createBooleanPropertyAssignment(map.get(key)!, value));
+          objectLiterals.push(this.createBooleanPropertyAssignment(gen2PropertyMap.get(key)!, value));
         } else if (key != 'DefaultRedirectURI') {
-          objectLiterals.push(this.createStringPropertyAssignment(map.get(key)!, value));
+          objectLiterals.push(this.createStringPropertyAssignment(gen2PropertyMap.get(key)!, value));
         }
-      } else if (typeof value == 'number' && map.has(key)) {
+      } else if (typeof value == 'number' && gen2PropertyMap.has(key)) {
         if (['IdTokenValidity', 'RefreshTokenValidity', 'AccessTokenValidity', 'AuthSessionValidity'].includes(key)) {
           // convert it to Duration
           this.importDurationFlag = true;
@@ -250,51 +250,56 @@ export class BackendSynthesizer {
             if (object['TokenValidityUnits'] && object['TokenValidityUnits'].IdToken) {
               durationUnit = object['TokenValidityUnits'].IdToken;
             }
-            objectLiterals.push(this.createDurationPropertyAssignment(map.get(key)!, value, durationUnit));
+            objectLiterals.push(this.createDurationPropertyAssignment(gen2PropertyMap.get(key)!, value, durationUnit));
           } else if (key == 'RefreshTokenValidity') {
             let durationUnit = 'days';
             if (object['TokenValidityUnits'] && object['TokenValidityUnits'].RefreshToken) {
               durationUnit = object['TokenValidityUnits'].RefreshToken;
             }
-            objectLiterals.push(this.createDurationPropertyAssignment(map.get(key)!, value, durationUnit));
+            objectLiterals.push(this.createDurationPropertyAssignment(gen2PropertyMap.get(key)!, value, durationUnit));
           } else if (key == 'AccessTokenValidity') {
             let durationUnit = 'hours';
             if (object['TokenValidityUnits'] && object['TokenValidityUnits'].AccessToken) {
               durationUnit = object['TokenValidityUnits'].AccessToken;
             }
-            objectLiterals.push(this.createDurationPropertyAssignment(map.get(key)!, value, durationUnit));
+            objectLiterals.push(this.createDurationPropertyAssignment(gen2PropertyMap.get(key)!, value, durationUnit));
           } else if (key == 'AuthSessionValidity') {
-            objectLiterals.push(this.createDurationPropertyAssignment(map.get(key)!, value, 'minutes'));
+            objectLiterals.push(this.createDurationPropertyAssignment(gen2PropertyMap.get(key)!, value, 'minutes'));
           }
         } else {
-          objectLiterals.push(this.createNumericPropertyAssignment(map.get(key)!, value));
+          objectLiterals.push(this.createNumericPropertyAssignment(gen2PropertyMap.get(key)!, value));
         }
-      } else if (Array.isArray(value) && map.has(key)) {
+      } else if (Array.isArray(value) && gen2PropertyMap.has(key)) {
         if (key == 'ReadAttributes' || key == 'WriteAttributes') {
-          objectLiterals.push(this.createReadWriteAttributes(map.get(key)!, value));
+          objectLiterals.push(this.createReadWriteAttributes(gen2PropertyMap.get(key)!, value));
         } else if (key == 'SupportedIdentityProviders') {
           this.supportedIdentityProviderFlag = true;
-          objectLiterals.push(this.createEnumListPropertyAssignment(map.get(key)!, 'UserPoolClientIdentityProvider', value));
+          objectLiterals.push(this.createEnumListPropertyAssignment(gen2PropertyMap.get(key)!, 'UserPoolClientIdentityProvider', value));
         } else if (!this.oAuthFlag && key == 'AllowedOAuthFlows') {
           this.oAuthFlag = true;
-          objectLiterals.push(this.createOAuthObjectExpression(object, map));
+          objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
         } else if (key == 'ExplicitAuthFlows') {
           objectLiterals.push(
-            factory.createPropertyAssignment(factory.createIdentifier(map.get(key)!), this.createAuthFlowsObjectExpression(value)),
+            factory.createPropertyAssignment(
+              factory.createIdentifier(gen2PropertyMap.get(key)!),
+              this.createAuthFlowsObjectExpression(value),
+            ),
           );
         } else if (!this.oAuthFlag && key == 'AllowedOAuthScopes') {
           this.oAuthFlag = true;
-          objectLiterals.push(this.createOAuthObjectExpression(object, map));
+          objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
         } else {
           if (!this.oAuthFlag && (key == 'CallbackURLs' || key == 'LogoutURLs')) {
             this.oAuthFlag = true;
-            objectLiterals.push(this.createOAuthObjectExpression(object, map));
+            objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
           } else if (key != 'CallbackURLs' && key != 'LogoutURLs' && key != 'AllowedOAuthScopes') {
-            objectLiterals.push(this.createListPropertyAssignment(map.get(key)!, value));
+            objectLiterals.push(this.createListPropertyAssignment(gen2PropertyMap.get(key)!, value));
           }
         }
-      } else if (map.has(key) && typeof value == 'object') {
-        objectLiterals.push(factory.createPropertyAssignment(factory.createIdentifier(key), this.createNestedObjectExpression(value, map)));
+      } else if (gen2PropertyMap.has(key) && typeof value == 'object') {
+        objectLiterals.push(
+          factory.createPropertyAssignment(factory.createIdentifier(key), this.createNestedObjectExpression(value, gen2PropertyMap)),
+        );
       }
     }
     return factory.createObjectLiteralExpression(objectLiterals, true);
@@ -582,10 +587,11 @@ export class BackendSynthesizer {
       );
     }
 
+    // Since Gen2 only supports 1 user pool client by default, we need to add CDK overrides for the additional user pool client from Gen1
     if (renderArgs.auth?.userPoolClient) {
       const userPoolVariableStatement = this.createVariableStatement(this.createVariableDeclaration('userPool', 'auth.resources.userPool'));
       nodes.push(userPoolVariableStatement);
-      nodes.push(this.createUserPoolAssignment(renderArgs.auth?.userPoolClient, imports));
+      nodes.push(this.createUserPoolClientAssignment(renderArgs.auth?.userPoolClient, imports));
     }
 
     if (renderArgs.storage && renderArgs.storage.hasS3Bucket) {
