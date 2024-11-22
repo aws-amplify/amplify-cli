@@ -125,22 +125,16 @@ class TemplateGenerator {
       });
       await migrationReadMeGenerator.initialize();
 
-      const {
-        oldTemplate: oldGen1Template,
-        newTemplate: newGen1Template,
-        parameters: gen1StackParameters,
-      } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
+      const { newTemplate: newGen1Template, parameters: gen1StackParameters } =
+        await categoryTemplateGenerator.generateGen1PreProcessTemplate();
       assert(gen1StackParameters);
       console.log(`Updating Gen1 ${category} stack...`);
       const gen1StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen1CategoryStackId, gen1StackParameters, newGen1Template);
       assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
       console.log(`Updated Gen1 ${category} stack successfully`);
 
-      const {
-        oldTemplate: oldGen2Template,
-        newTemplate: newGen2Template,
-        parameters: gen2StackParameters,
-      } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
+      const { newTemplate: newGen2Template, parameters: gen2StackParameters } =
+        await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
       console.log(`Updating Gen2 ${category} stack...`);
       const gen2StackUpdateStatus = await tryUpdateStack(
         this.cfnClient,

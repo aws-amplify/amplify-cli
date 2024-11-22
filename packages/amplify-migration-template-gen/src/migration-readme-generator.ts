@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises';
 import { CATEGORY, CFNTemplate, ResourceMapping } from './types';
-import { Parameter } from '@aws-sdk/client-cloudformation';
 import extractStackNameFromId from './cfn-stack-name-extractor';
 
 interface MigrationReadMeGeneratorOptions {
