@@ -136,13 +136,7 @@ class TemplateGenerator {
       const { newTemplate: newGen2Template, parameters: gen2StackParameters } =
         await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
       console.log(`Updating Gen2 ${category} stack...`);
-      const gen2StackUpdateStatus = await tryUpdateStack(
-        this.cfnClient,
-        gen2CategoryStackId,
-        gen2StackParameters ?? [],
-        newGen2Template,
-        60,
-      );
+      const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], newGen2Template);
       assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
       console.log(`Updated Gen2 ${category} stack successfully`);
 
