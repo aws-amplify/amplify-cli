@@ -14,7 +14,7 @@ export const UPDATE_COMPLETE = 'UPDATE_COMPLETE';
  * @param stackName
  * @param parameters
  * @param templateBody
- * @param attempts number of attempts to poll CFN stack for update completion state. The interval between the polls is 1 second.
+ * @param attempts number of attempts to poll CFN stack for update completion state. The interval between the polls is 1.5 seconds.
  */
 export async function tryUpdateStack(
   cfnClient: CloudFormationClient,
