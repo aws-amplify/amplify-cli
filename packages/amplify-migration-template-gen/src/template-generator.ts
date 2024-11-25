@@ -2,8 +2,9 @@ import { CloudFormationClient, DescribeStackResourcesCommand } from '@aws-sdk/cl
 import assert from 'node:assert';
 import CategoryTemplateGenerator from './category-template-generator';
 import fs from 'node:fs/promises';
-import { CATEGORY, CFN_AUTH_TYPE, CFN_CATEGORY_TYPE, CFN_S3_TYPE, CFNResource } from './types';
+import { CATEGORY, CFN_AUTH_TYPE, CFN_CATEGORY_TYPE, CFN_S3_TYPE, CFNResource, CFNStackStatus } from './types';
 import MigrationReadmeGenerator from './migration-readme-generator';
+import { tryUpdateStack } from './cfn-stack-updater';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 
@@ -124,27 +125,27 @@ class TemplateGenerator {
       });
       await migrationReadMeGenerator.initialize();
 
-      const {
-        oldTemplate: oldGen1Template,
-        newTemplate: newGen1Template,
-        parameters: gen1StackParameters,
-      } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
+      const { newTemplate: newGen1Template, parameters: gen1StackParameters } =
+        await categoryTemplateGenerator.generateGen1PreProcessTemplate();
       assert(gen1StackParameters);
-      await migrationReadMeGenerator.renderStep1(oldGen1Template, newGen1Template, gen1StackParameters);
+      console.log(`Updating Gen1 ${category} stack...`);
+      const gen1StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen1CategoryStackId, gen1StackParameters, newGen1Template);
+      assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
+      console.log(`Updated Gen1 ${category} stack successfully`);
 
-      const {
-        oldTemplate: oldGen2Template,
-        newTemplate: newGen2Template,
-        parameters: gen2StackParameters,
-      } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
-      await migrationReadMeGenerator.renderStep2(oldGen2Template, newGen2Template, gen2StackParameters);
+      const { newTemplate: newGen2Template, parameters: gen2StackParameters } =
+        await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
+      console.log(`Updating Gen2 ${category} stack...`);
+      const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], newGen2Template);
+      assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
+      console.log(`Updated Gen2 ${category} stack successfully`);
 
       const { sourceTemplate, destinationTemplate, logicalIdMapping } = categoryTemplateGenerator.generateStackRefactorTemplates(
         newGen1Template,
         newGen2Template,
       );
-      await migrationReadMeGenerator.renderStep3(sourceTemplate, destinationTemplate, logicalIdMapping, newGen1Template, newGen2Template);
-      await migrationReadMeGenerator.renderStep4();
+      await migrationReadMeGenerator.renderStep1(sourceTemplate, destinationTemplate, logicalIdMapping, newGen1Template, newGen2Template);
+      await migrationReadMeGenerator.renderStep2();
     }
   }
 }

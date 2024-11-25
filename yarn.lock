@@ -1812,6 +1812,7 @@ __metadata:
   resolution: "@aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen"
   dependencies:
     "@aws-sdk/client-cloudformation": ^3.592.0
+    "@jest/globals": ^29.7.0
     jest: ^29.5.0
     typescript: ^5.4.5
   languageName: unknown

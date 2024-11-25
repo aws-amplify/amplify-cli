@@ -94,7 +94,6 @@ class CfnOutputResolver {
 
   /**
    * Build a custom replacer function to replace Fn::GetAtt references with resource attribute values.
-   * @param resource
    * @param record
    * @private
    */
