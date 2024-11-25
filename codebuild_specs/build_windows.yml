@@ -4,7 +4,7 @@ env:
 phases:
   build:
     commands:
-      - choco install nodejs.install --version=18.17.0
+      - choco install nodejs.install --version=18.17.0 -y
       - cd scripts
       - yarn
       - cd ..
