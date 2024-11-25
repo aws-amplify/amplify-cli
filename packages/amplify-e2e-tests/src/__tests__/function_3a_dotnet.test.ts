@@ -32,7 +32,7 @@ describe('dotnet function tests', () => {
         name: funcName,
         functionTemplate: 'Hello World',
       },
-      'dotnet6',
+      'dotnet8',
     );
   });
 
