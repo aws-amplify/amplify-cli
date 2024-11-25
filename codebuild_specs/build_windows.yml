@@ -4,7 +4,6 @@ env:
 phases:
   build:
     commands:
-      - choco install -fy nodejs-lts --version=18.20.0
       - cd scripts
       - yarn
       - cd ..
