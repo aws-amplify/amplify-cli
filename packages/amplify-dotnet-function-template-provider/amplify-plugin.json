@@ -6,12 +6,8 @@
   "functionTemplate": {
     "conditions": {
       "provider": "awscloudformation",
-      "services": [
-        "Lambda"
-      ],
-      "runtime": [
-        "dotnet8"
-      ]
+      "services": ["Lambda"],
+      "runtime": ["dotnet8"]
     },
     "templates": [
       {
