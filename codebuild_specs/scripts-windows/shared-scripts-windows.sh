@@ -98,9 +98,6 @@ function _loadTestAccountCredentials {
 function _lsOut {
     ls ..
     ls ~
-    ls $HOME
-    ls $HOME/..
-    ls $HOME/../..
 }
 function _build {
     echo Windows Build
