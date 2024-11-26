@@ -46,7 +46,7 @@ describe('dotnet function tests', () => {
     expect(functionRuntime).toEqual('dotnet8');
     const functionProjFilePath = path.join(functionPath, 'src', `${funcName}.csproj`);
     const functionProjFileContent = fs.readFileSync(functionProjFilePath, 'utf8');
-    expect(functionProjFileContent).toContain('<TargetFramework>net6.0</TargetFramework>');
+    expect(functionProjFileContent).toContain('<TargetFramework>net8.0</TargetFramework>');
   };
 
   it('add dotnet hello world function and mock locally', async () => {
