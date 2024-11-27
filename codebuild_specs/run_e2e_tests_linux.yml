@@ -23,6 +23,9 @@ env:
     # mock value, Cognito validates the private key, this is an invalidated key.
     APPLE_PRIVATE_KEY_2: '----BEGIN PRIVATE KEY-----MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgIltgNsTgTfSzUadYiCS0VYtDDMFln/J8i1yJsSIw5g+gCgYIKoZIzj0DAQehRANCAASI8E0L/DhR/mIfTT07v3VwQu6q8I76lgn7kFhT0HvWoLuHKGQFcFkXXCgztgBrprzd419mUChAnKE6y89bWcNw----END PRIVATE KEY----'
 phases:
+  install:
+    runtime-versions:
+      dotnet: 8.0
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)
