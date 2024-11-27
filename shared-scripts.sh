@@ -425,7 +425,7 @@ function _putCredsInProfile {
 function _installIntegTestsDependencies {
     yum install -y sudo
     sudo yum install -y lsof
-    sudo yum install -y libgbm1
+    # sudo yum install -y libgbm1
 }
 
 function _integTestAmplifyInit {
