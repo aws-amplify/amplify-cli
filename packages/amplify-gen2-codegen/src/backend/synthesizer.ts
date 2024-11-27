@@ -122,11 +122,8 @@ export class BackendSynthesizer {
     throw new TypeError(`Unrecognized type: ${typeof value}`);
   }
 
-  private createBooleanPropertyAssignment(identifier: string, condition: any) {
-    return factory.createPropertyAssignment(
-      factory.createIdentifier(identifier),
-      condition ?? null ? factory.createTrue() : factory.createFalse(),
-    );
+  private createBooleanPropertyAssignment(identifier: string, condition: boolean) {
+    return factory.createPropertyAssignment(factory.createIdentifier(identifier), condition ? factory.createTrue() : factory.createFalse());
   }
 
   private createListPropertyAssignment(identifier: string, listAttribute: string[]) {
@@ -242,7 +239,7 @@ export class BackendSynthesizer {
             this.oAuthFlag = true;
             objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
           } else if (key == 'ClientSecret') {
-            objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, value));
+            objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, true));
           } else if (key != 'DefaultRedirectURI') {
             objectLiterals.push(this.createStringPropertyAssignment(mappedProperty, value));
           }
@@ -335,9 +332,12 @@ export class BackendSynthesizer {
     const standardAttributesLiterals: ts.PropertyAssignment[] = [];
     standardAttributes.forEach((attribute) => {
       if (standardAttrMap.has(attribute)) {
-        standardAttributesLiterals.push(
-          factory.createPropertyAssignment(factory.createIdentifier(standardAttrMap.get(attribute)!), factory.createTrue()),
-        );
+        const mappedAttribute = standardAttrMap.get(attribute);
+        if (mappedAttribute) {
+          standardAttributesLiterals.push(
+            factory.createPropertyAssignment(factory.createIdentifier(mappedAttribute), factory.createTrue()),
+          );
+        }
       }
     });
 
@@ -373,7 +373,10 @@ export class BackendSynthesizer {
     const scopesList: string[] = [];
     scopes.forEach((scope) => {
       if (scopeMap.has(scope)) {
-        scopesList.push(scopeMap.get(scope)!);
+        const scopeValue = scopeMap.get(scope);
+        if (scopeValue) {
+          scopesList.push(scopeValue);
+        }
       }
     });
     return scopesList;
@@ -390,9 +393,15 @@ export class BackendSynthesizer {
       } else if (key == 'AllowedOAuthScopes') {
         oAuthLiterals.push(this.createEnumListPropertyAssignment('scopes', 'OAuthScope', this.mapOAuthScopes(value)));
       } else if (key == 'CallbackURLs' || key == 'LogoutURLs') {
-        oAuthLiterals.push(this.createListPropertyAssignment(map.get(key)!, value));
+        const urlValue = map.get(key);
+        if (urlValue) {
+          oAuthLiterals.push(this.createListPropertyAssignment(urlValue, value));
+        }
       } else if (key == 'DefaultRedirectURI') {
-        oAuthLiterals.push(this.createStringPropertyAssignment(map.get(key)!, value));
+        const redirectUriValue = map.get(key);
+        if (redirectUriValue) {
+          oAuthLiterals.push(this.createStringPropertyAssignment(redirectUriValue, value));
+        }
       }
     }
     return factory.createPropertyAssignment(factory.createIdentifier('oAuth'), factory.createObjectLiteralExpression(oAuthLiterals, true));
