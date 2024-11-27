@@ -33,6 +33,8 @@ class MigrationReadmeGenerator {
    * @param sourceTemplate
    * @param destinationTemplate
    * @param logicalIdMapping
+   * @param oldSourceTemplate
+   * @param oldDestinationTemplate
    */
   async renderStep1(
     sourceTemplate: CFNTemplate,
@@ -80,24 +82,11 @@ class MigrationReadmeGenerator {
       `### STEP 1: CREATE AND EXECUTE CLOUDFORMATION STACK REFACTOR FOR ${this.category} CATEGORY
 This step will move the Gen1 ${this.category} resources to Gen2 stack.
 
-1.a) Upload the source and destination templates to S3
-\`\`\`
-export BUCKET_NAME=<<YOUR_BUCKET_NAME>>
-\`\`\`
-
-\`\`\`
-aws s3 cp ${step1SourceTemplateFileNamePath} s3://$BUCKET_NAME
-\`\`\`
-
-\`\`\`
-aws s3 cp ${step1DestinationTemplateFileNamePath} s3://$BUCKET_NAME
-\`\`\`
-
-1.b) Create stack refactor
+1.a) Create stack refactor
 \`\`\`
 aws cloudformation create-stack-refactor \
- --stack-definitions StackName=${this.gen1CategoryStackName},TemplateURL=s3://$BUCKET_NAME/${sourceTemplateFileName} \
- StackName=${this.gen2CategoryStackName},TemplateURL=s3://$BUCKET_NAME/${destinationTemplateFileName} \
+ --stack-definitions StackName=${this.gen1CategoryStackName},TemplateBody@=file://${step1SourceTemplateFileNamePath} \
+ StackName=${this.gen2CategoryStackName},TemplateBody@=file://${step1DestinationTemplateFileNamePath} \
  --resource-mappings \
  '${JSON.stringify(resourceMappings)}'
 \`\`\`
@@ -106,34 +95,26 @@ aws cloudformation create-stack-refactor \
 export STACK_REFACTOR_ID=<<REFACTOR-ID-FROM-CREATE-STACK-REFACTOR_CALL>>
 \`\`\`
   
-1.c) Describe stack refactor to check for creation status
+1.b) Describe stack refactor to check for creation status
 \`\`\`
  aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
 \`\`\`
  
-1.d) Execute stack refactor
+1.c) Execute stack refactor
 \`\`\`
  aws cloudformation execute-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
 \`\`\`
  
-1.e) Describe stack refactor to check for execution status
+1.d) Describe stack refactor to check for execution status
 \`\`\`
  aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
 \`\`\`
 
 #### Rollback step for refactor:
 \`\`\`
-aws s3 cp ${step1RollbackSourceTemplateFileNamePath} s3://$BUCKET_NAME
-\`\`\`
-
-\`\`\`
-aws s3 cp ${step1RollbackDestinationTemplateFileNamePath} s3://$BUCKET_NAME
-\`\`\`
-
-\`\`\`
  aws cloudformation create-stack-refactor \
- --stack-definitions StackName=${this.gen1CategoryStackName},TemplateURL=s3://$BUCKET_NAME/${rollbackSourceTemplateFileName} \
- StackName=${this.gen2CategoryStackName},TemplateURL=s3://$BUCKET_NAME/${rollbackDestinationTemplateFileName} \
+ --stack-definitions StackName=${this.gen1CategoryStackName},TemplateBody@=file://${step1RollbackSourceTemplateFileNamePath} \
+ StackName=${this.gen2CategoryStackName},TemplateBody@=file://${step1RollbackDestinationTemplateFileNamePath} \
  --resource-mappings \
  '${JSON.stringify(rollbackResourceMappings)}'
 \`\`\`
