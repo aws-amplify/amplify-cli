@@ -26,8 +26,6 @@ phases:
   install:
     runtime-versions:
       dotnet: 8.0
-    commands:
-      - dnf install -y xorg-x11-server-Xvfb gtk3-devel nss alsa-lib
   build:
     commands:
       # you can provide a codebuild source version to use old cache and skip all other jobs :)

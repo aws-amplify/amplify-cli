@@ -6,6 +6,9 @@ env:
     CIRCLECI: true
     IS_AMPLIFY_CI: true
 phases:
+  install:
+    commands:
+      - dnf install -y xorg-x11-server-Xvfb gtk3-devel nss alsa-lib
   build:
     commands:
       - source ./shared-scripts.sh && _integrationTest
