@@ -6,7 +6,7 @@ phases:
     commands:
       - npm install --save-dev -g yarn
       - pip install setuptools
-      - npm install --global windows-build-tools
+      - yarn global add windows-build-tools
   build:
     commands:
       - cd scripts
