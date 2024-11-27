@@ -4,6 +4,7 @@ env:
 phases:
   install:
     commands:
+      - choco install -fy nodejs-lts --version=18.20.0
       - npm install --save-dev -g yarn
       - choco install -fy visualstudio2019-workload-vctools
   build:
