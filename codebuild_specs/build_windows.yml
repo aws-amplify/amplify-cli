@@ -6,6 +6,7 @@ phases:
     commands:
       - npm install --save-dev -g yarn
       - pip install setuptools
+      - choco install -fy visualstudio2019-workload-vctools
   build:
     commands:
       - cd scripts
