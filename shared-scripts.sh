@@ -425,9 +425,7 @@ function _putCredsInProfile {
 function _installIntegTestsDependencies {
     yum install -y sudo
     sudo yum install -y lsof
-    sudo yum install -y python3 python3-pip libpython3-dev
     sudo yum install -y libgbm-dev
-    # pip install awscli
 }
 
 function _integTestAmplifyInit {
