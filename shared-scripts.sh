@@ -423,11 +423,10 @@ function _putCredsInProfile {
 }
 
 function _installIntegTestsDependencies {
-    apt-get update
-    apt-get install -y sudo
-    sudo apt-get install -y lsof
-    sudo apt-get install -y python3 python3-pip libpython3-dev
-    sudo apt-get install -y libgbm-dev
+    yum install -y sudo
+    sudo yum install -y lsof
+    sudo yum install -y python3 python3-pip libpython3-dev
+    sudo yum install -y libgbm-dev
     # pip install awscli
 }
 
