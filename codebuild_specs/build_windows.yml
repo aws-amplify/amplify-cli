@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - choco install -fy yarn
       - cd scripts
       - yarn
       - cd ..
