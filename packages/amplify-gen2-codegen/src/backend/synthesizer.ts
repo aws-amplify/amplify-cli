@@ -163,7 +163,7 @@ export class BackendSynthesizer {
     return factory.createPropertyAssignment(factory.createIdentifier(identifier), factory.createStringLiteral(stringLiteral));
   }
 
-  private addRemovalPolicyAssigment(identifier: string) {
+  private addRemovalPolicyAssignment(identifier: string) {
     return factory.createCallExpression(
       factory.createPropertyAccessExpression(factory.createIdentifier(identifier), factory.createIdentifier('applyRemovalPolicy')),
       undefined,
@@ -177,7 +177,7 @@ export class BackendSynthesizer {
     );
   }
 
-  private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: any[]) {
+  private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: ts.ImportDeclaration[]) {
     const userPoolClientAttributesMap = new Map<string, string>();
     userPoolClientAttributesMap.set('ClientName', 'userPoolClientName');
     userPoolClientAttributesMap.set('ClientSecret', 'generateSecret');
@@ -233,76 +233,76 @@ export class BackendSynthesizer {
     const objectLiterals = [];
 
     for (const [key, value] of Object.entries(object)) {
-      if (typeof value == 'boolean' && gen2PropertyMap.has(key)) {
-        objectLiterals.push(this.createBooleanPropertyAssignment(gen2PropertyMap.get(key)!, value));
-      } else if (typeof value == 'string' && gen2PropertyMap.has(key)) {
-        if (!this.oAuthFlag && key == 'DefaultRedirectURI') {
-          this.oAuthFlag = true;
-          objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
-        } else if (key == 'ClientSecret') {
-          objectLiterals.push(this.createBooleanPropertyAssignment(gen2PropertyMap.get(key)!, value));
-        } else if (key != 'DefaultRedirectURI') {
-          objectLiterals.push(this.createStringPropertyAssignment(gen2PropertyMap.get(key)!, value));
-        }
-      } else if (typeof value == 'number' && gen2PropertyMap.has(key)) {
-        if (['IdTokenValidity', 'RefreshTokenValidity', 'AccessTokenValidity', 'AuthSessionValidity'].includes(key)) {
-          // convert it to Duration
-          this.importDurationFlag = true;
-          if (key == 'IdTokenValidity') {
-            let durationUnit = 'hours';
-            if (object['TokenValidityUnits'] && object['TokenValidityUnits'].IdToken) {
-              durationUnit = object['TokenValidityUnits'].IdToken;
-            }
-            objectLiterals.push(this.createDurationPropertyAssignment(gen2PropertyMap.get(key)!, value, durationUnit));
-          } else if (key == 'RefreshTokenValidity') {
-            let durationUnit = 'days';
-            if (object['TokenValidityUnits'] && object['TokenValidityUnits'].RefreshToken) {
-              durationUnit = object['TokenValidityUnits'].RefreshToken;
-            }
-            objectLiterals.push(this.createDurationPropertyAssignment(gen2PropertyMap.get(key)!, value, durationUnit));
-          } else if (key == 'AccessTokenValidity') {
-            let durationUnit = 'hours';
-            if (object['TokenValidityUnits'] && object['TokenValidityUnits'].AccessToken) {
-              durationUnit = object['TokenValidityUnits'].AccessToken;
-            }
-            objectLiterals.push(this.createDurationPropertyAssignment(gen2PropertyMap.get(key)!, value, durationUnit));
-          } else if (key == 'AuthSessionValidity') {
-            objectLiterals.push(this.createDurationPropertyAssignment(gen2PropertyMap.get(key)!, value, 'minutes'));
-          }
-        } else {
-          objectLiterals.push(this.createNumericPropertyAssignment(gen2PropertyMap.get(key)!, value));
-        }
-      } else if (Array.isArray(value) && gen2PropertyMap.has(key)) {
-        if (key == 'ReadAttributes' || key == 'WriteAttributes') {
-          objectLiterals.push(this.createReadWriteAttributes(gen2PropertyMap.get(key)!, value));
-        } else if (key == 'SupportedIdentityProviders') {
-          this.supportedIdentityProviderFlag = true;
-          objectLiterals.push(this.createEnumListPropertyAssignment(gen2PropertyMap.get(key)!, 'UserPoolClientIdentityProvider', value));
-        } else if (!this.oAuthFlag && key == 'AllowedOAuthFlows') {
-          this.oAuthFlag = true;
-          objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
-        } else if (key == 'ExplicitAuthFlows') {
-          objectLiterals.push(
-            factory.createPropertyAssignment(
-              factory.createIdentifier(gen2PropertyMap.get(key)!),
-              this.createAuthFlowsObjectExpression(value),
-            ),
-          );
-        } else if (!this.oAuthFlag && key == 'AllowedOAuthScopes') {
-          this.oAuthFlag = true;
-          objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
-        } else {
-          if (!this.oAuthFlag && (key == 'CallbackURLs' || key == 'LogoutURLs')) {
+      const mappedProperty = gen2PropertyMap.get(key);
+      if (mappedProperty) {
+        if (typeof value == 'boolean') {
+          objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, value));
+        } else if (typeof value == 'string') {
+          if (!this.oAuthFlag && key == 'DefaultRedirectURI') {
             this.oAuthFlag = true;
             objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
-          } else if (key != 'CallbackURLs' && key != 'LogoutURLs' && key != 'AllowedOAuthScopes') {
-            objectLiterals.push(this.createListPropertyAssignment(gen2PropertyMap.get(key)!, value));
+          } else if (key == 'ClientSecret') {
+            objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, value));
+          } else if (key != 'DefaultRedirectURI') {
+            objectLiterals.push(this.createStringPropertyAssignment(mappedProperty, value));
           }
+        } else if (typeof value == 'number') {
+          if (['IdTokenValidity', 'RefreshTokenValidity', 'AccessTokenValidity', 'AuthSessionValidity'].includes(key)) {
+            // convert it to Duration
+            this.importDurationFlag = true;
+            if (key == 'IdTokenValidity') {
+              let durationUnit = 'hours';
+              if (object['TokenValidityUnits'] && object['TokenValidityUnits'].IdToken) {
+                durationUnit = object['TokenValidityUnits'].IdToken;
+              }
+              objectLiterals.push(this.createDurationPropertyAssignment(mappedProperty, value, durationUnit));
+            } else if (key == 'RefreshTokenValidity') {
+              let durationUnit = 'days';
+              if (object['TokenValidityUnits'] && object['TokenValidityUnits'].RefreshToken) {
+                durationUnit = object['TokenValidityUnits'].RefreshToken;
+              }
+              objectLiterals.push(this.createDurationPropertyAssignment(mappedProperty, value, durationUnit));
+            } else if (key == 'AccessTokenValidity') {
+              let durationUnit = 'hours';
+              if (object['TokenValidityUnits'] && object['TokenValidityUnits'].AccessToken) {
+                durationUnit = object['TokenValidityUnits'].AccessToken;
+              }
+              objectLiterals.push(this.createDurationPropertyAssignment(mappedProperty, value, durationUnit));
+            } else if (key == 'AuthSessionValidity') {
+              objectLiterals.push(this.createDurationPropertyAssignment(mappedProperty, value, 'minutes'));
+            }
+          } else {
+            objectLiterals.push(this.createNumericPropertyAssignment(mappedProperty, value));
+          }
+        } else if (Array.isArray(value) && gen2PropertyMap.has(key)) {
+          if (key == 'ReadAttributes' || key == 'WriteAttributes') {
+            objectLiterals.push(this.createReadWriteAttributes(mappedProperty, value));
+          } else if (key == 'SupportedIdentityProviders') {
+            this.supportedIdentityProviderFlag = true;
+            objectLiterals.push(this.createEnumListPropertyAssignment(mappedProperty, 'UserPoolClientIdentityProvider', value));
+          } else if (!this.oAuthFlag && key == 'AllowedOAuthFlows') {
+            this.oAuthFlag = true;
+            objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
+          } else if (key == 'ExplicitAuthFlows') {
+            objectLiterals.push(
+              factory.createPropertyAssignment(factory.createIdentifier(mappedProperty), this.createAuthFlowsObjectExpression(value)),
+            );
+          } else if (!this.oAuthFlag && key == 'AllowedOAuthScopes') {
+            this.oAuthFlag = true;
+            objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
+          } else {
+            if (!this.oAuthFlag && (key == 'CallbackURLs' || key == 'LogoutURLs')) {
+              this.oAuthFlag = true;
+              objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
+            } else if (key != 'CallbackURLs' && key != 'LogoutURLs' && key != 'AllowedOAuthScopes') {
+              objectLiterals.push(this.createListPropertyAssignment(mappedProperty, value));
+            }
+          }
+        } else if (typeof value == 'object') {
+          objectLiterals.push(
+            factory.createPropertyAssignment(factory.createIdentifier(key), this.createNestedObjectExpression(value, gen2PropertyMap)),
+          );
         }
-      } else if (gen2PropertyMap.has(key) && typeof value == 'object') {
-        objectLiterals.push(
-          factory.createPropertyAssignment(factory.createIdentifier(key), this.createNestedObjectExpression(value, gen2PropertyMap)),
-        );
       }
     }
     return factory.createObjectLiteralExpression(objectLiterals, true);
@@ -532,7 +532,7 @@ export class BackendSynthesizer {
           policies as number | string | boolean | string[] | object,
         ),
       );
-      nodes.push(this.addRemovalPolicyAssigment('cfnUserPool'));
+      nodes.push(this.addRemovalPolicyAssignment('cfnUserPool'));
     }
 
     if (renderArgs.auth?.guestLogin === false || (renderArgs.auth?.identityPoolName && !renderArgs?.auth?.referenceAuth)) {
@@ -548,7 +548,7 @@ export class BackendSynthesizer {
       if (renderArgs.auth?.guestLogin === false) {
         nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
       }
-      nodes.push(this.addRemovalPolicyAssigment('cfnIdentityPool'));
+      nodes.push(this.addRemovalPolicyAssignment('cfnIdentityPool'));
     }
 
     if (
@@ -612,7 +612,7 @@ export class BackendSynthesizer {
       );
 
       nodes.push(bucketNameAssignment);
-      nodes.push(this.addRemovalPolicyAssigment('s3Bucket'));
+      nodes.push(this.addRemovalPolicyAssignment('s3Bucket'));
     }
 
     if (
@@ -653,7 +653,7 @@ export class BackendSynthesizer {
       }
 
       if (renderArgs.storage?.bucketEncryptionAlgorithm) {
-        const serverSideEncryptionByDefaultMap = new Map<any, any>();
+        const serverSideEncryptionByDefaultMap = new Map<string, string>();
         serverSideEncryptionByDefaultMap.set('SSEAlgorithm', 'sseAlgorithm');
         serverSideEncryptionByDefaultMap.set('KMSMasterKeyID', 'kmsMasterKeyId');
         serverSideEncryptionByDefaultMap.set('bucketKeyEnabled', 'bucketKeyEnabled');

@@ -38,6 +38,8 @@ export interface AuthSynthesizerOptions {
     // (undocumented)
     userPool: UserPoolType;
     // (undocumented)
+    userPoolClient?: UserPoolClientType;
+    // (undocumented)
     webClient?: UserPoolClientType;
 }
 
@@ -53,7 +55,7 @@ export interface AuthTriggerConnection {
 export type AuthTriggerConnectionSourceMap = Partial<Record<keyof LambdaConfigType, string>>;
 
 // @public (undocumented)
-export const getAuthDefinition: ({ userPool, identityPoolName, identityProviders, identityProvidersDetails, identityGroups, webClient, authTriggerConnections, guestLogin, referenceAuth, mfaConfig, totpConfig, }: AuthSynthesizerOptions) => AuthDefinition;
+export const getAuthDefinition: ({ userPool, identityPoolName, identityProviders, identityProvidersDetails, identityGroups, webClient, authTriggerConnections, guestLogin, referenceAuth, mfaConfig, totpConfig, userPoolClient, }: AuthSynthesizerOptions) => AuthDefinition;
 
 // (No @packageDocumentation comment for this package)
 
