@@ -5,7 +5,7 @@ phases:
   install:
     commands:
       - npm install --save-dev -g yarn
-      - python3 -m pip install setuptools
+      - pip install setuptools
   build:
     commands:
       - cd scripts
