@@ -10,6 +10,7 @@ import { EnvironmentResponse } from '@aws-sdk/client-lambda';
 import { PasswordPolicyType } from '@aws-sdk/client-cognito-identity-provider';
 import { Runtime } from '@aws-sdk/client-lambda';
 import { ServerSideEncryptionByDefault } from '@aws-sdk/client-s3';
+import { UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 
 // @public (undocumented)
 export type AccessPatterns = {
@@ -48,6 +49,8 @@ export interface AuthDefinition {
     referenceAuth?: ReferenceAuth;
     // (undocumented)
     standardUserAttributes?: StandardAttributes;
+    // (undocumented)
+    userPoolClient?: UserPoolClientType;
     // (undocumented)
     userPoolOverrides?: PolicyOverrides;
     // (undocumented)

@@ -334,7 +334,143 @@ describe('BackendRenderer', () => {
         },
       });
       const output = printNodeArray(rendered);
-      assert(output.includes('applyRemovalPolicy'));
+      assert(output.includes('s3Bucket.applyRemovalPolicy'));
+    });
+  });
+  describe('UserPoolClient Configuration using render()', () => {
+    it('renders complete user pool client configuration', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: './auth/resource.ts',
+          userPoolClient: {
+            UserPoolId: 'us-west-2_aaaaaaaaa',
+            ClientName: 'MyApp',
+            ClientId: '38fjsnc484p94kpqsnet7mpld0',
+            ClientSecret: 'CLIENT_SECRET',
+            RefreshTokenValidity: 30,
+            AccessTokenValidity: 79,
+            ReadAttributes: [
+              'address',
+              'birthdate',
+              'custom:CustomAttr1',
+              'custom:CustomAttr2',
+              'email',
+              'email_verified',
+              'family_name',
+              'gender',
+              'given_name',
+              'locale',
+              'middle_name',
+              'name',
+              'nickname',
+              'phone_number',
+              'phone_number_verified',
+              'picture',
+              'preferred_username',
+              'profile',
+              'updated_at',
+              'website',
+              'zoneinfo',
+            ],
+            WriteAttributes: [
+              'address',
+              'birthdate',
+              'custom:CustomAttr1',
+              'custom:CustomAttr2',
+              'email',
+              'family_name',
+              'gender',
+              'given_name',
+              'locale',
+              'middle_name',
+              'name',
+              'nickname',
+              'phone_number',
+              'picture',
+              'preferred_username',
+              'profile',
+              'updated_at',
+              'website',
+              'zoneinfo',
+            ],
+            ExplicitAuthFlows: ['ADMIN_NO_SRP_AUTH', 'USER_PASSWORD_AUTH'],
+            AllowedOAuthFlowsUserPoolClient: true,
+            AllowedOAuthFlows: ['code', 'implicit'],
+            AllowedOAuthScopes: [
+              'phone',
+              'email',
+              'openid',
+              'profile',
+              'aws.cognito.signin.user.admin',
+              'custom:CustomScope1',
+              'custom:CustomScope2',
+            ],
+            CallbackURLs: ['XXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXX'],
+            LogoutURLs: ['XXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXX'],
+            DefaultRedirectURI: 'XXXXXXXXXXXXXXXXXX',
+            SupportedIdentityProviders: ['COGNITO'],
+            AuthSessionValidity: 3,
+            EnableTokenRevocation: true,
+            EnablePropagateAdditionalUserContextData: true,
+            TokenValidityUnits: {
+              RefreshToken: 'hours',
+              AccessToken: 'minutes',
+              IdToken: 'minutes',
+            },
+          },
+        },
+      });
+
+      const output = printNodeArray(rendered);
+
+      // Basic configuration
+      expect(output).toContain('"us-west-2_aaaaaaaaa"');
+      expect(output).toContain('userPoolClientName: "MyApp"');
+
+      // Token validity settings
+      expect(output).toContain('refreshTokenValidity: Duration.hours(30),');
+      expect(output).toContain('accessTokenValidity: Duration.minutes(79)');
+
+      // Attributes
+      expect(output).toContain('readAttributes: new ClientAttributes().withStandardAttributes');
+      expect(output).toContain('writeAttributes: new ClientAttributes().withStandardAttributes');
+      expect(output).toContain('custom:CustomAttr1');
+
+      // OAuth configuration
+      expect(output).toContain('flows: { authorizationCodeGrant: true, implicitCodeGrant: true, clientCredentials: false }');
+
+      // OAuth scopes
+      expect(output).toContain('OAuthScope.PHONE');
+      expect(output).toContain('OAuthScope.EMAIL');
+      expect(output).toContain('OAuthScope.OPENID');
+
+      // URLs
+      expect(output).toContain('callbackUrls');
+      expect(output).toContain('logoutUrls');
+      expect(output).toContain('defaultRedirectUri');
+
+      // Auth flows
+      expect(output).toContain('authFlows: { adminUserPassword: false, custom: false, userPassword: false, userSrp: false }');
+
+      // Additional settings
+      expect(output).toContain('supportedIdentityProviders');
+      expect(output).toContain('authSessionValidity: Duration.minutes(3)');
+      expect(output).toContain('enableTokenRevocation: true');
+      expect(output).toContain('enablePropagateAdditionalUserContextData: true');
+    });
+    it('renders userpool and identitypool deletion policy', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: 'auth/resource.ts',
+          identityPoolName: 'testIdentityPool',
+          userPoolOverrides: {},
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(output.includes('cfnUserPool.applyRemovalPolicy'));
+      assert(output.includes('cfnIdentityPool.applyRemovalPolicy'));
     });
   });
 });

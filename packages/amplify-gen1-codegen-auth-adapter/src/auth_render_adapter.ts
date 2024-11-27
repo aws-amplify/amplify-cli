@@ -50,6 +50,7 @@ export interface AuthSynthesizerOptions {
   guestLogin?: boolean;
   mfaConfig?: UserPoolMfaType;
   totpConfig?: SoftwareTokenMfaConfigType;
+  userPoolClient?: UserPoolClientType;
 }
 
 export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
@@ -247,6 +248,7 @@ export const getAuthDefinition = ({
   referenceAuth,
   mfaConfig,
   totpConfig,
+  userPoolClient,
 }: AuthSynthesizerOptions): AuthDefinition => {
   const mappedUserAttributeName = {
     address: 'address',
@@ -363,5 +365,6 @@ export const getAuthDefinition = ({
     readAttributes: webClient?.ReadAttributes,
     writeAttributes: webClient?.WriteAttributes,
     referenceAuth,
+    userPoolClient,
   };
 };

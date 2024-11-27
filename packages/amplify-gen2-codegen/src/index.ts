@@ -150,6 +150,7 @@ export const createGen2Renderer = ({
       readAttributes: auth?.readAttributes,
       writeAttributes: auth?.writeAttributes,
       referenceAuth: auth?.referenceAuth,
+      userPoolClient: auth?.userPoolClient,
     };
   }
 
