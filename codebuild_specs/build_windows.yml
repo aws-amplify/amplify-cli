@@ -2,9 +2,11 @@ version: 0.2
 env:
   shell: powershell.exe
 phases:
-  build:
+  install:
     commands:
       - choco install -fy yarn
+  build:
+    commands:
       - cd scripts
       - yarn
       - cd ..
