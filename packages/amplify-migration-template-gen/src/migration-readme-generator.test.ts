@@ -63,54 +63,33 @@ describe('MigrationReadMeGenerator', () => {
       `### STEP 1: CREATE AND EXECUTE CLOUDFORMATION STACK REFACTOR FOR auth CATEGORY
 This step will move the Gen1 auth resources to Gen2 stack.
 
-1.a) Upload the source and destination templates to S3
+1.a) Create stack refactor
 \`\`\`
-export BUCKET_NAME=<<YOUR_BUCKET_NAME>>
-\`\`\`
-
-\`\`\`
-aws s3 cp test/step3-sourceTemplate.json s3://$BUCKET_NAME
-\`\`\`
-
-\`\`\`
-aws s3 cp test/step3-destinationTemplate.json s3://$BUCKET_NAME
-\`\`\`
-
-1.b) Create stack refactor
-\`\`\`
-aws cloudformation create-stack-refactor  --stack-definitions StackName=amplify-testauth-dev-12345-auth-ABCDE,TemplateURL=s3://$BUCKET_NAME/step3-sourceTemplate.json  StackName=amplify-mygen2app-test-sandbox-12345-auth-ABCDE,TemplateURL=s3://$BUCKET_NAME/step3-destinationTemplate.json  --resource-mappings  '[{\"Source\":{\"StackName\":\"amplify-testauth-dev-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen1FooUserPool\"},\"Destination\":{\"StackName\":\"amplify-mygen2app-test-sandbox-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen2FooUserPool\"}}]'
+aws cloudformation create-stack-refactor  --stack-definitions StackName=amplify-testauth-dev-12345-auth-ABCDE,TemplateBody@=file://test/step3-sourceTemplate.json  StackName=amplify-mygen2app-test-sandbox-12345-auth-ABCDE,TemplateBody@=file://test/step3-destinationTemplate.json  --resource-mappings  '[{\"Source\":{\"StackName\":\"amplify-testauth-dev-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen1FooUserPool\"},\"Destination\":{\"StackName\":\"amplify-mygen2app-test-sandbox-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen2FooUserPool\"}}]'
 \`\`\`
  
 \`\`\`
 export STACK_REFACTOR_ID=<<REFACTOR-ID-FROM-CREATE-STACK-REFACTOR_CALL>>
 \`\`\`
   
-1.c) Describe stack refactor to check for creation status
+1.b) Describe stack refactor to check for creation status
 \`\`\`
  aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
 \`\`\`
  
-1.d) Execute stack refactor
+1.c) Execute stack refactor
 \`\`\`
  aws cloudformation execute-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
 \`\`\`
  
-1.e) Describe stack refactor to check for execution status
+1.d) Describe stack refactor to check for execution status
 \`\`\`
  aws cloudformation describe-stack-refactor --stack-refactor-id $STACK_REFACTOR_ID
 \`\`\`
 
 #### Rollback step for refactor:
 \`\`\`
-aws s3 cp test/step3-sourceTemplate-rollback.json s3://$BUCKET_NAME
-\`\`\`
-
-\`\`\`
-aws s3 cp test/step3-destinationTemplate-rollback.json s3://$BUCKET_NAME
-\`\`\`
-
-\`\`\`
- aws cloudformation create-stack-refactor  --stack-definitions StackName=amplify-testauth-dev-12345-auth-ABCDE,TemplateURL=s3://$BUCKET_NAME/step3-sourceTemplate-rollback.json  StackName=amplify-mygen2app-test-sandbox-12345-auth-ABCDE,TemplateURL=s3://$BUCKET_NAME/step3-destinationTemplate-rollback.json  --resource-mappings  '[{\"Source\":{\"StackName\":\"amplify-mygen2app-test-sandbox-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen2FooUserPool\"},\"Destination\":{\"StackName\":\"amplify-testauth-dev-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen1FooUserPool\"}}]'
+ aws cloudformation create-stack-refactor  --stack-definitions StackName=amplify-testauth-dev-12345-auth-ABCDE,TemplateBody@=file://test/step3-sourceTemplate-rollback.json  StackName=amplify-mygen2app-test-sandbox-12345-auth-ABCDE,TemplateBody@=file://test/step3-destinationTemplate-rollback.json  --resource-mappings  '[{\"Source\":{\"StackName\":\"amplify-mygen2app-test-sandbox-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen2FooUserPool\"},\"Destination\":{\"StackName\":\"amplify-testauth-dev-12345-auth-ABCDE\",\"LogicalResourceId\":\"Gen1FooUserPool\"}}]'
 \`\`\`
 
 \`\`\`
