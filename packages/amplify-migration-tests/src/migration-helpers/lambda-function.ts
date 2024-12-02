@@ -13,7 +13,7 @@ import {
 import _ from 'lodash';
 
 type FunctionActions = 'create' | 'update';
-type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
+type FunctionRuntimes = 'dotnet8' | 'go' | 'java' | 'nodejs' | 'python';
 type FunctionCallback = (chain: $TSAny, cwd: string, settings: $TSAny) => $TSAny;
 
 // runtimeChoices are shared between tests
@@ -507,7 +507,7 @@ const addCron = (chain: ExecutionContext, settings: $TSAny) => {
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnet6':
+    case 'dotnet8':
       return dotNetTemplateChoices;
     case 'go':
       return goTemplateChoices;
@@ -524,8 +524,8 @@ const getTemplateChoices = (runtime: FunctionRuntimes) => {
 
 const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnet6':
-      return '.NET 6';
+    case 'dotnet8':
+      return '.NET 8';
     case 'go':
       return 'Go';
     case 'java':

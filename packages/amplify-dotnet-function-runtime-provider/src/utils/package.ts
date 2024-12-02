@@ -14,7 +14,7 @@ export const packageAssemblies = async (request: PackageRequest, context: any): 
   }
 
   const packageHash = (await context.amplify.hashDir(distPath, [])) as string;
-  const framework = 'net6.0';
+  const framework = 'net8.0';
   try {
     const result = execa.sync(
       executableName,

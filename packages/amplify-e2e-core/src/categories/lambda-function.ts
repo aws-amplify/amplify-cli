@@ -7,12 +7,12 @@ import _ from 'lodash';
 import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 
-type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
+type FunctionRuntimes = 'dotnet8' | 'go' | 'java' | 'nodejs' | 'python';
 
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
 // runtimeChoices are shared between tests
-export const runtimeChoices = ['.NET 6', 'Go', 'Java', 'NodeJS', 'Python'];
+export const runtimeChoices = ['.NET 8', 'Go', 'Java', 'NodeJS', 'Python'];
 
 // templateChoices is per runtime
 const dotNetTemplateChoices = [
@@ -655,7 +655,7 @@ export const functionCloudInvoke = async (
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnet6':
+    case 'dotnet8':
       return dotNetTemplateChoices;
     case 'go':
       return goTemplateChoices;
@@ -672,8 +672,8 @@ const getTemplateChoices = (runtime: FunctionRuntimes) => {
 
 const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnet6':
-      return '.NET 6';
+    case 'dotnet8':
+      return '.NET 8';
     case 'go':
       return 'Go';
     case 'java':

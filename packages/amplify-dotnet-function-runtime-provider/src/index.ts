@@ -1,5 +1,5 @@
 import { FunctionRuntimeContributorFactory } from '@aws-amplify/amplify-function-plugin-interface';
-import { dotnet6 } from './constants';
+import { dotnet8 } from './constants';
 import { detectDotNet } from './utils/detect';
 import { build } from './utils/build';
 import { packageAssemblies } from './utils/package';
@@ -10,14 +10,14 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     checkDependencies: detectDotNet,
     contribute: async (contributionRequest) => {
       switch (contributionRequest.selection) {
-        case dotnet6:
+        case dotnet8:
           return {
             runtime: {
-              name: '.NET 6',
-              value: dotnet6,
-              cloudTemplateValue: dotnet6,
+              name: '.NET 8',
+              value: dotnet8,
+              cloudTemplateValue: dotnet8,
               defaultHandler: `${contributionRequest.contributionContext.resourceName}::${contributionRequest.contributionContext.resourceName}.${contributionRequest.contributionContext.functionName}::LambdaHandler`,
-              layerExecutablePath: dotnet6,
+              layerExecutablePath: dotnet8,
             },
           };
         default:
