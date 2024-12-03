@@ -16,8 +16,8 @@ const path = require('path');
 const chalk = require('react-dev-utils/chalk');
 const fs = require('fs-extra');
 const bfj = require('bfj');
-const webpack = require('webpack');
-const configFactory = require('../config/webpack.config');
+const rspack = require("@rspack/core");
+const configFactory = require('../config/rspack.config');
 const paths = require('../config/paths');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
@@ -49,6 +49,7 @@ const config = configFactory('production');
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
 const { checkBrowsers } = require('react-dev-utils/browsersHelper');
+const rspackConfig = require('../config/rspack.config');
 checkBrowsers(paths.appPath, isInteractive)
   .then(() => {
     // First, read the current file sizes in build directory.
@@ -108,7 +109,7 @@ checkBrowsers(paths.appPath, isInteractive)
 function build(previousFileSizes) {
   console.log('Creating an optimized production build...');
 
-  const compiler = webpack(config);
+  const compiler = rspack(config);
   return new Promise((resolve, reject) => {
     compiler.run((err, stats) => {
       let messages;
