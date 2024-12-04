@@ -63,7 +63,10 @@ const retrieveOAuthValues = async ({
     const providerDetails = IdentityProvider?.ProviderDetails;
     assert(providerDetails);
     const { client_id, client_secret, team_id, key_id } = providerDetails;
+    assert(client_id);
     if (ProviderName === 'SignInWithApple') {
+      assert(team_id);
+      assert(key_id);
       // Retrieve private key
       const { Parameter: PrivateKeyParameter } = await ssmClient.send(
         new GetParameterCommand({
@@ -77,18 +80,16 @@ const retrieveOAuthValues = async ({
       oAuthClientValues.push({
         ProviderName,
         client_id,
-        client_secret,
         team_id,
         key_id,
         private_key: privateKey,
       });
     } else {
+      assert(client_secret);
       oAuthClientValues.push({
         ProviderName,
         client_id,
         client_secret,
-        team_id,
-        key_id,
       });
     }
   }
