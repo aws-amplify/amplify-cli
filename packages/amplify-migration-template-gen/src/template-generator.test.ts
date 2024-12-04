@@ -28,10 +28,10 @@ const GEN2_ROOT_STACK_NAME = 'amplify-gen2-test-sandbox-12345';
 const ACCOUNT_ID = 'TEST_ACCOUNT_ID';
 const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
-const MOCK_CFN_CLIENT = new CloudFormationClient();
-const MOCK_SSM_CLIENT = new SSMClient();
-const MOCK_COGNITO_IDP_CLIENT = new CognitoIdentityProviderClient();
-const MOCK_APP_ID = 'd123456';
+const STUB_CFN_CLIENT = new CloudFormationClient();
+const STUB_SSM_CLIENT = new SSMClient();
+const STUB_COGNITO_IDP_CLIENT = new CognitoIdentityProviderClient();
+const APP_ID = 'd123456';
 const ENV_NAME = 'test';
 
 const mockDescribeGen1StackResources: DescribeStackResourcesOutput = {
@@ -190,10 +190,10 @@ describe('TemplateGenerator', () => {
       GEN1_ROOT_STACK_NAME,
       GEN2_ROOT_STACK_NAME,
       ACCOUNT_ID,
-      MOCK_CFN_CLIENT,
-      MOCK_SSM_CLIENT,
-      MOCK_COGNITO_IDP_CLIENT,
-      MOCK_APP_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
       ENV_NAME,
     );
     await generator.generate();
@@ -208,10 +208,10 @@ describe('TemplateGenerator', () => {
       GEN1_ROOT_STACK_NAME,
       GEN2_ROOT_STACK_NAME,
       ACCOUNT_ID,
-      MOCK_CFN_CLIENT,
-      MOCK_SSM_CLIENT,
-      MOCK_COGNITO_IDP_CLIENT,
-      MOCK_APP_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
       ENV_NAME,
     );
     const failureSendMock = (command: any) => {
@@ -248,10 +248,10 @@ describe('TemplateGenerator', () => {
       GEN1_ROOT_STACK_NAME,
       GEN2_ROOT_STACK_NAME,
       ACCOUNT_ID,
-      MOCK_CFN_CLIENT,
-      MOCK_SSM_CLIENT,
-      MOCK_COGNITO_IDP_CLIENT,
-      MOCK_APP_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
       ENV_NAME,
     );
     await expect(generator.generate()).rejects.toThrow(errorMessage);
@@ -281,10 +281,10 @@ describe('TemplateGenerator', () => {
       GEN1_ROOT_STACK_NAME,
       GEN2_ROOT_STACK_NAME,
       ACCOUNT_ID,
-      MOCK_CFN_CLIENT,
-      MOCK_SSM_CLIENT,
-      MOCK_COGNITO_IDP_CLIENT,
-      MOCK_APP_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
       ENV_NAME,
     );
     await generator.generate();
@@ -318,10 +318,10 @@ describe('TemplateGenerator', () => {
       GEN1_ROOT_STACK_NAME,
       GEN2_ROOT_STACK_NAME,
       ACCOUNT_ID,
-      MOCK_CFN_CLIENT,
-      MOCK_SSM_CLIENT,
-      MOCK_COGNITO_IDP_CLIENT,
-      MOCK_APP_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
       ENV_NAME,
     );
     expect.assertions(1);

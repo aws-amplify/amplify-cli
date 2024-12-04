@@ -7,6 +7,7 @@ const APP_ID = 'appId';
 const ENV_NAME = 'envName';
 const USER_POOL_ID = 'userPoolId';
 
+// This test suite covers negative cases. Happy path cases are covered in its consumer (category-template-generator.test.ts)
 describe('OAuthValuesRetriever', () => {
   it('should fail if the oauth param is not an array', async () => {
     oauthValuesRetriever({
