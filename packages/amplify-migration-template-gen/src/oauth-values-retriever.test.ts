@@ -10,33 +10,33 @@ const USER_POOL_ID = 'userPoolId';
 // This test suite covers negative cases. Happy path cases are covered in its consumer (category-template-generator.test.ts)
 describe('OAuthValuesRetriever', () => {
   it('should fail if the oauth param is not an array', async () => {
-    oauthValuesRetriever({
-      appId: APP_ID,
-      environmentName: ENV_NAME,
-      userPoolId: USER_POOL_ID,
-      oAuthParameter: {
-        ParameterKey: 'hostedUIProviderMeta',
-        ParameterValue: JSON.stringify({}),
-      },
-      ssmClient: new SSMClient(),
-      cognitoIdpClient: new CognitoIdentityProviderClient(),
-    }).catch((error) => {
-      expect(error.message).toEqual(INVALID_OAUTH_METADATA_PARAM);
-    });
+    await expect(
+      oauthValuesRetriever({
+        appId: APP_ID,
+        environmentName: ENV_NAME,
+        userPoolId: USER_POOL_ID,
+        oAuthParameter: {
+          ParameterKey: 'hostedUIProviderMeta',
+          ParameterValue: JSON.stringify({}),
+        },
+        ssmClient: new SSMClient(),
+        cognitoIdpClient: new CognitoIdentityProviderClient(),
+      }),
+    ).rejects.toThrowError(INVALID_OAUTH_METADATA_PARAM);
   });
   it('should fail if the oauth param does not have provider info', async () => {
-    oauthValuesRetriever({
-      appId: APP_ID,
-      environmentName: ENV_NAME,
-      userPoolId: USER_POOL_ID,
-      oAuthParameter: {
-        ParameterKey: 'hostedUIProviderMeta',
-        ParameterValue: JSON.stringify([{}]),
-      },
-      ssmClient: new SSMClient(),
-      cognitoIdpClient: new CognitoIdentityProviderClient(),
-    }).catch((error) => {
-      expect(error.message).toEqual(INVALID_OAUTH_METADATA_PARAM);
-    });
+    await expect(
+      oauthValuesRetriever({
+        appId: APP_ID,
+        environmentName: ENV_NAME,
+        userPoolId: USER_POOL_ID,
+        oAuthParameter: {
+          ParameterKey: 'hostedUIProviderMeta',
+          ParameterValue: JSON.stringify([{}]),
+        },
+        ssmClient: new SSMClient(),
+        cognitoIdpClient: new CognitoIdentityProviderClient(),
+      }),
+    ).rejects.toThrowError(INVALID_OAUTH_METADATA_PARAM);
   });
 });
