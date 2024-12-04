@@ -4,9 +4,9 @@ import fs from 'node:fs/promises';
 import assert from 'node:assert';
 import { v4 as uuid } from 'uuid';
 
-import { Gen2RenderingOptions, createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
+import { createGen2Renderer, Gen2RenderingOptions } from '@aws-amplify/amplify-gen2-codegen';
 
-import { UsageData, getProjectSettings } from '@aws-amplify/cli-internal';
+import { getProjectSettings, UsageData } from '@aws-amplify/cli-internal';
 import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
@@ -121,8 +121,7 @@ const getUsageDataMetric = async (): Promise<IUsageData> => {
 const getAccountId = async (): Promise<string | undefined> => {
   const stsClient = new STSClient();
   const callerIdentityResult = await stsClient.send(new GetCallerIdentityCommand());
-  const accountId = callerIdentityResult.Account;
-  return accountId;
+  return callerIdentityResult.Account;
 };
 
 const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
@@ -238,7 +237,12 @@ export async function execute() {
   await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
 }
 
-export async function generateTemplates(fromStack: string, toStack: string) {
+/**
+ * Executes the stack refactor operation to move Gen1 resources from Gen1 stack into Gen2 stack
+ * @param fromStack
+ * @param toStack
+ */
+export async function executeStackRefactor(fromStack: string, toStack: string) {
   const cfnClient = new CloudFormationClient();
   const ssmClient = new SSMClient();
   const cognitoIdpClient = new CognitoIdentityProviderClient();

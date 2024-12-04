@@ -1,16 +1,16 @@
 import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs';
-import { generateTemplates } from '../../../command-handlers';
+import { executeStackRefactor } from '../../../command-handlers';
 import assert from 'node:assert';
 
-export interface GenerateTemplatesCommandOptions {
+export interface ExecuteCommandOptions {
   from: string | undefined;
   to: string | undefined;
 }
 
 /**
- * Command that generates templates needed for Gen2 migration.
+ * Command that executes stack refactor operation needed for Gen2 migration.
  */
-export class GenerateTemplatesCommand implements CommandModule<object, GenerateTemplatesCommandOptions> {
+export class Gen2ExecuteCommand implements CommandModule<object, ExecuteCommandOptions> {
   /**
    * @inheritDoc
    */
@@ -22,11 +22,11 @@ export class GenerateTemplatesCommand implements CommandModule<object, GenerateT
   readonly describe: string;
 
   constructor() {
-    this.command = 'generate-templates';
-    this.describe = 'Generates stack refactor inputs (CFN templates)';
+    this.command = 'execute';
+    this.describe = 'Moves Amplify Gen1 resources from a Gen1 stack into a Gen2 stack';
   }
 
-  builder = (yargs: Argv): Argv<GenerateTemplatesCommandOptions> => {
+  builder = (yargs: Argv): Argv<ExecuteCommandOptions> => {
     return yargs
       .version(false)
       .option('from', {
@@ -40,10 +40,10 @@ export class GenerateTemplatesCommand implements CommandModule<object, GenerateT
         demandOption: true,
       });
   };
-  handler = async (args: ArgumentsCamelCase<GenerateTemplatesCommandOptions>): Promise<void> => {
+  handler = async (args: ArgumentsCamelCase<ExecuteCommandOptions>): Promise<void> => {
     const { from, to } = args;
     assert(from);
     assert(to);
-    await generateTemplates(from, to);
+    await executeStackRefactor(from, to);
   };
 }
