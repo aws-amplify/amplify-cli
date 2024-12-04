@@ -15,9 +15,11 @@ import {
   DescribeIdentityProviderResponse,
 } from '@aws-sdk/client-cognito-identity-provider';
 
-const mockCfnClientSendMock = jest.fn();
-const mockSsmClientSendMock = jest.fn();
-const mockCognitoClientSendMock = jest.fn();
+// We use 'stub' to indicate fake implementation. If we are asserting a fake, it becomes a 'mock'.
+// Ref: https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#lets-speak-the-same-language
+const stubCfnClientSend = jest.fn();
+const stubSsmClientSend = jest.fn();
+const stubCognitoClientSend = jest.fn();
 
 const GEN1_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-testauth-dev-12345-auth-ABCDE/12345';
 const GEN2_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-auth-ABCDE/12345';
@@ -437,7 +439,7 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
     ...jest.requireActual('@aws-sdk/client-cloudformation'),
     CloudFormationClient: function () {
       return {
-        send: mockCfnClientSendMock.mockImplementation((command) => {
+        send: stubCfnClientSend.mockImplementation((command) => {
           if (command instanceof DescribeStacksCommand) {
             return Promise.resolve(generateDescribeStacksResponse(command));
           } else if (command instanceof GetTemplateCommand) {
@@ -455,7 +457,7 @@ jest.mock('@aws-sdk/client-cognito-identity-provider', () => {
     ...jest.requireActual('@aws-sdk/client-cognito-identity-provider'),
     CognitoIdentityProviderClient: function () {
       return {
-        send: mockCognitoClientSendMock.mockImplementation((command) => {
+        send: stubCognitoClientSend.mockImplementation((command) => {
           if (command instanceof DescribeIdentityProviderCommand) {
             return Promise.resolve(generateDescribeIdentityProviderResponse(command));
           }
@@ -471,7 +473,7 @@ jest.mock('@aws-sdk/client-ssm', () => {
     ...jest.requireActual('@aws-sdk/client-ssm'),
     SSMClient: function () {
       return {
-        send: mockSsmClientSendMock.mockImplementation((command) => {
+        send: stubSsmClientSend.mockImplementation((command) => {
           if (command instanceof GetParameterCommand) {
             return Promise.resolve(generateGetParameterResponse(command));
           }
@@ -579,7 +581,7 @@ describe('CategoryTemplateGenerator', () => {
       }
       return Promise.resolve({});
     };
-    mockCfnClientSendMock.mockImplementationOnce(sendFailureMock).mockImplementationOnce(sendFailureMock);
+    stubCfnClientSend.mockImplementationOnce(sendFailureMock).mockImplementationOnce(sendFailureMock);
     await expect(noGen1ResourcesToMoveS3TemplateGenerator.generateGen1PreProcessTemplate()).rejects.toThrowError(
       'No resources to move in Gen1 stack.',
     );
@@ -599,7 +601,7 @@ describe('CategoryTemplateGenerator', () => {
       }
       return Promise.resolve({});
     };
-    mockCfnClientSendMock
+    stubCfnClientSend
       .mockImplementationOnce(sendFailureMock)
       .mockImplementationOnce(sendFailureMock)
       .mockImplementationOnce(sendFailureMock)
