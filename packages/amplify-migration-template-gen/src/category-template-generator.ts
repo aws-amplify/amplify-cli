@@ -1,4 +1,5 @@
 import { CloudFormationClient, DescribeStacksCommand, GetTemplateCommand, Stack } from '@aws-sdk/client-cloudformation';
+import { SSMClient } from '@aws-sdk/client-ssm';
 import assert from 'node:assert';
 import { CFN_CATEGORY_TYPE, CFNChangeTemplateWithParams, CFNResource, CFNStackRefactorTemplates, CFNTemplate } from './types';
 import CFNConditionResolver from './resolvers/cfn-condition-resolver';
@@ -6,6 +7,12 @@ import CfnParameterResolver from './resolvers/cfn-parameter-resolver';
 import CfnOutputResolver from './resolvers/cfn-output-resolver';
 import CfnDependencyResolver from './resolvers/cfn-dependency-resolver';
 import extractStackNameFromId from './cfn-stack-name-extractor';
+import retrieveOAuthValues from './oauth-values-retriever';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+
+const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
+const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
+const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
 
 class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
   private gen1DescribeStacksResponse: Stack | undefined;
@@ -18,6 +25,10 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     private readonly region: string,
     private readonly accountId: string,
     private readonly cfnClient: CloudFormationClient,
+    private readonly ssmClient: SSMClient,
+    private readonly cognitoIdpClient: CognitoIdentityProviderClient,
+    private readonly appId: string,
+    private readonly environmentName: string,
     private readonly resourcesToMove: CFNCategoryType[],
     private readonly resourcesToMovePredicate?: (resourcesToMove: CFN_CATEGORY_TYPE[], resourceEntry: [string, CFNResource]) => boolean,
   ) {
@@ -52,6 +63,27 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     );
     const gen1TemplateWithDepsResolved = new CfnDependencyResolver(gen1TemplateWithOutputsResolved).resolve(logicalResourceIds);
     const gen1TemplateWithConditionsResolved = new CFNConditionResolver(gen1TemplateWithDepsResolved).resolve(Parameters);
+    const oAuthProvidersParam = Parameters.find((param) => param.ParameterKey === HOSTED_PROVIDER_META_PARAMETER_NAME);
+    if (oAuthProvidersParam) {
+      const userPoolId = Outputs.find((op) => op.OutputKey === USER_POOL_ID_OUTPUT_KEY_NAME)?.OutputValue;
+      assert(userPoolId);
+      const oAuthValues = await retrieveOAuthValues({
+        ssmClient: this.ssmClient,
+        cognitoIdpClient: this.cognitoIdpClient,
+        appId: this.appId,
+        environmentName: this.environmentName,
+        oAuthParameter: oAuthProvidersParam,
+        userPoolId,
+      });
+      const oAuthProviderCredentialsParam = Parameters.find((param) => param.ParameterKey === HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME);
+      assert(oAuthProviderCredentialsParam);
+      oAuthProviderCredentialsParam.ParameterValue = JSON.stringify(oAuthValues);
+      return {
+        oldTemplate: oldGen1Template,
+        newTemplate: gen1TemplateWithConditionsResolved,
+        parameters: Parameters,
+      };
+    }
     return {
       oldTemplate: oldGen1Template,
       newTemplate: gen1TemplateWithConditionsResolved,

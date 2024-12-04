@@ -5,6 +5,8 @@ import fs from 'node:fs/promises';
 import { CATEGORY, CFN_AUTH_TYPE, CFN_CATEGORY_TYPE, CFN_S3_TYPE, CFNResource, CFNStackStatus } from './types';
 import MigrationReadmeGenerator from './migration-readme-generator';
 import { tryUpdateStack } from './cfn-stack-updater';
+import { SSMClient } from '@aws-sdk/client-ssm';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 
@@ -20,6 +22,10 @@ class TemplateGenerator {
     private readonly toStack: string,
     private readonly accountId: string,
     private readonly cfnClient: CloudFormationClient,
+    private readonly ssmClient: SSMClient,
+    private readonly cognitoIdpClient: CognitoIdentityProviderClient,
+    private readonly appId: string,
+    private readonly environmentName: string,
   ) {
     this.categoryStackMap = new Map<CATEGORY, [string, string]>();
     this.categoryTemplateGenerators = [];
@@ -88,6 +94,10 @@ class TemplateGenerator {
               this.region,
               this.accountId,
               this.cfnClient,
+              this.ssmClient,
+              this.cognitoIdpClient,
+              this.appId,
+              this.environmentName,
               [
                 CFN_AUTH_TYPE.UserPool,
                 CFN_AUTH_TYPE.UserPoolClient,
@@ -105,9 +115,18 @@ class TemplateGenerator {
             category,
             gen1CategoryStackId,
             gen2CategoryStackId,
-            new CategoryTemplateGenerator(gen1CategoryStackId, gen2CategoryStackId, this.region, this.accountId, this.cfnClient, [
-              CFN_S3_TYPE.Bucket,
-            ]),
+            new CategoryTemplateGenerator(
+              gen1CategoryStackId,
+              gen2CategoryStackId,
+              this.region,
+              this.accountId,
+              this.cfnClient,
+              this.ssmClient,
+              this.cognitoIdpClient,
+              this.appId,
+              this.environmentName,
+              [CFN_S3_TYPE.Bucket],
+            ),
           ]);
           break;
         }

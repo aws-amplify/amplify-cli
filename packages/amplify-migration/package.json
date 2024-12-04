@@ -58,6 +58,7 @@
     "@aws-sdk/client-cognito-identity-provider": "^3.592.0",
     "@aws-sdk/client-lambda": "^3.637.0",
     "@aws-sdk/client-s3": "^3.592.0",
+    "@aws-sdk/client-ssm": "^3.592.0",
     "@aws-sdk/client-sts": "^3.658.1",
     "@types/node": "^20.14.2",
     "@types/unzipper": "^0.10.9",
