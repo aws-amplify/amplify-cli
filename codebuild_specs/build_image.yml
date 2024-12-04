@@ -6,8 +6,9 @@ phases:
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
-      - export BRANCH_TAG=${CODEBUILD_WEBHOOK_TRIGGER#branch/codebuild-image/*}
-      - export IMAGE_TAG=${CUSTOM_TAG:=$BRANCH_TAG}
+      # increment DEFAULT_TAG version to a unique consecutive version whenever you make changes to the dockerfile or image settings
+      - export DEFAULT_TAG=1.0.3
+      - export IMAGE_TAG=${CUSTOM_TAG:=$DEFAULT_TAG}
       - echo $IMAGE_TAG
       - echo $PKG_BINARY_CACHE_BUCKET_NAME
       - mkdir pkg-cache

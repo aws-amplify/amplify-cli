@@ -1,1 +1,6 @@
 node_modules
+scripts/*
+packages/*
+.yarn/*
+.bin/*
+.DS_Store

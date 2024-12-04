@@ -1,5 +1,21 @@
 FROM public.ecr.aws/ubuntu/ubuntu:22.04 AS core
-
+# If you need to update or test a new LINUX image, make sure to increment the DEFAULT_TAG in the build_image.yml file.
+# You will be able to generate new images to test with, without affecting the production images, by following the instructions below.
+#
+# 1. Make a branch in the main repository (aws-amplify/amplify-cli/branch/codebuild-image/<your-new-image-branch>),
+# which you will use as the 'source' for triggering the ECR Image Build codebuild project in the Codebuild Testing account.
+#
+# 2. When the image is built/available, you can test with that image by modifying the cloud-e2e script locally
+# IE - modify this section: $(aws codebuild start-build-batch --profile="${profile_name}" --project-name $project_name --source-version=$target_branch --image-override <the new linux image URI> ...
+# Then, run the yarn cloud-e2e command while you have that script modified.
+#
+# 3. If everything is good to go, you'll be able to submit a PR from your branch to the codebuild-image/latest branch, and
+# finalize the DEFAULT_TAG value for that version before you merge your PR.
+# 4. Once merged, make sure to kick off the ECR image build (in both codebuild testing, and deployment accounts) for the 'codebuild-image/latest' branch.
+# 5. Verify that the images with DEFAULT_TAG tag exist in both accounts afterwards.
+# 6. Update the codebuild pipelines to reference the new DEFAULT_TAG value.
+# ie, const buildImage = codebuild.LinuxBuildImage.fromEcrRepository(ecrRepository, '<value of new DEFAULT_TAG>');
+# Make sure do this in both codebuild testing stack and codebuild deployment stacks.
 ARG DEBIAN_FRONTEND="noninteractive"
 
 # Install git, SSH, and other utilities
@@ -147,11 +163,11 @@ FROM tools AS runtimes
 
 #****************     .NET-CORE     *******************************************************
 
-ENV DOTNET_6_SDK_VERSION="6.0.405"
+ENV DOTNET_8_SDK_VERSION="8.0.404"
 ENV DOTNET_ROOT="/root/.dotnet"
 
 # Add .NET Core 6 Global Tools install folder to PATH
-RUN  /usr/local/bin/dotnet-install.sh -v $DOTNET_6_SDK_VERSION \
+RUN  /usr/local/bin/dotnet-install.sh -v $DOTNET_8_SDK_VERSION \
      && dotnet --list-sdks \
      && rm -rf /tmp/*
 
@@ -165,8 +181,10 @@ RUN set -ex \
     && rm -rf warmup \
     && rm -rf /tmp/NuGetScratch
 
-RUN dotnet tool install -g amazon.lambda.tools && \
-    dotnet tool install -g amazon.lambda.testtool-6.0
+# https://www.nuget.org/packages/Amazon.Lambda.Tools
+# https://www.nuget.org/packages/Amazon.Lambda.TestTool-8.0
+RUN dotnet tool install -g Amazon.Lambda.Tools --version 5.12.0 && \
+    dotnet tool install -g Amazon.Lambda.TestTool-8.0 --version 0.16.0
 
 # Install Powershell Core
 # See instructions at https://docs.microsoft.com/en-us/powershell/scripting/setup/installing-powershell-core-on-linux
