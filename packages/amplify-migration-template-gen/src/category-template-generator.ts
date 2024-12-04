@@ -78,11 +78,6 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
       const oAuthProviderCredentialsParam = Parameters.find((param) => param.ParameterKey === HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME);
       assert(oAuthProviderCredentialsParam);
       oAuthProviderCredentialsParam.ParameterValue = JSON.stringify(oAuthValues);
-      return {
-        oldTemplate: oldGen1Template,
-        newTemplate: gen1TemplateWithConditionsResolved,
-        parameters: Parameters,
-      };
     }
     return {
       oldTemplate: oldGen1Template,
