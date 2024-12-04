@@ -7,6 +7,8 @@ import {
   UpdateStackCommand,
 } from '@aws-sdk/client-cloudformation';
 import fs from 'node:fs/promises';
+import { SSMClient } from '@aws-sdk/client-ssm';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 
 jest.useFakeTimers();
 
@@ -26,7 +28,11 @@ const GEN2_ROOT_STACK_NAME = 'amplify-gen2-test-sandbox-12345';
 const ACCOUNT_ID = 'TEST_ACCOUNT_ID';
 const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
-const MOCK_CFN_CLIENT = new CloudFormationClient();
+const STUB_CFN_CLIENT = new CloudFormationClient();
+const STUB_SSM_CLIENT = new SSMClient();
+const STUB_COGNITO_IDP_CLIENT = new CognitoIdentityProviderClient();
+const APP_ID = 'd123456';
+const ENV_NAME = 'test';
 
 const mockDescribeGen1StackResources: DescribeStackResourcesOutput = {
   StackResources: [
@@ -180,7 +186,16 @@ describe('TemplateGenerator', () => {
 
   it('should generate a template', async () => {
     // Act
-    const generator = new TemplateGenerator(GEN1_ROOT_STACK_NAME, GEN2_ROOT_STACK_NAME, ACCOUNT_ID, MOCK_CFN_CLIENT);
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
     await generator.generate();
 
     // Assert
@@ -189,7 +204,16 @@ describe('TemplateGenerator', () => {
   });
 
   it('should fail to generate when no applicable categories are found', async () => {
-    const generator = new TemplateGenerator(GEN1_ROOT_STACK_NAME, GEN2_ROOT_STACK_NAME, ACCOUNT_ID, MOCK_CFN_CLIENT);
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
     const failureSendMock = (command: any) => {
       if (command instanceof DescribeStackResourcesCommand) {
         return Promise.resolve(
@@ -220,7 +244,16 @@ describe('TemplateGenerator', () => {
     });
 
     // Act + Assert
-    const generator = new TemplateGenerator(GEN1_ROOT_STACK_NAME, GEN2_ROOT_STACK_NAME, ACCOUNT_ID, MOCK_CFN_CLIENT);
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
     await expect(generator.generate()).rejects.toThrow(errorMessage);
   });
 
@@ -244,7 +277,16 @@ describe('TemplateGenerator', () => {
     });
 
     // Act
-    const generator = new TemplateGenerator(GEN1_ROOT_STACK_NAME, GEN2_ROOT_STACK_NAME, ACCOUNT_ID, MOCK_CFN_CLIENT);
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
     await generator.generate();
 
     // Assert
@@ -272,7 +314,16 @@ describe('TemplateGenerator', () => {
     });
 
     // Act + Assert
-    const generator = new TemplateGenerator(GEN1_ROOT_STACK_NAME, GEN2_ROOT_STACK_NAME, ACCOUNT_ID, MOCK_CFN_CLIENT);
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
     expect.assertions(1);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
     // and catch the error below

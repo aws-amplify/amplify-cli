@@ -13,6 +13,7 @@ import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { S3Client } from '@aws-sdk/client-s3';
 import { LambdaClient } from '@aws-sdk/client-lambda';
+import { SSMClient } from '@aws-sdk/client-ssm';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { BackendDownloader } from './backend_downloader';
 import { AppContextLogger } from './logger';
@@ -239,9 +240,28 @@ export async function execute() {
 
 export async function generateTemplates(fromStack: string, toStack: string) {
   const cfnClient = new CloudFormationClient();
+  const ssmClient = new SSMClient();
+  const cognitoIdpClient = new CognitoIdentityProviderClient();
   const accountId = await getAccountId();
   assert(accountId);
-  const templateGenerator = new TemplateGenerator(fromStack, toStack, accountId, cfnClient);
+  const gen1MetaFile = await fs.readFile(`${MIGRATION_DIR}/${AMPLIFY_DIR}/backend/amplify-meta.json`, { encoding: 'utf-8' });
+  assert(gen1MetaFile);
+  const gen1Meta = JSON.parse(gen1MetaFile);
+  const { AmplifyAppId: appId, StackName: stackName } = gen1Meta.providers.awscloudformation;
+  assert(appId);
+  assert(stackName);
+  const backendEnvironmentName = stackName.split('-')?.[2];
+  assert(backendEnvironmentName);
+  const templateGenerator = new TemplateGenerator(
+    fromStack,
+    toStack,
+    accountId,
+    cfnClient,
+    ssmClient,
+    cognitoIdpClient,
+    appId,
+    backendEnvironmentName,
+  );
   await templateGenerator.generate();
   printer.print(
     format.success(

@@ -5,10 +5,12 @@
 ```ts
 
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { SSMClient } from '@aws-sdk/client-ssm';
 
 // @public (undocumented)
 export class TemplateGenerator {
-    constructor(fromStack: string, toStack: string, accountId: string, cfnClient: CloudFormationClient);
+    constructor(fromStack: string, toStack: string, accountId: string, cfnClient: CloudFormationClient, ssmClient: SSMClient, cognitoIdpClient: CognitoIdentityProviderClient, appId: string, environmentName: string);
     // (undocumented)
     generate(): Promise<void>;
 }

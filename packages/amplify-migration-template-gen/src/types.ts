@@ -102,3 +102,11 @@ export enum CFN_PSEUDO_PARAMETERS_REF {
 export enum CFNStackStatus {
   UPDATE_COMPLETE = 'UPDATE_COMPLETE',
 }
+
+export type BaseOAuthClient = { ProviderName: string; client_id: string };
+export type OAuthClientWithSecret = BaseOAuthClient & { client_secret: string };
+export type SignInWithAppleOAuthClient = BaseOAuthClient & { team_id: string; key_id: string; private_key: string };
+export type OAuthClient = OAuthClientWithSecret | SignInWithAppleOAuthClient;
+export type HostedUIProviderMeta = {
+  ProviderName: 'Amazon' | 'Facebook' | 'Google' | 'SignInWithApple';
+};

@@ -8,8 +8,18 @@ import {
   GetTemplateOutput,
   Parameter,
 } from '@aws-sdk/client-cloudformation';
+import { GetParameterCommand, GetParameterCommandOutput, SSMClient } from '@aws-sdk/client-ssm';
+import {
+  CognitoIdentityProviderClient,
+  DescribeIdentityProviderCommand,
+  DescribeIdentityProviderResponse,
+} from '@aws-sdk/client-cognito-identity-provider';
 
-const mockCfnClientSendMock = jest.fn();
+// We use 'stub' to indicate fake implementation. If we are asserting a fake, it becomes a 'mock'.
+// Ref: https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#lets-speak-the-same-language
+const stubCfnClientSend = jest.fn();
+const stubSsmClientSend = jest.fn();
+const stubCognitoClientSend = jest.fn();
 
 const GEN1_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-testauth-dev-12345-auth-ABCDE/12345';
 const GEN2_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-auth-ABCDE/12345';
@@ -17,6 +27,8 @@ const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
 const GEN1_ANOTHER_S3_BUCKET_LOGICAL_ID = 'MyOtherS3Bucket';
 const GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID = 'MyOtherGen2S3Bucket';
+const MOCK_APP_ID = 'd123456';
+const ENV_NAME = 'test';
 
 const oldGen1Template: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
@@ -26,11 +38,24 @@ const oldGen1Template: CFNTemplate = {
       Type: 'String',
       Description: 'Environment',
     },
+    hostedUIProviderMeta: {
+      Type: 'String',
+      Description: 'HostedUIProviderMeta',
+    },
+    hostedUIProviderCreds: {
+      Type: 'String',
+      Description: 'HostedUIProviderCreds',
+      NoEcho: true,
+    },
   },
   Outputs: {
     BucketNameOutputRef: {
       Description: 'Bucket name',
       Value: { Ref: GEN1_S3_BUCKET_LOGICAL_ID },
+    },
+    UserPoolId: {
+      Description: 'User pool id',
+      Value: 'userPoolId',
     },
   },
   Resources: {
@@ -73,11 +98,24 @@ const newGen1Template: CFNTemplate = {
       Type: 'String',
       Description: 'Environment',
     },
+    hostedUIProviderMeta: {
+      Type: 'String',
+      Description: 'HostedUIProviderMeta',
+    },
+    hostedUIProviderCreds: {
+      Type: 'String',
+      Description: 'HostedUIProviderCreds',
+      NoEcho: true,
+    },
   },
   Outputs: {
     BucketNameOutputRef: {
       Description: 'Bucket name',
       Value: 'my-test-bucket-dev',
+    },
+    UserPoolId: {
+      Description: 'User pool id',
+      Value: 'userPoolId',
     },
   },
   Resources: {
@@ -120,11 +158,24 @@ const newGen1TemplateWithPredicate: CFNTemplate = {
       Type: 'String',
       Description: 'Environment',
     },
+    hostedUIProviderMeta: {
+      Type: 'String',
+      Description: 'HostedUIProviderMeta',
+    },
+    hostedUIProviderCreds: {
+      Type: 'String',
+      Description: 'HostedUIProviderCreds',
+      NoEcho: true,
+    },
   },
   Outputs: {
     BucketNameOutputRef: {
       Description: 'Bucket name',
       Value: 'my-test-bucket-dev',
+    },
+    UserPoolId: {
+      Description: 'User pool id',
+      Value: 'userPoolId',
     },
   },
   Resources: {
@@ -202,12 +253,7 @@ const oldGen2Template = {
 const newGen2Template: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
   Description: 'Test template',
-  Parameters: {
-    Environment: {
-      Type: 'String',
-      Description: 'Environment',
-    },
-  },
+  Parameters: oldGen2Template.Parameters,
   Outputs: {
     BucketNameOutputRef: {
       Description: 'Bucket name',
@@ -237,6 +283,34 @@ const gen1Params: Parameter[] = [
   {
     ParameterKey: 'Environment',
     ParameterValue: 'dev',
+  },
+  {
+    ParameterKey: 'hostedUIProviderMeta',
+    ParameterValue: JSON.stringify([
+      {
+        ProviderName: 'Facebook',
+      },
+      {
+        ProviderName: 'SignInWithApple',
+      },
+    ]),
+  },
+  {
+    ParameterKey: 'hostedUIProviderCreds',
+    ParameterValue: JSON.stringify([
+      {
+        ProviderName: 'Facebook',
+        client_id: 'fbClientId',
+        client_secret: 'fbClientSecret',
+      },
+      {
+        ProviderName: 'SignInWithApple',
+        teamId: 'appleTeamId',
+        keyId: 'appleKeyId',
+        privateKey: 'applePrivateKey',
+        clientId: 'appleClientId',
+      },
+    ]),
   },
 ];
 
@@ -325,6 +399,11 @@ const generateDescribeStacksResponse = (command: DescribeStacksCommand): Describ
           OutputValue: 'my-test-bucket-dev',
           Description: 'My bucket',
         },
+        {
+          OutputKey: 'UserPoolId',
+          OutputValue: 'userPoolId',
+          Description: 'My user pool',
+        },
       ],
     },
   ],
@@ -334,16 +413,69 @@ const generateGetTemplateResponse = (command: GetTemplateCommand): GetTemplateOu
   TemplateBody: command.input.StackName === GEN1_CATEGORY_STACK_ID ? JSON.stringify(oldGen1Template) : JSON.stringify(oldGen2Template),
 });
 
+const generateDescribeIdentityProviderResponse = ({ input }: DescribeIdentityProviderCommand): DescribeIdentityProviderResponse => ({
+  IdentityProvider: {
+    ProviderName: input.ProviderName,
+    ProviderDetails: {
+      client_id: 'client_id',
+      client_secret: 'client_secret',
+      team_id: input.ProviderName === 'SignInWithApple' ? 'team_id' : '',
+      key_id: input.ProviderName === 'SignInWithApple' ? 'key_id' : '',
+    },
+    UserPoolId: input.UserPoolId,
+  },
+});
+
+const generateGetParameterResponse = (command: GetParameterCommand): GetParameterCommandOutput => ({
+  Parameter: {
+    Name: command.input.Name,
+    Value: 'private_key',
+  },
+  $metadata: {},
+});
+
 jest.mock('@aws-sdk/client-cloudformation', () => {
   return {
     ...jest.requireActual('@aws-sdk/client-cloudformation'),
     CloudFormationClient: function () {
       return {
-        send: mockCfnClientSendMock.mockImplementation((command) => {
+        send: stubCfnClientSend.mockImplementation((command) => {
           if (command instanceof DescribeStacksCommand) {
             return Promise.resolve(generateDescribeStacksResponse(command));
           } else if (command instanceof GetTemplateCommand) {
             return Promise.resolve(generateGetTemplateResponse(command));
+          }
+          return Promise.resolve({});
+        }),
+      };
+    },
+  };
+});
+
+jest.mock('@aws-sdk/client-cognito-identity-provider', () => {
+  return {
+    ...jest.requireActual('@aws-sdk/client-cognito-identity-provider'),
+    CognitoIdentityProviderClient: function () {
+      return {
+        send: stubCognitoClientSend.mockImplementation((command) => {
+          if (command instanceof DescribeIdentityProviderCommand) {
+            return Promise.resolve(generateDescribeIdentityProviderResponse(command));
+          }
+          return Promise.resolve({});
+        }),
+      };
+    },
+  };
+});
+
+jest.mock('@aws-sdk/client-ssm', () => {
+  return {
+    ...jest.requireActual('@aws-sdk/client-ssm'),
+    SSMClient: function () {
+      return {
+        send: stubSsmClientSend.mockImplementation((command) => {
+          if (command instanceof GetParameterCommand) {
+            return Promise.resolve(generateGetParameterResponse(command));
           }
           return Promise.resolve({});
         }),
@@ -359,6 +491,10 @@ describe('CategoryTemplateGenerator', () => {
     'us-east-1',
     '12345',
     new CloudFormationClient(),
+    new SSMClient(),
+    new CognitoIdentityProviderClient(),
+    MOCK_APP_ID,
+    ENV_NAME,
     [CFN_S3_TYPE.Bucket],
   );
 
@@ -368,6 +504,10 @@ describe('CategoryTemplateGenerator', () => {
     'us-east-1',
     '12345',
     new CloudFormationClient(),
+    new SSMClient(),
+    new CognitoIdentityProviderClient(),
+    MOCK_APP_ID,
+    ENV_NAME,
     [CFN_S3_TYPE.Bucket],
     // decide which resources to move based on resource properties
     (resourcesToMove, resourceEntry) => resourcesToMove.includes(CFN_S3_TYPE.Bucket) && resourceEntry[0] === GEN1_S3_BUCKET_LOGICAL_ID,
@@ -379,6 +519,10 @@ describe('CategoryTemplateGenerator', () => {
     'us-east-1',
     '12345',
     new CloudFormationClient(),
+    new SSMClient(),
+    new CognitoIdentityProviderClient(),
+    MOCK_APP_ID,
+    ENV_NAME,
     [CFN_S3_TYPE.Bucket],
   );
 
@@ -437,7 +581,7 @@ describe('CategoryTemplateGenerator', () => {
       }
       return Promise.resolve({});
     };
-    mockCfnClientSendMock.mockImplementationOnce(sendFailureMock).mockImplementationOnce(sendFailureMock);
+    stubCfnClientSend.mockImplementationOnce(sendFailureMock).mockImplementationOnce(sendFailureMock);
     await expect(noGen1ResourcesToMoveS3TemplateGenerator.generateGen1PreProcessTemplate()).rejects.toThrowError(
       'No resources to move in Gen1 stack.',
     );
@@ -457,7 +601,7 @@ describe('CategoryTemplateGenerator', () => {
       }
       return Promise.resolve({});
     };
-    mockCfnClientSendMock
+    stubCfnClientSend
       .mockImplementationOnce(sendFailureMock)
       .mockImplementationOnce(sendFailureMock)
       .mockImplementationOnce(sendFailureMock)
