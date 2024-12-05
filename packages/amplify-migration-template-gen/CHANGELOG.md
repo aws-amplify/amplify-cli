@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-alpha.0...@aws-amplify/migrate-template-gen@0.1.0-alpha.1) (2024-12-05)
+
+
+### Bug Fixes
+
+* increase default poll attemps and poll interval ([c5c92f6](https://github.com/aws-amplify/amplify-cli/commit/c5c92f65940a17f275a489477afa6b8a497e0654))
+* **migrate-template-gen:** lint warnings ([b1b32cc](https://github.com/aws-amplify/amplify-cli/commit/b1b32cc798c025c936305b5fae56636916dde77f))
+* **migrate-template-gen:** remove extraneous return ([32ffd8a](https://github.com/aws-amplify/amplify-cli/commit/32ffd8ab22170ae9f7fbebede42c779731f0e838))
+* remove dead code from migrate readme ([634dcd3](https://github.com/aws-amplify/amplify-cli/commit/634dcd3f7301d8db5e80db3f206b94dc03895068))
+* set only required oauth params ([18f5ec3](https://github.com/aws-amplify/amplify-cli/commit/18f5ec39e3cc4cdbc06aa7f16546a1cf70034445))
+* update lock and api.md ([a8d09df](https://github.com/aws-amplify/amplify-cli/commit/a8d09df214c5f1182066a47183163e3a15a6f10f))
+
+
+### Features
+
+* automate preprocessing steps for refactor ([339c4cd](https://github.com/aws-amplify/amplify-cli/commit/339c4cd35fc7ecf4d579b1685676fb1eafdb2df5))
+* **migrate-template-gen:** retrieve oauth values for gen1 stack update ([3604b3e](https://github.com/aws-amplify/amplify-cli/commit/3604b3e86c01b300dd4d3480e900646875bba0f7))
+* **migrate-template-gen:** use nested file protocol prop using @ ([b6655c3](https://github.com/aws-amplify/amplify-cli/commit/b6655c38f62b1bfc039950fc9c555aa227d7d90d))
+
+
+
+
+
 # [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-gen2-migrations-alpha.0...@aws-amplify/migrate-template-gen@0.1.0-alpha.0) (2024-11-21)
 
 

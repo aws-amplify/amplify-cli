@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-alpha.0...@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-alpha.1) (2024-12-05)
+
+
+### Bug Fixes
+
+* added user pool client codegen ([29a7b5e](https://github.com/aws-amplify/amplify-cli/commit/29a7b5eed227b1fa3e5df670cd527477fe5df321))
+* fixed ESLint ([3d61929](https://github.com/aws-amplify/amplify-cli/commit/3d61929695d38c6642bcd9f6fb01677a7c86be4a))
+
+
+
+
+
 # [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-gen2-migrations-alpha.0...@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-alpha.0) (2024-11-21)
 
 
