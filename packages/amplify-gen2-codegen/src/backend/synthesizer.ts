@@ -447,6 +447,7 @@ export class BackendSynthesizer {
 
     if (renderArgs.auth) {
       imports.push(this.createImportStatement([authFunctionIdentifier], renderArgs.auth.importFrom));
+      imports.push(this.createImportStatement([factory.createIdentifier('RemovalPolicy')], 'aws-cdk-lib'));
       const auth = factory.createShorthandPropertyAssignment(authFunctionIdentifier);
       defineBackendProperties.push(auth);
     }

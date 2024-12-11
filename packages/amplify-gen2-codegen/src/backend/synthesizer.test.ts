@@ -335,6 +335,7 @@ describe('BackendRenderer', () => {
       });
       const output = printNodeArray(rendered);
       assert(output.includes('s3Bucket.applyRemovalPolicy'));
+      assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
     });
   });
   describe('UserPoolClient Configuration using render()', () => {
@@ -471,6 +472,7 @@ describe('BackendRenderer', () => {
       const output = printNodeArray(rendered);
       assert(output.includes('cfnUserPool.applyRemovalPolicy'));
       assert(output.includes('cfnIdentityPool.applyRemovalPolicy'));
+      assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
     });
   });
 });
