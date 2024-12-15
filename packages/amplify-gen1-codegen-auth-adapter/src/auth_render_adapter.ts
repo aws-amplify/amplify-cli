@@ -337,9 +337,17 @@ export const getAuthDefinition = ({
   if (userPool.UsernameAttributes?.includes('phone_number')) {
     loginWith.phone = true;
   }
+
   if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
     loginWith.emailOptions = getEmailConfig(userPool);
   }
+
+  if (userPool.SmsVerificationMessage) {
+    loginWith.phone = {
+      verificationMessage: userPool.SmsVerificationMessage,
+    };
+  }
+
   if (webClient?.CallbackURLs) {
     loginWith.callbackURLs = webClient?.CallbackURLs;
   }

@@ -426,6 +426,20 @@ void describe('auth codegen', () => {
       });
     });
   });
+
+  void describe('phone settings', () => {
+    void it('sets phone verification message', () => {
+      const result = getAuthDefinition({
+        userPool: {
+          SmsVerificationMessage: 'Your sms verification code is {####}.',
+        },
+      });
+      assert.deepEqual(result.loginOptions?.phone, {
+        verificationMessage: 'Your sms verification code is {####}.',
+      });
+    });
+  });
+
   void describe('Email verification settings', () => {
     void it('it sets email verification with code message', () => {
       const emailMessage = 'Your verification code is {####}';
