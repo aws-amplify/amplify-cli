@@ -114,7 +114,7 @@ describe('amplify pull with uibuilder', () => {
     const npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
     // Give react server time to start
     await new Promise((resolve) => setTimeout(resolve, 60000));
-    const res = execa.sync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
+    const res = execa.sync(getNpxPath(), ['cypress@13.16.0', 'run'], { cwd: reactDir, encoding: 'utf8' });
     // kill the react server process
     spawnSync('kill', [`${npmStartProcess.pid}`], { encoding: 'utf8' });
     await new Promise((resolve) => setTimeout(resolve, 1000));
