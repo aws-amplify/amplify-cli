@@ -98,7 +98,7 @@ describe('amplify pull with uibuilder', () => {
     spawnSync(
       getNpmPath(),
       // in some runs spawnSync/npx will still use an old ver of react-scripts moving it into npm install flow
-      ['install', '-E', '@types/react', 'cypress', '@aws-amplify/ui-react', 'aws-amplify', 'react-scripts@5'],
+      ['install', '-E', '@types/react', 'cypress@13.16.0', '@aws-amplify/ui-react', 'aws-amplify', 'react-scripts@5'],
       { cwd: reactDir },
     );
 
