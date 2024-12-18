@@ -29,13 +29,11 @@ describe('amplify pull with uibuilder', () => {
 
   const envName = 'integtest';
   const cypressConfig = `
-    const { defineConfig } = require('cypress')
-
-    module.exports = defineConfig({
+    module.exports = {
       e2e: {
         supportFile: false
       }
-    })
+    }
   `;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('pull-uibuilder');
@@ -113,7 +111,7 @@ describe('amplify pull with uibuilder', () => {
     const npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
     // Give react server time to start
     await new Promise((resolve) => setTimeout(resolve, 60000));
-    const res = execa.sync(getNpxPath(), ['NODE_OPTIONS="--no-experimental-require-module"', 'cypress', 'run'], {
+    const res = execa.sync(getNpxPath(), ['cypress', 'run'], {
       cwd: reactDir,
       encoding: 'utf8',
     });
