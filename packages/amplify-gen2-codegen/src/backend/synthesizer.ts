@@ -8,7 +8,7 @@ import ts, {
   NodeArray,
   SyntaxKind,
   VariableDeclaration,
-  VariableStatement
+  VariableStatement,
 } from 'typescript';
 import { PolicyOverrides, ReferenceAuth } from '../auth/source_builder.js';
 import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
@@ -284,7 +284,13 @@ export class BackendSynthesizer {
           } else if (key == 'SupportedIdentityProviders') {
             this.supportedIdentityProviderFlag = true;
             // Providers are upper case in CDK
-            objectLiterals.push(this.createEnumListPropertyAssignment(mappedProperty, 'UserPoolClientIdentityProvider', value.map(provider => provider.toUpperCase())));
+            objectLiterals.push(
+              this.createEnumListPropertyAssignment(
+                mappedProperty,
+                'UserPoolClientIdentityProvider',
+                value.map((provider) => provider.toUpperCase()),
+              ),
+            );
           } else if (!this.oAuthFlag && key == 'AllowedOAuthFlows') {
             this.oAuthFlag = true;
             objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
@@ -476,7 +482,7 @@ export class BackendSynthesizer {
     }
 
     if (renderArgs.function) {
-      const functionIdentifiers: Identifier[] = []; 
+      const functionIdentifiers: Identifier[] = [];
       const functionNameCategories = renderArgs.function.functionNamesAndCategories;
       for (const [functionName, category] of functionNameCategories) {
         functionIdentifiers.push(factory.createIdentifier(functionName));
