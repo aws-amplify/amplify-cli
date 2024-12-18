@@ -36,7 +36,7 @@
   "dependencies": {
     "@aws-amplify/amplify-app": "5.0.37-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-category-analytics": "5.0.37-gen2-migration-test-alpha.0",
-    "@aws-amplify/amplify-category-api": "5.13.0-gen1-migration-0924.0",
+    "@aws-amplify/amplify-category-api": "5.13.0-gen1-migration-1218-2.0",
     "@aws-amplify/amplify-category-auth": "3.7.16-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-category-custom": "3.1.25-gen2-migration-test-alpha.0",
     "@aws-amplify/amplify-category-function": "5.7.11-gen2-migration-test-alpha.0",
