@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-alpha.0...@aws-amplify/migrate@0.1.0-alpha.1) (2024-12-05)
+
+
+### Bug Fixes
+
+* added user pool client codegen ([29a7b5e](https://github.com/aws-amplify/amplify-cli/commit/29a7b5eed227b1fa3e5df670cd527477fe5df321))
+* **migrate:** rename generate-templates to execute command ([9e383cd](https://github.com/aws-amplify/amplify-cli/commit/9e383cd8bd9e14ea41322cb0ec5c4206d78d5a95))
+
+
+### Features
+
+* **migrate-template-gen:** retrieve oauth values for gen1 stack update ([3604b3e](https://github.com/aws-amplify/amplify-cli/commit/3604b3e86c01b300dd4d3480e900646875bba0f7))
+
+
+
+
+
 # [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-gen2-migrations-alpha.0...@aws-amplify/migrate@0.1.0-alpha.0) (2024-11-21)
 
 

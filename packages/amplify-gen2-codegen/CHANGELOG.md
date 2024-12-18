@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.0...@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.1) (2024-12-05)
+
+
+### Bug Fixes
+
+* added user pool client codegen ([29a7b5e](https://github.com/aws-amplify/amplify-cli/commit/29a7b5eed227b1fa3e5df670cd527477fe5df321))
+* addressed comments ([9b4eaab](https://github.com/aws-amplify/amplify-cli/commit/9b4eaab12cc08e8e6c6bf7c45deb9961824243d4))
+* addressed comments ([458c5e3](https://github.com/aws-amplify/amplify-cli/commit/458c5e3ee0d53ad7faaa770894b385acfdf00c96))
+* fixed ESLint ([3d61929](https://github.com/aws-amplify/amplify-cli/commit/3d61929695d38c6642bcd9f6fb01677a7c86be4a))
+* lint ([dc5f7b0](https://github.com/aws-amplify/amplify-cli/commit/dc5f7b03f3a46403f7e3b1cf1673c8f6cadf0865))
+
+
+
+
+
 # [0.1.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-gen2-migrations-alpha.0...@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.0) (2024-11-21)
 
 
