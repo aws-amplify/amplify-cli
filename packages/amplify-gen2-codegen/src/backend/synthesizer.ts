@@ -6,7 +6,6 @@ import ts, {
   ImportDeclaration,
   Node,
   NodeArray,
-  SyntaxKind,
   VariableDeclaration,
   VariableStatement,
 } from 'typescript';

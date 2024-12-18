@@ -152,9 +152,21 @@ Describe stack refactor to check for execution status
       `### STEP 2: REDEPLOY GEN2 APPLICATION
 This step will remove the hardcoded references from the template and replace them with resource references (where applicable).
 
-2.a) Only applicable to Storage category: Uncomment the following line in \`amplify/backend.ts\` file to instruct CDK to use the gen1 S3 bucket
+2.a) Uncomment the following lines in \`amplify/backend.ts\` file to instruct CDK to use the gen1 S3 bucket (if storage is enabled) and apply retain removal policies for auth and/or storage resources
 \`\`\`
 s3Bucket.bucketName = YOUR_GEN1_BUCKET_NAME;
+\`\`\`
+
+\`\`\`
+s3Bucket.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
+\`\`\`
+
+\`\`\`
+cfnUserPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
+\`\`\`
+
+\`\`\`
+cfnIdentityPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
 \`\`\`
 
 2.b) Deploy sandbox using the below command or trigger a CI/CD build via hosting by committing this file to your Git repository

@@ -158,6 +158,7 @@ const resolveAppId = (): string => {
 const unsupportedCategories = (): Map<string, string> => {
   const unsupportedCategories = new Map<string, string>();
   const urlPrefix = 'https://docs.amplify.aws/react/build-a-backend/add-aws-services';
+  const restAPIKey = 'rest api';
 
   unsupportedCategories.set('geo', `${urlPrefix}/geo/`);
   unsupportedCategories.set('analytics', `${urlPrefix}/analytics/`);
@@ -179,13 +180,17 @@ const unsupportedCategories = (): Map<string, string> => {
         Object.keys(apiList).forEach((api) => {
           const apiObj = apiList[api];
           if (apiObj.service == 'API Gateway') {
-            unsupportedCategoriesList.set('rest api', unsupportedCategories.get('rest api')!);
+            const restAPIDocsLink = unsupportedCategories.get(restAPIKey);
+            assert(restAPIDocsLink);
+            unsupportedCategoriesList.set(restAPIKey, restAPIDocsLink);
           }
         });
       }
     } else {
       if (unsupportedCategories.has(category) && Object.entries(meta[category]).length > 0) {
-        unsupportedCategoriesList.set(category, unsupportedCategories.get(category)!);
+        const unsupportedCategoryDocLink = unsupportedCategories.get(category);
+        assert(unsupportedCategoryDocLink);
+        unsupportedCategoriesList.set(category, unsupportedCategoryDocLink);
       }
     }
   });
