@@ -1,6 +1,6 @@
 import { CognitoIdentityProviderClient, DescribeUserPoolCommand, ListGroupsCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient, GetIdentityPoolRolesCommand, ListIdentityPoolsCommand } from '@aws-sdk/client-cognito-identity';
-import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 

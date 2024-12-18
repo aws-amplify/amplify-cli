@@ -38,7 +38,6 @@ export class AppFunctionsDefinitionFetcher {
 
     const authValues: AuthConfig | undefined = Object.values(auth)[0] as AuthConfig;
 
-
     // auth triggers
     if (auth && authValues && authValues.dependsOn) {
       for (const env of authValues.dependsOn) {
