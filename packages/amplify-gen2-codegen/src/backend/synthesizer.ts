@@ -1,19 +1,20 @@
 import ts, {
-  Node,
-  ExpressionStatement,
   CallExpression,
   Expression,
-  VariableDeclaration,
+  ExpressionStatement,
   Identifier,
-  NodeArray,
   ImportDeclaration,
+  Node,
+  NodeArray,
+  VariableDeclaration,
   VariableStatement,
 } from 'typescript';
 import { PolicyOverrides, ReferenceAuth } from '../auth/source_builder.js';
 import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-s3';
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../storage/source_builder.js';
-import { UserPoolClientType, OAuthFlowType, ExplicitAuthFlowsType } from '@aws-sdk/client-cognito-identity-provider';
+import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
+
 const factory = ts.factory;
 export interface BackendRenderParameters {
   data?: {
@@ -162,7 +163,7 @@ export class BackendSynthesizer {
 
   private addRemovalPolicyAssignment(identifier: string) {
     return factory.createCallExpression(
-      factory.createPropertyAccessExpression(factory.createIdentifier(identifier), factory.createIdentifier('applyRemovalPolicy')),
+      factory.createPropertyAccessExpression(factory.createIdentifier(`// ${identifier}`), factory.createIdentifier('applyRemovalPolicy')),
       undefined,
       [
         factory.createIdentifier('RemovalPolicy.RETAIN'),
@@ -233,7 +234,12 @@ export class BackendSynthesizer {
       const mappedProperty = gen2PropertyMap.get(key);
       if (mappedProperty) {
         if (typeof value == 'boolean') {
-          objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, value));
+          if (key === 'AllowedOAuthFlowsUserPoolClient') {
+            // CDK equivalent is disableOAuth which is opposite of this prop
+            objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, !value));
+          } else {
+            objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, value));
+          }
         } else if (typeof value == 'string') {
           if (!this.oAuthFlag && key == 'DefaultRedirectURI') {
             this.oAuthFlag = true;
@@ -276,7 +282,14 @@ export class BackendSynthesizer {
             objectLiterals.push(this.createReadWriteAttributes(mappedProperty, value));
           } else if (key == 'SupportedIdentityProviders') {
             this.supportedIdentityProviderFlag = true;
-            objectLiterals.push(this.createEnumListPropertyAssignment(mappedProperty, 'UserPoolClientIdentityProvider', value));
+            // Providers are upper case in CDK
+            objectLiterals.push(
+              this.createEnumListPropertyAssignment(
+                mappedProperty,
+                'UserPoolClientIdentityProvider',
+                value.map((provider) => provider.toUpperCase()),
+              ),
+            );
           } else if (!this.oAuthFlag && key == 'AllowedOAuthFlows') {
             this.oAuthFlag = true;
             objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
@@ -445,9 +458,12 @@ export class BackendSynthesizer {
       TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
     };
 
+    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket) {
+      imports.push(this.createImportStatement([factory.createIdentifier('RemovalPolicy')], 'aws-cdk-lib'));
+    }
+
     if (renderArgs.auth) {
       imports.push(this.createImportStatement([authFunctionIdentifier], renderArgs.auth.importFrom));
-      imports.push(this.createImportStatement([factory.createIdentifier('RemovalPolicy')], 'aws-cdk-lib'));
       const auth = factory.createShorthandPropertyAssignment(authFunctionIdentifier);
       defineBackendProperties.push(auth);
     }
@@ -460,7 +476,6 @@ export class BackendSynthesizer {
 
     if (renderArgs.storage?.hasS3Bucket) {
       imports.push(this.createImportStatement([storageFunctionIdentifier], renderArgs.storage.importFrom));
-      imports.push(this.createImportStatement([factory.createIdentifier('RemovalPolicy')], 'aws-cdk-lib'));
       const storage = factory.createShorthandPropertyAssignment(storageFunctionIdentifier);
       defineBackendProperties.push(storage);
     }

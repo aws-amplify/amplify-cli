@@ -31,7 +31,7 @@ export class AppFunctionsDefinitionFetcher {
     const meta = this.stateManager.getMeta();
     const functions = meta?.function ?? {};
 
-    const auth = meta?.auth;
+    const auth = meta?.auth ?? {};
     const storageList = meta?.storage ?? {};
 
     const functionCategoryMap = new Map<string, string>();

@@ -1,6 +1,6 @@
 import { CognitoIdentityProviderClient, DescribeUserPoolCommand, ListGroupsCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient, GetIdentityPoolRolesCommand, ListIdentityPoolsCommand } from '@aws-sdk/client-cognito-identity';
-import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 import { AmplifyClient, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
@@ -131,6 +131,7 @@ jest.mock('@aws-sdk/client-amplify', () => {
                 {
                   environmentName: 'dev',
                   deploymentArtifacts: 's3://deploymentArtifacts',
+                  stackName: 'stackName',
                 },
               ],
             });
@@ -160,6 +161,24 @@ jest.mock('@aws-sdk/client-s3', () => {
   };
 });
 
+jest.mock('@aws-sdk/client-cloudformation', () => {
+  return {
+    ...jest.requireActual('@aws-sdk/client-cloudformation'),
+    CloudFormationClient: function () {
+      return {
+        send: jest.fn().mockImplementation((command) => {
+          if (command instanceof DescribeStackResourcesCommand) {
+            return Promise.resolve({
+              StackResources: [],
+            });
+          }
+          return Promise.resolve();
+        }),
+      };
+    },
+  };
+});
+
 const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
 const cognitoIdentityClient = new CognitoIdentityClient();
 const cloudFormationClient = new CloudFormationClient();
@@ -179,6 +198,16 @@ describe('Auth definition Fetcher tests', () => {
     () => Promise.resolve({}),
     ccbFetcher,
   );
+  it('should not fetch imported auth definitions when not present', async () => {
+    // arrange
+    mockReadFile.mockResolvedValueOnce(
+      JSON.stringify({
+        api: {},
+      }),
+    );
+    // act + assert
+    await expect(appAuthDefinitionFetcher.getDefinition()).resolves.toEqual(undefined);
+  });
   it('should fetch imported auth definitions', async () => {
     await expect(appAuthDefinitionFetcher.getDefinition()).resolves.toEqual({
       referenceAuth: {
@@ -195,7 +224,7 @@ describe('Auth definition Fetcher tests', () => {
   });
 
   it('should not fetch imported auth definitions if there is no related cognito resource information', async () => {
-    mockReadFile.mockResolvedValue(
+    mockReadFile.mockResolvedValueOnce(
       JSON.stringify({
         auth: {
           importedAuth: {
