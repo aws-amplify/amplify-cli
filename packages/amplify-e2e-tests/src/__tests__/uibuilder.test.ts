@@ -113,9 +113,10 @@ describe('amplify pull with uibuilder', () => {
     const npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
     // Give react server time to start
     await new Promise((resolve) => setTimeout(resolve, 60000));
-    // see https://github.com/cypress-io/cypress/issues/19229#issuecomment-1124718827
-    delete process.env.NODE_OPTIONS;
-    const res = execa.sync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
+    const res = execa.sync(getNpxPath(), ['NODE_OPTIONS="--no-experimental-require-module"', 'cypress', 'run'], {
+      cwd: reactDir,
+      encoding: 'utf8',
+    });
     // kill the react server process
     spawnSync('kill', [`${npmStartProcess.pid}`], { encoding: 'utf8' });
     await new Promise((resolve) => setTimeout(resolve, 1000));
