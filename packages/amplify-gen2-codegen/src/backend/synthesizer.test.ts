@@ -334,7 +334,7 @@ describe('BackendRenderer', () => {
         },
       });
       const output = printNodeArray(rendered);
-      assert(output.includes('s3Bucket.applyRemovalPolicy'));
+      assert(output.includes('// s3Bucket.applyRemovalPolicy'));
       assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
     });
   });
@@ -410,7 +410,7 @@ describe('BackendRenderer', () => {
             CallbackURLs: ['XXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXX'],
             LogoutURLs: ['XXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXX'],
             DefaultRedirectURI: 'XXXXXXXXXXXXXXXXXX',
-            SupportedIdentityProviders: ['COGNITO'],
+            SupportedIdentityProviders: ['COGNITO', 'Facebook'],
             AuthSessionValidity: 3,
             EnableTokenRevocation: true,
             EnablePropagateAdditionalUserContextData: true,
@@ -455,7 +455,9 @@ describe('BackendRenderer', () => {
       expect(output).toContain('authFlows: { adminUserPassword: false, custom: false, userPassword: false, userSrp: false }');
 
       // Additional settings
-      expect(output).toContain('supportedIdentityProviders');
+      expect(output).toContain(`supportedIdentityProviders`);
+      expect(output).toContain(`UserPoolClientIdentityProvider.COGNITO`);
+      expect(output).toContain(`UserPoolClientIdentityProvider.FACEBOOK`);
       expect(output).toContain('authSessionValidity: Duration.minutes(3)');
       expect(output).toContain('enableTokenRevocation: true');
       expect(output).toContain('enablePropagateAdditionalUserContextData: true');
@@ -470,8 +472,8 @@ describe('BackendRenderer', () => {
         },
       });
       const output = printNodeArray(rendered);
-      assert(output.includes('cfnUserPool.applyRemovalPolicy'));
-      assert(output.includes('cfnIdentityPool.applyRemovalPolicy'));
+      assert(output.includes('// cfnUserPool.applyRemovalPolicy'));
+      assert(output.includes('// cfnIdentityPool.applyRemovalPolicy'));
       assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
     });
   });
