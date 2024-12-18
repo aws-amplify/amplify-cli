@@ -31,12 +31,13 @@ export class AppFunctionsDefinitionFetcher {
     const meta = this.stateManager.getMeta();
     const functions = meta?.function ?? {};
 
-    const auth = meta?.auth;
+    const auth = meta?.auth ?? {};
     const storageList = meta?.storage ?? {};
 
     const functionCategoryMap = new Map<string, string>();
 
     const authValues: AuthConfig | undefined = Object.values(auth)[0] as AuthConfig;
+
 
     // auth triggers
     if (auth && authValues && authValues.dependsOn) {
