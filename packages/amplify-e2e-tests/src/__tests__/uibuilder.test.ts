@@ -28,7 +28,7 @@ describe('amplify pull with uibuilder', () => {
   let appId: string;
 
   const envName = 'integtest';
-  // fixes recent esm module changes by removing require, while still disabling supportFile
+  // fixes recent esm module changes by removing require('cypress'), while still disabling supportFile
   const cypressConfig = `
     module.exports = {
       e2e: {
@@ -97,6 +97,8 @@ describe('amplify pull with uibuilder', () => {
     spawnSync(
       getNpmPath(),
       // in some runs spawnSync/npx will still use an old ver of react-scripts moving it into npm install flow
+      // using '--legacy-peer-deps' here as support for react 19 is not quite ready:
+      // see: https://github.com/aws-amplify/amplify-ui/issues/6084
       ['install', '-E', '@types/react', 'cypress', '@aws-amplify/ui-react', 'aws-amplify', 'react-scripts@5', '--legacy-peer-deps'],
       { cwd: reactDir },
     );
