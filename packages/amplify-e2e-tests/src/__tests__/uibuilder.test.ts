@@ -28,14 +28,13 @@ describe('amplify pull with uibuilder', () => {
   let appId: string;
 
   const envName = 'integtest';
+  // fixes recent esm module changes by removing require('cypress'), while still disabling supportFile
   const cypressConfig = `
-    const { defineConfig } = require('cypress')
-
-    module.exports = defineConfig({
+    module.exports = {
       e2e: {
         supportFile: false
       }
-    })
+    }
   `;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('pull-uibuilder');
@@ -98,7 +97,9 @@ describe('amplify pull with uibuilder', () => {
     spawnSync(
       getNpmPath(),
       // in some runs spawnSync/npx will still use an old ver of react-scripts moving it into npm install flow
-      ['install', '-E', '@types/react', 'cypress', '@aws-amplify/ui-react', 'aws-amplify', 'react-scripts@5'],
+      // using '--legacy-peer-deps' here as support for react 19 is not quite ready:
+      // see: https://github.com/aws-amplify/amplify-ui/issues/6084
+      ['install', '-E', '@types/react', 'cypress', '@aws-amplify/ui-react', 'aws-amplify', 'react-scripts@5', '--legacy-peer-deps'],
       { cwd: reactDir },
     );
 
@@ -110,11 +111,13 @@ describe('amplify pull with uibuilder', () => {
       `${reactDir}/cypress/e2e/sample_spec.cy.js`,
       fs.readFileSync(path.join(__dirname, '..', 'cypress', 'uibuilder', 'uibuilder-spec.js')),
     );
-
     const npmStartProcess = spawn(getNpmPath(), ['start'], { cwd: reactDir, timeout: 300000 });
     // Give react server time to start
     await new Promise((resolve) => setTimeout(resolve, 60000));
-    const res = execa.sync(getNpxPath(), ['cypress', 'run'], { cwd: reactDir, encoding: 'utf8' });
+    const res = execa.sync(getNpxPath(), ['cypress', 'run'], {
+      cwd: reactDir,
+      encoding: 'utf8',
+    });
     // kill the react server process
     spawnSync('kill', [`${npmStartProcess.pid}`], { encoding: 'utf8' });
     await new Promise((resolve) => setTimeout(resolve, 1000));
