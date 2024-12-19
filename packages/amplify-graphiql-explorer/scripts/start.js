@@ -14,15 +14,15 @@ require('../config/env');
 
 const fs = require('fs');
 const chalk = require('react-dev-utils/chalk');
-const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
+const rspack = require("@rspack/core");
+import { RspackDevServer } from "@rspack/dev-server";
 const clearConsole = require('react-dev-utils/clearConsole');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const { choosePort, createCompiler, prepareProxy, prepareUrls } = require('react-dev-utils/WebpackDevServerUtils');
 const openBrowser = require('react-dev-utils/openBrowser');
 const semver = require('semver');
 const paths = require('../config/paths');
-const configFactory = require('../config/webpack.config');
+const configFactory = require('../config/rspack.config');
 const createDevServerConfig = require('../config/webpackDevServer.config');
 const getClientEnvironment = require('../config/env');
 const react = require(require.resolve('react', { paths: [paths.appPath] }));
@@ -75,7 +75,7 @@ checkBrowsers(paths.appPath, isInteractive)
       urls,
       useYarn,
       useTypeScript,
-      webpack,
+      rspack,
     });
     // Load proxy config
     const proxySetting = require(paths.appPackageJson).proxy;
@@ -86,7 +86,7 @@ checkBrowsers(paths.appPath, isInteractive)
       host: HOST,
       port,
     };
-    const devServer = new WebpackDevServer(serverConfig, compiler);
+    const devServer = new RspackDevServer(serverConfig, compiler);
     // Launch WebpackDevServer.
     devServer.startCallback(() => {
       if (isInteractive) {
