@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.8-test-dotnet-8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.7.7...@aws-amplify/amplify-frontend-ios@3.7.8-test-dotnet-8.0) (2024-12-23)
+
+
+### Bug Fixes
+
+* **amplify-xode:** updated to support Xcode 16 ([#14029](https://github.com/aws-amplify/amplify-cli/issues/14029)) ([b8b6498](https://github.com/aws-amplify/amplify-cli/commit/b8b6498a350639d6bb798d6fcea167481a3718ae))
+
+
+
+
+
 ## [3.7.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.7.6...@aws-amplify/amplify-frontend-ios@3.7.7) (2024-08-02)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-ios

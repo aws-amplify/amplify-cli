@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.13.2-test-dotnet-8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.13.1...@aws-amplify/cli@12.13.2-test-dotnet-8.0) (2024-12-23)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [12.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.13.0...@aws-amplify/cli@12.13.1) (2024-11-18)
 
 **Note:** Version bump only for package @aws-amplify/cli
