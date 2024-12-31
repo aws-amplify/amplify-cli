@@ -41,6 +41,13 @@ jobs:
         with:
           python-version: '3.11'
 
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # version 4.0.2
+        if: runner.os == 'Windows'
+        with:
+          # Pin node to version before 18.20.2 due to https://github.com/nodejs/node/issues/52554
+          # Amplify App tries to spawn npm.cmd here https://github.com/aws-amplify/amplify-cli/blob/9571383521e6536ecf6568876609654393b27abb/packages/amplify-app/src/index.js#L88-L93
+          node-version: 18.20.0
+
       - name: Install Amplify CLI
         uses: ./.github/actions/install-cli
         with:
