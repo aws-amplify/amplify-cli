@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-rc.9571383521e6536.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.29...amplify-dotnet-function-runtime-provider@2.1.0-rc.9571383521e6536.0) (2024-12-31)
+
+
+### Features
+
+* lambda dotnet 8 support ([#14026](https://github.com/aws-amplify/amplify-cli/issues/14026)) ([540bfe1](https://github.com/aws-amplify/amplify-cli/commit/540bfe1187907609c3c813e1208c12b6a2a6ac6c))
+
+
+
+
+
 ## [2.0.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.0.28...amplify-dotnet-function-runtime-provider@2.0.29) (2024-08-02)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider

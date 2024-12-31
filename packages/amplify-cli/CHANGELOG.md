@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.14.0-rc.9571383521e6536.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.1...@aws-amplify/cli-internal@12.14.0-rc.9571383521e6536.0) (2024-12-31)
+
+
+### Features
+
+* bump version ([7cb8f88](https://github.com/aws-amplify/amplify-cli/commit/7cb8f882b17f4a6f783a300f5e7894097d166407))
+
+
+### Reverts
+
+* Revert "chore: cateogry-api + codegen version bump (#14048)" (#14049) ([5a0cdbf](https://github.com/aws-amplify/amplify-cli/commit/5a0cdbfa46856da320323923a4336d6ba60d82b9)), closes [#14048](https://github.com/aws-amplify/amplify-cli/issues/14048) [#14049](https://github.com/aws-amplify/amplify-cli/issues/14049)
+
+
+
+
+
 ## [12.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0...@aws-amplify/cli-internal@12.13.1) (2024-11-18)
 
 
