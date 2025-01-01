@@ -781,6 +781,7 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
     ...(answers.appClientNative!.ClientSecret ? { AppClientSecret: answers.appClientNative!.ClientSecret } : {}),
     AppClientIDWeb: answers.appClientWeb!.ClientId,
     HostedUIDomain: userPool.Domain,
+    HostedUICustomDomain: userPool.CustomDomain,
   };
 
   if (answers.authSelections === 'identityPoolAndUserPool') {
