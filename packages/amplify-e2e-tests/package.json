@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.10.1",
+  "version": "4.11.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@aws-amplify/amplify-category-auth": "3.7.16",
     "@aws-amplify/amplify-cli-core": "4.3.10",
-    "@aws-amplify/amplify-e2e-core": "5.6.1",
+    "@aws-amplify/amplify-e2e-core": "5.7.0",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.15",
     "@aws-amplify/graphql-transformer-core": "^2.9.3",
     "@aws-sdk/client-appsync": "3.624.0",
@@ -38,7 +38,7 @@
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "amplify-dynamodb-simulator": "2.9.19",
     "amplify-headless-interface": "1.17.7",
-    "amplify-storage-simulator": "1.11.5",
+    "amplify-storage-simulator": "1.11.6",
     "aws-amplify": "^5.3.16",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.129.0",
