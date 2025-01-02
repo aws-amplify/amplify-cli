@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-dotnet-function-template-provider",
-  "version": "2.6.10",
+  "version": "2.7.0",
   "description": ".NET templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
