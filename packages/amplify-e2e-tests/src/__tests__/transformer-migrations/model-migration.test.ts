@@ -33,6 +33,9 @@ describe('transformer model migration test', () => {
     deleteProjectDir(projRoot);
   });
 
+  // Test consistency of IAM role
+  // Test in Windows passing region by pinning
+
   it('migration of model key queries timestamps should succeed', async () => {
     const modelSchemaV1 = 'transformer_migration/basic-model-v1.graphql';
     const modelSchemaV2 = 'transformer_migration/basic-model-v2.graphql';
