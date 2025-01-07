@@ -11,7 +11,11 @@ function authenticate {
     role_name=$2
     profile_name=$3
     echo Authenticating terminal...
-    mwinit
+    if [[ -n $USE_FIDO_KEY ]] ; then
+      mwinit -s -f
+    else
+      mwinit
+    fi
     echo Loading account credentials for Account $account_number with Role: $role_name...
     ada cred update --profile="${profile_name}" --account="${account_number}" --role=${role_name} --provider=isengard --once
     aws configure set region us-east-1 --profile $profile_name
