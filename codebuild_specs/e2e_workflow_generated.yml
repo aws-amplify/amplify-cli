@@ -130,14 +130,6 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - upb
-    - identifier: amplify_migration_tests_non_multi_env_layers
-      buildspec: codebuild_specs/amplify_migration_tests_non_multi_env_layers.yml
-      depend-on:
-        - upb
-    - identifier: amplify_migration_tests_multi_env_layers
-      buildspec: codebuild_specs/amplify_migration_tests_multi_env_layers.yml
-      depend-on:
-        - upb
     - identifier: amplify_general_config_tests
       buildspec: codebuild_specs/amplify_general_config_tests.yml
       env:
