@@ -113,6 +113,9 @@ describe('transformer model migration test', () => {
     await updateApiSchema(projRoot, projectName, modelSchemaV2);
     await amplifyPushUpdate(projRoot);
 
+    // Wait for 20s to ensure the newly-created roles have propagated
+    await new Promise((resolve) => setTimeout(resolve, 20000));
+
     appSyncClient = getAppSyncClientFromProj(projRoot);
 
     createPostMutation = /* GraphQL */ `

@@ -6,7 +6,12 @@ source $scriptDir/.env set
 printf 'What is your PR number ? '
 read PR_NUMBER
 
-mwinit
+if [[ -n $USE_FIDO_KEY ]] ; then
+  mwinit -s -f
+else
+  mwinit
+fi
+
 ada cred update --profile=cb-ci-account --account=$E2E_ACCOUNT_PROD --role=CodeBuildE2E --provider=isengard --once
 RESULT=$(aws codebuild start-build-batch \
 --profile=cb-ci-account \
