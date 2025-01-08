@@ -34,4 +34,4 @@ export const validateVersionsForMigrationTest = async (): Promise<void> => {
  *
  * ext migrate flow: https://github.com/aws-amplify/amplify-cli/pull/8806
  */
-export const allowedVersionsToMigrateFrom = ['8.2.0', '10.5.1', '12.0.3'];
+export const allowedVersionsToMigrateFrom = ['12.10.1'];

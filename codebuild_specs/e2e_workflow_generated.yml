@@ -2320,22 +2320,6 @@ batch:
       depend-on:
         - build_windows
         - upb
-    - identifier: l_api_key_migration_v8
-      buildspec: codebuild_specs/migration_tests_v8.yml
-      env:
-        variables:
-          compute-type: BUILD_GENERAL1_SMALL
-          TEST_SUITE: src/__tests__/migration_tests/transformer_migration/api.key.migration.test.ts
-      depend-on:
-        - upb
-    - identifier: l_api_key_migration_2_v8
-      buildspec: codebuild_specs/migration_tests_v8.yml
-      env:
-        variables:
-          compute-type: BUILD_GENERAL1_SMALL
-          TEST_SUITE: src/__tests__/migration_tests/transformer_migration/api.key.migration-2.test.ts
-      depend-on:
-        - upb
     - identifier: l_auth_app_client_secret_migration_v12
       buildspec: codebuild_specs/migration_tests_v12.yml
       env:
