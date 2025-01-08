@@ -723,29 +723,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-migration-tests@workspace:packages/amplify-migration-tests":
-  version: 0.0.0-use.local
-  resolution: "@aws-amplify/amplify-migration-tests@workspace:packages/amplify-migration-tests"
-  dependencies:
-    "@aws-amplify/amplify-cli-core": 4.3.10
-    "@aws-amplify/amplify-e2e-core": 5.7.0
-    "@aws-cdk/cloudformation-diff": ~2.68.0
-    "@aws-sdk/client-s3": 3.624.0
-    amplify-headless-interface: 1.17.7
-    aws-amplify: ^5.3.16
-    aws-cdk-lib: ~2.129.0
-    constructs: ^10.0.5
-    fs-extra: ^8.1.0
-    graphql-transformer-core: ^8.2.13
-    jest: ^29.5.0
-    lodash: ^4.17.21
-    semver: ^7.5.4
-    strip-ansi: ^6.0.0
-    ts-node: ^10.9.1
-    uuid: ^8.3.2
-  languageName: unknown
-  linkType: soft
-
 "@aws-amplify/amplify-nodejs-function-template-provider@2.10.10, @aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-nodejs-function-template-provider@workspace:packages/amplify-nodejs-function-template-provider"
@@ -29266,7 +29243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.2.1, ts-node@npm:^10.4.0, ts-node@npm:^10.8.1, ts-node@npm:^10.9.1":
+"ts-node@npm:^10.2.1, ts-node@npm:^10.4.0, ts-node@npm:^10.8.1":
   version: 10.9.1
   resolution: "ts-node@npm:10.9.1"
   dependencies:
