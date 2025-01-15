@@ -202,10 +202,7 @@ export class BackendSynthesizer {
     const test = factory.createCallExpression(
       factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
       undefined,
-      [
-        factory.createStringLiteral(userPoolClient.UserPoolId!),
-        this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap),
-      ],
+      [factory.createStringLiteral('NativeAppClient'), this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap)],
     );
 
     if (this.importDurationFlag) {
@@ -229,6 +226,7 @@ export class BackendSynthesizer {
 
   private createNestedObjectExpression(object: Record<string, any>, gen2PropertyMap: Map<string, string>): ts.ObjectLiteralExpression {
     const objectLiterals = [];
+    const clientSecretKey = 'ClientSecret';
 
     for (const [key, value] of Object.entries(object)) {
       const mappedProperty = gen2PropertyMap.get(key);
@@ -244,7 +242,7 @@ export class BackendSynthesizer {
           if (!this.oAuthFlag && key == 'DefaultRedirectURI') {
             this.oAuthFlag = true;
             objectLiterals.push(this.createOAuthObjectExpression(object, gen2PropertyMap));
-          } else if (key == 'ClientSecret') {
+          } else if (key === clientSecretKey) {
             objectLiterals.push(this.createBooleanPropertyAssignment(mappedProperty, true));
           } else if (key != 'DefaultRedirectURI') {
             objectLiterals.push(this.createStringPropertyAssignment(mappedProperty, value));
@@ -314,6 +312,14 @@ export class BackendSynthesizer {
           );
         }
       }
+    }
+    // We need to set generateSecret to false explicitly when not defined.
+    // If it's set as undefined and current value in CFN template is false (moved from gen1 after refactor), CFN thinks the property has changed
+    // and requests for creation of a new resource (user pool client) instead of an update.
+    if (!object.hasOwnProperty(clientSecretKey)) {
+      const mappedClientSecretKey = gen2PropertyMap.get(clientSecretKey);
+      assert(mappedClientSecretKey);
+      objectLiterals.push(this.createBooleanPropertyAssignment(mappedClientSecretKey, false));
     }
     return factory.createObjectLiteralExpression(objectLiterals, true);
   }

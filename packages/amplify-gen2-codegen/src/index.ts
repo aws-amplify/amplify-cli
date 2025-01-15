@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'node:fs/promises';
-import { patchNpmPackageJson } from './npm_package/renderer';
+import { PackageJson, patchNpmPackageJson } from './npm_package/renderer';
 import { RenderPipeline, Renderer } from './render_pipeline';
 import { JsonRenderer } from './renderers/package_json';
 import { TypescriptNodeArrayRenderer } from './renderers/typescript_block_node';
@@ -74,15 +74,31 @@ export const createGen2Renderer = ({
   const ensureOutputDir = new EnsureDirectory(outputDir);
   const ensureAmplifyDirectory = new EnsureDirectory(path.join(outputDir, 'amplify'));
   const amplifyPackageJson = new JsonRenderer(
-    () => ({ type: 'module' }),
+    async () => ({ type: 'module' }),
     (content) => fileWriter(content, path.join(outputDir, 'amplify', 'package.json')),
   );
   const jsonRenderer = new JsonRenderer(
-    () => patchNpmPackageJson({}),
+    async () => {
+      let packageJson: PackageJson = {
+        name: 'my-gen2-app',
+      };
+      try {
+        const packageJsonContents = await fs.readFile(`./package.json`, { encoding: 'utf-8' });
+        packageJson = JSON.parse(packageJsonContents);
+      } catch (e) {}
+      // Restrict dev dependencies to specific versions based on create-amplify gen2 flow:
+      // https://github.com/aws-amplify/amplify-backend/blob/2dab201cb9a222c3b8c396a46c17d661411839ab/packages/create-amplify/src/amplify_project_creator.ts#L15-L24
+      return patchNpmPackageJson(packageJson, {
+        'aws-cdk': '^2',
+        'aws-cdk-lib': '^2',
+        constructs: '^10.0.0',
+        typescript: '^5.0.0',
+      });
+    },
     (content) => fileWriter(content, path.join(outputDir, 'package.json')),
   );
   const amplifyTsConfigJson = new JsonRenderer(
-    () => ({
+    async () => ({
       compilerOptions: {
         target: 'es2022',
         module: 'es2022',

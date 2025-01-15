@@ -1,4 +1,4 @@
-import { AmplifyDependencies, AmplifyDevDependencies, AmplifyPackageVersions, patchNpmPackageJson } from './renderer';
+import { AmplifyDependencies, AmplifyDevDependencies, AmplifyPackageVersions, PackageJson, patchNpmPackageJson } from './renderer';
 import assert from 'node:assert';
 interface PackageJSON {
   name?: string;
@@ -6,7 +6,7 @@ interface PackageJSON {
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
 }
-const createPackageJson = (): PackageJSON => ({
+const createPackageJson = (): PackageJson => ({
   name: 'my-package',
   scripts: {
     test: 'echo "hello, world"',
@@ -78,9 +78,10 @@ describe('package.json renderer', () => {
     });
   });
   describe('package name', () => {
-    it('is set to my-gen2-app when not defined', async () => {
-      const examplePackageJson = createPackageJson();
-      delete examplePackageJson.name;
+    it('is not overwritten ', async () => {
+      const examplePackageJson = {
+        name: 'my-gen2-app',
+      };
       const packageJson = patchNpmPackageJson(examplePackageJson, {});
       assert.equal(packageJson.name, 'my-gen2-app');
     });
