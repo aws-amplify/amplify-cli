@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.14.1-rc.c3a35db4f5a4679.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.0...@aws-amplify/cli-internal@12.14.1-rc.c3a35db4f5a4679.0) (2025-01-15)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 # [12.14.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.1...@aws-amplify/cli-internal@12.14.0) (2025-01-02)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.1-rc.c3a35db4f5a4679.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.5.0...@aws-amplify/amplify-migration-tests@6.5.1-rc.c3a35db4f5a4679.0) (2025-01-15)
+
+
+### Bug Fixes
+
+* removed migration tests between versions of Gen 1 ([#14062](https://github.com/aws-amplify/amplify-cli/issues/14062)) ([58856c8](https://github.com/aws-amplify/amplify-cli/commit/58856c8fb908ed21f3aea850d4dcc0d4a03f4114))
+
+
+
+
+
 # [6.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.4.1...@aws-amplify/amplify-migration-tests@6.5.0) (2025-01-02)
 
 
