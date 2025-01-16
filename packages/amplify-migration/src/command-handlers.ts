@@ -77,10 +77,8 @@ const generateGen2Code = async ({
 
   try {
     await pipeline.render();
-    await analytics.logEvent('finishedCodegen');
     await usageData.emitSuccess();
   } catch (e) {
-    await analytics.logEvent('failedCodegen');
     await usageData.emitError(e);
   }
 };
@@ -126,7 +124,8 @@ const getAccountId = async (): Promise<string | undefined> => {
 
 const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
   const amplifyMeta: AmplifyMeta = stateManager.getMeta();
-  const resourceName = Object.keys(amplifyMeta.auth)[0];
+  const resourceName = Object.entries(amplifyMeta.auth).find(([_, resource]) => resource.service === 'Cognito')?.[0];
+  assert(resourceName);
   const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
   if ('cognitoConfig' in authInputs && 'authTriggerConnections' in authInputs.cognitoConfig) {
     try {
@@ -233,8 +232,19 @@ export async function execute() {
     appId: appId,
   });
 
-  // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
   const cwd = process.cwd();
+
+  // Rewrite .gitignore to support gen2 related files
+  await fs.writeFile(
+    `${cwd}/.gitignore`,
+    `node_modules,
+amplify,
+amplify_outputs.json
+  `,
+    { encoding: 'utf-8' },
+  );
+
+  // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
   await fs.mkdir(MIGRATION_DIR, { recursive: true });
   await fs.rename(AMPLIFY_DIR, `${MIGRATION_DIR}/amplify`);
   await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
@@ -261,6 +271,7 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
   assert(stackName);
   const backendEnvironmentName = stackName.split('-')?.[2];
   assert(backendEnvironmentName);
+  const usageData = await getUsageDataMetric();
   const templateGenerator = new TemplateGenerator(
     fromStack,
     toStack,
@@ -272,9 +283,6 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
     backendEnvironmentName,
   );
   await templateGenerator.generate();
-  printer.print(
-    format.success(
-      `Generated CloudFormation templates and .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`,
-    ),
-  );
+  printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`));
+  await usageData.emitSuccess();
 }
