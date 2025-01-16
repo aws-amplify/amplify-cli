@@ -57,3 +57,4 @@ jobs:
         uses: ./.github/actions/run-smoke-tests
         with:
           role-to-assume: ${{ secrets.SMOKE_TESTS_ROLE_ARN }}
+          cli-version: ${{ matrix.cli-version }}

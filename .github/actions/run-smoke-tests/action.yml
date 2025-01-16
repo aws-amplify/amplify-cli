@@ -4,6 +4,9 @@ inputs:
   role-to-assume:
     description: an IAM role to use in tests
     required: true
+  cli-version:
+    description: version of Amplify CLI
+    required: true
   region:
     description: an AWS region to run in
     required: false
@@ -69,5 +72,5 @@ runs:
       uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 #v4.6.0
       if: always()
       with:
-        name: test report ${{ runner.os }}
+        name: test report ${{ runner.os }} ${{ inputs.cli-version }}
         path: packages/amplify-e2e-tests/amplify-e2e-reports
