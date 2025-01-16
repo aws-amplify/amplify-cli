@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.8.13...@aws-amplify/amplify-container-hosting@2.8.14) (2025-01-16)
+
+
+### Reverts
+
+* Revert "chore: cateogry-api + codegen version bump (#14048)" (#14049) ([5a0cdbf](https://github.com/aws-amplify/amplify-cli/commit/5a0cdbfa46856da320323923a4336d6ba60d82b9)), closes [#14048](https://github.com/aws-amplify/amplify-cli/issues/14048) [#14049](https://github.com/aws-amplify/amplify-cli/issues/14049)
+
+
+
+
+
 ## [2.8.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-container-hosting@2.8.12...@aws-amplify/amplify-container-hosting@2.8.13) (2024-11-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-container-hosting
