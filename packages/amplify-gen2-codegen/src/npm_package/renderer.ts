@@ -20,16 +20,13 @@ export type PackageJsonDependencies = {
 
 export type PackageJson = {
   name: string;
+  scripts?: Record<string, string>;
 } & PackageJsonDependencies;
 
 const withDefault = (version?: string) => version ?? '*';
 
-export const patchNpmPackageJson = (
-  packageJson: PackageJsonDependencies,
-  packageVersions: Partial<AmplifyPackageVersions> = {},
-): PackageJson => {
+export const patchNpmPackageJson = (packageJson: PackageJson, packageVersions: Partial<AmplifyPackageVersions> = {}): PackageJson => {
   return {
-    name: 'my-gen2-app',
     ...packageJson,
     devDependencies: {
       ...(packageJson.devDependencies ?? {}),

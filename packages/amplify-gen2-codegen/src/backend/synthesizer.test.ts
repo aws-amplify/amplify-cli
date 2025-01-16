@@ -426,7 +426,7 @@ describe('BackendRenderer', () => {
       const output = printNodeArray(rendered);
 
       // Basic configuration
-      expect(output).toContain('"us-west-2_aaaaaaaaa"');
+      expect(output).toContain('NativeAppClient');
       expect(output).toContain('userPoolClientName: "MyApp"');
 
       // Token validity settings
@@ -461,6 +461,7 @@ describe('BackendRenderer', () => {
       expect(output).toContain('authSessionValidity: Duration.minutes(3)');
       expect(output).toContain('enableTokenRevocation: true');
       expect(output).toContain('enablePropagateAdditionalUserContextData: true');
+      expect(output).toContain('generateSecret: true');
     });
     it('renders userpool and identitypool deletion policy', () => {
       const renderer = new BackendSynthesizer();
@@ -475,6 +476,28 @@ describe('BackendRenderer', () => {
       assert(output.includes('// cfnUserPool.applyRemovalPolicy'));
       assert(output.includes('// cfnIdentityPool.applyRemovalPolicy'));
       assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
+    });
+    it('renders user pool client configuration with default value for generateSecrets', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: './auth/resource.ts',
+          userPoolClient: {
+            UserPoolId: 'us-west-2_aaaaaaaaa',
+            ClientName: 'MyApp',
+            ClientId: '38fjsnc484p94kpqsnet7mpld0',
+          },
+        },
+      });
+
+      const output = printNodeArray(rendered);
+
+      // Basic configuration
+      expect(output).toContain('NativeAppClient');
+      expect(output).toContain('userPoolClientName: "MyApp"');
+
+      // Additional settings
+      expect(output).toContain('generateSecret: false');
     });
   });
 });
