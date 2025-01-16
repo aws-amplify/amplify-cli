@@ -1,11 +1,5 @@
 import { AmplifyDependencies, AmplifyDevDependencies, AmplifyPackageVersions, PackageJson, patchNpmPackageJson } from './renderer';
 import assert from 'node:assert';
-interface PackageJSON {
-  name?: string;
-  scripts?: Record<string, string>;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-}
 const createPackageJson = (): PackageJson => ({
   name: 'my-package',
   scripts: {

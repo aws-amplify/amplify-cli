@@ -316,7 +316,7 @@ export class BackendSynthesizer {
     // We need to set generateSecret to false explicitly when not defined.
     // If it's set as undefined and current value in CFN template is false (moved from gen1 after refactor), CFN thinks the property has changed
     // and requests for creation of a new resource (user pool client) instead of an update.
-    if (!object.hasOwnProperty(clientSecretKey) && gen2PropertyMap.has(clientSecretKey)) {
+    if (object[clientSecretKey] === undefined && gen2PropertyMap.has(clientSecretKey)) {
       const mappedClientSecretKey = gen2PropertyMap.get(clientSecretKey);
       assert(mappedClientSecretKey);
       objectLiterals.push(this.createBooleanPropertyAssignment(mappedClientSecretKey, false));

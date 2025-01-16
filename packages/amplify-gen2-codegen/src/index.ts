@@ -85,7 +85,9 @@ export const createGen2Renderer = ({
       try {
         const packageJsonContents = await fs.readFile(`./package.json`, { encoding: 'utf-8' });
         packageJson = JSON.parse(packageJsonContents);
-      } catch (e) {}
+      } catch (e) {
+        // File doesn't exist or is inaccessible. Ignore.
+      }
       // Restrict dev dependencies to specific versions based on create-amplify gen2 flow:
       // https://github.com/aws-amplify/amplify-backend/blob/2dab201cb9a222c3b8c396a46c17d661411839ab/packages/create-amplify/src/amplify_project_creator.ts#L15-L24
       return patchNpmPackageJson(packageJson, {
