@@ -1,13 +1,7 @@
 import assert from 'node:assert';
 import { stdin as input, stdout as output } from 'node:process';
 import readline from 'node:readline/promises';
-import {
-  AmplifyClient,
-  BackendEnvironment,
-  GetBackendEnvironmentCommand,
-  GetBackendEnvironmentCommandOutput,
-  ListBackendEnvironmentsCommand,
-} from '@aws-sdk/client-amplify';
+import { AmplifyClient, BackendEnvironment, GetBackendEnvironmentCommand } from '@aws-sdk/client-amplify';
 import { getEnvInfo } from '@aws-amplify/cli-internal/lib/extensions/amplify-helpers/get-env-info';
 
 export class BackendEnvironmentResolver {
