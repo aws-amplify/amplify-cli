@@ -1,7 +1,7 @@
 import { CognitoIdentityProviderClient, DescribeUserPoolCommand, ListGroupsCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient, GetIdentityPoolRolesCommand, ListIdentityPoolsCommand } from '@aws-sdk/client-cognito-identity';
 import { CloudFormationClient, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
-import { AmplifyClient, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
+import { AmplifyClient, GetBackendEnvironmentCommand } from '@aws-sdk/client-amplify';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 import { AmplifyStackParser } from './amplify_stack_parser';
@@ -125,15 +125,13 @@ jest.mock('@aws-sdk/client-amplify', () => {
     AmplifyClient: function () {
       return {
         send: jest.fn().mockImplementation((command) => {
-          if (command instanceof ListBackendEnvironmentsCommand) {
+          if (command instanceof GetBackendEnvironmentCommand) {
             return Promise.resolve({
-              backendEnvironments: [
-                {
-                  environmentName: 'dev',
-                  deploymentArtifacts: 's3://deploymentArtifacts',
-                  stackName: 'stackName',
-                },
-              ],
+              backendEnvironment: {
+                environmentName: 'dev',
+                deploymentArtifacts: 's3://deploymentArtifacts',
+                stackName: 'stackName',
+              },
             });
           }
           return Promise.resolve();
@@ -176,6 +174,14 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
         }),
       };
     },
+  };
+});
+
+jest.mock('@aws-amplify/cli-internal/lib/extensions/amplify-helpers/get-env-info', () => {
+  return {
+    getEnvInfo: jest.fn().mockReturnValue({
+      envName: 'dev',
+    }),
   };
 });
 
