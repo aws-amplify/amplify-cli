@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { createGen2Renderer, Gen2RenderingOptions } from '@aws-amplify/amplify-gen2-codegen';
 
 import { getProjectSettings, UsageData } from '@aws-amplify/cli-internal';
-import { AmplifyClient } from '@aws-sdk/client-amplify';
+import { AmplifyClient, BackendEnvironment } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
@@ -57,32 +57,32 @@ const generateGen2Code = async ({
   storageDefinitionFetcher,
   functionsDefinitionFetcher,
 }: CodegenCommandParameters) => {
-  logger.log(`Getting info for Amplify app`);
+  let gen2RenderOptions: Readonly<Gen2RenderingOptions> | undefined;
+  await printer.indicateProgress('Fetching resource details from AWS', async () => {
+    gen2RenderOptions = {
+      outputDir: outputDirectory,
+      appId: appId,
+      backendEnvironmentName: backendEnvironmentName,
+      auth: await authDefinitionFetcher.getDefinition(),
+      storage: await storageDefinitionFetcher.getDefinition(),
+      data: await dataDefinitionFetcher.getDefinition(),
+      functions: await functionsDefinitionFetcher.getDefinition(),
+      unsupportedCategories: unsupportedCategories(),
+    };
+  });
 
-  logger.log('Getting latest environment info');
+  await printer.indicateProgress('Generating your Gen 2 backend code', async () => {
+    assert(gen2RenderOptions);
+    const pipeline = createGen2Renderer(gen2RenderOptions);
+    const usageData = await getUsageDataMetric();
 
-  const gen2RenderOptions: Readonly<Gen2RenderingOptions> = {
-    outputDir: outputDirectory,
-    appId: appId,
-    backendEnvironmentName: backendEnvironmentName,
-    auth: await authDefinitionFetcher.getDefinition(),
-    storage: await storageDefinitionFetcher.getDefinition(),
-    data: await dataDefinitionFetcher.getDefinition(),
-    functions: await functionsDefinitionFetcher.getDefinition(),
-    unsupportedCategories: unsupportedCategories(),
-  };
-
-  const pipeline = createGen2Renderer(gen2RenderOptions);
-  const usageData = await getUsageDataMetric();
-
-  try {
-    await pipeline.render();
-    await analytics.logEvent('finishedCodegen');
-    await usageData.emitSuccess();
-  } catch (e) {
-    await analytics.logEvent('failedCodegen');
-    await usageData.emitError(e);
-  }
+    try {
+      await pipeline.render();
+      await usageData.emitSuccess();
+    } catch (e) {
+      await usageData.emitError(e);
+    }
+  });
 };
 
 type AmplifyMetaAuth = {
@@ -126,7 +126,8 @@ const getAccountId = async (): Promise<string | undefined> => {
 
 const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
   const amplifyMeta: AmplifyMeta = stateManager.getMeta();
-  const resourceName = Object.keys(amplifyMeta.auth)[0];
+  const resourceName = Object.entries(amplifyMeta.auth).find(([_, resource]) => resource.service === 'Cognito')?.[0];
+  assert(resourceName);
   const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
   if ('cognitoConfig' in authInputs && 'authTriggerConnections' in authInputs.cognitoConfig) {
     try {
@@ -199,7 +200,17 @@ const unsupportedCategories = (): Map<string, string> => {
 };
 
 export async function execute() {
-  const amplifyClient = new AmplifyClient();
+  let backendEnvironment: BackendEnvironment | undefined;
+  let backendEnvironmentResolver: BackendEnvironmentResolver | null = null;
+  const appId = resolveAppId();
+  await printer.indicateProgress(`Inspecting Amplify app ${appId} with current backend`, async () => {
+    const amplifyClient = new AmplifyClient();
+    backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
+    backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
+  });
+  assert(backendEnvironment);
+  assert(backendEnvironmentResolver);
+
   const s3Client = new S3Client();
   const cloudFormationClient = new CloudFormationClient();
   const cognitoIdentityProviderClient = new CognitoIdentityProviderClient();
@@ -207,13 +218,8 @@ export async function execute() {
   const lambdaClient = new LambdaClient({
     region: stateManager.getCurrentRegion(),
   });
-  const appId = resolveAppId();
-
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
-  const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
-  const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
   const ccbFetcher = new BackendDownloader(s3Client);
-
   await generateGen2Code({
     outputDirectory: TEMP_GEN_2_OUTPUT_DIR,
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
@@ -233,13 +239,25 @@ export async function execute() {
     appId: appId,
   });
 
-  // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
-  const cwd = process.cwd();
-  await fs.mkdir(MIGRATION_DIR, { recursive: true });
-  await fs.rename(AMPLIFY_DIR, `${MIGRATION_DIR}/amplify`);
-  await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
-  await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
-  await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
+  await printer.indicateProgress(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`, async () => {
+    const cwd = process.cwd();
+    // Rewrite .gitignore to support gen2 related files
+    await fs.writeFile(
+      `${cwd}/.gitignore`,
+      `node_modules
+amplify
+amplify_outputs.json
+  `,
+      { encoding: 'utf-8' },
+    );
+    // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
+    await fs.mkdir(MIGRATION_DIR, { recursive: true });
+    await fs.rename(AMPLIFY_DIR, `${MIGRATION_DIR}/amplify`);
+    await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
+    await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
+    await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
+  });
+  printer.print(format.success('Done!'));
 }
 
 /**
@@ -261,6 +279,7 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
   assert(stackName);
   const backendEnvironmentName = stackName.split('-')?.[2];
   assert(backendEnvironmentName);
+  const usageData = await getUsageDataMetric();
   const templateGenerator = new TemplateGenerator(
     fromStack,
     toStack,
@@ -272,9 +291,6 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
     backendEnvironmentName,
   );
   await templateGenerator.generate();
-  printer.print(
-    format.success(
-      `Generated CloudFormation templates and .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`,
-    ),
-  );
+  printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`));
+  await usageData.emitSuccess();
 }

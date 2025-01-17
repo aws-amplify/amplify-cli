@@ -21,7 +21,7 @@ describe('top level gen2 command', () => {
     await assert.rejects(
       () => runCommandAsync(parser, 'to-gen-2'),
       (err: Error) => {
-        assert.match(err.message, /Not enough non-option arguments/);
+        assert.match(err.message, /Top level gen2 handler should never be called/);
         return true;
       },
     );

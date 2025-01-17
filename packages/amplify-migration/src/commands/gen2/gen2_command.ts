@@ -22,7 +22,7 @@ export class Gen2Command implements CommandModule {
   }
 
   builder = (yargs: Argv): Argv => {
-    return yargs.version(false).command(this.subCommands).demandCommand().strictCommands().recommendCommands();
+    return yargs.version(false).command(this.subCommands).strictCommands().recommendCommands();
   };
   handler = (): Promise<void> => {
     // CommandModule requires handler implementation. But this is never called if top level command
