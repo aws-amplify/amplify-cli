@@ -24780,10 +24780,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picocolors@npm:^1.0.0, picocolors@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "picocolors@npm:1.0.1"
-  checksum: c63cdad2bf812ef0d66c8db29583802355d4ca67b9285d846f390cc15c2f6ccb94e8cb7eb6a6e97fc5990a6d3ad4ae42d86c84d3146e667c739a4234ed50d400
+"picocolors@npm:^1.0.0, picocolors@npm:^1.0.1, picocolors@npm:^1.1.0":
+  version: 1.1.1
+  resolution: "picocolors@npm:1.1.1"
+  checksum: e2e3e8170ab9d7c7421969adaa7e1b31434f789afb9b3f115f6b96d91945041ac3ceb02e9ec6fe6510ff036bcc0bf91e69a1772edc0b707e12b19c0f2d6bcf58
   languageName: node
   linkType: hard
 
@@ -24838,21 +24838,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pkg-fetch@npm:^3.5.2":
-  version: 3.5.2
-  resolution: "pkg-fetch@npm:3.5.2"
+"pkg-fetch@https://github.com/aws-amplify/pkg-fetch#c4659e89c432e008ac43a807215ea082efa58cba":
+  version: 3.4.2
+  resolution: "pkg-fetch@https://github.com/aws-amplify/pkg-fetch.git#commit=c4659e89c432e008ac43a807215ea082efa58cba"
   dependencies:
-    chalk: ^4.1.2
-    fs-extra: ^9.1.0
     https-proxy-agent: ^5.0.0
     node-fetch: ^2.6.6
+    picocolors: ^1.1.0
     progress: ^2.0.3
     semver: ^7.3.5
     tar-fs: ^2.1.1
     yargs: ^16.2.0
   bin:
     pkg-fetch: lib-es5/bin.js
-  checksum: 8105cf28178e0b325417a9dee6ec0f0f124ba7fe3608d8ad86628ef2f2a12d1490550a007d5be42e34f0c8573dcb9655737b4d07a177ce4ee278e762ccb42b9e
+  checksum: b73c3851f8ebcc9a0090e53046c616a9cd227a4ba1063f70de928263c0194c280be9ce8a1293553a056af36afce4e64d091b37d79114d5bc5dd2ffb5b6b28a93
   languageName: node
   linkType: hard
 
