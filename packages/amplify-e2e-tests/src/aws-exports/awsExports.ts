@@ -11,6 +11,5 @@ export function getAWSExports(projectRoot: string) {
   // require, that's why we need to copy the file.
   const awsExportsMJSPath = awsExportsPath.replace('.js', '.mjs');
   fs.copySync(awsExportsPath, awsExportsMJSPath, { overwrite: true });
-  const localRequire = require('esm')(module);
-  return localRequire(awsExportsMJSPath);
+  return require(awsExportsMJSPath);
 }
