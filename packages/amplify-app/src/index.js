@@ -90,6 +90,7 @@ async function installAmplifyCLI() {
       cwd: process.cwd(),
       env: process.env,
       stdio: 'inherit',
+      shell: isWindows ? true : undefined,
     });
 
     amplifyCLIInstall.on('exit', (code) => {
@@ -352,7 +353,12 @@ async function createJSHelperFiles() {
   console.log(`${emoji.get('white_check_mark')} Successfully added helper npm run scripts to your package.json.`);
 
   return new Promise((resolve, reject) => {
-    const npmInstall = spawn(npm, ['install', '--only=dev'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+    const npmInstall = spawn(npm, ['install', '--only=dev'], {
+      cwd: process.cwd(),
+      env: process.env,
+      stdio: 'inherit',
+      shell: isWindows ? true : undefined,
+    });
 
     npmInstall.on('exit', (code) => {
       if (code === 0) {
