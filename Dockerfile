@@ -203,9 +203,9 @@ RUN set -ex \
 
 #****************      NODEJS     ****************************************************
 
-ENV NODE_18_VERSION="18.15.0"
+ENV NODE_VERSION="22.12.0"
 
-RUN  n $NODE_18_VERSION && npm install --save-dev -g -f grunt && npm install --save-dev -g -f grunt-cli && npm install --save-dev -g -f webpack \
+RUN  n $NODE_VERSION && npm install --save-dev -g -f grunt && npm install --save-dev -g -f grunt-cli && npm install --save-dev -g -f webpack \
      && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
      && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
      && apt-get update && apt-get install -y -qq --no-install-recommends yarn \
@@ -374,7 +374,7 @@ VOLUME /var/lib/docker
 FROM runtimes_n_corretto AS std_v6
 
 # Activate runtime versions specific to image version.
-RUN n $NODE_18_VERSION
+RUN n $NODE_VERSION
 RUN pyenv  global $PYTHON_38_VERSION
 RUN goenv global  $GOLANG_18_VERSION
 
