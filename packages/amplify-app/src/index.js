@@ -90,7 +90,7 @@ async function installAmplifyCLI() {
       cwd: process.cwd(),
       env: process.env,
       stdio: 'inherit',
-      shell: isWindows ? true : undefined,
+      shell: isWin ? true : undefined,
     });
 
     amplifyCLIInstall.on('exit', (code) => {
@@ -357,7 +357,7 @@ async function createJSHelperFiles() {
       cwd: process.cwd(),
       env: process.env,
       stdio: 'inherit',
-      shell: isWindows ? true : undefined,
+      shell: isWin ? true : undefined,
     });
 
     npmInstall.on('exit', (code) => {
