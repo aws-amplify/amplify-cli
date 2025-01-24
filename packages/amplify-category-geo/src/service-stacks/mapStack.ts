@@ -3,7 +3,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnResource, Duration, Fn } from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { MapParameters } from '../service-utils/mapParams';
@@ -94,7 +93,7 @@ export class MapStack extends BaseStack {
     const customMapLambda = new lambda.Function(this, 'CustomMapLambda', {
       code: lambda.Code.fromInline(customMapLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: new lambda.Runtime('nodejs22.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }),
       timeout: Duration.seconds(300),
     });
     customMapLambda.addToRolePolicy(geoCreateMapStatement);
