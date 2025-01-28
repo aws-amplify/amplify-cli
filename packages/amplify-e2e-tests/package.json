@@ -29,7 +29,7 @@
     "@aws-amplify/amplify-cli-core": "4.3.10",
     "@aws-amplify/amplify-e2e-core": "5.7.0",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.15",
-    "@aws-amplify/graphql-transformer-core": "^2.9.3",
+    "@aws-amplify/graphql-transformer-core": "^2.9.4-gen1-type-ext.0",
     "@aws-sdk/client-appsync": "3.624.0",
     "@aws-sdk/client-dynamodb": "3.624.0",
     "@aws-sdk/client-s3": "3.624.0",
