@@ -2,20 +2,20 @@ import { FunctionDefinition } from '@aws-amplify/amplify-gen2-codegen';
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
 import assert from 'node:assert';
 
-type AmplifyMetaFunction = {
+export type AmplifyMetaFunction = {
   service: string;
   providerPlugin: 'awscloudformation';
   output: Record<string, string>;
 };
 
-type AmplifyMeta = {
+export type AmplifyMetaWithFunction = {
   function: Record<string, AmplifyMetaFunction>;
 };
 
 export const getFunctionDefinition = (
   functionConfigurations: FunctionConfiguration[],
   functionCategoryMap: Map<string, string>,
-  meta: AmplifyMeta,
+  meta: AmplifyMetaWithFunction,
 ): FunctionDefinition[] => {
   const funcDefList: FunctionDefinition[] = [];
 

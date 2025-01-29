@@ -1,1 +1,1 @@
-export { getFunctionDefinition } from './function_render_adapter.js';
+export { getFunctionDefinition, AmplifyMetaWithFunction, AmplifyMetaFunction } from './function_render_adapter.js';
