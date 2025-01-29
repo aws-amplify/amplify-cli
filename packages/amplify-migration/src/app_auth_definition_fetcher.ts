@@ -52,7 +52,11 @@ export class AppAuthDefinitionFetcher {
 
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
     const isImported =
-      'auth' in amplifyMeta && Object.keys(amplifyMeta.auth).map((key) => amplifyMeta.auth[key])[0].serviceType === 'imported';
+      'auth' in amplifyMeta &&
+      Object.keys(amplifyMeta.auth).length > 0 &&
+      Object.entries(amplifyMeta.auth).some(
+        ([_, value]) => typeof value === 'object' && value !== null && 'serviceType' in value && value.serviceType === 'imported',
+      );
     if (!isImported) {
       return undefined;
     }

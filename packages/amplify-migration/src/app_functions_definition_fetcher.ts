@@ -10,6 +10,7 @@ interface AuthConfig {
     category: string;
     resourceName: string;
   }>;
+  service: string;
   [key: string]: unknown;
 }
 
@@ -36,7 +37,10 @@ export class AppFunctionsDefinitionFetcher {
 
     const functionCategoryMap = new Map<string, string>();
 
-    const authValues: AuthConfig | undefined = Object.values(auth)[0] as AuthConfig;
+    const authValues: AuthConfig | undefined = Object.values(auth).find(
+      (resourceConfig: unknown) =>
+        resourceConfig && typeof resourceConfig === 'object' && 'service' in resourceConfig && resourceConfig?.service === 'Cognito',
+    ) as AuthConfig;
 
     // auth triggers
     if (auth && authValues && authValues.dependsOn) {
@@ -83,6 +87,6 @@ export class AppFunctionsDefinitionFetcher {
       .map((functionResponse) => functionResponse.Configuration ?? null)
       .filter((config): config is NonNullable<typeof config> => config !== null);
 
-    return getFunctionDefinition(functionConfigurations, functionCategoryMap);
+    return getFunctionDefinition(functionConfigurations, functionCategoryMap, meta);
   };
 }

@@ -18,7 +18,7 @@ export class Gen2StartCommand implements CommandModule<object, Gen2StartCommandO
   readonly describe: string;
 
   constructor() {
-    this.command = 'generate-code';
+    this.command = 'prepare';
     this.describe = 'Generates Amplify Gen2 code based on Gen1 configuration';
   }
 

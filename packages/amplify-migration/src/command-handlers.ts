@@ -29,6 +29,7 @@ import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetche
 import { TemplateGenerator } from '@aws-amplify/migrate-template-gen';
 import { printer } from './printer';
 import { format } from './format';
+import ora from 'ora';
 
 interface CodegenCommandParameters {
   analytics: Analytics;
@@ -46,6 +47,13 @@ const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
 const MIGRATION_DIR = '.amplify/migration';
 
+enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
+  DOT_AMPLIFY = '.amplify',
+  AMPLIFY_OUTPUTS = 'amplify_outputs*',
+  AMPLIFY_CONFIGURATION = 'amplifyconfiguration*',
+  NODE_MODULES = 'node_modules',
+}
+
 const generateGen2Code = async ({
   logger,
   analytics,
@@ -58,31 +66,31 @@ const generateGen2Code = async ({
   functionsDefinitionFetcher,
 }: CodegenCommandParameters) => {
   let gen2RenderOptions: Readonly<Gen2RenderingOptions> | undefined;
-  await printer.indicateProgress('Fetching resource details from AWS', async () => {
-    gen2RenderOptions = {
-      outputDir: outputDirectory,
-      appId: appId,
-      backendEnvironmentName: backendEnvironmentName,
-      auth: await authDefinitionFetcher.getDefinition(),
-      storage: await storageDefinitionFetcher.getDefinition(),
-      data: await dataDefinitionFetcher.getDefinition(),
-      functions: await functionsDefinitionFetcher.getDefinition(),
-      unsupportedCategories: unsupportedCategories(),
-    };
-  });
+  const fetchingAWSResourceDetails = ora('Fetching resource details from AWS').start();
+  gen2RenderOptions = {
+    outputDir: outputDirectory,
+    appId: appId,
+    backendEnvironmentName: backendEnvironmentName,
+    auth: await authDefinitionFetcher.getDefinition(),
+    storage: await storageDefinitionFetcher.getDefinition(),
+    data: await dataDefinitionFetcher.getDefinition(),
+    functions: await functionsDefinitionFetcher.getDefinition(),
+    unsupportedCategories: unsupportedCategories(),
+  };
+  fetchingAWSResourceDetails.succeed('Fetched resource details from AWS');
 
-  await printer.indicateProgress('Generating your Gen 2 backend code', async () => {
-    assert(gen2RenderOptions);
-    const pipeline = createGen2Renderer(gen2RenderOptions);
-    const usageData = await getUsageDataMetric();
+  const gen2Codegen = ora('Generating your Gen 2 backend code').start();
+  assert(gen2RenderOptions);
+  const pipeline = createGen2Renderer(gen2RenderOptions);
+  const usageData = await getUsageDataMetric();
 
-    try {
-      await pipeline.render();
-      await usageData.emitSuccess();
-    } catch (e) {
-      await usageData.emitError(e);
-    }
-  });
+  try {
+    await pipeline.render();
+    await usageData.emitSuccess();
+  } catch (e) {
+    await usageData.emitError(e);
+  }
+  gen2Codegen.succeed('Generated your Gen 2 backend code');
 };
 
 type AmplifyMetaAuth = {
@@ -90,8 +98,15 @@ type AmplifyMetaAuth = {
   providerPlugin: 'awscloudformation';
 };
 
+type AmplifyMetaFunction = {
+  service: 'Lambda';
+  providerPlugin: 'awscloudformation';
+  output: Record<string, string>;
+};
+
 type AmplifyMeta = {
   auth: Record<string, AmplifyMetaAuth>;
+  function: Record<string, AmplifyMetaFunction>;
 };
 
 const getFunctionPath = (functionName: string) => {
@@ -140,6 +155,7 @@ const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof Lambda
         triggerConnections = authInputs.cognitoConfig.authTriggerConnections.map((connection: string) => JSON.parse(connection));
       }
       const connections = triggerConnections.reduce((prev, curr) => {
+        const functionName = amplifyMeta.function[curr.lambdaFunctionName].output.Name;
         prev[curr.triggerType] = getFunctionPath(curr.lambdaFunctionName);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
@@ -199,15 +215,44 @@ const unsupportedCategories = (): Map<string, string> => {
   return unsupportedCategoriesList;
 };
 
+async function updateGitIgnoreForGen2() {
+  const cwd = process.cwd();
+  const updateGitIgnore = ora('Updating gitignore contents').start();
+  // Rewrite .gitignore to support gen2 related files
+  let gitIgnore = '';
+  try {
+    gitIgnore = await fs.readFile(`${cwd}/.gitignore`, { encoding: 'utf-8' });
+  } catch (e) {
+    // ignore absence of gitignore
+  }
+  // remove gen 1 amplify section
+  const regex = /#amplify-do-not-edit-begin[\s\S]*#amplify-do-not-edit-end/g;
+  let newGitIgnore = gitIgnore.replace(regex, '');
+  // add gen 2 section
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.DOT_AMPLIFY)) {
+    newGitIgnore = `${newGitIgnore}\n# amplify\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.DOT_AMPLIFY}`;
+  }
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.AMPLIFY_OUTPUTS)) {
+    newGitIgnore = `${newGitIgnore}\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.AMPLIFY_OUTPUTS}`;
+  }
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.AMPLIFY_CONFIGURATION)) {
+    newGitIgnore = `${newGitIgnore}\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.AMPLIFY_CONFIGURATION}`;
+  }
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.NODE_MODULES)) {
+    newGitIgnore = `${newGitIgnore}\n# node_modules\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.NODE_MODULES}`;
+  }
+  // remove empty lines
+  newGitIgnore = newGitIgnore.replace(/^\s*[\r\n]/gm, '');
+  await fs.writeFile(`${cwd}/.gitignore`, newGitIgnore, { encoding: 'utf-8' });
+  updateGitIgnore.succeed('Updated gitignore contents');
+}
+
 export async function execute() {
-  let backendEnvironment: BackendEnvironment | undefined;
-  let backendEnvironmentResolver: BackendEnvironmentResolver | null = null;
   const appId = resolveAppId();
-  await printer.indicateProgress(`Inspecting Amplify app ${appId} with current backend`, async () => {
-    const amplifyClient = new AmplifyClient();
-    backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
-    backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
-  });
+  const inspectApp = await ora(`Inspecting Amplify app ${appId} with current backend`).start();
+  const amplifyClient = new AmplifyClient();
+  let backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
+  let backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
   assert(backendEnvironment);
   assert(backendEnvironmentResolver);
 
@@ -220,6 +265,8 @@ export async function execute() {
   });
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const ccbFetcher = new BackendDownloader(s3Client);
+  inspectApp.stop();
+
   await generateGen2Code({
     outputDirectory: TEMP_GEN_2_OUTPUT_DIR,
     storageDefinitionFetcher: new AppStorageDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), s3Client),
@@ -239,25 +286,17 @@ export async function execute() {
     appId: appId,
   });
 
-  await printer.indicateProgress(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`, async () => {
-    const cwd = process.cwd();
-    // Rewrite .gitignore to support gen2 related files
-    await fs.writeFile(
-      `${cwd}/.gitignore`,
-      `node_modules
-amplify
-amplify_outputs.json
-  `,
-      { encoding: 'utf-8' },
-    );
-    // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
-    await fs.mkdir(MIGRATION_DIR, { recursive: true });
-    await fs.rename(AMPLIFY_DIR, `${MIGRATION_DIR}/amplify`);
-    await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
-    await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
-    await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
-  });
-  printer.print(format.success('Done!'));
+  await updateGitIgnoreForGen2();
+
+  const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`).start();
+  // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
+  const cwd = process.cwd();
+  await fs.mkdir(MIGRATION_DIR, { recursive: true });
+  await fs.rename(AMPLIFY_DIR, `${MIGRATION_DIR}/amplify`);
+  await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
+  await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
+  await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
+  movingGen1BackendFiles.succeed(`Moved your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`);
 }
 
 /**
