@@ -36,7 +36,7 @@
   "dependencies": {
     "@aws-amplify/amplify-app": "5.0.37",
     "@aws-amplify/amplify-category-analytics": "5.0.36",
-    "@aws-amplify/amplify-category-api": "^5.12.9",
+    "@aws-amplify/amplify-category-api": "^5.12.10",
     "@aws-amplify/amplify-category-auth": "3.7.16",
     "@aws-amplify/amplify-category-custom": "3.1.24",
     "@aws-amplify/amplify-category-function": "5.7.10",
