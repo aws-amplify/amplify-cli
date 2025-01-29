@@ -9,7 +9,6 @@ export type DataDefinition = {
 };
 
 const importedAmplifyDynamoDBTableMapKeyName = 'importedAmplifyDynamoDBTableMap';
-const importedModelsKey = 'importedModels';
 
 export const schemaPlaceholderComment = 'TODO: Add your existing graphql schema here';
 
