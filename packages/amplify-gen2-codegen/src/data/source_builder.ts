@@ -1,7 +1,6 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTodoError } from '../todo_error';
-import { table } from 'console';
 const factory = ts.factory;
 
 export type DataTableMapping = Record<string, string>;
