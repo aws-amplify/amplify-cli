@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-custom",
-  "version": "3.1.24",
+  "version": "3.1.25-rc.a274b640ee2b029.0",
   "description": "amplify-cli custom resources plugin",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.3.10",
+    "@aws-amplify/amplify-cli-core": "4.3.11-rc.a274b640ee2b029.0",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "aws-cdk-lib": "~2.129.0",
     "execa": "^5.1.1",
