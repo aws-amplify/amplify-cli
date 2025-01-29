@@ -15,7 +15,9 @@ void describe('function codegen', () => {
       functionConf1.Environment = { Variables: { ENV: 'dev', REGION: 'us-west-2' } };
       configurations.push(functionConf1);
 
-      const result = getFunctionDefinition(configurations, new Map([['function1', 'function']]));
+      const result = getFunctionDefinition(configurations, new Map([['function1', 'function']]), {
+        function: {},
+      });
 
       for (const func of result) {
         assert.equal(func.runtime, 'nodejs18.x');

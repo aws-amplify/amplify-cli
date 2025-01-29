@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { createGen2Renderer, Gen2RenderingOptions } from '@aws-amplify/amplify-gen2-codegen';
 
 import { getProjectSettings, UsageData } from '@aws-amplify/cli-internal';
-import { AmplifyClient, BackendEnvironment } from '@aws-sdk/client-amplify';
+import { AmplifyClient } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
@@ -155,7 +155,6 @@ const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof Lambda
         triggerConnections = authInputs.cognitoConfig.authTriggerConnections.map((connection: string) => JSON.parse(connection));
       }
       const connections = triggerConnections.reduce((prev, curr) => {
-        const functionName = amplifyMeta.function[curr.lambdaFunctionName].output.Name;
         prev[curr.triggerType] = getFunctionPath(curr.lambdaFunctionName);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
