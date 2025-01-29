@@ -16,7 +16,23 @@ void describe('function codegen', () => {
       configurations.push(functionConf1);
 
       const result = getFunctionDefinition(configurations, new Map([['function1', 'function']]), {
-        function: {},
+        function: {
+          'function1': {
+            providerPlugin: 'awscloudformation',
+            service: 'Lambda',
+            output: {
+              Name: 'function1'
+            }
+          },
+          'function2': {
+            providerPlugin: 'awscloudformation',
+            service: 'Lambda',
+            output: {
+
+              Name: 'function2'
+            }
+          }
+        },
       });
 
       for (const func of result) {

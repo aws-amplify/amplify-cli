@@ -3,7 +3,7 @@ import { FunctionConfiguration } from '@aws-sdk/client-lambda';
 import assert from 'node:assert';
 
 type AmplifyMetaFunction = {
-  service: 'Cognito';
+  service: string;
   providerPlugin: 'awscloudformation';
   output: Record<string, string>;
 };
