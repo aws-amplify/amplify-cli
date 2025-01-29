@@ -17,7 +17,6 @@
       "src/**/*.{ts,tsx,js,jsx}",
       "!src/__tests__/"
     ],
-    "preset": "ts-jest",
     "transform": {
       "^.+\\.tsx?$": [
         "ts-jest"
@@ -45,9 +44,6 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@babel/preset-env": "^7.26.7",
-    "@types/babel__preset-env": "^7",
-    "babel-jest": "^29.7.0",
     "jest": "^29.7.0"
   },
   "dependencies": {

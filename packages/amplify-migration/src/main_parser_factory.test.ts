@@ -3,8 +3,6 @@ import { version } from '../package.json';
 import assert from 'node:assert';
 import { runCommandAsync } from './test-utils/command_runner';
 
-jest.mock('ora');
-
 describe('main parser', () => {
   const parser = createMainParser(version);
 

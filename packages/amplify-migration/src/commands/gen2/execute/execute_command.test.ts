@@ -3,8 +3,6 @@ import { runCommandAsync } from '../../../test-utils/command_runner';
 import yargs, { CommandModule } from 'yargs';
 import assert from 'node:assert';
 
-jest.mock('ora');
-
 const mockHandler = jest.fn();
 jest.mock('../../../command-handlers', () => ({
   ...jest.requireActual('../../../command-handlers'),
