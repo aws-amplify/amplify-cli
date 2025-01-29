@@ -4,7 +4,7 @@ import { EOL } from 'os';
 export class Printer {
   // Properties for ellipsis animation
   private timer: ReturnType<typeof setTimeout> | null = null;
-  private timerSet: boolean = false;
+  private timerSet = false;
   /**
    * Spinner frames
    */
@@ -13,7 +13,7 @@ export class Printer {
     private readonly minimumLogLevel: LogLevel,
     private readonly stdout: WriteStream | NodeJS.WritableStream = process.stdout,
     private readonly stderr: WriteStream | NodeJS.WritableStream = process.stderr,
-    private readonly refreshRate: number = 1,
+    private readonly refreshRate: number = 30,
   ) {}
 
   /**

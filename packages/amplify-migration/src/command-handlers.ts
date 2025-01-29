@@ -55,8 +55,6 @@ enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
 }
 
 const generateGen2Code = async ({
-  logger,
-  analytics,
   outputDirectory,
   backendEnvironmentName,
   appId,
@@ -65,9 +63,8 @@ const generateGen2Code = async ({
   storageDefinitionFetcher,
   functionsDefinitionFetcher,
 }: CodegenCommandParameters) => {
-  let gen2RenderOptions: Readonly<Gen2RenderingOptions> | undefined;
   const fetchingAWSResourceDetails = ora('Fetching resource details from AWS').start();
-  gen2RenderOptions = {
+  const gen2RenderOptions = {
     outputDir: outputDirectory,
     appId: appId,
     backendEnvironmentName: backendEnvironmentName,
@@ -141,7 +138,7 @@ const getAccountId = async (): Promise<string | undefined> => {
 
 const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
   const amplifyMeta: AmplifyMeta = stateManager.getMeta();
-  const resourceName = Object.entries(amplifyMeta.auth).find(([_, resource]) => resource.service === 'Cognito')?.[0];
+  const resourceName = Object.entries(amplifyMeta.auth).find(([, resource]) => resource.service === 'Cognito')?.[0];
   assert(resourceName);
   const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
   if ('cognitoConfig' in authInputs && 'authTriggerConnections' in authInputs.cognitoConfig) {
@@ -250,8 +247,8 @@ export async function execute() {
   const appId = resolveAppId();
   const inspectApp = await ora(`Inspecting Amplify app ${appId} with current backend`).start();
   const amplifyClient = new AmplifyClient();
-  let backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
-  let backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
+  const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
+  const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
   assert(backendEnvironment);
   assert(backendEnvironmentResolver);
 
