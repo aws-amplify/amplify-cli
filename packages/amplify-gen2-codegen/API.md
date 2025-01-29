@@ -103,6 +103,8 @@ export interface FunctionDefinition {
     // (undocumented)
     name?: string;
     // (undocumented)
+    resourceName?: string;
+    // (undocumented)
     runtime?: Runtime | string;
     // (undocumented)
     timeoutSeconds?: number;

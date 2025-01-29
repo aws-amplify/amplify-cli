@@ -7,8 +7,10 @@
 import { FunctionConfiguration } from '@aws-sdk/client-lambda';
 import { FunctionDefinition } from '@aws-amplify/amplify-gen2-codegen';
 
+// Warning: (ae-forgotten-export) The symbol "AmplifyMeta" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export const getFunctionDefinition: (functionConfigurations: FunctionConfiguration[], functionCategoryMap: Map<string, string>) => FunctionDefinition[];
+export const getFunctionDefinition: (functionConfigurations: FunctionConfiguration[], functionCategoryMap: Map<string, string>, meta: AmplifyMeta) => FunctionDefinition[];
 
 // (No @packageDocumentation comment for this package)
 
