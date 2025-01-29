@@ -1,10 +1,12 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTodoError } from '../todo_error';
+import { table } from 'console';
 const factory = ts.factory;
 
+export type DataTableMapping = Record<string, string>;
 export type DataDefinition = {
-  tableMapping: Record<string, string>;
+  tableMappings: Record<string, DataTableMapping | undefined>;
 };
 
 const importedAmplifyDynamoDBTableMapKeyName = 'importedAmplifyDynamoDBTableMap';
@@ -17,25 +19,43 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineData');
 
-  if (dataDefinition?.tableMapping) {
-    const tableMappingProperties: ObjectLiteralElementLike[] = [];
-    for (const [tableName, tableId] of Object.entries(dataDefinition.tableMapping)) {
-      tableMappingProperties.push(
-        factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
+  if (dataDefinition?.tableMappings) {
+    const tableMappingEnvironments: ObjectLiteralElementLike[] = [];
+    for (const [environmentName, tableMapping] of Object.entries(dataDefinition.tableMappings)) {
+      const tableMappingProperties: ObjectLiteralElementLike[] = [];
+      if (tableMapping) {
+        for (const [tableName, tableId] of Object.entries(tableMapping)) {
+          tableMappingProperties.push(
+            factory.createPropertyAssignment(factory.createIdentifier(tableName), factory.createStringLiteral(tableId)),
+          );
+        }
+      }
+
+      let tableMappingExpression = factory.createObjectLiteralExpression(tableMappingProperties);
+      if (tableMappingProperties.length === 0) {
+        tableMappingExpression = ts.addSyntheticLeadingComment(
+          ts.addSyntheticLeadingComment(tableMappingExpression, ts.SyntaxKind.SingleLineCommentTrivia, '', true),
+          ts.SyntaxKind.MultiLineCommentTrivia,
+          ' Unable to find the table mapping for this environment.\n' +
+            ' This could be due the enableGen2Migration feature flag not being set to true for this environment.\n' +
+            ' Please enable the feature flag and push the backend resources.\n' +
+            ' If you are not planning to migrate this environment, you can remove this key',
+          true,
+        );
+      }
+      tableMappingEnvironments.push(
+        ts.addSyntheticLeadingComment(
+          factory.createPropertyAssignment(factory.createIdentifier(environmentName), tableMappingExpression),
+          ts.SyntaxKind.SingleLineCommentTrivia,
+          ` replace the environment name (${environmentName}) with the corresponding branch name`,
+          true,
+        ),
       );
     }
     dataRenderProperties.push(
       factory.createPropertyAssignment(
         importedAmplifyDynamoDBTableMapKeyName,
-        factory.createObjectLiteralExpression(tableMappingProperties),
-      ),
-    );
-    dataRenderProperties.push(
-      factory.createPropertyAssignment(
-        importedModelsKey,
-        factory.createArrayLiteralExpression(
-          Object.keys(dataDefinition.tableMapping).map((tableName) => factory.createStringLiteral(tableName)),
-        ),
+        factory.createObjectLiteralExpression(tableMappingEnvironments),
       ),
     );
   }

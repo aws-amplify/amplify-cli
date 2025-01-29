@@ -43,7 +43,7 @@ import {
   ServerSideEncryptionConfiguration,
 } from './storage/source_builder.js';
 
-import { DataDefinition, generateDataSource } from './data/source_builder';
+import { DataDefinition, DataTableMapping, generateDataSource } from './data/source_builder';
 
 import { FunctionDefinition, renderFunctions } from './function/source_builder';
 
@@ -242,6 +242,7 @@ export {
   AuthLambdaTriggers,
   StorageTriggerEvent,
   DataDefinition,
+  DataTableMapping,
   SamlOptions,
   OidcEndPoints,
   MetadataOptions,

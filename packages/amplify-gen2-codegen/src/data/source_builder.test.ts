@@ -16,23 +16,19 @@ describe('Data Category code generation', () => {
   });
   describe('import map', () => {
     it('is rendered', () => {
-      const tableMapping = { Todo: 'my-todo-mapping' };
-      const source = printNodeArray(generateDataSource({ tableMapping }));
-      assert.match(source, /importedAmplifyDynamoDBTableMap: \{\s+Todo: ['"]my-todo-mapping['"]/);
-    });
-    it('shows each key in the mapping table in the `importedModels` array', () => {
-      const tables = ['Todo', 'Foo', 'Bar'];
-      const tableMapping = tables.reduce((prev, curr) => ({ ...prev, [curr]: 'baz' }), {});
-      const source = printNodeArray(generateDataSource({ tableMapping }));
-      const array = source.match(/importedModels:\s+\[(.*?)\]/);
-      assert.deepEqual(tables, array?.[1].replaceAll('"', '').split(', '));
-    });
-    it('has each each key in defineData', () => {
-      const tableMapping = { Todo: 'my-todo-mapping' };
-      const source = printNodeArray(generateDataSource({ tableMapping }));
+      const tableMappings = { dev: { Todo: 'my-todo-mapping' } };
+      const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /defineData\({\n\s+importedAmplifyDynamoDBTableMap: \{\s+Todo: ['"]my-todo-mapping['"] },\n\s+importedModels:\s+\[.*?\],\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
+        /importedAmplifyDynamoDBTableMap: \{\s+\n\s+\/\/ replace the environment name \(dev\) with the corresponding branch name\n\s+dev: { Todo: ['"]my-todo-mapping['"] } }/,
+      );
+    });
+    it('has each each key in defineData', () => {
+      const tableMappings = { dev: { Todo: 'my-todo-mapping' } };
+      const source = printNodeArray(generateDataSource({ tableMappings }));
+      assert.match(
+        source,
+        /defineData\({\n\s+importedAmplifyDynamoDBTableMap: \{\s+\n\s+\/\/ replace the environment name \(dev\) with the corresponding branch name\n\s+dev: { Todo: ['"]my-todo-mapping['"] } },\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
       );
     });
   });
