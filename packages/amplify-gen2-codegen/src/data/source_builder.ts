@@ -38,7 +38,7 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
           ' Unable to find the table mapping for this environment.\n' +
             ' This could be due the enableGen2Migration feature flag not being set to true for this environment.\n' +
             ' Please enable the feature flag and push the backend resources.\n' +
-            ' If you are not planning to migrate this environment, you can remove this key',
+            ' If you are not planning to migrate this environment, you can remove this key.',
           true,
         );
       }
@@ -46,7 +46,7 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
         ts.addSyntheticLeadingComment(
           factory.createPropertyAssignment(factory.createIdentifier(environmentName), tableMappingExpression),
           ts.SyntaxKind.SingleLineCommentTrivia,
-          ` replace the environment name (${environmentName}) with the corresponding branch name`,
+          ` Replace the environment name (${environmentName}) with the corresponding branch name. Use "sandbox" for your sandbox environment.`,
           true,
         ),
       );
