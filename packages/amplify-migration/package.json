@@ -35,10 +35,7 @@
       "json",
       "node"
     ],
-    "collectCoverage": true,
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setup-jest.ts"
-    ]
+    "collectCoverage": true
   },
   "author": "",
   "license": "ISC",
