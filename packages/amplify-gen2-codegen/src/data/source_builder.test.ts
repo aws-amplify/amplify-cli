@@ -20,7 +20,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /importedAmplifyDynamoDBTableMap: \{\s+\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+dev: { Todo: ['"]my-todo-mapping['"] } }/,
+        /\/\/ Replace each environment name with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+importedAmplifyDynamoDBTableMap: \{\s+dev: { Todo: ['"]my-todo-mapping['"] } }/,
       );
     });
     it('has each each key in defineData', () => {
@@ -28,7 +28,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /defineData\({\n\s+importedAmplifyDynamoDBTableMap: \{\s+\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use \"sandbox\" for your sandbox environment.\n\s+dev: { Todo: ['"]my-todo-mapping['"] } },\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
+        /defineData\({\n\s+\/\/ Replace each environment name with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+importedAmplifyDynamoDBTableMap: \{\s+dev: { Todo: ['"]my-todo-mapping['"] } },\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
       );
     });
   });

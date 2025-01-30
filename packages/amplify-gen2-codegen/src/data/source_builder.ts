@@ -41,19 +41,17 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
           true,
         );
       }
-      tableMappingEnvironments.push(
-        ts.addSyntheticLeadingComment(
-          factory.createPropertyAssignment(factory.createIdentifier(environmentName), tableMappingExpression),
-          ts.SyntaxKind.SingleLineCommentTrivia,
-          ` Replace the environment name (${environmentName}) with the corresponding branch name. Use "sandbox" for your sandbox environment.`,
-          true,
-        ),
-      );
+      tableMappingEnvironments.push(factory.createPropertyAssignment(factory.createIdentifier(environmentName), tableMappingExpression));
     }
     dataRenderProperties.push(
-      factory.createPropertyAssignment(
-        importedAmplifyDynamoDBTableMapKeyName,
-        factory.createObjectLiteralExpression(tableMappingEnvironments),
+      ts.addSyntheticLeadingComment(
+        factory.createPropertyAssignment(
+          importedAmplifyDynamoDBTableMapKeyName,
+          factory.createObjectLiteralExpression(tableMappingEnvironments),
+        ),
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ` Replace each environment name with the corresponding branch name. Use "sandbox" for your sandbox environment.`,
+        true,
       ),
     );
   }
