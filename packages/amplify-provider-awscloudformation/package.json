@@ -39,7 +39,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "^3.10.2",
     "amplify-codegen": "^4.10.2",
     "archiver": "^5.3.0",
-    "aws-cdk-lib": "~2.129.0",
+    "aws-cdk-lib": "~2.177.0",
     "aws-sdk": "^2.1464.0",
     "bottleneck": "2.19.5",
     "chalk": "^4.1.1",
