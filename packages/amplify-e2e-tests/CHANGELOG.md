@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.11...amplify-e2e-tests@4.10.0) (2024-10-05)
+
+
+### Bug Fixes
+
+* update message when expecting s3 to throw ([de45143](https://github.com/aws-amplify/amplify-cli/commit/de45143f83b92781c6412da9a49257ab5f94eeab))
+
+
+### Features
+
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
+
+
+
+
+
 ## [4.9.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.10...amplify-e2e-tests@4.9.11) (2024-08-02)
 
 **Note:** Version bump only for package amplify-e2e-tests
