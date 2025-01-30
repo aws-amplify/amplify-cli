@@ -98,9 +98,6 @@ function _loadTestAccountCredentials {
 function _lsOut {
     ls ..
     ls ~
-    ls $HOME
-    ls $HOME/..
-    ls $HOME/../..
 }
 function _build {
     echo Windows Build
@@ -120,8 +117,8 @@ function _install_packaged_cli_win {
     echo Move to CLI Binary to already existing PATH
     # This is a Hack to make sure the Amplify CLI is in the PATH
 
-    cp $CODEBUILD_SRC_DIR/out/amplify.exe $HOME/AppData/Local/Microsoft/WindowsApps
-    ls $HOME/AppData/Local/Microsoft/WindowsApps
+    cp $CODEBUILD_SRC_DIR/out/amplify.exe C:/Users/ContainerAdministrator/AppData/Local/Microsoft/WindowsApps
+    ls C:/Users/ContainerAdministrator/AppData/Local/Microsoft/WindowsApps
 
     # reset working directory
     cd $CODEBUILD_SRC_DIR

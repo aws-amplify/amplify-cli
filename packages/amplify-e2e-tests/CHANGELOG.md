@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.0...amplify-e2e-tests@4.11.1) (2025-01-16)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [4.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.10.1...amplify-e2e-tests@4.11.0) (2025-01-02)
+
+
+### Bug Fixes
+
+* UIBuilder test ([#14047](https://github.com/aws-amplify/amplify-cli/issues/14047)) ([c1d60c4](https://github.com/aws-amplify/amplify-cli/commit/c1d60c46617501dd408d4f78d16e8828886e23cb))
+
+
+### Features
+
+* lambda dotnet 8 support ([#14026](https://github.com/aws-amplify/amplify-cli/issues/14026)) ([540bfe1](https://github.com/aws-amplify/amplify-cli/commit/540bfe1187907609c3c813e1208c12b6a2a6ac6c))
+
+
+
+
+
+## [4.10.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.10.0...amplify-e2e-tests@4.10.1) (2024-11-18)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 # [4.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.11...amplify-e2e-tests@4.10.0) (2024-10-05)
 
 

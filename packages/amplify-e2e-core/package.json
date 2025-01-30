@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-e2e-core",
-  "version": "5.6.0",
+  "version": "5.7.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -23,8 +23,8 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.3.10",
-    "@aws-sdk/client-sts": "^3.303.0",
-    "@aws-sdk/credential-providers": "^3.303.0",
+    "@aws-sdk/client-sts": "3.624.0",
+    "@aws-sdk/credential-providers": "3.624.0",
     "amplify-headless-interface": "1.17.7",
     "aws-amplify": "^5.3.16",
     "aws-appsync": "^4.1.1",

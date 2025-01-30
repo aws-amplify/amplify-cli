@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-predictions",
-  "version": "5.5.15",
+  "version": "5.5.16",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@aws-sdk/client-rekognition": "^3.303.0"
+    "@aws-sdk/client-rekognition": "3.624.0"
   },
   "berry": {
     "plugins": [
