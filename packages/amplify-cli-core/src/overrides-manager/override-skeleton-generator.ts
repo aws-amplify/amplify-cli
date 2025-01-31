@@ -93,7 +93,17 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
     const tsConfigSampleFilePath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.resource.json');
     fs.writeFileSync(tsConfigDestFilePath, fs.readFileSync(tsConfigSampleFilePath));
 
-    execa.sync(packageManager.executable, [`run`, `build`, `--project`, `${tsConfigDestFilePath}`], {
+    // get locally installed tsc executable
+
+    const localTscExecutablePath = path.join(cwd, 'node_modules', '.bin', 'tsc');
+
+    if (!fs.existsSync(localTscExecutablePath)) {
+      throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
+        message: 'TypeScript executable not found.',
+        resolution: 'Please add it as a dev-dependency in the package.json file for this resource.',
+      });
+    }
+    execa.sync(localTscExecutablePath, [`--project`, `${tsConfigDestFilePath}`], {
       cwd: tsConfigDir,
       stdio: 'pipe',
       encoding: 'utf-8',
