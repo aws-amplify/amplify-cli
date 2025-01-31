@@ -4,23 +4,19 @@ import {
   initJSProjectWithProfile,
   addApiWithoutSchema,
   updateApiSchema,
-  updateApiWithMultiAuth,
   createNewProjectDir,
   deleteProjectDir,
   getAppSyncApi,
   getProjectMeta,
-  getTransformConfig,
   getDDBTable,
   addFunction,
   getBackendAmplifyMeta,
   amplifyPushUpdateForDependentModel,
   amplifyPushForce,
-  createRandomName,
   generateRandomShortId,
 } from '@aws-amplify/amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
-import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;

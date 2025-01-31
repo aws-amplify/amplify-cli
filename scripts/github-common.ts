@@ -5,7 +5,7 @@ import * as path from 'path';
 /**
  * Some constants and utils shared by github-prerelease and github-release
  */
-const owner = 'aws-amplify';
+const owner = process.env.GITHUB_REPO_OWNER ?? 'aws-amplify';
 const repo = 'amplify-cli';
 const apiTemplate = (subdomain: string) => `${subdomain}.github.com/repos/${owner}/${repo}/releases`;
 const API_URL = apiTemplate('api');

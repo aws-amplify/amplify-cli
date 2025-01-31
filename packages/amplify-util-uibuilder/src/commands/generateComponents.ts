@@ -1,5 +1,4 @@
 /* eslint-disable spellcheck/spell-checker */
-import { StudioSchema } from '@aws-amplify/codegen-ui';
 import ora from 'ora';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
@@ -7,18 +6,19 @@ import { AmplifyStudioClient } from '../clients';
 import {
   notifyMissingPackages,
   shouldRenderComponents,
-  generateUiBuilderComponents,
-  generateUiBuilderThemes,
   getAmplifyDataSchema,
-  generateAmplifyUiBuilderIndexFile,
-  generateUiBuilderForms,
-  generateAmplifyUiBuilderUtilFile,
-  isStudioForm,
   isFormDetachedFromModel,
   deleteDetachedForms,
   hasStorageField,
-  isFormSchema,
+  mapGenericDataSchemaToCodegen,
+  waitForSucceededJob,
+  extractUIComponents,
+  parsePackageJsonFile,
+  getStartCodegenJobDependencies,
 } from './utils';
+import { getUiBuilderComponentsPath } from './utils/getUiBuilderComponentsPath';
+import { AmplifyUIBuilder } from 'aws-sdk';
+import { getApiConfiguration, hasDataStoreConfiguration, hasGraphQLConfiguration } from './utils/getApiConfiguration';
 
 /**
  * Pulls ui components from Studio backend and generates the code in the user's file system
@@ -37,70 +37,72 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       studioClient.isGraphQLSupported ? getAmplifyDataSchema(context) : Promise.resolve(undefined),
     ]);
 
-    const nothingWouldAutogenerate =
-      !dataSchema || !studioClient.metadata.autoGenerateForms || !studioClient.isGraphQLSupported || !studioClient.isDataStoreEnabled;
+    const canGenerateDataComponents = dataSchema && studioClient.isGraphQLSupported;
 
-    if (nothingWouldAutogenerate && [componentSchemas, themeSchemas, formSchemas].every((group) => !group.entities.length)) {
+    const apiConfiguration: AmplifyUIBuilder.ApiConfiguration = canGenerateDataComponents
+      ? getApiConfiguration(studioClient, context)
+      : { noApiConfig: {} };
+    const hasDataAPI = hasDataStoreConfiguration(apiConfiguration) || hasGraphQLConfiguration(apiConfiguration);
+    const willAutogenerateItems = canGenerateDataComponents && studioClient.metadata.autoGenerateForms && hasDataAPI;
+
+    if (!willAutogenerateItems && [componentSchemas, themeSchemas, formSchemas].every((group) => !group.entities.length)) {
       printer.debug('Skipping UI component generation since none are found.');
       return;
     }
     spinner.start('Generating UI components...');
 
-    const generatedResults = {
-      component: generateUiBuilderComponents(context, componentSchemas.entities, dataSchema),
-      theme: generateUiBuilderThemes(context, themeSchemas.entities),
-      form: generateUiBuilderForms(
-        context,
-        formSchemas.entities,
-        dataSchema,
-        studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && studioClient.isDataStoreEnabled,
-        studioClient.metadata.formFeatureFlags,
-      ),
-    };
+    const genericDataSchema = dataSchema ? mapGenericDataSchemaToCodegen(dataSchema) : undefined;
 
-    const successfulSchemas: StudioSchema[] = [];
+    const packageJsonFile = parsePackageJsonFile(context);
+    let startCodegenJobDependencies: { [key: string]: string } = {};
+    if (packageJsonFile) {
+      startCodegenJobDependencies = getStartCodegenJobDependencies(packageJsonFile);
+    }
+    const job: AmplifyUIBuilder.StartCodegenJobData = {
+      renderConfig: {
+        react: {
+          module: 'es2020',
+          target: 'es2020',
+          script: 'jsx',
+          renderTypeDeclarations: true,
+          apiConfiguration,
+          dependencies: startCodegenJobDependencies,
+        } as AmplifyUIBuilder.ReactStartCodegenJobData,
+      },
+      autoGenerateForms: studioClient.metadata.autoGenerateForms && studioClient.isGraphQLSupported && hasDataAPI,
+      features: studioClient.metadata.formFeatureFlags,
+    };
+    // SDK will throw if this is undefined
+    // even though it's optional
+    if (genericDataSchema) {
+      job.genericDataSchema = genericDataSchema;
+    }
+    const jobId = await studioClient.startCodegenJob(job);
+    const finishedJob = await waitForSucceededJob(() => studioClient.getCodegenJob(jobId), { pollInterval: 2000 });
+    if (!finishedJob.asset?.downloadUrl) {
+      throw new Error('No manifest file in codegen job');
+    }
+    const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
+    await extractUIComponents(finishedJob.asset.downloadUrl, uiBuilderComponentsPath);
+
     const detachedForms: { id: string; name: string }[] = [];
-    let hasSuccessfulForm = false;
     const failedResponseNames: string[] = [];
     const modelNames = dataSchema?.models ? new Set(Object.keys(dataSchema.models)) : new Set<string>();
-    let hasStorageManagerField = false;
+    const hasStorageManagerField = formSchemas.entities.some((formSchema) => hasStorageField(formSchema));
 
-    Object.entries(generatedResults).forEach(([key, results]) => {
-      results.forEach((result) => {
-        if (result.resultType === 'SUCCESS') {
-          successfulSchemas.push(result.schema);
-          if (key === 'form') {
-            hasSuccessfulForm = true;
-
-            if (!hasStorageManagerField && isFormSchema(result.schema) && hasStorageField(result.schema)) {
-              hasStorageManagerField = true;
-            }
-          }
-        } else {
-          const failedSchema = result.schema;
-          /**
-           * A form resource may fail to generate because it's DataStore model type
-           * no longer exists.
-           */
-          if (
-            isStudioForm(failedSchema) &&
-            failedSchema.id &&
-            dataSchema &&
-            eventType === 'PostPush' &&
-            isFormDetachedFromModel(failedSchema, modelNames)
-          ) {
-            // Don't need to add form to failedResponseNames if it is going to be deleted
-            detachedForms.push({ id: failedSchema.id, name: failedSchema.name });
-            return;
-          }
-          failedResponseNames.push(result.schemaName);
-        }
+    if (dataSchema && eventType === 'PostPush') {
+      formSchemas.entities.forEach((formSchema) => {
+        isFormDetachedFromModel(formSchema, modelNames) && detachedForms.push({ id: formSchema.id, name: formSchema.name });
       });
-    });
+    }
 
-    generateAmplifyUiBuilderIndexFile(context, successfulSchemas);
-
-    generateAmplifyUiBuilderUtilFile(context, { hasForms: hasSuccessfulForm, hasViews: false });
+    if (finishedJob.statusMessage) {
+      const errorStack = JSON.parse(finishedJob.statusMessage)?.codegenErrors as {
+        schemaName: string;
+        error: string;
+      }[];
+      errorStack.forEach((e) => failedResponseNames.push(e.schemaName));
+    }
 
     if (failedResponseNames.length > 0) {
       spinner.fail(`Failed to sync the following components: ${failedResponseNames.join(', ')}`);
@@ -112,6 +114,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       ...componentSchemas.entities.filter((component) => !component.schemaVersion).map((component) => component.name),
       ...formSchemas.entities.filter((form) => !form.schemaVersion).map((form) => form.name),
     ];
+
     if (invalidComponentNames.length) {
       printer.warn(
         `The components ${invalidComponentNames.join(
@@ -120,7 +123,7 @@ export const run = async (context: $TSContext, eventType: 'PostPush' | 'PostPull
       );
     }
 
-    notifyMissingPackages(context, hasStorageManagerField);
+    notifyMissingPackages(context, hasStorageManagerField, finishedJob.dependencies);
 
     await deleteDetachedForms(detachedForms, studioClient);
   } catch (e) {

@@ -4,11 +4,11 @@ This packages contains migration tests that are run in CircleCI to ensure that c
 
 ## Setup
 
-To run the tests locally, you need to have your AWS credentials stored in a `.env` file of this package. These values are used to configure the test projects.
+To run the tests locally, you need to have your personal AWS credentials stored in a `.env` file of this package. These values are used to configure the test projects.
 
-Please see sample.env for the keys that are expected in your `.env` file.
+Please see sample.env for the keys that are expected in your `.env` file. Or, for internal engineers, you can copy "Copy bash/zsh" directly from your personal account, and paste it in the terminal.
 
-The `.env` file does not get commited as its in the `.gitignore` file.
+The `.env` file does not get committed as its in the `.gitignore` file.
 
 # Verbose logging
 
@@ -26,19 +26,20 @@ but a native installation overrides an npm installation on your PATH
 
 ## Running individual tests
 
-Amplify Migration tests use Jest. So all the standard Jest comnmads work.
+Amplify Migration tests use Jest. So all the standard Jest commands work.
 You can run a single test while adding a new test by running
 
 ```bash
-cd <amplif-cli-root>/packages/amplify-migration-tests/__tests__/
-yarn migration update_tests/function_migration_update.test.ts
+cd <amplif-cli-root>/packages/amplify-migration-tests
+yarn migration_v<VERSION>  src/__tests__/migration_tests_v<VERSION>/scaffold.test.ts
+# e.g. `yarn migration_v10.5.1 src/__tests__/migration_tests_v10/scaffold.test.ts`
 ```
 
 The exact command is different for some tests. See `package.json` for all of the variations of the `migration` script.
 
 ## Writing a new integration test
 
-E2E tests internally use [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfileV4_52_0 is a helper method that is used in `init`tests and also used in all the other tests to initalize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using`aws-sdk` to make assert the resource configuration.
+E2E tests internally use [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfileV4_52_0 is a helper method that is used in `init`tests and also used in all the other tests to initialize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using`aws-sdk` to make assert the resource configuration.
 
 ```typescript
 import { initJSProjectWithProfileV4_52_0, deleteProject, amplifyPush } from '../init';

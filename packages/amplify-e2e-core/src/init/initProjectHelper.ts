@@ -27,6 +27,8 @@ const defaultSettings = {
   providerConfig: undefined,
   permissionsBoundaryArn: undefined,
   includeUsageDataPrompt: true,
+  includeGen2RecommendationPrompt: true,
+  testingWithLatestCodebase: false,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
@@ -53,12 +55,22 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
-  const chain = spawn(getCLIPath(), cliArgs, {
+  const chain = spawn(getCLIPath(s.testingWithLatestCodebase), cliArgs, {
     cwd,
     stripColors: true,
     env,
     disableCIDetection: s.disableCIDetection,
-  })
+  });
+
+  if (s.includeGen2RecommendationPrompt) {
+    chain
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn();
+  }
+
+  chain
     .wait('Enter a name for the project')
     .sendLine(s.name)
     .wait('Initialize the project with the above configuration?')
@@ -90,7 +102,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   }
 
   if (s.includeUsageDataPrompt) {
-    chain.wait('Help improve Amplify CLI by sharing non sensitive configurations on failures').sendYes();
+    chain.wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/).sendYes();
   }
   return chain.wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/).runAsync();
 }
@@ -114,6 +126,10 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       stripColors: true,
       env,
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -130,7 +146,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Partial<typ
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -170,6 +186,10 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       stripColors: true,
       env,
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -184,7 +204,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -199,6 +219,40 @@ export function initIosProjectWithProfile(cwd: string, settings: Record<string, 
   });
 }
 
+export function initIosProjectWithXcode(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['init'], {
+    cwd,
+    stripColors: true,
+  })
+    .wait('Do you want to continue with Amplify Gen 1?')
+    .sendYes()
+    .wait('Why would you like to use Amplify Gen 1?')
+    .sendCarriageReturn()
+    .wait('Enter a name for the project')
+    .sendCarriageReturn()
+    .wait('Initialize the project with the above configuration?')
+    .sendConfirmNo()
+    .wait('Enter a name for the environment')
+    .sendLine(defaultSettings.envName)
+    .wait('Choose your default editor:')
+    .sendKeyDown(2)
+    .sendCarriageReturn()
+    .wait("Choose the type of app that you're building")
+    .sendLine('ios')
+    .wait('Select the authentication method you want to use:')
+    .sendCarriageReturn()
+    .wait('Please choose the profile you want to use')
+    .sendLine(defaultSettings.profileName)
+    .wait(/Help improve Amplify CLI by sharing non( |-)sensitive( | project )configurations on failures/)
+    .sendYes()
+    .wait('Updating Xcode project:')
+    .wait('Amplify project found.')
+    .wait('Amplify config files found.')
+    .wait('Successfully updated project')
+    .wait('Amplify setup completed successfully.')
+    .runAsync();
+}
+
 export function initFlutterProjectWithProfile(cwd: string, settings: Record<string, unknown>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
@@ -206,6 +260,10 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -226,7 +284,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Record<stri
 
     singleSelect(chain, s.region, amplifyRegions);
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -255,6 +313,10 @@ export function initProjectWithAccessKey(
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -289,7 +351,7 @@ export function initProjectWithAccessKey(
 
     singleSelect(chain, s.region, amplifyRegions);
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
@@ -482,6 +544,16 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
   });
 }
 
-export function initHeadless(cwd: string, envName: string, appId: string): Promise<void> {
-  return spawn(getCLIPath(), ['init', '--yes', '--envName', envName, '--appId', appId], { cwd, stripColors: true }).runAsync();
+export function initHeadless(cwd: string, envName?: string, appId?: string): Promise<void> {
+  const cliArgs = ['init', '--yes'];
+
+  if (envName) {
+    cliArgs.push('--envName', envName);
+  }
+
+  if (appId) {
+    cliArgs.push('--appId', appId);
+  }
+
+  return spawn(getCLIPath(), cliArgs, { cwd, stripColors: true }).runAsync();
 }

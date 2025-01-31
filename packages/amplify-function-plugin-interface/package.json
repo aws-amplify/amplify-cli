@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-function-plugin-interface",
-  "version": "1.10.2",
+  "version": "1.12.1",
   "description": "Interface for plugins that provide additional functionality to function category plugins",
   "repository": {
     "type": "git",

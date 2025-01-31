@@ -46,7 +46,7 @@ describe('amplify auth with trigger', () => {
     expect(userPool.UserPool.LambdaConfig.DefineAuthChallenge).toBeDefined();
     expect(userPool.UserPool.LambdaConfig.VerifyAuthChallengeResponse).toBeDefined();
 
-    await updateAuthChangeToUserPoolOnlyAndSetCodeMessages(projRoot, {});
+    await updateAuthChangeToUserPoolOnlyAndSetCodeMessages(projRoot);
 
     await amplifyPushAuth(projRoot);
 
@@ -64,7 +64,7 @@ describe('amplify auth with trigger', () => {
     expect(userPool.UserPool.LambdaConfig.VerifyAuthChallengeResponse).toBeDefined();
   });
 
-  const updateAuthChangeToUserPoolOnlyAndSetCodeMessages = async (cwd: string, settings: any): Promise<void> => {
+  const updateAuthChangeToUserPoolOnlyAndSetCodeMessages = async (cwd: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
 

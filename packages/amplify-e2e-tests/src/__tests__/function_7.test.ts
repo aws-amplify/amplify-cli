@@ -16,7 +16,7 @@ import {
   setCategoryParameters,
   updateFunction,
 } from '@aws-amplify/amplify-e2e-core';
-import { addEnvironmentYes, removeEnvironment } from '../environment/env';
+import { addEnvironmentYes, checkoutEnvironment, removeEnvironment } from '../environment/env';
 
 describe('function secret value', () => {
   let projRoot: string;
@@ -278,6 +278,60 @@ describe('function secret value', () => {
 
     // check that old value is removed and new one is added
     await expectParams([{ name: 'A_NEW_SECRET', value: 'anewtestsecretvalue' }], ['TEST_SECRET'], region, appId, 'integtest', funcName);
+  });
+
+  it('keeps old secrets when pushing secrets added in another env', async () => {
+    // add func w/ secret
+    const envName = 'enva';
+    await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
+    const funcName = `secretsTest${generateRandomShortId()}`;
+    const funcSecretName = 'TEST_SECRET';
+    await addFunction(
+      projRoot,
+      {
+        functionTemplate: 'Hello World',
+        name: funcName,
+        secretsConfig: {
+          operation: 'add',
+          name: funcSecretName,
+          value: 'testsecretvalue',
+        },
+      },
+      'nodejs',
+    );
+
+    await amplifyPushAuth(projRoot);
+
+    // add new env and add new secret to func
+    await addEnvironmentYes(projRoot, { envName: 'envb' });
+    await amplifyPushAuth(projRoot);
+    const newFuncSecretName = 'NEW_TEST_SECRET';
+    await updateFunction(
+      projRoot,
+      {
+        secretsConfig: {
+          operation: 'add',
+          name: newFuncSecretName,
+          value: 'testsecretvalue',
+        },
+      },
+      'nodejs',
+    );
+
+    // push updated func w/ new secret
+    await amplifyPushAuth(projRoot);
+
+    await checkoutEnvironment(projRoot, { envName });
+
+    // check contents of function-parameters.json for new secret
+    const expectedFuncSecrets = [funcSecretName, newFuncSecretName];
+    const funcParams = getCategoryParameters(projRoot, 'function', funcName);
+    expect(funcParams.secretNames).toEqual(expectedFuncSecrets);
+
+    // push with original env and assert all secrets are in function-parameters.json
+    await amplifyPushMissingFuncSecret(projRoot, 'anewtestsecretvalue');
+    const funcParamsPostPush = getCategoryParameters(projRoot, 'function', funcName);
+    expect(funcParamsPostPush.secretNames).toEqual(expectedFuncSecrets);
   });
 });
 

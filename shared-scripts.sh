@@ -40,7 +40,7 @@ function loadCache {
     # create directory if it doesn't exist yet
     mkdir -p $localPath
     # check if cache exists in s3
-    if ! aws s3 ls $s3Path > /dev/null; then
+    if ! aws s3 ls $s3Path >/dev/null; then
         echo "Cache not found."
         exit 0
     fi
@@ -57,7 +57,7 @@ function loadCacheFile {
     s3Path="s3://$CACHE_BUCKET_NAME/$CODEBUILD_SOURCE_VERSION/$alias"
     echo loading cache file from $s3Path
     # check if cache file exists in s3
-    if ! aws s3 ls $s3Path > /dev/null; then
+    if ! aws s3 ls $s3Path >/dev/null; then
         echo "Cache file not found."
         exit 0
     fi
@@ -82,14 +82,21 @@ function _loadTestAccountCredentials {
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
 
-
-
+# Installs and caches dependencies
+# Use this in workflows that do not require building from CLI sources
+function _installAndCacheDependencies {
+    echo Install Dependencies
+    yarn --immutable
+    storeCache $CODEBUILD_SRC_DIR repo
+    storeCache $HOME/.cache .cache
+}
 
 function _buildLinux {
     echo Linux Build
     yarn --immutable
     yarn production-build
     yarn build-tests
+    ./.circleci/cb-publish-step-1-set-versions.sh
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
@@ -102,6 +109,17 @@ function _testLinux {
     yarn test-ci
     # echo collecting coverage
     # yarn coverage
+}
+function _validateRollbackTargetVersion {
+    echo Validate Rollback Target Version
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+        echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+        exit 1
+    fi
+    yarn ts-node scripts/verify-deployment.ts -v $ROLLBACK_TARGET_VERSION
 }
 function _validateCDKVersion {
     echo Validate CDK Version
@@ -116,6 +134,8 @@ function _lint {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
+    export NODE_OPTIONS=--max-old-space-size=8096
+
     yarn lint-check
     yarn lint-check-package-json
     yarn prettier-check
@@ -125,7 +145,41 @@ function _verifyAPIExtract {
     # download [repo, .cache from s3]
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
+    unset IS_AMPLIFY_CI
     yarn verify-api-extract
+}
+function _verifyGeneratedE2EWorkflow {
+    echo "Verify Generated E2E Workflow"
+    # download [repo, .cache from s3]
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache .cache $HOME/.cache
+
+    # backup current file and remove regions, they are not deterministic
+    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" >codebuild_specs/e2e_workflow_generated.yml.old.trimmed
+
+    # regenerate e2e workflow
+    yarn split-e2e-tests-codebuild
+
+    # remove regions from generated file, they are not deterministic
+    cat codebuild_specs/e2e_workflow_generated.yml | grep -v "CLI_REGION:" >codebuild_specs/e2e_workflow_generated.yml.trimmed
+
+    changed_lines_in_e2e_workflow_generated=$(diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed | wc -l)
+
+    if [[ changed_lines_in_e2e_workflow_generated -gt 0 ]]; then
+        echo "Fail! An uncommitted drift in E2E workflow has been detected - e2e_workflow_generated.yml. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
+        diff codebuild_specs/e2e_workflow_generated.yml.old.trimmed codebuild_specs/e2e_workflow_generated.yml.trimmed
+        exit 1
+    fi
+
+    # check if wait_for_ids.json changed.
+    changed_wait_for_ids_manifest=$(git status | grep -F wait_for_ids.json | wc -l)
+
+    if [[ changed_wait_for_ids_manifest -gt 0 ]]; then
+        echo "Fail! An uncommitted drift in E2E workflow has been detected - wait_for_ids.json. Please run 'yarn split-e2e-tests-codebuild' and commit the result."
+        exit 1
+    fi
+
+    echo "Success! No drift detected in E2E workflow."
 }
 function _verifyYarnLock {
     echo "Verify Yarn Lock"
@@ -140,8 +194,8 @@ function _verifyVersionsMatch {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     checkPackageVersionsInLocalNpmRegistry
@@ -151,9 +205,12 @@ function _mockE2ETests {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
-    source .circleci/local_publish_helpers.sh
+    # make repo directory accessible to codebuild-user
+    chown -R codebuild-user .
+    source .circleci/local_publish_helpers_codebuild.sh
     cd packages/amplify-util-mock/
-    yarn e2e
+    # run mock e2e tests as codebuild-user, root can't run open search
+    sudo -u codebuild-user bash -c 'export NODE_OPTIONS=--max-old-space-size=4096 && yarn e2e'
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
@@ -161,23 +218,22 @@ function _publishToLocalRegistry {
     loadCache repo $CODEBUILD_SRC_DIR
     loadCache .cache $HOME/.cache
 
-    source ./.circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source ./.circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
-    export LOCAL_PUBLISH_TO_LATEST=true
-    ./.circleci/publish-codebuild.sh
+    ./.circleci/cb-publish-step-2-verdaccio.sh
     unsetNpmRegistryUrl
 
     echo Generate Change Log
     # Leaving this breadcrumb here "git reset --soft HEAD~1"
-    # we commented this out because the publish script is now checking out the current branch, and this started to fail as a result
+    # we commented this out previously because the publish script is now checking out the current branch, and this started to fail as a result
     # if we run into problems in the future, we should revisit this
-    # git reset --soft HEAD~1
+    git reset --soft HEAD~1
     yarn ts-node scripts/unified-changelog.ts
     cat UNIFIED_CHANGELOG.md
-    
+
     echo Save new amplify Github tag
-    node scripts/echo-current-cli-version.js > .amplify-pkg-version
-    
+    node scripts/echo-current-cli-version.js >.amplify-pkg-version
+
     echo LS HOME
     ls $CODEBUILD_SRC_DIR/..
 
@@ -202,8 +258,8 @@ function _uploadPkgBinaries {
     echo Done loading binaries
     ls $CODEBUILD_SRC_DIR/out
 
-    # source .circleci/local_publish_helpers.sh
-    # uploadPkgCli
+    source .circleci/local_publish_helpers_codebuild.sh
+    uploadPkgCliCodeBuild
 
     storeCache $CODEBUILD_SRC_DIR/out all-binaries
 }
@@ -218,7 +274,7 @@ function _buildBinaries {
     loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
     loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
 
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     generatePkgCli $binaryType
@@ -232,13 +288,13 @@ function _install_packaged_cli_linux {
 
     cd $CODEBUILD_SRC_DIR/out
     ln -sf amplify-pkg-linux-x64 amplify
-    export PATH=$AMPLIFY_DIR:$PATH
+    export PATH=$AMPLIFY_DIR:$PATH:$CODEBUILD_SRC_DIR/node_modules/.bin/
     cd $CODEBUILD_SRC_DIR
 }
 function _convertCoverage {
     echo Convert Coverage
-    
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
 
@@ -251,8 +307,7 @@ function _convertCoverage {
 }
 # https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader
 function _uploadCoverageLinux {
-    if [ -z ${CODECOV_TOKEN+x} ]
-    then
+    if [ -z ${CODECOV_TOKEN+x} ]; then
         echo "CODECOV_TOKEN not set: No coverage will be uploaded."
     else
         curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
@@ -263,9 +318,10 @@ function _uploadCoverageLinux {
         shasum -a 256 -c codecov.SHA256SUM
 
         chmod +x codecov
-        ./codecov -t ${CODECOV_TOKEN} 
+        ./codecov -t ${CODECOV_TOKEN}
     fi
 }
+
 # END COVERAGE FUNCTIONS
 function _loadE2ECache {
     loadCache repo $CODEBUILD_SRC_DIR
@@ -280,9 +336,13 @@ function _runE2ETestsLinux {
     echo RUN E2E Tests Linux
     _loadE2ECache
     _install_packaged_cli_linux
+    # select region
+    export CLI_REGION=$(yarn ts-node ./scripts/select-region-for-e2e-test.ts)
+    echo "Test will run in $CLI_REGION"
     # verify installation
+    which amplify
     amplify version
-    source .circleci/local_publish_helpers.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
     amplify version
@@ -296,10 +356,28 @@ function _unassumeTestAccountCredentials {
     unset AWS_SECRET_ACCESS_KEY
     unset AWS_SESSION_TOKEN
 }
+function _runMigrationMultiEnvLayersTest {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers_codebuild.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn migration_v4.52.0_multienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationNonMultiEnvLayersTest {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers_codebuild.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    _loadTestAccountCredentials
+    retry yarn migration_v4.28.2_nonmultienv_layers --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
 function _runMigrationV8Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
@@ -310,13 +388,24 @@ function _runMigrationV8Test {
 function _runMigrationV10Test {
     echo RUN E2E Tests Linux
     _loadE2ECache
-    source .circleci/local_publish_helpers.sh
+    source .circleci/local_publish_helpers_codebuild.sh
     changeNpmGlobalPath
     cd packages/amplify-migration-tests
     unset IS_AMPLIFY_CI
     echo $IS_AMPLIFY_CI
     _loadTestAccountCredentials
     retry yarn run migration_v10.5.1 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
+}
+function _runMigrationV12Test {
+    echo RUN E2E Tests Linux
+    _loadE2ECache
+    source .circleci/local_publish_helpers_codebuild.sh
+    changeNpmGlobalPath
+    cd packages/amplify-migration-tests
+    unset IS_AMPLIFY_CI
+    echo $IS_AMPLIFY_CI
+    _loadTestAccountCredentials
+    retry yarn run migration_v12.0.3 --no-cache --maxWorkers=4 --forceExit $TEST_SUITE
 }
 
 function _scanArtifacts {
@@ -329,8 +418,8 @@ function _scanArtifacts {
 
 function _putCredsInProfile {
     mkdir -p ~/.aws
-    touch ~/.aws/config ~/.aws/credentials 
-    python3 codebuild_specs/sh-files/aws-configure-credentials.py
+    touch ~/.aws/config ~/.aws/credentials
+    ts-node scripts/aws-configure-credentials.ts
 }
 
 function _installIntegTestsDependencies {
@@ -346,7 +435,7 @@ function _integTestAmplifyInit {
     export REACTCONFIG="{\"SourceDir\":\"src\",\"DistributionDir\":\"build\",\"BuildCommand\":\"npm run-script build\",\"StartCommand\":\"npm run-script start\"}"
     export FRONTEND="{\"frontend\":\"javascript\",\"framework\":\"react\",\"config\":$REACTCONFIG}"
     export AMPLIFY_INIT_CONFIG="{\"projectName\":\"unauth\",\"envName\":\"integtest\",\"defaultEditor\":\"code\"}"
-    export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"    
+    export PROVIDERS="{\"awscloudformation\":$AWSCLOUDFORMATIONCONFIG}"
     amplify-dev init --amplify $AMPLIFY_INIT_CONFIG --frontend $FRONTEND --providers $PROVIDERS --yes
 }
 
@@ -390,7 +479,50 @@ function _runIntegApiTests {
     yarn cypress run --spec $(find . -type f -name 'api_spec*')
 }
 
+function _amplifySudoInstallTestSetup {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setSudoNpmRegistryUrlToLocal
+    changeSudoNpmGlobalPath
+    # sudo npm install -g @aws-amplify/cli
+    # unsetSudoNpmRegistryUrl
+    # amplify version
+}
+function _amplifyInstallTestSetup {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    # limit memory for new processes to 1GB
+    # this is to make sure that install can work on small VMs
+    # i.e. not buffer content in memory while installing binary
+    # ulimit -Sv 1000000
+    # npm install -g @aws-amplify/cli
+    # unsetNpmRegistryUrl
+    # amplify version
+}
+function _amplifyConsoleIntegrationTests {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    npm install -g @aws-amplify/cli
+    npm install -g amplify-app
+    unsetNpmRegistryUrl
+    export PATH=$CODEBUILD_SRC_DIR/../.npm-global/bin:$PATH
+    amplify -v
+    cd packages/amplify-console-integration-tests
+    _loadTestAccountCredentials
+    retry yarn console-integration --no-cache --maxWorkers=4 --forceExit
+}
 function _integrationTest {
+    npm install -g ts-node
+
     echo "Restoring Cache"
     loadCache repo $CODEBUILD_SRC_DIR
 
@@ -422,7 +554,7 @@ function _integrationTest {
     echo "Initializing new amplify project for auth"
     pwd
     _integTestAmplifyInit
-    
+
     echo "Adding auth and pushing"
     _addAndPushAuth
     echo "end push"
@@ -432,7 +564,8 @@ function _integrationTest {
 
     echo "running auth server in background"
     export NODE_OPTIONS=--openssl-legacy-provider
-    nohup yarn start > server_output.txt & disown $!
+    nohup yarn start >server_output.txt &
+    disown $!
     echo "Polling for server ready message"
     while ! grep -Fxq "You can now view aws-amplify-cypress-auth in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
     echo "server started"
@@ -451,7 +584,6 @@ function _integrationTest {
     chmod +x ../amplify-cli/codebuild_specs/sh-files/delete.sh
     expect ../amplify-cli/codebuild_specs/exp-files/delete.exp
     aws s3 rb "$DEPLOYMENT_BUCKET" --force
-
 
     echo "Clone API test package"
     cd .. && pwd
@@ -473,7 +605,8 @@ function _integrationTest {
 
     echo "running api server in background"
     export NODE_OPTIONS=--openssl-legacy-provider
-    nohup yarn start > server_output.txt & disown $!
+    nohup yarn start >server_output.txt &
+    disown $!
     echo "Polling for server ready message"
     while ! grep -Fxq "You can now view aws-amplify-cypress-api in the browser." server_output.txt; do echo "Waiting for server to start" && sleep 1; done
     echo "server started"
@@ -507,7 +640,7 @@ function _uploadReportsToS3 {
     source_version=$1
     build_identifier=$2
     test_package=$3
-    reports_dir=$CODEBUILD_SRC_DIR/packages/$test_package/reports/junit
+    reports_dir=packages/$test_package/reports/junit
     cd $reports_dir
     for filename in $(ls); do aws s3 cp "$filename" "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version/$build_identifier-$filename"; done
 }
@@ -521,4 +654,140 @@ function _downloadReportsFromS3 {
     aws s3 ls "s3://$AGGREGATED_REPORTS_BUCKET_NAME"
     aws s3 sync "s3://$AGGREGATED_REPORTS_BUCKET_NAME/$source_version" .
     for file in $(find . -mindepth 2 -type f); do mv $file ./$(dirname $file).xml; done #This line moves all files into the top level directory so that the reports can be consumed by CB
+}
+
+function _buildTestsStandalone {
+    echo "Running yarn install --immutable"
+    yarn install --immutable
+    echo "Running yarn build-tests"
+    yarn build-tests
+}
+
+function _waitForJobs {
+    file_path=$1
+    account_for_failures=$2
+    echo "file_path" $file_path
+    cd ./scripts
+    npm install -g ts-node
+    npm install aws-sdk
+    ts-node ./wait-for-all-codebuild.ts $CODEBUILD_RESOLVED_SOURCE_VERSION $file_path $PROJECT_NAME ${CODEBUILD_WEBHOOK_TRIGGER:-empty} $account_for_failures
+    cd ..
+}
+function _verifyPkgCLI {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache repo-out-arm $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-linux $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-macos $CODEBUILD_SRC_DIR/out
+    loadCache repo-out-win $CODEBUILD_SRC_DIR/out
+    source .circleci/local_publish_helpers_codebuild.sh && verifyPkgCli
+}
+function _githubPrerelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    loadCacheFile UNIFIED_CHANGELOG.md $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md
+    cd out
+    mv amplify-pkg-macos-x64 amplify-pkg-macos
+    mv amplify-pkg-linux-x64 amplify-pkg-linux
+    mv amplify-pkg-win-x64.exe amplify-pkg-win.exe
+    tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
+    tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
+    tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
+    cd $CODEBUILD_SRC_DIR
+    echo Publish Amplify CLI GitHub prerelease
+    commit=$(git rev-parse HEAD~1)
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/github-prerelease.ts $version $commit
+}
+function _githubPrereleaseInstallSanityCheck {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Install packaged Amplify CLI
+    version=$(cat .amplify-pkg-version)
+    curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash
+    export PATH=$PATH:$HOME/.amplify/bin
+    echo Sanity check install
+    amplify version
+}
+function _publishToNpm {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+
+    ./out/amplify-pkg-linux-x64 --version
+    echo Authenticate with npm
+    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" >~/.npmrc
+
+    source ./.circleci/cb-publish-step-3-npm.sh
+}
+function _rollbackNpm {
+    loadCache repo $CODEBUILD_SRC_DIR
+
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+        echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+        exit 1
+    fi
+
+    echo Authenticate with npm
+    echo "//registry.npmjs.org/:_authToken=$NPM_PUBLISH_TOKEN" >~/.npmrc
+
+    npm dist-tag add @aws-amplify/cli@$ROLLBACK_TARGET_VERSION "latest"
+}
+function _postPublishPushToGit {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    echo Push release commit and tags
+    source ./.circleci/cb-publish-step-4-push-to-git.sh
+}
+function _githubRelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCache all-binaries $CODEBUILD_SRC_DIR/out
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Publish Amplify CLI GitHub release
+    commit=$(git rev-parse HEAD~1)
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/github-release.ts $version $commit
+}
+function _githubRollback {
+    loadCache repo $CODEBUILD_SRC_DIR
+    echo Rollback Amplify CLI GitHub release
+    if [ -z "$ROLLBACK_TARGET_VERSION" ]; then
+        echo "Rollback target version is missing. Make sure CodeBuild workflow was started with ROLLBACK_TARGET_VERSION environment variable"
+        exit 1
+    fi
+    yarn ts-node scripts/github-rollback.ts $ROLLBACK_TARGET_VERSION
+}
+function _amplifyGeneralConfigTests {
+    _loadE2ECache
+    _install_packaged_cli_linux
+    amplify version
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    amplify version
+    cd packages/amplify-e2e-tests
+    _loadTestAccountCredentials
+    retry yarn general-config-e2e --no-cache --maxWorkers=3 --forceExit $TEST_SUITE
+}
+
+function _cleanUpResources {
+    _loadTestAccountCredentials
+    echo "Executing resource cleanup"
+    cd packages/amplify-e2e-tests
+    yarn install
+    ts-node ./src/cleanup-codebuild-resources.ts
+    _unassumeTestAccountCredentials
+}
+function _deploymentVerificationPostRelease {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Verify Release Deployment
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/verify-deployment.ts -v $version
+}
+function _deploymentVerificationRCOrTagged {
+    loadCache repo $CODEBUILD_SRC_DIR
+    loadCacheFile .amplify-pkg-version $CODEBUILD_SRC_DIR/.amplify-pkg-version
+    echo Verify Tagged or RC Deployment
+    version=$(cat .amplify-pkg-version)
+    yarn ts-node scripts/verify-deployment.ts --version $version --exclude-github
 }

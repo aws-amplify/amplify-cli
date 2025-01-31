@@ -19,7 +19,7 @@ export * from './init';
 export * from './utils';
 export * from './categories';
 export * from './export';
-export { addFeatureFlag } from './utils/feature-flags';
+export { addFeatureFlag, loadFeatureFlags } from './utils/feature-flags';
 export * from './cli-version-controller';
 
 declare global {

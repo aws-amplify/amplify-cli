@@ -1,10 +1,13 @@
 version: 0.2
 env:
   shell: bash
+  variables:
+    CI: true
+    CIRCLECI: true
+    IS_AMPLIFY_CI: true
 phases:
   build:
     commands:
-      - echo "integration testing"
       - source ./shared-scripts.sh && _integrationTest
 artifacts:
   files:

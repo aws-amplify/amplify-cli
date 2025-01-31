@@ -18,5 +18,5 @@ export const printAuthExistsWarning = (context: $TSContext): void => {
 };
 
 const checkAuthIsImported = (authResources: [string, $TSObject][]): boolean => {
-  return authResources.filter(([_, resource]) => resource?.serviceType === 'imported').length > 0;
+  return authResources.filter(([, resource]) => resource?.serviceType === 'imported').length > 0;
 };

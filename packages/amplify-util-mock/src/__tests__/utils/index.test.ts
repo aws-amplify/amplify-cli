@@ -1,7 +1,4 @@
-import { describe } from 'jest-circus';
 import { _isUnsupportedJavaVersion, checkJavaHome } from '../../utils';
-import semver = require('semver/preload');
-import * as fs from 'fs-extra';
 
 jest.mock('fs-extra', () => ({
   existsSync: jest.fn().mockReturnValue(true),

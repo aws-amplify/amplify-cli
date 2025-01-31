@@ -1,19 +1,21 @@
-import inquirer from 'inquirer';
+import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import {
   FunctionParameters,
-  FunctionTemplateCondition,
   FunctionRuntimeCondition,
-  FunctionRuntimeParameters,
-  FunctionTemplateParameters,
   FunctionRuntimeLifecycleManager,
+  FunctionRuntimeParameters,
+  FunctionTemplateCondition,
+  FunctionTemplateParameters,
   RuntimeContributionRequest,
   TemplateContributionRequest,
 } from '@aws-amplify/amplify-function-plugin-interface';
-import { ServiceName } from './constants';
+import { printer } from '@aws-amplify/amplify-prompts';
+import inquirer from 'inquirer';
 import _ from 'lodash';
-import { LayerParameters } from './layerParams';
-import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { categoryName } from '../../../constants';
+import { ServiceName } from './constants';
+import { LayerParameters } from './layerParams';
+
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
@@ -86,9 +88,7 @@ export async function runtimeWalkthrough(
     const plugin = await loadPluginFromFactory(selection.pluginPath, 'functionRuntimeContributorFactory', context);
     const depCheck = await (plugin as FunctionRuntimeLifecycleManager).checkDependencies(selection.value);
     if (!depCheck.hasRequiredDependencies) {
-      context.print.warning(
-        depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed',
-      );
+      printer.warn(depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed');
     }
     plugins.push(plugin);
   }
@@ -113,6 +113,7 @@ async function _functionRuntimeWalkthroughHelper(
     runtimes.push({
       ...contribution,
       runtimePluginId: selections[i].pluginId,
+      scripts: selections[i].scripts,
     });
   }
   return runtimes;
@@ -129,8 +130,8 @@ async function getSelectionsFromContributors<T>(
   // get providers from context
   const templateProviders = context.pluginPlatform.plugins[selectionOptions.pluginType];
   if (!templateProviders) {
-    context.print.error(selectionOptions.notFoundMessage);
-    context.print.error(notFoundSuffix);
+    printer.error(selectionOptions.notFoundMessage);
+    printer.error(notFoundSuffix);
     throw new Error('No plugins found for function configuration');
   }
 
@@ -154,8 +155,8 @@ async function getSelectionsFromContributors<T>(
   // sanity checks
   let selection;
   if (selections.length === 0) {
-    context.print.error(selectionOptions.notFoundMessage);
-    context.print.error(notFoundSuffix);
+    printer.error(selectionOptions.notFoundMessage);
+    printer.error(notFoundSuffix);
     throw new Error('Plugins found but no selections supplied for function configuration');
   } else if (selections.length === 1) {
     // quick hack to print custom messages for single selection options
@@ -165,7 +166,7 @@ async function getSelectionsFromContributors<T>(
     } else if (selectionOptions.listOptionsField === 'runtimes') {
       singleOptionMsg = `Only one runtime detected: ${selections[0].name}. Learn more about additional runtimes at https://docs.amplify.aws/cli/function`;
     }
-    context.print.info(singleOptionMsg);
+    printer.info(singleOptionMsg);
     selection = selections[0].value;
   } else if (isDefaultDefined(selectionOptions)) {
     selection = selectionOptions.defaultSelection;
@@ -187,7 +188,7 @@ async function getSelectionsFromContributors<T>(
     selection = [selection];
   }
 
-  return selection.map((s) => {
+  return selection.map((s: string) => {
     return {
       value: s,
       pluginPath: selectionMap.get(s).path,
@@ -244,6 +245,9 @@ interface PluginSelection {
   pluginPath: string;
   value: string;
   pluginId: string;
+  scripts?: {
+    build: string;
+  };
 }
 
 interface ListOption {

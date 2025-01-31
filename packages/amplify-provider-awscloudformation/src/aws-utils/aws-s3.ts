@@ -18,8 +18,8 @@ import { loadConfiguration } from '../configuration-manager';
 import aws from './aws';
 
 const providerName = require('../constants').ProviderName;
+const consumers = require('stream/consumers');
 
-const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 const { fileLogger } = require('../utils/aws-logger');
 
 const logger = fileLogger('aws-s3');
@@ -124,26 +124,32 @@ export class S3 {
     const { _Body, ...others } = augmentedS3Params;
     let uploadTask;
     try {
-      // eslint-disable-next-line no-unused-expressions
-      showSpinner && spinner.start('Uploading files.');
-      if (
-        (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
-        (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
-      ) {
-        logger('uploadFile.s3.upload', [others])();
-        uploadTask = this.s3.upload(augmentedS3Params);
+      if (showSpinner) {
+        spinner.start('Uploading files.');
+      }
+      logger('uploadFile.s3.upload', [others])();
+      const minChunkSize = 5 * 1024 * 1024; // 5 MB
+      if (augmentedS3Params.Body instanceof fs.ReadStream && fs.statSync(augmentedS3Params.Body.path).size <= minChunkSize) {
+        // Buffer small files to avoid memory leak.
+        // Previous implementation used s3.putObject for small uploads, but it didn't have retries, see https://github.com/aws-amplify/amplify-cli/pull/13493.
+        // On the other hand uploading small streams leads to memory leak, see https://github.com/aws/aws-sdk-js/issues/2552.
+        // Therefore, buffering small files ourselves seems to be middle ground between memory leak and loosing retries.
+        // Buffering small files brings back balance between leaking and non-leaking uploads that is matching
+        // the ratio from before https://github.com/aws-amplify/amplify-cli/pull/13493.
+        augmentedS3Params.Body = await consumers.buffer(augmentedS3Params.Body);
+      }
+      uploadTask = this.s3.upload(augmentedS3Params);
+      if (showSpinner) {
         uploadTask.on('httpUploadProgress', (max) => {
-          if (showSpinner) spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
+          spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
         });
-      } else {
-        logger('uploadFile.s3.putObject', [others])();
-        uploadTask = this.s3.putObject(augmentedS3Params);
       }
       await uploadTask.promise();
       return this.uploadState.s3Params.Bucket;
     } finally {
-      // eslint-disable-next-line no-unused-expressions
-      showSpinner && spinner.stop();
+      if (showSpinner) {
+        spinner.stop();
+      }
     }
   }
 

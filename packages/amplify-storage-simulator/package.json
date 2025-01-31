@@ -1,6 +1,6 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "1.9.0",
+  "version": "1.11.6",
   "description": "An S3 simulator to test S3 APIs",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "body-parser": "^1.19.2",
     "cors": "^2.8.5",
     "etag": "^1.8.1",
-    "express": "^4.17.3",
+    "express": "^4.21.2",
     "fs-extra": "^8.1.0",
     "glob": "^7.2.0",
     "object-to-xml": "^2.0.0",
@@ -44,7 +44,7 @@
     "@types/serve-static": "^1.13.3",
     "@types/uuid": "^8.3.1",
     "@types/xml": "^1.0.4",
-    "aws-sdk": "^2.1354.0"
+    "aws-sdk": "^2.1464.0"
   },
   "berry": {
     "plugins": [

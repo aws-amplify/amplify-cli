@@ -8,6 +8,15 @@ type AmplifyConfiguration = {
   region?: string;
 };
 
+type CommandFlags = 'usage-data-on' | 'usage-data-off' | 'share-project-config-on' | 'share-project-config-off';
+
+const commandFlagsReturnMessage: { [key in CommandFlags]: string } = {
+  'usage-data-on': 'Usage Data has been turned on',
+  'usage-data-off': 'Usage Data has been turned off',
+  'share-project-config-on': 'Share Project Config has been turned on',
+  'share-project-config-off': 'Share Project Config has been turned off',
+};
+
 const defaultSettings = {
   profileName: 'amplify-integ-test-user',
   region: 'us-east-2',
@@ -27,6 +36,7 @@ export const amplifyRegions = [
   'eu-central-1',
   'ap-northeast-1',
   'ap-northeast-2',
+  'ap-northeast-3',
   'ap-southeast-1',
   'ap-southeast-2',
   'ap-south-1',
@@ -41,42 +51,48 @@ const authenticationOptions = ['AWS profile', 'AWS access keys'];
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
 
-export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> {
-  const s = { ...defaultSettings, ...settings };
-  const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(s).includes(p));
-  if (missingParam.length) {
-    throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
+export function amplifyConfigure(cwd: string | null, settings: AmplifyConfiguration | CommandFlags | null): Promise<void> {
+  if (typeof settings === 'string') {
+    return spawn(getCLIPath(), ['configure', `--${settings}`], { cwd, stripColors: true })
+      .wait(commandFlagsReturnMessage[settings])
+      .runAsync();
+  } else {
+    const allSettings = { ...defaultSettings, ...settings };
+    const missingParam = MANDATORY_PARAMS.filter((p) => !Object.keys(allSettings).includes(p));
+    if (missingParam.length) {
+      throw new Error(`mandatory params ${missingParam.join(' ')} are missing`);
+    }
+
+    return new Promise((resolve, reject) => {
+      const chain = spawn(getCLIPath(), ['configure'], { cwd, stripColors: true })
+        .wait('Sign in to your AWS administrator account:')
+        .wait('Press Enter to continue')
+        .sendCarriageReturn()
+        .wait('Specify the AWS Region');
+
+      singleSelect(chain, allSettings.region, amplifyRegions);
+
+      chain
+        .wait('Press Enter to continue')
+        .sendCarriageReturn()
+        .wait('accessKeyId')
+        .pauseRecording()
+        .sendLine(allSettings.accessKeyId)
+        .wait('secretAccessKey')
+        .sendLine(allSettings.secretAccessKey)
+        .resumeRecording()
+        .wait('Profile Name:')
+        .sendLine(allSettings.profileName)
+        .wait('Successfully set up the new user.')
+        .run((err: Error) => {
+          if (!err) {
+            resolve();
+          } else {
+            reject(err);
+          }
+        });
+    });
   }
-
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['configure'], { stripColors: true })
-      .wait('Sign in to your AWS administrator account:')
-      .wait('Press Enter to continue')
-      .sendCarriageReturn()
-      .wait('Specify the AWS Region');
-
-    singleSelect(chain, s.region, amplifyRegions);
-
-    chain
-      .wait('Press Enter to continue')
-      .sendCarriageReturn()
-      .wait('accessKeyId')
-      .pauseRecording()
-      .sendLine(s.accessKeyId)
-      .wait('secretAccessKey')
-      .sendLine(s.secretAccessKey)
-      .resumeRecording()
-      .wait('Profile Name:')
-      .sendLine(s.profileName)
-      .wait('Successfully set up the new user.')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
 }
 
 export const amplifyConfigureBeforeOrAtV10_7 = (settings: AmplifyConfiguration): Promise<void> => {

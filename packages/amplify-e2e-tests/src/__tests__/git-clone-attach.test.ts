@@ -91,7 +91,7 @@ describe('attach amplify to git-cloned project', () => {
     const preCleanTpi = getTeamProviderInfo(projRoot);
     const importBucketRegion = (Object.values(preCleanTpi[envName].categories.storage)[0] as any).region;
     const appId = preCleanTpi[envName].awscloudformation.AmplifyAppId;
-    gitCleanFdx(projRoot);
+    await gitCleanFdx(projRoot);
 
     const socialProviders = getSocialProviders();
     const categoriesConfig = {
@@ -120,9 +120,8 @@ describe('attach amplify to git-cloned project', () => {
     expect(changedFiles).toMatchInlineSnapshot(`
       [
         ".gitignore",
-        "amplify/README.md",
       ]
-    `); // there is a .gitignore newline and the amplify/README.md file is modified after pull
+    `); // there is a .gitignore newline after pull
     expect(getTeamProviderInfo(projRoot)).toEqual(preCleanTpi);
   });
 });

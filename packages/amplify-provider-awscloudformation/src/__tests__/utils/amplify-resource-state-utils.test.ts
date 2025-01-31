@@ -2,7 +2,7 @@ import { getTableNames, getPreviousDeploymentRecord } from '../../utils/amplify-
 import { CloudFormation } from 'aws-sdk';
 
 const cfnClientStub = {
-  describeStackResources: ({ StackName }) => ({
+  describeStackResources: () => ({
     promise: () =>
       Promise.resolve({
         StackResources: [
@@ -13,7 +13,7 @@ const cfnClientStub = {
         ],
       }),
   }),
-  describeStacks: ({ StackName }) => ({
+  describeStacks: () => ({
     promise: () =>
       Promise.resolve({
         Stacks: [

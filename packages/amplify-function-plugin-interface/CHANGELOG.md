@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.12.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-function-plugin-interface@1.11.0...@aws-amplify/amplify-function-plugin-interface@1.12.1) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+# [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-function-plugin-interface@1.10.3...@aws-amplify/amplify-function-plugin-interface@1.12.0) (2023-11-08)
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+
+
+
+
+
+# [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-function-plugin-interface@1.10.3...@aws-amplify/amplify-function-plugin-interface@1.11.0) (2023-07-20)
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+
+
+
+
+
+## [1.10.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-function-plugin-interface@1.10.2...@aws-amplify/amplify-function-plugin-interface@1.10.3) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-function-plugin-interface
+
+
+
+
+
 ## [1.10.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-function-plugin-interface@1.10.0...@aws-amplify/amplify-function-plugin-interface@1.10.2) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-function-plugin-interface

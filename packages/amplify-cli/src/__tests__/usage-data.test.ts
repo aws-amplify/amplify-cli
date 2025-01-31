@@ -1,21 +1,29 @@
-import url from 'url';
 import nock from 'nock';
+import url from 'url';
 import * as uuid from 'uuid';
 
-import { UsageData } from '../domain/amplify-usageData/UsageData';
-import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
-import { AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { CLIInput as CommandLineInput } from '../domain/command-input';
-import { ManuallyTimedCodePath } from '@aws-amplify/amplify-cli-core';
-import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
-import { SerializableError } from '../domain/amplify-usageData/SerializableError';
+import { AmplifyError, ManuallyTimedCodePath } from '@aws-amplify/amplify-cli-core';
 import { ProjectSettings } from '@aws-amplify/amplify-cli-core/src/types';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { SerializableError } from '../domain/amplify-usageData/SerializableError';
+import { UsageData } from '../domain/amplify-usageData/UsageData';
+import { UsageDataPayload } from '../domain/amplify-usageData/UsageDataPayload';
+import { getUrl } from '../domain/amplify-usageData/getUsageDataUrl';
+import { CLIInput as CommandLineInput } from '../domain/command-input';
 
 const baseOriginalUrl = 'https://cli.amplify';
 const pathToUrl = '/metrics';
 const originalUrl = `${baseOriginalUrl}${pathToUrl}`;
 
+jest.mock('@aws-amplify/amplify-prompts');
+
 describe('test usageData', () => {
+  const printerMock = printer as jest.Mocked<typeof printer>;
+
+  beforeEach(() => {
+    printerMock.debug = jest.fn();
+  });
+
   beforeAll(() => {
     process.env = Object.assign(process.env, { AMPLIFY_CLI_BETA_USAGE_TRACKING_URL: originalUrl });
   });
@@ -174,12 +182,11 @@ describe('test usageData', () => {
     expect((UsageData.Instance as unknown as any).pushNormalizationFactor).toEqual(3);
   });
 
-  it('errors if starting a duplicate timer', () => {
+  it('should not error if starting a duplicate timer', () => {
     const usageData = UsageData.Instance;
     usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES);
-    expect(() => usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES)).toThrowErrorMatchingInlineSnapshot(
-      '"initEnvCategories already has a running timer"',
-    );
+    expect(() => usageData.startCodePathTimer(ManuallyTimedCodePath.INIT_ENV_CATEGORIES)).not.toThrowError();
+    expect(printerMock.debug).toBeCalledWith(`${ManuallyTimedCodePath.INIT_ENV_CATEGORIES} already has a running timer`);
   });
 
   it('does nothing when stopping a timer that is not running', () => {

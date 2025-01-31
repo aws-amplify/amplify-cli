@@ -28,7 +28,7 @@ export class AmplifySpinner {
    * Render function
    */
   private render(): void {
-    if (!this.terminal) {
+    if (!this.terminal || !this.terminal.isTTY()) {
       return;
     }
     if (this.timer) {
@@ -52,6 +52,9 @@ export class AmplifySpinner {
     if (!this.terminal) {
       this.terminal = new AmplifyTerminal();
     }
+    if (!this.terminal.isTTY()) {
+      return;
+    }
     this.prefixText = text ? text.replace('\n', '') : this.prefixText;
     this.terminal.cursor(false);
     this.render();
@@ -61,7 +64,7 @@ export class AmplifySpinner {
    * Reset spinner message
    */
   resetMessage(text: string | null): void {
-    if (!this.terminal) {
+    if (!this.terminal || !this.terminal.isTTY()) {
       this.start(text);
       return;
     }
@@ -75,16 +78,18 @@ export class AmplifySpinner {
     if (!this.terminal) {
       return;
     }
-    const lines: TerminalLine[] = [
-      {
-        renderString: text || '',
-        color: success ? 'green' : 'red',
-      },
-    ];
+    if (this.terminal.isTTY()) {
+      const lines: TerminalLine[] = [
+        {
+          renderString: text || '',
+          color: success ? 'green' : 'red',
+        },
+      ];
 
-    clearTimeout(this.timer);
-    this.terminal.writeLines(lines);
-    this.terminal.cursor(true);
+      clearTimeout(this.timer);
+      this.terminal.writeLines(lines);
+      this.terminal.cursor(true);
+    }
     this.terminal = null;
   }
 }

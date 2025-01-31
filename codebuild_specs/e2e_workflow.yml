@@ -26,73 +26,88 @@ batch:
         image: $WINDOWS_IMAGE_2019
     - identifier: test
       buildspec: codebuild_specs/test.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: lint
+      buildspec: codebuild_specs/lint.yml
+      depend-on:
+        - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: mock_e2e_tests
       buildspec: codebuild_specs/mock_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: validate_cdk_version
       buildspec: codebuild_specs/validate_cdk_version.yml
       depend-on:
         - build_linux
     - identifier: verify_api_extract
       buildspec: codebuild_specs/verify_api_extract.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_yarn_lock
       buildspec: codebuild_specs/verify_yarn_lock.yml
       depend-on:
         - build_linux
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_arm
       buildspec: codebuild_specs/build_pkg_binaries_arm.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_linux
       buildspec: codebuild_specs/build_pkg_binaries_linux.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_macos
       buildspec: codebuild_specs/build_pkg_binaries_macos.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
-    - identifier: upload_pkg_binaries
-      buildspec: codebuild_specs/upload_pkg_binaries.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+    - identifier: upb
+      buildspec: codebuild_specs/upload_pkg_binaries.yml
       depend-on:
         - build_pkg_binaries_arm
         - build_pkg_binaries_linux
         - build_pkg_binaries_macos
         - build_pkg_binaries_win
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
       depend-on:
         - publish_to_local_registry
+    - identifier: verify_pkg_cli
+      buildspec: codebuild_specs/verify_pkg_cli.yml
+      depend-on:
+        - build_pkg_binaries_arm
+        - build_pkg_binaries_linux
+        - build_pkg_binaries_macos
+        - build_pkg_binaries_win
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: run_e2e_tests_linux
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
@@ -102,7 +117,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts
       debug-session: true
       depend-on:
-        - upload_pkg_binaries
+        - upb
     - identifier: run_e2e_tests_linux_2
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
@@ -112,7 +127,7 @@ batch:
           TEST_SUITE: src/__tests__/auth_2f.test.ts
       debug-session: true
       depend-on:
-        - upload_pkg_binaries
+        - upb
     - identifier: run_coverage_linux
       buildspec: codebuild_specs/run_coverage_linux.yml
       env:
@@ -132,14 +147,31 @@ batch:
           TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts|src/__tests__/auth_2f.test.ts
       depend-on:
         - build_windows
-        - upload_pkg_binaries
+        - upb
     - identifier: integration_test
       buildspec: codebuild_specs/integration_test.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-      debug-session: true
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: amplify_sudo_install_test
+      buildspec: codebuild_specs/amplify_sudo_install_test.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - upb
+    - identifier: amplify_install_test
+      buildspec: codebuild_specs/amplify_install_test.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - upb
+    - identifier: amplify_console_integration_tests
+      buildspec: codebuild_specs/amplify_console_integration_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+      depend-on:
+        - upb
     - identifier: aggregate_e2e_reports
       buildspec: codebuild_specs/aggregate_e2e_reports.yml
       env:
@@ -148,4 +180,4 @@ batch:
           WAIT_FOR_IDS_FILE_PATH: ./codebuild_specs/wait_for_ids_local.json
       debug-session: true
       depend-on:
-        - upload_pkg_binaries
+        - upb

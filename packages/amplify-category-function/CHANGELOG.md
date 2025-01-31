@@ -3,6 +3,251 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.10...@aws-amplify/amplify-category-function@5.7.11) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.9...@aws-amplify/amplify-category-function@5.7.10) (2024-08-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.8...@aws-amplify/amplify-category-function@5.7.9) (2024-06-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.7...@aws-amplify/amplify-category-function@5.7.8) (2024-06-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.6...@aws-amplify/amplify-category-function@5.7.7) (2024-06-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.5...@aws-amplify/amplify-category-function@5.7.6) (2024-05-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.4...@aws-amplify/amplify-category-function@5.7.5) (2024-05-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.3...@aws-amplify/amplify-category-function@5.7.4) (2024-04-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.2...@aws-amplify/amplify-category-function@5.7.3) (2024-04-15)
+
+
+### Bug Fixes
+
+* upgrade Go runtime and fix e2e ([#13671](https://github.com/aws-amplify/amplify-cli/issues/13671)) ([395f717](https://github.com/aws-amplify/amplify-cli/commit/395f717cf52e7beef76f00ee08d37877138b0c30))
+
+
+
+
+
+## [5.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.1...@aws-amplify/amplify-category-function@5.7.2) (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.0...@aws-amplify/amplify-category-function@5.7.1) (2024-03-06)
+
+
+### Reverts
+
+* Revert "chore: bump data package versions (#13486)" (#13487) ([3280d40](https://github.com/aws-amplify/amplify-cli/commit/3280d40a5ab50c675b0e2b8050ad35a69c83cdc2)), closes [#13486](https://github.com/aws-amplify/amplify-cli/issues/13486) [#13487](https://github.com/aws-amplify/amplify-cli/issues/13487)
+
+
+
+
+
+# [5.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.4...@aws-amplify/amplify-category-function@5.7.0) (2023-12-11)
+
+
+### Features
+
+* bump data dependencies to launch RDS feature ([#13409](https://github.com/aws-amplify/amplify-cli/issues/13409)) ([7fbf29f](https://github.com/aws-amplify/amplify-cli/commit/7fbf29f56eb7335d20de0b5526fbed7795a2af09))
+
+
+
+
+
+## [5.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.2...@aws-amplify/amplify-category-function@5.6.4) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [5.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.2...@aws-amplify/amplify-category-function@5.6.3) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.1...@aws-amplify/amplify-category-function@5.6.2) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.6.0...@aws-amplify/amplify-category-function@5.6.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* add retained secrets to syncSecretDeltas ([#13300](https://github.com/aws-amplify/amplify-cli/issues/13300)) ([f3c9c05](https://github.com/aws-amplify/amplify-cli/commit/f3c9c05617b55560ac78f824cf71d4001cb5c58b))
+
+
+
+
+
+# [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.5.3...@aws-amplify/amplify-category-function@5.6.0) (2023-10-05)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [5.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.5.2...@aws-amplify/amplify-category-function@5.5.3) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.5.1...@aws-amplify/amplify-category-function@5.5.2) (2023-09-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.5.0...@aws-amplify/amplify-category-function@5.5.1) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+# [5.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.4.4...@aws-amplify/amplify-category-function@5.5.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+## [5.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.4.3...@aws-amplify/amplify-category-function@5.4.4) (2023-08-09)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.4.2...@aws-amplify/amplify-category-function@5.4.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.4.1...@aws-amplify/amplify-category-function@5.4.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.4.0...@aws-amplify/amplify-category-function@5.4.1) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.3.4...@aws-amplify/amplify-category-function@5.4.0) (2023-07-20)
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
+## [5.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.3.3...@aws-amplify/amplify-category-function@5.3.4) (2023-06-13)
+
+
+### Bug Fixes
+
+* functions e2e tests on windows ([#12745](https://github.com/aws-amplify/amplify-cli/issues/12745)) ([0de4529](https://github.com/aws-amplify/amplify-cli/commit/0de45299fbaafb090893f96c1884cdcff321f511))
+* throw message when adding lambda function with same name ([#12623](https://github.com/aws-amplify/amplify-cli/issues/12623)) ([0819db4](https://github.com/aws-amplify/amplify-cli/commit/0819db49c0f3b1057c0e5ca94d674f2dc1cc3d77))
+
+
+
+
+
 ## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.3.1...@aws-amplify/amplify-category-function@5.3.3) (2023-05-25)
 
 

@@ -34,11 +34,9 @@ const AWS_REGION = 'my-local-2';
 
 let APPSYNC_CLIENT_1: AWSAppSyncClient<any> = undefined;
 let APPSYNC_CLIENT_2: AWSAppSyncClient<any> = undefined;
-let APPSYNC_CLIENT_3: AWSAppSyncClient<any> = undefined;
 
 let GRAPHQL_CLIENT_1: GraphQLClient = undefined;
 let GRAPHQL_CLIENT_2: GraphQLClient = undefined;
-let GRAPHQL_CLIENT_3: GraphQLClient = undefined;
 
 const USER_POOL_ID = 'fake_user_pool';
 
@@ -148,7 +146,7 @@ beforeAll(async () => {
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
     // Configure Amplify, create users, and sign in.
-    const idToken1 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [INSTRUCTOR_GROUP_NAME, ADMIN_GROUP_NAME]);
+    const idToken1 = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [INSTRUCTOR_GROUP_NAME, ADMIN_GROUP_NAME]);
     APPSYNC_CLIENT_1 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -164,7 +162,7 @@ beforeAll(async () => {
     GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken1,
     });
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME]);
+    const idToken2 = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [INSTRUCTOR_GROUP_NAME, MEMBER_GROUP_NAME]);
     APPSYNC_CLIENT_2 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -180,8 +178,8 @@ beforeAll(async () => {
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
-    const idToken3 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME3, USERNAME3, []);
-    APPSYNC_CLIENT_3 = new AWSAppSyncClient({
+    const idToken3 = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME3, USERNAME3, []);
+    new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
       disableOffline: true,
@@ -193,7 +191,7 @@ beforeAll(async () => {
         jwtToken: idToken3,
       },
     });
-    GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, {
+    new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken3,
     });
 
@@ -237,8 +235,8 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     `,
   });
 
-  const subscriptionPromise = new Promise((resolve, _) => {
-    let subscription = observer.subscribe((event: any) => {
+  const subscriptionPromise = new Promise((resolve) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onCreateStudent;
       subscription.unsubscribe();
       expect(student.name).toEqual('student1');
@@ -261,7 +259,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
 
 test('Test a subscription on update', async () => {
   // susbcribe to update students as user 2
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnUpdateStudent {
@@ -275,7 +273,7 @@ test('Test a subscription on update', async () => {
         }
       `,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onUpdateStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student3ID);
@@ -309,7 +307,7 @@ test('Test a subscription on update', async () => {
 
 test('Test a subscription on delete', async () => {
   // subscribe to onDelete as user 2
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnDeleteStudent {
@@ -323,7 +321,7 @@ test('Test a subscription on delete', async () => {
         }
       `,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const student = event.data.onDeleteStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student4ID);
@@ -359,7 +357,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
   expect(result.errors[0].message === 'Unauthorized');
 
   // though they should see when a new member is created
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnCreateMember {
@@ -393,7 +391,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
   const memberID = '001';
   const memberName = 'newUsername';
 
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnUpdateMember {
@@ -427,7 +425,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
   const memberID = '001';
   const memberName = 'newUsername';
 
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
       query: gql`
         subscription OnDeleteMember {
@@ -459,7 +457,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
 
 // ownerField Tests
 test('Test subscription onCreatePost with ownerField', async () => {
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve) => {
     const observer = APPSYNC_CLIENT_1.subscribe({
       query: gql`
       subscription OnCreatePost {
@@ -470,7 +468,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
           }
       }`,
     });
-    let subscription = observer.subscribe((event: any) => {
+    const subscription = observer.subscribe((event: any) => {
       const post = event.data.onCreatePost;
       subscription.unsubscribe();
       expect(post.title).toEqual('someTitle');

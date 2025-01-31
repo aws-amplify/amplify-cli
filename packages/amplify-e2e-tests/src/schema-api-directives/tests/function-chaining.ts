@@ -1,8 +1,6 @@
-import { addApi, amplifyPush } from '@aws-amplify/amplify-e2e-core';
+import { addApi, amplifyPush, configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from '@aws-amplify/amplify-e2e-core';
 
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
-
-import { updateSchemaInTestProject, testQueries } from '../common';
+import { testQueries, updateSchemaInTestProject } from '../common';
 
 import { addSimpleFunction, updateFunctionNameInSchema } from '../functionTester';
 

@@ -5,7 +5,6 @@ import * as WebSocket from 'ws';
 import { Server as WebSocketServer, ServerOptions } from 'ws';
 import {
   GQLMessageConnectionAck,
-  GQLMessageConnectionInit,
   GQLMessageSubscriptionStart,
   GQLMessageSubscriptionStop,
   isSubscriptionConnectionInitMessage,

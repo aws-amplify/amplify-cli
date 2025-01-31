@@ -5,3 +5,6 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _lint
+artifacts:
+  files:
+    - 'shared-scripts.sh'

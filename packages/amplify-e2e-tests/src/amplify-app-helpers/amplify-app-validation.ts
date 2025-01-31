@@ -2,6 +2,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { AmplifyFrontend, pathManager } from '@aws-amplify/amplify-cli-core';
 
+const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+
 function validateProject(projRoot: string, platform: AmplifyFrontend) {
   expect(fs.existsSync(path.join(projRoot, 'amplify'))).toBe(true);
   expect(fs.existsSync(path.join(projRoot, '.gitignore'))).toBe(true);
@@ -46,7 +48,7 @@ function validateProjectConfig(projRoot: string, platform: AmplifyFrontend, fram
           break;
         case 'react':
           expect(config['javascript']['framework']).toBe('react');
-          expect(config['javascript']['config']['StartCommand']).toBe('npm run-script start');
+          expect(config['javascript']['config']['StartCommand']).toBe(`${npm} run-script start`);
           break;
         default:
           expect(false).toBe(true);

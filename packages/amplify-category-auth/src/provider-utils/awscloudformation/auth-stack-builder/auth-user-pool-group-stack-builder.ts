@@ -1,14 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import * as fs from 'fs-extra';
 import { Construct } from 'constructs';
-// eslint-disable-next-line import/no-cycle
-import { roleMapLambdaFilePath } from '../constants';
 // eslint-disable-next-line import/no-cycle
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 
@@ -31,9 +27,6 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   userPoolGroup: Record<string, CfnUserPoolGroup>;
   userPoolGroupRole: Record<string, iam.CfnRole>;
-  roleMapCustomResource?: cdk.CustomResource;
-  roleMapLambdaFunction?: lambda.CfnFunction;
-  lambdaExecutionRole?: iam.CfnRole;
 
   constructor(scope: Construct, id: string, props: AmplifyAuthCognitoStackProps) {
     super(scope, id, props);
@@ -192,117 +185,6 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
         }
       }
     });
-
-    if (props.identityPoolName) {
-      this.lambdaExecutionRole = new iam.CfnRole(this, 'LambdaExecutionRole', {
-        roleName: cdk.Fn.conditionIf(
-          'ShouldNotCreateEnvResources',
-          props.cognitoResourceName,
-          cdk.Fn.join('', [`${props.cognitoResourceName}-ExecutionRole-`, cdk.Fn.ref('env')]).toString(),
-        ).toString(),
-        assumeRolePolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Principal: {
-                Service: ['lambda.amazonaws.com'],
-              },
-              Action: ['sts:AssumeRole'],
-            },
-          ],
-        },
-        policies: [
-          {
-            policyName: 'UserGroupExecutionPolicy',
-            policyDocument: {
-              Version: '2012-10-17',
-              Statement: [
-                {
-                  Effect: 'Allow',
-                  Action: [
-                    'cognito-identity:SetIdentityPoolRoles',
-                    'cognito-identity:ListIdentityPools',
-                    'cognito-identity:describeIdentityPool',
-                  ],
-                  Resource: '*',
-                },
-              ],
-            },
-          },
-          {
-            policyName: 'UserGroupPassRolePolicy',
-            policyDocument: {
-              Version: '2012-10-17',
-              Statement: [
-                {
-                  Effect: 'Allow',
-                  Action: ['iam:PassRole'],
-                  Resource: [
-                    {
-                      Ref: 'AuthRoleArn',
-                    },
-                    {
-                      Ref: 'UnauthRoleArn',
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        ],
-      });
-      // lambda function for RoleMap Custom Resource
-      this.roleMapLambdaFunction = new lambda.CfnFunction(this, 'RoleMapFunction', {
-        code: {
-          zipFile: fs.readFileSync(roleMapLambdaFilePath, 'utf-8'),
-        },
-        handler: 'index.handler',
-        runtime: 'nodejs16.x',
-        timeout: 300,
-        role: cdk.Fn.getAtt('LambdaExecutionRole', 'Arn').toString(),
-      });
-
-      // eslint-disable-next-line no-new
-      new iam.CfnPolicy(this, 'LambdaCloudWatchPolicy', {
-        policyName: 'UserGroupLogPolicy',
-        roles: [this.lambdaExecutionRole.ref],
-        policyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-              Resource: {
-                'Fn::Sub': [
-                  'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaName}:log-stream:*',
-                  {
-                    lambdaName: this.roleMapLambdaFunction.ref,
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      });
-
-      // adding custom trigger roleMap function
-      this.roleMapCustomResource = new cdk.CustomResource(this, 'RoleMapFunctionInput', {
-        serviceToken: this.roleMapLambdaFunction.attrArn,
-        resourceType: 'Custom::LambdaCallout',
-        properties: {
-          AuthRoleArn: cdk.Fn.ref('AuthRoleArn'),
-          UnauthRoleArn: cdk.Fn.ref('UnauthRoleArn'),
-          identityPoolId: cdk.Fn.ref(getCfnParamsLogicalId(props.cognitoResourceName, 'IdentityPoolId')),
-          userPoolId: cdk.Fn.ref(getCfnParamsLogicalId(props.cognitoResourceName, 'UserPoolId')),
-          appClientIDWeb: cdk.Fn.ref(getCfnParamsLogicalId(props.cognitoResourceName, 'AppClientIDWeb')),
-          appClientID: cdk.Fn.ref(getCfnParamsLogicalId(props.cognitoResourceName, 'AppClientID')),
-          region: cdk.Fn.ref('AWS::Region'),
-          env: cdk.Fn.ref('env'),
-        },
-      });
-      this.roleMapCustomResource.node.addDependency(this.roleMapLambdaFunction);
-    }
   };
 }
 

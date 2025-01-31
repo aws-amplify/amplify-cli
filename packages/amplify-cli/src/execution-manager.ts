@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { prompter } from '@aws-amplify/amplify-prompts';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { scan, getPluginsWithNameAndCommand, getPluginsWithEventHandler } from './plugin-manager';
@@ -269,6 +269,9 @@ const raisePreExportEvent = async (context: Context): Promise<void> => {
 };
 
 const raisePreCodegenModelsEvent = async (context: Context): Promise<void> => {
+  if (shouldSkipCodegenModelsEvents(context, AmplifyEvent.PreCodegenModels)) {
+    return;
+  }
   await raiseEvent(context, { event: AmplifyEvent.PreCodegenModels, data: {} });
 };
 
@@ -309,7 +312,22 @@ const raisePostPullEvent = async (context: Context): Promise<void> => {
   await raiseEvent(context, { event: AmplifyEvent.PostPull, data: {} });
 };
 
+const shouldSkipCodegenModelsEvents = (context: Context, event: AmplifyEvent): boolean => {
+  const optionsIndicatingUninitializedModelgen = ['target', 'model-schema'];
+  const cliOptions = context?.parameters?.options ? new Set(Object.keys(context.parameters.options)) : new Set();
+  const skipEvents = optionsIndicatingUninitializedModelgen.every((option) => cliOptions.has(option));
+  if (skipEvents) {
+    printer.info(
+      `Skipping ${event} lifecycle event, due to presence of ${JSON.stringify(optionsIndicatingUninitializedModelgen)} in context options`,
+    );
+  }
+  return skipEvents;
+};
+
 const raisePostCodegenModelsEvent = async (context: Context): Promise<void> => {
+  if (shouldSkipCodegenModelsEvents(context, AmplifyEvent.PostCodegenModels)) {
+    return;
+  }
   await raiseEvent(context, { event: AmplifyEvent.PostCodegenModels, data: {} });
 };
 

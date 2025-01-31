@@ -1130,7 +1130,7 @@ export const importedAuthEnvInit = async (
   answers.appClientWeb = questionParameters.webClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.webClientId);
 
   if (!answers.appClientWeb) {
-    printer.error(importMessages.AppClientNotFound('Web', currentEnvSpecificParameters.webClientId));
+    printer.error(importMessages.AppClientNotFound('Web'));
 
     return {
       succeeded: false,
@@ -1140,7 +1140,7 @@ export const importedAuthEnvInit = async (
   answers.appClientNative = questionParameters.nativeClients!.find((c) => c.ClientId! === currentEnvSpecificParameters.nativeClientId);
 
   if (!answers.appClientNative) {
-    printer.error(importMessages.AppClientNotFound('Native', currentEnvSpecificParameters.nativeClientId));
+    printer.error(importMessages.AppClientNotFound('Native'));
 
     return {
       succeeded: false,
@@ -1292,7 +1292,7 @@ export const headlessImport = async (
 
   if (!answers.appClientWeb) {
     throw new AmplifyError('AuthImportError', {
-      message: importMessages.AppClientNotFound('Web', resolvedEnvParams.webClientId),
+      message: importMessages.AppClientNotFound('Web'),
     });
   }
 
@@ -1300,7 +1300,7 @@ export const headlessImport = async (
 
   if (!answers.appClientNative) {
     throw new AmplifyError('AuthImportError', {
-      message: importMessages.AppClientNotFound('Native', resolvedEnvParams.nativeClientId),
+      message: importMessages.AppClientNotFound('Native'),
     });
   }
 

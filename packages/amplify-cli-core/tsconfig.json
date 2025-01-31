@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./lib",
     "rootDir": "./src",
+    "allowJs": true,
     "useUnknownInCatchVariables": false
   }
 }

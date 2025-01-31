@@ -2,7 +2,6 @@ import { $TSAny, $TSContext, AmplifyCategories, JSONUtilities, pathManager } fro
 import { UserPoolGroupMetadata } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { updateUserPoolGroups } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
 import { createAdminAuthFunction } from '../../../../provider-utils/awscloudformation/utils/synthesize-resources';
-import * as path from 'path';
 
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('fs-extra');

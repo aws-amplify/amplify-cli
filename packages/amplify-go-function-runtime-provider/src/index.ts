@@ -12,11 +12,11 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
       }
       return Promise.resolve({
         runtime: {
-          name: 'Go 1.x',
-          value: 'go1.x',
-          cloudTemplateValue: 'go1.x',
-          defaultHandler: 'main',
-          layerExecutablePath: 'go1.x',
+          name: 'provided.al2023',
+          value: 'provided.al2023',
+          cloudTemplateValue: 'provided.al2023',
+          defaultHandler: 'bootstrap',
+          layerExecutablePath: 'provided.al2023',
         },
       });
     },

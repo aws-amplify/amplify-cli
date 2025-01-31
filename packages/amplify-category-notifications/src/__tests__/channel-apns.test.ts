@@ -153,7 +153,6 @@ describe('channel-APNS', () => {
     expect(enableData).toEqual(mockAPNSChannelResponseData(true, ChannelAction.ENABLE, mockPinpointResponseData.APNSChannelResponse));
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
   test('enable unsuccessful', async () => {
     prompterMock.pick.mockResolvedValueOnce('Certificate');
 

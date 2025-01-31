@@ -2,10 +2,10 @@ version: 0.2
 env:
   shell: powershell.exe
   variables:
-    CLI_REGION: us-east-1
     TEST_SUITE: src/__tests__/auth_2a.test.ts|src/__tests__/auth_2b.test.ts|src/__tests__/auth_2d.test.ts|src/__tests__/auth_2f.test.ts
     CI: true
     CIRCLECI: true
+    IS_AMPLIFY_CI: true
     # mock values to test artifact scanning
     ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
     MOCK_ENV_VAR_FOR_SCANNING_SECRETS: 'abc123xyz'
@@ -25,10 +25,19 @@ env:
 phases:
   build:
     commands:
-      - choco install -fy jq
+      - git config --global core.longpaths true
       - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
       - bash ./codebuild_specs/scripts-windows/rename-packaged-cli.sh
       - bash ./codebuild_specs/scripts-windows/run-e2e-windows.sh
+  post_build:
+    commands:
+      - bash ./codebuild_specs/upload-reports-windows.sh
+reports:
+  e2e-reports:
+    files:
+      - '*.xml'
+    file-format: 'JUNITXML'
+    base-directory: 'packages/amplify-e2e-tests/reports/junit'
 artifacts:
   files:
     - '$E2E_TEST_COVERAGE_DIR/*'

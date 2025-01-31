@@ -19,7 +19,7 @@ let GRAPHQL_ENDPOINT = undefined;
 let APIKEY_GRAPHQL_CLIENT = undefined;
 let USER_POOL_AUTH_CLIENT = undefined;
 
-let USER_POOL_ID = 'fake_user_pool';
+const USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
 
@@ -149,7 +149,7 @@ beforeAll(async () => {
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
     expect(USER_POOL_ID).toBeTruthy();
 
-    const idToken = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, []);
+    const idToken = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, []);
 
     USER_POOL_AUTH_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken,

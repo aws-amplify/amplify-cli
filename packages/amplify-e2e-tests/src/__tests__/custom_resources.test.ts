@@ -60,11 +60,19 @@ describe('adding custom resources test', () => {
     const ddbName = 'ddb';
     await addSimpleDDB(projRoot, { name: ddbName });
 
-    // happy path test (this custom stack compiles and runs successfully)
+    // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
     const srcCustomResourceFilePath = path.join(__dirname, '..', '..', 'custom-resources', 'custom-cdk-stack.ts');
+    fs.copyFileSync(srcRuntimeErrorTest, destCustomResourceFilePath);
+    await expect(amplifyPushAuth(projRoot, false, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
+
+    // happy path test (this custom stack compiles and runs successfully)
     fs.copyFileSync(srcCustomResourceFilePath, destCustomResourceFilePath);
 
-    await buildCustomResources(projRoot);
+    /* TEMPORARY-PR12830: Uncomment after we ship PR12830
+     * this is required to jump over breaking change between 2.68 and 2.80 of CDK.
+     */
+    // await buildCustomResources(projRoot);
+    /* END TEMPORARY */
 
     // check if latest @aws-amplify/cli-extensibility-helper works
     // skip on Windows, we don't start local registry there

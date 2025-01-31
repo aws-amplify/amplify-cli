@@ -27,7 +27,7 @@ const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
     'transform.conf.json',
     'parameters.json',
   ]
-    .flatMap((baseName) => glob.sync(`**/${baseName}`, { cwd: amplifyDirPath }))
+    .flatMap((baseName) => glob.sync(`**/${baseName}`, { cwd: amplifyDirPath, ignore: ['**/node_modules/**'] }))
     .filter((filePath) => !filePath.startsWith('backend'))
     .map((filePath) => ({
       Body: fs.createReadStream(path.join(amplifyDirPath, filePath)),

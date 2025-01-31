@@ -51,6 +51,10 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendCarriageReturn()
       .wait('Initialize the project with the above configuration?')
@@ -85,7 +89,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
 
     singleSelect(chain, settings.region, amplifyRegions);
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI by sharing non-sensitive project configurations on failures')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {

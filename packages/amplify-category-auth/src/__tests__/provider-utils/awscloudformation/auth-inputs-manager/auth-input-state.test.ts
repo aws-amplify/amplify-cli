@@ -120,5 +120,5 @@ test('Auth Input State -> validate cli payload manual payload', async () => {
 test('Auth Input State -> validate cli payload manual payload to throw error', async () => {
   const resourceName = 'mockResource';
   const authState = new AuthInputState(mockContext, resourceName);
-  expect(authState.isCLIInputsValid()).rejects.toThrowError();
+  await expect(authState.isCLIInputsValid()).rejects.toThrowError();
 });

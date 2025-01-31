@@ -1,6 +1,7 @@
-const fetch = require('node-fetch');
-const fs = require('fs-extra');
 const { spinner } = require('@aws-amplify/amplify-cli-core');
+const fs = require('fs-extra');
+const fetch = require('node-fetch');
+const { ProxyAgent } = require('proxy-agent');
 
 const DEPLOY_ARTIFACTS_MESSAGE = 'Deploying build artifacts to the Amplify Console..';
 const DEPLOY_COMPLETE_MESSAGE = 'Deployment complete!';
@@ -55,7 +56,7 @@ function waitJobToSucceed(job, amplifyClient) {
   return new Promise(async (resolve, reject) => {
     const timeout = setTimeout(() => {
       console.log('Job Timeout before succeeded');
-      reject();
+      reject(new Error('Job Timeout before succeeded'));
     }, 1000 * 60 * 10);
     let processing = true;
     try {
@@ -84,9 +85,13 @@ function waitJobToSucceed(job, amplifyClient) {
 }
 
 async function httpPutFile(filePath, url) {
+  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
+  const proxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  const proxyOption = proxy ? { agent: new ProxyAgent() } : {};
   await fetch(url, {
     method: 'PUT',
     body: fs.readFileSync(filePath),
+    ...proxyOption,
   });
 }
 

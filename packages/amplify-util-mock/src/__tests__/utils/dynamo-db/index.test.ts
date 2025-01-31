@@ -1,5 +1,5 @@
 import { createAndUpdateTable, MockDynamoDBConfig } from '../../../utils/dynamo-db';
-import * as AWSMock from 'aws-sdk-mock';
+import AWS_MOCK from 'aws-sdk-mock';
 import * as AWS from 'aws-sdk';
 import { DynamoDB } from 'aws-sdk';
 
@@ -73,7 +73,7 @@ describe('createAndUpdateTable', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.useFakeTimers();
-    AWSMock.setSDKInstance(AWS);
+    AWS_MOCK.setSDKInstance(AWS);
   });
 
   it('should create new tables when they are missing', async () => {
@@ -105,13 +105,13 @@ describe('createAndUpdateTable', () => {
       {
         ...table2Input,
         GlobalSecondaryUpdate: {
-          Create: [table2Input.GlobalSecondaryIndexes[0]],
+          Create: [table2Input.GlobalSecondaryIndexes![0]],
         },
       },
       {
         ...table2Input,
         GlobalSecondaryUpdate: {
-          Create: [table2Input.GlobalSecondaryIndexes[1]],
+          Create: [table2Input.GlobalSecondaryIndexes![1]],
         },
       },
     ];

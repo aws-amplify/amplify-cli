@@ -248,6 +248,16 @@ export class PathManager {
       PathConstants.BuildDirName,
     ]);
 
+  getStackBuildCategoryResourceDirPath = (projectPath: string, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.BuildDirName,
+      category,
+      resourceName,
+    ]);
+
   getCurrentCloudRootStackDirPath = (projectPath: string): string =>
     this.constructPath(projectPath, [
       PathConstants.AmplifyDirName,

@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as ini from 'ini';
 import * as inquirer from 'inquirer';
-import proxyAgent from 'proxy-agent';
+import { ProxyAgent } from 'proxy-agent';
 import * as constants from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { AwsSdkConfig } from './utils/auth-types';
@@ -123,10 +123,11 @@ export const getProfiledAwsConfig = async (
     });
   }
 
+  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   if (httpProxy) {
     awsConfigInfo = {
       ...awsConfigInfo,
-      httpOptions: { agent: proxyAgent(httpProxy) },
+      httpOptions: { agent: new ProxyAgent() },
     };
   }
 

@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.6...amplify-headless-interface@1.17.7) (2024-05-07)
+
+
+### Bug Fixes
+
+* **amplify-headless-interface:** added lambda auth type to headless api payloads ([#13729](https://github.com/aws-amplify/amplify-cli/issues/13729)) ([450eaf1](https://github.com/aws-amplify/amplify-cli/commit/450eaf18af24f3cc15117a55fc565b68b5a63768))
+
+
+
+
+
+## [1.17.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.4...amplify-headless-interface@1.17.6) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [1.17.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.4...amplify-headless-interface@1.17.5) (2023-11-08)
+
+**Note:** Version bump only for package amplify-headless-interface
+
+
+
+
+
+## [1.17.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.3...amplify-headless-interface@1.17.4) (2023-06-13)
+
+**Note:** Version bump only for package amplify-headless-interface
+
+
+
+
+
 ## [1.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.1...amplify-headless-interface@1.17.3) (2023-04-14)
 
 **Note:** Version bump only for package amplify-headless-interface

@@ -96,8 +96,8 @@ class AmplifyCLIExecutionReporter {
                 }),
               );
             }
-            let sanitizedSections = [];
-            for (let section of commandAndParams) {
+            const sanitizedSections = [];
+            for (const section of commandAndParams) {
               // this ensures only alphanumeric values are in the file name
               sanitizedSections.push(section.replace(/[^a-z0-9]/gi, '_').toLowerCase());
             }

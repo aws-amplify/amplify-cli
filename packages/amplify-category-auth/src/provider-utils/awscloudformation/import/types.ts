@@ -155,7 +155,7 @@ export interface ProviderUtils {
     privateParams: $TSObject,
     envSpecificParams: string[],
   ): void;
-  loadResourceParameters(context: $TSContext, category: string, resourceName: string): Record<string, any>;
+  loadResourceParameters(context: $TSContext, category: string, resourceName: string): Record<string, $TSAny>;
 }
 
 export type ImportAuthHeadlessParameters = {

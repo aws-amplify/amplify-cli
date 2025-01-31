@@ -86,7 +86,7 @@ export const run = async (startTime: number): Promise<void> => {
   ensureFilePermissions(pathManager.getAWSCredentialsFilePath());
   ensureFilePermissions(pathManager.getAWSConfigFilePath());
 
-  let verificationResult = verifyInput(pluginPlatform, input);
+  let verificationResult = await verifyInput(pluginPlatform, input);
 
   // invalid input might be because plugin platform might have been updated,
   // scan and try again
@@ -96,7 +96,7 @@ export const run = async (startTime: number): Promise<void> => {
     }
     pluginPlatform = await scan();
     input = getCommandLineInput(pluginPlatform);
-    verificationResult = verifyInput(pluginPlatform, input);
+    verificationResult = await verifyInput(pluginPlatform, input);
   }
   if (!verificationResult.verified) {
     if (verificationResult.helpCommandAvailable) {
@@ -209,14 +209,14 @@ async function sigIntHandler(context: Context): Promise<void> {
  */
 export const execute = async (input: CLIInput): Promise<void> => {
   let pluginPlatform = await getPluginPlatform();
-  let verificationResult = verifyInput(pluginPlatform, input);
+  let verificationResult = await verifyInput(pluginPlatform, input);
 
   if (!verificationResult.verified) {
     if (verificationResult.message) {
       printer.warn(verificationResult.message);
     }
     pluginPlatform = await scan();
-    verificationResult = verifyInput(pluginPlatform, input);
+    verificationResult = await verifyInput(pluginPlatform, input);
   }
 
   if (!verificationResult.verified) {
@@ -257,5 +257,4 @@ export const executeAmplifyCommand = async (context: Context): Promise<void> => 
   }
 };
 
-// bump version to 12.1.0
-//
+// bump version to 12.14.0

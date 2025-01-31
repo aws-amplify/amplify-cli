@@ -57,7 +57,7 @@ export abstract class ResourcePackager {
 
   constructor(context: $TSContext, deployType: ResourceDeployType) {
     this.context = context;
-    this.elasticContainerZipFiles = ['custom-resource-pipeline-awaiter.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
+    this.elasticContainerZipFiles = ['custom-resource-pipeline-awaiter-18.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
     const projectPath = pathManager.findProjectRoot();
     this.amplifyMeta = stateManager.getMeta(projectPath);
     this.amplifyTeamProviderInfo = stateManager.getTeamProviderInfo(projectPath);

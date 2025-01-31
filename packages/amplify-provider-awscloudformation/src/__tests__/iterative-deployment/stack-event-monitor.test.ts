@@ -39,8 +39,8 @@ describe('StackEventMonitor', () => {
     });
   });
 
-  test('stop StackEventMonitor', () => {
-    monitor.stop();
+  test('stop StackEventMonitor', async () => {
+    await monitor.stop();
 
     expect(stackProgressPrinterStub.printerFn).toBeCalled();
     expect(clearTimeout).toBeCalledTimes(1);

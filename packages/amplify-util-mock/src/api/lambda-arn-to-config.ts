@@ -34,7 +34,7 @@ export const lambdaArnToConfig = async (context: $TSContext, arn: $TSAny): Promi
     throw new Error(`Cannot interpret Lambda ARN [${JSON.stringify(arn)}]${errorSuffix}`);
   }
   const lambdaNames = _.entries<{ service: string }>(_.get(stateManager.getMeta(), ['function']))
-    .filter(([_, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
+    .filter(([, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
     .map(([key]) => key);
   const foundLambdaName = lambdaNames.find((name) => searchString.includes(name));
   if (!foundLambdaName) {

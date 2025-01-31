@@ -36,7 +36,7 @@ describe('generated tags test', () => {
 
   it('should compare the nested stack tags key with the tags.json file and return true', async () => {
     const projName = 'tagsTest';
-    const envName = 'devtag';
+    const envName = 'devtagtest';
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addPRODHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
@@ -58,7 +58,7 @@ describe('generated tags test', () => {
 function checkEquality(localTags: {}[], generatedTags: {}[]) {
   localTags.forEach((tagObj) => {
     const rootTag = generatedTags.find((obj) => obj['Key'] === tagObj['Key']);
-    if (tagObj['Key'] !== rootTag['Key']) return false;
+    return tagObj['Key'] === rootTag['Key'];
   });
 
   return true;

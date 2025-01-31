@@ -24,13 +24,42 @@ const getIncompleteJobIdsFromBatchId = async (cb: CodeBuild, batchId: string): P
   return ids ?? [];
 };
 
+const getFailedJobIdsFromBatchId = async (cb: CodeBuild, batchId: string): Promise<string[]> => {
+  const retrievedBatchInfo = await cb.batchGetBuildBatches({ ids: [batchId] }).promise();
+  const ids = retrievedBatchInfo.buildBatches?.[0].buildGroups
+    ?.filter(
+      (group) =>
+        group.currentBuildSummary?.buildStatus === 'FAILED' ||
+        group.currentBuildSummary?.buildStatus === 'FAULT' ||
+        group.currentBuildSummary?.buildStatus === 'STOPPED' ||
+        group.currentBuildSummary?.buildStatus === 'TIMED_OUT',
+    )
+    .map((group) => group.identifier ?? '');
+  return ids ?? [];
+};
+
 const main = async () => {
-  const cb = new CodeBuild({ region: 'us-east-1' });
+  const cb = new CodeBuild({
+    region: 'us-east-1',
+    maxRetries: 10,
+    retryDelayOptions: {
+      base: 10 * 1000,
+    },
+  });
   const expectedSourceVersion = process.argv[2];
-  const jobsDependedOnFilepath = process.argv[3];
+  const jobsDependedOnFilepathOrId = process.argv[3];
   const codeBuildProjectName = process.argv[4];
-  const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepath, 'utf8');
-  const jobsDependedOn = JSON.parse(jobsDependedOnRaw);
+  const codebuildWebhookTrigger = process.argv[5];
+  const accountForFailures: boolean = process.argv.length >= 7 && process.argv[6] === 'requirePrevJobsToSucceed';
+
+  let jobsDependedOn: string[];
+  if (fs.existsSync(jobsDependedOnFilepathOrId)) {
+    const jobsDependedOnRaw = fs.readFileSync(jobsDependedOnFilepathOrId, 'utf8');
+    jobsDependedOn = JSON.parse(jobsDependedOnRaw);
+  } else {
+    jobsDependedOn = [jobsDependedOnFilepathOrId];
+  }
+  console.log(`accountForFailures: ${accountForFailures}`);
   console.log(`Depending on these jobs: ${JSON.stringify(jobsDependedOn)}`);
   console.log(`Number of jobs depended on: ${jobsDependedOn.length}`);
   const allBatchBuildIds = await getBatchesInProject(cb, codeBuildProjectName);
@@ -52,6 +81,19 @@ const main = async () => {
   let intersectingIncompleteJobs: string[];
   do {
     await new Promise((resolve) => setTimeout(resolve, 180 * 1000)); // sleep for 180 seconds
+    const failedJobsInBatch = await getFailedJobIdsFromBatchId(cb, batchId);
+    const intersectingFailedJobs = failedJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));
+    const batchFailed = failedJobsInBatch.length || intersectingFailedJobs.length;
+    console.log(`Batch triggered by ${codebuildWebhookTrigger} ${batchFailed ? 'failed' : 'succeeded'}.`);
+
+    if (accountForFailures) {
+      console.log(`failedJobsInBatch: ${JSON.stringify(failedJobsInBatch)}`);
+      console.log(`intersectingFailedJobs: ${JSON.stringify(intersectingFailedJobs)}`);
+      if (intersectingFailedJobs.length > 0) {
+        console.log(`${jobsDependedOn[0]} failed. Exiting.`);
+        process.exit(1);
+      }
+    }
     const incompleteJobsInBatch = await getIncompleteJobIdsFromBatchId(cb, batchId);
     console.log(`These are all of the incomplete jobs in the batch: ${JSON.stringify(incompleteJobsInBatch)}`);
     intersectingIncompleteJobs = incompleteJobsInBatch.filter((jobId) => jobsDependedOn.includes(jobId));

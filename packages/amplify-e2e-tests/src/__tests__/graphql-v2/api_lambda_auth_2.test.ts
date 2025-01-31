@@ -83,7 +83,6 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
 
     const url = GraphQLAPIEndpointOutput as string;
-    const apiKey = GraphQLAPIKeyOutput as string;
 
     const appSyncClient = new AWSAppSyncClient({
       url,
@@ -108,7 +107,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
         note: 'initial note',
       },
     };
-    const createResult: any = await appSyncClient.mutate({
+    await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
       variables: createInput,

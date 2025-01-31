@@ -3,7 +3,7 @@ const awsS3Client = new AWS.S3();
 const bucketEnvVar = '{{bucketEnvVar}}'; // This value is replaced from test
 
 exports.handler = async () => {
-  let listObjects = await awsS3Client
+  const listObjects = await awsS3Client
     .listObjectsV2({
       Bucket: process.env[bucketEnvVar],
     })

@@ -9,6 +9,7 @@ export function getGraphQLTransformerFunctionDocLink(version: number): string {
   }
 }
 
+// Currently not used in this project, but there are dependencies in other projects https://github.com/search?q=org%3Aaws-amplify+getGraphQLTransformerAuthDocLink&type=code
 export function getGraphQLTransformerAuthDocLink(version: number): string {
   switch (version) {
     case 1:
@@ -20,6 +21,7 @@ export function getGraphQLTransformerAuthDocLink(version: number): string {
   }
 }
 
+// Currently not used in this project, but there are dependencies in other projects https://github.com/search?q=org%3Aaws-amplify+getGraphQLTransformerAuthSubscriptionsDocLink&type=code
 export function getGraphQLTransformerAuthSubscriptionsDocLink(version: number): string {
   switch (version) {
     case 1:
@@ -42,6 +44,7 @@ export function getGraphQLTransformerOpenSearchDocLink(version: number): string 
   }
 }
 
+// Currently not used in this project, but there are dependencies in other projects https://github.com/search?q=org%3Aaws-amplify+getGraphQLTransformerOpenSearchProductionDocLink&type=code
 export function getGraphQLTransformerOpenSearchProductionDocLink(version: number): string {
   switch (version) {
     case 1:

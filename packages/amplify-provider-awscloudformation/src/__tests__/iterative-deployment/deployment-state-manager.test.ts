@@ -41,18 +41,18 @@ describe('deployment state manager', () => {
     const getInstanceSpy = jest.spyOn(S3, 'getInstance');
 
     getInstanceSpy.mockReturnValue(
-      new Promise((resolve, __) => {
+      new Promise((resolve) => {
         resolve({
           // eslint-disable-next-line
           uploadFile: async (s3Params: any, showSpinner: boolean): Promise<string> =>
-            new Promise((resolve, _) => {
+            new Promise((resolve) => {
               s3Files[s3Params.Key] = s3Params.Body;
 
               resolve('');
             }),
           // eslint-disable-next-line
           getStringObjectFromBucket: async (bucketName: string, objectKey: string): Promise<string> =>
-            new Promise((resolve, _) => {
+            new Promise((resolve) => {
               resolve(s3Files[objectKey]);
             }),
         } as unknown as S3);

@@ -1,6 +1,3 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB, setupSearchableMockResources } from '../__e2e__/utils';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import * as openSearchEmulator from '@aws-amplify/amplify-opensearch-simulator';
@@ -9,6 +6,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { v4 } from 'uuid';
 import fetch from 'node-fetch';
+import { transformAndSynth, defaultTransformParams } from './test-synthesizer';
 
 jest.setTimeout(2000000);
 
@@ -57,11 +55,14 @@ describe('@searchable transformer', () => {
     }`;
 
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-        sandboxModeEnabled: true,
+      const out = transformAndSynth({
+        ...defaultTransformParams,
+        schema: validSchema,
+        transformParameters: {
+          ...defaultTransformParams.transformParameters,
+          sandboxModeEnabled: true,
+        },
       });
-      const out = await transformer.transform(validSchema);
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
 

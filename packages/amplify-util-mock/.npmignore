@@ -1,6 +1,7 @@
 **/__mocks__/**
 **/__tests__/**
 **/__e2e__/**
+**/__e2e_v2__/**
 src
 tsconfig.json
 tsconfig.tsbuildinfo

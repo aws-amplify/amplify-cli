@@ -2,11 +2,7 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   amplifyPushAuth,
-  addAuthWithDefault,
-  removeAuthWithDefault,
   addAuthWithMaxOptions,
-  addAuthUserPoolOnly,
-  getBackendAmplifyMeta,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
@@ -14,7 +10,6 @@ import {
   getUserPoolClients,
   getLambdaFunction,
 } from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
 
 const defaultsSettings = {
   name: 'authTest',

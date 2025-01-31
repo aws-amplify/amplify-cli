@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.14...@aws-amplify/amplify-graphiql-explorer@2.6.0) (2024-05-07)
+
+
+### Features
+
+* support https for mock util plugin ([#13700](https://github.com/aws-amplify/amplify-cli/issues/13700)) ([cf418f1](https://github.com/aws-amplify/amplify-cli/commit/cf418f1d9ebc46fff8e12abe7a61d9a5e4ccdfe7))
+
+
+
+
+
+## [2.5.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.13...@aws-amplify/amplify-graphiql-explorer@2.5.14) (2024-04-15)
+
+
+### Bug Fixes
+
+* bump webpack deps version ([#13675](https://github.com/aws-amplify/amplify-cli/issues/13675)) ([41ec40a](https://github.com/aws-amplify/amplify-cli/commit/41ec40a220ec693fd0eeb8b9e4033e00f8bad29e))
+* resolve issues with graphiql explorer ([#13691](https://github.com/aws-amplify/amplify-cli/issues/13691)) ([4d0677d](https://github.com/aws-amplify/amplify-cli/commit/4d0677def73fb0d1c2fb77e30ed8b7c0e34cfebd))
+
+
+
+
+
+## [2.5.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.12...@aws-amplify/amplify-graphiql-explorer@2.5.13) (2023-12-11)
+
+**Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
+
+
+
+
+
+## [2.5.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.10...@aws-amplify/amplify-graphiql-explorer@2.5.12) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [2.5.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.10...@aws-amplify/amplify-graphiql-explorer@2.5.11) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
+
+
+
+
+
+## [2.5.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.9...@aws-amplify/amplify-graphiql-explorer@2.5.10) (2023-10-21)
+
+**Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
+
+
+
+
+
+## [2.5.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.8...@aws-amplify/amplify-graphiql-explorer@2.5.9) (2023-08-09)
+
+
+### Bug Fixes
+
+* Dependabot alerts for semver, tough-cookie ([#12962](https://github.com/aws-amplify/amplify-cli/issues/12962)) ([175a86b](https://github.com/aws-amplify/amplify-cli/commit/175a86b89a54c65bb6e68c0609be503d61e39d63))
+
+
+
+
+
+## [2.5.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.7...@aws-amplify/amplify-graphiql-explorer@2.5.8) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
+
+
+
+
+
 ## [2.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.5...@aws-amplify/amplify-graphiql-explorer@2.5.7) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer

@@ -39,14 +39,14 @@ describe('amplify add api (REST)', () => {
     expect(service).toBe('DynamoDB');
     expect(lastPushTimeStamp).toBeDefined();
     expect(lastPushDirHash).toBeDefined();
-    validateRestApiMeta(projRoot, meta);
+    await validateRestApiMeta(projRoot, meta);
   });
 
   it('init a project, then add a serverless rest api', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addRestApi(projRoot, { isCrud: false });
     await amplifyPushUpdate(projRoot);
-    validateRestApiMeta(projRoot);
+    await validateRestApiMeta(projRoot);
   });
 
   it('init a project, create lambda and attach it to an api', async () => {
@@ -54,7 +54,7 @@ describe('amplify add api (REST)', () => {
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addRestApi(projRoot, { existingLambda: true });
     await amplifyPushUpdate(projRoot);
-    validateRestApiMeta(projRoot);
+    await validateRestApiMeta(projRoot);
   });
 
   it('init a project, create lambda and attach multiple rest apis', async () => {
@@ -113,6 +113,6 @@ describe('amplify add api (REST)', () => {
       expect(PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
     }
 
-    validateRestApiMeta(projRoot, amplifyMeta);
+    await validateRestApiMeta(projRoot, amplifyMeta);
   });
 });

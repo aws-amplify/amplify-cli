@@ -9,7 +9,7 @@ const DIR_NOT_FOUND_ERROR_MESSAGE = 'Please ensure your build artifacts path exi
 function zipFile(sourceDir, destFilePath, extraFiles) {
   return new Promise((resolve, reject) => {
     if (!fs.pathExistsSync(sourceDir)) {
-      reject(DIR_NOT_FOUND_ERROR_MESSAGE);
+      reject(new Error(DIR_NOT_FOUND_ERROR_MESSAGE));
     }
     const zipFilePath = destFilePath;
     const output = fs.createWriteStream(zipFilePath);

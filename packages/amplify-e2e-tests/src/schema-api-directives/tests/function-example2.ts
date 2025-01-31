@@ -1,26 +1,23 @@
 //special handling needed becasue we need to set up the function in a differnt region
-import path from 'path';
-import fs from 'fs-extra';
 import {
-  amplifyPush,
-  addFunction,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
-  updateAuthAddUserGroups,
   addAuthWithDefault,
+  addFunction,
+  amplifyPush,
+  configureAmplify,
+  getCognitoResourceName,
+  getConfiguredAppsyncClientCognitoAuth,
+  getUserPoolId,
+  setupUser,
+  signInUser,
+  updateAuthAddUserGroups,
 } from '@aws-amplify/amplify-e2e-core';
+import fs from 'fs-extra';
+import path from 'path';
 
 import { updateFunctionNameInSchema } from '../functionTester';
 
-import {
-  configureAmplify,
-  getUserPoolId,
-  getCognitoResourceName,
-  setupUser,
-  signInUser,
-  getConfiguredAppsyncClientCognitoAuth,
-} from '../authHelper';
-
-import { updateSchemaInTestProject, testQueries } from '../common';
+import { testQueries, updateSchemaInTestProject } from '../common';
 
 import { randomizedFunctionName } from '../functionTester';
 

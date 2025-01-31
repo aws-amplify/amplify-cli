@@ -3,7 +3,7 @@ import { CLIEnvironmentProvider, CLIContextEnvironmentProvider } from '..';
 describe('ContextCLIEnvironmentProvider tests', () => {
   test('returns env name from initialized context', () => {
     const context: any = {
-      getEnvInfo: (_: boolean): any => {
+      getEnvInfo: (): any => {
         return {
           envName: 'testenv',
         };
@@ -17,7 +17,7 @@ describe('ContextCLIEnvironmentProvider tests', () => {
 
   test('returns empty env name from when envInfo is undefined in context', () => {
     const context: any = {
-      getEnvInfo: (_: boolean): any => {
+      getEnvInfo: (): any => {
         return undefined;
       },
     };
@@ -29,7 +29,7 @@ describe('ContextCLIEnvironmentProvider tests', () => {
 
   test('returns empty env name from when envInfo.envName is undefined in context', () => {
     const context: any = {
-      getEnvInfo: (_: boolean): any => {
+      getEnvInfo: (): any => {
         return {
           envName: undefined,
         };
@@ -43,7 +43,7 @@ describe('ContextCLIEnvironmentProvider tests', () => {
 
   test('returns empty env name from when getEnvInfo throws', () => {
     const context: any = {
-      getEnvInfo: (_: boolean): any => {
+      getEnvInfo: (): any => {
         throw new Error();
       },
     };
@@ -55,7 +55,7 @@ describe('ContextCLIEnvironmentProvider tests', () => {
 
   test('throws when undefined context passed in', () => {
     expect(() => {
-      const _: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(undefined as any);
+      new CLIContextEnvironmentProvider(undefined as any);
     }).toThrowError('CLIContextEnvironmentProvider expects a context instance');
   });
 });

@@ -63,14 +63,14 @@ describe('Pipeline Resolvers', () => {
     beforeEach(() => {
       fnImpl = {
         fn1: {
-          resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context, info) => ({
+          resolve: jest.fn().mockImplementation((source, args, stash) => ({
             result: 'FN1-RESULT',
             args,
             stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn1'] },
           })),
         },
         fn2: {
-          resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context, info) => ({
+          resolve: jest.fn().mockImplementation((source, args, stash) => ({
             args,
             result: 'FN2-RESULT',
             stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn2'] },
@@ -171,12 +171,12 @@ describe('Pipeline Resolvers', () => {
         appsyncErrors: [],
       };
       const info = {};
-      fnImpl.fn1.resolve.mockImplementation((source, args, stash, prevResult, context, info) => ({
+      fnImpl.fn1.resolve.mockImplementation((source, args, stash) => ({
         result: 'FN1-RESULT',
         args: { ...args, fn1Arg: 'FN1-ARG1' },
         stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn1'] },
       }));
-      fnImpl.fn2.resolve.mockImplementation((source, args, stash, prevResult, context, info) => ({
+      fnImpl.fn2.resolve.mockImplementation((source, args, stash) => ({
         result: 'FN2-RESULT',
         args: { ...args, fn2Arg: 'FN2-ARG1' },
         stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn2'] },
@@ -245,7 +245,7 @@ describe('Pipeline Resolvers', () => {
     it('bails out early on terminal error', async () => {
       resolver = new AppSyncPipelineResolver(baseConfig, simulatorContext);
       fnImpl.fn1 = {
-        resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context, info) => {
+        resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context) => {
           const err = new Error('fn1-ERROR');
           context.appsyncErrors = [...context.appsyncErrors, err];
           return {

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-frontend-flutter",
-  "version": "1.4.2",
+  "version": "1.4.7",
   "description": "amplify-cli front-end plugin for Flutter projects",
   "repository": {
     "type": "git",

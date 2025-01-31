@@ -100,7 +100,11 @@ export class FunctionSecretsStateManager {
       return;
     }
     const cloudSecretNames = await this.getCloudFunctionSecretNames(functionName);
-    const addedSecrets = localSecretNames.filter((name) => !cloudSecretNames.includes(name));
+    const retainedSecrets: string[] = [];
+    const addedSecrets: string[] = [];
+
+    localSecretNames.forEach((name) => (cloudSecretNames.includes(name) ? retainedSecrets.push(name) : addedSecrets.push(name)));
+
     if (!addedSecrets.length) {
       return;
     }
@@ -118,8 +122,12 @@ export class FunctionSecretsStateManager {
         link: 'https://docs.amplify.aws/cli/reference/ssm-parameter-store/#manually-creating-parameters',
       });
     }
+
+    const current = secretNamesToSecretDeltas(retainedSecrets);
     const delta = await prePushMissingSecretsWalkthrough(functionName, addedSecrets);
-    await this.syncSecretDeltas(delta, functionName);
+    const secretDeltas = { ...current, ...delta };
+
+    await this.syncSecretDeltas(secretDeltas, functionName);
   };
 
   /**

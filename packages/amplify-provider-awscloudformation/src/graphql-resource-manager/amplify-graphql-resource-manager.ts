@@ -29,6 +29,8 @@ import { addGSI, getGSIDetails, removeGSI } from './dynamodb-gsi-helpers';
 
 import { loadConfiguration } from '../configuration-manager';
 
+export const DISABLE_GSI_LIMIT_CHECK_OPTION = 'disable-gsi-limit-check';
+
 const ROOT_LEVEL = 'root';
 const RESERVED_ROOT_STACK_TEMPLATE_STATE_KEY_NAME = '_root';
 const CONNECTION_STACK_NAME = 'ConnectionStack';
@@ -43,6 +45,7 @@ export type GQLResourceManagerProps = {
   backendDir: string;
   cloudBackendDir: string;
   rebuildAllTables?: boolean;
+  disableGSILimitCheck?: boolean;
 };
 
 /**
@@ -76,6 +79,7 @@ export class GraphQLResourceManager {
   private backendApiProjectRoot: string;
   private templateState: TemplateState;
   private rebuildAllTables = false; // indicates that all underlying model tables should be rebuilt
+  private readonly disableGSILimitCheck;
 
   public static createInstance = async (
     context: $TSContext,
@@ -89,12 +93,14 @@ export class GraphQLResourceManager {
     const apiStack = await cfn
       .describeStackResources({ StackName: StackId, LogicalResourceId: gqlResource.providerMetadata.logicalId })
       .promise();
+
     return new GraphQLResourceManager({
       cfnClient: cfn,
       resourceMeta: { ...gqlResource, stackId: apiStack.StackResources[0].PhysicalResourceId },
       backendDir: pathManager.getBackendDirPath(),
       cloudBackendDir: pathManager.getCurrentCloudBackendDirPath(),
       rebuildAllTables,
+      disableGSILimitCheck: context?.input?.options?.[DISABLE_GSI_LIMIT_CHECK_OPTION],
     });
   };
 
@@ -113,6 +119,7 @@ export class GraphQLResourceManager {
     this.cloudBackendApiProjectRoot = path.join(props.cloudBackendDir, GraphQLResourceManager.categoryName, this.resourceMeta.resourceName);
     this.templateState = new TemplateState();
     this.rebuildAllTables = props.rebuildAllTables || false;
+    this.disableGSILimitCheck = props.disableGSILimitCheck || false;
   }
 
   run = async (): Promise<DeploymentStep[]> => {
@@ -438,7 +445,7 @@ export class GraphQLResourceManager {
 
   private addGSI = (gsiRecord: GSIRecord, tableName: string, template: Template): void => {
     const table = template.Resources[tableName] as DynamoDB.Table;
-    template.Resources[tableName] = addGSI(gsiRecord, table);
+    template.Resources[tableName] = addGSI(gsiRecord, table, this.disableGSILimitCheck);
   };
 
   private deleteGSI = (indexName: string, tableName: string, template: Template): void => {
@@ -474,5 +481,5 @@ export class GraphQLResourceManager {
   };
 
   private getTableNameFromTemplate = (template: Template): string | undefined =>
-    Object.entries(template?.Resources || {}).find(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')?.[0];
+    Object.entries(template?.Resources || {}).find(([, resource]) => resource.Type === 'AWS::DynamoDB::Table')?.[0];
 }

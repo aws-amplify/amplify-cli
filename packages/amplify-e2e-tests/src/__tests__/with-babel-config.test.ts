@@ -15,7 +15,7 @@ describe('project with babel config', () => {
   let packageJsonPath: string;
   let babelConfigPath: string;
   const projName = 'withBabelConfig';
-  const envName = 'dev';
+  const envName = 'devtest';
 
   beforeAll(async () => {
     projectRoot = await createNewProjectDir(projName);

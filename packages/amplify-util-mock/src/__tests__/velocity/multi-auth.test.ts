@@ -1,10 +1,14 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
+import { DeploymentResources } from '../../__e2e_v2__/test-synthesizer/deployment-resources';
+import { testTransform } from '../v2-test-synthesizer/test-transform';
 import { VelocityTemplateSimulator, AppSyncVTLContext, getGenericToken } from '../../velocity';
-import { featureFlags } from './test-helper';
+
+type TestTransform = {
+  transform: (schema: string) => DeploymentResources;
+};
 
 jest.mock('@aws-amplify/amplify-prompts');
 
@@ -13,7 +17,7 @@ jest.mock('@aws-amplify/amplify-prompts');
 // - group: 'cognito:groups' -> default to null or empty list
 describe('@model + @auth with oidc provider', () => {
   let vtlTemplate: VelocityTemplateSimulator;
-  let transformer: GraphQLTransform;
+  let transformer: TestTransform;
   const subIdUser: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT,
     jwt: getGenericToken('randomIdUser', 'random@user.com'),
@@ -37,11 +41,14 @@ describe('@model + @auth with oidc provider', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
-    });
+    transformer = {
+      transform: (schema: string) =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [new ModelTransformer(), new AuthTransformer()],
+        }),
+    };
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
 
@@ -119,7 +126,7 @@ describe('@model + @auth with oidc provider', () => {
 describe('with identity claim feature flag disabled', () => {
   describe('@model + @auth with oidc provider', () => {
     let vtlTemplate: VelocityTemplateSimulator;
-    let transformer: GraphQLTransform;
+    let transformer: TestTransform;
     const subIdUser: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT,
       jwt: getGenericToken('randomIdUser', 'random@user.com'),
@@ -143,14 +150,17 @@ describe('with identity claim feature flag disabled', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
-      });
+      transformer = {
+        transform: (schema: string) =>
+          testTransform({
+            schema,
+            authConfig,
+            transformers: [new ModelTransformer(), new AuthTransformer()],
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: false,
+            },
+          }),
+      };
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
 

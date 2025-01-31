@@ -148,42 +148,42 @@ describe('amplify help functions: ', () => {
   ];
 
   it('lookup valid command (init) and expect not null', () => {
-    let initCommandInfo = lookUpCommand(mockCommandsInfo, 'init');
+    const initCommandInfo = lookUpCommand(mockCommandsInfo, 'init');
     expect(initCommandInfo).not.toBeUndefined();
   });
 
   it('lookup invalid command and expect null', () => {
-    let invalidCommandInfo = lookUpCommand(mockCommandsInfo, 'invalidcommand');
+    const invalidCommandInfo = lookUpCommand(mockCommandsInfo, 'invalidcommand');
     expect(invalidCommandInfo).toBeUndefined();
   });
 
   it('lookup valid command (init) and expect correct command name', () => {
-    let initCommandInfo = lookUpCommand(mockCommandsInfo, 'init');
+    const initCommandInfo = lookUpCommand(mockCommandsInfo, 'init');
     expect(initCommandInfo!.command).toBe('init');
   });
 
   it('lookup valid command (configure) and expect correct command name', () => {
-    let initCommandInfo = lookUpCommand(mockCommandsInfo, 'configure');
+    const initCommandInfo = lookUpCommand(mockCommandsInfo, 'configure');
     expect(initCommandInfo!.command).toBe('configure');
   });
 
   it('lookup valid subcommand (configure project) and expect not null', () => {
-    let configureProjectSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'project');
+    const configureProjectSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'project');
     expect(configureProjectSubCommandInfo).not.toBeUndefined();
   });
 
   it('lookup invalid subcommand and expect null', () => {
-    let invalidSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'invalidcommand', 'invalidsubcommand');
+    const invalidSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'invalidcommand', 'invalidsubcommand');
     expect(invalidSubCommandInfo).toBeUndefined();
   });
 
   it('lookup valid subcommand (configure project) and expect correct subcommand name', () => {
-    let configureProjectSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'project');
+    const configureProjectSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'project');
     expect(configureProjectSubCommandInfo!.subCommand).toBe('project');
   });
 
   it('lookup valid subcommand (configure hosting) correct subcommand name', () => {
-    let configureHostingSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'hosting');
+    const configureHostingSubCommandInfo = lookUpSubcommand(mockCommandsInfo, 'configure', 'hosting');
     expect(configureHostingSubCommandInfo!.subCommand).toBe('hosting');
   });
 
@@ -195,7 +195,7 @@ describe('amplify help functions: ', () => {
       plugin: 'core',
       subCommands: ['configure'],
     };
-    let specifiedCommands = parseHelpCommands(configureInput, mockCommandsInfo);
+    const specifiedCommands = parseHelpCommands(configureInput, mockCommandsInfo);
     expect(specifiedCommands.command).toBe('configure');
     expect(specifiedCommands.subCommand).toBe('');
   });
@@ -208,14 +208,13 @@ describe('amplify help functions: ', () => {
       options: { help: true, yes: false },
       subCommands: ['mock', 'function'],
     };
-    let specifiedCommands = parseHelpCommands(mockFunctionInput, mockCommandsInfo);
+    const specifiedCommands = parseHelpCommands(mockFunctionInput, mockCommandsInfo);
     expect(specifiedCommands.command).toBe('mock');
     expect(specifiedCommands.subCommand).toBe('function');
   });
 
   it('run help invalid command', () => {
-    let mockContext: $TSContext;
-    mockContext = {
+    const mockContext = {
       input: {
         argv: ['node', 'amplify', 'invalid', 'command', '-h'],
         command: 'help',
@@ -230,9 +229,7 @@ describe('amplify help functions: ', () => {
   });
 
   it('run help command (mock)', () => {
-    let mockContext: $TSContext;
-
-    mockContext = {
+    const mockContext = {
       print: {
         info: jest.fn(),
       },
@@ -249,9 +246,7 @@ describe('amplify help functions: ', () => {
   });
 
   it('run help subcommand (mock function)', () => {
-    let mockContext: $TSContext;
-
-    mockContext = {
+    const mockContext = {
       print: {
         info: jest.fn(),
       },

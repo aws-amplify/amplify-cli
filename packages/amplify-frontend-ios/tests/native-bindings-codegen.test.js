@@ -7,7 +7,7 @@ describe('amplify-xcode native bindings codegen', () => {
         name: 'option-name',
         kind: 'option',
       };
-      const expected = [[`if (params['${param.name}']) {`, `    command += \` --${param.name}=\${params['${param.name}']}\`;`, `  }`]];
+      const expected = [[`if (params['${param.name}']) {`, `    args.push(\`--${param.name}=\${params['${param.name}']}\`);`, `  }`]];
       expect(generateCommandParameters([param])).toEqual(expected);
     });
 
@@ -16,7 +16,7 @@ describe('amplify-xcode native bindings codegen', () => {
         name: 'flagName',
         kind: 'flag',
       };
-      const expected = [[`if (params['${param.name}']) {`, `    command += \` --${param.name}\`;`, `  }`]];
+      const expected = [[`if (params['${param.name}']) {`, `    args.push(\`--${param.name}\`);`, `  }`]];
       expect(generateCommandParameters([param])).toEqual(expected);
     });
 
@@ -25,7 +25,7 @@ describe('amplify-xcode native bindings codegen', () => {
         name: 'argName',
         kind: 'argument',
       };
-      const expected = [["  command += ` ${params['argName']}`;"]];
+      const expected = [["  args.push(`${params['argName']}`);"]];
       expect(generateCommandParameters([param])).toEqual(expected);
     });
   });

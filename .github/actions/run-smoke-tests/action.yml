@@ -1,0 +1,76 @@
+name: Run Smoke Tests
+description: Executes Smoke Tests
+inputs:
+  role-to-assume:
+    description: an IAM role to use in tests
+    required: true
+  cli-version:
+    description: version of Amplify CLI
+    required: true
+  region:
+    description: an AWS region to run in
+    required: false
+    default: us-west-2
+runs:
+  using: 'composite'
+  steps:
+    - name: Verify Amplify Path
+      shell: bash
+      run: |
+        if [[ -z "$AMPLIFY_PATH" ]]; then
+          echo "AMPLIFY_PATH must be defined"
+          exit 1
+        fi
+        echo "AMPLIFY_PATH=$AMPLIFY_PATH"
+        $AMPLIFY_PATH version
+
+    - name: Yarn build on Windows
+      shell: bash
+      if: runner.os == 'Windows'
+      run: |
+        cd scripts
+        yarn
+
+    - name: Install Dependencies
+      shell: bash
+      run: yarn install --immutable
+
+    - name: Build
+      shell: bash
+      run: yarn build-tests
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@04b98b3f9e85f563fb061be8751a0352327246b0 # v3.0.1
+      with:
+        role-to-assume: ${{ inputs.role-to-assume }}
+        aws-region: ${{ inputs.region }}
+
+      # For iOS tests
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939 # v1.152.0
+      if: runner.os == 'macOS'
+      with:
+        ruby-version: '3.2.1'
+
+      # For iOS tests
+    - name: Set Default Xcode Version
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        sudo xcode-select -s "/Applications/Xcode_14.1.app"
+        xcodebuild -version
+
+    - name: Run Smoke Tests
+      shell: bash
+      run: yarn smoketest -- --forceExit --no-cache --maxWorkers=2
+      env:
+        CLI_REGION: ${{ inputs.region }}
+        CI: true
+        CIRCLECI: true
+
+    - name: Upload Report
+      uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 #v4.6.0
+      if: always()
+      with:
+        name: test report ${{ runner.os }} ${{ inputs.cli-version }}
+        path: packages/amplify-e2e-tests/amplify-e2e-reports

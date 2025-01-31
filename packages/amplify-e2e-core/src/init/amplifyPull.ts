@@ -166,8 +166,7 @@ export const amplifyStudioHeadlessPull = (
     awscloudformation: {
       configLevel: 'project',
       useProfile: true,
-      // eslint-disable-next-line spellcheck/spell-checker
-      profileName: profileName ?? 'amplify-integ-test-user',
+      profileName: profileName ?? TEST_PROFILE_NAME,
     },
   };
   const args = ['pull', '--amplify', JSON.stringify({ appId, envName }), '--providers', JSON.stringify(providersConfig), '--yes'];

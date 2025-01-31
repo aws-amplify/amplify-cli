@@ -1,10 +1,6 @@
 import { deploy, launchDDBLocal, logDebug, terminateDDB, GraphQLClient } from '../__e2e__/utils';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { transformAndSynth, defaultTransformParams } from './test-synthesizer';
 
 jest.setTimeout(2000000);
 
@@ -61,13 +57,10 @@ describe('@index transformer', () => {
         updatedAt: AWSDateTime!
       }`;
 
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
-      featureFlags: {
-        getBoolean: (name) => (name === 'improvePluralization' ? true : false),
-      } as FeatureFlagProvider,
+    const out = transformAndSynth({
+      schema: validSchema,
+      ...defaultTransformParams,
     });
-    const out = transformer.transform(validSchema);
     let ddbClient;
     ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
     const result = await deploy(out, ddbClient);

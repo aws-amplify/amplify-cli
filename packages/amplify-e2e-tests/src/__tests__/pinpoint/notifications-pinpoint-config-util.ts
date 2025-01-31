@@ -6,13 +6,13 @@ import {
   deleteProjectDir,
   getAmplifyFlutterConfig,
   getAppId,
+  getAWSExports,
   removeAllNotificationChannel,
 } from '@aws-amplify/amplify-e2e-core';
 import { $TSAny, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getShortId } from '../../import-helpers';
-import { getAWSExports } from '../../schema-api-directives';
 
 const pinpointSettings = { resourceName: `notifications${getShortId()}` };
 

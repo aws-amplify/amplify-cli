@@ -86,9 +86,17 @@ const execHelper = async (
         error: errorParameter,
       }),
       stripFinalNewline: false,
+      stdout: 'inherit',
+      // added to do further checks before throwing due to EPIPE error
+      reject: false,
     });
-    childProcess?.stdout?.pipe(process.stdout);
     const childProcessResult = await childProcess;
+
+    // throw if child process ended with anything other than exitCode 0
+    if (childProcessResult && childProcess.exitCode !== 0) {
+      throw childProcessResult;
+    }
+
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
       printer.blankLine();
     }

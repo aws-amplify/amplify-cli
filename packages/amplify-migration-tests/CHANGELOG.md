@@ -3,6 +3,297 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.5.1...@aws-amplify/amplify-migration-tests@6.5.2) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.5.0...@aws-amplify/amplify-migration-tests@6.5.1) (2025-01-16)
+
+
+### Bug Fixes
+
+* removed migration tests between versions of Gen 1 ([#14062](https://github.com/aws-amplify/amplify-cli/issues/14062)) ([58856c8](https://github.com/aws-amplify/amplify-cli/commit/58856c8fb908ed21f3aea850d4dcc0d4a03f4114))
+
+
+
+
+
+# [6.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.4.1...@aws-amplify/amplify-migration-tests@6.5.0) (2025-01-02)
+
+
+### Features
+
+* lambda dotnet 8 support ([#14026](https://github.com/aws-amplify/amplify-cli/issues/14026)) ([540bfe1](https://github.com/aws-amplify/amplify-cli/commit/540bfe1187907609c3c813e1208c12b6a2a6ac6c))
+
+
+
+
+
+## [6.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.4.0...@aws-amplify/amplify-migration-tests@6.4.1) (2024-11-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+# [6.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.10...@aws-amplify/amplify-migration-tests@6.4.0) (2024-10-05)
+
+
+### Features
+
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
+
+
+
+
+
+## [6.3.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.9...@aws-amplify/amplify-migration-tests@6.3.10) (2024-08-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.8...@aws-amplify/amplify-migration-tests@6.3.9) (2024-06-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.7...@aws-amplify/amplify-migration-tests@6.3.8) (2024-06-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.6...@aws-amplify/amplify-migration-tests@6.3.7) (2024-06-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.5...@aws-amplify/amplify-migration-tests@6.3.6) (2024-05-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.4...@aws-amplify/amplify-migration-tests@6.3.5) (2024-05-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.3...@aws-amplify/amplify-migration-tests@6.3.4) (2024-04-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.2...@aws-amplify/amplify-migration-tests@6.3.3) (2024-04-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.1...@aws-amplify/amplify-migration-tests@6.3.2) (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.0...@aws-amplify/amplify-migration-tests@6.3.1) (2024-03-06)
+
+
+### Reverts
+
+* Revert "chore: bump data package versions (#13486)" (#13487) ([3280d40](https://github.com/aws-amplify/amplify-cli/commit/3280d40a5ab50c675b0e2b8050ad35a69c83cdc2)), closes [#13486](https://github.com/aws-amplify/amplify-cli/issues/13486) [#13487](https://github.com/aws-amplify/amplify-cli/issues/13487)
+
+
+
+
+
+# [6.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.9...@aws-amplify/amplify-migration-tests@6.3.0) (2023-12-11)
+
+
+### Features
+
+* bump data dependencies to launch RDS feature ([#13409](https://github.com/aws-amplify/amplify-cli/issues/13409)) ([7fbf29f](https://github.com/aws-amplify/amplify-cli/commit/7fbf29f56eb7335d20de0b5526fbed7795a2af09))
+
+
+
+
+
+## [6.2.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.7...@aws-amplify/amplify-migration-tests@6.2.9) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [6.2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.7...@aws-amplify/amplify-migration-tests@6.2.8) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.6...@aws-amplify/amplify-migration-tests@6.2.7) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.5...@aws-amplify/amplify-migration-tests@6.2.6) (2023-10-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.4...@aws-amplify/amplify-migration-tests@6.2.5) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.3...@aws-amplify/amplify-migration-tests@6.2.4) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.2...@aws-amplify/amplify-migration-tests@6.2.3) (2023-09-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.1...@aws-amplify/amplify-migration-tests@6.2.2) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.2.0...@aws-amplify/amplify-migration-tests@6.2.1) (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+# [6.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.1.3...@aws-amplify/amplify-migration-tests@6.2.0) (2023-08-09)
+
+
+### Bug Fixes
+
+* Dependabot alerts for semver, tough-cookie ([#12962](https://github.com/aws-amplify/amplify-cli/issues/12962)) ([175a86b](https://github.com/aws-amplify/amplify-cli/commit/175a86b89a54c65bb6e68c0609be503d61e39d63))
+* typo in migration tests manifest ([#12949](https://github.com/aws-amplify/amplify-cli/issues/12949)) ([bc97cfb](https://github.com/aws-amplify/amplify-cli/commit/bc97cfb68216a4fa2a94fd7b199914fcd9b58aff))
+
+
+### Features
+
+* replace oauth and userpoolclient lambdas with cfn and sdk calls ([#12935](https://github.com/aws-amplify/amplify-cli/issues/12935)) ([b3ab512](https://github.com/aws-amplify/amplify-cli/commit/b3ab5125f2ec405afd1af9d2f77b8683d5914010))
+* replace role mapping lambda in auth category ([#13003](https://github.com/aws-amplify/amplify-cli/issues/13003)) ([4ce0329](https://github.com/aws-amplify/amplify-cli/commit/4ce032932702305b9f9564a77418855ceb0f0fca))
+* run auth lambdas on node 18 ([#13011](https://github.com/aws-amplify/amplify-cli/issues/13011)) ([a9e12ff](https://github.com/aws-amplify/amplify-cli/commit/a9e12ff9552ba024887312a81bf411fb5c7926d0))
+
+
+
+
+
+## [6.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.1.2...@aws-amplify/amplify-migration-tests@6.1.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.1.1...@aws-amplify/amplify-migration-tests@6.1.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+## [6.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.1.0...@aws-amplify/amplify-migration-tests@6.1.1) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+# [6.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.0.4...@aws-amplify/amplify-migration-tests@6.1.0) (2023-07-20)
+
+
+### Bug Fixes
+
+* ensure AWS_REGION matches CLI_REGION in all tests ([#12837](https://github.com/aws-amplify/amplify-cli/issues/12837)) ([7be43e4](https://github.com/aws-amplify/amplify-cli/commit/7be43e41ded3bf09fd20cd9d9b95467491344cbe))
+* fix yarn path ([#12769](https://github.com/aws-amplify/amplify-cli/issues/12769)) ([dca98aa](https://github.com/aws-amplify/amplify-cli/commit/dca98aa35e544dce4cf0ac9f340919b87041e65f))
+
+
+### Features
+
+* lambda support for yarn2/3 and pnpm package managers ([#12750](https://github.com/aws-amplify/amplify-cli/issues/12750)) ([fd18195](https://github.com/aws-amplify/amplify-cli/commit/fd181952672efb0479ca6955c0c7a45fe248d1b1))
+
+
+### Reverts
+
+* Revert "chore: cleanup stale resources in CodeBuild (#12779)" (#12853) ([d19d17e](https://github.com/aws-amplify/amplify-cli/commit/d19d17ebcace24c9db56331c0c2bd053f8ec0966)), closes [#12779](https://github.com/aws-amplify/amplify-cli/issues/12779) [#12853](https://github.com/aws-amplify/amplify-cli/issues/12853)
+
+
+
+
+
+## [6.0.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.0.3...@aws-amplify/amplify-migration-tests@6.0.4) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
 ## [6.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.0.1...@aws-amplify/amplify-migration-tests@6.0.3) (2023-05-25)
 
 

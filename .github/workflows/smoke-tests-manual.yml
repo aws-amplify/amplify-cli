@@ -1,0 +1,27 @@
+name: Smoke Tests - Manual Run
+
+# This is required by aws-actions/configure-aws-credentials
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        required: false
+        type: string
+        default: '["macos-latest-xl", "ubuntu-latest", "amplify-cli_windows-latest_8-core"]'
+      versions:
+        required: false
+        type: string
+        default: '["rc", "latest"]'
+
+jobs:
+  call-smoke-tests:
+    if: github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/smoke-tests.yml
+    secrets: inherit
+    with:
+      os: ${{ github.event.inputs.os }}
+      versions: ${{ github.event.inputs.versions }}

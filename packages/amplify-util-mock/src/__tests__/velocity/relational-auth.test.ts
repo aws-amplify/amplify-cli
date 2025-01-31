@@ -2,21 +2,14 @@ import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration, FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
-// eslint-disable-next-line import/no-unresolved
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
+import { DeploymentResources } from '../../__e2e_v2__/test-synthesizer/deployment-resources';
+import { testTransform } from '../v2-test-synthesizer/test-transform';
 import { VelocityTemplateSimulator, getJWTToken, getIAMToken } from '../../velocity';
 
-const mockFeatureFlags: FeatureFlagProvider = {
-  getBoolean: (value: string): boolean => {
-    if (value === 'useSubUsernameForDefaultIdentityClaim') {
-      return true;
-    }
-    return false;
-  },
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
+type TestTransform = {
+  transform: (schema: string) => DeploymentResources;
 };
 
 jest.mock('@aws-amplify/amplify-prompts');
@@ -25,7 +18,7 @@ const USER_POOL_ID = 'us-fake-1ID';
 
 describe('relational tests', () => {
   let vtlTemplate: VelocityTemplateSimulator;
-  let transformer: GraphQLTransform;
+  let transformer: TestTransform;
   const ownerRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
     jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
@@ -58,19 +51,22 @@ describe('relational tests', () => {
         },
       ],
     };
-    transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [
-        new ModelTransformer(),
-        new AuthTransformer(),
-        new PrimaryKeyTransformer(),
-        new IndexTransformer(),
-        new HasManyTransformer(),
-        new HasOneTransformer(),
-        new BelongsToTransformer(),
-      ],
-      featureFlags: mockFeatureFlags,
-    });
+    transformer = {
+      transform: (schema: string) =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [
+            new ModelTransformer(),
+            new AuthTransformer(),
+            new PrimaryKeyTransformer(),
+            new IndexTransformer(),
+            new HasManyTransformer(),
+            new HasOneTransformer(),
+            new BelongsToTransformer(),
+          ],
+        }),
+    };
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
 
@@ -345,7 +341,7 @@ describe('relational tests', () => {
 describe('with identity claim feature flag disabled', () => {
   describe('relational tests', () => {
     let vtlTemplate: VelocityTemplateSimulator;
-    let transformer: GraphQLTransform;
+    let transformer: TestTransform;
     const ownerRequest: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
       jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
@@ -378,22 +374,25 @@ describe('with identity claim feature flag disabled', () => {
           },
         ],
       };
-      transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [
-          new ModelTransformer(),
-          new AuthTransformer(),
-          new PrimaryKeyTransformer(),
-          new IndexTransformer(),
-          new HasManyTransformer(),
-          new HasOneTransformer(),
-          new BelongsToTransformer(),
-        ],
-        featureFlags: {
-          ...mockFeatureFlags,
-          ...{ getBoolean: () => false },
-        },
-      });
+      transformer = {
+        transform: (schema: string) =>
+          testTransform({
+            schema,
+            authConfig,
+            transformers: [
+              new ModelTransformer(),
+              new AuthTransformer(),
+              new PrimaryKeyTransformer(),
+              new IndexTransformer(),
+              new HasManyTransformer(),
+              new HasOneTransformer(),
+              new BelongsToTransformer(),
+            ],
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: false,
+            },
+          }),
+      };
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
 

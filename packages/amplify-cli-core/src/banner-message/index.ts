@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import semver from 'semver';
-import ProxyAgent from 'proxy-agent';
+import { ProxyAgent } from 'proxy-agent';
 import { getLogger } from '../logger';
 
 export type Message = {
@@ -43,7 +43,8 @@ export class BannerMessage {
     try {
       logger.info(`fetch banner messages from ${url}`);
       const proxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-      const fetchOptions = proxy ? { agent: new ProxyAgent(proxy) } : {};
+      // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
+      const fetchOptions = proxy ? { agent: new ProxyAgent() } : {};
       const result = await fetch(url, fetchOptions);
       const body = await result.json();
       if (!semver.satisfies(body.version, MAX_SUPPORTED_MESSAGE_CONFIG_VERSION)) {

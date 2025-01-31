@@ -273,4 +273,60 @@ describe('Check Auth Template', () => {
     );
     expect(process.exit).toBeCalledTimes(1);
   });
+
+  it('should include oauth settings in cfn when enabled oauth', async () => {
+    getCLIInputPayload_mock.mockReset();
+    getCLIInputPayload_mock.mockReturnValue({
+      cognitoConfig: {
+        ...inputPayload1.cognitoConfig,
+        oAuthMetadata:
+          '{"AllowedOAuthFlows":["code"],"AllowedOAuthScopes":["phone","email","openid","profile","aws.cognito.signin.user.admin"],"CallbackURLs":["https://localhost:3000/"]}',
+      },
+    });
+
+    const resourceName = 'mockResource';
+    const authTransform = new AmplifyAuthTransform(resourceName);
+    const mock_template = await authTransform.transform(context_stub_typed);
+    expect(mock_template.Resources?.UserPoolClient.Properties.AllowedOAuthFlows).toMatchInlineSnapshot(`
+      [
+        "code",
+      ]
+    `);
+    expect(mock_template.Resources?.UserPoolClient.Properties.AllowedOAuthScopes).toMatchInlineSnapshot(`
+      [
+        "phone",
+        "email",
+        "openid",
+        "profile",
+        "aws.cognito.signin.user.admin",
+      ]
+    `);
+    expect(mock_template.Resources?.UserPoolClient.Properties.CallbackURLs).toMatchInlineSnapshot(`
+      [
+        "https://localhost:3000/",
+      ]
+    `);
+    expect(mock_template.Resources?.UserPoolClient.Properties.LogoutURLs).toMatchInlineSnapshot(`undefined`);
+
+    expect(mock_template.Resources?.UserPoolClientWeb.Properties.AllowedOAuthFlows).toMatchInlineSnapshot(`
+      [
+        "code",
+      ]
+    `);
+    expect(mock_template.Resources?.UserPoolClientWeb.Properties.AllowedOAuthScopes).toMatchInlineSnapshot(`
+      [
+        "phone",
+        "email",
+        "openid",
+        "profile",
+        "aws.cognito.signin.user.admin",
+      ]
+    `);
+    expect(mock_template.Resources?.UserPoolClientWeb.Properties.CallbackURLs).toMatchInlineSnapshot(`
+      [
+        "https://localhost:3000/",
+      ]
+    `);
+    expect(mock_template.Resources?.UserPoolClientWeb.Properties.LogoutURLs).toMatchInlineSnapshot(`undefined`);
+  });
 });

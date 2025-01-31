@@ -16,8 +16,10 @@ import {
   amplifyPullNonInteractive,
   amplifyPullWithCtrlCOnFrameworkPrompt,
 } from '@aws-amplify/amplify-e2e-core';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { addEnvironment } from '../environment/env';
 
 describe('amplify pull in two directories', () => {
   let projRoot: string;
@@ -56,6 +58,24 @@ describe('amplify pull in two directories', () => {
     const appId = getAppId(projRoot);
     await amplifyPullWithCtrlCOnFrameworkPrompt(projRoot2, { appId, envName });
     await amplifyPull(projRoot2, { appId, envName, emptyDir: true });
+  });
+
+  it('appends pulled env to local-aws-info contents instead of overriding existing env', async () => {
+    const envName = 'testing';
+    const newEnvName = 'newenv';
+    const expectedEnvs = [envName, newEnvName];
+
+    // add both envs to project
+    await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
+    await addEnvironment(projRoot, { envName: newEnvName });
+
+    // pull twice for both envs in other directory
+    const appId = getBackendAmplifyMeta(projRoot)?.providers?.awscloudformation?.AmplifyAppId;
+    await amplifyPullNonInteractive(projRoot2, { appId, envName: envName });
+    await amplifyPullNonInteractive(projRoot2, { appId, envName: newEnvName });
+
+    // assert that local-aws-info.json contains both envs
+    expect(Object.keys(stateManager.getLocalAWSInfo(projRoot2))).toEqual(expectedEnvs);
   });
 });
 

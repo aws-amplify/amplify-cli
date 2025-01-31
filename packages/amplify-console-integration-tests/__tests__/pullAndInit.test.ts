@@ -134,7 +134,7 @@ describe('amplify console build', () => {
     const originalProjectDirPath = await util.createNewProjectDir('console-original');
     await headlessInit(originalProjectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(originalProjectDirPath)).toBeTruthy();
-    let originalTeamProviderInfo = getTeamProviderInfo(originalProjectDirPath);
+    const originalTeamProviderInfo = getTeamProviderInfo(originalProjectDirPath);
     expect(originalTeamProviderInfo).toBeDefined();
     expect(originalTeamProviderInfo['devteama']).toBeDefined();
 
@@ -153,7 +153,7 @@ describe('amplify console build', () => {
     };
     await headlessInit(clonedProjectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(clonedProjectDirPath)).toBeTruthy();
-    let clonedTeamProviderInfo = getTeamProviderInfo(clonedProjectDirPath);
+    const clonedTeamProviderInfo = getTeamProviderInfo(clonedProjectDirPath);
     expect(clonedTeamProviderInfo).toBeDefined();
     expect(clonedTeamProviderInfo['devteamb']).toBeDefined();
 
@@ -246,7 +246,7 @@ describe('amplify app console tests', () => {
     expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     // with frontend
-    const frontendConfig = deleteAmplifyDir(projRoot);
+    deleteAmplifyDir(projRoot);
     await headlessPull(
       projRoot,
       { envName, appId },

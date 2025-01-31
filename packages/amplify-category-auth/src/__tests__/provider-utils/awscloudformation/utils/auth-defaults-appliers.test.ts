@@ -23,10 +23,8 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
   return {
     ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
     FeatureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        if (name === 'auth.enableCaseInsensitivity') {
-          return true;
-        }
+      getBoolean: jest.fn().mockImplementation((name) => {
+        return name === 'auth.enableCaseInsensitivity';
       }),
       getNumber: jest.fn(),
       getObject: jest.fn(),

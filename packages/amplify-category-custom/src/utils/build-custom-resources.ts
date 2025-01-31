@@ -15,6 +15,7 @@ import * as path from 'path';
 import { categoryName, TYPES_DIR_NAME, AMPLIFY_RESOURCES_TYPE_DEF_FILENAME } from './constants';
 import { getAllResources } from './dependency-management-utils';
 import { generateCloudFormationFromCDK } from './generate-cfn-from-cdk';
+import { skipHooks } from '@aws-amplify/amplify-cli-core';
 
 type ResourceMeta = ResourceTuple & {
   service: string;
@@ -69,14 +70,18 @@ export const generateDependentResourcesType = async (): Promise<void> => {
 
 const buildResource = async (resource: ResourceMeta): Promise<void> => {
   const targetDir = path.resolve(path.join(pathManager.getBackendDirPath(), categoryName, resource.resourceName));
-
+  if (skipHooks()) {
+    throw new AmplifyError('DeploymentError', {
+      message: 'A flag to disable custom resources has been detected, please deploy from a different environment.',
+    }); // should rollback
+  }
   // generate dynamic types for Amplify resources
   await generateDependentResourcesType();
 
   const packageManager = await getPackageManager(targetDir);
 
   if (packageManager === null) {
-    throw new Error('No package manager found. Please install npm or yarn to compile overrides for this project.');
+    throw new Error('No package manager found. Please install npm, yarn, or pnpm to compile overrides for this project.');
   }
 
   try {

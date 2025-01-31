@@ -1,16 +1,18 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  createNewProjectDir,
-  deleteProjectDir,
+  addApi,
   addFeatureFlag,
   amplifyPush,
-  addApi,
   amplifyPushUpdate,
+  configureAmplify,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getApiKey,
+  getConfiguredAppsyncClientAPIKeyAuth,
+  initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
+import { testQueries, updateSchemaInTestProject } from '../../schema-api-directives/common';
 import { addSimpleFunction, updateFunctionNameInSchema } from '../../schema-api-directives/functionTester';
-import { updateSchemaInTestProject, testQueries } from '../../schema-api-directives/common';
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../../schema-api-directives/authHelper';
 
 describe('api directives @function v1 to v2 migration', () => {
   let projectDir: string;

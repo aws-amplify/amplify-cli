@@ -1,9 +1,10 @@
 // normalize command line arguments, allow verb / noun place switch
-import { constants, PluginPlatform, pathManager, stateManager, commandsInfo } from '@aws-amplify/amplify-cli-core';
+import { constants, PluginPlatform, pathManager, stateManager, commandsInfo, getPackageManager } from '@aws-amplify/amplify-cli-core';
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
 import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
 import { CLIInput } from './domain/command-input';
+import { EOL } from 'os';
 
 export function getCommandLineInput(pluginPlatform: PluginPlatform): CLIInput {
   const result = new CLIInput(process.argv);
@@ -139,7 +140,7 @@ function normalizeInput(input: CLIInput): CLIInput {
   return input;
 }
 
-export function verifyInput(pluginPlatform: PluginPlatform, input: CLIInput): InputVerificationResult {
+export async function verifyInput(pluginPlatform: PluginPlatform, input: CLIInput): Promise<InputVerificationResult> {
   const result = new InputVerificationResult();
 
   // Normalize status command options
@@ -235,7 +236,12 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: CLIInput): In
         commandString += ' ' + input.subCommands!.join(' ');
       }
 
-      result.message = `The Amplify CLI can NOT find command: ${commandString}`;
+      const packageManager = (await getPackageManager())?.packageManager ?? 'npm';
+      const executeCommand = packageManager === 'npm' ? 'npx' : `${packageManager} dlx`;
+
+      const amplifyGen2Message = `If you are trying to use Amplify Gen 2, install the @aws-amplify/backend-cli package or execute using the package name directly:${EOL}${executeCommand} @aws-amplify/backend-cli${commandString}`;
+
+      result.message = `The Amplify CLI can NOT find command: ${commandString}${EOL}${EOL}${amplifyGen2Message}`;
     }
   } else {
     result.verified = false;

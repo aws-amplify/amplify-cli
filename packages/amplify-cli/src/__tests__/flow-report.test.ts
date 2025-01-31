@@ -14,7 +14,6 @@ import {
 } from 'amplify-headless-interface';
 import { v4 as uuid } from 'uuid';
 import { Redactor } from '@aws-amplify/amplify-cli-logger';
-import crypto from 'crypto';
 import { CLIFlowReport } from '../domain/amplify-usageData/FlowReport';
 
 describe('Test FlowReport Logging', () => {
@@ -215,8 +214,6 @@ const getGeoHeadlessTestInput = () => {
   };
   return headlessPayload;
 };
-
-const getAPIHeadlessTestInput = () => {};
 
 const getGraphQLHeadlessTestInput = () => {
   const headlessPayload: AddApiRequest = {

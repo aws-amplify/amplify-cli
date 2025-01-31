@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-environment-parameters",
-  "version": "1.6.3",
+  "version": "1.9.16",
   "description": "Amplify CLI environment parameter manager",
   "repository": {
     "type": "git",
@@ -27,12 +27,12 @@
     "generate-schemas": "mkdirp lib/schemas src/schemas && ts-json-schema-generator --path src/backend-parameters.d.ts --type BackendParameters --no-type-check --out lib/schemas/BackendParameters.schema.json && copyfiles --flat lib/schemas/BackendParameters.schema.json src/schemas"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.8",
+    "@aws-amplify/amplify-cli-core": "4.3.11",
     "ajv": "^6.12.6",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1354.0",
+    "aws-sdk": "^2.1464.0",
     "mkdirp": "^1.0.4",
     "ts-json-schema-generator": "~1.1.2"
   },

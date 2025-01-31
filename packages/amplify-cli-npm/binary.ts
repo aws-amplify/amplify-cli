@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { spawnSync, execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import util from 'util';
 import tar from 'tar-stream';
 import { createGunzip } from 'zlib';
@@ -72,24 +72,12 @@ const getCompressedBinaryUrl = (): string => {
   const compressedBinaryName = getPlatformCompressedBinaryName();
   let url = `${BINARY_LOCATION}/${version}/${compressedBinaryName}`;
 
-  if (process.env.IS_AMPLIFY_CI) {
-    url = url.replace('.tgz', `-${getCommitHash()}.tgz`);
+  if (process.env.IS_AMPLIFY_CI && process.env.CODEBUILD_SRC_DIR) {
+    // use cloudfront distribution for e2e
+    url = `https://${process.env.PKG_CLI_CLOUDFRONT_URL}/${version}/${compressedBinaryName}`;
   }
 
   return url;
-};
-
-/**
- * CI-only, used for testing hash-based binaries
- *
- * @returns string
- */
-const getCommitHash = (): string => {
-  if (process.env.hash) {
-    return process.env.hash;
-  }
-  const hash = execSync('(git rev-parse HEAD | cut -c 1-12) || false').toString();
-  return hash.substr(0, 12);
 };
 
 /**

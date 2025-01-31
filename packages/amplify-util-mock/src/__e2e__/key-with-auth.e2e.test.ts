@@ -28,7 +28,7 @@ let GRAPHQL_CLIENT_2 = undefined;
  */
 let GRAPHQL_CLIENT_3 = undefined;
 
-let USER_POOL_ID = 'fake_user_pool';
+const USER_POOL_ID = 'fake_user_pool';
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
@@ -86,7 +86,7 @@ beforeAll(async () => {
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
 
-    const idToken = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [
+    const idToken = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME1, USERNAME1, [
       ADMIN_GROUP_NAME,
       PARTICIPANT_GROUP_NAME,
       PARTICIPANT_GROUP_NAME,
@@ -95,12 +95,12 @@ beforeAll(async () => {
       Authorization: idToken,
     });
 
-    const idToken2 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [DEVS_GROUP_NAME]);
+    const idToken2 = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME2, USERNAME2, [DEVS_GROUP_NAME]);
     GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken2,
     });
 
-    const idToken3 = signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME3, USERNAME3, []);
+    const idToken3 = await signUpAddToGroupAndGetJwtToken(USER_POOL_ID, USERNAME3, USERNAME3, []);
     GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, {
       Authorization: idToken3,
     });
@@ -196,40 +196,6 @@ async function createOrder(client: GraphQLClient, customerEmail: string, orderId
   const result = await client.query(
     `mutation CreateOrder($input: CreateOrderInput!) {
         createOrder(input: $input) {
-            customerEmail
-            orderId
-            createdAt
-        }
-    }`,
-    {
-      input: { customerEmail, orderId },
-    },
-  );
-  logDebug(JSON.stringify(result, null, 4));
-  return result;
-}
-
-async function updateOrder(client: GraphQLClient, customerEmail: string, orderId: string) {
-  const result = await client.query(
-    `mutation UpdateOrder($input: UpdateOrderInput!) {
-        updateOrder(input: $input) {
-            customerEmail
-            orderId
-            createdAt
-        }
-    }`,
-    {
-      input: { customerEmail, orderId },
-    },
-  );
-  logDebug(JSON.stringify(result, null, 4));
-  return result;
-}
-
-async function deleteOrder(client: GraphQLClient, customerEmail: string, orderId: string) {
-  const result = await client.query(
-    `mutation DeleteOrder($input: DeleteOrderInput!) {
-        deleteOrder(input: $input) {
             customerEmail
             orderId
             createdAt

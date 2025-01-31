@@ -32,7 +32,7 @@ export class Git {
   }
 
   getShortSha(ref: string = 'HEAD'): string {
-    const command = ['git', 'rev-parse', '--short', ref];
+    const command = ['git', 'rev-parse', '--short=15', ref];
     return execa.sync(command[0], command.slice(1)).stdout.trim();
   }
 
@@ -146,8 +146,8 @@ type Args = {
   devBranch: string;
   repository: string;
 };
-function getArgs(): Args {
-  const args = yargs(process.argv.slice(2))
+async function getArgs(): Promise<Args> {
+  const args = await yargs(process.argv.slice(2))
     .string('release-branch')
     .default('release-branch', 'main')
     .string('dev-branch')
@@ -167,7 +167,7 @@ function getArgs(): Args {
 }
 
 export async function main() {
-  const { continue: continueArg, releaseBranch, devBranch, repository, mergeBranch: mergeBranchArg } = getArgs();
+  const { continue: continueArg, releaseBranch, devBranch, repository, mergeBranch: mergeBranchArg } = await getArgs();
   const git = new Git();
   const rlInterface = rl.createInterface({
     input: stdin,

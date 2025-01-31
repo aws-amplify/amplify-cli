@@ -9,16 +9,15 @@ import {
   JSONUtilities,
   LocalEnvInfo,
   pathManager,
+  runOverride,
   stateManager,
   Tag,
   Template,
 } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import * as vm from 'vm2';
 
 import fs from 'fs-extra';
-import moment from 'moment';
 import path from 'path';
 import sequential from 'promise-sequential';
 import { getDefaultTemplateDescription } from './template-description-utils';
@@ -56,10 +55,9 @@ export const run = async (context: $TSContext): Promise<void> => {
     context.exeInfo ??= { inputParams: {}, localEnvInfo: {} as unknown as LocalEnvInfo };
     const { projectName } = context.exeInfo.projectConfig;
     const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
-    /* eslint-disable-next-line spellcheck/spell-checker */
-    const timeStamp = process.env.CIRCLECI ? uuid().substring(0, 5) : `${moment().format('Hmmss')}`;
+    const uuidStamp = uuid().substring(0, 5);
     const { envName = '' } = context.exeInfo.localEnvInfo;
-    let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
+    let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${uuidStamp}`);
     const awsConfigInfo = await configurationManager.getAwsConfig(context);
 
     await configurePermissionsBoundaryForInit(context);
@@ -92,31 +90,20 @@ export const run = async (context: $TSContext): Promise<void> => {
     };
 
     let projectInitialized = false;
+    let overrideDir = '';
     let overrideFilePath = '';
     try {
       const backendDir = pathManager.getBackendDirPath();
+      overrideDir = path.join(backendDir, 'awscloudformation');
       overrideFilePath = path.join(backendDir, 'awscloudformation', 'build', 'override.js');
       projectInitialized = true;
     } catch (e) {
       // project not initialized
     }
     if (projectInitialized && fs.existsSync(overrideFilePath)) {
+      const projectInfo = getProjectInfo();
       try {
-        const overrideCode: string = await fs.readFile(overrideFilePath, 'utf-8');
-        if (overrideCode) {
-          const sandboxNode = new vm.NodeVM({
-            console: 'inherit',
-            timeout: 5000,
-            sandbox: {},
-            require: {
-              context: 'sandbox',
-              builtin: ['path'],
-              external: true,
-            },
-          });
-          const projectInfo = getProjectInfo();
-          await sandboxNode.run(overrideCode).override(configuration, projectInfo);
-        }
+        await runOverride(overrideDir, configuration, projectInfo);
       } catch (err) {
         // absolutely want to throw if there is a compile or runtime error
         throw new AmplifyError(

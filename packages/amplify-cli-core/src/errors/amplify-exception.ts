@@ -169,6 +169,7 @@ export type AmplifyErrorType =
   | 'ResourceRemoveError'
   | 'SchemaNotFoundError'
   | 'SchemaValidationError'
+  | 'ScriptingFeaturesDisabledError'
   | 'SearchableMockProcessError'
   | 'SearchableMockUnavailablePortError'
   | 'SearchableMockUnsupportedPlatformError'

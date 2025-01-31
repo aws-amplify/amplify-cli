@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, AmplifyFault, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, $TSContext, AmplifyFault, AmplifyError, parseArn } from '@aws-amplify/amplify-cli-core';
 import { IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import { CognitoIdentity } from 'aws-sdk';
 import { PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse } from 'aws-sdk/clients/cognitoidentity';
@@ -101,10 +101,10 @@ export class IdentityPoolService implements IIdentityPoolService {
     let resourceName;
 
     if (arn) {
-      const parts = arn.split('/');
-
-      if (parts.length === 2) {
-        resourceName = parts[1];
+      const fullRoleName = parseArn(arn).resource;
+      const parts = fullRoleName.split('/');
+      if (parts.length >= 2) {
+        resourceName = [...parts].pop();
       }
     }
 

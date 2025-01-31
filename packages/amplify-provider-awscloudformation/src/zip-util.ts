@@ -1,5 +1,4 @@
-import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
-import extract from 'extract-zip';
+import { AmplifyFault, extract } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import path from 'path';
 import { S3 } from './aws-utils/aws-s3';
@@ -15,6 +14,15 @@ export const downloadZip = async (s3: S3, tempDir: string, zipFileName: string, 
   log();
   const objectResult = await s3.getFile({ Key: zipFileName }, envName);
   fs.ensureDirSync(tempDir);
+
+  // After updating node types from 12.x to 18.x the objectResult
+  // became not directly assignable to Buffer.from parameter type.
+  // However, this code has been running fine since 2022 which means that
+  // runtime types are compatible.
+  // The alternative would require multiple logical branches to handle type mismatch
+  // that doesn't seem to exist in runtime.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const buff = Buffer.from(objectResult);
   const tempFile = `${tempDir}/${zipFileName}`;
   await fs.writeFile(tempFile, buff);

@@ -1,4 +1,3 @@
-/* eslint-disable spellcheck/spell-checker */
 import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
   amplifyPushAuth,
@@ -6,6 +5,7 @@ import {
   deleteProject,
   deleteProjectDir,
   getAppId,
+  getProjectMeta,
   initJSProjectWithProfile,
   pullProject,
 } from '@aws-amplify/amplify-e2e-core';
@@ -47,7 +47,11 @@ describe('amplify pull', () => {
       name: 'import',
       envName: 'integtest',
     });
-    await importSingleIdentityPoolAndUserPool(importRoot, settings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+
+    const meta = getProjectMeta(importRoot);
+    const region = meta.providers.awscloudformation.Region;
+
+    await importSingleIdentityPoolAndUserPool(importRoot, settings.userPoolName, region, { native: '_app_client ', web: '_app_clientWeb' });
     await amplifyPushAuth(importRoot);
 
     const appId = getAppId(importRoot);

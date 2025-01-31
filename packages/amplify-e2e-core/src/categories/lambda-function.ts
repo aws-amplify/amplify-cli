@@ -7,12 +7,12 @@ import _ from 'lodash';
 import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 
-type FunctionRuntimes = 'dotnet6' | 'go' | 'java' | 'nodejs' | 'python';
+type FunctionRuntimes = 'dotnet8' | 'go' | 'java' | 'nodejs' | 'python';
 
 type FunctionCallback = (chain: any, cwd: string, settings: any) => any;
 
 // runtimeChoices are shared between tests
-export const runtimeChoices = ['.NET 6', 'Go', 'Java', 'NodeJS', 'Python'];
+export const runtimeChoices = ['.NET 8', 'Go', 'Java', 'NodeJS', 'Python'];
 
 // templateChoices is per runtime
 const dotNetTemplateChoices = [
@@ -51,7 +51,7 @@ const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: a
   if (settings.resourceChoices === undefined) {
     settings.resourceChoices = settings.resources;
   }
-  // when single resource, it gets autoselected
+  // when single resource, it gets auto selected
   if (settings.resourceChoices.length > 1) {
     chain.wait('Select the one you would like your Lambda to access');
     if (settings.keepExistingResourceSelection) {
@@ -116,15 +116,26 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
     }
   }
   if (settings.secretsConfig) {
-    if (settings.secretsConfig.operation === 'add') {
-      throw new Error('Secres update walkthrough only supports update and delete');
-    }
-    // this walkthrough assumes 1 existing secret is configured for the function
     const actions = ['Add a secret', 'Update a secret', 'Remove secrets', "I'm done"];
-    const action = settings.secretsConfig.operation === 'delete' ? actions[2] : actions[1];
+    const operation = settings.secretsConfig.operation;
+    let action: string;
+    if (operation === 'add') {
+      action = actions[0];
+    } else if (operation === 'delete') {
+      action = actions[2];
+    } else {
+      action = actions[1];
+    }
     chain.wait('What do you want to do?');
     singleSelect(chain, action, actions);
-    switch (settings.secretsConfig.operation) {
+    switch (operation) {
+      case 'add': {
+        chain.wait('Enter a secret name');
+        chain.sendLine(settings.secretsConfig.name);
+        chain.wait('Enter the value for');
+        chain.sendLine(settings.secretsConfig.value);
+        break;
+      }
       case 'delete': {
         chain.wait('Select the secrets to delete:');
         chain.sendLine(' '); // assumes one secret
@@ -137,14 +148,27 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
         break;
       }
     }
+
     chain.wait('What do you want to do?');
     chain.sendCarriageReturn(); // "I'm done"
+
+    if (operation === 'add') {
+      // assumes function is already pushed to the cloud
+      chain.wait('This will immediately update secret values in the cloud');
+      chain.sendCarriageReturn(); // "Yes"
+      chain.wait('Do you want to edit the local lambda function now');
+      chain.sendCarriageReturn(); // "No"
+    }
   }
 };
 
 export type CoreFunctionSettings = {
   testingWithLatestCodebase?: boolean;
   name?: string;
+  packageManager?: {
+    name: string;
+    command?: string;
+  };
   functionTemplate?: string;
   expectFailure?: boolean;
   additionalPermissions?: any;
@@ -206,7 +230,8 @@ const coreFunction = (
         settings.schedulePermissions ||
         settings.layerOptions ||
         settings.environmentVariables ||
-        settings.secretsConfig
+        settings.secretsConfig ||
+        settings.packageManager
       ) {
         chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
@@ -255,6 +280,20 @@ const coreFunction = (
           }
           chain.sendConfirmYes();
           addSecretWalkthrough(chain, settings.secretsConfig);
+        }
+
+        if (runtime === 'nodejs') {
+          chain.wait('Choose the package manager that you want to use:');
+          if (settings.packageManager?.name) {
+            chain.sendLine(settings.packageManager.name);
+          } else {
+            chain.sendCarriageReturn(); // npm
+          }
+
+          if (settings.packageManager?.name.toLowerCase().includes('custom')) {
+            chain.wait('Enter command or script path to build your function:');
+            chain.sendLine(settings.packageManager.command);
+          }
         }
       } else {
         chain.sendConfirmNo();
@@ -397,9 +436,9 @@ export interface LayerOptions {
   select?: string[]; // list options to select
   layerAndFunctionExist?: boolean; // whether this test involves both a function and a layer
   expectedListOptions?: string[]; // the expected list of all layers
-  versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
+  versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the version and expected version for each layer
   customArns?: string[]; // external ARNs to enter
-  skipLayerAssignment?: boolean; // true if the layer assigment must be left unchanged for the function, otherwise true
+  skipLayerAssignment?: boolean; // true if the layer assignment must be left unchanged for the function, otherwise true
   layerWalkthrough?: (chain: ExecutionContext) => void; // If this function is provided the addLayerWalkthrough will invoke it instead of the standard one, suitable for full customization
 }
 
@@ -616,7 +655,7 @@ export const functionCloudInvoke = async (
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnet6':
+    case 'dotnet8':
       return dotNetTemplateChoices;
     case 'go':
       return goTemplateChoices;
@@ -633,8 +672,8 @@ const getTemplateChoices = (runtime: FunctionRuntimes) => {
 
 const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
   switch (runtime) {
-    case 'dotnet6':
-      return '.NET 6';
+    case 'dotnet8':
+      return '.NET 8';
     case 'go':
       return 'Go';
     case 'java':

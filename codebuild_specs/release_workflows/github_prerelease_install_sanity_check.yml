@@ -1,0 +1,11 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _githubPrereleaseInstallSanityCheck
+
+artifacts:
+  files:
+    - 'shared-scripts.sh'

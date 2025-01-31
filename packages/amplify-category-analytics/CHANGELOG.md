@@ -3,6 +3,225 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.37](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.36...@aws-amplify/amplify-category-analytics@5.0.37) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.36](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.35...@aws-amplify/amplify-category-analytics@5.0.36) (2024-08-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.35](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.34...@aws-amplify/amplify-category-analytics@5.0.35) (2024-06-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.34](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.33...@aws-amplify/amplify-category-analytics@5.0.34) (2024-06-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.33](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.32...@aws-amplify/amplify-category-analytics@5.0.33) (2024-06-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.32](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.31...@aws-amplify/amplify-category-analytics@5.0.32) (2024-05-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.31](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.30...@aws-amplify/amplify-category-analytics@5.0.31) (2024-05-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.30](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.29...@aws-amplify/amplify-category-analytics@5.0.30) (2024-04-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.29](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.28...@aws-amplify/amplify-category-analytics@5.0.29) (2024-04-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.28](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.27...@aws-amplify/amplify-category-analytics@5.0.28) (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.27](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.26...@aws-amplify/amplify-category-analytics@5.0.27) (2024-03-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.26](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.25...@aws-amplify/amplify-category-analytics@5.0.26) (2023-12-11)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.25](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.23...@aws-amplify/amplify-category-analytics@5.0.25) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [5.0.24](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.23...@aws-amplify/amplify-category-analytics@5.0.24) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.23](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.22...@aws-amplify/amplify-category-analytics@5.0.23) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.21...@aws-amplify/amplify-category-analytics@5.0.22) (2023-10-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.21](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.20...@aws-amplify/amplify-category-analytics@5.0.21) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.19...@aws-amplify/amplify-category-analytics@5.0.20) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.18...@aws-amplify/amplify-category-analytics@5.0.19) (2023-09-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.18](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.17...@aws-amplify/amplify-category-analytics@5.0.18) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.16...@aws-amplify/amplify-category-analytics@5.0.17) (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.15...@aws-amplify/amplify-category-analytics@5.0.16) (2023-08-09)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.14...@aws-amplify/amplify-category-analytics@5.0.15) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.13...@aws-amplify/amplify-category-analytics@5.0.14) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.12...@aws-amplify/amplify-category-analytics@5.0.13) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.11...@aws-amplify/amplify-category-analytics@5.0.12) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
+## [5.0.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.10...@aws-amplify/amplify-category-analytics@5.0.11) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-analytics
+
+
+
+
+
 ## [5.0.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-analytics@5.0.8...@aws-amplify/amplify-category-analytics@5.0.10) (2023-05-25)
 
 

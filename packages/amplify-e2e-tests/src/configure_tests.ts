@@ -8,7 +8,7 @@ async function setupAmplify() {
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || !REGION) {
       throw new Error('Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and CLI_REGION in .env');
     }
-    await configure({
+    await configure(null, {
       accessKeyId: AWS_ACCESS_KEY_ID,
       secretAccessKey: AWS_SECRET_ACCESS_KEY,
       profileName: 'amplify-integ-test-user',

@@ -1,12 +1,15 @@
-/* eslint-disable import/no-unresolved */
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
+import { DeploymentResources } from '../../__e2e_v2__/test-synthesizer/deployment-resources';
+import { testTransform } from '../v2-test-synthesizer/test-transform';
 import { VelocityTemplateSimulator, AppSyncVTLContext, getJWTToken } from '../../velocity';
-import { featureFlags } from './test-helper';
+
+type TestTransform = {
+  transform: (schema: string) => DeploymentResources;
+};
 
 jest.mock('@aws-amplify/amplify-prompts');
 
@@ -14,7 +17,7 @@ const USER_POOL_ID = 'us-fake-1ID';
 
 describe('@model owner mutation checks', () => {
   let vtlTemplate: VelocityTemplateSimulator;
-  let transformer: GraphQLTransform;
+  let transformer: TestTransform;
   const ownerRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
     jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
@@ -29,11 +32,14 @@ describe('@model owner mutation checks', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
-    });
+    transformer = {
+      transform: (schema: string) =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [new ModelTransformer(), new AuthTransformer()],
+        }),
+    };
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
 
@@ -250,7 +256,7 @@ describe('@model owner mutation checks', () => {
 
 describe('@model operations', () => {
   let vtlTemplate: VelocityTemplateSimulator;
-  let transformer: GraphQLTransform;
+  let transformer: TestTransform;
   const ownerRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
     jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
@@ -286,11 +292,14 @@ describe('@model operations', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
-    });
+    transformer = {
+      transform: (schema: string) =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [new ModelTransformer(), new AuthTransformer()],
+        }),
+    };
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
 
@@ -528,7 +537,7 @@ describe('@model operations', () => {
 
 describe('@model field auth', () => {
   let vtlTemplate: VelocityTemplateSimulator;
-  let transformer: GraphQLTransform;
+  let transformer: TestTransform;
   const ownerRequest: AppSyncGraphQLExecutionContext = {
     requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
     jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
@@ -548,11 +557,14 @@ describe('@model field auth', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer()],
-      featureFlags,
-    });
+    transformer = {
+      transform: (schema: string) =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [new ModelTransformer(), new AuthTransformer()],
+        }),
+    };
     vtlTemplate = new VelocityTemplateSimulator({ authConfig });
   });
 
@@ -728,16 +740,7 @@ describe('@model field auth', () => {
 });
 
 describe('@model @primaryIndex @index auth', () => {
-  let vtlTemplate: VelocityTemplateSimulator;
-  let transformer: GraphQLTransform;
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const ownerRequest: AppSyncGraphQLExecutionContext = {
-    requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
-    jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
-    headers: {},
-    sourceIp: '',
-  };
+  let transformer: TestTransform;
 
   beforeEach(() => {
     const authConfig: AppSyncAuthConfiguration = {
@@ -746,25 +749,14 @@ describe('@model @primaryIndex @index auth', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    transformer = new GraphQLTransform({
-      authConfig,
-      featureFlags: {
-        getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-          if (name === 'secondaryKeyAsGSI') {
-            return true;
-          }
-          if (name === 'useSubUsernameForDefaultIdentityClaim') {
-            return true;
-          }
-          return defaultValue;
+    transformer = {
+      transform: (schema: string) =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
         }),
-        getNumber: jest.fn(),
-        getObject: jest.fn(),
-      },
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
-    });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    vtlTemplate = new VelocityTemplateSimulator({ authConfig });
+    };
   });
 
   test('listX operations', () => {
@@ -790,7 +782,7 @@ describe('@model @primaryIndex @index auth', () => {
 describe('with identity claim feature flag disabled', () => {
   describe('@model owner mutation checks', () => {
     let vtlTemplate: VelocityTemplateSimulator;
-    let transformer: GraphQLTransform;
+    let transformer: TestTransform;
     const ownerRequest: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
       jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
@@ -805,14 +797,17 @@ describe('with identity claim feature flag disabled', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
-      });
+      transformer = {
+        transform: (schema: string) =>
+          testTransform({
+            schema,
+            authConfig,
+            transformers: [new ModelTransformer(), new AuthTransformer()],
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: false,
+            },
+          }),
+      };
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
 
@@ -1028,7 +1023,7 @@ describe('with identity claim feature flag disabled', () => {
 
   describe('@model operations', () => {
     let vtlTemplate: VelocityTemplateSimulator;
-    let transformer: GraphQLTransform;
+    let transformer: { transform: (schema: string) => DeploymentResources };
     const ownerRequest: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
       jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
@@ -1064,14 +1059,17 @@ describe('with identity claim feature flag disabled', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
-      });
+      transformer = {
+        transform: (schema: string) =>
+          testTransform({
+            schema,
+            authConfig,
+            transformers: [new ModelTransformer(), new AuthTransformer()],
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: false,
+            },
+          }),
+      };
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
 
@@ -1305,7 +1303,7 @@ describe('with identity claim feature flag disabled', () => {
 
   describe('@model field auth', () => {
     let vtlTemplate: VelocityTemplateSimulator;
-    let transformer: GraphQLTransform;
+    let transformer: TestTransform;
     const ownerRequest: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
       jwt: getJWTToken(USER_POOL_ID, 'user1', 'user1@test.com'),
@@ -1325,14 +1323,14 @@ describe('with identity claim feature flag disabled', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [new ModelTransformer(), new AuthTransformer()],
-        featureFlags: {
-          ...featureFlags,
-          ...{ getBoolean: () => false },
-        },
-      });
+      transformer = {
+        transform: (schema: string) =>
+          testTransform({
+            schema,
+            authConfig,
+            transformers: [new ModelTransformer(), new AuthTransformer()],
+          }),
+      };
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
 
@@ -1512,7 +1510,7 @@ describe('with identity claim feature flag disabled', () => {
 
   describe('@model @primaryIndex @index auth', () => {
     let vtlTemplate: VelocityTemplateSimulator;
-    let transformer: GraphQLTransform;
+    let transformer: TestTransform;
 
     const ownerRequest: AppSyncGraphQLExecutionContext = {
       requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
@@ -1528,23 +1526,17 @@ describe('with identity claim feature flag disabled', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      transformer = new GraphQLTransform({
-        authConfig,
-        featureFlags: {
-          getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-            if (name === 'secondaryKeyAsGSI') {
-              return true;
-            }
-            if (name === 'useSubUsernameForDefaultIdentityClaim') {
-              return false;
-            }
-            return defaultValue;
+      transformer = {
+        transform: (schema: string) =>
+          testTransform({
+            schema,
+            authConfig,
+            transformParameters: {
+              useSubUsernameForDefaultIdentityClaim: false,
+            },
+            transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
           }),
-          getNumber: jest.fn(),
-          getObject: jest.fn(),
-        },
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
-      });
+      };
       vtlTemplate = new VelocityTemplateSimulator({ authConfig });
     });
 

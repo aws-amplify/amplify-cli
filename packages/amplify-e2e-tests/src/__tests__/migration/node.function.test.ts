@@ -83,7 +83,6 @@ describe('nodejs version migration tests', () => {
     functionStackContent = fs.readFileSync(functionStackFileName).toString();
 
     expect(projectConfigContent.indexOf('3.1')).toBeGreaterThan(0);
-    expect(authStackContent.indexOf('nodejs16.x')).toBeGreaterThan(0);
     expect(functionStackContent.indexOf('nodejs16.x')).toBeGreaterThan(0);
   });
 

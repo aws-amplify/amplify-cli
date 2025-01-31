@@ -28,8 +28,8 @@ describe('global sandbox mode c', () => {
   // TODO: need a reason why we're skipping this or we should remove this test
   it.skip('compiles schema with three models and pushes to cloud', async () => {
     await addApiWithThreeModels(projectDir);
-    await apiGqlCompile(projectDir, true);
+    await apiGqlCompile(projectDir);
     await generateModels(projectDir);
-    await amplifyPush(projectDir, true);
+    await amplifyPush(projectDir);
   });
 });

@@ -64,7 +64,14 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);
-    const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non sensitive configurations on failures', false);
+    const result = await prompter.yesOrNo('Help improve Amplify CLI by sharing non-sensitive project configurations on failures', false);
+    printer.info(`
+    ${
+      result
+        ? 'Thank you for helping us improve Amplify CLI!'
+        : 'You can always opt-in by running "amplify configure --share-project-config-on"'
+    }`);
+
     const actualResult = context.exeInfo.inputParams.yes ? undefined : result;
     DebugConfig.Instance.setAndWriteShareProject(actualResult);
   }
@@ -86,16 +93,7 @@ export const onSuccess = async (context: $TSContext): Promise<void> => {
   await initializeEnv(context, currentAmplifyMeta);
 
   if (!context.parameters.options?.app) {
-    printWelcomeMessage(context);
-  }
-
-  const appId = currentAmplifyMeta?.providers?.awscloudformation?.AmplifyAppId;
-
-  if (!appId) {
-    printer.warn('The maximum number of apps that you can create with Amplify in this region has likely been reached:');
-    printer.info('For more information on Amplify Service Quotas, see:');
-    printer.info('https://docs.aws.amazon.com/general/latest/gr/amplify.html#service-quotas-amplify');
-    printer.blankLine();
+    printWelcomeMessage();
   }
 };
 
@@ -219,20 +217,18 @@ const generateHooksSampleDirectory = (context: $TSContext): void => {
   stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
 };
 
-const printWelcomeMessage = (context: $TSContext): void => {
-  context.print.info('');
-  context.print.success('Your project has been successfully initialized and connected to the cloud!');
-  context.print.info('');
-  context.print.success('Some next steps:');
-  context.print.info('"amplify status" will show you what you\'ve added already and if it\'s locally configured or deployed');
-  context.print.info('"amplify add <category>" will allow you to add features like user login or a backend API');
-  context.print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
-  context.print.info('"amplify console" to open the Amplify Console and view your project status');
-  context.print.info(
-    '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
-  );
-  context.print.info('');
-  context.print.success('Pro tip:');
-  context.print.info('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything');
-  context.print.info('');
+const printWelcomeMessage = (): void => {
+  printer.success('Your project has been successfully initialized and connected to the cloud!');
+  printer.info('Some next steps:', 'green');
+  printer.info(`
+"amplify status" will show you what you've added already and if it's locally configured or deployed
+"amplify add <category>" will allow you to add features like user login or a backend API
+"amplify push" will build all your local backend resources and provision it in the cloud
+"amplify console" to open the Amplify Console and view your project status
+"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud
+`);
+  printer.blankLine();
+  printer.info('Pro tip:', 'green');
+  printer.info('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything');
+  printer.blankLine();
 };

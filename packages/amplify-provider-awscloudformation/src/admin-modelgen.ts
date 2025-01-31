@@ -4,6 +4,8 @@ import _ from 'lodash';
 import * as path from 'path';
 import { S3 } from './aws-utils/aws-s3';
 import { ProviderName as providerName } from './constants';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { isAmplifyAdminApp } from './utils/admin-helpers';
 
 /**
  * Generates DataStore Models for Admin UI CMS to consume
@@ -23,6 +25,18 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
   const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
 
   if (!appId) {
+    return;
+  }
+
+  const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
+  // Early return with a warning if the schema file does not exist
+  if (!fs.existsSync(localSchemaPath)) {
+    const { isAdminApp } = await isAmplifyAdminApp(appId);
+    if (isAdminApp) {
+      printer.warn(
+        `Could not find the GraphQL schema file at "${localSchemaPath}". Amplify Studio's schema editor might not work as intended if you're using multiple schema files.`,
+      );
+    }
     return;
   }
 
@@ -65,7 +79,6 @@ export const adminModelgen = async (context: $TSContext, resources: $TSAny[]): P
     // invokes https://github.com/aws-amplify/amplify-codegen/blob/main/packages/amplify-codegen/src/commands/model-intropection.js#L8
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModelIntrospection', [context]);
 
-    const localSchemaPath = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', resourceName), 'schema.graphql');
     const localSchemaJsPath = path.join(absoluteTempOutputDir, 'models', 'schema.js');
     const localModelIntrospectionPath = path.join(absoluteTempOutputDir, 'model-introspection.json');
 

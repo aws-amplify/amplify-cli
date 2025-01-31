@@ -8,3 +8,6 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _mockE2ETests
+artifacts:
+  files:
+    - 'shared-scripts.sh'

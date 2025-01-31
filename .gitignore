@@ -6,7 +6,6 @@
 !.yarn/sdks
 !.yarn/versions
 **/.DS_Store
-.circleci/generated_config.yml
 scripts/cci-job.data.json
 scripts/cci-test.data.json
 scripts/.yarn/*
@@ -22,9 +21,8 @@ node_modules
 out
 pkg/node_modules
 pkg/yarn.lock
-lerna-debug.log
-npm-debug.log
-yarn-error.log
+*.log
+logs
 coverage
 .nyc_output
 .env

@@ -1,9 +1,6 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { deploy, logDebug, GraphQLClient } from '../__e2e__/utils';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import { transformAndSynth, defaultTransformParams } from './test-synthesizer';
 
 jest.setTimeout(2000000);
 
@@ -33,13 +30,10 @@ describe('@function transformer', () => {
         msg: String!
       }`;
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new FunctionTransformer()],
-        featureFlags: {
-          getBoolean: (name) => (name === 'improvePluralization' ? true : false),
-        } as FeatureFlagProvider,
+      const out = transformAndSynth({
+        ...defaultTransformParams,
+        schema: validSchema,
       });
-      const out = transformer.transform(validSchema);
       const result = await deploy(out);
       server = result.simulator;
 

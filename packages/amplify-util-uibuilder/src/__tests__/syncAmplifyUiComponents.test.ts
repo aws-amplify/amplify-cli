@@ -1,18 +1,19 @@
-/* eslint-disable spellcheck/spell-checker */
-import { AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core'; // eslint-disable-line import/no-extraneous-dependencies
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
+import aws from 'aws-sdk';
 import {
-  generateUiBuilderComponents,
-  generateUiBuilderThemes,
   getEnvName,
   getAppId,
   resolveAppId,
-  generateUiBuilderForms,
+  mapGenericDataSchemaToCodegen,
+  waitForSucceededJob,
+  extractUIComponents,
+  fetchWithRetries,
 } from '../commands/utils';
 import { AmplifyStudioClient } from '../clients';
-import * as createUiBuilderComponentDependency from '../commands/utils/codegenResources';
-import { exampleSchema } from './utils';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
+import type { GenericDataSchema } from '@aws-amplify/codegen-ui';
+import fetch, { Response } from 'node-fetch';
+import { existsSync, writeFileSync } from 'fs';
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
@@ -24,21 +25,56 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 jest.mock('../commands/utils/featureFlags', () => ({
   getTransformerVersion: jest.fn().mockReturnValue(2),
 }));
-
 jest.mock('@aws-amplify/amplify-category-api', () => ({
-  ...jest.requireActual('@aws-amplify/amplify-category-api'),
   isDataStoreEnabled: jest.fn(),
 }));
+jest.mock('fs');
+jest.mock('node-fetch');
 
 const awsMock = aws as any;
 const stateManagerMock = stateManager as any;
-const createUiBuilderComponentDependencyMock = createUiBuilderComponentDependency as any;
 const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
+const mockWriteFileSync = jest.mocked(writeFileSync);
+const mockExistsSync = jest.mocked(existsSync);
+const mockNodeFetch = jest.mocked(fetch);
 
 describe('should sync amplify ui builder components', () => {
   let context: any;
+  const env = process.env;
+
+  const mockGenericDataSchema: GenericDataSchema = {
+    dataSourceType: 'DataStore',
+    models: {
+      Blog: {
+        fields: {
+          id: { dataType: 'ID', required: true, readOnly: false, isArray: false },
+        },
+        primaryKeys: ['id'],
+      },
+    },
+    enums: {
+      Status: { values: ['ENABLED', 'DISABLED', 'HIDDEN'] },
+    },
+    nonModels: {
+      Metadata: {
+        fields: {
+          name: {
+            dataType: 'String',
+            required: false,
+            readOnly: false,
+            isArray: false,
+          },
+        },
+      },
+    },
+  };
+
   beforeEach(() => {
+    mockNodeFetch.mockReset();
+    process.env = { ...env };
+
     isDataStoreEnabledMocked.mockResolvedValue(true);
+    mockExistsSync.mockReturnValue(false);
     context = {
       exeInfo: {
         projectConfig: {
@@ -156,29 +192,10 @@ describe('should sync amplify ui builder components', () => {
         })),
       })),
     }));
-
-    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn();
-    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn();
-    createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn();
-    createUiBuilderComponentDependencyMock.createUiBuilderView = jest.fn();
   });
 
-  it('pulls components from aws-sdk and passes them to createUiBuilderComponent', () => {
-    generateUiBuilderComponents(context, []);
-  });
-
-  it('does not throw an error when createUiBuilderComponent fails', () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn(() => {
-      throw new Error('ahhh!'); // eslint-disable-line spellcheck/spell-checker
-    });
-    expect(async () => generateUiBuilderComponents(context, [])).not.toThrow();
-  });
-
-  it('does not throw an error when createUiBuilderThemes fails', () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn(() => {
-      throw new Error('ahhh!'); // eslint-disable-line spellcheck/spell-checker
-    });
-    expect(async () => generateUiBuilderThemes(context, [])).not.toThrow();
+  afterEach(() => {
+    process.env = env;
   });
 
   it('can getAmplifyUIBuilderService', async () => {
@@ -199,110 +216,94 @@ describe('should sync amplify ui builder components', () => {
       }),
     );
   });
+
   it('can list components', async () => {
     const client = await AmplifyStudioClient.setClientInfo(context);
     const components = await client.listComponents();
     expect(components.entities).toHaveLength(1);
   });
+
   it('can list themes', async () => {
     const client = await AmplifyStudioClient.setClientInfo(context);
     const themes = await client.listThemes();
     expect(themes.entities).toHaveLength(1);
   });
+
   it('can list forms', async () => {
     const client = await AmplifyStudioClient.setClientInfo(context);
     const forms = await client.listForms();
     expect(forms.entities).toHaveLength(1);
   });
+
   it('can getAppId', async () => {
     const appId = getAppId(context);
     expect(appId).toBe('testAppId');
   });
+
   it('can getEnvName', () => {
     const envName = getEnvName(context);
     expect(envName).toBe('testEnvName');
   });
+
   it('can resolveAppId', async () => {
     const appId = resolveAppId();
     expect(appId).toBe('testAppId');
   });
+
   it('can throw on getAppId', async () => {
     context.input.options.appId = null;
     context.amplify.invokePluginMethod = () => null;
     stateManagerMock.getMeta = () => ({});
     expect(() => getAppId(context)).toThrowError();
   });
-  it('can generate ui builder components', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn().mockImplementation(() => ({}));
-    const components = generateUiBuilderComponents(context, [{}, {}]);
-    expect(components.every((component) => component.resultType === 'SUCCESS')).toBeTruthy();
-  });
-  it('can handle failed generation generate ui builder components', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderComponent = jest.fn().mockImplementation(() => {
-      throw new Error('ahh!');
-    });
-    const components = generateUiBuilderComponents(context, [{}, {}]);
-    expect(components.every((component) => component.resultType === 'FAILURE')).toBeTruthy();
-  });
-  it('can generate ui builder themes', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => ({}));
-    const themes = generateUiBuilderThemes(context, [{}, {}]);
-    expect(themes.every((theme) => theme.resultType === 'SUCCESS')).toBeTruthy();
-  });
-  it('can handle failed generation generate ui builder themes', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => {
-      throw new Error('ahh!');
-    });
-    const themes = generateUiBuilderThemes(context, [{}, {}]);
-    expect(themes.every((theme) => theme.resultType === 'FAILURE')).toBeTruthy();
-  });
-  it('can generate ui builder default theme when no themes are passed', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => ({}));
-    const themes = generateUiBuilderThemes(context, []);
-    expect(themes.every((theme) => theme.resultType === 'SUCCESS')).toBeTruthy();
-  });
-  it('can handle failed generation generate ui builder default theme when no themes are passed', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderTheme = jest.fn().mockImplementation(() => {
-      throw new Error('ahh!');
-    });
-    const themes = generateUiBuilderThemes(context, []);
-    expect(themes.every((theme) => theme.resultType === 'FAILURE')).toBeTruthy();
-  });
-  it('can generate ui builder forms', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
-    const forms = generateUiBuilderForms(context, [{}, {}]);
-    expect(forms.every((form) => form.resultType === 'SUCCESS')).toBeTruthy();
-  });
-  it('can handle failed generation generate ui builder forms', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => {
-      throw new Error('ahh!');
-    });
-    const forms = generateUiBuilderForms(context, [{}, {}]);
-    expect(forms.every((form) => form.resultType === 'FAILURE')).toBeTruthy();
-  });
-  it('can generate uibuilder forms from data schema if autogenerate true', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
-    const forms = generateUiBuilderForms(context, [], exampleSchema, true);
-    expect(forms.every((form) => form.resultType === 'SUCCESS')).toBeTruthy();
-    // create & update form for author model
-    expect(forms.length).toEqual(2);
+
+  it('can map generic data schema to start codegen job request', () => {
+    expect(mapGenericDataSchemaToCodegen(mockGenericDataSchema)).toMatchSnapshot();
   });
 
-  it('should not autogenerate forms for join tables or unsupported models', async () => {
-    expect(Object.keys(exampleSchema.models)).toStrictEqual(['Author', 'JoinTable', 'EmptyModel']);
-    createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (_ctx, schema, _dataSchema) => ({ name: schema.dataType.dataTypeName }),
-    );
-    const forms = generateUiBuilderForms(context, [], exampleSchema, true);
-    expect(forms.every((form) => form.resultType === 'SUCCESS')).toBeTruthy();
-    // only create & update form for author model
-    expect(forms.map((f) => (f.schema as any).name)).toStrictEqual(['Author', 'Author']);
+  it('can wait for a succeeded job', async () => {
+    const succeededJob = { status: 'succeeded' };
+    const getJob = jest.fn().mockResolvedValueOnce({ status: 'in_progress' }).mockResolvedValueOnce(succeededJob);
+    const job = await waitForSucceededJob(getJob, { pollInterval: 1 });
+    expect(job).toEqual(succeededJob);
   });
 
-  it('does not generate uibuilder forms from data schema if autogenerate false', async () => {
-    createUiBuilderComponentDependencyMock.createUiBuilderForm = jest.fn().mockImplementation(() => ({}));
-    const forms = generateUiBuilderForms(context, [], exampleSchema, false);
-    expect(forms.length).toEqual(0);
+  it('can throw if job failed', async () => {
+    const statusMessage = 'failed status';
+    const getJob = jest.fn().mockResolvedValueOnce({ status: 'in_progress' }).mockResolvedValueOnce({ status: 'failed', statusMessage });
+    await expect(waitForSucceededJob(getJob, { pollInterval: 2 })).rejects.toThrow(statusMessage);
+  });
+
+  it('can throw after timeout when waiting for a succeeded job', async () => {
+    process.env.UI_BUILDER_CODEGENJOB_TIMEOUT = '1';
+    const succeededJob = { status: 'succeeded' };
+    const getJob = jest.fn().mockResolvedValueOnce({ status: 'in_progress' }).mockResolvedValueOnce(succeededJob);
+    await expect(waitForSucceededJob(getJob, { pollInterval: 2 })).rejects.toThrow('Failed to return codegen job');
+  });
+
+  it('can extract ui components from archive', async () => {
+    const mockedFetchResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        Output: [
+          {
+            downloadUrl: 'https://s3.com',
+            fileName: 'MyComponent.jsx',
+            schemaName: 'MyComponent',
+          },
+        ],
+      }),
+      text: jest.fn().mockResolvedValue('source code'),
+    } as unknown as Response;
+    mockNodeFetch.mockResolvedValue(mockedFetchResponse);
+    mockExistsSync.mockReturnValue(true);
+    await extractUIComponents('https:://example.aws', 'tmp/ui-components');
+    expect(mockWriteFileSync).toHaveBeenCalledWith('tmp/ui-components/MyComponent.jsx', 'source code');
+  });
+
+  it('fetchWithRetries retries 3 times', async () => {
+    mockNodeFetch.mockRejectedValue(new Error('Server dropped the connection'));
+    await expect(fetchWithRetries('https://amazon.com')).rejects.toThrowError('Fetch reached max number of retries without succeeding');
+    expect(mockNodeFetch).toHaveBeenCalledTimes(3);
   });
 });

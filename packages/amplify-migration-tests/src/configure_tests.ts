@@ -29,7 +29,7 @@ async function setupAmplify(version = 'latest') {
 
     if (!validSemver || semver.gt(version, '10.7.0')) {
       // version is either after 10.7 or it's a tag name like latest so use the current configure function
-      await configure({
+      await configure(null, {
         accessKeyId: AWS_ACCESS_KEY_ID,
         secretAccessKey: AWS_SECRET_ACCESS_KEY,
         profileName: 'amplify-integ-test-user',

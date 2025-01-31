@@ -10,6 +10,7 @@ import { getLayerDirectoryName, LayerDirectoryType } from '..';
 export * from './add-circleci-tags';
 export * from './api';
 export * from './appsync';
+export * from './auth-utils';
 export * from './envVars';
 export * from './getAppId';
 export * from './headless';
@@ -28,11 +29,17 @@ export * from './admin-ui';
 export * from './hooks';
 export * from './git-operations';
 export * from './help';
+export * from './credentials-rotator';
 
 /**
  * Whether the current environment is CircleCI or not
  */
 export const isCI = (): boolean => JSON.parse(process.env.CI || 'false') && JSON.parse(process.env.CIRCLECI || 'false');
+
+/**
+ * Whether the current run is smoke test run.
+ */
+export const isSmokeTestRun = (): boolean => JSON.parse(process.env.IS_AMPLIFY_CLI_SMOKE_TEST_RUN || 'false');
 
 // eslint-disable-next-line spellcheck/spell-checker
 export const TEST_PROFILE_NAME = isCI() ? 'amplify-integ-test-user' : 'default';

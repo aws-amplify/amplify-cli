@@ -2,15 +2,19 @@ jest.mock('mime-types');
 jest.mock('../../../../lib/S3AndCloudFront/helpers/file-scanner', () => {
   return {
     scan: jest.fn(() => {
-      return ['filePath1', 'filePath2'];
+      return ['assets/index-4e7fb3f6.js', 'index.html', 'assets/mapbox-gl-d152561b.js', 'assets/index-d41dc7ea.css', 'vite.svg'];
     }),
   };
+});
+jest.mock('../../../../lib/S3AndCloudFront/helpers/upload-file', () => {
+  return { uploadFile: jest.fn() };
 });
 
 const fs = require('fs-extra');
 const mime = require('mime-types');
 
 const fileScanner = require('../../../../lib/S3AndCloudFront/helpers/file-scanner');
+const { uploadFile } = require('../../../../lib/S3AndCloudFront/helpers/upload-file');
 
 const mockTemplate = require('../../../../__mocks__/mockTemplate');
 const mockParameters = require('../../../../__mocks__/mockParameters');
@@ -89,10 +93,21 @@ describe('cloudfront-manager', () => {
     });
   });
 
-  beforeEach(() => {});
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-  test('run', async () => {
+  test('file scanner should be called', async () => {
     await fileUploader.run(mockContext, 'mockDistributionFolder');
     expect(fileScanner.scan).toBeCalled();
+  });
+
+  test('uploadFileCalls should have the index.html at the end', async () => {
+    await fileUploader.run(mockContext, 'mockDistributionFolder');
+    expect(uploadFile).toHaveBeenCalled();
+    const uploadFileCalls = uploadFile.mock.calls;
+
+    expect(uploadFileCalls.length).toBe(5);
+    expect(uploadFileCalls[4][3]).toBe('index.html');
   });
 });

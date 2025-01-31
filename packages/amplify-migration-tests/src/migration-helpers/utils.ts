@@ -1,6 +1,6 @@
-import { v4 as uuid } from 'uuid';
 import {
   amplifyPull,
+  amplifyPushForce,
   amplifyPushWithoutCodegen,
   cliInputsExists,
   createNewProjectDir,
@@ -16,6 +16,7 @@ import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { Writable } from 'stream';
 import { AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import strip from 'strip-ansi';
+import { v4 as uuid } from 'uuid';
 
 /**
  * generates a random string
@@ -164,6 +165,24 @@ export const pullPushWithLatestCodebaseValidateParameterAndCfnDrift = async (pro
     assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
     expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
     await amplifyPushWithoutCodegen(projRoot2, true);
+    assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
+    expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+  } finally {
+    deleteProjectDir(projRoot2);
+  }
+};
+
+/**
+ * Pulls and pushes with force project with latest codebase. Validates parameter and cfn drift.
+ */
+export const pullPushForceWithLatestCodebaseValidateParameterAndCfnDrift = async (projRoot: string, projRoot2: string): Promise<void> => {
+  const appId = getAppId(projRoot);
+  expect(appId).toBeDefined();
+  try {
+    await amplifyPull(projRoot2, { emptyDir: true, appId }, true);
+    assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
+    expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
+    await amplifyPushForce(projRoot2, true);
     assertNoParameterChangesBetweenProjects(projRoot, projRoot2);
     expect(collectCloudformationDiffBetweenProjects(projRoot, projRoot2)).toMatchSnapshot();
   } finally {

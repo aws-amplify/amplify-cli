@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import { reportError } from '../commands/diagnose';
@@ -8,7 +9,7 @@ const printerMock = printer as any;
 
 const reportErrorMock = reportError as jest.MockedFunction<typeof reportError>;
 jest.mock('../commands/diagnose', () => ({
-  reportError: jest.fn(async (__context: Context, __error: Error | undefined): Promise<void> => {
+  reportError: jest.fn(async (): Promise<void> => {
     /* no-op */
   }),
 }));
@@ -30,7 +31,7 @@ describe('test exception handler', () => {
   } as unknown as Context;
   beforeEach(() => {
     jest.resetAllMocks();
-    processExit = jest.spyOn(process, 'exit').mockImplementation((__code?: number) => undefined as never);
+    processExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     init(contextMock);
   });
   it('error handler should call usageData emitError', async () => {
@@ -56,30 +57,34 @@ describe('test exception handler', () => {
 
   it('error handler should print error', async () => {
     const amplifyError = new AmplifyError('NotImplementedError', {
-      message: 'Test Not implemented',
-      details: 'Test Not implemented',
-      resolution: 'Test Not implemented',
+      message: 'Test Not implemented(message)',
+      details: 'Test Not implemented(details)',
+      resolution: 'Test Not implemented(resolution)',
     });
 
     await handleException(amplifyError);
 
-    expect(printerMock.error).toHaveBeenCalledWith(amplifyError.message);
-    expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
+    expect(printerMock.error).toHaveBeenCalledWith(`${amplifyError.message}${EOL}${amplifyError.details}`);
+    expect(printerMock.info).toHaveBeenCalledTimes(2);
+    expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.resolution}`);
+    expect(printerMock.info).toHaveBeenLastCalledWith('Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/');
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
   });
 
   it('error handler should handle encountered errors gracefully', async () => {
     const amplifyError = new AmplifyError('NotImplementedError', {
-      message: 'Test Not implemented',
-      details: 'Test Not implemented',
-      resolution: 'Test Not implemented',
+      message: 'Test Not implemented(message)',
+      details: 'Test Not implemented(details)',
+      resolution: 'Test Not implemented(resolution)',
     });
 
     reportErrorMock.mockRejectedValueOnce(new Error('MockTestError'));
     await handleException(amplifyError);
 
-    expect(printerMock.error).toHaveBeenCalledWith(amplifyError.message);
-    expect(printerMock.info).toHaveBeenCalledWith(amplifyError.details);
+    expect(printerMock.error).toHaveBeenCalledWith(`${amplifyError.message}${EOL}${amplifyError.details}`);
+    expect(printerMock.info).toHaveBeenCalledTimes(2);
+    expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.resolution}`);
+    expect(printerMock.info).toHaveBeenLastCalledWith('Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/');
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
     expect(printerMock.error).toHaveBeenCalledWith('Failed to report error: MockTestError');
   });

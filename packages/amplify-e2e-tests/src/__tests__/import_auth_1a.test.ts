@@ -8,15 +8,16 @@ import {
   amplifyPushAuth,
   amplifyStatus,
   createNewProjectDir,
+  createUserPoolOnlyWithOAuthSettings,
   deleteProject,
   deleteProjectDir,
+  getCognitoResourceName,
   initJSProjectWithProfile,
 } from '@aws-amplify/amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   AuthProjectDetails,
-  createUserPoolOnlyWithOAuthSettings,
   expectApiHasCorrectAuthConfig,
   expectAuthProjectDetailsMatch,
   expectLocalAndCloudMetaFilesMatching,
@@ -29,7 +30,6 @@ import {
   readRootStack,
   removeImportedAuthWithDefault,
 } from '../import-helpers';
-import { getCognitoResourceName } from '../schema-api-directives/authHelper';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('auth import userpool only', () => {

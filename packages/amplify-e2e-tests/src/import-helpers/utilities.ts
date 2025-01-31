@@ -3,6 +3,7 @@ import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
   addAuthUserPoolOnlyWithOAuth,
   amplifyPushAuth,
+  createUserPoolOnlyWithOAuthSettings,
   getBackendAmplifyMeta,
   getProjectMeta,
   getTeamProviderInfo,
@@ -13,7 +14,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 // eslint-disable-next-line import/no-cycle
-import { AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails } from '.';
+import { AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, StorageProjectDetails } from '.';
 import { AppClientSettings, DynamoDBProjectDetails } from './types';
 
 export const getShortId = (): string => {

@@ -72,6 +72,7 @@ export type BuildRequest = {
   lastBuildTimeStamp?: Date;
   lastBuildType?: BuildType;
   service?: string;
+  scripts?: { build: string };
 };
 
 export enum BuildType {
@@ -141,6 +142,7 @@ export type FunctionParameters = {
   defaultRuntime?: string;
   skipAdvancedSection?: boolean;
   skipNextSteps?: boolean;
+  scripts?: { build: string };
 };
 
 /**
@@ -169,6 +171,7 @@ export interface FunctionTriggerParameters {
   cloudResourceTemplatePath?: string;
   environmentVariables?: Record<string, string>;
   skipNextSteps?: boolean;
+  scripts?: { build: string };
 }
 
 export interface ProviderContext {

@@ -63,7 +63,7 @@ describe('init --forcePush', () => {
       projRoot,
       getAmplifyInitConfig(projectName, 'newenv'),
       undefined,
-      true,
+      false,
       undefined,
       false, // don't reject on failure
     );
@@ -78,7 +78,7 @@ describe('init --forcePush', () => {
     delete tpi?.[envName]?.categories?.function?.[funcName]?.fooBar;
     setTeamProviderInfo(projRoot, tpi);
 
-    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), undefined, true);
+    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), undefined, false);
 
     const tpiAfter = getTeamProviderInfo(projRoot);
     expect(tpiAfter?.[envName]?.categories?.function?.[funcName]?.fooBar).toBe('fooBar');
@@ -91,6 +91,6 @@ describe('init --forcePush', () => {
     await gitCommitAll(projRoot);
     await gitCleanFdx(projRoot);
 
-    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), undefined, true);
+    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, envName), undefined, false);
   });
 });

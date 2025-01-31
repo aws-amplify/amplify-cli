@@ -2,10 +2,9 @@ import aws from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
 import glob from 'glob';
-import extract from 'extract-zip';
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import { exitOnNextTick, pathManager, PathConstants, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { exitOnNextTick, pathManager, PathConstants, AmplifyError, extract } from '@aws-amplify/amplify-cli-core';
 import * as configurationManager from './configuration-manager';
 import { getConfiguredAmplifyClient } from './aws-utils/aws-amplify';
 import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-check';
@@ -345,7 +344,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
 
     const unzippedDirPath = path.join(tempDirPath, path.basename(zipFileName, '.zip'));
 
-    await extract(tempFilePath, { dir: unzippedDirPath });
+    await extract(tempFilePath, { dir: unzippedDirPath, skipEntryPrefixes: ['types/'] });
 
     // Move out cli.*json if exists in the temp directory into the amplify directory before copying backend and
     // current cloud backend directories.

@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as execa from 'execa';
-import * as fs from 'fs-extra';
-import { executeHooks, HooksMeta, skipHooksFilePath } from '../../hooks';
+import { executeHooks, HooksMeta } from '../../hooks';
 import * as skipHooksModule from '../../hooks/skipHooks';
 import { pathManager, stateManager } from '../../state-manager';
 import { CommandLineInput } from '../../types';
@@ -43,6 +42,7 @@ jest.mock('which', () => ({
     if (runtimeName === 'python3') return pathToPython3Runtime;
     if (runtimeName === 'python') return pathToPythonRuntime;
     if (runtimeName === 'node') return pathToNodeRuntime;
+    throw new Error('unknown runtime');
   }),
 }));
 jest.mock('fs-extra', () => {
@@ -81,26 +81,22 @@ describe('hooksExecutioner tests', () => {
   });
   afterEach(() => {
     HooksMeta.releaseInstance();
+    delete process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES;
   });
 
   test('skip Hooks test', async () => {
     mockSkipHooks.mockRestore();
 
-    const orgSkipHooksExist = fs.existsSync(skipHooksFilePath);
-
-    fs.ensureFileSync(skipHooksFilePath);
-    // skip hooks file exists so no execa calls should be made
+    process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES = 'true';
+    // skip hooks flag exists so no execa calls should be made
     await executeHooks(HooksMeta.getInstance({ command: 'push', plugin: 'core' } as CommandLineInput, 'pre'));
     expect(execa).toHaveBeenCalledTimes(0);
 
-    fs.removeSync(skipHooksFilePath);
-    // skip hooks file does not exists so execa calls should be made
+    delete process.env.AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES;
+    // skip hooks flag does not exist so execa calls should be made
     await executeHooks(HooksMeta.getInstance({ command: 'push', plugin: 'core' } as CommandLineInput, 'pre'));
     expect(execa).not.toHaveBeenCalledTimes(0);
 
-    // restoring the original state of skip hooks file
-    if (!orgSkipHooksExist) fs.removeSync(skipHooksFilePath);
-    else fs.ensureFileSync(skipHooksFilePath);
     mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
   });
 
@@ -181,5 +177,41 @@ describe('hooksExecutioner tests', () => {
     await expect(executeHooks(HooksMeta.getInstance({ command: 'status', plugin: 'core' } as CommandLineInput, 'pre'))).rejects.toThrow(
       duplicateErrorThrown,
     );
+  });
+
+  test('should not exit process if execa fails with exitCode being 0', async () => {
+    const execaMock = execa as jest.Mocked<typeof execa>;
+    (execaMock as any).mockReturnValue({
+      exitCode: 0,
+      errNo: -32,
+      code: 'EPIPE',
+      syscall: 'write',
+      originalMessage: 'write EPIPE',
+      shortMessage: 'Command failed with EPIPE',
+      escapedCommand: 'testCommand',
+      stderr: '',
+      failed: true,
+      timedOut: false,
+      isCanceled: false,
+      killed: false,
+    });
+    const processExitMock = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    await executeHooks(HooksMeta.getInstance({ command: 'add', plugin: 'auth' } as CommandLineInput, 'pre'));
+    expect(processExitMock).toBeCalledTimes(0);
+  });
+
+  test('should exit process with exit code 76 if execa fails with exitCode other than 0', async () => {
+    const execaMock = execa as jest.Mocked<typeof execa>;
+    (execaMock as any).mockReturnValue({
+      exitCode: 1,
+      stderr: '',
+      failed: true,
+      timedOut: false,
+      isCanceled: false,
+      killed: false,
+    });
+    const processExitMock = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    await executeHooks(HooksMeta.getInstance({ command: 'add', plugin: 'auth' } as CommandLineInput, 'pre'));
+    expect(processExitMock).toBeCalledWith(76);
   });
 });

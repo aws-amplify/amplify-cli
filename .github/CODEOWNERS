@@ -1,15 +1,24 @@
-# Amplify CLI Team owns the full repo by default.
-
-* @aws-amplify/amplify-cli
+# Require at least one Amplify CLI Admin to approve changes.
+# Non-admin reviewers participate in pull request review quorum by having write access to repository.
+* @aws-amplify/amplify-cli-admins
 
 # Add Data team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team.
+/packages/amplify-graphiql-explorer @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime
+/packages/amplify-velocity-template @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime
 
-/packages/amplify-graphiql-explorer @aws-amplify/amplify-cli @aws-amplify/amplify-data-buildtime
-/packages/amplify-velocity-template @aws-amplify/amplify-cli @aws-amplify/amplify-data-buildtime
+# Add Studio Backend team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team.
+/packages/amplify-migration @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins 
+/packages/amplify-gen2-codegen @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+/packages/amplify-gen1-codegen-auth-adapter @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+/packages/amplify-gen1-codegen-data-adapter @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+/packages/amplify-gen1-codegen-function-adapter @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+/packages/amplify-gen1-codegen-storage-adapter @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
 
-# Add folks focused on reviewing changes to CI/CD scripts/buildspecs
-
-/.circleci/ @aws-amplify/amplify-cli-admins 
-/scripts/ @aws-amplify/amplify-cli-admins 
-/shared-scripts.sh @aws-amplify/amplify-cli-admins 
-/codebuild_specs/ @aws-amplify/amplify-cli-admins 
+# Templates with IAM resources
+packages/amplify-provider-awscloudformation/resources/rootStackTemplate.json @aws-amplify/amplify-cli-admins
+packages/amplify-provider-awscloudformation/src/root-stack-builder/root-stack-builder.ts @aws-amplify/amplify-cli-admins
+packages/amplify-provider-awscloudformation/resources/update-idp-roles-cfn.json @aws-amplify/amplify-cli-admins
+packages/amplify-category-auth/src/provider-utils/awscloudformation/auth-stack-builder/auth-user-pool-group-stack-builder.ts @aws-amplify/amplify-cli-admins
+packages/amplify-category-storage/resources/triggers/s3/lambda-cloudformation-template.json.ejs @aws-amplify/amplify-cli-admins
+packages/amplify-category-storage/resources/triggers/dynamoDB/lambda-cloudformation-template.json.ejs @aws-amplify/amplify-cli-admins
+packages/amplify-category-predictions/src/provider-utils/awscloudformation/triggers/s3/lambda-cloudformation-template.json.ejs @aws-amplify/amplify-cli-admins

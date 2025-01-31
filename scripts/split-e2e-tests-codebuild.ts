@@ -2,15 +2,14 @@ import * as glob from 'glob';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import * as yaml from 'js-yaml';
-import { AWS_REGIONS_TO_RUN_TESTS as regions } from './cci-utils';
 import { REPO_ROOT } from './cci-utils';
 import { FORCE_REGION_MAP, getOldJobNameWithoutSuffixes, loadTestTimings, USE_PARENT_ACCOUNT } from './cci-utils';
-import { migrationFromV10Tests, migrationFromV8Tests } from './split-e2e-test-filters';
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_generated');
 const RUN_SOLO = [
   'src/__tests__/auth_2c.test.ts',
   'src/__tests__/auth_2e.test.ts',
+  'src/__tests__/aws-exports/js-frontend-config.test.ts',
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/env-3.test.ts',
@@ -41,24 +40,43 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+  'src/__tests__/uibuilder.test.ts',
+];
+const DISABLE_COVERAGE = [
+  'src/__tests__/datastore-modelgen.test.ts',
+  'src/__tests__/amplify-app.test.ts',
+  'src/__tests__/smoke-tests/smoketest-amplify-app.test.ts',
 ];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
   l: [],
   w: [
+    /* TEMPORARY-PR12830: Remove after we ship PR12830 */
+    'src/__tests__/custom_resources.test.ts',
+    'src/__tests__/custom-resource-with-storage.test.ts',
+    /* END TEMPORARY */
+    'src/__tests__/smoketest.test.ts',
     'src/__tests__/opensearch-simulator/opensearch-simulator.test.ts',
     'src/__tests__/storage-simulator/S3server.test.ts',
     'src/__tests__/amplify-app.test.ts',
+    'src/__tests__/smoke-tests/smoketest-amplify-app.test.ts',
+    // failing in parsing JSON strings on powershell
+    'src/__tests__/auth_2g.test.ts',
     'src/__tests__/auth_12.test.ts',
     'src/__tests__/datastore-modelgen.test.ts',
     'src/__tests__/diagnose.test.ts',
     'src/__tests__/env-2.test.ts',
+    'src/__tests__/pr-previews-multi-env-1.test.ts',
     'src/__tests__/export.test.ts',
-    'src/__tests__/function_3a.test.ts',
+    'src/__tests__/function_3a_dotnet.test.ts',
+    'src/__tests__/function_3a_python.test.ts',
+    'src/__tests__/function_3a_go.test.ts',
+    'src/__tests__/function_3a_nodejs.test.ts',
     'src/__tests__/function_3b.test.ts',
     'src/__tests__/function_4.test.ts',
     'src/__tests__/function_6.test.ts',
     'src/__tests__/function_7.test.ts',
     'src/__tests__/function_8.test.ts',
+    'src/__tests__/function_15.test.ts',
     'src/__tests__/geo-add-e.test.ts',
     'src/__tests__/geo-add-f.test.ts',
     'src/__tests__/geo-remove-2.test.ts',
@@ -67,6 +85,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/geo-update-2.test.ts',
     'src/__tests__/git-clone-attach.test.ts',
     'src/__tests__/hooks-a.test.ts',
+    'src/__tests__/hooks-c.test.ts',
     'src/__tests__/import_auth_1a.test.ts',
     'src/__tests__/import_auth_1b.test.ts',
     'src/__tests__/import_auth_2a.test.ts',
@@ -81,6 +100,7 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/layer-2.test.ts',
     'src/__tests__/mock-api.test.ts',
     'src/__tests__/pull.test.ts',
+    'src/__tests__/pull-2.test.ts',
     'src/__tests__/schema-iterative-rollback-1.test.ts',
     'src/__tests__/schema-iterative-rollback-2.test.ts',
     'src/__tests__/storage-5.test.ts',
@@ -103,7 +123,7 @@ export function saveConfig(config: any): void {
   const output = ['# auto generated file. DO NOT EDIT manually', yaml.dump(config, { noRefs: true, lineWidth: -1 })];
   fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}.yml`, output.join('\n'));
 }
-function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
+export function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   return glob.sync(pattern, { cwd: dir });
 }
 type COMPUTE_TYPE = 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE';
@@ -125,23 +145,24 @@ type ConfigBase = {
     variables: [string: string];
   };
 };
-const MAX_WORKERS = 4;
+const MAX_WORKERS = 3;
+const MAX_WORKERS_WINDOWS = 2;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
-  region: string;
+  region?: string;
   os: OS_TYPE;
   executor: string;
   tests: string[];
   useParentAccount: boolean;
+  disableCoverage: boolean;
 };
 const createRandomJob = (os: OS_TYPE): CandidateJob => {
-  const region = regions[Math.floor(Math.random() * regions.length)];
   return {
-    region,
     os,
     executor: os === 'l' ? 'l_large' : 'w_medium',
     tests: [],
     useParentAccount: false,
+    disableCoverage: false,
   };
 };
 const splitTestsV3 = (
@@ -182,8 +203,9 @@ const splitTestsV3 = (
       }
       const FORCE_REGION = FORCE_REGION_MAP.get(test);
       const USE_PARENT = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));
+      const NO_COVERAGE = DISABLE_COVERAGE.find((nocov) => test === nocov);
 
-      if (isMigration || RUN_SOLO.find((solo) => test === solo)) {
+      if (isMigration || RUN_SOLO.find((solo) => test === solo) || NO_COVERAGE) {
         const newSoloJob = createRandomJob(os);
         newSoloJob.tests.push(test);
         if (FORCE_REGION) {
@@ -191,6 +213,9 @@ const splitTestsV3 = (
         }
         if (USE_PARENT) {
           newSoloJob.useParentAccount = true;
+        }
+        if (NO_COVERAGE) {
+          newSoloJob.disableCoverage = true;
         }
         soloJobs.push(newSoloJob);
         continue;
@@ -205,8 +230,9 @@ const splitTestsV3 = (
         currentJob.useParentAccount = true;
       }
 
+      const maxWorkers = os === 'w' ? MAX_WORKERS_WINDOWS : MAX_WORKERS;
       // create a new job once the current job is full;
-      if (currentJob.tests.length >= MAX_WORKERS) {
+      if (currentJob.tests.length >= maxWorkers) {
         osJobs.push(createRandomJob(os));
       }
     }
@@ -224,38 +250,57 @@ const splitTestsV3 = (
   };
   const result: any[] = [];
   const dependeeIdentifiers: string[] = [];
-  linuxJobs.forEach((j) => {
-    if (j.tests.length !== 0) {
-      const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
-      const identifier = getIdentifier(j.os, names);
+  linuxJobs.forEach((job) => {
+    if (job.tests.length !== 0) {
+      const names = job.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const identifier = getIdentifier(job.os, names);
       dependeeIdentifiers.push(identifier);
-      const tmp = {
+      const formattedJob = {
         ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
         identifier,
       };
-      tmp.env.variables = {};
-      tmp.env.variables.TEST_SUITE = j.tests.join('|');
-      tmp.env.variables.CLI_REGION = j.region;
-      if (j.useParentAccount) {
-        tmp.env.variables.USE_PARENT_ACCOUNT = 1;
+      formattedJob.env.variables = {};
+      if (isMigration || job.tests.length === 1) {
+        formattedJob.env.variables['compute-type'] = 'BUILD_GENERAL1_SMALL';
       }
-      result.push(tmp);
+      formattedJob.env.variables.TEST_SUITE = job.tests.join('|');
+      if (job.region) {
+        // Jobs with forced region are assigned one explicitly.
+        // Otherwise, region is assigned at runtime by select-region-for-e2e-test.ts script.
+        formattedJob.env.variables.CLI_REGION = job.region;
+      }
+      if (job.useParentAccount) {
+        formattedJob.env.variables.USE_PARENT_ACCOUNT = 1;
+      }
+      if (job.disableCoverage) {
+        formattedJob.env.variables.DISABLE_COVERAGE = 1;
+      }
+      result.push(formattedJob);
     }
   });
-  windowsJobs.forEach((j) => {
-    if (j.tests.length !== 0) {
-      const names = j.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
-      const identifier = getIdentifier(j.os, names);
+  windowsJobs.forEach((job) => {
+    if (job.tests.length !== 0) {
+      const names = job.tests.map((tn) => getOldJobNameWithoutSuffixes(tn)).join('_');
+      const identifier = getIdentifier(job.os, names);
       dependeeIdentifiers.push(identifier);
-      const tmp = {
+      const formattedJob = {
         ...JSON.parse(JSON.stringify(baseJobWindows)), // deep clone base job
         identifier,
       };
-      tmp.env.variables = {};
-      tmp.env.variables.TEST_SUITE = j.tests.join('|');
-      tmp.env.variables.CLI_REGION = j.region;
-      tmp.env.variables.USE_PARENT_ACCOUNT = j.useParentAccount;
-      result.push(tmp);
+      formattedJob.env.variables = {};
+      formattedJob.env.variables.TEST_SUITE = job.tests.join('|');
+      if (job.region) {
+        // Jobs with forced region are assigned one explicitly.
+        // Otherwise, region is assigned at runtime by select-region-for-e2e-test.ts script.
+        formattedJob.env.variables.CLI_REGION = job.region;
+      }
+      if (job.useParentAccount) {
+        formattedJob.env.variables.USE_PARENT_ACCOUNT = 1;
+      }
+      if (job.disableCoverage) {
+        formattedJob.env.variables.DISABLE_COVERAGE = 1;
+      }
+      result.push(formattedJob);
     }
   });
   return result;
@@ -283,37 +328,10 @@ function main(): void {
     false,
     undefined,
   );
-  const splitMigrationV8Tests = splitTestsV3(
-    {
-      identifier: 'migration_tests_v8',
-      buildspec: 'codebuild_specs/migration_tests_v8.yml',
-      env: {},
-      'depend-on': ['upb'],
-    },
-    undefined,
-    join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
-    true,
-    (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV8Tests.find((t: string) => t === testName));
-    },
-  );
-  const splitMigrationV10Tests = splitTestsV3(
-    {
-      identifier: 'migration_tests_v10',
-      buildspec: 'codebuild_specs/migration_tests_v10.yml',
-      env: {},
-      'depend-on': ['upb'],
-    },
-    undefined,
-    join(REPO_ROOT, 'packages', 'amplify-migration-tests'),
-    true,
-    (tests: string[]) => {
-      return tests.filter((testName) => migrationFromV10Tests.find((t) => t === testName));
-    },
-  );
-  let allBuilds = [...splitE2ETests, ...splitMigrationV8Tests, ...splitMigrationV10Tests];
+
+  let allBuilds = [...splitE2ETests];
   const dependeeIdentifiers: string[] = allBuilds.map((buildObject) => buildObject.identifier).sort();
-  const dependeeIdentifiersFileContents = JSON.stringify(dependeeIdentifiers, null, 4);
+  const dependeeIdentifiersFileContents = `${JSON.stringify(dependeeIdentifiers, null, 2)}\n`;
   const waitForIdsFilePath = './codebuild_specs/wait_for_ids.json';
   fs.writeFileSync(waitForIdsFilePath, dependeeIdentifiersFileContents);
   const reportsAggregator = {

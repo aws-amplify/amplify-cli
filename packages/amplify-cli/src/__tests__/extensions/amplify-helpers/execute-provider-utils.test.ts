@@ -8,7 +8,7 @@ jest.mock('../../../extensions/amplify-helpers/get-provider-plugins.ts', () => (
 jest.mock('../../../../__mocks__/faked-plugin', () => ({
   providerUtils: {
     compileSchema: jest.fn().mockReturnValue(Promise.resolve({})),
-    zipFiles: jest.fn((context, [srcDir, dstZipFilePath]) => {
+    zipFiles: jest.fn(() => {
       return Promise.resolve({});
     }),
   },

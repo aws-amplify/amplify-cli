@@ -8,7 +8,6 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
-import _ from 'lodash';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -41,7 +40,7 @@ describe('amplify add auth...a', () => {
     await removeAuthWithDefault(projRoot);
     await amplifyPushAuth(projRoot);
 
-    expect(AuthRoleName).not.toHaveValidPolicyConditionMatchingIdpId(idpId);
-    expect(UnauthRoleName).not.toHaveValidPolicyConditionMatchingIdpId(idpId);
+    expect(AuthRoleName).toHaveDenyAssumeRolePolicy();
+    expect(UnauthRoleName).toHaveDenyAssumeRolePolicy();
   });
 });

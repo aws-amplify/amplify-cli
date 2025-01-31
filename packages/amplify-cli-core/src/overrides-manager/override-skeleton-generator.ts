@@ -2,8 +2,9 @@ import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, AmplifyError, getPackageManager, pathManager } from '../index';
+import { $TSContext, AmplifyError, getPackageManager, pathManager, skipHooks, stateManager } from '../index';
 import { JSONUtilities } from '../jsonUtilities';
+import { merge } from 'lodash';
 
 /**
  * This method generates the default/template overrides file
@@ -47,6 +48,11 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
     // return when no override file found
     return false;
   }
+  if (skipHooks()) {
+    throw new AmplifyError('ScriptingFeaturesDisabledError', {
+      message: 'A flag to disable overrides has been detected, please deploy from a different environment.',
+    });
+  }
   const overrideBackendPackageJson = path.join(pathManager.getBackendDirPath(), 'package.json');
   if (!fs.existsSync(overrideBackendPackageJson)) {
     const overrideSamplePackageJsonPath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'package.json');
@@ -58,6 +64,10 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
     const overrideSampleTsconfigJsonPath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.json');
     fs.writeFileSync(overrideBackendTsConfigJson, fs.readFileSync(overrideSampleTsconfigJsonPath));
   }
+
+  // ensure awscloudformation folder is not excluded in vscode
+  setSettingsJsonAwscloudformationFlagFalse();
+
   const packageManager = await getPackageManager(cwd);
 
   if (packageManager === null) {
@@ -148,4 +158,28 @@ export const generateTsConfigforProject = (srcResourceDirPath: string, destDirPa
   const resourceTsConfigFileName = path.join(destDirPath, 'build', 'tsconfig.resource.json');
   fs.writeFileSync(overrideFileName, fs.readFileSync(path.join(srcResourceDirPath, 'override.ts.sample')));
   fs.writeFileSync(resourceTsConfigFileName, fs.readFileSync(path.join(srcResourceDirPath, 'tsconfig.resource.json')));
+};
+
+/**
+ * this method sets the flag to false in vscode settings.json to show awscloudformation folder in vscode
+ */
+const setSettingsJsonAwscloudformationFlagFalse = (): void => {
+  if (stateManager.getLocalEnvInfo().defaultEditor !== 'vscode') {
+    return;
+  }
+
+  const workspaceSettingsPath = '.vscode/settings.json';
+  const exclusionRules = {
+    'files.exclude': {
+      'amplify/backend/awscloudformation': false,
+    },
+  };
+
+  try {
+    // if settings file exists, safely add exclude settings to it
+    const settings = JSONUtilities.readJson(workspaceSettingsPath);
+    JSONUtilities.writeJson(workspaceSettingsPath, merge(settings, exclusionRules));
+  } catch (error) {
+    // workspace settings file does not exist, noop
+  }
 };

@@ -3,6 +3,87 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.5...amplify-storage-simulator@1.11.6) (2025-01-02)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.11.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.4...amplify-storage-simulator@1.11.5) (2024-11-18)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.11.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.3...amplify-storage-simulator@1.11.4) (2024-10-05)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.11.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.1...amplify-storage-simulator@1.11.3) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [1.11.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.1...amplify-storage-simulator@1.11.2) (2023-11-08)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+## [1.11.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.0...amplify-storage-simulator@1.11.1) (2023-10-05)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
+# [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.10.0...amplify-storage-simulator@1.11.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.9.1...amplify-storage-simulator@1.10.0) (2023-07-20)
+
+
+### Features
+
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
+## [1.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.9.0...amplify-storage-simulator@1.9.1) (2023-06-13)
+
+**Note:** Version bump only for package amplify-storage-simulator
+
+
+
+
+
 # [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.8.0...amplify-storage-simulator@1.9.0) (2023-05-11)
 
 

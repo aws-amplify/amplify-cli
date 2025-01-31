@@ -1,14 +1,32 @@
-import { $TSContext, getPackageManager, JSONUtilities, LocalEnvInfo, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import {
+  $TSContext,
+  getPackageManager,
+  JSONUtilities,
+  LocalEnvInfo,
+  pathManager,
+  stateManager,
+  getPackageManagerByType,
+  $TSAny,
+} from '@aws-amplify/amplify-cli-core';
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 import { sync } from 'which';
-import { preInitSetup } from '../../init-steps/preInitSetup';
+import { getPreInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
 import { coerce } from 'semver';
 
-jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('@aws-amplify/amplify-cli-core', () => ({
+  ...(jest.requireActual('@aws-amplify/amplify-cli-core') as {}),
+  FeatureFlags: {
+    getBoolean: jest.fn(),
+    getNumber: jest.fn(),
+    isInitialized: jest.fn().mockReturnValue(true),
+    ensureDefaultFeatureFlags: jest.fn(),
+  },
+  getPackageManager: jest.fn(),
+}));
 jest.mock('child_process');
 jest.mock('fs-extra');
 jest.mock('which');
@@ -19,16 +37,11 @@ jest.mock('which');
 (existsSync as jest.Mock).mockReturnValue(true);
 (readdirSync as jest.Mock).mockReturnValue([]);
 (sync as jest.MockedFunction<typeof sync>).mockReturnValue('mock/path');
-(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue(
-  new Promise((resolve) =>
-    resolve({
-      executable: 'yarn',
-      lockFile: 'mock.lock',
-      packageManager: 'yarn',
-      version: coerce('1.22.0') ?? undefined,
-    }),
-  ),
-);
+
+const packageManager = getPackageManagerByType('yarn');
+(packageManager as $TSAny).lockFile = 'mock.lock';
+(packageManager as $TSAny).version = coerce('1.22.0') ?? undefined;
+(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockResolvedValue(packageManager);
 
 describe('amplify init:', () => {
   const mockGetProjectConfigFilePath = jest.spyOn(pathManager, 'getProjectConfigFilePath');
@@ -124,7 +137,9 @@ describe('amplify init:', () => {
           },
         },
       };
-      await preInitSetup(context as unknown as $TSContext);
+      const recommendGen2 = true;
+      const step = getPreInitSetup(!recommendGen2);
+      await step(context as unknown as $TSContext);
       expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
       expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });
       expect(execSync).toBeCalledWith('yarn install', { stdio: 'inherit' });

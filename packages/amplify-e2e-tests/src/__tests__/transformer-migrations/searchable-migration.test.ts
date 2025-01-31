@@ -11,6 +11,7 @@ import {
   getProjectMeta,
   createNewProjectDir,
   deleteProjectDir,
+  tryScheduleCredentialRefresh,
 } from '@aws-amplify/amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -23,6 +24,10 @@ describe('transformer model searchable migration test', () => {
   let projRoot: string;
   let projectName: string;
   let appSyncClient;
+
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
 
   beforeEach(async () => {
     projectName = createRandomName();

@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - ./.circleci/codebuild-checkout.sh
       - source ./shared-scripts.sh && _buildLinux
 
 artifacts:

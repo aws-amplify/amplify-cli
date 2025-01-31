@@ -1,6 +1,7 @@
 import {
   $TSContext,
   AmplifyError,
+  AmplifyException,
   AmplifyFault,
   exitOnNextTick,
   pathManager,
@@ -9,7 +10,6 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import * as inquirer from 'inquirer';
 import _ from 'lodash';
 import { removeResourceParameters } from './envResourceParams';
 import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
@@ -77,7 +77,6 @@ export async function removeResource(
   if (resourceNameCallback) {
     await resourceNameCallback(resourceName);
   }
-
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
 
   if (options.headless !== true) {
@@ -99,6 +98,9 @@ export async function removeResource(
   try {
     return await deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
+    if (err instanceof AmplifyException) {
+      throw err;
+    }
     throw new AmplifyFault(
       'ResourceRemoveFault',
       { message: 'An error occurred when removing the resources from the local directory' },
@@ -113,14 +115,14 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
     const { allResources } = await context.amplify.getResourceStatus();
     allResources.forEach((resourceItem) => {
       if (resourceItem.dependsOn) {
-        resourceItem.dependsOn.forEach((dependsOnItem) => {
+        for (const dependsOnItem of resourceItem.dependsOn) {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
             throw new AmplifyError('ResourceRemoveError', {
               message: 'Resource cannot be removed because it has a dependency on another resource',
               details: `Dependency: ${resourceItem.service} - ${resourceItem.resourceName}. Remove the dependency first.`,
             });
           }
-        });
+        }
       }
     });
   }
@@ -136,7 +138,9 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
   stateManager.setMeta(undefined, amplifyMeta);
 
   // Remove resource directory from backend/
+  const stackBuildDir = pathManager.getStackBuildCategoryResourceDirPath('', category, resourceName);
   context.filesystem.remove(resourceDir);
+  context.filesystem.remove(stackBuildDir);
 
   removeResourceParameters(context, category, resourceName);
   updateBackendConfigAfterResourceRemove(category, resourceName);

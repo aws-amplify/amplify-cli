@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { validateAddGeoRequest, validateUpdateGeoRequest } from '../../../index';
+import { validateUpdateGeoRequest } from '../../../index';
 
 const assetRoot = path.resolve(path.join(__dirname, '..', '..', 'assets'));
 
@@ -13,6 +13,6 @@ describe('validate update geo request', () => {
 
   it('rejects promise when invalid payload', async () => {
     const resultPromise = validateUpdateGeoRequest('garbage');
-    expect(resultPromise).rejects.toBeTruthy();
+    await expect(resultPromise).rejects.toBeTruthy();
   });
 });

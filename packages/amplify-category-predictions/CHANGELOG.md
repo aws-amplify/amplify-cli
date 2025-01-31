@@ -3,6 +3,242 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.16...@aws-amplify/amplify-category-predictions@5.5.17) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.15...@aws-amplify/amplify-category-predictions@5.5.16) (2024-11-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.14...@aws-amplify/amplify-category-predictions@5.5.15) (2024-08-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.13...@aws-amplify/amplify-category-predictions@5.5.14) (2024-06-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.12...@aws-amplify/amplify-category-predictions@5.5.13) (2024-06-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.11...@aws-amplify/amplify-category-predictions@5.5.12) (2024-06-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.10...@aws-amplify/amplify-category-predictions@5.5.11) (2024-05-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.9...@aws-amplify/amplify-category-predictions@5.5.10) (2024-05-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.8...@aws-amplify/amplify-category-predictions@5.5.9) (2024-04-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.7...@aws-amplify/amplify-category-predictions@5.5.8) (2024-04-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.6...@aws-amplify/amplify-category-predictions@5.5.7) (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.5...@aws-amplify/amplify-category-predictions@5.5.6) (2024-03-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.4...@aws-amplify/amplify-category-predictions@5.5.5) (2023-12-11)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.2...@aws-amplify/amplify-category-predictions@5.5.4) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [5.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.2...@aws-amplify/amplify-category-predictions@5.5.3) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.1...@aws-amplify/amplify-category-predictions@5.5.2) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.0...@aws-amplify/amplify-category-predictions@5.5.1) (2023-10-12)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+# [5.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.4.3...@aws-amplify/amplify-category-predictions@5.5.0) (2023-10-05)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [5.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.4.2...@aws-amplify/amplify-category-predictions@5.4.3) (2023-10-03)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.4.1...@aws-amplify/amplify-category-predictions@5.4.2) (2023-09-22)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.4.0...@aws-amplify/amplify-category-predictions@5.4.1) (2023-08-31)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.3.4...@aws-amplify/amplify-category-predictions@5.4.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+## [5.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.3.3...@aws-amplify/amplify-category-predictions@5.3.4) (2023-08-09)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.3.2...@aws-amplify/amplify-category-predictions@5.3.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.3.1...@aws-amplify/amplify-category-predictions@5.3.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.3.0...@aws-amplify/amplify-category-predictions@5.3.1) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
+# [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.2.4...@aws-amplify/amplify-category-predictions@5.3.0) (2023-07-20)
+
+
+### Features
+
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
+## [5.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.2.3...@aws-amplify/amplify-category-predictions@5.2.4) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
 ## [5.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.2.1...@aws-amplify/amplify-category-predictions@5.2.3) (2023-05-25)
 
 

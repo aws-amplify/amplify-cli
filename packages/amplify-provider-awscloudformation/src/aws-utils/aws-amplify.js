@@ -1,5 +1,5 @@
 const aws = require('aws-sdk');
-const proxyAgent = require('proxy-agent');
+const { ProxyAgent } = require('proxy-agent');
 const configurationManager = require('../configuration-manager');
 const { regions: amplifyServiceRegions } = require('../aws-regions');
 
@@ -24,7 +24,7 @@ async function getConfiguredAmplifyClient(context, options = {}) {
   if (httpProxy) {
     aws.config.update({
       httpOptions: {
-        agent: proxyAgent(httpProxy),
+        agent: new ProxyAgent(),
       },
     });
   }

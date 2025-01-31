@@ -71,7 +71,7 @@ describe('amplify export pull d', () => {
     const meta = getBackendAmplifyMeta(projRoot);
     const stackName = _.get(meta, ['providers', 'awscloudformation', 'StackName']);
     const pathToExportGeneratedConfig = path.join(projRoot, 'exportSrc');
-    fs.ensureDir(pathToExportGeneratedConfig);
+    await fs.ensureDir(pathToExportGeneratedConfig);
     await exportPullBackend(projRoot, {
       exportPath: pathToExportGeneratedConfig,
       frontend,

@@ -37,7 +37,9 @@ async function createFrontendConfigsAtPath(context, amplifyResources, amplifyClo
   const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
 
   const amplifyConfig = await getAWSExports(context, newOutputsForFrontend, cloudOutputsForFrontend);
-  await generateAwsExportsAtPath(context, path.join(exportPath, constants.exportsFilename), amplifyConfig);
+
+  context.amplify.writeObjectAsJson(path.join(exportPath, constants.exportsJSONFilename), amplifyConfig, true);
+  await generateAwsExportsAtPath(context, path.join(exportPath, constants.exportsJSFilename), amplifyConfig);
 }
 
 async function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {

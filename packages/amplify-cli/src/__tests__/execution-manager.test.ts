@@ -5,6 +5,9 @@ import { CLIInput as CommandLineInput } from '../domain/command-input';
 import { Context } from '../domain/context';
 import { PluginInfo } from '@aws-amplify/amplify-cli-core';
 import { executeCommand } from '../execution-manager';
+import { printer } from '@aws-amplify/amplify-prompts';
+
+jest.mock('@aws-amplify/amplify-prompts');
 
 const handleAmplifyEventMock = jest.fn();
 jest.mock('../../__mocks__/faked-plugin', () => ({
@@ -66,6 +69,7 @@ describe('execution manager', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockContext.parameters = { options: {} };
   });
 
   it.each([
@@ -74,6 +78,7 @@ describe('execution manager', () => {
     ['pull', { event: AmplifyEvent.PrePull, data: {} }],
     ['models', { event: AmplifyEvent.PreCodegenModels, data: {} }],
   ])('executeCommand raise pre %s event', async (command, args) => {
+    mockFs.readdirSync.mockReturnValue([]);
     mockFs.existsSync.mockReturnValue(true);
     mockContext.input.command = command;
     await executeCommand(mockContext);
@@ -86,9 +91,23 @@ describe('execution manager', () => {
     ['pull', { event: AmplifyEvent.PostPull, data: {} }],
     ['models', { event: AmplifyEvent.PostCodegenModels, data: {} }],
   ])('executeCommand raise post %s event', async (command, args) => {
+    mockFs.readdirSync.mockReturnValue([]);
     mockFs.existsSync.mockReturnValue(true);
     mockContext.input.command = command;
     await executeCommand(mockContext);
     expect(handleAmplifyEventMock).toBeCalledWith(mockContext, args);
   });
+
+  it.each([[AmplifyEvent.PreCodegenModels], [AmplifyEvent.PostCodegenModels]])(
+    'executeCommand skips %s when target and model-schema parameters are provided',
+    async (event) => {
+      mockFs.readdirSync.mockReturnValue([]);
+      mockFs.existsSync.mockReturnValue(true);
+      mockContext.input.command = 'models';
+      mockContext.parameters.options = { target: 'javascript', 'model-schema': 'schema.graphql' };
+      await executeCommand(mockContext);
+      expect(printer.info).toBeCalledWith(expect.stringContaining(`Skipping ${event}`));
+      expect(handleAmplifyEventMock).not.toBeCalledWith(mockContext, { event, data: {} });
+    },
+  );
 });

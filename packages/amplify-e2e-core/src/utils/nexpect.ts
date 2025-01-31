@@ -160,7 +160,7 @@ function chain(context: Context): ExecutionContext {
 
     wait(
       expectation: string | RegExp,
-      callback = (data: string) => {
+      callback: (data: string) => void = () => {
         // empty
       },
     ): ExecutionContext {
@@ -307,7 +307,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: "'[send] Y <CR>",
+        description: '[send] N',
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -737,7 +737,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   }
 
   const testingWithLatestCodebase = isTestingWithLatestCodebase(command);
-  if (testingWithLatestCodebase || (process.platform === 'win32' && !command.endsWith('.exe'))) {
+  if (testingWithLatestCodebase || (process.platform === 'win32' && !(command.endsWith('.exe') || command.endsWith('.cmd')))) {
     params.unshift(command);
     command = getScriptRunnerPath(testingWithLatestCodebase);
   }
@@ -753,7 +753,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   // For push operations in E2E we have to explicitly disable the Amplify Console App creation
   // as for the tests that need it, it is already enabled for init, setting the env var here
   // disables the post push check we have in the CLI.
-  if (params.length > 0 && params.find((param: string) => param.toLowerCase() === 'push')) {
+  if (params.length > 0 && params.some((param: string) => param.toLowerCase() === 'push')) {
     pushEnv = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
@@ -771,14 +771,9 @@ export function nspawn(command: string | string[], params: string[] = [], option
     };
 
     // Undo ci-info detection, required for some tests
+    // see https://github.com/watson/ci-info/blob/master/index.js#L57
     if (options.disableCIDetection === true) {
-      delete childEnv.CI;
-      delete childEnv.CONTINUOUS_INTEGRATION;
-      delete childEnv.BUILD_NUMBER;
-      delete childEnv.TRAVIS;
-      delete childEnv.GITHUB_ACTIONS;
-      delete childEnv.CIRCLECI;
-      delete childEnv.CIRCLE_PULL_REQUEST;
+      childEnv.CI = false;
     }
   }
 

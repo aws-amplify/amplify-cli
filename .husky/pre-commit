@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Define color variables
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No color
+
+echo "${GREEN}Running pre-commit hook${NC}"
+echo "${CYAN}Running yarn prettier staged files${NC}"
+git diff --name-only --cached --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' | xargs --no-run-if-empty yarn prettier --write
+echo "${CYAN}Running yarn lint-staged${NC}"
+yarn lint-fix
+echo "${CYAN}Running yarn stage prettified files${NC}"
+git diff --name-only --cached --diff-filter=ACM | xargs git add
+echo "${CYAN}Running yarn lint-fix${NC}"
+yarn lint-fix
+echo "${CYAN}Running ./scripts/package-json-check.sh${NC}"
+./scripts/package-json-check.sh
+echo "${CYAN}Running yarn verify-commit${NC}"
+yarn verify-commit

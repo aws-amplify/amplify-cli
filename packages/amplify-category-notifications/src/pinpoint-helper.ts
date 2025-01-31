@@ -33,7 +33,7 @@ import {
   resolveRegion,
   loadConfigurationForEnv,
 } from '@aws-amplify/amplify-provider-awscloudformation';
-import proxyAgent from 'proxy-agent';
+import { ProxyAgent } from 'proxy-agent';
 const spinner = ora('');
 const defaultPinpointRegion = 'us-east-1';
 
@@ -544,10 +544,11 @@ export const getPinpointClient = async (
     customUserAgent: formUserAgentParam(context, userAgentAction),
   };
 
+  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   if (httpProxy) {
     aws.config.update({
       httpOptions: {
-        agent: proxyAgent(httpProxy),
+        agent: new ProxyAgent(),
       },
     });
   }

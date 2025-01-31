@@ -1,11 +1,6 @@
-import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import { transformAndSynth, defaultTransformParams } from './test-synthesizer';
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let GRAPHQL_ENDPOINT: string;
@@ -43,21 +38,14 @@ describe('@model with relational transformer', () => {
     }`;
 
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [
-          new ModelTransformer(),
-          new IndexTransformer(),
-          new PrimaryKeyTransformer(),
-          new HasOneTransformer(),
-          new HasManyTransformer(),
-          new BelongsToTransformer(),
-          new AuthTransformer(),
-        ],
-        featureFlags: {
-          getBoolean: (name) => (name === 'improvePluralization' ? true : false),
-        } as FeatureFlagProvider,
+      const out = transformAndSynth({
+        ...defaultTransformParams,
+        schema: validSchema,
+        transformParameters: {
+          ...defaultTransformParams.transformParameters,
+          respectPrimaryKeyAttributesOnConnectionField: false,
+        },
       });
-      const out = transformer.transform(validSchema);
 
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());

@@ -1,4 +1,3 @@
-import { StudioForm, StudioSchema } from '@aws-amplify/codegen-ui';
 import { Form } from 'aws-sdk/clients/amplifyuibuilder';
 import { AmplifyStudioClient } from '../../clients';
 import { printer } from '@aws-amplify/amplify-prompts';
@@ -7,7 +6,7 @@ import asyncPool from 'tiny-async-pool';
 /**
  * Does the form's reference DataStore type exist in the list of models
  */
-export const isFormDetachedFromModel = (formSchema: StudioForm | Form, modelNames: Set<string>): boolean => {
+export const isFormDetachedFromModel = (formSchema: Form, modelNames: Set<string>): boolean => {
   return formSchema.dataType.dataSourceType === 'DataStore' && !modelNames.has(formSchema.dataType.dataTypeName);
 };
 
@@ -16,7 +15,7 @@ export const isFormDetachedFromModel = (formSchema: StudioForm | Form, modelName
  * @param schema The schema to test
  * @returns boolean
  */
-export const isFormSchemaCustomized = (formSchema: StudioForm | Form): boolean => {
+export const isFormSchemaCustomized = (formSchema: Form): boolean => {
   const { fields, style, sectionalElements } = formSchema;
   // Fields and sectionalElements just need an empty check
   if (!isEmpty({ ...fields, ...sectionalElements })) {
@@ -31,7 +30,7 @@ export const isFormSchemaCustomized = (formSchema: StudioForm | Form): boolean =
 /**
  * Is the schema a StudioForm
  */
-export const isStudioForm = (schema: StudioSchema | undefined): schema is StudioForm => {
+export const isStudioForm = (schema: Form | undefined): schema is Form => {
   if (!schema) return false;
   return 'formActionType' in schema;
 };

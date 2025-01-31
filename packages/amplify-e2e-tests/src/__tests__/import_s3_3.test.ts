@@ -19,11 +19,9 @@ import {
   getS3ResourceName,
 } from '../import-helpers';
 
-const profileName = 'amplify-integ-test-user';
-
 describe('headless s3 import', () => {
   const projectPrefix = 'sssheadimp';
-  const bucketPrefix = 'sss-headless-import-';
+  const bucketPrefix = 'sss-headless-import-test';
 
   const projectSettings = {
     name: projectPrefix,
@@ -37,9 +35,6 @@ describe('headless s3 import', () => {
   beforeAll(async () => {
     const shortId = getShortId();
     bucketNameToImport = `${bucketPrefix}${shortId}`;
-
-    const credentials = new aws.SharedIniFileCredentials({ profile: profileName });
-    aws.config.credentials = credentials;
 
     const s3 = new aws.S3();
 

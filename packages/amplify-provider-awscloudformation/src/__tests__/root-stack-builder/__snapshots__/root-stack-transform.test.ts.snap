@@ -125,6 +125,53 @@ exports[`Root stack template tests Generated root stack template during init 1`]
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
+    "DeploymentBucketBlockHTTP": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "DeploymentBucketName",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false,
+                },
+              },
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "DeploymentBucketName",
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "DeploymentBucketName",
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
     "UnauthRole": {
       "Properties": {
         "AssumeRolePolicyDocument": {

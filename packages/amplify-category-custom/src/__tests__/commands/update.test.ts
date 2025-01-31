@@ -8,7 +8,7 @@ jest.mock('../../walkthroughs/cloudformation-walkthrough');
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('@aws-amplify/amplify-prompts');
 
-let mockAmplifyMeta = {
+const mockAmplifyMeta = {
   custom: {
     mockcdkresourcename: {
       service: CDK_SERVICE_NAME,

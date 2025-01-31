@@ -14,67 +14,90 @@ env:
 batch:
   fast-fail: false
   build-graph:
+    - identifier: build_tests_standalone
+      buildspec: codebuild_specs/build_tests_standalone.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_linux
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
     - identifier: test
       buildspec: codebuild_specs/test.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: lint
+      buildspec: codebuild_specs/lint.yml
+      depend-on:
+        - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: mock_e2e_tests
       buildspec: codebuild_specs/mock_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: validate_cdk_version
       buildspec: codebuild_specs/validate_cdk_version.yml
       depend-on:
         - build_linux
     - identifier: verify_api_extract
       buildspec: codebuild_specs/verify_api_extract.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_yarn_lock
       buildspec: codebuild_specs/verify_yarn_lock.yml
       depend-on:
         - build_linux
     - identifier: publish_to_local_registry
       buildspec: codebuild_specs/publish_to_local_registry.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_arm
       buildspec: codebuild_specs/build_pkg_binaries_arm.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_linux
       buildspec: codebuild_specs/build_pkg_binaries_linux.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_macos
       buildspec: codebuild_specs/build_pkg_binaries_macos.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: build_pkg_binaries_win
       buildspec: codebuild_specs/build_pkg_binaries_win.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - publish_to_local_registry
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: verify_pkg_cli
+      buildspec: codebuild_specs/verify_pkg_cli.yml
+      depend-on:
+        - build_pkg_binaries_arm
+        - build_pkg_binaries_linux
+        - build_pkg_binaries_macos
+        - build_pkg_binaries_win
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: verify_versions_match
       buildspec: codebuild_specs/verify_versions_match.yml
       depend-on:
         - publish_to_local_registry
+    - identifier: verify_e2e_workflow_generated
+      buildspec: codebuild_specs/verify_e2e_workflow_generated.yml
+      depend-on:
+        - build_linux

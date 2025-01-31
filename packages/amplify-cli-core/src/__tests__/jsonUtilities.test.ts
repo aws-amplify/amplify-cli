@@ -160,7 +160,7 @@ describe('JSONUtilities tests', () => {
 
   test('JSON parse throws error when jsonString is undefined', () => {
     expect(() => {
-      const _ = JSONUtilities.parse(undefined as unknown as string);
+      JSONUtilities.parse(undefined as unknown as string);
     }).toThrowError(`'jsonString' argument missing or empty`);
   });
 

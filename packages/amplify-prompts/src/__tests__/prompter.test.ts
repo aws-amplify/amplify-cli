@@ -95,7 +95,7 @@ describe('input', () => {
     const promptResponse = 'this is the result';
     const transformedValue = 'transformed value';
     promptMock.mockResolvedValueOnce({ result: promptResponse });
-    expect(await prompter.input('test message', { transform: (_) => transformedValue })).toEqual(transformedValue);
+    expect(await prompter.input('test message', { transform: () => transformedValue })).toEqual(transformedValue);
   });
 
   it('transforms each input part separately when "many" specified', async () => {

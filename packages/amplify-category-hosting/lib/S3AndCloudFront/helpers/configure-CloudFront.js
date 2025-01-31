@@ -37,8 +37,7 @@ async function configure(context) {
       delete context.exeInfo.template.Resources.BucketPolicy;
       delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
     }
-  } 
-
+  }
 
   if (context.exeInfo.template.Resources.CloudFrontDistribution) {
     const { DistributionConfig } = context.exeInfo.template.Resources.CloudFrontDistribution.Properties;

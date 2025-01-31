@@ -1,6 +1,6 @@
 {
   "name": "amplify-python-function-runtime-provider",
-  "version": "2.4.21",
+  "version": "2.4.48",
   "description": "Provides functionality related to functions in Python on AWS",
   "repository": {
     "type": "git",
@@ -25,12 +25,12 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.8",
-    "@aws-amplify/amplify-function-plugin-interface": "1.10.2",
+    "@aws-amplify/amplify-cli-core": "4.3.11",
+    "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "execa": "^5.1.1",
     "glob": "^7.2.0",
     "ini": "^1.3.5",
-    "semver": "^7.3.5",
+    "semver": "^7.5.4",
     "which": "^2.0.2"
   },
   "devDependencies": {

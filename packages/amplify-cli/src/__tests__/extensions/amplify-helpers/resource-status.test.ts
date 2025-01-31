@@ -485,9 +485,11 @@ describe('resource-status', () => {
       const fsMock = fs as jest.Mocked<typeof fs>;
       fsMock.existsSync.mockReturnValue(true);
       const hashElementMock = hashElement as jest.MockedFunction<typeof hashElement>;
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       hashElementMock.mockImplementation(async () => ({
         hash: sampleHash1,
       }));
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       hashElementMock.mockImplementationOnce(async () => ({
         hash: sampleHash2,
       }));
@@ -740,7 +742,6 @@ describe('resource-status', () => {
 
     it('throws an error when non amplify project', async () => {
       (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockReturnValue(NON_AMPLIFY_PROJECT);
-      // eslint-disable-next-line jest/valid-expect
       await expect(getResourceStatus()).rejects.toThrow('No Amplify backend project files detected within this folder.');
     });
   });
@@ -816,9 +817,11 @@ describe('resource-status', () => {
       const fsMock = fs as jest.Mocked<typeof fs>;
       fsMock.existsSync.mockReturnValue(true);
       const hashElementMock = hashElement as jest.MockedFunction<typeof hashElement>;
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       hashElementMock.mockImplementation(async () => ({
         hash: sampleHash1,
       }));
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       hashElementMock.mockImplementationOnce(async () => ({
         hash: sampleHash2,
       }));

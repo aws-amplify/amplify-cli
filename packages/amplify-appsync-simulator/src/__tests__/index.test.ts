@@ -4,10 +4,8 @@ import { VelocityTemplate } from '../velocity';
 
 import {
   AmplifyAppSyncSimulatorAuthenticationType,
-  AppSyncSimulatorDataSourceNoneConfig,
   AmplifyAppSyncSimulatorConfig,
   AppSyncMockFile,
-  AppSyncSimulatorBaseResolverConfig,
   RESOLVER_KIND,
   AppSyncSimulatorUnitResolverConfig,
 } from '../type-definition';

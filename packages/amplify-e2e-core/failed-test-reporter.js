@@ -20,7 +20,7 @@ class FailedTestNameReporter {
   getFailedTestRegEx(results) {
     let failedTestNames = [];
     if (results.testResults) {
-      for (let result of results.testResults) {
+      for (const result of results.testResults) {
         failedTestNames = [...failedTestNames, ...this.getFailedTestRegEx(result)];
       }
     } else if (results.status === 'failed') {

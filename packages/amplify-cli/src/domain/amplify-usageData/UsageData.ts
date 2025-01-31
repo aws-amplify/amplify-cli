@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { ICommandInput, IFlowReport } from '@aws-amplify/amplify-cli-shared-interfaces';
-import { prompter } from '@aws-amplify/amplify-prompts';
+import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
@@ -117,9 +117,10 @@ export class UsageData implements IUsageData {
    */
   startCodePathTimer(codePath: StartableTimedCodePath): void {
     if (this.codePathTimers.has(codePath)) {
-      throw new Error(`${codePath} already has a running timer`);
+      printer.debug(`${codePath} already has a running timer`);
+    } else {
+      this.codePathTimers.set(codePath, Timer.start());
     }
-    this.codePathTimers.set(codePath, Timer.start());
   }
 
   /**

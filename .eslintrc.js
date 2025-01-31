@@ -102,22 +102,26 @@ module.exports = {
     },
     {
       // edit rules here to modify test linting
-      files: ['__tests__/**', '*.test.ts', '**/amplify-e2e-tests/**'],
-      plugins: ['jest'],
-      extends: ['plugin:jest/recommended'],
-      rules: {
-        '@typescript-eslint/unbound-method': 'off',
-        'jest/unbound-method': 'error',
-        '@typescript-eslint/no-explicit-any': 'off',
-        'spellcheck/spell-checker': 'off',
+      files: ['**/__tests__/**', '**/__test__/**', '*.test.ts', '**/amplify-e2e-*/**', '**/test/**', '**/tests/**', '**/__e2e__/**'],
+      parserOptions: {
+        project: ['tsconfig.tests.json'],
       },
-    },
-    {
-      // disable spell checker in tests
-      files: ['**/__tests__/**', '**/__test__/**', '*.test.ts', 'packages/amplify-e2e-*/**', '**/test/**', '**/tests/**'],
-      plugins: ['jest'],
-      extends: ['plugin:jest/recommended'],
       rules: {
+        '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/ban-types': 'off',
+        '@typescript-eslint/no-empty-function': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-inferrable-types': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-unused-vars': 'error',
+        'consistent-return': 'error',
+        'import/no-extraneous-dependencies': 'error',
+        'no-constant-condition': 'off',
+        'no-restricted-syntax': 'off',
+        'no-useless-catch': 'error',
+        'no-useless-escape': 'off',
+        'no-var': 'error',
+        'prefer-const': 'error',
         'spellcheck/spell-checker': 'off',
       },
     },
@@ -132,8 +136,6 @@ module.exports = {
   // Files / paths / globs that shouldn't be linted at all
   // (note that only .js, .jsx, .ts, and .tsx files are linted in the first place)
   ignorePatterns: [
-    '**/__tests__/**',
-    '**.test.**',
     '.eslintrc.js',
     'scripts/',
     'node_modules',
@@ -142,7 +144,6 @@ module.exports = {
     '__mocks__',
     'coverage',
     'packages/**/lib',
-    '**/__e2e__/**',
 
     // Forked package
     'amplify-velocity-template',
@@ -207,6 +208,8 @@ module.exports = {
     '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
     '/packages/amplify-environment-parameters/lib',
     '/packages/amplify-opensearch-simulator/lib',
+    '/packages/amplify-nodejs-function-runtime-provider/src/__tests__/utils/handlerWithSyntaxError.js',
+    '/packages/amplify-frontend-ios/tests/sample*',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',

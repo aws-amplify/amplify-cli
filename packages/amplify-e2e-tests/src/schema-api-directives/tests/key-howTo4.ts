@@ -1,6 +1,12 @@
-import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema } from '@aws-amplify/amplify-e2e-core';
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
-import { testQueries, testMutations } from '../common';
+import {
+  addApiWithBlankSchemaAndConflictDetection,
+  amplifyPush,
+  configureAmplify,
+  getApiKey,
+  getConfiguredAppsyncClientAPIKeyAuth,
+  updateApiSchema,
+} from '@aws-amplify/amplify-e2e-core';
+import { testMutations, testQueries } from '../common';
 
 //schema
 export const schemaName = 'selective_sync.graphql';

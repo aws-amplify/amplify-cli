@@ -3,6 +3,7 @@ name: 'CodeQL Tests'
 
 on:
   push:
+    branches: [dev]
   pull_request:
 
 jobs:

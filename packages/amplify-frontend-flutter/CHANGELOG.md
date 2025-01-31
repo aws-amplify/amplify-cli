@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-flutter@1.4.5...@aws-amplify/amplify-frontend-flutter@1.4.7) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [1.4.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-flutter@1.4.5...@aws-amplify/amplify-frontend-flutter@1.4.6) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-flutter
+
+
+
+
+
+## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-flutter@1.4.4...@aws-amplify/amplify-frontend-flutter@1.4.5) (2023-08-31)
+
+
+### Bug Fixes
+
+* exclude tests from publish ([#13153](https://github.com/aws-amplify/amplify-cli/issues/13153)) ([1b1fe09](https://github.com/aws-amplify/amplify-cli/commit/1b1fe09a1c08be0262a1013f71354abd7160722a))
+
+
+
+
+
+## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-flutter@1.4.3...@aws-amplify/amplify-frontend-flutter@1.4.4) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-flutter
+
+
+
+
+
+## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-flutter@1.4.2...@aws-amplify/amplify-frontend-flutter@1.4.3) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-flutter
+
+
+
+
+
 ## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-flutter@1.4.0...@aws-amplify/amplify-frontend-flutter@1.4.2) (2023-04-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-flutter

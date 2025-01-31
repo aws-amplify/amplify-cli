@@ -52,9 +52,7 @@ describe('Schema iterative update - locking', () => {
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
 
-    let projectRootPull;
-
-    projectRootPull = await createNewProjectDir('iterlock-pull');
+    const projectRootPull = await createNewProjectDir('iterlock-pull');
 
     await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 

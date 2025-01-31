@@ -69,6 +69,17 @@ export const amplifyPushLegacy = async (cwd: string): Promise<void> => {
 };
 
 /**
+ * Function to test amplify push with --yes
+ */
+export const amplifyPushNonInteractive = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
+  await spawn(getCLIPath(testingWithLatestCodebase), ['push', '--yes'], {
+    cwd,
+    stripColors: true,
+    noOutputTimeout: pushTimeoutMS,
+  }).runAsync();
+};
+
+/**
  * Function to test amplify push with codegen for graphql API
  */
 export const amplifyPushGraphQlWithCognitoPrompt = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
@@ -203,8 +214,8 @@ export function amplifyPushUpdateLegacy(
 /**
  * Function to test amplify push
  */
-export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false): Promise<void> =>
-  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false, env?: Record<string, string>): Promise<void> =>
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS, env })
     .wait('Are you sure you want to continue?')
     .sendYes()
     .wait(/.*/)
@@ -400,14 +411,18 @@ export const amplifyPushDestructiveApiUpdate = (cwd: string, includeForce: boole
 /**
  * Function to test amplify push with overrides functionality
  */
-export const amplifyPushOverride = async (cwd: string, testingWithLatestCodebase = false): Promise<void> => {
+export const amplifyPushOverride = async (
+  cwd: string,
+  testingWithLatestCodebase = false,
+  env: Record<string, string> = {},
+): Promise<void> => {
   // Test detailed status
   await spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait(/.*/)
     .runAsync();
 
   // Test amplify push
-  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+  await spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS, env })
     .wait('Are you sure you want to continue?')
     .sendConfirmYes()
     .wait(/.*/)

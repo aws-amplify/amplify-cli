@@ -12,14 +12,6 @@ exports[`Check Auth Template Generated authstack template in default flow 1`] = 
         "NONE",
       ],
     },
-    "ShouldOutputAppClientSecrets": {
-      "Fn::Equals": [
-        {
-          "Ref": "userpoolClientGenerateSecret",
-        },
-        true,
-      ],
-    },
   },
   "Description": "Amplify Cognito Stack for AWS Amplify CLI",
   "Outputs": {
@@ -33,15 +25,6 @@ exports[`Check Auth Template Generated authstack template in default flow 1`] = 
       "Description": "The user pool app client id for web",
       "Value": {
         "Ref": "UserPoolClientWeb",
-      },
-    },
-    "AppClientSecret": {
-      "Condition": "ShouldOutputAppClientSecrets",
-      "Value": {
-        "Fn::GetAtt": [
-          "UserPoolClientInputs",
-          "appSecret",
-        ],
       },
     },
     "IdentityPoolId": {
@@ -188,9 +171,6 @@ exports[`Check Auth Template Generated authstack template in default flow 1`] = 
   },
   "Resources": {
     "IdentityPool": {
-      "DependsOn": [
-        "UserPoolClientInputs",
-      ],
       "Properties": {
         "AllowUnauthenticatedIdentities": {
           "Ref": "allowUnauthenticatedIdentities",
@@ -361,149 +341,7 @@ exports[`Check Auth Template Generated authstack template in default flow 1`] = 
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "UserPoolClientInputs": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "UserPoolClientLogPolicy",
-      ],
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "UserPoolClientLambda",
-            "Arn",
-          ],
-        },
-        "clientId": {
-          "Ref": "UserPoolClient",
-        },
-        "userpoolId": {
-          "Ref": "UserPool",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "UserPoolClientLambda": {
-      "DependsOn": [
-        "UserPoolClientRole",
-      ],
-      "Properties": {
-        "Code": {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then((res) => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch((err) => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "UserPoolClientRole",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs16.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "UserPoolClientLambdaPolicy": {
-      "DependsOn": [
-        "UserPoolClientLambda",
-      ],
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "cognito-idp:DescribeUserPoolClient",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "authde2c33facd_userpoolclient_lambda_iam_policy",
-        "Roles": [
-          {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "UserPoolClientLogPolicy": {
-      "DependsOn": [
-        "UserPoolClientLambdaPolicy",
-      ],
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Sub": [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  {
-                    "account": {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": {
-                      "Ref": "UserPoolClientLambda",
-                    },
-                    "region": {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "authde2c33facd_userpoolclient_lambda_log_policy",
-        "Roles": [
-          {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "UserPoolClientRole": {
-      "DependsOn": [
-        "UserPoolClient",
-      ],
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -587,14 +425,6 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
         "NONE",
       ],
     },
-    "ShouldOutputAppClientSecrets": {
-      "Fn::Equals": [
-        {
-          "Ref": "userpoolClientGenerateSecret",
-        },
-        true,
-      ],
-    },
   },
   "Description": "Amplify Cognito Stack for AWS Amplify CLI",
   "Outputs": {
@@ -613,15 +443,6 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
       "Description": "The user pool app client id for web",
       "Value": {
         "Ref": "UserPoolClientWeb",
-      },
-    },
-    "AppClientSecret": {
-      "Condition": "ShouldOutputAppClientSecrets",
-      "Value": {
-        "Fn::GetAtt": [
-          "UserPoolClientInputs",
-          "appSecret",
-        ],
       },
     },
     "AppleWebClient": {
@@ -963,86 +784,85 @@ exports[`Check Auth Template Generated authstack template in manual flow 1`] = `
       "Properties": {
         "Code": {
           "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
+const {
+  CognitoIdentityProviderClient,
+  CreateUserPoolDomainCommand,
+  DeleteUserPoolDomainCommand,
+  DescribeUserPoolCommand,
+  DescribeUserPoolDomainCommand,
+} = require('@aws-sdk/client-cognito-identity-provider');
+const identity = new CognitoIdentityProviderClient({});
+
+exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  void tryHandleEvent(event, context);
+};
+
+async function tryHandleEvent(event, context) {
+  try {
+    await handleEvent(event);
+    response.send(event, context, response.SUCCESS, {});
+  } catch (err) {
+    console.log(err);
+    response.send(event, context, response.FAILED, { err });
+  }
+}
+
+async function handleEvent(event) {
   const userPoolId = event.ResourceProperties.userPoolId;
   const inputDomainName = event.ResourceProperties.hostedUIDomainName;
-  let deleteUserPoolDomain = (domainName) => {
-    let params = { Domain: domainName, UserPoolId: userPoolId };
-    return identity.deleteUserPoolDomain(params).promise();
+  if (event.RequestType === 'Delete') {
+    await deleteUserPoolDomain(inputDomainName, userPoolId);
+  } else if (event.RequestType === 'Update' || event.RequestType === 'Create') {
+    await createOrUpdateDomain(inputDomainName, userPoolId);
+  }
+}
+
+async function checkDomainAvailability(domainName) {
+  const params = { Domain: domainName };
+  try {
+    const res = await identity.send(new DescribeUserPoolDomainCommand(params));
+    return !(res.DomainDescription && res.DomainDescription.UserPoolId);
+  } catch (err) {
+    return false;
+  }
+}
+
+async function deleteUserPoolDomain(domainName, userPoolId) {
+  const params = { Domain: domainName, UserPoolId: userPoolId };
+  await identity.send(new DeleteUserPoolDomainCommand(params));
+}
+
+async function createUserPoolDomain(domainName, userPoolId) {
+  const params = {
+    Domain: domainName,
+    UserPoolId: userPoolId,
   };
-  if (event.RequestType == 'Delete') {
-    deleteUserPoolDomain(inputDomainName)
-      .then(() => {
-        response.send(event, context, response.SUCCESS, {});
-      })
-      .catch((err) => {
-        console.log(err);
-        response.send(event, context, response.FAILED, { err });
-      });
+  await identity.send(new CreateUserPoolDomainCommand(params));
+}
+
+async function createOrUpdateDomain(inputDomainName, userPoolId) {
+  const result = await identity.send(new DescribeUserPoolCommand({ UserPoolId: userPoolId }));
+  if (result.UserPool.Domain === inputDomainName) {
+    // if existing domain is same as input domain do nothing.
+    return;
   }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    let checkDomainAvailability = (domainName) => {
-      let params = { Domain: domainName };
-      return identity
-        .describeUserPoolDomain(params)
-        .promise()
-        .then((res) => {
-          if (res.DomainDescription && res.DomainDescription.UserPool) {
-            return false;
-          }
-          return true;
-        })
-        .catch((err) => {
-          return false;
-        });
-    };
-    let createUserPoolDomain = (domainName) => {
-      let params = { Domain: domainName, UserPoolId: userPoolId };
-      return identity.createUserPoolDomain(params).promise();
-    };
-    identity
-      .describeUserPool({ UserPoolId: userPoolId })
-      .promise()
-      .then((result) => {
-        if (inputDomainName) {
-          if (result.UserPool.Domain === inputDomainName) {
-            return;
-          } else {
-            if (!result.UserPool.Domain) {
-              return checkDomainAvailability(inputDomainName).then((isDomainAvailable) => {
-                if (isDomainAvailable) {
-                  return createUserPoolDomain(inputDomainName);
-                } else {
-                  throw new Error('Domain not available');
-                }
-              });
-            } else {
-              return checkDomainAvailability(inputDomainName).then((isDomainAvailable) => {
-                if (isDomainAvailable) {
-                  return deleteUserPoolDomain(result.UserPool.Domain).then(() => createUserPoolDomain(inputDomainName));
-                } else {
-                  throw new Error('Domain not available');
-                }
-              });
-            }
-          }
-        } else {
-          if (result.UserPool.Domain) {
-            return deleteUserPoolDomain(result.UserPool.Domain);
-          }
-        }
-      })
-      .then(() => {
-        response.send(event, context, response.SUCCESS, {});
-      })
-      .catch((err) => {
-        console.log(err);
-        response.send(event, context, response.FAILED, { err });
-      });
+  if (inputDomainName) {
+    // create new or replace existing domain.
+    const isDomainAvailable = await checkDomainAvailability(inputDomainName);
+    if (isDomainAvailable) {
+      if (result.UserPool.Domain) {
+        await deleteUserPoolDomain(result.UserPool.Domain, userPoolId);
+      }
+      await createUserPoolDomain(inputDomainName, userPoolId);
+    } else {
+      throw new Error('Domain not available');
+    }
+  } else if (result.UserPool.Domain) {
+    // if input domain is undefined delete existing domain if exists.
+    await deleteUserPoolDomain(result.UserPool.Domain, userPoolId);
   }
-};
+}
 ",
         },
         "Handler": "index.handler",
@@ -1052,7 +872,7 @@ exports.handler = (event, context, callback) => {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
@@ -1209,109 +1029,115 @@ exports.handler = (event, context, callback) => {
       "Properties": {
         "Code": {
           "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
+const {
+  CognitoIdentityProviderClient,
+  CreateIdentityProviderCommand,
+  DeleteIdentityProviderCommand,
+  ListIdentityProvidersCommand,
+  UpdateIdentityProviderCommand,
+} = require('@aws-sdk/client-cognito-identity-provider');
+const identity = new CognitoIdentityProviderClient({});
+
+exports.handler = (event, context) => {
+  // Don't return promise, response.send() marks context as done internally
+  void tryHandleEvent(event, context);
+};
+
+async function tryHandleEvent(event, context) {
   try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    let hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
-    if (hostedUIProviderCreds.length === 0) {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      let getRequestParams = (providerName) => {
-        let providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);
-        let providerMeta = hostedUIProviderMeta[providerMetaIndex];
-        let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);
-        let providerCreds = hostedUIProviderCreds[providerCredsIndex];
-        let requestParams = {
-          ProviderName: providerMeta.ProviderName,
-          UserPoolId: userPoolId,
-          AttributeMapping: providerMeta.AttributeMapping,
-        };
-        if (providerMeta.ProviderName === 'SignInWithApple') {
-          if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
-            requestParams.ProviderDetails = {
-              client_id: providerCreds.client_id,
-              team_id: providerCreds.team_id,
-              key_id: providerCreds.key_id,
-              private_key: providerCreds.private_key,
-              authorize_scopes: providerMeta.authorize_scopes,
-            };
-          } else {
-            requestParams = null;
-          }
-        } else {
-          if (providerCreds.client_id && providerCreds.client_secret) {
-            requestParams.ProviderDetails = {
-              client_id: providerCreds.client_id,
-              client_secret: providerCreds.client_secret,
-              authorize_scopes: providerMeta.authorize_scopes,
-            };
-          } else {
-            requestParams = null;
-          }
-        }
-        return requestParams;
-      };
-      let createIdentityProvider = (providerName) => {
-        let requestParams = getRequestParams(providerName);
-        if (!requestParams) {
-          return Promise.resolve();
-        }
-        requestParams.ProviderType = requestParams.ProviderName;
-        return identity.createIdentityProvider(requestParams).promise();
-      };
-      let updateIdentityProvider = (providerName) => {
-        let requestParams = getRequestParams(providerName);
-        if (!requestParams) {
-          return Promise.resolve();
-        }
-        return identity.updateIdentityProvider(requestParams).promise();
-      };
-      let deleteIdentityProvider = (providerName) => {
-        let params = { ProviderName: providerName, UserPoolId: userPoolId };
-        return identity.deleteIdentityProvider(params).promise();
-      };
-      let providerPromises = [];
-      identity
-        .listIdentityProviders({ UserPoolId: userPoolId, MaxResults: 60 })
-        .promise()
-        .then((result) => {
-          console.log(result);
-          let providerList = result.Providers.map((provider) => provider.ProviderName);
-          let providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-          hostedUIProviderMeta.forEach((providerMetadata) => {
-            if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
-              providerPromises.push(updateIdentityProvider(providerMetadata.ProviderName));
-            } else {
-              providerPromises.push(createIdentityProvider(providerMetadata.ProviderName));
-            }
-          });
-          providerList.forEach((provider) => {
-            if (providerListInParameters.indexOf(provider) < 0) {
-              providerPromises.push(deleteIdentityProvider(provider));
-            }
-          });
-          return Promise.all(providerPromises);
-        })
-        .then(() => {
-          response.send(event, context, response.SUCCESS, {});
-        })
-        .catch((err) => {
-          console.log(err.stack);
-          response.send(event, context, response.FAILED, { err });
-        });
-    }
+    await handleEvent(event);
+    response.send(event, context, response.SUCCESS, {});
   } catch (err) {
     console.log(err.stack);
     response.send(event, context, response.FAILED, { err });
   }
-};
+}
+
+async function handleEvent(event) {
+  const userPoolId = event.ResourceProperties.userPoolId;
+  const hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
+  const hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);
+  const hasHostedUIProviderCreds = hostedUIProviderCreds.length && hostedUIProviderCreds.length > 0;
+  if (hasHostedUIProviderCreds && (event.RequestType === 'Update' || event.RequestType === 'Create')) {
+    const listIdentityProvidersResponse = await identity.send(
+      new ListIdentityProvidersCommand({
+        UserPoolId: userPoolId,
+        MaxResults: 60,
+      }),
+    );
+    console.log(listIdentityProvidersResponse);
+    const providerList = listIdentityProvidersResponse.Providers.map((provider) => provider.ProviderName);
+    const providerListInParameters = hostedUIProviderMeta.map((provider) => provider.ProviderName);
+    for (const providerMetadata of hostedUIProviderMeta) {
+      if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
+        await updateIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+      } else {
+        await createIdentityProvider(providerMetadata.ProviderName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+      }
+    }
+    for (const provider of providerList) {
+      if (providerListInParameters.indexOf(provider) < 0) {
+        await deleteIdentityProvider(provider, userPoolId);
+      }
+    }
+  }
+}
+
+function getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {
+  const providerMeta = hostedUIProviderMeta.find((provider) => provider.ProviderName === providerName);
+  const providerCreds = hostedUIProviderCreds.find((provider) => provider.ProviderName === providerName);
+  let requestParams = {
+    ProviderName: providerMeta.ProviderName,
+    UserPoolId: userPoolId,
+    AttributeMapping: providerMeta.AttributeMapping,
+  };
+  if (providerMeta.ProviderName === 'SignInWithApple') {
+    if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {
+      requestParams.ProviderDetails = {
+        client_id: providerCreds.client_id,
+        team_id: providerCreds.team_id,
+        key_id: providerCreds.key_id,
+        private_key: providerCreds.private_key,
+        authorize_scopes: providerMeta.authorize_scopes,
+      };
+    } else {
+      requestParams = null;
+    }
+  } else {
+    if (providerCreds.client_id && providerCreds.client_secret) {
+      requestParams.ProviderDetails = {
+        client_id: providerCreds.client_id,
+        client_secret: providerCreds.client_secret,
+        authorize_scopes: providerMeta.authorize_scopes,
+      };
+    } else {
+      requestParams = null;
+    }
+  }
+  return requestParams;
+}
+
+async function createIdentityProvider(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {
+  const requestParams = getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+  if (!requestParams) {
+    return;
+  }
+  requestParams.ProviderType = requestParams.ProviderName;
+  await identity.send(new CreateIdentityProviderCommand(requestParams));
+}
+
+async function updateIdentityProvider(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId) {
+  const requestParams = getRequestParams(providerName, hostedUIProviderMeta, hostedUIProviderCreds, userPoolId);
+  if (!requestParams) {
+    return;
+  }
+  await identity.send(new UpdateIdentityProviderCommand(requestParams));
+}
+
+async function deleteIdentityProvider(providerName, userPoolId) {
+  const params = { ProviderName: providerName, UserPoolId: userPoolId };
+  await identity.send(new DeleteIdentityProviderCommand(params));
+}
 ",
         },
         "Handler": "index.handler",
@@ -1321,7 +1147,7 @@ exports.handler = (event, context, callback) => {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
@@ -1456,9 +1282,6 @@ exports.handler = (event, context, callback) => {
       "Type": "AWS::IAM::Policy",
     },
     "IdentityPool": {
-      "DependsOn": [
-        "UserPoolClientInputs",
-      ],
       "Properties": {
         "AllowUnauthenticatedIdentities": {
           "Ref": "allowUnauthenticatedIdentities",
@@ -1538,10 +1361,54 @@ exports.handler = (event, context, callback) => {
     "IdentityPoolRoleMap": {
       "DependsOn": [
         "IdentityPool",
+        "UserPoolClient",
+        "UserPoolClientWeb",
       ],
       "Properties": {
         "IdentityPoolId": {
           "Ref": "IdentityPool",
+        },
+        "RoleMappings": {
+          "UserPoolClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Sub": [
+                "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${client}",
+                {
+                  "client": {
+                    "Ref": "UserPoolClient",
+                  },
+                  "region": {
+                    "Ref": "AWS::Region",
+                  },
+                  "userPool": {
+                    "Ref": "UserPool",
+                  },
+                },
+              ],
+            },
+            "Type": "Token",
+          },
+          "UserPoolWebClientRoleMapping": {
+            "AmbiguousRoleResolution": "AuthenticatedRole",
+            "IdentityProvider": {
+              "Fn::Sub": [
+                "cognito-idp.\${region}.amazonaws.com/\${userPool}:\${webClient}",
+                {
+                  "region": {
+                    "Ref": "AWS::Region",
+                  },
+                  "userPool": {
+                    "Ref": "UserPool",
+                  },
+                  "webClient": {
+                    "Ref": "UserPoolClientWeb",
+                  },
+                },
+              ],
+            },
+            "Type": "Token",
+          },
         },
         "Roles": {
           "authenticated": {
@@ -1553,197 +1420,6 @@ exports.handler = (event, context, callback) => {
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-    },
-    "OAuthCustomResource": {
-      "DependsOn": [
-        "HostedUICustomResourceInputs",
-        "HostedUIProvidersCustomResourceInputs",
-      ],
-      "Properties": {
-        "Code": {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  try {
-    const userPoolId = event.ResourceProperties.userPoolId;
-    let webClientId = event.ResourceProperties.webClientId;
-    let nativeClientId = event.ResourceProperties.nativeClientId;
-    let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);
-    let oAuthMetadata = JSON.parse(event.ResourceProperties.oAuthMetadata);
-    let providerList = hostedUIProviderMeta.map((provider) => provider.ProviderName);
-    providerList.push('COGNITO');
-    if (event.RequestType == 'Delete') {
-      response.send(event, context, response.SUCCESS, {});
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      let params = {
-        UserPoolId: userPoolId,
-        AllowedOAuthFlows: oAuthMetadata.AllowedOAuthFlows,
-        AllowedOAuthFlowsUserPoolClient: true,
-        AllowedOAuthScopes: oAuthMetadata.AllowedOAuthScopes,
-        CallbackURLs: oAuthMetadata.CallbackURLs,
-        LogoutURLs: oAuthMetadata.LogoutURLs,
-        SupportedIdentityProviders: providerList,
-      };
-      console.log(params);
-      let updateUserPoolClientPromises = [];
-      params.ClientId = webClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      params.ClientId = nativeClientId;
-      updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());
-      Promise.all(updateUserPoolClientPromises)
-        .then(() => {
-          response.send(event, context, response.SUCCESS, {});
-        })
-        .catch((err) => {
-          console.log(err.stack);
-          response.send(event, context, response.FAILED, { err });
-        });
-    }
-  } catch (err) {
-    console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "UserPoolClientRole",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs16.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "OAuthCustomResourceInputs": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "OAuthCustomResourceLogPolicy",
-      ],
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "OAuthCustomResource",
-            "Arn",
-          ],
-        },
-        "hostedUIProviderMeta": {
-          "Ref": "hostedUIProviderMeta",
-        },
-        "nativeClientId": {
-          "Ref": "UserPoolClient",
-        },
-        "oAuthMetadata": {
-          "Ref": "oAuthMetadata",
-        },
-        "userPoolId": {
-          "Ref": "UserPool",
-        },
-        "webClientId": {
-          "Ref": "UserPoolClientWeb",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "OAuthCustomResourceLogPolicy": {
-      "DependsOn": [
-        "OAuthCustomResourcePolicy",
-      ],
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Sub": [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  {
-                    "account": {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": {
-                      "Ref": "OAuthCustomResource",
-                    },
-                    "region": {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": {
-          "Fn::Join": [
-            "-",
-            [
-              {
-                "Ref": "UserPool",
-              },
-              "OAuthLogPolicy",
-            ],
-          ],
-        },
-        "Roles": [
-          {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "OAuthCustomResourcePolicy": {
-      "DependsOn": [
-        "OAuthCustomResource",
-      ],
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "cognito-idp:UpdateUserPoolClient",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": {
-          "Fn::Join": [
-            "-",
-            [
-              {
-                "Ref": "UserPool",
-              },
-              "OAuth",
-            ],
-          ],
-        },
-        "Roles": [
-          {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
     },
     "SNSRole": {
       "Properties": {
@@ -1987,19 +1663,44 @@ exports.handler = (event, context, callback) => {
     },
     "UserPoolClient": {
       "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": {
+        "AllowedOAuthFlows": [
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": [
+          "https://localhost:3000/",
+        ],
         "ClientName": "extaut87063394_app_client",
         "GenerateSecret": {
           "Ref": "userpoolClientGenerateSecret",
         },
+        "LogoutURLs": [
+          "https://localhost:3000/",
+        ],
         "ReadAttributes": {
           "Ref": "userpoolClientReadAttributes",
         },
         "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
+        "SupportedIdentityProviders": [
+          "Facebook",
+          "Google",
+          "LoginWithAmazon",
+          "SignInWithApple",
+          "COGNITO",
+        ],
         "TokenValidityUnits": {
           "RefreshToken": "days",
         },
@@ -2012,149 +1713,7 @@ exports.handler = (event, context, callback) => {
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "UserPoolClientInputs": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "UserPoolClientLogPolicy",
-      ],
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "UserPoolClientLambda",
-            "Arn",
-          ],
-        },
-        "clientId": {
-          "Ref": "UserPoolClient",
-        },
-        "userpoolId": {
-          "Ref": "UserPool",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "UserPoolClientLambda": {
-      "DependsOn": [
-        "UserPoolClientRole",
-      ],
-      "Properties": {
-        "Code": {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    const params = {
-      ClientId: event.ResourceProperties.clientId,
-      UserPoolId: event.ResourceProperties.userpoolId,
-    };
-    identity
-      .describeUserPoolClient(params)
-      .promise()
-      .then((res) => {
-        response.send(event, context, response.SUCCESS, { appSecret: res.UserPoolClient.ClientSecret });
-      })
-      .catch((err) => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "UserPoolClientRole",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs16.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "UserPoolClientLambdaPolicy": {
-      "DependsOn": [
-        "UserPoolClientLambda",
-      ],
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "cognito-idp:DescribeUserPoolClient",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "extaut87063394_userpoolclient_lambda_iam_policy",
-        "Roles": [
-          {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "UserPoolClientLogPolicy": {
-      "DependsOn": [
-        "UserPoolClientLambdaPolicy",
-      ],
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Sub": [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  {
-                    "account": {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": {
-                      "Ref": "UserPoolClientLambda",
-                    },
-                    "region": {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "extaut87063394_userpoolclient_lambda_log_policy",
-        "Roles": [
-          {
-            "Ref": "UserPoolClientRole",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "UserPoolClientRole": {
-      "DependsOn": [
-        "UserPoolClient",
-      ],
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -2206,16 +1765,41 @@ exports.handler = (event, context, callback) => {
     },
     "UserPoolClientWeb": {
       "DependsOn": [
+        "HostedUIProvidersCustomResourceInputs",
         "UserPool",
       ],
       "Properties": {
+        "AllowedOAuthFlows": [
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": [
+          "https://localhost:3000/",
+        ],
         "ClientName": "extaut87063394_app_clientWeb",
+        "LogoutURLs": [
+          "https://localhost:3000/",
+        ],
         "ReadAttributes": {
           "Ref": "userpoolClientReadAttributes",
         },
         "RefreshTokenValidity": {
           "Ref": "userpoolClientRefreshTokenValidity",
         },
+        "SupportedIdentityProviders": [
+          "Facebook",
+          "Google",
+          "LoginWithAmazon",
+          "SignInWithApple",
+          "COGNITO",
+        ],
         "TokenValidityUnits": {
           "RefreshToken": "days",
         },

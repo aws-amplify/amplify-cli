@@ -185,17 +185,17 @@ describe('Test reading the resource meta information', () => {
   it('fails reading the meta information for non-existing resource', async () => {
     const nonExistingMap = 'map12345';
     const errorMessage = (resourceName: string): string => `Error reading Meta Parameters for ${resourceName}`;
-    expect(async () => await readResourceMetaParameters(ServiceName.Map, nonExistingMap)).rejects.toThrowError(
+    await expect(async () => await readResourceMetaParameters(ServiceName.Map, nonExistingMap)).rejects.toThrowError(
       errorMessage(nonExistingMap),
     );
 
     const nonExistingPlaceIndex = 'placeIndex12345';
-    expect(async () => await readResourceMetaParameters(ServiceName.PlaceIndex, nonExistingPlaceIndex)).rejects.toThrowError(
+    await expect(async () => await readResourceMetaParameters(ServiceName.PlaceIndex, nonExistingPlaceIndex)).rejects.toThrowError(
       errorMessage(nonExistingPlaceIndex),
     );
 
     const nonExistingGeofenceCollection = 'geofenceCollection12345';
-    expect(
+    await expect(
       async () => await readResourceMetaParameters(ServiceName.GeofenceCollection, nonExistingGeofenceCollection),
     ).rejects.toThrowError(errorMessage(nonExistingGeofenceCollection));
   });

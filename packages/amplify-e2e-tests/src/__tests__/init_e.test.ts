@@ -40,12 +40,21 @@ describe('amplify init e', () => {
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
-    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
-    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
-    expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
+    // test default vscode settings.json for awscloudformation folder
+    const editorSettingsPath = path.join(projRoot, '.vscode', 'settings.json');
+    const editorSettings = fs.readJSONSync(editorSettingsPath);
+    expect(editorSettings['files.exclude']['amplify/backend/awscloudformation']).toEqual(true);
+
+    await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    await expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // override new env
-    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
+    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: false });
+
+    // test awscloudformation folder is not excluded in vscode settings.json after override
+    const editorSettingsAfterOverride = fs.readJSONSync(editorSettingsPath);
+    expect(editorSettingsAfterOverride['files.exclude']['amplify/backend/awscloudformation']).toEqual(false);
 
     // this is where we will write overrides to
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
@@ -60,9 +69,12 @@ describe('amplify init e', () => {
     fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideFilePath);
     await expect(amplifyPushOverride(projRoot)).rejects.toThrowError();
 
-    // test happy path
+    // test with valid file
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
     replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
+    // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
+    await expect(amplifyPushOverride(projRoot, false, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
+    // should succeed now
     await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toContain('mockRole');
@@ -85,7 +97,7 @@ describe('amplify init e', () => {
     await gitInit(projRoot);
     await gitCommitAll(projRoot);
     await gitCleanFdx(projRoot);
-    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, 'integtest'), undefined, true);
+    await nonInteractiveInitWithForcePushAttach(projRoot, getAmplifyInitConfig(projectName, 'integtest'), undefined, false);
     // check if overrides are applied
     const gitClonedMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(await listRolePolicies(gitClonedMeta.AuthRoleName, gitClonedMeta.Region)).toMatchInlineSnapshot(`

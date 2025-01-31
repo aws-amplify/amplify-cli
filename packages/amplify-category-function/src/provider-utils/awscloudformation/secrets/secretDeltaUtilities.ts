@@ -15,7 +15,7 @@ export const hasExistingSecrets = (secretDeltas: SecretDeltas) =>
  */
 export const getExistingSecrets = (secretDeltas: SecretDeltas) =>
   Object.entries(secretDeltas)
-    .filter(([_, delta]) => existingSecretDeltaPredicate(delta))
+    .filter(([, delta]) => existingSecretDeltaPredicate(delta))
     .reduce((acc, [secretName, secretDelta]) => ({ ...acc, [secretName]: secretDelta }), {} as SecretDeltas);
 
 /**

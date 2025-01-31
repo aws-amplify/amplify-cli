@@ -143,7 +143,6 @@ test('Test queryPost query', async () => {
 const title = 'Test Query with Sort Field';
 const comment1 = 'a comment and a date! - 1';
 const comment2 = 'a comment and a date! - 2';
-const whenpast = '2017-10-01T00:00:00.000Z';
 const when1 = '2018-10-01T00:00:00.000Z';
 const whenmid = '2018-12-01T00:00:00.000Z';
 const when2 = '2019-10-01T00:00:01.000Z';

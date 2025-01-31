@@ -4,7 +4,6 @@ import { getPermissionPolicies } from '../index';
 jest.mock('@aws-amplify/amplify-cli-core');
 
 describe('only grant permission policies as requested', () => {
-  const provider = 'awscloudformation';
   let mockContext: $TSContext;
   // construct mock amplify meta
   const mockAmplifyMeta: $TSObject = {

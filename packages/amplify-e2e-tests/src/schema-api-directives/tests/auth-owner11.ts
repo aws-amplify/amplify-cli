@@ -1,8 +1,16 @@
 /* eslint-disable */
-import { addApi, amplifyPushWithoutCodegen, updateAuthAddUserGroups, getAmplifyFlutterConfig } from '@aws-amplify/amplify-e2e-core';
-import { signInUser, getConfiguredAppsyncClientCognitoAuth, setupUser, getUserPoolId } from '../authHelper';
-import { updateSchemaInTestProject, testMutations, testQueries, testSubscriptions } from '../common';
-import Amplify from 'aws-amplify';
+import {
+  addApi,
+  amplifyPushWithoutCodegen,
+  getAmplifyFlutterConfig,
+  getConfiguredAppsyncClientCognitoAuth,
+  getUserPoolId,
+  setupUser,
+  signInUser,
+  updateAuthAddUserGroups,
+} from '@aws-amplify/amplify-e2e-core';
+import { Amplify } from 'aws-amplify';
+import { testMutations, testQueries, testSubscriptions, updateSchemaInTestProject } from '../common';
 
 const GROUPNAME = 'Admin';
 const USERNAME = 'user1';

@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "echo-current-cli-version.js",
-  "scripts": {
-    "split-e2e-tests": "yarn ts-node --transpile-only ./split-e2e-tests.ts"
-  },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
@@ -19,7 +16,7 @@
     "@types/js-yaml": "^4.0.4",
     "@types/node": "^16.11.5",
     "@yarnpkg/parsers": "^3.0.0-rc.44",
-    "axios": "^0.26.0",
+    "axios": "^1.6.7",
     "execa": "^5.1.1",
     "fs-extra": "^10.0.0",
     "glob": "^7.2.0",

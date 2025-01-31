@@ -26,7 +26,11 @@ const defaultSearchIndexQuestion = `Set this search index as the default? It wil
 const defaultMapQuestion = `Set this Map as the default? It will be used in Amplify Map API calls if no explicit reference is provided.`;
 const defaultGeofenceCollectionQuestion = `Set this geofence collection as the default? It will be used in Amplify geofence collection API calls if no explicit reference is provided.`;
 
+const isWindowsPlatform = (): boolean => !!process?.platform?.startsWith('win');
 export function getGeoJSONFilePath(fileName: string): string {
+  if (process.env.CODEBUILD_SRC_DIR && isWindowsPlatform()) {
+    return path.join(process.env.CODEBUILD_SRC_DIR, 'packages', 'amplify-e2e-tests', 'geo-json-files', fileName);
+  }
   return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'geo-json-files', fileName);
 }
 

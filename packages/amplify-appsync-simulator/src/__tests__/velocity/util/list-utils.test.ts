@@ -7,7 +7,7 @@ import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definit
 
 const stubInfo = {} as unknown;
 export const mockInfo = stubInfo as GraphQLResolveInfo;
-var util;
+let util;
 
 beforeEach(() => {
   const executionContext: AppSyncGraphQLExecutionContext = {

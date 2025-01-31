@@ -45,3 +45,13 @@ describe('test getAmplifyPackageLibDirPath', () => {
     }
   });
 });
+
+describe('test getStackBuildCategoryResourceDirPath', () => {
+  const category = 'storage';
+  const resourceName = 'testResource';
+  const expectedPath = path.join(pathManager.getRootStackBuildDirPath('projectPath'), category, resourceName);
+
+  it('should return correct path', () => {
+    expect(pathManager.getStackBuildCategoryResourceDirPath('projectPath', category, resourceName)).toEqual(expectedPath);
+  });
+});

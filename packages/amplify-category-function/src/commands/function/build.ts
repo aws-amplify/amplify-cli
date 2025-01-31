@@ -28,15 +28,11 @@ export const run = async (context: $TSContext) => {
       await packageResource(context, resource);
     }
   } catch (err) {
-    context.print.info(err.stack);
-    context.print.error('There was an error building the function resources');
-    const amplifyError = new AmplifyError(
+    throw new AmplifyError(
       'PackagingLambdaFunctionError',
       { message: `There was an error building the function resources ${err.message}` },
       err,
     );
-    void context.usageData.emitError(amplifyError);
-    process.exitCode = 1;
   }
 };
 

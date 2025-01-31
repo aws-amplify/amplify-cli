@@ -34,8 +34,6 @@ import {
   expectS3LocalAndOGMetaFilesOutputMatching,
 } from '../import-helpers';
 
-const profileName = 'amplify-integ-test-user';
-
 describe('s3 import', () => {
   const projectPrefix = 'sssimp';
   const ogProjectPrefix = 'ogsssimp';
@@ -60,7 +58,6 @@ describe('s3 import', () => {
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
   let dummyOGSettings: AddStorageSettings;
 
   let projectRoot: string;
@@ -79,7 +76,6 @@ describe('s3 import', () => {
     ogProjectDetails = getOGStorageProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
     dummyOGSettings = createStorageSettings(dummyOGProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);

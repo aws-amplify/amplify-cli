@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.8.1...@aws-amplify/amplify-util-import@2.8.3) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [2.8.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.8.1...@aws-amplify/amplify-util-import@2.8.2) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-import
+
+
+
+
+
+## [2.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.8.0...@aws-amplify/amplify-util-import@2.8.1) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-import
+
+
+
+
+
+# [2.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.7.0...@aws-amplify/amplify-util-import@2.8.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+# [2.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.6.1...@aws-amplify/amplify-util-import@2.7.0) (2023-07-20)
+
+
+### Features
+
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
+## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.6.0...@aws-amplify/amplify-util-import@2.6.1) (2023-06-13)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-import
+
+
+
+
+
 # [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-import@2.5.0...@aws-amplify/amplify-util-import@2.6.0) (2023-05-11)
 
 

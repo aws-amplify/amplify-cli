@@ -55,21 +55,28 @@ const processPaths = (paths: string[]): string[] => {
   }
   const longestString = paths.reduce((a, b) => (a.length > b.length ? a : b));
   const directoriesToRemove = longestString.split('/');
-  const directoriesRemoved = new Set<string>();
-  directoriesToRemove.forEach((directory) => {
+  const directoriesRemoved: Array<string> = [];
+  for (const directory of directoriesToRemove) {
     if (directory === '') {
-      return;
+      continue;
     }
+    let removedInAnyPath = false;
     for (let i = 0; i < result.length; i++) {
       if (result[i].startsWith(`/${directory}`) && result[i] !== longestString) {
         result[i] = result[i].replace(`/${directory}`, '');
-        directoriesRemoved.add(directory);
+        removedInAnyPath = true;
       }
     }
-  });
+    if (removedInAnyPath) {
+      directoriesRemoved.push(directory);
+    } else {
+      // if current segment is not in any path this means we removed common prefix from all paths.
+      break;
+    }
+  }
 
   return result.map((r) => {
-    if (r === longestString) {
+    if (r === longestString && directoriesRemoved.length > 0) {
       return longestString.replace(path.join(...directoriesRemoved), '');
     }
     return r;

@@ -3,6 +3,306 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.15...@aws-amplify/amplify-util-uibuilder@1.14.16) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.14...@aws-amplify/amplify-util-uibuilder@1.14.15) (2025-01-16)
+
+
+### Reverts
+
+* Revert "chore: cateogry-api + codegen version bump (#14048)" (#14049) ([5a0cdbf](https://github.com/aws-amplify/amplify-cli/commit/5a0cdbfa46856da320323923a4336d6ba60d82b9)), closes [#14048](https://github.com/aws-amplify/amplify-cli/issues/14048) [#14049](https://github.com/aws-amplify/amplify-cli/issues/14049)
+
+
+
+
+
+## [1.14.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.13...@aws-amplify/amplify-util-uibuilder@1.14.14) (2024-11-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.12...@aws-amplify/amplify-util-uibuilder@1.14.13) (2024-10-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.11...@aws-amplify/amplify-util-uibuilder@1.14.12) (2024-08-06)
+
+
+### Bug Fixes
+
+* update awaiter s3 key ([#13872](https://github.com/aws-amplify/amplify-cli/issues/13872)) ([dacfab7](https://github.com/aws-amplify/amplify-cli/commit/dacfab73fcc53586b873f99e149d44c390b2d76f))
+
+
+
+
+
+## [1.14.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.10...@aws-amplify/amplify-util-uibuilder@1.14.11) (2024-08-02)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.9...@aws-amplify/amplify-util-uibuilder@1.14.10) (2024-06-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.8...@aws-amplify/amplify-util-uibuilder@1.14.9) (2024-06-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.7...@aws-amplify/amplify-util-uibuilder@1.14.8) (2024-06-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.6...@aws-amplify/amplify-util-uibuilder@1.14.7) (2024-05-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.5...@aws-amplify/amplify-util-uibuilder@1.14.6) (2024-05-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.4...@aws-amplify/amplify-util-uibuilder@1.14.5) (2024-04-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.3...@aws-amplify/amplify-util-uibuilder@1.14.4) (2024-04-15)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.2...@aws-amplify/amplify-util-uibuilder@1.14.3) (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.1...@aws-amplify/amplify-util-uibuilder@1.14.2) (2024-03-06)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.0...@aws-amplify/amplify-util-uibuilder@1.14.1) (2023-12-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+# [1.14.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.13.3...@aws-amplify/amplify-util-uibuilder@1.14.0) (2023-12-11)
+
+
+### Features
+
+* bump data dependencies to launch RDS feature ([#13409](https://github.com/aws-amplify/amplify-cli/issues/13409)) ([7fbf29f](https://github.com/aws-amplify/amplify-cli/commit/7fbf29f56eb7335d20de0b5526fbed7795a2af09))
+
+
+
+
+
+## [1.13.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.13.1...@aws-amplify/amplify-util-uibuilder@1.13.3) (2023-11-08)
+
+
+### Bug Fixes
+
+* bump versions after unsuccessful release ([#13395](https://github.com/aws-amplify/amplify-cli/issues/13395)) ([7f43363](https://github.com/aws-amplify/amplify-cli/commit/7f433637b052d6dd33fcbf87f390a6b85e9de5b7))
+
+
+
+
+
+## [1.13.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.13.1...@aws-amplify/amplify-util-uibuilder@1.13.2) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.13.0...@aws-amplify/amplify-util-uibuilder@1.13.1) (2023-11-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+# [1.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.12.0...@aws-amplify/amplify-util-uibuilder@1.13.0) (2023-10-12)
+
+
+### Features
+
+* codegen support for Amplify Android Lazy loading and custom selection set ([8f9d855](https://github.com/aws-amplify/amplify-cli/commit/8f9d855a6eb74a8d0452b2878a65ff5222ac61ee))
+
+
+
+
+
+# [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.11.2...@aws-amplify/amplify-util-uibuilder@1.12.0) (2023-10-05)
+
+
+### Features
+
+* **amplify-util-uibuilder:** amplify js backwards compatibility ([#13288](https://github.com/aws-amplify/amplify-cli/issues/13288)) ([2db3e18](https://github.com/aws-amplify/amplify-cli/commit/2db3e181cf06954085eb8fade0b26162672327db))
+
+
+
+
+
+## [1.11.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.11.1...@aws-amplify/amplify-util-uibuilder@1.11.2) (2023-10-03)
+
+
+### Bug Fixes
+
+* update api category and codegen to capture high-priority bug-fixes ([3836b90](https://github.com/aws-amplify/amplify-cli/commit/3836b90b3f9ccd654d9c1b61a4b83c9c4712290c))
+
+
+
+
+
+## [1.11.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.11.0...@aws-amplify/amplify-util-uibuilder@1.11.1) (2023-09-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+# [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.10.1...@aws-amplify/amplify-util-uibuilder@1.11.0) (2023-09-22)
+
+
+### Features
+
+* support codegen and modelgen commands in non-amplify directories ([#13245](https://github.com/aws-amplify/amplify-cli/issues/13245)) ([85dd5cb](https://github.com/aws-amplify/amplify-cli/commit/85dd5cb6b33d8df41e35c2cbcf3b3b0e390b1af0))
+
+
+
+
+
+## [1.10.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.10.0...@aws-amplify/amplify-util-uibuilder@1.10.1) (2023-08-31)
+
+
+### Bug Fixes
+
+* exclude tests from publish ([#13153](https://github.com/aws-amplify/amplify-cli/issues/13153)) ([1b1fe09](https://github.com/aws-amplify/amplify-cli/commit/1b1fe09a1c08be0262a1013f71354abd7160722a))
+
+
+
+
+
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.9.4...@aws-amplify/amplify-util-uibuilder@1.10.0) (2023-08-17)
+
+
+### Features
+
+* generate components using graphql ([1568581](https://github.com/aws-amplify/amplify-cli/commit/15685810460881aa71e88724398b9be05ba53781))
+
+
+
+
+
+## [1.9.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.9.3...@aws-amplify/amplify-util-uibuilder@1.9.4) (2023-08-09)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.9.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.9.2...@aws-amplify/amplify-util-uibuilder@1.9.3) (2023-07-28)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.9.1...@aws-amplify/amplify-util-uibuilder@1.9.2) (2023-07-27)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.9.0...@aws-amplify/amplify-util-uibuilder@1.9.1) (2023-07-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.4...@aws-amplify/amplify-util-uibuilder@1.9.0) (2023-07-20)
+
+
+### Features
+
+* uibuilder codegen service ([#12896](https://github.com/aws-amplify/amplify-cli/issues/12896)) ([3fe2f98](https://github.com/aws-amplify/amplify-cli/commit/3fe2f98a99a9daf22efccb23a031882ea2be899b))
+
+
+
+
+
+## [1.8.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.3...@aws-amplify/amplify-util-uibuilder@1.8.4) (2023-06-13)
+
+
+### Bug Fixes
+
+* skip automatic form generation when datastore is not enabled ([e45fcc1](https://github.com/aws-amplify/amplify-cli/commit/e45fcc1a9bdff3d20645fb18bf2e2be34e16beb1))
+
+
+
+
+
 ## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.8.1...@aws-amplify/amplify-util-uibuilder@1.8.3) (2023-05-25)
 
 

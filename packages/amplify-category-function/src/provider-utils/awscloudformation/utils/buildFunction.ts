@@ -1,5 +1,6 @@
 import { $TSContext, pathManager, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildType, FunctionRuntimeLifecycleManager } from '@aws-amplify/amplify-function-plugin-interface';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { categoryName } from '../../../constants';
 
 export const buildFunction = async (
@@ -15,31 +16,26 @@ export const buildFunction = async (
 
   const depCheck = await runtimePlugin.checkDependencies(breadcrumbs.functionRuntime);
   if (!depCheck.hasRequiredDependencies) {
-    context.print.error(depCheck.errorMessage || `You are missing dependencies required to package ${resourceName}`);
+    printer.error(depCheck.errorMessage || `You are missing dependencies required to package ${resourceName}`);
     throw new AmplifyError('PackagingLambdaFunctionError', { message: `Missing required dependencies to package ${resourceName}` });
   }
 
   const prevBuildTime = lastBuildTimestamp ? new Date(lastBuildTimestamp) : undefined;
 
   // build the function
-  let rebuilt = false;
-  if (breadcrumbs.scripts && breadcrumbs.scripts.build) {
-    // TODO
-    throw new AmplifyError('NotImplementedError', { message: 'Executing custom build scripts is not yet implemented' });
-  } else {
-    const buildRequest: BuildRequest = {
-      buildType,
-      srcRoot: pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName),
-      runtime: breadcrumbs.functionRuntime,
-      legacyBuildHookParams: {
-        projectRoot: pathManager.findProjectRoot(),
-        resourceName,
-      },
-      lastBuildTimeStamp: prevBuildTime,
-      lastBuildType,
-    };
-    rebuilt = (await runtimePlugin.build(buildRequest)).rebuilt;
-  }
+  const buildRequest: BuildRequest = {
+    buildType,
+    srcRoot: pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName),
+    runtime: breadcrumbs.functionRuntime,
+    legacyBuildHookParams: {
+      projectRoot: pathManager.findProjectRoot(),
+      resourceName,
+    },
+    lastBuildTimeStamp: prevBuildTime,
+    lastBuildType,
+    scripts: breadcrumbs.scripts,
+  };
+  const rebuilt = (await runtimePlugin.build(buildRequest)).rebuilt;
   if (rebuilt) {
     context.amplify.updateamplifyMetaAfterBuild({ category: categoryName, resourceName }, buildType.toString());
     return new Date().toISOString();

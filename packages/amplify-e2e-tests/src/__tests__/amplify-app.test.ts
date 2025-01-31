@@ -1,21 +1,11 @@
-import {
-  amplifyAppAndroid,
-  amplifyAppIos,
-  amplifyAppAngular,
-  amplifyAppReact,
-  amplifyModelgen,
-  amplifyPush,
-  addIntegAccountInConfig,
-} from '../amplify-app-helpers/amplify-app-setup';
-import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from '@aws-amplify/amplify-e2e-core';
+import { amplifyAppAndroid, amplifyAppIos, amplifyAppAngular } from '../amplify-app-helpers/amplify-app-setup';
+import { createNewProjectDir, deleteProjectDir, isCI } from '@aws-amplify/amplify-e2e-core';
 import { AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
 import {
   validateProject,
   validateProjectConfig,
   validateApi,
   validateBackendConfig,
-  validateModelgen,
-  validateAmplifyPush,
   validateFeatureFlags,
 } from '../amplify-app-helpers/amplify-app-validation';
 
@@ -30,7 +20,7 @@ describe('amplify-app platform tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  jest.setTimeout(1000 * 60 * 30); // 30 minutes is suffice as push operations are taking time
+  jest.setTimeout(1000 * 60 * 30); // 30 minutes is enough as push operations are taking time
 
   it('should set up an android project', async () => {
     await amplifyAppAndroid(projRoot);
@@ -63,20 +53,5 @@ describe('amplify-app platform tests', () => {
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);
-  });
-
-  it('should set up a react project and run scripts', async () => {
-    await amplifyAppReact(projRoot);
-    validateProject(projRoot, AmplifyFrontend.javascript);
-    validateProjectConfig(projRoot, AmplifyFrontend.javascript, 'react');
-    validateApi(projRoot);
-    validateBackendConfig(projRoot);
-    validateFeatureFlags(projRoot);
-    addIntegAccountInConfig(projRoot);
-    await amplifyModelgen(projRoot);
-    validateModelgen(projRoot);
-    await amplifyPush(projRoot);
-    validateAmplifyPush(projRoot);
-    await deleteProject(projRoot);
   });
 });

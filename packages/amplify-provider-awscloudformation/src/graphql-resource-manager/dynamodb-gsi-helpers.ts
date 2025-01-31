@@ -4,6 +4,7 @@ import { DynamoDB, IntrinsicFunction } from 'cloudform-types';
 import _ from 'lodash';
 import { AmplifyError, AMPLIFY_SUPPORT_DOCS } from '@aws-amplify/amplify-cli-core';
 import { GSIRecord } from '../utils/amplify-resource-state-utils';
+import { DISABLE_GSI_LIMIT_CHECK_OPTION } from './amplify-graphql-resource-manager';
 
 export const MAX_GSI_PER_TABLE = 20;
 /**
@@ -45,8 +46,9 @@ export const getGSIDetails = (indexName: string, table: DynamoDB.Table): GSIReco
  * Helper method to add new GSI and attribute definitions
  * @param index GSIRecord with the index  and attribute definition
  * @param table DynamoDB table to which the new GSI is added
+ * @param disableGSILimitChecks if enabled, do not check for GSI limits during iteration.
  */
-export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table => {
+export const addGSI = (index: GSIRecord, table: DynamoDB.Table, disableGSILimitCheck: boolean): DynamoDB.Table => {
   const updatedTable = _.cloneDeep(table);
 
   const gsis = updatedTable.Properties.GlobalSecondaryIndexes ?? [];
@@ -54,9 +56,11 @@ export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
 
   const existingIndices = getExistingIndexNames(table);
 
-  if (existingIndices.length + 1 > MAX_GSI_PER_TABLE) {
+  if (existingIndices.length + 1 > MAX_GSI_PER_TABLE && !disableGSILimitCheck) {
+    const tableName = table.Properties.TableName;
+    const tableNameString = tableName ? (typeof tableName === 'string' ? tableName : JSON.stringify(tableName)) : '{UnNamedTable}';
     throw new AmplifyError('ConfigurationError', {
-      message: `DynamoDB ${table.Properties.TableName || '{UnNamedTable}'} can have max of ${MAX_GSI_PER_TABLE} GSIs`,
+      message: `DynamoDB ${tableNameString} can have max of ${MAX_GSI_PER_TABLE} GSIs. To disable this check, use the --${DISABLE_GSI_LIMIT_CHECK_OPTION} option.`,
     });
   }
 

@@ -1,9 +1,7 @@
 jest.mock('@aws-amplify/amplify-cli-core', () => {
   return {
     FeatureFlags: {
-      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-        return true;
-      }),
+      getBoolean: jest.fn().mockReturnValue(true),
     },
   };
 });

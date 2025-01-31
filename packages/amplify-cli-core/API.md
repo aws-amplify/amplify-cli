@@ -8,9 +8,10 @@
 
 import Ajv from 'ajv';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { ARN } from '@aws-sdk/util-arn-parser';
+import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as cdk from 'aws-cdk-lib';
 import { ChildProcess } from 'child_process';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import * as execa from 'execa';
 import opn from 'open';
 import { Ora } from 'ora';
@@ -122,7 +123,7 @@ export class AmplifyError extends AmplifyException {
 }
 
 // @public (undocumented)
-export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'APIRateExceededError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'CustomPoliciesFormatError' | 'DebugConfigValueNotSetError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DestructiveMigrationError' | 'DiagnoseReportUploadError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'ExportError' | 'FeatureFlagsValidationError' | 'FileSystemPermissionsError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'GraphQLError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidDirectiveError' | 'InvalidGSIMigrationError' | 'InvalidMigrationError' | 'InvalidOverrideError' | 'InvalidStackError' | 'InvalidTransformerError' | 'IterativeRollbackError' | 'LambdaFunctionInvokeError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'PackagingLambdaFunctionError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceCountLimitExceedError' | 'ResourceDoesNotExistError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'ResourceRemoveError' | 'SchemaNotFoundError' | 'SchemaValidationError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'ShellCommandExecutionError' | 'StackNotFoundError' | 'StackStateError' | 'StorageImportError' | 'TransformerContractError' | 'UnknownDirectiveError' | 'UnsupportedLockFileTypeError' | 'UserInputError';
+export type AmplifyErrorType = 'AmplifyStudioError' | 'AmplifyStudioLoginError' | 'AmplifyStudioNotEnabledError' | 'ApiCategorySchemaNotFoundError' | 'APIRateExceededError' | 'AuthImportError' | 'BackendConfigValidationError' | 'BucketAlreadyExistsError' | 'BucketNotFoundError' | 'CategoryNotEnabledError' | 'CloudFormationTemplateError' | 'CommandNotSupportedError' | 'ConfigurationError' | 'CustomPoliciesFormatError' | 'DebugConfigValueNotSetError' | 'DeploymentError' | 'DeploymentInProgressError' | 'DestructiveMigrationError' | 'DiagnoseReportUploadError' | 'DirectoryAlreadyExistsError' | 'DirectoryError' | 'DuplicateLogicalIdError' | 'EnvironmentConfigurationError' | 'EnvironmentNameError' | 'EnvironmentNotInitializedError' | 'ExportError' | 'FeatureFlagsValidationError' | 'FileSystemPermissionsError' | 'FrameworkNotSupportedError' | 'FunctionTooLargeError' | 'GraphQLError' | 'InputValidationError' | 'InvalidAmplifyAppIdError' | 'InvalidCustomResourceError' | 'InvalidDirectiveError' | 'InvalidGSIMigrationError' | 'InvalidMigrationError' | 'InvalidOverrideError' | 'InvalidStackError' | 'InvalidTransformerError' | 'IterativeRollbackError' | 'LambdaFunctionInvokeError' | 'LambdaLayerDeleteError' | 'MigrationError' | 'MissingAmplifyMetaFileError' | 'MissingExpectedParameterError' | 'MissingOverridesInstallationRequirementsError' | 'MockProcessError' | 'ModelgenError' | 'NestedProjectInitError' | 'NotImplementedError' | 'NoUpdateBackendError' | 'OpenSslCertificateError' | 'PackagingLambdaFunctionError' | 'ParameterNotFoundError' | 'PermissionsError' | 'PluginMethodNotFoundError' | 'PluginNotFoundError' | 'PluginPolicyAddError' | 'ProfileConfigurationError' | 'ProjectAppIdResolveError' | 'ProjectInitError' | 'ProjectNotFoundError' | 'ProjectNotInitializedError' | 'PushResourcesError' | 'RegionNotAvailableError' | 'RemoveNotificationAppError' | 'ResourceAlreadyExistsError' | 'ResourceCountLimitExceedError' | 'ResourceDoesNotExistError' | 'ResourceInUseError' | 'ResourceNotReadyError' | 'ResourceRemoveError' | 'SchemaNotFoundError' | 'SchemaValidationError' | 'ScriptingFeaturesDisabledError' | 'SearchableMockProcessError' | 'SearchableMockUnavailablePortError' | 'SearchableMockUnsupportedPlatformError' | 'ShellCommandExecutionError' | 'StackNotFoundError' | 'StackStateError' | 'StorageImportError' | 'TransformerContractError' | 'UnknownDirectiveError' | 'UnsupportedLockFileTypeError' | 'UserInputError';
 
 // @public (undocumented)
 export enum AmplifyEvent {
@@ -329,7 +330,7 @@ export class ApiCategoryFacade {
     // (undocumented)
     static getTransformerVersion(context: $TSContext): Promise<number>;
     // (undocumented)
-    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<DeploymentResources | undefined>;
+    static transformGraphQLSchema(context: $TSContext, options: $TSAny): Promise<$TSAny | undefined>;
 }
 
 // @public (undocumented)
@@ -820,6 +821,9 @@ export class ExportPathValidationError extends AmplifyError {
 }
 
 // @public (undocumented)
+export const extract: any;
+
+// @public (undocumented)
 export function fancy(message?: string): void;
 
 // @public (undocumented)
@@ -941,6 +945,9 @@ export type GetPackageAssetPaths = () => Promise<string[]>;
 
 // @public (undocumented)
 export const getPackageManager: (rootPath?: string) => Promise<PackageManager | null>;
+
+// @public (undocumented)
+export const getPackageManagerByType: (packageManagerType: PackageManagerType) => PackageManager;
 
 // @public (undocumented)
 export const getPermissionsBoundaryArn: (env?: string) => string | undefined;
@@ -1478,15 +1485,31 @@ export { open_2 as open }
 export const overriddenCategories: string[];
 
 // @public (undocumented)
-export type PackageManager = {
-    packageManager: PackageManagerType;
-    lockFile: string;
-    executable: string;
+export interface PackageManager {
+    // (undocumented)
+    readonly displayValue: string;
+    // (undocumented)
+    readonly executable: string;
+    // (undocumented)
+    getInstallArgs: (buildType: BuildType, resourceDir?: string) => string[];
+    // (undocumented)
+    getRunScriptArgs: (scriptName: string) => string[];
+    // (undocumented)
+    readonly lockFile: string;
+    // (undocumented)
+    readonly packageManager: PackageManagerType;
+    // (undocumented)
     version?: SemVer;
-};
+}
 
 // @public (undocumented)
-export type PackageManagerType = 'yarn' | 'npm';
+export const packageManagers: Record<PackageManagerType, PackageManager>;
+
+// @public (undocumented)
+export type PackageManagerType = 'yarn' | 'npm' | 'pnpm' | 'custom';
+
+// @public (undocumented)
+export const parseArn: (arn: string) => ARN;
 
 // @public (undocumented)
 export function parseHelpCommands(input: $TSAny, commandsInfo: Array<CommandInfo>): {
@@ -1631,6 +1654,8 @@ export class PathManager {
     getRootOverrideDirPath: (projectPath: string) => string;
     // (undocumented)
     getRootStackBuildDirPath: (projectPath: string) => string;
+    // (undocumented)
+    getStackBuildCategoryResourceDirPath: (projectPath: string, category: string, resourceName: string) => string;
     // (undocumented)
     getTagFilePath: (projectPath?: string) => string;
     // (undocumented)
@@ -1901,6 +1926,9 @@ export interface ResourceTuple {
 
 // @public (undocumented)
 export function runHelp(context: $TSContext, commandsInfo: Array<CommandInfo>): void;
+
+// @public (undocumented)
+export const runOverride: (overrideDir: string, templateObject: $TSAny, projectInfo: $TSAny) => Promise<void>;
 
 // @public (undocumented)
 export type Runtime = {

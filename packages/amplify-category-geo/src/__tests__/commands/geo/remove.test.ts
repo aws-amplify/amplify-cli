@@ -5,7 +5,7 @@ import { run } from '../../../commands/geo/remove';
 
 const mockRemoveResource = removeResource as jest.MockedFunction<typeof removeResource>;
 const mockResource = 'resource12345';
-mockRemoveResource.mockImplementation((context: $TSContext, service: string): Promise<string> => {
+mockRemoveResource.mockImplementation((): Promise<string> => {
   return new Promise<string>((resolve) => {
     resolve(mockResource);
   });

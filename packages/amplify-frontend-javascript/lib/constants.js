@@ -3,5 +3,6 @@ module.exports = {
   ProjectScanBaseScore: 10,
   ProjectScanMaxScore: 90,
   configFilename: 'amplify-config.js',
-  exportsFilename: 'aws-exports.js',
+  exportsJSFilename: 'aws-exports.js',
+  exportsJSONFilename: 'amplifyconfiguration.json',
 };

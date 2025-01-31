@@ -149,7 +149,7 @@ describe('intrinsic-functions', () => {
 
     it('should call parseValue if the ref is not a string', () => {
       const node = [{ 'Fn::Join': ['-', ['foo', 'bar']] }];
-      const parseValue = jest.fn((val) => 'fromParam');
+      const parseValue = jest.fn(() => 'fromParam');
       expect(cfnRef(node, cfnContext, parseValue)).toEqual('foo');
     });
 
