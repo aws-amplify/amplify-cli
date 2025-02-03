@@ -93,14 +93,7 @@ export const buildOverrideDir = async (cwd: string, destDirPath: string): Promis
     const tsConfigSampleFilePath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.resource.json');
     fs.writeFileSync(tsConfigDestFilePath, fs.readFileSync(tsConfigSampleFilePath));
 
-    const cmd = [`run`, `build`];
-    // ensure the --project and specific tsconfig.json file get passed through to tsc with npm by using --
-    if (packageManager.executable === 'npm') {
-      cmd.push('--');
-    }
-    cmd.push(`--project`, `${tsConfigDestFilePath}`);
-
-    execa.sync(packageManager.executable, cmd, {
+    execa.sync(packageManager.runner, ['tsc', '--project', tsConfigDestFilePath], {
       cwd: tsConfigDir,
       stdio: 'pipe',
       encoding: 'utf-8',

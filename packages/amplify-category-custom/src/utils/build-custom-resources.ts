@@ -98,19 +98,8 @@ const buildResource = async (resource: ResourceMeta): Promise<void> => {
     }
   }
 
-  // get locally installed tsc executable
-
-  const localTscExecutablePath = path.join(targetDir, 'node_modules', '.bin', 'tsc');
-
-  if (!fs.existsSync(localTscExecutablePath)) {
-    throw new AmplifyError('MissingOverridesInstallationRequirementsError', {
-      message: 'TypeScript executable not found.',
-      resolution: 'Please add it as a dev-dependency in the package.json file for this resource.',
-    });
-  }
-
   try {
-    execa.sync(localTscExecutablePath, {
+    execa.sync(packageManager.runner, ['tsc'], {
       cwd: targetDir,
       stdio: 'pipe',
       encoding: 'utf-8',
