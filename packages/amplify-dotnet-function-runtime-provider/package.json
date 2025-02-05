@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-runtime-provider",
-  "version": "2.1.1",
+  "version": "2.1.2-rc.9d1bb1a309d4acc.0",
   "description": "Provides functionality related to functions in .NET on AWS",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.3.11",
+    "@aws-amplify/amplify-cli-core": "4.3.12-rc.9d1bb1a309d4acc.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "execa": "^5.1.1",

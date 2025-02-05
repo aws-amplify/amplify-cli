@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.12-rc.9d1bb1a309d4acc.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.11...@aws-amplify/amplify-cli-core@4.3.12-rc.9d1bb1a309d4acc.0) (2025-02-05)
+
+
+### Bug Fixes
+
+* **amplify-cli-core:** use build script for overrides ([#13858](https://github.com/aws-amplify/amplify-cli/issues/13858)) ([30c9f0c](https://github.com/aws-amplify/amplify-cli/commit/30c9f0ce2935c3b3871baa2bb01007638b3ffcc9)), closes [#11854](https://github.com/aws-amplify/amplify-cli/issues/11854) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889)
+* **amplify-cli-core:** use build script properly for overrides ([#14093](https://github.com/aws-amplify/amplify-cli/issues/14093)) ([aab715d](https://github.com/aws-amplify/amplify-cli/commit/aab715db07578b7790498b9ad791db7d3a0b4d5c)), closes [#11854](https://github.com/aws-amplify/amplify-cli/issues/11854) [#13858](https://github.com/aws-amplify/amplify-cli/issues/13858) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889)
+
+
+### Reverts
+
+* Revert "fix(amplify-cli-core): use build script for overrides (#13858)" (#14092) ([4d368b3](https://github.com/aws-amplify/amplify-cli/commit/4d368b3d587616b7cba3164b701c370429c66ae2)), closes [#13858](https://github.com/aws-amplify/amplify-cli/issues/13858) [#14092](https://github.com/aws-amplify/amplify-cli/issues/14092)
+
+
+
+
+
 ## [4.3.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.10...@aws-amplify/amplify-cli-core@4.3.11) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-cli-core
