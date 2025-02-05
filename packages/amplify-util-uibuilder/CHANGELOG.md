@@ -3,18 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.14.13-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.13-gen2-migrations-test.0...@aws-amplify/amplify-util-uibuilder@1.14.13-gen2-migration-test-alpha.0) (2024-09-26)
+## [1.14.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.14...@aws-amplify/amplify-util-uibuilder@1.14.15) (2025-01-16)
 
 
-### Bug Fixes
+### Reverts
 
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
-
-
+* Revert "chore: cateogry-api + codegen version bump (#14048)" (#14049) ([5a0cdbf](https://github.com/aws-amplify/amplify-cli/commit/5a0cdbfa46856da320323923a4336d6ba60d82b9)), closes [#14048](https://github.com/aws-amplify/amplify-cli/issues/14048) [#14049](https://github.com/aws-amplify/amplify-cli/issues/14049)
 
 
 
-## [1.14.13-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.12...@aws-amplify/amplify-util-uibuilder@1.14.13-gen2-migrations-test.0) (2024-09-23)
+
+
+## [1.14.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.13...@aws-amplify/amplify-util-uibuilder@1.14.14) (2024-11-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
+
+
+
+
+
+## [1.14.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-uibuilder@1.14.12...@aws-amplify/amplify-util-uibuilder@1.14.13) (2024-10-05)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-uibuilder
 

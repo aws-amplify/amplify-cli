@@ -3,7 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [8.10.14-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.14-gen2-migration-test-alpha.0...@aws-amplify/amplify-provider-awscloudformation@8.10.14-alpha.0) (2024-11-21)
+## [8.11.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.1...@aws-amplify/amplify-provider-awscloudformation@8.11.2) (2025-01-16)
+
+
+### Reverts
+
+* Revert "chore: cateogry-api + codegen version bump (#14048)" (#14049) ([5a0cdbf](https://github.com/aws-amplify/amplify-cli/commit/5a0cdbfa46856da320323923a4336d6ba60d82b9)), closes [#14048](https://github.com/aws-amplify/amplify-cli/issues/14048) [#14049](https://github.com/aws-amplify/amplify-cli/issues/14049)
+
+
+
+
+
+## [8.11.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.0...@aws-amplify/amplify-provider-awscloudformation@8.11.1) (2024-11-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
 
@@ -11,20 +22,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [8.10.14-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.14-gen2-migrations-test.0...@aws-amplify/amplify-provider-awscloudformation@8.10.14-gen2-migration-test-alpha.0) (2024-09-26)
+# [8.11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.13...@aws-amplify/amplify-provider-awscloudformation@8.11.0) (2024-10-05)
 
 
-### Bug Fixes
+### Features
 
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
-
-
-
-
-
-## [8.10.14-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.10.13...@aws-amplify/amplify-provider-awscloudformation@8.10.14-gen2-migrations-test.0) (2024-09-23)
-
-**Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
 
 
 

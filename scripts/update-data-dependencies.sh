@@ -13,6 +13,7 @@ if [ $# -eq 0 ]
         --deep \
         --upgrade \
         --dep "prod,dev,peer,bundle,optional" \
+        --target minor \
         --filter "$FILTER"
   else 
     echo "Updating to $1 tag"

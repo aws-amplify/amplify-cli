@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.9.12-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.12-gen2-migration-test-alpha.0...amplify-e2e-tests@4.9.12-alpha.0) (2024-11-21)
+## [4.11.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.0...amplify-e2e-tests@4.11.1) (2025-01-16)
 
 **Note:** Version bump only for package amplify-e2e-tests
 
@@ -11,20 +11,41 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [4.9.12-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.12-gen2-migrations-test.0...amplify-e2e-tests@4.9.12-gen2-migration-test-alpha.0) (2024-09-26)
+# [4.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.10.1...amplify-e2e-tests@4.11.0) (2025-01-02)
 
 
 ### Bug Fixes
 
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
+* UIBuilder test ([#14047](https://github.com/aws-amplify/amplify-cli/issues/14047)) ([c1d60c4](https://github.com/aws-amplify/amplify-cli/commit/c1d60c46617501dd408d4f78d16e8828886e23cb))
+
+
+### Features
+
+* lambda dotnet 8 support ([#14026](https://github.com/aws-amplify/amplify-cli/issues/14026)) ([540bfe1](https://github.com/aws-amplify/amplify-cli/commit/540bfe1187907609c3c813e1208c12b6a2a6ac6c))
 
 
 
 
 
-## [4.9.12-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.11...amplify-e2e-tests@4.9.12-gen2-migrations-test.0) (2024-09-23)
+## [4.10.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.10.0...amplify-e2e-tests@4.10.1) (2024-11-18)
 
 **Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [4.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.9.11...amplify-e2e-tests@4.10.0) (2024-10-05)
+
+
+### Bug Fixes
+
+* update message when expecting s3 to throw ([de45143](https://github.com/aws-amplify/amplify-cli/commit/de45143f83b92781c6412da9a49257ab5f94eeab))
+
+
+### Features
+
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
 
 
 

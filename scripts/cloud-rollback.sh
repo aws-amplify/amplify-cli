@@ -6,7 +6,12 @@ source $scriptDir/.env set
 printf 'What version should I rollback to ? '
 read ROLLBACK_TARGET_VERSION
 
-mwinit
+if [[ -n $USE_FIDO_KEY ]] ; then
+  mwinit -s -f
+else
+  mwinit
+fi
+
 ada cred update --profile=AmplifyCLIReleaseProd --account=$RELEASE_ACCOUNT_PROD --role=CodebuildRelease --provider=isengard --once
 RESULT=$(aws codebuild start-build-batch \
 --profile=AmplifyCLIReleaseProd \

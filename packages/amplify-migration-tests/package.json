@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-migration-tests",
-  "version": "6.4.0-alpha.0",
+  "version": "6.5.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -26,16 +26,16 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.0-gen2-migration-test-alpha.0",
-    "@aws-amplify/amplify-e2e-core": "5.6.0-alpha.0",
+    "@aws-amplify/amplify-cli-core": "4.3.10",
+    "@aws-amplify/amplify-e2e-core": "5.7.0",
     "@aws-cdk/cloudformation-diff": "~2.68.0",
-    "@aws-sdk/client-s3": "^3.303.0",
+    "@aws-sdk/client-s3": "3.624.0",
     "amplify-headless-interface": "1.17.7",
     "aws-amplify": "^5.3.16",
     "aws-cdk-lib": "~2.129.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "8.2.14-gen1-migration-0924.0",
+    "graphql-transformer-core": "^8.2.13",
     "lodash": "^4.17.21",
     "semver": "^7.5.4",
     "strip-ansi": "^6.0.0",
