@@ -3,18 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.10.11-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.10.11-gen2-migrations-test.0...@aws-amplify/amplify-nodejs-function-template-provider@2.10.11-gen2-migration-test-alpha.0) (2024-09-26)
-
-
-### Bug Fixes
-
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
-
-
-
-
-
-## [2.10.11-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.10.10...@aws-amplify/amplify-nodejs-function-template-provider@2.10.11-gen2-migrations-test.0) (2024-09-23)
+## [2.10.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-nodejs-function-template-provider@2.10.10...@aws-amplify/amplify-nodejs-function-template-provider@2.10.11) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-nodejs-function-template-provider
 
