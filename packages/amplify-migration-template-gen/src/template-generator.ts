@@ -4,9 +4,10 @@ import CategoryTemplateGenerator from './category-template-generator';
 import fs from 'node:fs/promises';
 import { CATEGORY, CFN_AUTH_TYPE, CFN_CATEGORY_TYPE, CFN_S3_TYPE, CFNResource, CFNStackStatus } from './types';
 import MigrationReadmeGenerator from './migration-readme-generator';
-import { tryUpdateStack } from './cfn-stack-updater';
+import { pollStackForCompletionState, tryUpdateStack } from './cfn-stack-updater';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { tryRefactorStack } from './cfn-stack-refactor-updater';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 
@@ -57,10 +58,23 @@ class TemplateGenerator {
     const gen2CategoryStacks = destStackResources?.filter((stackResource) => stackResource.ResourceType === CFN_RESOURCE_STACK_TYPE);
     assert(gen1CategoryStacks && gen1CategoryStacks?.length > 0, 'No gen1 category stack found');
     assert(gen2CategoryStacks && gen2CategoryStacks?.length > 0, 'No gen2 category stack found');
-    gen1CategoryStacks.forEach(({ LogicalResourceId: Gen1LogicalResourceId, PhysicalResourceId: Gen1PhysicalResourceId }) => {
+    for (const { LogicalResourceId: Gen1LogicalResourceId, PhysicalResourceId: Gen1PhysicalResourceId } of gen1CategoryStacks) {
       const category = CATEGORIES.find((category) => Gen1LogicalResourceId?.startsWith(category));
-      if (!category) return;
+      if (!category) continue;
       assert(Gen1PhysicalResourceId);
+      if (category === 'auth') {
+        const {  StackResources: AuthStackResources } = await this.cfnClient.send(
+          new DescribeStackResourcesCommand({
+            StackName: Gen1PhysicalResourceId,
+          }),
+        );
+        assert(AuthStackResources);
+        if (AuthStackResources.some(authResource => authResource.ResourceType === CFN_AUTH_TYPE.UserPoolGroups)) {
+          console.log('Skipping moving of user pool groups.');
+          continue;
+        }
+      }
+
       const correspondingCategoryStackInGen2 = gen2CategoryStacks.find(({ LogicalResourceId: Gen2LogicalResourceId }) =>
         Gen2LogicalResourceId?.startsWith(category),
       );
@@ -70,7 +84,7 @@ class TemplateGenerator {
       const Gen2PhysicalResourceId = correspondingCategoryStackInGen2.PhysicalResourceId;
       assert(Gen2PhysicalResourceId);
       this.categoryStackMap.set(category, [Gen1PhysicalResourceId, Gen2PhysicalResourceId]);
-    });
+    }
   }
 
   private async generateCategoryTemplates() {
@@ -104,6 +118,7 @@ class TemplateGenerator {
                 CFN_AUTH_TYPE.IdentityPool,
                 CFN_AUTH_TYPE.IdentityPoolRoleAttachment,
                 CFN_AUTH_TYPE.UserPoolDomain,
+                CFN_AUTH_TYPE.UserPoolGroups
               ],
               resourcesToMovePredicate,
             ),
@@ -152,7 +167,7 @@ class TemplateGenerator {
       assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
       console.log(`Updated Gen1 ${category} stack successfully`);
 
-      const { newTemplate: newGen2Template, parameters: gen2StackParameters } =
+      const { newTemplate: newGen2Template, oldTemplate: oldGen2Template, parameters: gen2StackParameters } =
         await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
       console.log(`Updating Gen2 ${category} stack...`);
       const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], newGen2Template);
@@ -163,8 +178,49 @@ class TemplateGenerator {
         newGen1Template,
         newGen2Template,
       );
-      await migrationReadMeGenerator.renderStep1(sourceTemplate, destinationTemplate, logicalIdMapping, newGen1Template, newGen2Template);
+      let resourceMappings = [];
+      for (const [gen1LogicalId, gen2LogicalId] of logicalIdMapping) {
+        resourceMappings.push({
+          Source: {
+            StackName: gen1CategoryStackId,
+            LogicalResourceId: gen1LogicalId,
+          },
+          Destination: {
+            StackName: gen2CategoryStackId,
+            LogicalResourceId: gen2LogicalId,
+          },
+        });
+      }
+      console.log(`Moving ${category} resources from Gen1 to Gen2 stack...`);
+      const [success, failedRefactorMetadata] = await tryRefactorStack(this.cfnClient, {
+        StackDefinitions: [
+          {
+            TemplateBody: JSON.stringify(sourceTemplate),
+            StackName: gen1CategoryStackId,
+          },
+          {
+            TemplateBody: JSON.stringify(destinationTemplate),
+            StackName: gen2CategoryStackId,
+          },
+        ],
+        ResourceMappings: resourceMappings,
+      });
+      if (!success) {
+        console.log(
+          `Moving ${category} resources from Gen1 to Gen2 stack failed. Reason: ${failedRefactorMetadata?.reason}. Status: ${failedRefactorMetadata?.status}. RefactorId: ${failedRefactorMetadata?.stackRefactorId}.`,
+        );
+        await pollStackForCompletionState(this.cfnClient, gen2CategoryStackId, 30);
+        console.log(`Rolling back Gen2 ${category} stack...`);
+        const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], oldGen2Template);
+        assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
+        console.log(`Rolled back Gen2 ${category} stack successfully`);
+        return false;
+      } else {
+        console.log(`Moved ${category} resources from Gen1 to Gen2 stack successfully`);
+      }
+      // await migrationReadMeGenerator.renderStep1(sourceTemplate, destinationTemplate, logicalIdMapping, newGen1Template, newGen2Template);
       await migrationReadMeGenerator.renderStep2();
+      return true;
     }
   }
 }

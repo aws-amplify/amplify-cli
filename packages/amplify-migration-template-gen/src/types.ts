@@ -1,4 +1,4 @@
-import { Parameter } from '@aws-sdk/client-cloudformation';
+import { Parameter, StackRefactorExecutionStatus, StackRefactorStatus } from '@aws-sdk/client-cloudformation';
 
 export interface CFNOutput {
   Description: string;
@@ -83,6 +83,7 @@ export enum CFN_AUTH_TYPE {
   IdentityPool = 'AWS::Cognito::IdentityPool',
   IdentityPoolRoleAttachment = 'AWS::Cognito::IdentityPoolRoleAttachment',
   UserPoolDomain = 'AWS::Cognito::UserPoolDomain',
+  UserPoolGroups = 'AWS::Cognito::UserPoolGroup'
 }
 
 export enum CFN_S3_TYPE {
@@ -110,3 +111,9 @@ export type OAuthClient = OAuthClientWithSecret | SignInWithAppleOAuthClient;
 export type HostedUIProviderMeta = {
   ProviderName: 'Amazon' | 'Facebook' | 'Google' | 'SignInWithApple';
 };
+
+export type FailedRefactorResponse = {
+  reason: string | undefined;
+  stackRefactorId: string;
+  status: StackRefactorStatus | StackRefactorExecutionStatus | undefined;
+}
