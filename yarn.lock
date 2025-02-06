@@ -14819,7 +14819,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amplify-dynamodb-simulator@2.9.20, git samplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator":
+"amplify-dynamodb-simulator@2.9.20, amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator":
   version: 0.0.0-use.local
   resolution: "amplify-dynamodb-simulator@workspace:packages/amplify-dynamodb-simulator"
   dependencies:
