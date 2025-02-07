@@ -4,7 +4,7 @@ import { EOL } from 'os';
 export class Printer {
   // Properties for ellipsis animation
   private timer: ReturnType<typeof setTimeout> | null = null;
-  private timerSet: boolean = false;
+  private timerSet = false;
   /**
    * Spinner frames
    */

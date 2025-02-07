@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [12.13.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-alpha.0...@aws-amplify/cli-internal@12.13.0-alpha.1) (2024-12-05)
+## [12.14.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.1...@aws-amplify/cli-internal@12.14.2) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [12.13.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migrations-alpha.0...@aws-amplify/cli-internal@12.13.0-alpha.0) (2024-11-21)
+## [12.14.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.0...@aws-amplify/cli-internal@12.14.1) (2025-01-16)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
 
@@ -19,44 +19,45 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [12.13.0-gen2-migrations-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migration-test-alpha.0...@aws-amplify/cli-internal@12.13.0-gen2-migrations-alpha.0) (2024-10-10)
-
-
-### Bug Fixes
-
-* add usage data metrics for codegen ([ffc8041](https://github.com/aws-amplify/amplify-cli/commit/ffc8041041c6d1b66589c537e93f05a7453e5bc9))
-* updated yarn.lock and API.md ([c45f8a7](https://github.com/aws-amplify/amplify-cli/commit/c45f8a73dea1a4b4c418b5b2ea3b5ab32b760547))
-
-
-
-
-
-# [12.13.0-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migration-test.0...@aws-amplify/cli-internal@12.13.0-gen2-migration-test-alpha.0) (2024-09-26)
-
-
-### Bug Fixes
-
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
-
-
-
-
-
-# [12.13.0-gen2-migration-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0-gen2-migrations-test.0...@aws-amplify/cli-internal@12.13.0-gen2-migration-test.0) (2024-09-23)
-
-**Note:** Version bump only for package @aws-amplify/cli-internal
-
-
-
-
-
-# [12.13.0-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.6...@aws-amplify/cli-internal@12.13.0-gen2-migrations-test.0) (2024-09-23)
+# [12.14.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.1...@aws-amplify/cli-internal@12.14.0) (2025-01-02)
 
 
 ### Features
 
-* **cli:** initial migration merge ([#13856](https://github.com/aws-amplify/amplify-cli/issues/13856)) ([ebe5cd0](https://github.com/aws-amplify/amplify-cli/commit/ebe5cd046cfb18c38ffdce17610ed3a133cc9d44))
-* **migrate:** make as an independent executable ([0aeffb9](https://github.com/aws-amplify/amplify-cli/commit/0aeffb96b9fad75549d76d19778725eb522ad64e))
+* bump version ([7cb8f88](https://github.com/aws-amplify/amplify-cli/commit/7cb8f882b17f4a6f783a300f5e7894097d166407))
+
+
+### Reverts
+
+* Revert "chore: cateogry-api + codegen version bump (#14048)" (#14049) ([5a0cdbf](https://github.com/aws-amplify/amplify-cli/commit/5a0cdbfa46856da320323923a4336d6ba60d82b9)), closes [#14048](https://github.com/aws-amplify/amplify-cli/issues/14048) [#14049](https://github.com/aws-amplify/amplify-cli/issues/14049)
+
+
+
+
+
+## [12.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.13.0...@aws-amplify/cli-internal@12.13.1) (2024-11-18)
+
+
+### Bug Fixes
+
+* add opt-out for appId mismatch check during init ([#14013](https://github.com/aws-amplify/amplify-cli/issues/14013)) ([87a6b4c](https://github.com/aws-amplify/amplify-cli/commit/87a6b4c66b064e73f520355cd7b563090f87b6cb))
+
+
+
+
+
+# [12.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.12.6...@aws-amplify/cli-internal@12.13.0) (2024-10-05)
+
+
+### Bug Fixes
+
+* avoid copying node_modules folder for increased performance ([24c8f85](https://github.com/aws-amplify/amplify-cli/commit/24c8f853cbadb96659efe7befaf07be0c15b7794))
+* prevent init if local files belong to other app ([#13954](https://github.com/aws-amplify/amplify-cli/issues/13954)) ([d79627c](https://github.com/aws-amplify/amplify-cli/commit/d79627c816e46ebddde16bb1f870f6955a2aec22))
+
+
+### Features
+
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
 
 
 

@@ -1,5 +1,5 @@
 import * as ddbUtils from '../../../utils/dynamo-db/utils';
-import * as AWSMock from 'aws-sdk-mock';
+import AWS_MOCK from 'aws-sdk-mock';
 import * as AWS from 'aws-sdk';
 import { DescribeTableOutput, CreateTableInput, UpdateTableInput, TableDescription } from 'aws-sdk/clients/dynamodb';
 import { waitTillTableStateIsActive } from '../../../utils/dynamo-db/helpers';
@@ -10,13 +10,13 @@ jest.mock('../../../utils/dynamo-db/helpers');
 describe('DynamoDB Utils', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    AWSMock.setSDKInstance(require('aws-sdk'));
+    AWS_MOCK.setSDKInstance(require('aws-sdk'));
   });
 
   describe('describeTables', () => {
     const describeTableMock = jest.fn();
     beforeEach(() => {
-      AWSMock.mock('DynamoDB', 'describeTable', describeTableMock);
+      AWS_MOCK.mock('DynamoDB', 'describeTable', describeTableMock);
     });
 
     it('should call DynamoDB Clients describe table and collect the results', async () => {

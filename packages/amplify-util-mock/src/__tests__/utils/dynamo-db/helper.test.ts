@@ -1,5 +1,5 @@
 import { waitTillTableStateIsActive } from '../../../utils/dynamo-db/helpers';
-import * as AWSMock from 'aws-sdk-mock';
+import AWS_MOCK from 'aws-sdk-mock';
 import * as AWS from 'aws-sdk';
 import { DynamoDB } from 'aws-sdk';
 
@@ -8,7 +8,7 @@ describe('waitTillTableStateIsActive', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.useFakeTimers();
-    AWSMock.setSDKInstance(AWS);
+    AWS_MOCK.setSDKInstance(AWS);
   });
   afterEach(() => {
     jest.useRealTimers();

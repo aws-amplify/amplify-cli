@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.7.16-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.16-gen2-migrations-test.0...@aws-amplify/amplify-category-auth@3.7.16-gen2-migration-test-alpha.0) (2024-09-26)
+## [3.7.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.16...@aws-amplify/amplify-category-auth@3.7.17) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [3.7.16-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.15...@aws-amplify/amplify-category-auth@3.7.16-gen2-migrations-test.0) (2024-09-23)
+## [3.7.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.15...@aws-amplify/amplify-category-auth@3.7.16) (2024-11-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth
 

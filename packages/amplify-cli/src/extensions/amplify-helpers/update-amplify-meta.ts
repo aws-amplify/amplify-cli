@@ -5,7 +5,6 @@ import { buildTypeKeyMap, ServiceName } from '@aws-amplify/amplify-category-func
 import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from '@aws-amplify/amplify-cli-core';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
-import glob from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
 import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
@@ -77,13 +76,13 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
     }
 
     fs.ensureDirSync(targetDir);
+    const isLambdaOrCustom =
+      resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes('custom'));
 
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
-      fs.copySync(sourceDir, targetDir);
-      if (resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes('custom'))) {
-        removeNodeModulesDir(targetDir);
-      }
+      const nodeModulesFilterFn = (src: string): boolean => path.basename(src) !== 'node_modules';
+      fs.copySync(sourceDir, targetDir, { ...(isLambdaOrCustom ? { filter: nodeModulesFilterFn } : {}) });
     }
   }
 
@@ -105,18 +104,6 @@ const moveBackendResourcesToCurrentCloudBackend = (resources: $TSObject[]): void
   } catch (err) {
     if (err.code !== 'ENOENT') {
       throw err;
-    }
-  }
-};
-
-const removeNodeModulesDir = (currentCloudBackendDir: string): void => {
-  const nodeModulesDirs = glob.sync('**/node_modules', {
-    cwd: currentCloudBackendDir,
-    absolute: true,
-  });
-  for (const nodeModulesPath of nodeModulesDirs) {
-    if (fs.existsSync(nodeModulesPath)) {
-      fs.removeSync(nodeModulesPath);
     }
   }
 };

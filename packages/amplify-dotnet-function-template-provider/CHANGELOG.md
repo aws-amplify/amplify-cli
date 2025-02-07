@@ -3,20 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.6.11-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.6.11-gen2-migrations-test.0...@aws-amplify/amplify-dotnet-function-template-provider@2.6.11-gen2-migration-test-alpha.0) (2024-09-26)
-
-
-### Bug Fixes
-
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
-
-
-
-
-
-## [2.6.11-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.6.10...@aws-amplify/amplify-dotnet-function-template-provider@2.6.11-gen2-migrations-test.0) (2024-09-23)
+## [2.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.7.0...@aws-amplify/amplify-dotnet-function-template-provider@2.7.1) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-dotnet-function-template-provider
+
+
+
+
+
+# [2.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-dotnet-function-template-provider@2.6.10...@aws-amplify/amplify-dotnet-function-template-provider@2.7.0) (2025-01-02)
+
+
+### Features
+
+* lambda dotnet 8 support ([#14026](https://github.com/aws-amplify/amplify-cli/issues/14026)) ([540bfe1](https://github.com/aws-amplify/amplify-cli/commit/540bfe1187907609c3c813e1208c12b6a2a6ac6c))
 
 
 

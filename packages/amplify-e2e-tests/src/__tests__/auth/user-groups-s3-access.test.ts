@@ -100,7 +100,7 @@ describe('user group tests', () => {
           Key: s3key,
         }),
       ),
-    ).rejects.toThrow('Access Denied');
+    ).rejects.toThrow(/not authorized to perform/);
     await expect(
       s3Client2.send(
         new PutObjectCommand({
@@ -109,7 +109,7 @@ describe('user group tests', () => {
           Body: s3val,
         }),
       ),
-    ).rejects.toThrow('Access Denied');
+    ).rejects.toThrow(/not authorized to perform/);
     await signOutUser();
   });
 });

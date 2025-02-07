@@ -34,9 +34,6 @@ export const execute: (input: CLIInput) => Promise<void>;
 export const executeAmplifyCommand: (context: Context) => Promise<void>;
 
 // @public (undocumented)
-export const getProjectSettings: () => ProjectSettings;
-
-// @public (undocumented)
 export const run: (startTime: number) => Promise<void>;
 
 // @public (undocumented)

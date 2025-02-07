@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [6.4.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.4.0-gen2-migration-test-alpha.0...@aws-amplify/amplify-migration-tests@6.4.0-alpha.0) (2024-11-21)
+## [6.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.5.1...@aws-amplify/amplify-migration-tests@6.5.2) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-tests
 
@@ -11,23 +11,42 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [6.4.0-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.4.0-gen2-migrations-test.0...@aws-amplify/amplify-migration-tests@6.4.0-gen2-migration-test-alpha.0) (2024-09-26)
+## [6.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.5.0...@aws-amplify/amplify-migration-tests@6.5.1) (2025-01-16)
 
 
 ### Bug Fixes
 
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
+* removed migration tests between versions of Gen 1 ([#14062](https://github.com/aws-amplify/amplify-cli/issues/14062)) ([58856c8](https://github.com/aws-amplify/amplify-cli/commit/58856c8fb908ed21f3aea850d4dcc0d4a03f4114))
 
 
 
 
 
-# [6.4.0-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.10...@aws-amplify/amplify-migration-tests@6.4.0-gen2-migrations-test.0) (2024-09-23)
+# [6.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.4.1...@aws-amplify/amplify-migration-tests@6.5.0) (2025-01-02)
 
 
 ### Features
 
-* fixed lint ([0ed8fbe](https://github.com/aws-amplify/amplify-cli/commit/0ed8fbe2347c2f67cc022f06b671bea8ceb82538))
+* lambda dotnet 8 support ([#14026](https://github.com/aws-amplify/amplify-cli/issues/14026)) ([540bfe1](https://github.com/aws-amplify/amplify-cli/commit/540bfe1187907609c3c813e1208c12b6a2a6ac6c))
+
+
+
+
+
+## [6.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.4.0...@aws-amplify/amplify-migration-tests@6.4.1) (2024-11-18)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-tests
+
+
+
+
+
+# [6.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-tests@6.3.10...@aws-amplify/amplify-migration-tests@6.4.0) (2024-10-05)
+
+
+### Features
+
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
 
 
 

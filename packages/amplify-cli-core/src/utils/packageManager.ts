@@ -19,6 +19,7 @@ export interface PackageManager {
   readonly packageManager: PackageManagerType;
   readonly lockFile: string;
   readonly executable: string;
+  readonly runner: string;
   readonly displayValue: string;
   version?: SemVer;
   getRunScriptArgs: (scriptName: string) => string[];
@@ -29,6 +30,7 @@ class NpmPackageManager implements PackageManager {
   readonly packageManager = 'npm';
   readonly displayValue = 'NPM';
   readonly executable = 'npm';
+  readonly runner = 'npx';
   readonly lockFile = 'package-lock.json';
 
   getRunScriptArgs = (scriptName: string) => ['run-script', scriptName];
@@ -39,6 +41,7 @@ class YarnPackageManager implements PackageManager {
   readonly packageManager: PackageManagerType = 'yarn';
   readonly displayValue = 'Yarn';
   readonly executable = 'yarn';
+  readonly runner = this.executable;
   readonly lockFile = 'yarn.lock';
   version?: SemVer;
 
@@ -66,6 +69,7 @@ class PnpmPackageManager implements PackageManager {
   readonly packageManager: PackageManagerType = 'pnpm';
   readonly displayValue = 'PNPM';
   readonly executable = 'pnpm';
+  readonly runner = this.executable;
   readonly lockFile = 'pnpm-lock.yaml';
 
   getRunScriptArgs = (scriptName: string) => [scriptName];
@@ -77,11 +81,13 @@ class CustomPackageManager implements PackageManager {
   readonly displayValue = 'Custom Build Command or Script Path';
   lockFile;
   executable;
+  runner;
   version?: SemVer;
 
   constructor() {
     this.lockFile = '';
     this.executable = '';
+    this.runner = '';
   }
   getRunScriptArgs = () => {
     throw new AmplifyError('PackagingLambdaFunctionError', {

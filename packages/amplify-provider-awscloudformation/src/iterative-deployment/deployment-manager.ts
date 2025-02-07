@@ -88,8 +88,9 @@ export class DeploymentManager {
   ): Promise<DeploymentManager> => {
     try {
       const cred = await loadConfiguration(context);
-      assert(cred.region);
-      return new DeploymentManager(cred, cred.region, deploymentBucket, eventMap, options);
+      // this is the "general" config level case, aws sdk will resolve creds and region from env variables etc.
+      const region = cred?.region ?? new aws.S3().config.region;
+      return new DeploymentManager(cred, region, deploymentBucket, eventMap, options);
     } catch (e) {
       throw new AmplifyError(
         'DeploymentError',

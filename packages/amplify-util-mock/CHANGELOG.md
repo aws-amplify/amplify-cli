@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.10.7-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.7-gen2-migration-test-alpha.0...@aws-amplify/amplify-util-mock@5.10.7-alpha.0) (2024-11-21)
+## [5.10.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.10...@aws-amplify/amplify-util-mock@5.10.11) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock
 
@@ -11,18 +11,37 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [5.10.7-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.7-gen2-migrations-test.0...@aws-amplify/amplify-util-mock@5.10.7-gen2-migration-test-alpha.0) (2024-09-26)
+## [5.10.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.9...@aws-amplify/amplify-util-mock@5.10.10) (2025-01-16)
+
+**Note:** Version bump only for package @aws-amplify/amplify-util-mock
+
+
+
+
+
+## [5.10.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.8...@aws-amplify/amplify-util-mock@5.10.9) (2025-01-02)
+
+
+### Reverts
+
+* Revert "chore: cateogry-api + codegen version bump (#14048)" (#14049) ([5a0cdbf](https://github.com/aws-amplify/amplify-cli/commit/5a0cdbfa46856da320323923a4336d6ba60d82b9)), closes [#14048](https://github.com/aws-amplify/amplify-cli/issues/14048) [#14049](https://github.com/aws-amplify/amplify-cli/issues/14049)
+
+
+
+
+
+## [5.10.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.7...@aws-amplify/amplify-util-mock@5.10.8) (2024-11-18)
 
 
 ### Bug Fixes
 
-* missed some pins ([5543630](https://github.com/aws-amplify/amplify-cli/commit/554363023bcf5f874fc485c6a9f566df9b504b77))
+* bump versions ([#13985](https://github.com/aws-amplify/amplify-cli/issues/13985)) ([65c4d3a](https://github.com/aws-amplify/amplify-cli/commit/65c4d3af9ad17e48f99acf7ee904ee97d2dcfcb1))
 
 
 
 
 
-## [5.10.7-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.6...@aws-amplify/amplify-util-mock@5.10.7-gen2-migrations-test.0) (2024-09-23)
+## [5.10.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.6...@aws-amplify/amplify-util-mock@5.10.7) (2024-10-05)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock
 
