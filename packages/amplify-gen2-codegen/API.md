@@ -81,8 +81,11 @@ export type CustomAttributes = Partial<Record<`custom:${string}`, CustomAttribut
 
 // @public (undocumented)
 export type DataDefinition = {
-    tableMapping: Record<string, string>;
+    tableMappings: Record<string, DataTableMapping | undefined>;
 };
+
+// @public (undocumented)
+export type DataTableMapping = Record<string, string>;
 
 // @public (undocumented)
 export type EmailOptions = {

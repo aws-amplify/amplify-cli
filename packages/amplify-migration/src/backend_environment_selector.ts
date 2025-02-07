@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { AmplifyClient, BackendEnvironment, GetBackendEnvironmentCommand } from '@aws-sdk/client-amplify';
+import { AmplifyClient, BackendEnvironment, GetBackendEnvironmentCommand, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
 import { getEnvInfo } from '@aws-amplify/cli-internal/lib/extensions/amplify-helpers/get-env-info';
 
 export class BackendEnvironmentResolver {
@@ -18,5 +18,17 @@ export class BackendEnvironmentResolver {
     assert(backendEnvironment, 'No backend environment found');
     this.selectedEnvironment = backendEnvironment;
     return this.selectedEnvironment;
+  };
+
+  getAllBackendEnvironments = async (): Promise<BackendEnvironment[]> => {
+    const envInfo = getEnvInfo();
+    assert(envInfo);
+    const { backendEnvironments } = await this.amplifyClient.send(
+      new ListBackendEnvironmentsCommand({
+        appId: this.appId,
+      }),
+    );
+    assert(backendEnvironments, 'No backend environments found');
+    return backendEnvironments;
   };
 }

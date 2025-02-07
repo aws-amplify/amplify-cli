@@ -16,23 +16,40 @@ describe('Data Category code generation', () => {
   });
   describe('import map', () => {
     it('is rendered', () => {
-      const tableMapping = { Todo: 'my-todo-mapping' };
-      const source = printNodeArray(generateDataSource({ tableMapping }));
-      assert.match(source, /importedAmplifyDynamoDBTableMap: \{\s+Todo: ['"]my-todo-mapping['"]/);
-    });
-    it('shows each key in the mapping table in the `importedModels` array', () => {
-      const tables = ['Todo', 'Foo', 'Bar'];
-      const tableMapping = tables.reduce((prev, curr) => ({ ...prev, [curr]: 'baz' }), {});
-      const source = printNodeArray(generateDataSource({ tableMapping }));
-      const array = source.match(/importedModels:\s+\[(.*?)\]/);
-      assert.deepEqual(tables, array?.[1].replaceAll('"', '').split(', '));
-    });
-    it('has each each key in defineData', () => {
-      const tableMapping = { Todo: 'my-todo-mapping' };
-      const source = printNodeArray(generateDataSource({ tableMapping }));
+      const tableMappings = { dev: { Todo: 'my-todo-mapping' } };
+      const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /defineData\({\n\s+importedAmplifyDynamoDBTableMap: \{\s+Todo: ['"]my-todo-mapping['"] },\n\s+importedModels:\s+\[.*?\],\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
+        /\/\/ Replace each environment name with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+importedAmplifyDynamoDBTableMap: \{\s+dev: { Todo: ['"]my-todo-mapping['"] } }/,
+      );
+    });
+    it('includes multiple table mappings', () => {
+      const tableMappings = {
+        dev: { Todo: 'my-todo-mapping' },
+        prod: { Todo: 'my-todo-mapping-prod' },
+      };
+      const source = printNodeArray(generateDataSource({ tableMappings }));
+      assert.match(
+        source,
+        /importedAmplifyDynamoDBTableMap: \{\s+dev: { Todo: ['"]my-todo-mapping['"] }, prod: { Todo: ['"]my-todo-mapping-prod['"] } }/,
+      );
+    });
+    it('includes a comment for missing table mappings', () => {
+      const tableMappings = {
+        dev: undefined,
+      };
+      const source = printNodeArray(generateDataSource({ tableMappings }));
+      assert.match(
+        source,
+        /\/\*\*\n\s+\* Unable to find the table mapping for this environment.\n\s+\* This could be due the enableGen2Migration feature flag not being set to true for this environment.\n\s+\* Please enable the feature flag and push the backend resources.\n\s+\* If you are not planning to migrate this environment, you can remove this key.\n\s+\*\/\n\s+dev: {}/,
+      ); //\s+dev: {}/);
+    });
+    it('has each each key in defineData', () => {
+      const tableMappings = { dev: { Todo: 'my-todo-mapping' } };
+      const source = printNodeArray(generateDataSource({ tableMappings }));
+      assert.match(
+        source,
+        /defineData\({\n\s+\/\/ Replace each environment name with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+importedAmplifyDynamoDBTableMap: \{\s+dev: { Todo: ['"]my-todo-mapping['"] } },\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
       );
     });
   });
