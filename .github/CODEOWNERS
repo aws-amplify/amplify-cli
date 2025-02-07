@@ -6,6 +6,14 @@
 /packages/amplify-graphiql-explorer @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime
 /packages/amplify-velocity-template @aws-amplify/amplify-cli-admins @aws-amplify/amplify-data-buildtime
 
+# Add Studio Backend team folks focused on GQL transform/codegen to ownership for packages which will be migrated, in addition to the existing cli team.
+/packages/amplify-migration @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins 
+/packages/amplify-gen2-codegen @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+/packages/amplify-gen1-codegen-auth-adapter @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+/packages/amplify-gen1-codegen-data-adapter @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+/packages/amplify-gen1-codegen-function-adapter @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+/packages/amplify-gen1-codegen-storage-adapter @aws-amplify/amplify-cli-admins @aws-amplify/amplify-studio-backend-admins
+
 # Templates with IAM resources
 packages/amplify-provider-awscloudformation/resources/rootStackTemplate.json @aws-amplify/amplify-cli-admins
 packages/amplify-provider-awscloudformation/src/root-stack-builder/root-stack-builder.ts @aws-amplify/amplify-cli-admins

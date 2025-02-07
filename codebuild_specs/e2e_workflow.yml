@@ -172,18 +172,6 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - upb
-    - identifier: amplify_migration_tests_non_multi_env_layers
-      buildspec: codebuild_specs/amplify_migration_tests_non_multi_env_layers.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - upb
-    - identifier: amplify_migration_tests_multi_env_layers
-      buildspec: codebuild_specs/amplify_migration_tests_multi_env_layers.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - upb
     - identifier: aggregate_e2e_reports
       buildspec: codebuild_specs/aggregate_e2e_reports.yml
       env:

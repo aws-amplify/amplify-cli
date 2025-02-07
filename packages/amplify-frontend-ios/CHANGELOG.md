@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.7.8-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.7.8-gen2-migrations-test.0...@aws-amplify/amplify-frontend-ios@3.7.8-gen2-migration-test-alpha.0) (2024-09-26)
+## [3.7.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.7.8...@aws-amplify/amplify-frontend-ios@3.7.9) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
 
@@ -11,9 +11,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [3.7.8-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.7.7...@aws-amplify/amplify-frontend-ios@3.7.8-gen2-migrations-test.0) (2024-09-23)
+## [3.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.7.7...@aws-amplify/amplify-frontend-ios@3.7.8) (2025-01-02)
 
-**Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
+
+### Bug Fixes
+
+* **amplify-xode:** updated to support Xcode 16 ([#14029](https://github.com/aws-amplify/amplify-cli/issues/14029)) ([b8b6498](https://github.com/aws-amplify/amplify-cli/commit/b8b6498a350639d6bb798d6fcea167481a3718ae))
 
 
 

@@ -21,7 +21,7 @@ export const detectDotNet = async (): Promise<CheckDependenciesResult> => {
   if (sdkResult.exitCode !== 0) {
     throw new Error(`${executableName} failed SDK detection, exit code was ${sdkResult.exitCode}`);
   }
-  const requiredSdkRegex = /^6\.0/m;
+  const requiredSdkRegex = /^8\.0/m;
   const sdkInstalled = installedSdks && installedSdks.match(requiredSdkRegex);
 
   const toolResult = execa.sync(executableName, ['tool', 'list', '--global']);
@@ -37,13 +37,13 @@ export const detectDotNet = async (): Promise<CheckDependenciesResult> => {
     if (installedToolList.match(/^amazon\.lambda\.tools/m)) {
       toolInstalled = true;
     }
-    const requiredTestToolVersionRegex = /^amazon\.lambda\.testtool-6\.0/m;
+    const requiredTestToolVersionRegex = /^amazon\.lambda\.testtool-8\.0/m;
     if (installedToolList.match(requiredTestToolVersionRegex)) {
       testToolInstalled = true;
     }
   }
 
-  // Verify that a dotnet 6 SDK and the dotnet Lambda tools is installed locally
+  // Verify that a dotnet 8 SDK and the dotnet Lambda tools is installed locally
   if (sdkInstalled && toolInstalled && testToolInstalled) {
     return {
       hasRequiredDependencies: true,
@@ -54,7 +54,7 @@ export const detectDotNet = async (): Promise<CheckDependenciesResult> => {
       errorMessage: 'Unable to detect required dependencies:\n',
     };
     if (!sdkInstalled) {
-      result.errorMessage += '- The .NET 6 SDK must be installed. It can be installed from https://dotnet.microsoft.com/download\n';
+      result.errorMessage += '- The .NET 8 SDK must be installed. It can be installed from https://dotnet.microsoft.com/download\n';
     }
     if (!toolInstalled) {
       result.errorMessage +=
@@ -62,7 +62,7 @@ export const detectDotNet = async (): Promise<CheckDependenciesResult> => {
     }
     if (!testToolInstalled) {
       result.errorMessage +=
-        '- The Amazon.Lambda.TestTool-6.0 global tool must be installed. Please install by running "dotnet tool install -g Amazon.Lambda.TestTool-6.0".\n';
+        '- The Amazon.Lambda.TestTool-8.0 global tool must be installed. Please install by running "dotnet tool install -g Amazon.Lambda.TestTool-8.0".\n';
     }
     return result;
   }

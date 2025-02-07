@@ -1499,6 +1499,8 @@ export interface PackageManager {
     // (undocumented)
     readonly packageManager: PackageManagerType;
     // (undocumented)
+    readonly runner: string;
+    // (undocumented)
     version?: SemVer;
 }
 

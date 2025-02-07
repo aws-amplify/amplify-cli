@@ -3,31 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.6.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.5.11-gen2-migration-test-alpha.0...@aws-amplify/amplify-e2e-core@5.6.0-alpha.0) (2024-11-21)
+## [5.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.7.0...@aws-amplify/amplify-e2e-core@5.7.1) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
+# [5.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.6.1...@aws-amplify/amplify-e2e-core@5.7.0) (2025-01-02)
 
 
 ### Features
 
-* add category specific codegen integration tests ([70033b2](https://github.com/aws-amplify/amplify-cli/commit/70033b2d38b21f6c0216fe59c4b7281b1effb628))
+* lambda dotnet 8 support ([#14026](https://github.com/aws-amplify/amplify-cli/issues/14026)) ([540bfe1](https://github.com/aws-amplify/amplify-cli/commit/540bfe1187907609c3c813e1208c12b6a2a6ac6c))
 
 
 
 
 
-## [5.5.11-gen2-migration-test-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.5.11-gen2-migrations-test.0...@aws-amplify/amplify-e2e-core@5.5.11-gen2-migration-test-alpha.0) (2024-09-26)
-
-
-### Bug Fixes
-
-* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
-
-
-
-
-
-## [5.5.11-gen2-migrations-test.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.5.10...@aws-amplify/amplify-e2e-core@5.5.11-gen2-migrations-test.0) (2024-09-23)
+## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.6.0...@aws-amplify/amplify-e2e-core@5.6.1) (2024-11-18)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core
+
+
+
+
+
+# [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.5.10...@aws-amplify/amplify-e2e-core@5.6.0) (2024-10-05)
+
+
+### Features
+
+* add init prompts for Gen2 ([#13849](https://github.com/aws-amplify/amplify-cli/issues/13849)) ([7ab8fae](https://github.com/aws-amplify/amplify-cli/commit/7ab8faef1e2ce0c15db783d236aeee9d312ec135))
 
 
 
