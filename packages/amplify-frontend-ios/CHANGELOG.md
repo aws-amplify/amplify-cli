@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.7.9...@aws-amplify/amplify-frontend-ios@3.7.10) (2025-02-07)
+
+**Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
+
+
+
+
+
 ## [3.7.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-frontend-ios@3.7.8...@aws-amplify/amplify-frontend-ios@3.7.9) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-frontend-ios
