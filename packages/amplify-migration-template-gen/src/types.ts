@@ -82,7 +82,7 @@ export enum CFN_AUTH_TYPE {
   UserPoolClient = 'AWS::Cognito::UserPoolClient',
   IdentityPool = 'AWS::Cognito::IdentityPool',
   IdentityPoolRoleAttachment = 'AWS::Cognito::IdentityPoolRoleAttachment',
-  UserPoolDomain = 'AWS::Cognito::UserPoolDomain'
+  UserPoolDomain = 'AWS::Cognito::UserPoolDomain',
 }
 
 export enum CFN_S3_TYPE {

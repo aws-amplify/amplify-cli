@@ -49,7 +49,7 @@ export async function tryUpdateStack(
  * @param attempts number of attempts to poll for completion.
  * @returns the stack status
  */
-export async function pollStackForCompletionState(cfnClient: CloudFormationClient, stackName: string, attempts: number): Promise<string> {
+async function pollStackForCompletionState(cfnClient: CloudFormationClient, stackName: string, attempts: number): Promise<string> {
   do {
     const { Stacks } = await cfnClient.send(
       new DescribeStacksCommand({
