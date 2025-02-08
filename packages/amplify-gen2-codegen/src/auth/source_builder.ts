@@ -521,7 +521,6 @@ export function renderAuthNode(definition: AuthDefinition): ts.NodeArray<ts.Node
       ),
     );
   }
-
   const hasFunctions = definition.lambdaTriggers && Object.keys(definition.lambdaTriggers).length > 0;
   const { loginOptions } = definition;
   if (

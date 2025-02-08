@@ -11,7 +11,7 @@ jest.mock('../../../command-handlers', () => ({
 describe('StartCommand', () => {
   it('should run command successfully', async () => {
     const parser = yargs().command(new Gen2StartCommand());
-    await runCommandAsync(parser, 'generate-code');
+    await runCommandAsync(parser, 'prepare');
     expect(mockHandler).toHaveBeenCalledTimes(1);
   });
 });

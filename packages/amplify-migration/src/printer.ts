@@ -13,7 +13,7 @@ export class Printer {
     private readonly minimumLogLevel: LogLevel,
     private readonly stdout: WriteStream | NodeJS.WritableStream = process.stdout,
     private readonly stderr: WriteStream | NodeJS.WritableStream = process.stderr,
-    private readonly refreshRate: number = 1,
+    private readonly refreshRate: number = 30,
   ) {}
 
   /**

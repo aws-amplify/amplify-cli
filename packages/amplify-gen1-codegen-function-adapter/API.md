@@ -8,7 +8,19 @@ import { FunctionConfiguration } from '@aws-sdk/client-lambda';
 import { FunctionDefinition } from '@aws-amplify/amplify-gen2-codegen';
 
 // @public (undocumented)
-export const getFunctionDefinition: (functionConfigurations: FunctionConfiguration[], functionCategoryMap: Map<string, string>) => FunctionDefinition[];
+export type AmplifyMetaFunction = {
+    service: string;
+    providerPlugin: 'awscloudformation';
+    output: Record<string, string>;
+};
+
+// @public (undocumented)
+export type AmplifyMetaWithFunction = {
+    function: Record<string, AmplifyMetaFunction>;
+};
+
+// @public (undocumented)
+export const getFunctionDefinition: (functionConfigurations: FunctionConfiguration[], functionCategoryMap: Map<string, string>, meta: AmplifyMetaWithFunction) => FunctionDefinition[];
 
 // (No @packageDocumentation comment for this package)
 

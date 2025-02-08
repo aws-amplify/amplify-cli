@@ -10,6 +10,7 @@ export interface FunctionDefinition {
   memoryMB?: number;
   environment?: EnvironmentResponse;
   runtime?: Runtime | string;
+  resourceName?: string;
 }
 
 const factory = ts.factory;
@@ -26,9 +27,7 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
     factory.createJSDocComment(
       factory.createNodeArray([
         factory.createJSDocText(
-          `Source code for this function can be found in your Amplify Gen 1 Directory.\nSee .amplify/migration/amplify/backend/function/${
-            definition.name?.split('-')[0]
-          }/src \n`,
+          `Source code for this function can be found in your Amplify Gen 1 Directory.\nSee .amplify/migration/amplify/backend/function/${definition.resourceName}/src \n`,
         ),
       ]),
     ),
@@ -37,7 +36,7 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
   const defineFunctionProperty = createFunctionDefinition(definition, groupsComment, namedImports, appId, backendEnvironmentName);
 
   return renderResourceTsFile({
-    exportedVariableName: factory.createIdentifier(definition?.name?.split('-')[0] || 'sayHello'),
+    exportedVariableName: factory.createIdentifier(definition?.resourceName || 'sayHello'),
     functionCallParameter: factory.createObjectLiteralExpression(defineFunctionProperty, true),
     backendFunctionConstruct: 'defineFunction',
     additionalImportedBackendIdentifiers: namedImports,
