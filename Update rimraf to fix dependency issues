@@ -1,0 +1,5 @@
+Upgrade rimraf because used 3.0.2 is no longer supported & uses other unsupported packages with problems
+Repository: AWS Amplify CLI
+Issue Link: #13889
+Type: Bug related to dependency issues.
+Description: The rimraf package version 3.0.2 is outdated and uses unsupported dependencies, which may cause problems.
