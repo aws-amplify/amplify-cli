@@ -1,8 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSAny, AmplifyFault, JSONUtilities, pathManager, getPermissionsBoundaryArn } from '@aws-amplify/amplify-cli-core';
+import { $TSAny, AmplifyFault, getPermissionsBoundaryArn, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { CustomResource } from 'aws-cdk-lib';
 import { v4 as uuid } from 'uuid';
@@ -152,7 +153,7 @@ const createCustomResource = (
 ): void => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
-    runtime: lambda.Runtime.NODEJS_18_X,
+    runtime: new lambda.Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });

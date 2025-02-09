@@ -5,7 +5,6 @@ import { Duration, Fn } from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { customGeofenceCollectionLambdaCodePath } from '../service-utils/constants';
 import { BaseStack, TemplateMappings } from './baseStack';
@@ -94,7 +93,7 @@ export class GeofenceCollectionStack extends BaseStack {
     const customGeofenceCollectionLambda = new lambda.Function(this, 'CustomGeofenceCollectionLambda', {
       code: lambda.Code.fromInline(customGeofenceCollectionLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: new lambda.Runtime('nodejs22.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }),
       timeout: Duration.seconds(300),
     });
     customGeofenceCollectionLambda.addToRolePolicy(geoCreateCollectionStatement);

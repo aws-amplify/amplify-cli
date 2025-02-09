@@ -5,7 +5,8 @@ const ini = require('ini');
 const { spawn } = require('child_process');
 const inquirer = require('inquirer');
 
-const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
+const isWindows = /^win/.test(process.platform);
+const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : isWindows ? 'amplify.cmd' : 'amplify';
 const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
 const configFilePath = path.join(dotAWSDirPath, 'config');
 run();
@@ -50,7 +51,12 @@ async function getValidProfile(profileToUse) {
 }
 
 async function configureProfile() {
-  const amplifyConfigure = spawn(amplify, ['configure'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+  const amplifyConfigure = spawn(amplify, ['configure'], {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: 'inherit',
+    shell: isWindows ? true : undefined,
+  });
 
   return new Promise((resolve, reject) => {
     amplifyConfigure.on('exit', (code) => {
@@ -124,11 +130,17 @@ async function run() {
       cwd: process.cwd(),
       env: process.env,
       stdio: 'inherit',
+      shell: isWindows ? true : undefined,
     });
   } else {
     // just push
 
-    cloudPush = spawn(amplify, ['push', '--yes'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+    cloudPush = spawn(amplify, ['push', '--yes'], {
+      cwd: process.cwd(),
+      env: process.env,
+      stdio: 'inherit',
+      shell: isWindows ? true : undefined,
+    });
   }
 
   cloudPush.on('exit', (code) => {

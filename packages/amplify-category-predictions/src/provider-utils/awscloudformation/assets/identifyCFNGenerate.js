@@ -534,7 +534,7 @@ const generateLambdaAccessForRekognition = (identifyCFNFile, functionName, s3Res
         },
       },
       Handler: 'index.handler',
-      Runtime: 'nodejs18.x',
+      Runtime: 'nodejs22.x',
       Timeout: 300,
       Role: {
         'Fn::GetAtt': ['CollectionsLambdaExecutionRole', 'Arn'],
