@@ -1531,7 +1531,7 @@ __metadata:
     "@aws-amplify/graphql-predictions-transformer": ^2.1.28
     "@aws-amplify/graphql-relational-transformer": ^2.5.14
     "@aws-amplify/graphql-searchable-transformer": ^2.7.12
-    "@aws-amplify/graphql-transformer": ^1.7.0-gen1-migration-0924.0
+    "@aws-amplify/graphql-transformer": ^1.1.0
     "@aws-amplify/graphql-transformer-core": ^2.9.4
     "@aws-amplify/graphql-transformer-interfaces": ^3.10.2
     "@aws-amplify/graphql-transformer-migrator": ^2.2.28
@@ -2078,27 +2078,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-auth-transformer@npm:3.6.5-gen2-migration-0809.0":
-  version: 3.6.5-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.5-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-relational-transformer": 2.6.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-    lodash: ^4.17.21
-    md5: ^2.3.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: fe1b0f9de7857a866a99e3793ab078de143fefd6203c5cda9dccc1e4be97a8d3ef7ee2c0bf4c02fc0dd7022cd1d0cd8f6b9108e069c6ba97af8cd967d42f9a52
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/graphql-auth-transformer@npm:3.6.6-gen1-migration-0924.0":
   version: 3.6.6-gen1-migration-0924.0
   resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.6-gen1-migration-0924.0"
@@ -2141,21 +2120,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-default-value-transformer@npm:2.3.13-gen2-migration-0809.0":
-  version: 2.3.13-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.13-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-    libphonenumber-js: 1.9.47
-  checksum: 8da7d8a3c79715765975c904921716154d9634f459c29a08369d54b8f3abef8ee19921cb6bda2464e8351a51f3c3fe3be5f65cc027a98cdaec7473b441ff198c
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/graphql-default-value-transformer@npm:2.3.14-gen1-migration-0924.0":
   version: 2.3.14-gen1-migration-0924.0
   resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.14-gen1-migration-0924.0"
@@ -2193,13 +2157,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-directives@npm:1.2.0-gen2-migration-0809.0":
-  version: 1.2.0-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-directives@npm:1.2.0-gen2-migration-0809.0"
-  checksum: 89f1e434190e4ff9e0368b3597de2bbbe115f45fd16c25f96f47181e63e0273252530aabc4d19b77b3a8224eac0f07f0801761cf21b081cd1bd0cdfa1d45540e
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/graphql-docs-generator@npm:4.2.1":
   version: 4.2.1
   resolution: "@aws-amplify/graphql-docs-generator@npm:4.2.1"
@@ -2227,23 +2184,6 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: b8f576e2e2af5063f71b73be6c66c272960d687edc37712f6e53c1b40ab12e32cdf17c34b19c9dcce80742211e444100e0f599ae6fd1572ce8440c27655cb0e3
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/graphql-function-transformer@npm:2.1.27-gen2-migration-0809.0":
-  version: 2.1.27-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-function-transformer@npm:2.1.27-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: e87c02debc28086c43442251297ce41315fdfac4cf3fc5e144840437d0320758bfbcc2f9c943597e722c387fd5e5c87981ffbe05bee0ee9430fe8f995ac4527c
   languageName: node
   linkType: hard
 
@@ -2300,23 +2240,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-http-transformer@npm:2.1.27-gen2-migration-0809.0":
-  version: 2.1.27-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.27-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: ada40154a2de7e9c5dab6b1e0385f7c9e38669fc772b7154fc74f11ad9552e90cd909083e96738a75b39919893487b6cf339a66d6e4986d528a66a0401def24a
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/graphql-http-transformer@npm:2.1.28, @aws-amplify/graphql-http-transformer@npm:^2.1.28":
   version: 2.1.28
   resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.28"
@@ -2367,40 +2290,6 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: b20e4091e6cc39504d83bfdfa7b4bb3bfe6e78304d0ba8ac041e4cef00a0adff0257829f3ccad971860eb0b3e3dc08cb1e108297bc287540d5b81f63db355410
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/graphql-index-transformer@npm:2.4.9-gen2-migration-0809.0":
-  version: 2.4.9-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-index-transformer@npm:2.4.9-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: 020deff195b49b2820f4f40e96ca21511b9d6be33c74610b7a33428062aca07e96bd4ba3b9732d863b41d71fea8135da0c73617dee65f4ab51a3c6850f67bb42
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/graphql-maps-to-transformer@npm:3.4.23-gen2-migration-0809.0":
-  version: 3.4.23-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.4.23-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: 27855b94a0cc7d51eca67abfabafbd802518578b74d76a9f6fda196e905cb8b6d03435a7c25173183de70c4935bf713cca368acce4c0188b05a1b34283897e5c
   languageName: node
   linkType: hard
 
@@ -2487,23 +2376,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-model-transformer@npm:2.12.0-gen2-migration-0809.0":
-  version: 2.12.0-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-model-transformer@npm:2.12.0-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: 5b8a5948688f7cd8bc882d0b5f1d744ce1a7dd44146ced58000a451b031833132f76ed7574b629cac2e440e2752071c670860a6ed98374f781a1752ecea9a368
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/graphql-predictions-transformer@npm:2.1.27-gen1-migration-0924.0":
   version: 2.1.27-gen1-migration-0924.0
   resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.1.27-gen1-migration-0924.0"
@@ -2518,23 +2390,6 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: f4a76801ec99c0e3ab03fb25e477e37fb5958dab64dc711268b96b9897e211eecb4bf3baad048cdbf66029baa9a09d57fbf6c48bf157cf5ed7b1daec4caa5b05
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/graphql-predictions-transformer@npm:2.1.27-gen2-migration-0809.0":
-  version: 2.1.27-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.1.27-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: 29c73789b89373f0b12a161a6bf65d55f041a3bc3a69c3818546cf6e7b4c33a40a803330cead8b1cd46bb96916ce119d4e631f5315b8d3e3fe50b04f59115300
   languageName: node
   linkType: hard
 
@@ -2592,26 +2447,6 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: 1d746bbc17ebe9a264b4ee775ea3047d070c9b9f5d391d936b63666812f24ddc6274d8b23f1ec84588c97fa6376ead26f3bb47530fbc829b368fa57aff8664c8
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/graphql-relational-transformer@npm:2.6.0-gen2-migration-0809.0":
-  version: 2.6.0-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-relational-transformer@npm:2.6.0-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-index-transformer": 2.4.9-gen2-migration-0809.0
-    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-    immer: ^9.0.12
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: 34e39d35e2286a62a64c2bae10c49f40129f94a5186028dffbd3fa4a064546aedc0261d4a7422874f9182bbeec1c0d0150ed7f9592439a7b7811905cf84076a7
   languageName: node
   linkType: hard
 
@@ -2699,24 +2534,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-searchable-transformer@npm:2.7.9-gen2-migration-0809.0":
-  version: 2.7.9-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.9-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: 2f319665973b3d956205f14456b141d71ac8d2f8660ec840fcbecaab8b43b640a076630d43bfb9e870573052a410db03049d52b54a4f7000d4aa000b7ab859be
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/graphql-sql-transformer@npm:0.3.10-gen1-migration-0924.0":
   version: 0.3.10-gen1-migration-0924.0
   resolution: "@aws-amplify/graphql-sql-transformer@npm:0.3.10-gen1-migration-0924.0"
@@ -2732,24 +2549,6 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: 1f28d35fd50c40986eae58b0cbf2bd3b1ac512c2e3666104411e4fd6373f50d034b254b84e741527ee20c200690447e1eb0197cc1893f204fd5523f99b4142c1
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/graphql-sql-transformer@npm:0.3.9-gen2-migration-0809.0":
-  version: 0.3.9-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-sql-transformer@npm:0.3.9-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: d8135b159d331a7354876047eb17a6b2d57e21a96817c8c5d7f2930f24a54b5c017a4beac429d1f8ef9a804db15794c8f7292cee71c2bfc21a2080f92a235dc2
   languageName: node
   linkType: hard
 
@@ -2790,28 +2589,6 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: de9e16bf4c52e0ef441b3c1d18ef27c6ee9104d46bb0693d5515582c8da303592d808114e7e6b316aa6ceaa8b50c82b11c668d3bb716be5698ccc46690b04b95
-  languageName: node
-  linkType: hard
-
-"@aws-amplify/graphql-transformer-core@npm:2.10.0-gen2-migration-0809.0":
-  version: 2.10.0-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-transformer-core@npm:2.10.0-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-    fs-extra: ^8.1.0
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
-    hjson: ^3.2.2
-    lodash: ^4.17.21
-    md5: ^2.3.0
-    object-hash: ^3.0.0
-    ts-dedent: ^2.0.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: c00fdca7c45f11204b3669d98f1bf183be7fc0cc1be9dccd124850007fd8a00de271ab931f2159b65690767baeab8981609456eea6a14af18f599b2de9b7805d
   languageName: node
   linkType: hard
 
@@ -2895,18 +2672,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-interfaces@npm:3.11.0-gen2-migration-0809.0":
-  version: 3.11.0-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.11.0-gen2-migration-0809.0"
-  dependencies:
-    graphql: ^15.5.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: 774acb5a8aba340535c353a4e9870941cbaf9a3f55465d9bd6912ac6e94e273c2d3515f51e2b97313249a17144129bd14a5bb0e72155c0525464e91e34327d7f
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/graphql-transformer-migrator@npm:2.2.28, @aws-amplify/graphql-transformer-migrator@npm:^2.2.28":
   version: 2.2.28
   resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.2.28"
@@ -2943,7 +2708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer@npm:1.6.8":
+"@aws-amplify/graphql-transformer@npm:1.6.8, @aws-amplify/graphql-transformer@npm:^1.1.0":
   version: 1.6.8
   resolution: "@aws-amplify/graphql-transformer@npm:1.6.8"
   dependencies:
@@ -2991,30 +2756,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer@npm:^1.7.0-gen1-migration-0924.0":
-  version: 1.7.0-gen2-migration-0809.0
-  resolution: "@aws-amplify/graphql-transformer@npm:1.7.0-gen2-migration-0809.0"
-  dependencies:
-    "@aws-amplify/graphql-auth-transformer": 3.6.5-gen2-migration-0809.0
-    "@aws-amplify/graphql-default-value-transformer": 2.3.13-gen2-migration-0809.0
-    "@aws-amplify/graphql-function-transformer": 2.1.27-gen2-migration-0809.0
-    "@aws-amplify/graphql-http-transformer": 2.1.27-gen2-migration-0809.0
-    "@aws-amplify/graphql-index-transformer": 2.4.9-gen2-migration-0809.0
-    "@aws-amplify/graphql-maps-to-transformer": 3.4.23-gen2-migration-0809.0
-    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-predictions-transformer": 2.1.27-gen2-migration-0809.0
-    "@aws-amplify/graphql-relational-transformer": 2.6.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-searchable-transformer": 2.7.9-gen2-migration-0809.0
-    "@aws-amplify/graphql-sql-transformer": 0.3.9-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
-    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
-  peerDependencies:
-    aws-cdk-lib: ^2.129.0
-    constructs: ^10.3.0
-  checksum: adc5bc664184fccc4f7e06e0bec877c0bcc5eb6863f3e28061df33cb2be8e857bd717d9653e9b1ec7ffb4125605fd3e0fae3f47e0e323290a468a2950877d8fd
-  languageName: node
-  linkType: hard
-
 "@aws-amplify/graphql-types-generator@npm:3.6.0":
   version: 3.6.0
   resolution: "@aws-amplify/graphql-types-generator@npm:3.6.0"
@@ -3059,7 +2800,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen"
   dependencies:
-    "@aws-sdk/client-cloudformation": ^3.592.0
+    "@aws-sdk/client-cloudformation": ^3.744.0
     "@aws-sdk/client-cognito-identity-provider": ^3.592.0
     "@aws-sdk/client-ssm": ^3.592.0
     "@jest/globals": ^29.7.0
@@ -3769,44 +3510,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudformation@npm:^3.592.0":
-  version: 3.743.0
-  resolution: "@aws-sdk/client-cloudformation@npm:3.743.0"
+"@aws-sdk/client-cloudformation@npm:^3.592.0, @aws-sdk/client-cloudformation@npm:^3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/client-cloudformation@npm:3.744.0"
   dependencies:
     "@aws-crypto/sha256-browser": 5.2.0
     "@aws-crypto/sha256-js": 5.2.0
-    "@aws-sdk/core": 3.734.0
-    "@aws-sdk/credential-provider-node": 3.743.0
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/credential-provider-node": 3.744.0
     "@aws-sdk/middleware-host-header": 3.734.0
     "@aws-sdk/middleware-logger": 3.734.0
     "@aws-sdk/middleware-recursion-detection": 3.734.0
-    "@aws-sdk/middleware-user-agent": 3.743.0
+    "@aws-sdk/middleware-user-agent": 3.744.0
     "@aws-sdk/region-config-resolver": 3.734.0
     "@aws-sdk/types": 3.734.0
     "@aws-sdk/util-endpoints": 3.743.0
     "@aws-sdk/util-user-agent-browser": 3.734.0
-    "@aws-sdk/util-user-agent-node": 3.743.0
+    "@aws-sdk/util-user-agent-node": 3.744.0
     "@smithy/config-resolver": ^4.0.1
-    "@smithy/core": ^3.1.1
+    "@smithy/core": ^3.1.2
     "@smithy/fetch-http-handler": ^5.0.1
     "@smithy/hash-node": ^4.0.1
     "@smithy/invalid-dependency": ^4.0.1
     "@smithy/middleware-content-length": ^4.0.1
-    "@smithy/middleware-endpoint": ^4.0.2
-    "@smithy/middleware-retry": ^4.0.3
-    "@smithy/middleware-serde": ^4.0.1
+    "@smithy/middleware-endpoint": ^4.0.3
+    "@smithy/middleware-retry": ^4.0.4
+    "@smithy/middleware-serde": ^4.0.2
     "@smithy/middleware-stack": ^4.0.1
     "@smithy/node-config-provider": ^4.0.1
     "@smithy/node-http-handler": ^4.0.2
     "@smithy/protocol-http": ^5.0.1
-    "@smithy/smithy-client": ^4.1.2
+    "@smithy/smithy-client": ^4.1.3
     "@smithy/types": ^4.1.0
     "@smithy/url-parser": ^4.0.1
     "@smithy/util-base64": ^4.0.0
     "@smithy/util-body-length-browser": ^4.0.0
     "@smithy/util-body-length-node": ^4.0.0
-    "@smithy/util-defaults-mode-browser": ^4.0.3
-    "@smithy/util-defaults-mode-node": ^4.0.3
+    "@smithy/util-defaults-mode-browser": ^4.0.4
+    "@smithy/util-defaults-mode-node": ^4.0.4
     "@smithy/util-endpoints": ^3.0.1
     "@smithy/util-middleware": ^4.0.1
     "@smithy/util-retry": ^4.0.1
@@ -3815,7 +3556,7 @@ __metadata:
     "@types/uuid": ^9.0.1
     tslib: ^2.6.2
     uuid: ^9.0.1
-  checksum: 944f46a12174481cd801f7af1eaf126396b753df04d0eb68272c7c001bf9913ad19ce43fd89b4e23267e6f468dfb7efe8aa3917815abb7170e8149c69ad79eed
+  checksum: 748a1de70668c49e7286424723366aa787906a3e69957d31b1607e735d17516e5ce2cabd2ff438d9472423145d30a0960ea1b01c895cae9fc7a8c33790d2fe7e
   languageName: node
   linkType: hard
 
@@ -5244,6 +4985,52 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-sso@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/client-sso@npm:3.744.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/middleware-host-header": 3.734.0
+    "@aws-sdk/middleware-logger": 3.734.0
+    "@aws-sdk/middleware-recursion-detection": 3.734.0
+    "@aws-sdk/middleware-user-agent": 3.744.0
+    "@aws-sdk/region-config-resolver": 3.734.0
+    "@aws-sdk/types": 3.734.0
+    "@aws-sdk/util-endpoints": 3.743.0
+    "@aws-sdk/util-user-agent-browser": 3.734.0
+    "@aws-sdk/util-user-agent-node": 3.744.0
+    "@smithy/config-resolver": ^4.0.1
+    "@smithy/core": ^3.1.2
+    "@smithy/fetch-http-handler": ^5.0.1
+    "@smithy/hash-node": ^4.0.1
+    "@smithy/invalid-dependency": ^4.0.1
+    "@smithy/middleware-content-length": ^4.0.1
+    "@smithy/middleware-endpoint": ^4.0.3
+    "@smithy/middleware-retry": ^4.0.4
+    "@smithy/middleware-serde": ^4.0.2
+    "@smithy/middleware-stack": ^4.0.1
+    "@smithy/node-config-provider": ^4.0.1
+    "@smithy/node-http-handler": ^4.0.2
+    "@smithy/protocol-http": ^5.0.1
+    "@smithy/smithy-client": ^4.1.3
+    "@smithy/types": ^4.1.0
+    "@smithy/url-parser": ^4.0.1
+    "@smithy/util-base64": ^4.0.0
+    "@smithy/util-body-length-browser": ^4.0.0
+    "@smithy/util-body-length-node": ^4.0.0
+    "@smithy/util-defaults-mode-browser": ^4.0.4
+    "@smithy/util-defaults-mode-node": ^4.0.4
+    "@smithy/util-endpoints": ^3.0.1
+    "@smithy/util-middleware": ^4.0.1
+    "@smithy/util-retry": ^4.0.1
+    "@smithy/util-utf8": ^4.0.0
+    tslib: ^2.6.2
+  checksum: a61d128f3055e604d3d81f9ddce9e9915570a4206ce7b3a66644d7820ece38dede094fe597b6545fbc8c43defd13d6a04990d5cf2cb40349a027129bf1f6f781
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sts@npm:3.186.3":
   version: 3.186.3
   resolution: "@aws-sdk/client-sts@npm:3.186.3"
@@ -5522,6 +5309,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/core@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/core@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/types": 3.734.0
+    "@smithy/core": ^3.1.2
+    "@smithy/node-config-provider": ^4.0.1
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/protocol-http": ^5.0.1
+    "@smithy/signature-v4": ^5.0.1
+    "@smithy/smithy-client": ^4.1.3
+    "@smithy/types": ^4.1.0
+    "@smithy/util-middleware": ^4.0.1
+    fast-xml-parser: 4.4.1
+    tslib: ^2.6.2
+  checksum: d0e3238083bfe58129e73d6de50b972156b0b4b058d6344ecb01185753cae891908611b04406a1a6a455e3cad723d5d3189e63d5b147c23cf6b6f5f4382176a3
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-cognito-identity@npm:3.624.0":
   version: 3.624.0
   resolution: "@aws-sdk/credential-provider-cognito-identity@npm:3.624.0"
@@ -5582,6 +5388,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-env@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/credential-provider-env@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  checksum: 759f0d7684af4045418c95115cdc4d5878be792c3b0ccb15e571b7e49b00478f4457ff7bb6fa8dcdeb0d331bab397553c676c62daa6117839be690b020a56bd0
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-http@npm:3.622.0":
   version: 3.622.0
   resolution: "@aws-sdk/credential-provider-http@npm:3.622.0"
@@ -5614,6 +5433,24 @@ __metadata:
     "@smithy/util-stream": ^4.0.2
     tslib: ^2.6.2
   checksum: 60edc09a92f91049bd61f3b51700ceeaa1c429d1e41e25a39560bbe56f1f0623a3a475577e265d89552f31c6d6388acda5e073f3a111692b27f07c0ad824b613
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-http@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/credential-provider-http@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/fetch-http-handler": ^5.0.1
+    "@smithy/node-http-handler": ^4.0.2
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/protocol-http": ^5.0.1
+    "@smithy/smithy-client": ^4.1.3
+    "@smithy/types": ^4.1.0
+    "@smithy/util-stream": ^4.0.2
+    tslib: ^2.6.2
+  checksum: 48204c4135b7c2e5ab590a1b9e08a7e0d22d0082b528b86def44293bc393725a7ef87c0eafb7b379bf43960b71c13d49b89264ca8e9757c35ce6c076bb78cda6
   languageName: node
   linkType: hard
 
@@ -5711,6 +5548,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-ini@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/credential-provider-env": 3.744.0
+    "@aws-sdk/credential-provider-http": 3.744.0
+    "@aws-sdk/credential-provider-process": 3.744.0
+    "@aws-sdk/credential-provider-sso": 3.744.0
+    "@aws-sdk/credential-provider-web-identity": 3.744.0
+    "@aws-sdk/nested-clients": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/credential-provider-imds": ^4.0.1
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/shared-ini-file-loader": ^4.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  checksum: 88cccc04bc4e3db9850a9473f32ded2dbc4d98f8f9d264792e7638c787f61a4b8e88254b19ce9712615af8b0f4e0b1ab9bae43a762b511f3b6f9dea47ab9a696
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-node@npm:3.186.0":
   version: 3.186.0
   resolution: "@aws-sdk/credential-provider-node@npm:3.186.0"
@@ -5785,6 +5643,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-node@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/credential-provider-node@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/credential-provider-env": 3.744.0
+    "@aws-sdk/credential-provider-http": 3.744.0
+    "@aws-sdk/credential-provider-ini": 3.744.0
+    "@aws-sdk/credential-provider-process": 3.744.0
+    "@aws-sdk/credential-provider-sso": 3.744.0
+    "@aws-sdk/credential-provider-web-identity": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/credential-provider-imds": ^4.0.1
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/shared-ini-file-loader": ^4.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  checksum: 94db2864ad275ea4bedeee2174c06f1843f007c8d69ae880f2be5f6baa40120dc1c3a9b43d2c080df4d9d402042ae64d75e807c0069cf8cfbf101c3170ddeb2a
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-process@npm:3.186.0":
   version: 3.186.0
   resolution: "@aws-sdk/credential-provider-process@npm:3.186.0"
@@ -5837,6 +5715,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-process@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/credential-provider-process@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/shared-ini-file-loader": ^4.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  checksum: bc712a37a9c4f0d33515e60931902fb415b9a97f35158cf511d4cc89e0960917580039698faec00e58e67e1998bf5add2d7f34436921cf38a330750fba2adcf9
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-sso@npm:3.186.0":
   version: 3.186.0
   resolution: "@aws-sdk/credential-provider-sso@npm:3.186.0"
@@ -5881,6 +5773,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-sso@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/client-sso": 3.744.0
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/token-providers": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/shared-ini-file-loader": ^4.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  checksum: 6b23fe8cb8f46aff55af27a2b841054d1f9907967c027dd09dcd6adeeac10889811536f3a8659248de7a2cf5a4d03ac361b2ea6353182b043c6217f09d9c95a4
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-web-identity@npm:3.186.0":
   version: 3.186.0
   resolution: "@aws-sdk/credential-provider-web-identity@npm:3.186.0"
@@ -5917,6 +5825,20 @@ __metadata:
     "@smithy/types": ^4.1.0
     tslib: ^2.6.2
   checksum: 77753abc290f4c02b942cf6fe0d9dd094c1c3803b74642ccd9da7fc9158de09bb1be30b239b081ce4f9967fdbaae458b0ebddbfbc079a7f4114a2738d94d2e66
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-web-identity@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/credential-provider-web-identity@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/nested-clients": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  checksum: 10a6e3fbc08d25826cab40f63d15d29c76e80187f90f19063f12c3b3ddc79bfc0e4b0e2130272e5e8e95b55f447c7ec376798ae34b2230e053b6278b81479f59
   languageName: node
   linkType: hard
 
@@ -6746,6 +6668,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/middleware-user-agent@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/middleware-user-agent@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@aws-sdk/util-endpoints": 3.743.0
+    "@smithy/core": ^3.1.2
+    "@smithy/protocol-http": ^5.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  checksum: eba9f2c273cce3764696d24dcd0bbc839e5e231e0cebaa51f4b7cc2cb4a625827d77e6614270d1d58c85a592d11345741b52852be60f836677c70d39c3777a63
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/nested-clients@npm:3.743.0":
   version: 3.743.0
   resolution: "@aws-sdk/nested-clients@npm:3.743.0"
@@ -6789,6 +6726,52 @@ __metadata:
     "@smithy/util-utf8": ^4.0.0
     tslib: ^2.6.2
   checksum: 7e05138e6524174b7b337d4a23759797e4c05f91e62664ebad34a5e9ec9921b9a08971b703aef8d6df2ab5f940dc1849f84de337e834ead74c092b0312278e18
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/nested-clients@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/nested-clients@npm:3.744.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/core": 3.744.0
+    "@aws-sdk/middleware-host-header": 3.734.0
+    "@aws-sdk/middleware-logger": 3.734.0
+    "@aws-sdk/middleware-recursion-detection": 3.734.0
+    "@aws-sdk/middleware-user-agent": 3.744.0
+    "@aws-sdk/region-config-resolver": 3.734.0
+    "@aws-sdk/types": 3.734.0
+    "@aws-sdk/util-endpoints": 3.743.0
+    "@aws-sdk/util-user-agent-browser": 3.734.0
+    "@aws-sdk/util-user-agent-node": 3.744.0
+    "@smithy/config-resolver": ^4.0.1
+    "@smithy/core": ^3.1.2
+    "@smithy/fetch-http-handler": ^5.0.1
+    "@smithy/hash-node": ^4.0.1
+    "@smithy/invalid-dependency": ^4.0.1
+    "@smithy/middleware-content-length": ^4.0.1
+    "@smithy/middleware-endpoint": ^4.0.3
+    "@smithy/middleware-retry": ^4.0.4
+    "@smithy/middleware-serde": ^4.0.2
+    "@smithy/middleware-stack": ^4.0.1
+    "@smithy/node-config-provider": ^4.0.1
+    "@smithy/node-http-handler": ^4.0.2
+    "@smithy/protocol-http": ^5.0.1
+    "@smithy/smithy-client": ^4.1.3
+    "@smithy/types": ^4.1.0
+    "@smithy/url-parser": ^4.0.1
+    "@smithy/util-base64": ^4.0.0
+    "@smithy/util-body-length-browser": ^4.0.0
+    "@smithy/util-body-length-node": ^4.0.0
+    "@smithy/util-defaults-mode-browser": ^4.0.4
+    "@smithy/util-defaults-mode-node": ^4.0.4
+    "@smithy/util-endpoints": ^3.0.1
+    "@smithy/util-middleware": ^4.0.1
+    "@smithy/util-retry": ^4.0.1
+    "@smithy/util-utf8": ^4.0.0
+    tslib: ^2.6.2
+  checksum: 0cf2f091421f39ba21fff02c7731f2e3baa0f97bda2d90dc361f89c687667c8737382481918f1a47b04f241e1afecc92d81d3fcd198058e54bcd81df3a13bdc8
   languageName: node
   linkType: hard
 
@@ -7088,6 +7071,20 @@ __metadata:
     "@smithy/types": ^4.1.0
     tslib: ^2.6.2
   checksum: f4394cb2458663a0a855e84b280962a9b391a476f3f0b03d2a61702c6e4d3302d597ecba1b72c48bc12ac7ad4ebccd4c412c38f254ab4da71e2a54bda3f1d9cf
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/token-providers@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/token-providers@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/nested-clients": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/property-provider": ^4.0.1
+    "@smithy/shared-ini-file-loader": ^4.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  checksum: fc6f2fc25892f734c104ed2a94e019b0fd99c10e17b41a18186ade5aa18f052003062f868521d115041ba88ffeb36f2da96fa95e423519f060b336f26771c2a9
   languageName: node
   linkType: hard
 
@@ -7529,6 +7526,24 @@ __metadata:
     aws-crt:
       optional: true
   checksum: c9ff322d544372be4e1c30cdaaa5afb7ca0c3af0c08d469cba4fb02fdd22fd7c93a9e70b5e75386736a6ced19ae78ba697c73661aba95bbb6d09cef68bf169d9
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-user-agent-node@npm:3.744.0":
+  version: 3.744.0
+  resolution: "@aws-sdk/util-user-agent-node@npm:3.744.0"
+  dependencies:
+    "@aws-sdk/middleware-user-agent": 3.744.0
+    "@aws-sdk/types": 3.734.0
+    "@smithy/node-config-provider": ^4.0.1
+    "@smithy/types": ^4.1.0
+    tslib: ^2.6.2
+  peerDependencies:
+    aws-crt: ">=1.0.0"
+  peerDependenciesMeta:
+    aws-crt:
+      optional: true
+  checksum: a0c480d53998a01ba090dd89e49030698b7e6dbe2415cf2e1d7ac6bd8da350db9b7e7c0e65e8d9ac114f2208978aecf480b2de7213884ddfdcb873a0fc7d315f
   languageName: node
   linkType: hard
 
@@ -12125,7 +12140,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/middleware-retry@npm:^4.0.3":
+"@smithy/middleware-retry@npm:^4.0.3, @smithy/middleware-retry@npm:^4.0.4":
   version: 4.0.4
   resolution: "@smithy/middleware-retry@npm:4.0.4"
   dependencies:
@@ -12573,7 +12588,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/util-defaults-mode-browser@npm:^4.0.3":
+"@smithy/util-defaults-mode-browser@npm:^4.0.3, @smithy/util-defaults-mode-browser@npm:^4.0.4":
   version: 4.0.4
   resolution: "@smithy/util-defaults-mode-browser@npm:4.0.4"
   dependencies:
@@ -12601,7 +12616,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/util-defaults-mode-node@npm:^4.0.3":
+"@smithy/util-defaults-mode-node@npm:^4.0.3, @smithy/util-defaults-mode-node@npm:^4.0.4":
   version: 4.0.4
   resolution: "@smithy/util-defaults-mode-node@npm:4.0.4"
   dependencies:
@@ -22206,18 +22221,6 @@ __metadata:
     md5: ^2.2.1
     pluralize: 8.0.0
   checksum: fb0dbd36a01417b890fcb0d64aaf96de56e6604044bf11736c5f5c2100964dc9307527ba15c5d229d73a6eb2791d1ceefce230f8c668ac24093038000cac890e
-  languageName: node
-  linkType: hard
-
-"graphql-transformer-common@npm:4.32.0-gen2-migration-0809.0":
-  version: 4.32.0-gen2-migration-0809.0
-  resolution: "graphql-transformer-common@npm:4.32.0-gen2-migration-0809.0"
-  dependencies:
-    graphql: ^15.5.0
-    graphql-mapping-template: 4.20.16
-    md5: ^2.2.1
-    pluralize: 8.0.0
-  checksum: 960d7f67dcf3ae38de4108a403d5bb02da08ca8eb528c63829f2c15bec1565ff764df12dcc1c96d00c918c54a78ae2ed8b5af21418a0e2dca242ab30ff4679b1
   languageName: node
   linkType: hard
 
