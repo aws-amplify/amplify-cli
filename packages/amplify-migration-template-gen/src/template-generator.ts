@@ -220,8 +220,8 @@ class TemplateGenerator {
         return false;
       } else {
         console.log(`Moved ${category} resources from Gen1 to Gen2 stack successfully`);
+        await migrationReadMeGenerator.renderStep2();
       }
-      await migrationReadMeGenerator.renderStep2();
     }
     return true;
   }

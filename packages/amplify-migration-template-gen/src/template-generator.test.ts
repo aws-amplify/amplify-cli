@@ -407,6 +407,7 @@ describe('TemplateGenerator', () => {
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 4;
     assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1, true);
+    expect(mockReadMeRenderStep2).not.toHaveBeenCalled();
   });
 
   it('should rollback gen2 stack when execute stack refactor fails', async () => {
@@ -453,6 +454,7 @@ describe('TemplateGenerator', () => {
     await generator.generate();
     const numCFNOperationsBeforeGen2StackUpdate = 4;
     assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1);
+    expect(mockReadMeRenderStep2).not.toHaveBeenCalled();
   });
 
   it('should fail after all poll attempts have exhausted during create stack refactor', async () => {
@@ -495,11 +497,12 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
     );
-    expect.assertions(1);
+    expect.assertions(2);
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
     // and catch the error below
     generator.generate().catch((e) => {
       expect(e.message).toBe(`Stack refactor 12345 did not reach a completion state within the given time period.`);
+      expect(mockReadMeRenderStep2).not.toHaveBeenCalled();
     });
     await waitForPromisesAndFakeTimers();
     return;
