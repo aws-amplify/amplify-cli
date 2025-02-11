@@ -176,11 +176,11 @@ describe('CFNOutputResolver', () => {
       },
       LambdaRole: {
         Description: 'Lambda execution role',
-        Value: 'lambda-exec-role',
+        Value: 'arn:aws:iam::12345:role/lambda-exec-role',
       },
       CreatedSNSRole: {
         Description: 'role arn',
-        Value: 'sns_role_arn',
+        Value: 'arn:aws:iam::12345:role/sns12345-dev',
       },
     },
     Resources: {
@@ -213,7 +213,7 @@ describe('CFNOutputResolver', () => {
           UserPoolName: 'MyUserPool',
           SmsConfiguration: {
             ExternalId: 'testsns_role_external_id',
-            SnsCallerArn: 'arn:aws:iam::12345:role/sns_role_arn',
+            SnsCallerArn: 'arn:aws:iam::12345:role/sns12345-dev',
           },
         },
       },
@@ -315,11 +315,11 @@ describe('CFNOutputResolver', () => {
           },
           {
             OutputKey: 'LambdaRole',
-            OutputValue: 'lambda-exec-role',
+            OutputValue: 'arn:aws:iam::12345:role/lambda-exec-role',
           },
           {
             OutputKey: 'CreatedSNSRole',
-            OutputValue: 'sns_role_arn',
+            OutputValue: 'arn:aws:iam::12345:role/sns12345-dev',
           },
         ],
       ),
