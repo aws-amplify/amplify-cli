@@ -90,7 +90,11 @@ export enum CFN_S3_TYPE {
   Bucket = 'AWS::S3::Bucket',
 }
 
-export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE;
+export enum CFN_IAM_TYPE {
+  Role = 'AWS::IAM::Role',
+}
+
+export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE;
 
 export type AWS_RESOURCE_ATTRIBUTES = 'Arn';
 
