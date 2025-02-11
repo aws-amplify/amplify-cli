@@ -12,7 +12,7 @@ import { SSMClient } from '@aws-sdk/client-ssm';
 export class TemplateGenerator {
     constructor(fromStack: string, toStack: string, accountId: string, cfnClient: CloudFormationClient, ssmClient: SSMClient, cognitoIdpClient: CognitoIdentityProviderClient, appId: string, environmentName: string);
     // (undocumented)
-    generate(): Promise<void>;
+    generate(): Promise<boolean>;
 }
 
 // (No @packageDocumentation comment for this package)

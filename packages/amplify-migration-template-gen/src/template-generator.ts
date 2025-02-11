@@ -181,7 +181,7 @@ class TemplateGenerator {
         newGen1Template,
         newGen2Template,
       );
-      let resourceMappings = [];
+      const resourceMappings = [];
       for (const [gen1LogicalId, gen2LogicalId] of logicalIdMapping) {
         resourceMappings.push({
           Source: {

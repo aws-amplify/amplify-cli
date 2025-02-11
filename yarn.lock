@@ -3769,57 +3769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudformation@npm:^3.592.0":
-  version: 3.743.0
-  resolution: "@aws-sdk/client-cloudformation@npm:3.743.0"
-  dependencies:
-    "@aws-crypto/sha256-browser": 5.2.0
-    "@aws-crypto/sha256-js": 5.2.0
-    "@aws-sdk/core": 3.734.0
-    "@aws-sdk/credential-provider-node": 3.743.0
-    "@aws-sdk/middleware-host-header": 3.734.0
-    "@aws-sdk/middleware-logger": 3.734.0
-    "@aws-sdk/middleware-recursion-detection": 3.734.0
-    "@aws-sdk/middleware-user-agent": 3.743.0
-    "@aws-sdk/region-config-resolver": 3.734.0
-    "@aws-sdk/types": 3.734.0
-    "@aws-sdk/util-endpoints": 3.743.0
-    "@aws-sdk/util-user-agent-browser": 3.734.0
-    "@aws-sdk/util-user-agent-node": 3.743.0
-    "@smithy/config-resolver": ^4.0.1
-    "@smithy/core": ^3.1.1
-    "@smithy/fetch-http-handler": ^5.0.1
-    "@smithy/hash-node": ^4.0.1
-    "@smithy/invalid-dependency": ^4.0.1
-    "@smithy/middleware-content-length": ^4.0.1
-    "@smithy/middleware-endpoint": ^4.0.2
-    "@smithy/middleware-retry": ^4.0.3
-    "@smithy/middleware-serde": ^4.0.1
-    "@smithy/middleware-stack": ^4.0.1
-    "@smithy/node-config-provider": ^4.0.1
-    "@smithy/node-http-handler": ^4.0.2
-    "@smithy/protocol-http": ^5.0.1
-    "@smithy/smithy-client": ^4.1.2
-    "@smithy/types": ^4.1.0
-    "@smithy/url-parser": ^4.0.1
-    "@smithy/util-base64": ^4.0.0
-    "@smithy/util-body-length-browser": ^4.0.0
-    "@smithy/util-body-length-node": ^4.0.0
-    "@smithy/util-defaults-mode-browser": ^4.0.3
-    "@smithy/util-defaults-mode-node": ^4.0.3
-    "@smithy/util-endpoints": ^3.0.1
-    "@smithy/util-middleware": ^4.0.1
-    "@smithy/util-retry": ^4.0.1
-    "@smithy/util-utf8": ^4.0.0
-    "@smithy/util-waiter": ^4.0.2
-    "@types/uuid": ^9.0.1
-    tslib: ^2.6.2
-    uuid: ^9.0.1
-  checksum: 944f46a12174481cd801f7af1eaf126396b753df04d0eb68272c7c001bf9913ad19ce43fd89b4e23267e6f468dfb7efe8aa3917815abb7170e8149c69ad79eed
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/client-cloudformation@npm:^3.744.0":
+"@aws-sdk/client-cloudformation@npm:^3.592.0, @aws-sdk/client-cloudformation@npm:^3.744.0":
   version: 3.744.0
   resolution: "@aws-sdk/client-cloudformation@npm:3.744.0"
   dependencies:

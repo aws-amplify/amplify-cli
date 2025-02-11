@@ -213,7 +213,7 @@ describe('CFNOutputResolver', () => {
           UserPoolName: 'MyUserPool',
           SmsConfiguration: {
             ExternalId: 'testsns_role_external_id',
-            SnsCallerArn: "arn:aws:iam::12345:role/sns_role_arn"
+            SnsCallerArn: 'arn:aws:iam::12345:role/sns_role_arn',
           },
         },
       },
