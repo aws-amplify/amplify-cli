@@ -254,7 +254,8 @@ export interface AmplifyInternalOnlyPostEnvRemoveEventData {
 // @public (undocumented)
 export class AmplifyNodePkgDetector {
     // (undocumented)
-    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [];
+    detectAffectedDirectDependencies: (dependencyToSearch: string) => Array<DetectedDependency> | [
+    ];
     // (undocumented)
     static getInstance: (amplifyDetectorProps: AmplifyNodePkgDetectorProps) => Promise<AmplifyNodePkgDetector>;
 }
@@ -2206,7 +2207,7 @@ export function validateExportDirectoryPath(directoryPath: any, defaultPath: str
 export class ViewResourceTableParams {
     constructor(cliParams: CLIParams);
     // (undocumented)
-    get categoryList(): [] | string[];
+    get categoryList(): string[] | [];
     // (undocumented)
     get command(): string;
     // (undocumented)
