@@ -5,11 +5,29 @@ import {
   DescribeStacksCommand,
   DescribeStacksCommandInput,
   UpdateStackCommandInput,
+  CreateStackRefactorCommandInput,
+  ExecuteStackRefactorCommandInput,
+  DescribeStackRefactorCommandInput,
+  CreateStackRefactorCommand,
+  ExecuteStackRefactorCommand,
+  DescribeStackRefactorCommand,
 } from '@aws-sdk/client-cloudformation';
 
 type CFNCommand = DescribeStackResourcesCommand | DescribeStacksCommand | UpdateStackCommand;
-type CFNCommandType = typeof DescribeStackResourcesCommand | typeof DescribeStacksCommand | typeof UpdateStackCommand;
-type CFNCommandInput = DescribeStackResourcesCommandInput | DescribeStacksCommandInput | UpdateStackCommandInput;
+type CFNCommandType =
+  | typeof DescribeStackResourcesCommand
+  | typeof DescribeStacksCommand
+  | typeof UpdateStackCommand
+  | typeof CreateStackRefactorCommand
+  | typeof ExecuteStackRefactorCommand
+  | typeof DescribeStackRefactorCommand;
+type CFNCommandInput =
+  | DescribeStackResourcesCommandInput
+  | DescribeStacksCommandInput
+  | UpdateStackCommandInput
+  | CreateStackRefactorCommandInput
+  | ExecuteStackRefactorCommandInput
+  | DescribeStackRefactorCommandInput;
 
 export const toBeACloudFormationCommand = (actual: [CFNCommand], expectedInput: CFNCommandInput, expectedType: CFNCommandType) => {
   const actualInstance = actual[0];

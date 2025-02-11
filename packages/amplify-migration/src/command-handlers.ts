@@ -325,7 +325,9 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
     appId,
     backendEnvironmentName,
   );
-  await templateGenerator.generate();
-  printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`));
+  const success = await templateGenerator.generate();
+  if (success) {
+    printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`));
+  }
   await usageData.emitSuccess();
 }

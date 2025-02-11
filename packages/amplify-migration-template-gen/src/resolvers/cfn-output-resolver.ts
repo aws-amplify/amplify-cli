@@ -28,23 +28,31 @@ class CfnOutputResolver {
       const stackOutputValue = stackOutputs?.find((op) => op.OutputKey === outputKey)?.OutputValue;
       assert(stackOutputValue);
 
+      if (typeof value !== 'object') {
+        return;
+      }
+
+      let logicalResourceId: string | undefined;
       // Replace logicalId references using stack output values
-      if (typeof value === 'object' && REF in value) {
-        const logicalResourceId = value[REF] as string;
+      if (REF in value && typeof value[REF] === 'string') {
+        logicalResourceId = value[REF];
         const outputRegexp = new RegExp(`{"${REF}":"${logicalResourceId}"}`, 'g');
         stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(outputRegexp, `"${stackOutputValue}"`);
+      } else if (GET_ATT in value && Array.isArray(value[GET_ATT])) {
+        logicalResourceId = value[GET_ATT][0];
+      }
+      assert(logicalResourceId);
 
-        // Replace Fn:GetAtt references using stack output values
-        const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["${logicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
-        const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp).next();
-        if (!fnGetAttRegExpResult.done) {
-          const resourceType = this.template.Resources[logicalResourceId].Type as CFN_RESOURCE_TYPES;
-          const attributeName = fnGetAttRegExpResult.value.groups?.AttributeName;
-          assert(attributeName);
-          const resource = this.getResourceAttribute(attributeName as AWS_RESOURCE_ATTRIBUTES, resourceType, stackOutputValue);
-          if (resource) {
-            stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExp, this.buildFnGetAttReplace(resource));
-          }
+      // Replace Fn:GetAtt references using stack output values
+      const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["${logicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
+      const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp).next();
+      if (!fnGetAttRegExpResult.done) {
+        const resourceType = this.template.Resources[logicalResourceId].Type as CFN_RESOURCE_TYPES;
+        const attributeName = fnGetAttRegExpResult.value.groups?.AttributeName;
+        assert(attributeName);
+        const resource = this.getResourceAttribute(attributeName as AWS_RESOURCE_ATTRIBUTES, resourceType, stackOutputValue);
+        if (resource) {
+          stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExp, this.buildFnGetAttReplace(resource));
         }
       }
     });
@@ -82,6 +90,11 @@ class CfnOutputResolver {
           case 'AWS::Cognito::UserPool':
             return {
               Arn: `arn:aws:cognito-idp:${this.region}:${this.accountId}:userpool/${resourceIdentifier}`,
+            };
+          case 'AWS::IAM::Role':
+            return {
+              // output is already in ARN format
+              Arn: resourceIdentifier,
             };
           default:
             return undefined;

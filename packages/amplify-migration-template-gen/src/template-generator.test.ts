@@ -1,14 +1,20 @@
 import { TemplateGenerator } from './template-generator';
 import {
   CloudFormationClient,
+  CreateStackRefactorCommand,
+  DescribeStackRefactorCommand,
   DescribeStackResourcesCommand,
   DescribeStackResourcesOutput,
   DescribeStacksCommand,
+  ExecuteStackRefactorCommand,
+  StackRefactorExecutionStatus,
+  StackRefactorStatus,
   UpdateStackCommand,
 } from '@aws-sdk/client-cloudformation';
 import fs from 'node:fs/promises';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { CATEGORY } from './types';
 
 jest.useFakeTimers();
 
@@ -154,7 +160,7 @@ jest.mock('./category-template-generator', () => {
       generateStackRefactorTemplates: mockGenerateStackRefactorTemplates.mockReturnValue({
         sourceTemplate: {},
         destinationTemplate: {},
-        logicalIdMapping: {},
+        logicalIdMapping: new Map([['ResourceA', 'ResourceB']]),
       }),
     };
   };
@@ -174,6 +180,17 @@ describe('TemplateGenerator', () => {
       if (command instanceof DescribeStacksCommand) {
         return Promise.resolve({
           Stacks: [{ StackStatus: 'UPDATE_COMPLETE' }],
+        });
+      }
+      if (command instanceof CreateStackRefactorCommand) {
+        return Promise.resolve({
+          StackRefactorId: '12345',
+        });
+      }
+      if (command instanceof DescribeStackRefactorCommand) {
+        return Promise.resolve({
+          Status: StackRefactorStatus.CREATE_COMPLETE,
+          ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE,
         });
       }
       return Promise.resolve({});
@@ -273,6 +290,17 @@ describe('TemplateGenerator', () => {
           Stacks: [{ StackStatus: 'UPDATE_COMPLETE' }],
         });
       }
+      if (command instanceof CreateStackRefactorCommand) {
+        return Promise.resolve({
+          StackRefactorId: '12345',
+        });
+      }
+      if (command instanceof DescribeStackRefactorCommand) {
+        return Promise.resolve({
+          Status: StackRefactorStatus.CREATE_COMPLETE,
+          ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_COMPLETE,
+        });
+      }
       return Promise.resolve({});
     });
 
@@ -294,7 +322,7 @@ describe('TemplateGenerator', () => {
     assertCFNCalls(true);
   });
 
-  it('should fail after all poll attempts have exhausted', async () => {
+  it('should fail after all poll attempts have exhausted during update stack', async () => {
     // Arrange
     mockCfnClientSendMock.mockImplementation((command) => {
       if (command instanceof DescribeStackResourcesCommand) {
@@ -335,6 +363,150 @@ describe('TemplateGenerator', () => {
     await waitForPromisesAndFakeTimers();
     return;
   });
+
+  it('should rollback gen2 stack when create stack refactor fails', async () => {
+    mockCfnClientSendMock.mockImplementation((command) => {
+      if (command instanceof DescribeStackResourcesCommand) {
+        return Promise.resolve(
+          command.input.StackName === GEN1_ROOT_STACK_NAME ? mockDescribeGen1StackResources : mockDescribeGen2StackResources,
+        );
+      }
+      if (command instanceof UpdateStackCommand) {
+        return Promise.resolve({});
+      }
+      if (command instanceof DescribeStacksCommand) {
+        return Promise.resolve({
+          Stacks: [{ StackStatus: 'UPDATE_COMPLETE' }],
+        });
+      }
+      if (command instanceof CreateStackRefactorCommand) {
+        return Promise.resolve({
+          StackRefactorId: '12345',
+        });
+      }
+      if (command instanceof DescribeStackRefactorCommand) {
+        return Promise.resolve({
+          Status: StackRefactorStatus.CREATE_FAILED,
+          StatusReason: 'Update operations not permitted in refactor',
+        });
+      }
+      return Promise.resolve({});
+    });
+
+    // Act
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
+    await generator.generate();
+    const numCFNOperationsBeforeGen2StackUpdate = 4;
+    assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1, true);
+    expect(mockReadMeRenderStep2).not.toHaveBeenCalled();
+  });
+
+  it('should rollback gen2 stack when execute stack refactor fails', async () => {
+    mockCfnClientSendMock.mockImplementation((command) => {
+      if (command instanceof DescribeStackResourcesCommand) {
+        return Promise.resolve(
+          command.input.StackName === GEN1_ROOT_STACK_NAME ? mockDescribeGen1StackResources : mockDescribeGen2StackResources,
+        );
+      }
+      if (command instanceof UpdateStackCommand) {
+        return Promise.resolve({});
+      }
+      if (command instanceof DescribeStacksCommand) {
+        return Promise.resolve({
+          Stacks: [{ StackStatus: 'UPDATE_COMPLETE' }],
+        });
+      }
+      if (command instanceof CreateStackRefactorCommand) {
+        return Promise.resolve({
+          StackRefactorId: '12345',
+        });
+      }
+      if (command instanceof DescribeStackRefactorCommand) {
+        return Promise.resolve({
+          Status: StackRefactorStatus.CREATE_COMPLETE,
+          ExecutionStatus: StackRefactorExecutionStatus.EXECUTE_FAILED,
+          StatusReason: 'Update operations not permitted in refactor',
+        });
+      }
+      return Promise.resolve({});
+    });
+
+    // Act
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
+    await generator.generate();
+    const numCFNOperationsBeforeGen2StackUpdate = 4;
+    assertRollbackRefactor('auth', numCFNOperationsBeforeGen2StackUpdate + 1);
+    expect(mockReadMeRenderStep2).not.toHaveBeenCalled();
+  });
+
+  it('should fail after all poll attempts have exhausted during create stack refactor', async () => {
+    // Arrange
+    mockCfnClientSendMock.mockImplementation((command) => {
+      if (command instanceof DescribeStackResourcesCommand) {
+        return Promise.resolve(
+          command.input.StackName === GEN1_ROOT_STACK_NAME ? mockDescribeGen1StackResources : mockDescribeGen2StackResources,
+        );
+      }
+      if (command instanceof UpdateStackCommand) {
+        return Promise.resolve({});
+      }
+      if (command instanceof DescribeStacksCommand) {
+        return Promise.resolve({
+          Stacks: [{ StackStatus: 'UPDATE_COMPLETE' }],
+        });
+      }
+      if (command instanceof CreateStackRefactorCommand) {
+        return Promise.resolve({
+          StackRefactorId: '12345',
+        });
+      }
+      if (command instanceof DescribeStackRefactorCommand) {
+        return Promise.resolve({
+          Status: StackRefactorStatus.CREATE_IN_PROGRESS,
+        });
+      }
+      return Promise.resolve({});
+    });
+
+    // Act + Assert
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
+    expect.assertions(2);
+    // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
+    // and catch the error below
+    generator.generate().catch((e) => {
+      expect(e.message).toBe(`Stack refactor 12345 did not reach a completion state within the given time period.`);
+      expect(mockReadMeRenderStep2).not.toHaveBeenCalled();
+    });
+    await waitForPromisesAndFakeTimers();
+    return;
+  });
 });
 
 function successfulTemplateGenerationAssertions() {
@@ -343,53 +515,31 @@ function successfulTemplateGenerationAssertions() {
   expect(mockGenerateGen2ResourceRemovalTemplate).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
   expect(mockGenerateStackRefactorTemplates).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
   expect(mockReadMeInitialize).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
-  expect(mockReadMeRenderStep1).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
   expect(mockReadMeRenderStep2).toBeCalledTimes(NUM_CATEGORIES_TO_REFACTOR);
 }
 
 function assertCFNCalls(skipUpdate = false) {
-  expect(mockCfnClientSendMock.mock.calls[0]).toBeACloudFormationCommand(
+  let callIndex = 0;
+  expect(mockCfnClientSendMock.mock.calls[callIndex++]).toBeACloudFormationCommand(
     {
       StackName: GEN1_ROOT_STACK_NAME,
     },
     DescribeStackResourcesCommand,
   );
-  expect(mockCfnClientSendMock.mock.calls[1]).toBeACloudFormationCommand(
+  expect(mockCfnClientSendMock.mock.calls[callIndex++]).toBeACloudFormationCommand(
     {
       StackName: GEN2_ROOT_STACK_NAME,
     },
     DescribeStackResourcesCommand,
   );
+  expect(mockCfnClientSendMock.mock.calls[callIndex++]).toBeACloudFormationCommand(
+    {
+      StackName: getStackId(GEN1_ROOT_STACK_NAME, 'auth'),
+    },
+    DescribeStackResourcesCommand,
+  );
 
-  // If updates are skipped, there are no describe stack calls
-  if (!skipUpdate) {
-    expect(mockCfnClientSendMock.mock.calls[3]).toBeACloudFormationCommand(
-      {
-        StackName: getStackId(GEN1_ROOT_STACK_NAME, 'auth'),
-      },
-      DescribeStacksCommand,
-    );
-    expect(mockCfnClientSendMock.mock.calls[5]).toBeACloudFormationCommand(
-      {
-        StackName: getStackId(GEN2_ROOT_STACK_NAME, 'auth'),
-      },
-      DescribeStacksCommand,
-    );
-    expect(mockCfnClientSendMock.mock.calls[7]).toBeACloudFormationCommand(
-      {
-        StackName: getStackId(GEN1_ROOT_STACK_NAME, 'storage'),
-      },
-      DescribeStacksCommand,
-    );
-    expect(mockCfnClientSendMock.mock.calls[9]).toBeACloudFormationCommand(
-      {
-        StackName: getStackId(GEN2_ROOT_STACK_NAME, 'storage'),
-      },
-      DescribeStacksCommand,
-    );
-  }
-
-  let updateStackCallIndex = 2;
+  let updateStackCallIndex = callIndex;
   const updateStackCallIndexInterval = skipUpdate ? 1 : 2;
   expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex]).toBeACloudFormationCommand(
     {
@@ -401,6 +551,14 @@ function assertCFNCalls(skipUpdate = false) {
     },
     UpdateStackCommand,
   );
+  if (!skipUpdate) {
+    expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex + 1]).toBeACloudFormationCommand(
+      {
+        StackName: getStackId(GEN1_ROOT_STACK_NAME, 'auth'),
+      },
+      DescribeStacksCommand,
+    );
+  }
   updateStackCallIndex += updateStackCallIndexInterval;
   expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex]).toBeACloudFormationCommand(
     {
@@ -412,8 +570,16 @@ function assertCFNCalls(skipUpdate = false) {
     },
     UpdateStackCommand,
   );
-
-  updateStackCallIndex += updateStackCallIndexInterval;
+  if (!skipUpdate) {
+    expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex + 1]).toBeACloudFormationCommand(
+      {
+        StackName: getStackId(GEN2_ROOT_STACK_NAME, 'auth'),
+      },
+      DescribeStacksCommand,
+    );
+  }
+  updateStackCallIndex = assertStackRefactorCommands('auth', updateStackCallIndex + (skipUpdate ? 1 : 2));
+  updateStackCallIndex++;
   expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex]).toBeACloudFormationCommand(
     {
       StackName: getStackId(GEN1_ROOT_STACK_NAME, 'storage'),
@@ -424,11 +590,109 @@ function assertCFNCalls(skipUpdate = false) {
     },
     UpdateStackCommand,
   );
+  if (!skipUpdate) {
+    expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex + 1]).toBeACloudFormationCommand(
+      {
+        StackName: getStackId(GEN1_ROOT_STACK_NAME, 'storage'),
+      },
+      DescribeStacksCommand,
+    );
+  }
 
   updateStackCallIndex += updateStackCallIndexInterval;
   expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex]).toBeACloudFormationCommand(
     {
       StackName: getStackId(GEN2_ROOT_STACK_NAME, 'storage'),
+      Capabilities: ['CAPABILITY_NAMED_IAM'],
+      Parameters: [],
+      TemplateBody: JSON.stringify({}),
+      Tags: [],
+    },
+    UpdateStackCommand,
+  );
+  if (!skipUpdate) {
+    expect(mockCfnClientSendMock.mock.calls[updateStackCallIndex + 1]).toBeACloudFormationCommand(
+      {
+        StackName: getStackId(GEN2_ROOT_STACK_NAME, 'storage'),
+      },
+      DescribeStacksCommand,
+    );
+  }
+  assertStackRefactorCommands('storage', updateStackCallIndex + (skipUpdate ? 1 : 2));
+}
+
+function assertStackRefactorCommands(category: CATEGORY, callIndex: number, onCreateRefactorFailed = false) {
+  expect(mockCfnClientSendMock.mock.calls[callIndex]).toBeACloudFormationCommand(
+    {
+      ResourceMappings: [
+        {
+          Source: {
+            LogicalResourceId: 'ResourceA',
+            StackName: getStackId(GEN1_ROOT_STACK_NAME, category),
+          },
+          Destination: {
+            LogicalResourceId: 'ResourceB',
+            StackName: getStackId(GEN2_ROOT_STACK_NAME, category),
+          },
+        },
+      ],
+      StackDefinitions: [
+        {
+          TemplateBody: `{}`,
+          StackName: getStackId(GEN1_ROOT_STACK_NAME, category),
+        },
+        {
+          TemplateBody: `{}`,
+          StackName: getStackId(GEN2_ROOT_STACK_NAME, category),
+        },
+      ],
+    },
+    CreateStackRefactorCommand,
+  );
+  expect(mockCfnClientSendMock.mock.calls[++callIndex]).toBeACloudFormationCommand(
+    {
+      StackRefactorId: '12345',
+    },
+    DescribeStackRefactorCommand,
+  );
+  if (!onCreateRefactorFailed) {
+    expect(mockCfnClientSendMock.mock.calls[++callIndex]).toBeACloudFormationCommand(
+      {
+        StackRefactorId: '12345',
+      },
+      ExecuteStackRefactorCommand,
+    );
+    expect(mockCfnClientSendMock.mock.calls[++callIndex]).toBeACloudFormationCommand(
+      {
+        StackRefactorId: '12345',
+      },
+      DescribeStackRefactorCommand,
+    );
+  }
+  return callIndex;
+}
+
+function assertRollbackRefactor(category: CATEGORY, callIndex: number, onCreateRefactorFailed = false) {
+  expect(mockCfnClientSendMock.mock.calls[callIndex]).toBeACloudFormationCommand(
+    {
+      StackName: getStackId(GEN2_ROOT_STACK_NAME, category),
+      Capabilities: ['CAPABILITY_NAMED_IAM'],
+      Parameters: [],
+      TemplateBody: JSON.stringify({}),
+      Tags: [],
+    },
+    UpdateStackCommand,
+  );
+  callIndex = assertStackRefactorCommands(category, callIndex + 2, onCreateRefactorFailed);
+  expect(mockCfnClientSendMock.mock.calls[++callIndex]).toBeACloudFormationCommand(
+    {
+      StackName: getStackId(GEN2_ROOT_STACK_NAME, category),
+    },
+    DescribeStacksCommand,
+  );
+  expect(mockCfnClientSendMock.mock.calls[++callIndex]).toBeACloudFormationCommand(
+    {
+      StackName: getStackId(GEN2_ROOT_STACK_NAME, category),
       Capabilities: ['CAPABILITY_NAMED_IAM'],
       Parameters: [],
       TemplateBody: JSON.stringify({}),

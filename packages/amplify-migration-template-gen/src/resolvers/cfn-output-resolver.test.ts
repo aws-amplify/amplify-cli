@@ -31,6 +31,12 @@ describe('CFNOutputResolver', () => {
         Description: 'Lambda execution role',
         Value: { Ref: 'TestLambdaRole' },
       },
+      CreatedSNSRole: {
+        Description: 'role arn',
+        Value: {
+          'Fn::GetAtt': ['SNSRole', 'Arn'],
+        },
+      },
     },
     Resources: {
       MyS3Bucket: {
@@ -60,6 +66,12 @@ describe('CFNOutputResolver', () => {
         Type: 'AWS::Cognito::UserPool',
         Properties: {
           UserPoolName: 'MyUserPool',
+          SmsConfiguration: {
+            ExternalId: 'testsns_role_external_id',
+            SnsCallerArn: {
+              'Fn::GetAtt': ['SNSRole', 'Arn'],
+            },
+          },
         },
       },
       HostedUICustomResourcePolicy: {
@@ -113,6 +125,28 @@ describe('CFNOutputResolver', () => {
           },
         },
       },
+      SNSRole: {
+        Type: 'AWS::IAM::Role',
+        Properties: {
+          AssumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'cognito-idp.amazonaws.com',
+                },
+                Action: ['sts:AssumeRole'],
+                Condition: {
+                  StringEquals: {
+                    'sts:ExternalId': 'role_external_id',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
     },
   };
   const expectedTemplate: CFNTemplate = {
@@ -142,7 +176,11 @@ describe('CFNOutputResolver', () => {
       },
       LambdaRole: {
         Description: 'Lambda execution role',
-        Value: 'lambda-exec-role',
+        Value: 'arn:aws:iam::12345:role/lambda-exec-role',
+      },
+      CreatedSNSRole: {
+        Description: 'role arn',
+        Value: 'arn:aws:iam::12345:role/sns12345-dev',
       },
     },
     Resources: {
@@ -173,6 +211,10 @@ describe('CFNOutputResolver', () => {
         Type: 'AWS::Cognito::UserPool',
         Properties: {
           UserPoolName: 'MyUserPool',
+          SmsConfiguration: {
+            ExternalId: 'testsns_role_external_id',
+            SnsCallerArn: 'arn:aws:iam::12345:role/sns12345-dev',
+          },
         },
       },
       HostedUICustomResourcePolicy: {
@@ -204,7 +246,7 @@ describe('CFNOutputResolver', () => {
         Properties: {
           FunctionName: 'TestLambda',
           Handler: 'index.handler',
-          Role: { 'Fn::GetAtt': ['TestLambdaRole', 'Arn'] },
+          Role: 'arn:aws:iam::12345:role/lambda-exec-role',
           Code: {
             ZipFile: 'exports.handler = function() {}',
           },
@@ -221,6 +263,28 @@ describe('CFNOutputResolver', () => {
               {
                 Effect: 'Allow',
                 Principal: {},
+              },
+            ],
+          },
+        },
+      },
+      SNSRole: {
+        Type: 'AWS::IAM::Role',
+        Properties: {
+          AssumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'cognito-idp.amazonaws.com',
+                },
+                Action: ['sts:AssumeRole'],
+                Condition: {
+                  StringEquals: {
+                    'sts:ExternalId': 'role_external_id',
+                  },
+                },
               },
             ],
           },
@@ -251,7 +315,11 @@ describe('CFNOutputResolver', () => {
           },
           {
             OutputKey: 'LambdaRole',
-            OutputValue: 'lambda-exec-role',
+            OutputValue: 'arn:aws:iam::12345:role/lambda-exec-role',
+          },
+          {
+            OutputKey: 'CreatedSNSRole',
+            OutputValue: 'arn:aws:iam::12345:role/sns12345-dev',
           },
         ],
       ),
