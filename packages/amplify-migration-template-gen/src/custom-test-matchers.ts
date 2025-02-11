@@ -8,11 +8,19 @@ import {
   CreateStackRefactorCommandInput,
   ExecuteStackRefactorCommandInput,
   DescribeStackRefactorCommandInput,
-  CreateStackRefactorCommand, ExecuteStackRefactorCommand, DescribeStackRefactorCommand,
+  CreateStackRefactorCommand,
+  ExecuteStackRefactorCommand,
+  DescribeStackRefactorCommand,
 } from '@aws-sdk/client-cloudformation';
 
 type CFNCommand = DescribeStackResourcesCommand | DescribeStacksCommand | UpdateStackCommand;
-type CFNCommandType = typeof DescribeStackResourcesCommand | typeof DescribeStacksCommand | typeof UpdateStackCommand | typeof CreateStackRefactorCommand | typeof ExecuteStackRefactorCommand | typeof DescribeStackRefactorCommand;
+type CFNCommandType =
+  | typeof DescribeStackResourcesCommand
+  | typeof DescribeStacksCommand
+  | typeof UpdateStackCommand
+  | typeof CreateStackRefactorCommand
+  | typeof ExecuteStackRefactorCommand
+  | typeof DescribeStackRefactorCommand;
 type CFNCommandInput =
   | DescribeStackResourcesCommandInput
   | DescribeStacksCommandInput

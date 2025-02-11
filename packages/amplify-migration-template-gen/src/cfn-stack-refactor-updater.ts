@@ -51,7 +51,6 @@ export async function tryRefactorStack(
       },
     ];
   }
-  // assert(describeStackRefactorResponse.Status === StackRefactorStatus.CREATE_COMPLETE);
   await cfnClient.send(
     new ExecuteStackRefactorCommand({
       StackRefactorId,
@@ -80,8 +79,6 @@ export async function tryRefactorStack(
     ];
   }
   return [true, undefined];
-
-  // assert(describeStackRefactorResponse.ExecutionStatus === StackRefactorExecutionStatus.EXECUTE_COMPLETE);
 }
 
 /**

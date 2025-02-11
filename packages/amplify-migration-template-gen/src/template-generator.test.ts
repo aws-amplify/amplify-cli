@@ -499,9 +499,7 @@ describe('TemplateGenerator', () => {
     // Intentionally not awaiting the below call to be able to advance timers and micro task queue in waitForPromisesAndFakeTimers
     // and catch the error below
     generator.generate().catch((e) => {
-      expect(e.message).toBe(
-        `Stack refactor 12345 did not reach a completion state within the given time period.`,
-      );
+      expect(e.message).toBe(`Stack refactor 12345 did not reach a completion state within the given time period.`);
     });
     await waitForPromisesAndFakeTimers();
     return;
@@ -631,7 +629,7 @@ function assertStackRefactorCommands(category: CATEGORY, callIndex: number, onCr
           },
           Destination: {
             LogicalResourceId: 'ResourceB',
-            StackName:  getStackId(GEN2_ROOT_STACK_NAME, category),
+            StackName: getStackId(GEN2_ROOT_STACK_NAME, category),
           },
         },
       ],
