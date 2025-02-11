@@ -13,6 +13,6 @@ describe('Data definition', () => {
       ],
     } as Stack;
     const result = getDataDefinition(stack);
-    assert.equal(result.tableMapping.hello, 'world');
+    assert.equal(result.hello, 'world');
   });
 });

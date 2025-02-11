@@ -4,11 +4,11 @@
 
 ```ts
 
-import { DataDefinition } from '@aws-amplify/amplify-gen2-codegen';
+import { DataTableMapping } from '@aws-amplify/amplify-gen2-codegen';
 import { Stack } from '@aws-sdk/client-cloudformation';
 
 // @public (undocumented)
-export const getDataDefinition: (dataStack: Stack) => DataDefinition;
+export const getDataDefinition: (dataStack: Stack) => DataTableMapping;
 
 // (No @packageDocumentation comment for this package)
 

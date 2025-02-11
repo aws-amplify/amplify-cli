@@ -11,10 +11,13 @@ describe('DataDefinitionFetcher', () => {
       it('maps cloudformation stack output to table mapping', async () => {
         const mapping = { hello: 'world' };
         const mockBackendEnvResolver: BackendEnvironmentResolver = {
-          selectBackendEnvironment: async () => {
-            return {
-              stackName: 'asdf',
-            } as BackendEnvironment;
+          getAllBackendEnvironments: async () => {
+            return [
+              {
+                environmentName: 'dev',
+                stackName: 'asdf',
+              },
+            ] as BackendEnvironment[];
           },
         } as BackendEnvironmentResolver;
         const mockAmplifyStackParser: AmplifyStackParser = {
@@ -32,14 +35,17 @@ describe('DataDefinitionFetcher', () => {
         } as unknown as AmplifyStackParser;
         const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
         const results = await dataDefinitionFetcher.getDefinition();
-        assert(results?.tableMapping);
+        assert(results?.tableMappings);
       });
-      it('throws an error if the json cannot be parsed', async () => {
+      it('return undefined for mapping if json cannot be parsed', async () => {
         const mockBackendEnvResolver: BackendEnvironmentResolver = {
-          selectBackendEnvironment: async () => {
-            return {
-              stackName: 'asdf',
-            } as BackendEnvironment;
+          getAllBackendEnvironments: async () => {
+            return [
+              {
+                environmentName: 'dev',
+                stackName: 'asdf',
+              },
+            ] as BackendEnvironment[];
           },
         } as BackendEnvironmentResolver;
         const mockAmplifyStackParser: AmplifyStackParser = {
@@ -56,16 +62,21 @@ describe('DataDefinitionFetcher', () => {
             } as AmplifyStacks),
         } as unknown as AmplifyStackParser;
         const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
-        await assert.rejects(() => dataDefinitionFetcher.getDefinition(), { message: 'Could not parse the Amplify Data table mapping' });
+        const results = await dataDefinitionFetcher.getDefinition();
+        assert(results?.tableMappings);
+        assert.equal(JSON.stringify(results?.tableMappings), JSON.stringify({ dev: undefined }));
       });
     });
     describe('table mapping is not defined', () => {
-      it('reject with table mapping assertion', async () => {
+      it('return undefined for table mapping', async () => {
         const mockBackendEnvResolver: BackendEnvironmentResolver = {
-          selectBackendEnvironment: async () => {
-            return {
-              stackName: 'asdf',
-            } as BackendEnvironment;
+          getAllBackendEnvironments: async () => {
+            return [
+              {
+                environmentName: 'dev',
+                stackName: 'asdf',
+              },
+            ] as BackendEnvironment[];
           },
         } as BackendEnvironmentResolver;
         const mockAmplifyStackParser: AmplifyStackParser = {
@@ -75,17 +86,22 @@ describe('DataDefinitionFetcher', () => {
             } as AmplifyStacks),
         } as unknown as AmplifyStackParser;
         const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
-        await assert.rejects(dataDefinitionFetcher.getDefinition);
+        const results = await dataDefinitionFetcher.getDefinition();
+        assert(results?.tableMappings);
+        assert.equal(JSON.stringify(results?.tableMappings), JSON.stringify({ dev: undefined }));
       });
     });
   });
   describe('if data stack is undefined', () => {
     it('does not reject with table mapping assertion', async () => {
       const mockBackendEnvResolver: BackendEnvironmentResolver = {
-        selectBackendEnvironment: async () => {
-          return {
-            stackName: 'asdf',
-          } as BackendEnvironment;
+        getAllBackendEnvironments: async () => {
+          return [
+            {
+              environmentName: 'dev',
+              stackName: 'asdf',
+            },
+          ] as BackendEnvironment[];
         },
       } as BackendEnvironmentResolver;
       const mockAmplifyStackParser: AmplifyStackParser = {
@@ -97,12 +113,15 @@ describe('DataDefinitionFetcher', () => {
       const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
       await assert.doesNotReject(dataDefinitionFetcher.getDefinition);
     });
-    it('returns undefined', async () => {
+    it('returns undefined for table mapping', async () => {
       const mockBackendEnvResolver: BackendEnvironmentResolver = {
-        selectBackendEnvironment: async () => {
-          return {
-            stackName: 'asdf',
-          } as BackendEnvironment;
+        getAllBackendEnvironments: async () => {
+          return [
+            {
+              environmentName: 'dev',
+              stackName: 'asdf',
+            },
+          ] as BackendEnvironment[];
         },
       } as BackendEnvironmentResolver;
       const mockAmplifyStackParser: AmplifyStackParser = {
@@ -112,8 +131,9 @@ describe('DataDefinitionFetcher', () => {
           } as AmplifyStacks),
       } as unknown as AmplifyStackParser;
       const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
-      const definition = await dataDefinitionFetcher.getDefinition();
-      assert.equal(definition, undefined);
+      const results = await dataDefinitionFetcher.getDefinition();
+      assert(results?.tableMappings);
+      assert.equal(JSON.stringify(results?.tableMappings), JSON.stringify({ dev: undefined }));
     });
   });
 });
