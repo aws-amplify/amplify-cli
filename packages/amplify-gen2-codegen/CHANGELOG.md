@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.1...@aws-amplify/amplify-gen2-codegen@0.1.0-beta-latest.0) (2025-02-12)
+
+
+### Bug Fixes
+
+* add check for client secret key presence in map ([89b420b](https://github.com/aws-amplify/amplify-cli/commit/89b420b0194143af4326c2b193210a0f29c4c5a2))
+* add import for removal policy in gen2 codegen ([300d169](https://github.com/aws-amplify/amplify-cli/commit/300d1696968705d90788a2b6393884631f29873e))
+* add uncomment instructions in readme ([b1ca1b1](https://github.com/aws-amplify/amplify-cli/commit/b1ca1b1efe70425b97c9083f5ac47d71c32aaeb7))
+* dedupe lock, update api md ([7520e27](https://github.com/aws-amplify/amplify-cli/commit/7520e2760cc2fa0934f3c095f37aedc01b689161))
+* gen2 data table mapping, userpoolclient provider casing ([ab5a244](https://github.com/aws-amplify/amplify-cli/commit/ab5a244da56022a67fa275f10e3f4a2fe53a0a78))
+* lint errors in gen2 codegen ([566f887](https://github.com/aws-amplify/amplify-cli/commit/566f8878a314089aed9bf15ad9524cb620ded0d9))
+* orphaned functions, import auth ([26fd22b](https://github.com/aws-amplify/amplify-cli/commit/26fd22be0232ba11e37d165135c0912deeb0c520))
+* package json name and deps, always set generateSecrets prop ([731071c](https://github.com/aws-amplify/amplify-cli/commit/731071c8c12e64e33229b856d9d5decc680efc16))
+
+
+### Features
+
+* include all envs in gen 2 data codegen ([#14087](https://github.com/aws-amplify/amplify-cli/issues/14087)) ([6a437e3](https://github.com/aws-amplify/amplify-cli/commit/6a437e3345489ce22d78621de18acc46f969d883))
+
+
+
+
+
 # [0.1.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.0...@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.1) (2024-12-05)
 
 

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-alpha.1...@aws-amplify/migrate-template-gen@0.1.0-beta-latest.0) (2025-02-12)
+
+
+### Bug Fixes
+
+* add uncomment instructions in readme ([b1ca1b1](https://github.com/aws-amplify/amplify-cli/commit/b1ca1b1efe70425b97c9083f5ac47d71c32aaeb7))
+* **migrate-template-gen:** don't generate README on failure ([a9b2e5a](https://github.com/aws-amplify/amplify-cli/commit/a9b2e5aa7a52ea0e534537f50cec81cd0649a984))
+* **migrate-template-gen:** lint, api extract ([8f9bef1](https://github.com/aws-amplify/amplify-cli/commit/8f9bef120c282fdd49a2c5c9b321c3541e1bd163))
+* **migrate-template-gen:** no need to reconstruct arn for iam role output ([790a290](https://github.com/aws-amplify/amplify-cli/commit/790a29056685278afe8ff99f41830f4b602334e8))
+* **migrate-template-gen:** support Get:Att in output resolver for roles ([15f8cbe](https://github.com/aws-amplify/amplify-cli/commit/15f8cbe87c156f3d66dfcf544be9375f3549f80d))
+
+
+### Features
+
+* add refactor operation to gen2 migration ([9f2752b](https://github.com/aws-amplify/amplify-cli/commit/9f2752b9b116b81267cb6ac5f7fd0877781c9e7f))
+
+
+
+
+
 # [0.1.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-alpha.0...@aws-amplify/migrate-template-gen@0.1.0-alpha.1) (2024-12-05)
 
 

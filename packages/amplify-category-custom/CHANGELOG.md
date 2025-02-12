@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.26-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.25...@aws-amplify/amplify-category-custom@3.1.26-beta-latest.0) (2025-02-12)
+
+
+### Bug Fixes
+
+* **amplify-cli-core:** use build script properly for overrides ([#14093](https://github.com/aws-amplify/amplify-cli/issues/14093)) ([aab715d](https://github.com/aws-amplify/amplify-cli/commit/aab715db07578b7790498b9ad791db7d3a0b4d5c)), closes [#11854](https://github.com/aws-amplify/amplify-cli/issues/11854) [#13858](https://github.com/aws-amplify/amplify-cli/issues/13858) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889)
+
+
+
+
+
 ## [3.1.25](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.24...@aws-amplify/amplify-category-custom@3.1.25) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-custom

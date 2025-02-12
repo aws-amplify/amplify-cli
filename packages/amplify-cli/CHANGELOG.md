@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.15.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.2...@aws-amplify/cli-internal@12.15.0-beta-latest.0) (2025-02-12)
+
+
+### Bug Fixes
+
+* add usage data metrics for codegen ([ffc8041](https://github.com/aws-amplify/amplify-cli/commit/ffc8041041c6d1b66589c537e93f05a7453e5bc9))
+* lint & api md ([351d7b2](https://github.com/aws-amplify/amplify-cli/commit/351d7b22fb7308c974ceea965566431e6d296183))
+* updated yarn.lock and API.md ([c45f8a7](https://github.com/aws-amplify/amplify-cli/commit/c45f8a73dea1a4b4c418b5b2ea3b5ab32b760547))
+* use pinned version of tagged release ([b6bd127](https://github.com/aws-amplify/amplify-cli/commit/b6bd127ec9c6da526d2e98b28c2021f2650f9961))
+
+
+### Features
+
+* **cli:** initial migration merge ([#13856](https://github.com/aws-amplify/amplify-cli/issues/13856)) ([ebe5cd0](https://github.com/aws-amplify/amplify-cli/commit/ebe5cd046cfb18c38ffdce17610ed3a133cc9d44))
+* **migrate:** make as an independent executable ([0aeffb9](https://github.com/aws-amplify/amplify-cli/commit/0aeffb96b9fad75549d76d19778725eb522ad64e))
+
+
+
+
+
 ## [12.14.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.1...@aws-amplify/cli-internal@12.14.2) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

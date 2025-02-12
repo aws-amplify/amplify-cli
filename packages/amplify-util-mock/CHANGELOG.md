@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.12-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.11...@aws-amplify/amplify-util-mock@5.10.12-beta-latest.0) (2025-02-12)
+
+
+### Bug Fixes
+
+* merge issues ([4fb77af](https://github.com/aws-amplify/amplify-cli/commit/4fb77afbcd85dee95603808ad9610b3e93980046))
+* missed some pins ([5543630](https://github.com/aws-amplify/amplify-cli/commit/554363023bcf5f874fc485c6a9f566df9b504b77))
+
+
+
+
+
 ## [5.10.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.10...@aws-amplify/amplify-util-mock@5.10.11) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

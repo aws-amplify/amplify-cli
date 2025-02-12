@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-gen1-codegen-auth-adapter",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-beta-latest.0",
   "type": "commonjs",
   "main": "lib/index.js",
   "devDependencies": {
@@ -8,7 +8,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@aws-amplify/amplify-gen2-codegen": "0.1.0-alpha.1",
+    "@aws-amplify/amplify-gen2-codegen": "0.1.0-beta-latest.0",
     "@aws-amplify/auth-construct": "^1.1.5",
     "@aws-sdk/client-amplify": "^3.592.0",
     "@aws-sdk/client-cognito-identity": "^3.592.0",

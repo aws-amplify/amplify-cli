@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-alpha.1...@aws-amplify/migrate@0.1.0-beta-latest.0) (2025-02-12)
+
+
+### Bug Fixes
+
+* add progress bar for gen 2 codegen ([6b7bf79](https://github.com/aws-amplify/amplify-cli/commit/6b7bf79ec9fa7c65245956b179e261fa0604bb9b))
+* add uncomment instructions in readme ([b1ca1b1](https://github.com/aws-amplify/amplify-cli/commit/b1ca1b1efe70425b97c9083f5ac47d71c32aaeb7))
+* auth definition fetcher test ([dd75bfd](https://github.com/aws-amplify/amplify-cli/commit/dd75bfdd81a50104534f18f94ab10fc8c0641d72))
+* check for absence of auth in gen2 codegen ([518a0f4](https://github.com/aws-amplify/amplify-cli/commit/518a0f41f0cc817a05932e4c5bb06d5c805c5cc7))
+* choose current env, update gitignore for gen2, derive fn name from output key ([40b1730](https://github.com/aws-amplify/amplify-cli/commit/40b17308470d1946878c1e74afde61c67c211625))
+* delete extraneous map file ([2699ee2](https://github.com/aws-amplify/amplify-cli/commit/2699ee2ee2ab7fa806675b66710a588ceb5e438b))
+* function migration adapter category ([afb1136](https://github.com/aws-amplify/amplify-cli/commit/afb1136d5c1eb82e0aa7baf6c12784b06a72de17))
+* lint & api md ([351d7b2](https://github.com/aws-amplify/amplify-cli/commit/351d7b22fb7308c974ceea965566431e6d296183))
+* lint errros and warnings in amplify-migration ([8464c01](https://github.com/aws-amplify/amplify-cli/commit/8464c019b70cadbb786b281b9f0b02ca057c402e))
+* lint in migrations package ([8380bb0](https://github.com/aws-amplify/amplify-cli/commit/8380bb0d2829884c02ab8e450c575d5f07f2ac4f))
+* orphaned functions, import auth ([26fd22b](https://github.com/aws-amplify/amplify-cli/commit/26fd22be0232ba11e37d165135c0912deeb0c520))
+* remove extraneous deps ([74c6647](https://github.com/aws-amplify/amplify-cli/commit/74c6647296512c50f9ace9021ea4e2c332e605ac))
+* remove ora mock ([783f33f](https://github.com/aws-amplify/amplify-cli/commit/783f33f9a083679fed266bcb860962c1ed0d629f))
+* use older version of ora to keep it consistent with other packages ([0b390a3](https://github.com/aws-amplify/amplify-cli/commit/0b390a3d19d07efac86699c0628954602ebdf862))
+
+
+### Features
+
+* add refactor operation to gen2 migration ([9f2752b](https://github.com/aws-amplify/amplify-cli/commit/9f2752b9b116b81267cb6ac5f7fd0877781c9e7f))
+* include all envs in gen 2 data codegen ([#14087](https://github.com/aws-amplify/amplify-cli/issues/14087)) ([6a437e3](https://github.com/aws-amplify/amplify-cli/commit/6a437e3345489ce22d78621de18acc46f969d883))
+
+
+
+
+
 # [0.1.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-alpha.0...@aws-amplify/migrate@0.1.0-alpha.1) (2024-12-05)
 
 
