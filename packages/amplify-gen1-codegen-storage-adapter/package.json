@@ -1,10 +1,10 @@
 {
   "name": "@aws-amplify/amplify-gen1-codegen-storage-adapter",
-  "version": "0.1.0-beta-latest.0",
+  "version": "0.1.0-alpha.1",
   "type": "commonjs",
   "main": "lib/index.js",
   "dependencies": {
-    "@aws-amplify/amplify-gen2-codegen": "0.1.0-beta-latest.0",
+    "@aws-amplify/amplify-gen2-codegen": "0.1.0-alpha.1",
     "@aws-sdk/client-amplify": "^3.592.0",
     "@aws-sdk/client-cognito-identity": "^3.592.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.592.0",

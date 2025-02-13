@@ -3,22 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-data-adapter@0.0.2-alpha.1...@aws-amplify/amplify-gen1-codegen-data-adapter@0.1.0-beta-latest.0) (2025-02-12)
-
-
-### Bug Fixes
-
-* gen2 data table mapping, userpoolclient provider casing ([ab5a244](https://github.com/aws-amplify/amplify-cli/commit/ab5a244da56022a67fa275f10e3f4a2fe53a0a78))
-
-
-### Features
-
-* include all envs in gen 2 data codegen ([#14087](https://github.com/aws-amplify/amplify-cli/issues/14087)) ([6a437e3](https://github.com/aws-amplify/amplify-cli/commit/6a437e3345489ce22d78621de18acc46f969d883))
-
-
-
-
-
 ## [0.0.2-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-data-adapter@0.0.2-alpha.0...@aws-amplify/amplify-gen1-codegen-data-adapter@0.0.2-alpha.1) (2024-12-05)
 
 **Note:** Version bump only for package @aws-amplify/amplify-gen1-codegen-data-adapter
