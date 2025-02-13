@@ -20,7 +20,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /\/\/ Replace each environment name with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+importedAmplifyDynamoDBTableMap: \{\s+dev: { Todo: ['"]my-todo-mapping['"] } }/,
+        /migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}]/,
       );
     });
     it('includes multiple table mappings', () => {
@@ -31,7 +31,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /importedAmplifyDynamoDBTableMap: \{\s+dev: { Todo: ['"]my-todo-mapping['"] }, prod: { Todo: ['"]my-todo-mapping-prod['"] } }/,
+        /migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}, {\n\s+\/\/ Replace the environment name \(prod\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]prod['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping-prod['"] }\n\s+}]/,
       );
     });
     it('includes a comment for missing table mappings', () => {
@@ -41,15 +41,15 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /\/\*\*\n\s+\* Unable to find the table mapping for this environment.\n\s+\* This could be due the enableGen2Migration feature flag not being set to true for this environment.\n\s+\* Please enable the feature flag and push the backend resources.\n\s+\* If you are not planning to migrate this environment, you can remove this key.\n\s+\*\/\n\s+dev: {}/,
-      ); //\s+dev: {}/);
+        /\/\*\*\n\s+\* Unable to find the table mapping for this environment.\n\s+\* This could be due the enableGen2Migration feature flag not being set to true for this environment.\n\s+\* Please enable the feature flag and push the backend resources.\n\s+\* If you are not planning to migrate this environment, you can remove this key.\n\s+\*\/\n\s+modelTableNameMap: {}/,
+      );
     });
     it('has each each key in defineData', () => {
       const tableMappings = { dev: { Todo: 'my-todo-mapping' } };
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /defineData\({\n\s+\/\/ Replace each environment name with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+importedAmplifyDynamoDBTableMap: \{\s+dev: { Todo: ['"]my-todo-mapping['"] } },\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
+        /defineData\({\n\s+migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
       );
     });
   });
