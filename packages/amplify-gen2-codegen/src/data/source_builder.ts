@@ -8,7 +8,7 @@ export type DataDefinition = {
   tableMappings: Record<string, DataTableMapping | undefined>;
 };
 
-const importedAmplifyDynamoDBTableMapKeyName = 'importedAmplifyDynamoDBTableMap';
+const migratedAmplifyGen1DynamoDbTableMapKeyName = 'migratedAmplifyGen1DynamoDbTableMap';
 
 export const schemaPlaceholderComment = 'TODO: Add your existing graphql schema here';
 
@@ -56,7 +56,7 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
     }
     dataRenderProperties.push(
       factory.createPropertyAssignment(
-        importedAmplifyDynamoDBTableMapKeyName,
+        migratedAmplifyGen1DynamoDbTableMapKeyName,
         factory.createArrayLiteralExpression(tableMappingEnvironments),
       ),
     );

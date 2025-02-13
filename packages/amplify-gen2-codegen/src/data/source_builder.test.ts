@@ -20,7 +20,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /importedAmplifyDynamoDBTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}]/,
+        /migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}]/,
       );
     });
     it('includes multiple table mappings', () => {
@@ -31,7 +31,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /importedAmplifyDynamoDBTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}, {\n\s+\/\/ Replace the environment name \(prod\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]prod['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping-prod['"] }\n\s+}]/,
+        /migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}, {\n\s+\/\/ Replace the environment name \(prod\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]prod['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping-prod['"] }\n\s+}]/,
       );
     });
     it('includes a comment for missing table mappings', () => {
@@ -49,7 +49,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings }));
       assert.match(
         source,
-        /defineData\({\n\s+importedAmplifyDynamoDBTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
+        /defineData\({\n\s+migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema: "TODO: Add your existing graphql schema here"\n}\)/,
       );
     });
   });
