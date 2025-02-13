@@ -22,7 +22,7 @@ const getGen2Permissions = (permissions: CLIV1Permission[]): Permission[] => {
 };
 export const getStorageAccess = (input: StorageCLIInputsJSON): AccessPatterns => {
   let groups: AccessPatterns['groups'] | undefined;
-  if (input.groupAccess) {
+  if (input.groupAccess && Object.keys(input.groupAccess).length > 0) {
     groups = Object.entries(input.groupAccess).reduce((acc, [key, value]) => {
       acc[key] = getGen2Permissions(value);
       return acc;
