@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-beta-latest.0...@aws-amplify/amplify-migration-e2e@0.1.0-log-hooks-executor.0) (2025-02-13)
+
+
+### Reverts
+
+* Revert "chore(release): Publish tagged release beta-latest" ([57171ac](https://github.com/aws-amplify/amplify-cli/commit/57171accc71ca92ecfac01ed3c5426fe846c39d6))
+
+
+
+
+
 # [0.1.0-alpha.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-alpha.0...@aws-amplify/amplify-migration-e2e@0.1.0-alpha.1) (2024-12-05)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-e2e

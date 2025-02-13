@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.7-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.7-beta-latest.0...amplify-storage-simulator@1.11.7-log-hooks-executor.0) (2025-02-13)
+
+
+### Reverts
+
+* Revert "chore(release): Publish tagged release beta-latest" ([57171ac](https://github.com/aws-amplify/amplify-cli/commit/57171accc71ca92ecfac01ed3c5426fe846c39d6))
+
+
+
+
+
 ## [1.11.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.11.5...amplify-storage-simulator@1.11.6) (2025-01-02)
 
 **Note:** Version bump only for package amplify-storage-simulator

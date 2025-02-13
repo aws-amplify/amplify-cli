@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.14.3-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.15.0-beta-latest.0...@aws-amplify/cli@12.14.3-log-hooks-executor.0) (2025-02-13)
+
+
+### Reverts
+
+* Revert "chore(release): Publish tagged release beta-latest" ([57171ac](https://github.com/aws-amplify/amplify-cli/commit/57171accc71ca92ecfac01ed3c5426fe846c39d6))
+
+
+
+
+
 ## [12.14.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.14.1...@aws-amplify/cli@12.14.2) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/cli

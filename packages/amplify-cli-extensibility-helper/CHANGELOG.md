@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.36-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.36-beta-latest.0...@aws-amplify/cli-extensibility-helper@3.0.36-log-hooks-executor.0) (2025-02-13)
+
+
+### Reverts
+
+* Revert "chore(release): Publish tagged release beta-latest" ([57171ac](https://github.com/aws-amplify/amplify-cli/commit/57171accc71ca92ecfac01ed3c5426fe846c39d6))
+
+
+
+
+
 ## [3.0.35](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.34...@aws-amplify/cli-extensibility-helper@3.0.35) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
