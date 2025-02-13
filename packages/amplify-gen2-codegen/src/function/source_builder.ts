@@ -24,13 +24,12 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
   namedImports['@aws-amplify/backend'].add('defineFunction');
 
   groupsComment.push(
-    factory.createJSDocComment(
-      factory.createNodeArray([
-        factory.createJSDocText(
-          `Source code for this function can be found in your Amplify Gen 1 Directory.\nSee .amplify/migration/amplify/backend/function/${definition.resourceName}/src \n`,
-        ),
-      ]),
-    ),
+    factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+      // eslint-disable-next-line spellcheck/spell-checker
+      factory.createStringLiteral(
+        `Source code for this function can be found in your Amplify Gen 1 Directory. See .amplify/migration/amplify/backend/function/${definition.resourceName}/src`,
+      ),
+    ]),
   );
 
   const defineFunctionProperty = createFunctionDefinition(definition, groupsComment, namedImports, appId, backendEnvironmentName);

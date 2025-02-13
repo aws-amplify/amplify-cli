@@ -285,7 +285,12 @@ export class BackendSynthesizer {
               this.createEnumListPropertyAssignment(
                 mappedProperty,
                 'UserPoolClientIdentityProvider',
-                value.map((provider) => provider.toUpperCase()),
+                value.map((provider) => {
+                  if (provider.toUpperCase() == 'LOGINWITHAMAZON') {
+                    return 'AMAZON';
+                  }
+                  return provider.toUpperCase();
+                }),
               ),
             );
           } else if (!this.oAuthFlag && key == 'AllowedOAuthFlows') {
@@ -443,6 +448,17 @@ export class BackendSynthesizer {
     ]);
   }
 
+  private createTemplateLiteralExpression(id1: string, id2: string, templateHead: string) {
+    return factory.createExpressionStatement(
+      factory.createAssignment(
+        factory.createPropertyAccessExpression(factory.createIdentifier(id1), factory.createIdentifier(id2)),
+        factory.createTemplateExpression(factory.createTemplateHead(templateHead), [
+          factory.createTemplateSpan(factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME'), factory.createTemplateTail('')),
+        ]),
+      ),
+    );
+  }
+
   render(renderArgs: BackendRenderParameters): NodeArray<Node> {
     const authFunctionIdentifier = factory.createIdentifier('auth');
     const storageFunctionIdentifier = factory.createIdentifier('storage');
@@ -538,6 +554,16 @@ export class BackendSynthesizer {
       factory.createVariableDeclarationList([backendVariable], ts.NodeFlags.Const),
     );
 
+    const amplifyGen1EnvStatement = this.createVariableStatement(
+      factory.createVariableDeclaration(
+        'AMPLIFY_GEN_1_ENV_NAME',
+        undefined,
+        undefined,
+        factory.createIdentifier('process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox"'),
+      ),
+    );
+    nodes.push(amplifyGen1EnvStatement);
+
     if (renderArgs.auth?.userPoolOverrides && !renderArgs?.auth?.referenceAuth) {
       const cfnUserPoolVariableStatement = this.createVariableStatement(
         this.createVariableDeclaration('cfnUserPool', 'auth.resources.cfnResources.cfnUserPool'),
@@ -547,7 +573,20 @@ export class BackendSynthesizer {
         passwordPolicy: {},
       };
       for (const [overridePath, value] of Object.entries(renderArgs.auth.userPoolOverrides)) {
-        if (overridePath.includes('PasswordPolicy')) {
+        if (overridePath.includes('userPoolName')) {
+          assert(value);
+          assert(typeof value === 'string');
+          const splitUserPoolName = value.split('-');
+          const userPoolWithoutBackendEnvName = splitUserPoolName.slice(0, -1).join('-');
+
+          const userPoolAssignment = this.createTemplateLiteralExpression(
+            'cfnUserPool',
+            'userPoolName',
+            `${userPoolWithoutBackendEnvName}-`,
+          );
+
+          nodes.push(userPoolAssignment);
+        } else if (overridePath.includes('PasswordPolicy')) {
           const policyKey = overridePath.split('.')[2];
           if (value !== undefined && policyKey in mappedPolicyType) {
             policies.passwordPolicy[mappedPolicyType[policyKey] as string] = value;
@@ -572,9 +611,16 @@ export class BackendSynthesizer {
       );
       nodes.push(cfnIdentityPoolVariableStatement);
       if (renderArgs.auth?.identityPoolName) {
-        nodes.push(
-          this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'identityPoolName', renderArgs.auth.identityPoolName),
+        const splitIdentityPoolName = renderArgs.auth.identityPoolName.split('_');
+        const identityPoolWithoutBackendEnvName = splitIdentityPoolName.slice(0, -1).join('_');
+
+        const identityPoolAssignment = this.createTemplateLiteralExpression(
+          'cfnIdentityPool',
+          'identityPoolName',
+          `${identityPoolWithoutBackendEnvName}_`,
         );
+
+        nodes.push(identityPoolAssignment);
       }
       if (renderArgs.auth?.guestLogin === false) {
         nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
@@ -635,13 +681,10 @@ export class BackendSynthesizer {
       );
       nodes.push(cfnStorageVariableStatement);
 
-      const bucketNameAssignment = factory.createExpressionStatement(
-        factory.createAssignment(
-          factory.createPropertyAccessExpression(factory.createIdentifier('// s3Bucket'), factory.createIdentifier('bucketName')),
-          factory.createStringLiteral(renderArgs.storage.bucketName),
-        ),
-      );
+      const splitBucketName = renderArgs.storage.bucketName.split('-');
+      const bucketNameWithoutBackendEnvName = splitBucketName.slice(0, -1).join('-');
 
+      const bucketNameAssignment = this.createTemplateLiteralExpression('// s3Bucket', 'bucketName', `${bucketNameWithoutBackendEnvName}-`);
       nodes.push(bucketNameAssignment);
       nodes.push(this.addRemovalPolicyAssignment('s3Bucket'));
     }

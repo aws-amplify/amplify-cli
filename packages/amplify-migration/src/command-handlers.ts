@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { createGen2Renderer, Gen2RenderingOptions } from '@aws-amplify/amplify-gen2-codegen';
 
 import { getProjectSettings, UsageData } from '@aws-amplify/cli-internal';
-import { AmplifyClient } from '@aws-sdk/client-amplify';
+import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
@@ -251,6 +251,7 @@ export async function execute() {
   const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
   assert(backendEnvironment);
   assert(backendEnvironmentResolver);
+  assert(backendEnvironment.environmentName);
 
   const s3Client = new S3Client();
   const cloudFormationClient = new CloudFormationClient();
@@ -262,6 +263,15 @@ export async function execute() {
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const ccbFetcher = new BackendDownloader(s3Client);
   inspectApp.stop();
+
+  await amplifyClient.send(
+    new UpdateAppCommand({
+      appId: appId,
+      environmentVariables: {
+        AMPLIFY_GEN_1_ENV_NAME: backendEnvironment.environmentName,
+      },
+    }),
+  );
 
   await generateGen2Code({
     outputDirectory: TEMP_GEN_2_OUTPUT_DIR,

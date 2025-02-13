@@ -19,6 +19,7 @@ describe('render function', () => {
       const rendered = renderFunctions({});
       const source = printNodeArray(rendered);
       assert.doesNotMatch(source, new RegExp(`entry:`));
+      assert.match(source, /throw new Error/);
     });
   });
   describe('render properties', () => {

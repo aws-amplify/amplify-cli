@@ -26,7 +26,7 @@ describe('BackendRenderer', () => {
         'Policies.PasswordPolicy.RequireLowercase': true,
         'Policies.PasswordPolicy.RequireUppercase': false,
         'Policies.PasswordPolicy.TemporaryPasswordValidityDays': 10,
-        userPoolName: 'Test_Name',
+        userPoolName: 'Test_Name-dev',
         userNameAttributes: undefined,
       };
       const mappedPolicyType: Record<string, string> = {
@@ -50,7 +50,11 @@ describe('BackendRenderer', () => {
             },
           });
           const output = printNodeArray(rendered);
-          if (key.includes('PasswordPolicy')) {
+          if (key.includes('userPoolName')) {
+            assert(value);
+            assert(typeof value === 'string');
+            assert(output.includes('cfnUserPool.userPoolName = `Test_Name-${AMPLIFY_GEN_1_ENV_NAME}`'));
+          } else if (key.includes('PasswordPolicy')) {
             const policyKey = key.split('.')[2];
             if (value !== undefined && policyKey in mappedPolicyType) {
               if (typeof value === 'string') assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:"${value}"}}`));
@@ -76,7 +80,11 @@ describe('BackendRenderer', () => {
         });
         const output = printNodeArray(rendered);
         for (const [key, value] of Object.entries(testCases)) {
-          if (key.includes('PasswordPolicy')) {
+          if (key.includes('userPoolName')) {
+            assert(value);
+            assert(typeof value === 'string');
+            assert(output.includes('cfnUserPool.userPoolName = `Test_Name-${AMPLIFY_GEN_1_ENV_NAME}`'));
+          } else if (key.includes('PasswordPolicy')) {
             const policyKey = key.split('.')[2];
             if (value !== undefined && policyKey in mappedPolicyType) {
               if (typeof value === 'string') assert(output.includes(`cfnUserPool.policies = {passwordPolicy:{${policyKey}:"${value}"}}`));
@@ -122,12 +130,12 @@ describe('BackendRenderer', () => {
       const rendered = renderer.render({
         auth: {
           importFrom: './auth/resource.ts',
-          identityPoolName: 'Test_Name',
+          identityPoolName: 'Test_Name_dev',
           guestLogin: true,
         },
       });
       const output = printNodeArray(rendered);
-      assert(output.includes('cfnIdentityPool'));
+      assert(output.includes('cfnIdentityPool.identityPoolName = `Test_Name_${AMPLIFY_GEN_1_ENV_NAME}`'));
     });
     it('Does not render cfnIdentityPool accessor if identityPoolName is undefined and guestLogin is true', () => {
       const renderer = new BackendSynthesizer();
@@ -410,7 +418,7 @@ describe('BackendRenderer', () => {
             CallbackURLs: ['XXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXX'],
             LogoutURLs: ['XXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXX'],
             DefaultRedirectURI: 'XXXXXXXXXXXXXXXXXX',
-            SupportedIdentityProviders: ['COGNITO', 'Facebook'],
+            SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon'],
             AuthSessionValidity: 3,
             EnableTokenRevocation: true,
             EnablePropagateAdditionalUserContextData: true,
@@ -458,6 +466,7 @@ describe('BackendRenderer', () => {
       expect(output).toContain(`supportedIdentityProviders`);
       expect(output).toContain(`UserPoolClientIdentityProvider.COGNITO`);
       expect(output).toContain(`UserPoolClientIdentityProvider.FACEBOOK`);
+      expect(output).toContain(`UserPoolClientIdentityProvider.AMAZON`);
       expect(output).toContain('authSessionValidity: Duration.minutes(3)');
       expect(output).toContain('enableTokenRevocation: true');
       expect(output).toContain('enablePropagateAdditionalUserContextData: true');
