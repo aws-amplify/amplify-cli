@@ -48,6 +48,7 @@ void describe('getStorageAccess', () => {
         const input = getCLIInput();
         input.groupAccess = {};
         const access = getStorageAccess(input);
+        assert.notEqual(access, undefined);
         assert.deepEqual(access?.groups, undefined);
       });
     }

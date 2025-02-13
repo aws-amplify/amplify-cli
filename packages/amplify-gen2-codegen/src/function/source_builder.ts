@@ -25,7 +25,6 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
 
   groupsComment.push(
     factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-      // eslint-disable-next-line spellcheck/spell-checker
       factory.createStringLiteral(
         `Source code for this function can be found in your Amplify Gen 1 Directory. See .amplify/migration/amplify/backend/function/${definition.resourceName}/src`,
       ),

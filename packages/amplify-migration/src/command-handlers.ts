@@ -266,7 +266,7 @@ export async function execute() {
 
   await amplifyClient.send(
     new UpdateAppCommand({
-      appId: appId,
+      appId,
       environmentVariables: {
         AMPLIFY_GEN_1_ENV_NAME: backendEnvironment.environmentName,
       },

@@ -48,6 +48,8 @@ export interface BackendRenderParameters {
   unsupportedCategories?: Map<string, string>;
 }
 
+const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
+
 export class BackendSynthesizer {
   private importDurationFlag = false;
   private oAuthFlag = false;
@@ -448,12 +450,13 @@ export class BackendSynthesizer {
     ]);
   }
 
-  private createTemplateLiteralExpression(id1: string, id2: string, templateHead: string) {
+  // id1.id2 = `templateHead-${templateSpan}templateTail`;
+  private createTemplateLiteralExpression(id1: string, id2: string, templateHead: string, templateSpan: string, templateTail: string) {
     return factory.createExpressionStatement(
       factory.createAssignment(
         factory.createPropertyAccessExpression(factory.createIdentifier(id1), factory.createIdentifier(id2)),
         factory.createTemplateExpression(factory.createTemplateHead(templateHead), [
-          factory.createTemplateSpan(factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME'), factory.createTemplateTail('')),
+          factory.createTemplateSpan(factory.createIdentifier(templateSpan), factory.createTemplateTail(templateTail)),
         ]),
       ),
     );
@@ -583,6 +586,8 @@ export class BackendSynthesizer {
             'cfnUserPool',
             'userPoolName',
             `${userPoolWithoutBackendEnvName}-`,
+            amplifyGen1EnvName,
+            '',
           );
 
           nodes.push(userPoolAssignment);
@@ -618,6 +623,8 @@ export class BackendSynthesizer {
           'cfnIdentityPool',
           'identityPoolName',
           `${identityPoolWithoutBackendEnvName}_`,
+          amplifyGen1EnvName,
+          '',
         );
 
         nodes.push(identityPoolAssignment);
@@ -684,7 +691,13 @@ export class BackendSynthesizer {
       const splitBucketName = renderArgs.storage.bucketName.split('-');
       const bucketNameWithoutBackendEnvName = splitBucketName.slice(0, -1).join('-');
 
-      const bucketNameAssignment = this.createTemplateLiteralExpression('// s3Bucket', 'bucketName', `${bucketNameWithoutBackendEnvName}-`);
+      const bucketNameAssignment = this.createTemplateLiteralExpression(
+        '// s3Bucket',
+        'bucketName',
+        `${bucketNameWithoutBackendEnvName}-`,
+        amplifyGen1EnvName,
+        '',
+      );
       nodes.push(bucketNameAssignment);
       nodes.push(this.addRemovalPolicyAssignment('s3Bucket'));
     }
