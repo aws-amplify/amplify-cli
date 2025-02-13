@@ -1,4 +1,4 @@
-import ts, { ObjectLiteralElementLike } from 'typescript';
+import ts, { ObjectLiteralElementLike, ObjectLiteralExpression } from 'typescript';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTodoError } from '../todo_error';
 const factory = ts.factory;
@@ -18,7 +18,7 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
   namedImports['@aws-amplify/backend'].add('defineData');
 
   if (dataDefinition?.tableMappings) {
-    const tableMappingEnvironments: ObjectLiteralElementLike[] = [];
+    const tableMappingEnvironments: ObjectLiteralExpression[] = [];
     for (const [environmentName, tableMapping] of Object.entries(dataDefinition.tableMappings)) {
       const tableMappingProperties: ObjectLiteralElementLike[] = [];
       if (tableMapping) {
@@ -29,8 +29,14 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
         }
       }
 
+      const branchNameExpression = ts.addSyntheticLeadingComment(
+        factory.createPropertyAssignment('branchName', factory.createStringLiteral(environmentName)),
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ` Replace the environment name (${environmentName}) with the corresponding branch name. Use "sandbox" for your sandbox environment.`,
+        true,
+      );
       let tableMappingExpression = factory.createPropertyAssignment(
-        factory.createIdentifier(environmentName),
+        'modelTableNameMap',
         factory.createObjectLiteralExpression(tableMappingProperties),
       );
       if (tableMappingProperties.length === 0) {
@@ -45,17 +51,13 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
           true,
         );
       }
-      tableMappingEnvironments.push(tableMappingExpression);
+      const tableMappingForEnvironment = factory.createObjectLiteralExpression([branchNameExpression, tableMappingExpression], true);
+      tableMappingEnvironments.push(tableMappingForEnvironment);
     }
     dataRenderProperties.push(
-      ts.addSyntheticLeadingComment(
-        factory.createPropertyAssignment(
-          importedAmplifyDynamoDBTableMapKeyName,
-          factory.createObjectLiteralExpression(tableMappingEnvironments),
-        ),
-        ts.SyntaxKind.SingleLineCommentTrivia,
-        ` Replace each environment name with the corresponding branch name. Use "sandbox" for your sandbox environment.`,
-        true,
+      factory.createPropertyAssignment(
+        importedAmplifyDynamoDBTableMapKeyName,
+        factory.createArrayLiteralExpression(tableMappingEnvironments),
       ),
     );
   }
