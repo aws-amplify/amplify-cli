@@ -369,7 +369,7 @@ const refactoredGen2Template: CFNTemplate = {
     [GEN2_S3_BUCKET_LOGICAL_ID]: {
       Type: CFN_S3_TYPE.Bucket,
       Properties: {
-        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', 'amplify-testauth-dev-12345-storage-ABCDE']] },
+        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', GEN1_STORAGE_CATEGORY_STACK_NAME]] },
       },
     },
     [GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID]: {
