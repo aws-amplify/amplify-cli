@@ -109,7 +109,6 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     // validate empty resources
     if (this.gen2ResourcesToRemove.size === 0) throw new Error('No resources to remove in Gen2 stack.');
     const logicalResourceIds = [...this.gen2ResourcesToRemove.keys()];
-    // const gen2TemplateWithDepsResolved = new CfnDependencyResolver(oldGen2Template).resolve(logicalResourceIds);
     const updatedGen2Template = this.removeGen2ResourcesFromGen2Stack(oldGen2Template, logicalResourceIds);
     return {
       oldTemplate: oldGen2Template,
