@@ -84,6 +84,8 @@ const getUserPoolOverrides = (userPool: UserPoolType): Partial<PolicyOverrides> 
   }
   if (userPool.UsernameAttributes === undefined || userPool.UsernameAttributes.length === 0) {
     userPoolOverrides.usernameAttributes = undefined;
+  } else {
+    userPoolOverrides.usernameAttributes = userPool.UsernameAttributes;
   }
   return userPoolOverrides;
 };
@@ -334,9 +336,6 @@ export const getAuthDefinition = ({
     loginWith.samlLogin = samlOptions;
   }
 
-  if (userPool.UsernameAttributes?.includes('phone_number')) {
-    loginWith.phone = true;
-  }
   if (userPool.EmailVerificationMessage || userPool.EmailVerificationSubject) {
     loginWith.emailOptions = getEmailConfig(userPool);
   }

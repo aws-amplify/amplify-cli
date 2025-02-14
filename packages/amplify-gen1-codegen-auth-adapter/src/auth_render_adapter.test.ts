@@ -331,9 +331,14 @@ void describe('auth codegen', () => {
     });
   });
   void describe('`Enable users to login with phone` is selected', () => {
-    void it('loginWith contains `phone: true`', () => {
+    // gen1 oddities: In order to match the gen1 template,
+    // we can't add phone to loginOptions as it changes the Schema & AutoVerifiedAttributes section.
+    // It just needs to be present as part of usernameAttributes
+    void it('loginWith does not contains `phone: true`', () => {
       const result = getAuthDefinition({ userPool: { UsernameAttributes: ['phone_number'] } });
-      assert(result.loginOptions?.phone);
+      expect(result.loginOptions).toBeDefined();
+      expect(result.loginOptions?.phone).not.toBeDefined();
+      assert.deepEqual(result.userPoolOverrides, { usernameAttributes: ['phone_number'] });
     });
   });
   void describe('Password policy', () => {
