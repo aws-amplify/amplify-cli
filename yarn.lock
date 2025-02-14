@@ -151,16 +151,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-api@npm:^5.12.10":
-  version: 5.12.10
-  resolution: "@aws-amplify/amplify-category-api@npm:5.12.10"
+"@aws-amplify/amplify-category-api@npm:^5.13.0-gen1-migration-0214.0":
+  version: 5.13.0-gen2-migration-0809.0
+  resolution: "@aws-amplify/amplify-category-api@npm:5.13.0-gen2-migration-0809.0"
   dependencies:
-    "@aws-amplify/graphql-auth-transformer": 3.6.8
-    "@aws-amplify/graphql-schema-generator": ^0.9.4
-    "@aws-amplify/graphql-transformer": 1.6.8
-    "@aws-amplify/graphql-transformer-core": 2.9.4
-    "@aws-amplify/graphql-transformer-interfaces": 3.10.2
-    "@aws-amplify/graphql-transformer-migrator": 2.2.28
+    "@aws-amplify/graphql-auth-transformer": 3.6.5-gen2-migration-0809.0
+    "@aws-amplify/graphql-schema-generator": 0.9.4-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer": 1.7.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-migrator": 2.2.28-gen2-migration-0809.0
     "@aws-cdk/aws-apigatewayv2-alpha": ~2.114.1-alpha.0
     "@aws-sdk/client-ec2": 3.624.0
     "@aws-sdk/client-iam": 3.624.0
@@ -172,18 +172,18 @@ __metadata:
     cloudform-types: ^4.2.0
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-auth-transformer: 7.2.82
-    graphql-connection-transformer: 5.2.80
-    graphql-dynamodb-transformer: 7.2.80
-    graphql-elasticsearch-transformer: 5.2.81
-    graphql-function-transformer: 3.3.71
-    graphql-http-transformer: 5.2.80
-    graphql-key-transformer: 3.2.80
-    graphql-predictions-transformer: 3.2.80
-    graphql-relational-schema-transformer: 2.21.34
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
-    graphql-versioned-transformer: 5.2.80
+    graphql-auth-transformer: 7.2.83-gen2-migration-0809.0
+    graphql-connection-transformer: 5.2.81-gen2-migration-0809.0
+    graphql-dynamodb-transformer: 7.2.81-gen2-migration-0809.0
+    graphql-elasticsearch-transformer: 5.2.82-gen2-migration-0809.0
+    graphql-function-transformer: 3.3.72-gen2-migration-0809.0
+    graphql-http-transformer: 5.2.81-gen2-migration-0809.0
+    graphql-key-transformer: 3.2.81-gen2-migration-0809.0
+    graphql-predictions-transformer: 3.2.81-gen2-migration-0809.0
+    graphql-relational-schema-transformer: 2.21.35-gen2-migration-0809.0
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
+    graphql-versioned-transformer: 5.2.81-gen2-migration-0809.0
     import-from: ^3.0.0
     import-global: ^0.1.0
     inquirer: ^7.3.3
@@ -202,7 +202,7 @@ __metadata:
     amplify-util-headless-input: ^1.9.18
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
-  checksum: a89922ec94eb43e439de640cb1ce45f7d19fa0c786f18dc552ef0d4ccb3fb9795b6e188741434f61402a3021774f5d36242084257ee7b2a042458c1e65253ad4
+  checksum: 6c0b27c2cb41479a30f98d8738fabfb363c978cd637c4e0466a4c98e0ad5f0ea2e794551afbbdca3406e7345096bb0a4f271c25d7db1e433c2c67632b70934da
   languageName: node
   linkType: hard
 
@@ -276,7 +276,7 @@ __metadata:
     folder-hash: ^4.0.2
     fs-extra: ^8.1.0
     globby: ^11.0.3
-    graphql-transformer-core: ^8.2.13
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
     inquirer: ^7.3.3
     inquirer-datepicker: ^2.0.0
     jest: ^29.5.0
@@ -398,7 +398,7 @@ __metadata:
     "@aws-amplify/amplify-cli-logger": 1.3.8
     "@aws-amplify/amplify-function-plugin-interface": 1.10.3
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/graphql-transformer-interfaces": ^3.10.2
+    "@aws-amplify/graphql-transformer-interfaces": ^3.11.0-gen1-migration-0214.0
     "@aws-sdk/util-arn-parser": ^3.310.0
     "@types/archiver": ^5.3.1
     "@types/ejs": ^3.1.1
@@ -504,7 +504,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-container-hosting@workspace:packages/amplify-container-hosting"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.12.10
+    "@aws-amplify/amplify-category-api": ^5.13.0-gen1-migration-0214.0
     "@aws-amplify/amplify-cli-core": 4.3.12
     "@aws-amplify/amplify-environment-parameters": 1.9.17
     fs-extra: ^8.1.0
@@ -523,7 +523,7 @@ __metadata:
     "@types/inquirer": ^6.5.0
     "@types/lodash": ^4.14.149
     "@types/node": ^12.12.6
-    graphql-transformer-core: ^8.2.13
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
   languageName: unknown
   linkType: soft
 
@@ -543,7 +543,7 @@ __metadata:
     dotenv: ^8.2.0
     execa: ^5.1.1
     fs-extra: ^8.1.0
-    graphql-transformer-core: ^8.2.13
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
     ini: ^1.3.5
     jest-circus: ^27.0.0
     jest-environment-node: ^26.6.2
@@ -736,7 +736,7 @@ __metadata:
     aws-cdk-lib: ~2.177.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
-    graphql-transformer-core: ^8.2.13
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
     jest: ^29.5.0
     lodash: ^4.17.21
     semver: ^7.5.4
@@ -756,7 +756,7 @@ __metadata:
     "@types/fs-extra": ^8.0.1
     "@types/inquirer": ^6.5.0
     "@types/node": ^12.12.6
-    graphql-transformer-core: ^8.2.13
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
     lodash: ^4.17.21
   languageName: unknown
   linkType: soft
@@ -806,8 +806,8 @@ __metadata:
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/amplify-util-import": 2.8.3
     "@aws-amplify/cli-extensibility-helper": 3.0.36
-    "@aws-amplify/graphql-transformer-core": ^2.9.4
-    "@aws-amplify/graphql-transformer-interfaces": ^3.10.2
+    "@aws-amplify/graphql-transformer-core": ^2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": ^3.11.0-gen1-migration-0214.0
     "@types/columnify": ^1.5.0
     "@types/deep-diff": ^1.0.0
     "@types/folder-hash": ^4.0.1
@@ -829,7 +829,7 @@ __metadata:
     fs-extra: ^8.1.0
     glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-core: ^8.2.13
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
     ignore: ^5.2.0
     ini: ^1.3.5
     inquirer: ^7.3.3
@@ -880,20 +880,20 @@ __metadata:
     "@aws-amplify/amplify-opensearch-simulator": 1.7.17
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/amplify-provider-awscloudformation": 8.11.4
-    "@aws-amplify/graphql-auth-transformer": ^3.6.8
-    "@aws-amplify/graphql-default-value-transformer": ^2.3.16
-    "@aws-amplify/graphql-function-transformer": ^2.1.28
-    "@aws-amplify/graphql-http-transformer": ^2.1.28
-    "@aws-amplify/graphql-index-transformer": ^2.4.12
-    "@aws-amplify/graphql-maps-to-transformer": ^3.4.26
-    "@aws-amplify/graphql-model-transformer": ^2.11.7
-    "@aws-amplify/graphql-predictions-transformer": ^2.1.28
-    "@aws-amplify/graphql-relational-transformer": ^2.5.14
-    "@aws-amplify/graphql-searchable-transformer": ^2.7.12
+    "@aws-amplify/graphql-auth-transformer": ^3.6.9-gen1-migration-0214.0
+    "@aws-amplify/graphql-default-value-transformer": ^2.3.17-gen1-migration-0214.0
+    "@aws-amplify/graphql-function-transformer": ^2.1.29-gen1-migration-0214.0
+    "@aws-amplify/graphql-http-transformer": ^2.1.29-gen1-migration-0214.0
+    "@aws-amplify/graphql-index-transformer": ^2.4.13-gen1-migration-0214.0
+    "@aws-amplify/graphql-maps-to-transformer": ^3.4.27-gen1-migration-0214.0
+    "@aws-amplify/graphql-model-transformer": ^2.12.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-predictions-transformer": ^2.1.29-gen1-migration-0214.0
+    "@aws-amplify/graphql-relational-transformer": ^2.5.15-gen1-migration-0214.0
+    "@aws-amplify/graphql-searchable-transformer": ^2.7.13-gen1-migration-0214.0
     "@aws-amplify/graphql-transformer": ^1.1.0
-    "@aws-amplify/graphql-transformer-core": ^2.9.4
-    "@aws-amplify/graphql-transformer-interfaces": ^3.10.2
-    "@aws-amplify/graphql-transformer-migrator": ^2.2.28
+    "@aws-amplify/graphql-transformer-core": ^2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": ^3.11.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-migrator": ^2.2.29-gen1-migration-0214.0
     "@hapi/topo": ^5.0.0
     "@types/detect-port": ^1.3.0
     "@types/jest": ^29.0.0
@@ -917,14 +917,14 @@ __metadata:
     execa: ^5.1.1
     fs-extra: ^8.1.0
     graphql: ^15.5.0
-    graphql-auth-transformer: ^7.2.82
-    graphql-connection-transformer: ^5.2.80
-    graphql-dynamodb-transformer: ^7.2.80
-    graphql-function-transformer: ^3.3.71
-    graphql-key-transformer: ^3.2.80
+    graphql-auth-transformer: ^7.2.83-gen1-migration-0214.0
+    graphql-connection-transformer: ^5.2.81-gen1-migration-0214.0
+    graphql-dynamodb-transformer: ^7.2.81-gen1-migration-0214.0
+    graphql-function-transformer: ^3.3.72-gen1-migration-0214.0
+    graphql-key-transformer: ^3.2.81-gen1-migration-0214.0
     graphql-tag: ^2.10.1
-    graphql-transformer-core: ^8.2.13
-    graphql-versioned-transformer: ^5.2.80
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
+    graphql-versioned-transformer: ^5.2.81-gen1-migration-0214.0
     inquirer: ^7.3.3
     isomorphic-fetch: ^3.0.0
     jest: ^29.0.0
@@ -942,7 +942,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-uibuilder@workspace:packages/amplify-util-uibuilder"
   dependencies:
-    "@aws-amplify/amplify-category-api": ^5.12.10
+    "@aws-amplify/amplify-category-api": ^5.13.0-gen1-migration-0214.0
     "@aws-amplify/amplify-cli-core": 4.3.12
     "@aws-amplify/amplify-prompts": 2.8.6
     "@aws-amplify/appsync-modelgen-plugin": ^2.6.0
@@ -1078,7 +1078,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-app": 5.0.39
     "@aws-amplify/amplify-category-analytics": 5.0.38
-    "@aws-amplify/amplify-category-api": ^5.12.10
+    "@aws-amplify/amplify-category-api": ^5.13.0-gen1-migration-0214.0
     "@aws-amplify/amplify-category-auth": 3.7.18
     "@aws-amplify/amplify-category-custom": 3.1.26
     "@aws-amplify/amplify-category-function": 5.7.12
@@ -1144,7 +1144,7 @@ __metadata:
     fs-extra: ^8.1.0
     glob: ^7.2.0
     graphql: ^15.5.0
-    graphql-transformer-core: ^8.2.13
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
     gunzip-maybe: ^1.4.2
     hidefile: ^3.0.0
     ini: ^1.3.5
@@ -1261,7 +1261,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-auth-transformer@npm:3.6.8, @aws-amplify/graphql-auth-transformer@npm:^3.6.8":
+"@aws-amplify/graphql-auth-transformer@npm:3.6.5-gen2-migration-0809.0":
+  version: 3.6.5-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.5-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-relational-transformer": 2.6.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    lodash: ^4.17.21
+    md5: ^2.3.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: fe1b0f9de7857a866a99e3793ab078de143fefd6203c5cda9dccc1e4be97a8d3ef7ee2c0bf4c02fc0dd7022cd1d0cd8f6b9108e069c6ba97af8cd967d42f9a52
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-auth-transformer@npm:3.6.8":
   version: 3.6.8
   resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.8"
   dependencies:
@@ -1282,7 +1303,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-default-value-transformer@npm:2.3.16, @aws-amplify/graphql-default-value-transformer@npm:^2.3.16":
+"@aws-amplify/graphql-auth-transformer@npm:^3.6.9-gen1-migration-0214.0":
+  version: 3.6.9-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-auth-transformer@npm:3.6.9-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-relational-transformer": 2.5.15-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+    lodash: ^4.17.21
+    md5: ^2.3.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 1ff868fe345020448cdd31a09f5e86ee06c391698b9ba1b96c8dbe932085ad2835777bbb80bf65e1d08a3f9339c99bf318fe339c511abebb4b4540d894c97cde
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-default-value-transformer@npm:2.3.13-gen2-migration-0809.0":
+  version: 2.3.13-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.13-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    libphonenumber-js: 1.9.47
+  checksum: 8da7d8a3c79715765975c904921716154d9634f459c29a08369d54b8f3abef8ee19921cb6bda2464e8351a51f3c3fe3be5f65cc027a98cdaec7473b441ff198c
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-default-value-transformer@npm:2.3.16":
   version: 2.3.16
   resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.16"
   dependencies:
@@ -1297,10 +1354,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-amplify/graphql-default-value-transformer@npm:^2.3.17-gen1-migration-0214.0":
+  version: 2.3.17-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-default-value-transformer@npm:2.3.17-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+    libphonenumber-js: 1.9.47
+  checksum: ede507aa021cbb9399fadd1cd0efdae3c393eac599e435a48b0a2fdd9062459ab5195b1aed6974e17611cbfcc0ee01c740c37655d4056ae0594fee4d3da9b248
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/graphql-directives@npm:1.1.0, @aws-amplify/graphql-directives@npm:^1.0.1":
   version: 1.1.0
   resolution: "@aws-amplify/graphql-directives@npm:1.1.0"
   checksum: ad1d22f2e48c2f9f32b59e539a60381e2e2c17e5ab719ca05bc57bbfc93302d3b9de5315b08fb376e04b11c3ab47d7f73893dc91e3d837703bcfbbd25505eb09
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-directives@npm:1.2.0-gen2-migration-0809.0":
+  version: 1.2.0-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-directives@npm:1.2.0-gen2-migration-0809.0"
+  checksum: 89f1e434190e4ff9e0368b3597de2bbbe115f45fd16c25f96f47181e63e0273252530aabc4d19b77b3a8224eac0f07f0801761cf21b081cd1bd0cdfa1d45540e
   languageName: node
   linkType: hard
 
@@ -1317,7 +1396,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-function-transformer@npm:2.1.28, @aws-amplify/graphql-function-transformer@npm:^2.1.28":
+"@aws-amplify/graphql-function-transformer@npm:2.1.27-gen2-migration-0809.0":
+  version: 2.1.27-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-function-transformer@npm:2.1.27-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: e87c02debc28086c43442251297ce41315fdfac4cf3fc5e144840437d0320758bfbcc2f9c943597e722c387fd5e5c87981ffbe05bee0ee9430fe8f995ac4527c
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-function-transformer@npm:2.1.28":
   version: 2.1.28
   resolution: "@aws-amplify/graphql-function-transformer@npm:2.1.28"
   dependencies:
@@ -1331,6 +1427,23 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: 107a52edc17d5a650e68b867aa99d40a4b365889a4f2019126369770f310c0314e189ff85599cbc401e310b6294d539e395ded64ad2f3dc86114bcbf1381e3d5
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-function-transformer@npm:^2.1.29-gen1-migration-0214.0":
+  version: 2.1.29-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-function-transformer@npm:2.1.29-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 4a2c354b1407c50efee1c810131cafa1e59fc57fade0cff33bf2187d56331531830d8b770948ba1efce21f3aa7c44056e56ba13c0f35c3073beab8f364adbc96
   languageName: node
   linkType: hard
 
@@ -1353,7 +1466,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-http-transformer@npm:2.1.28, @aws-amplify/graphql-http-transformer@npm:^2.1.28":
+"@aws-amplify/graphql-http-transformer@npm:2.1.27-gen2-migration-0809.0":
+  version: 2.1.27-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.27-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: ada40154a2de7e9c5dab6b1e0385f7c9e38669fc772b7154fc74f11ad9552e90cd909083e96738a75b39919893487b6cf339a66d6e4986d528a66a0401def24a
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-http-transformer@npm:2.1.28":
   version: 2.1.28
   resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.28"
   dependencies:
@@ -1370,7 +1500,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-index-transformer@npm:2.4.12, @aws-amplify/graphql-index-transformer@npm:^2.4.12":
+"@aws-amplify/graphql-http-transformer@npm:^2.1.29-gen1-migration-0214.0":
+  version: 2.1.29-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-http-transformer@npm:2.1.29-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 145a612462d74e5b82fb810e4c4af16a4a054c4b38a7ba15a02ab8db9417c02955cdbec19cefc6d5a675aff36631e6091fda36fe574809886ae5926683b5b027
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-index-transformer@npm:2.4.12":
   version: 2.4.12
   resolution: "@aws-amplify/graphql-index-transformer@npm:2.4.12"
   dependencies:
@@ -1388,7 +1535,59 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-maps-to-transformer@npm:3.4.26, @aws-amplify/graphql-maps-to-transformer@npm:^3.4.26":
+"@aws-amplify/graphql-index-transformer@npm:2.4.13-gen1-migration-0214.0, @aws-amplify/graphql-index-transformer@npm:^2.4.13-gen1-migration-0214.0":
+  version: 2.4.13-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-index-transformer@npm:2.4.13-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 4b6470efe930eb0942f21626999932ce03012b16703012f2482f3ccdeec2d9ed8adee7cff9cd05111990435949bc1762e1c17bbd4e99017ae14e7cef09d29636
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-index-transformer@npm:2.4.9-gen2-migration-0809.0":
+  version: 2.4.9-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-index-transformer@npm:2.4.9-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 020deff195b49b2820f4f40e96ca21511b9d6be33c74610b7a33428062aca07e96bd4ba3b9732d863b41d71fea8135da0c73617dee65f4ab51a3c6850f67bb42
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-maps-to-transformer@npm:3.4.23-gen2-migration-0809.0":
+  version: 3.4.23-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.4.23-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 27855b94a0cc7d51eca67abfabafbd802518578b74d76a9f6fda196e905cb8b6d03435a7c25173183de70c4935bf713cca368acce4c0188b05a1b34283897e5c
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-maps-to-transformer@npm:3.4.26":
   version: 3.4.26
   resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.4.26"
   dependencies:
@@ -1401,6 +1600,22 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: bc525af145fb82bd1b44d4230db0432998019e17eca6a7dea00f7e69b8ab957160b753f8f37316be3977b50ae5d460052c2822f051d4cfd4684652ef4fea5e02
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-maps-to-transformer@npm:^3.4.27-gen1-migration-0214.0":
+  version: 3.4.27-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-maps-to-transformer@npm:3.4.27-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 9cb91fe50848c1919326a73c097ae5e3cdb854e0308566961340479b650f6adad76bc4dde89574eecb73350726e74d4014d7330e3c1679d52e8e7af66e2ca5e0
   languageName: node
   linkType: hard
 
@@ -1421,7 +1636,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-model-transformer@npm:2.11.7, @aws-amplify/graphql-model-transformer@npm:^2.11.7":
+"@aws-amplify/graphql-model-transformer@npm:2.11.7":
   version: 2.11.7
   resolution: "@aws-amplify/graphql-model-transformer@npm:2.11.7"
   dependencies:
@@ -1438,7 +1653,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-predictions-transformer@npm:2.1.28, @aws-amplify/graphql-predictions-transformer@npm:^2.1.28":
+"@aws-amplify/graphql-model-transformer@npm:2.12.0-gen1-migration-0214.0":
+  version: 2.12.0-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-model-transformer@npm:2.12.0-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: b7c91c2d885d9511466bf03dae1d307e89b825203c23f9cbec5e26bbc13d45a85215a4f4c5fb86241d8984fa6a45159654b50f01fb80b574e93503ae172c2037
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-model-transformer@npm:2.12.0-gen2-migration-0809.0, @aws-amplify/graphql-model-transformer@npm:^2.12.0-gen1-migration-0214.0":
+  version: 2.12.0-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-model-transformer@npm:2.12.0-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 5b8a5948688f7cd8bc882d0b5f1d744ce1a7dd44146ced58000a451b031833132f76ed7574b629cac2e440e2752071c670860a6ed98374f781a1752ecea9a368
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-predictions-transformer@npm:2.1.27-gen2-migration-0809.0":
+  version: 2.1.27-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.1.27-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 29c73789b89373f0b12a161a6bf65d55f041a3bc3a69c3818546cf6e7b4c33a40a803330cead8b1cd46bb96916ce119d4e631f5315b8d3e3fe50b04f59115300
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-predictions-transformer@npm:2.1.28":
   version: 2.1.28
   resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.1.28"
   dependencies:
@@ -1455,7 +1721,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-relational-transformer@npm:2.5.14, @aws-amplify/graphql-relational-transformer@npm:^2.5.14":
+"@aws-amplify/graphql-predictions-transformer@npm:^2.1.29-gen1-migration-0214.0":
+  version: 2.1.29-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-predictions-transformer@npm:2.1.29-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: c8282600935a4a5234cafcfc619b88e652870d167f718d55c35ad6482fb2e1cb7c68ad0f21480e652676c722826735e1a5bef5400fcd8a6f696580120d70c188
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-relational-transformer@npm:2.5.14":
   version: 2.5.14
   resolution: "@aws-amplify/graphql-relational-transformer@npm:2.5.14"
   dependencies:
@@ -1475,12 +1758,52 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-schema-generator@npm:^0.9.4":
-  version: 0.9.4
-  resolution: "@aws-amplify/graphql-schema-generator@npm:0.9.4"
+"@aws-amplify/graphql-relational-transformer@npm:2.5.15-gen1-migration-0214.0, @aws-amplify/graphql-relational-transformer@npm:^2.5.15-gen1-migration-0214.0":
+  version: 2.5.15-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-relational-transformer@npm:2.5.15-gen1-migration-0214.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 2.9.3
-    "@aws-amplify/graphql-transformer-interfaces": 3.10.1
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-index-transformer": 2.4.13-gen1-migration-0214.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+    immer: ^9.0.12
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 6e12566e4ffcf17860d0abedc528dc9656f51c3102ceb5360d166f321059f621b0ca918c1ac1a537be4b5d8a7310e53d78700365bf6b4f003cf4be57441a672b
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-relational-transformer@npm:2.6.0-gen2-migration-0809.0":
+  version: 2.6.0-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-relational-transformer@npm:2.6.0-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-index-transformer": 2.4.9-gen2-migration-0809.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    immer: ^9.0.12
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 34e39d35e2286a62a64c2bae10c49f40129f94a5186028dffbd3fa4a064546aedc0261d4a7422874f9182bbeec1c0d0150ed7f9592439a7b7811905cf84076a7
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-schema-generator@npm:0.9.4-gen2-migration-0809.0":
+  version: 0.9.4-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-schema-generator@npm:0.9.4-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
     "@aws-sdk/client-ec2": 3.624.0
     "@aws-sdk/client-iam": 3.624.0
     "@aws-sdk/client-lambda": 3.624.0
@@ -1488,18 +1811,18 @@ __metadata:
     csv-parse: ^5.5.2
     fs-extra: 11.1.1
     graphql: ^15.5.0
-    graphql-transformer-common: 4.31.1
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
     knex: ~2.4.0
     mysql2: ~3.9.7
     ora: ^4.0.3
     pg: ~8.11.3
     pluralize: ^8.0.0
     typescript: ^4.8.4
-  checksum: 3c3c6a97f4011c7051a89d9327c1cf02097c20f1e7e4180403e1a50e1be5bb7923b0732fe215e35ab145b40615ed33cef201dfe08103b19cc7ce7a81df1a6356
+  checksum: 8a2d5c9f8774626ee2c0e5b9ba9d36a1fce46c7a941aa3012b391c2a3e92981375c5373713f23c6a96a422cdbe9b737a1620588d0e4106eea6e7869c05cd82ae
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-searchable-transformer@npm:2.7.12, @aws-amplify/graphql-searchable-transformer@npm:^2.7.12":
+"@aws-amplify/graphql-searchable-transformer@npm:2.7.12":
   version: 2.7.12
   resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.12"
   dependencies:
@@ -1514,6 +1837,60 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: 531b96a3ab1b80fcc1137c9d66cb0e824bc413dfdf86a840ea78952a0131aab41b985f24c4f79535a45342c916c748012eae71c5ba88c2569f162c372446c5d1
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-searchable-transformer@npm:2.7.9-gen2-migration-0809.0":
+  version: 2.7.9-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.9-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 2f319665973b3d956205f14456b141d71ac8d2f8660ec840fcbecaab8b43b640a076630d43bfb9e870573052a410db03049d52b54a4f7000d4aa000b7ab859be
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-searchable-transformer@npm:^2.7.13-gen1-migration-0214.0":
+  version: 2.7.13-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-searchable-transformer@npm:2.7.13-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: c317622c4ebd94c4e45884dbc61514f8f88b83736df53f0e16327657bffb254d3e057edef77944181cec4c8b091f8604cce10b2a1c273be9262432c3d0b38649
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-sql-transformer@npm:0.3.9-gen2-migration-0809.0":
+  version: 0.3.9-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-sql-transformer@npm:0.3.9-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: d8135b159d331a7354876047eb17a6b2d57e21a96817c8c5d7f2930f24a54b5c017a4beac429d1f8ef9a804db15794c8f7292cee71c2bfc21a2080f92a235dc2
   languageName: node
   linkType: hard
 
@@ -1532,6 +1909,50 @@ __metadata:
     aws-cdk-lib: ^2.129.0
     constructs: ^10.3.0
   checksum: b67c567b26a390b31b8bbb6af2e4746ac981fd47a134fc7c4c833ba8778c5104c5f7a20d52d4454be40b8d1d07c12a497ca310f680026b1d440ea4b435695303
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer-core@npm:2.10.0-gen1-migration-0214.0":
+  version: 2.10.0-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-transformer-core@npm:2.10.0-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.1.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen1-migration-0214.0
+    fs-extra: ^8.1.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+    hjson: ^3.2.2
+    lodash: ^4.17.21
+    md5: ^2.3.0
+    object-hash: ^3.0.0
+    ts-dedent: ^2.0.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: a95655f067b8e86562e9b775f8429a8b5c34f9529be54337167afd2332a5171b38b7e819fe8917af8165628980c75966f7fe8fb34fb8ab581536dab5044ebf2a
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer-core@npm:2.10.0-gen2-migration-0809.0, @aws-amplify/graphql-transformer-core@npm:^2.10.0-gen1-migration-0214.0":
+  version: 2.10.0-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-transformer-core@npm:2.10.0-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-directives": 1.2.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+    fs-extra: ^8.1.0
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    hjson: ^3.2.2
+    lodash: ^4.17.21
+    md5: ^2.3.0
+    object-hash: ^3.0.0
+    ts-dedent: ^2.0.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: c00fdca7c45f11204b3669d98f1bf183be7fc0cc1be9dccd124850007fd8a00de271ab931f2159b65690767baeab8981609456eea6a14af18f599b2de9b7805d
   languageName: node
   linkType: hard
 
@@ -1557,7 +1978,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-core@npm:2.9.4, @aws-amplify/graphql-transformer-core@npm:^2.9.4":
+"@aws-amplify/graphql-transformer-core@npm:2.9.4":
   version: 2.9.4
   resolution: "@aws-amplify/graphql-transformer-core@npm:2.9.4"
   dependencies:
@@ -1591,7 +2012,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-interfaces@npm:3.10.2, @aws-amplify/graphql-transformer-interfaces@npm:^3.10.2":
+"@aws-amplify/graphql-transformer-interfaces@npm:3.10.2":
   version: 3.10.2
   resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.10.2"
   dependencies:
@@ -1603,25 +2024,91 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-migrator@npm:2.2.28, @aws-amplify/graphql-transformer-migrator@npm:^2.2.28":
-  version: 2.2.28
-  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.2.28"
+"@aws-amplify/graphql-transformer-interfaces@npm:3.11.0-gen1-migration-0214.0":
+  version: 3.11.0-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.11.0-gen1-migration-0214.0"
   dependencies:
-    "@aws-amplify/graphql-transformer-core": 2.9.4
+    graphql: ^15.5.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 839fe9b37a8fa05a21a797e078aa7a14afc33eba59d1dd2a6434e0a749796ec16bfe45dd8381e70bf53721d5a5ae610b972a946b18be3d60ef47373704c66b61
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer-interfaces@npm:3.11.0-gen2-migration-0809.0, @aws-amplify/graphql-transformer-interfaces@npm:^3.11.0-gen1-migration-0214.0":
+  version: 3.11.0-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.11.0-gen2-migration-0809.0"
+  dependencies:
+    graphql: ^15.5.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: 774acb5a8aba340535c353a4e9870941cbaf9a3f55465d9bd6912ac6e94e273c2d3515f51e2b97313249a17144129bd14a5bb0e72155c0525464e91e34327d7f
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer-migrator@npm:2.2.28-gen2-migration-0809.0":
+  version: 2.2.28-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.2.28-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
     fs-extra: ^8.1.0
     glob: ^10.3.0
     graphql: ^15.5.0
-    graphql-transformer-common: 4.31.1
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
     lodash: ^4.17.21
   peerDependencies:
     "@aws-amplify/amplify-cli-core": ^4.3.9
     "@aws-amplify/amplify-environment-parameters": ^1.9.14
     "@aws-amplify/amplify-prompts": ^2.8.6
-  checksum: 813e5dbbd464c6a9af921b2ddef4c6d177cc664cc422c0c8d724b6212a9361726be001e71a22309ce68dc71ea0efe7ee436ad541f8cdd7f48973b99981beb856
+  checksum: c5ef143ba2b1991f98031d97d578c02cf8eb359543739d7dc78861bbfcdcd0217a8a3be925c6e6dace6e3cd184d7075989a2709afae9292893b075c82d93b381
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer@npm:1.6.8, @aws-amplify/graphql-transformer@npm:^1.1.0":
+"@aws-amplify/graphql-transformer-migrator@npm:^2.2.29-gen1-migration-0214.0":
+  version: 2.2.29-gen1-migration-0214.0
+  resolution: "@aws-amplify/graphql-transformer-migrator@npm:2.2.29-gen1-migration-0214.0"
+  dependencies:
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen1-migration-0214.0
+    fs-extra: ^8.1.0
+    glob: ^10.3.0
+    graphql: ^15.5.0
+    graphql-transformer-common: 4.32.0-gen1-migration-0214.0
+    lodash: ^4.17.21
+  peerDependencies:
+    "@aws-amplify/amplify-cli-core": ^4.3.9
+    "@aws-amplify/amplify-environment-parameters": ^1.9.14
+    "@aws-amplify/amplify-prompts": ^2.8.6
+  checksum: 18a636d9ea4e2aec71cf934b30e761487f18fc0c9b5175474db321000e3f335e07c989fdb80a51f695b288315e48a6cddc306dfbe8901238117a887f4a53b675
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer@npm:1.7.0-gen2-migration-0809.0":
+  version: 1.7.0-gen2-migration-0809.0
+  resolution: "@aws-amplify/graphql-transformer@npm:1.7.0-gen2-migration-0809.0"
+  dependencies:
+    "@aws-amplify/graphql-auth-transformer": 3.6.5-gen2-migration-0809.0
+    "@aws-amplify/graphql-default-value-transformer": 2.3.13-gen2-migration-0809.0
+    "@aws-amplify/graphql-function-transformer": 2.1.27-gen2-migration-0809.0
+    "@aws-amplify/graphql-http-transformer": 2.1.27-gen2-migration-0809.0
+    "@aws-amplify/graphql-index-transformer": 2.4.9-gen2-migration-0809.0
+    "@aws-amplify/graphql-maps-to-transformer": 3.4.23-gen2-migration-0809.0
+    "@aws-amplify/graphql-model-transformer": 2.12.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-predictions-transformer": 2.1.27-gen2-migration-0809.0
+    "@aws-amplify/graphql-relational-transformer": 2.6.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-searchable-transformer": 2.7.9-gen2-migration-0809.0
+    "@aws-amplify/graphql-sql-transformer": 0.3.9-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-core": 2.10.0-gen2-migration-0809.0
+    "@aws-amplify/graphql-transformer-interfaces": 3.11.0-gen2-migration-0809.0
+  peerDependencies:
+    aws-cdk-lib: ^2.129.0
+    constructs: ^10.3.0
+  checksum: adc5bc664184fccc4f7e06e0bec877c0bcc5eb6863f3e28061df33cb2be8e857bd717d9653e9b1ec7ffb4125605fd3e0fae3f47e0e323290a468a2950877d8fd
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/graphql-transformer@npm:^1.1.0":
   version: 1.6.8
   resolution: "@aws-amplify/graphql-transformer@npm:1.6.8"
   dependencies:
@@ -11766,7 +12253,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.3.12
     "@aws-amplify/amplify-e2e-core": 5.7.2
     "@aws-amplify/amplify-opensearch-simulator": 1.7.17
-    "@aws-amplify/graphql-transformer-core": ^2.9.4
+    "@aws-amplify/graphql-transformer-core": ^2.10.0-gen1-migration-0214.0
     "@aws-sdk/client-appsync": 3.624.0
     "@aws-sdk/client-dynamodb": 3.624.0
     "@aws-sdk/client-s3": 3.624.0
@@ -11795,7 +12282,7 @@ __metadata:
     get-port: ^5.1.1
     glob: ^8.0.3
     graphql-tag: ^2.10.1
-    graphql-transformer-core: ^8.2.13
+    graphql-transformer-core: ^8.2.14-gen1-migration-0214.0
     isomorphic-fetch: ^3.0.0
     jest: ^29.5.0
     lodash: ^4.17.21
@@ -18571,16 +19058,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-auth-transformer@npm:7.2.82, graphql-auth-transformer@npm:^7.2.82":
-  version: 7.2.82
-  resolution: "graphql-auth-transformer@npm:7.2.82"
+"graphql-auth-transformer@npm:7.2.83-gen2-migration-0809.0, graphql-auth-transformer@npm:^7.2.83-gen1-migration-0214.0":
+  version: 7.2.83-gen2-migration-0809.0
+  resolution: "graphql-auth-transformer@npm:7.2.83-gen2-migration-0809.0"
   dependencies:
     graphql: ^15.5.0
-    graphql-connection-transformer: 5.2.80
+    graphql-connection-transformer: 5.2.81-gen2-migration-0809.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
-  checksum: 92b10bb20e9c82974b4738176e04693b8eab29e11328911e156ee41e3290984ef8768aa18e8db18b1d6902d34667522edc4a6f54688177ca3a3f2bf7ea049b2d
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
+  checksum: 52f10ffbef4340c85ed1a5ac85fe25de0ac7c4069d10c0f8c8b2438cc83dbfac99fc62fa1d587f99fbcbf48e10d259d803563dc88baf97c8981cf4916c9084d2
   languageName: node
   linkType: hard
 
@@ -18599,73 +19086,73 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-connection-transformer@npm:5.2.80, graphql-connection-transformer@npm:^5.2.80":
-  version: 5.2.80
-  resolution: "graphql-connection-transformer@npm:5.2.80"
+"graphql-connection-transformer@npm:5.2.81-gen2-migration-0809.0, graphql-connection-transformer@npm:^5.2.81-gen1-migration-0214.0":
+  version: 5.2.81-gen2-migration-0809.0
+  resolution: "graphql-connection-transformer@npm:5.2.81-gen2-migration-0809.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-dynamodb-transformer: 7.2.80
-    graphql-key-transformer: 3.2.80
+    graphql-dynamodb-transformer: 7.2.81-gen2-migration-0809.0
+    graphql-key-transformer: 3.2.81-gen2-migration-0809.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
-  checksum: 9b716a1c6f3fce8e8a6acdad2161e3faecaa5c05a09c38d1365c51376d315bcc57114dc16e51c958639c57fc736a5fe6087b9057d9b210aca58406fb0a14e464
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
+  checksum: e7de679eb6753d1645b9d7ca5c47fe309173dce67341beec988171cea1a2078de860dd4672a3e9ee1241c60a2c80f63b2d75498877016225a1bac51b4a583180
   languageName: node
   linkType: hard
 
-"graphql-dynamodb-transformer@npm:7.2.80, graphql-dynamodb-transformer@npm:^7.2.80":
-  version: 7.2.80
-  resolution: "graphql-dynamodb-transformer@npm:7.2.80"
+"graphql-dynamodb-transformer@npm:7.2.81-gen2-migration-0809.0, graphql-dynamodb-transformer@npm:^7.2.81-gen1-migration-0214.0":
+  version: 7.2.81-gen2-migration-0809.0
+  resolution: "graphql-dynamodb-transformer@npm:7.2.81-gen2-migration-0809.0"
   dependencies:
     "@types/pluralize": ^0.0.29
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
     md5: ^2.2.1
     pluralize: ^8.0.0
-  checksum: d2922b4013ae1dc60f9a9338abd7801d721ff721bfb0bdc27e1b8bd9ea7b7b9eafef05700027539318984701e8dbda3b380db501fee96e55da915fe5fad247b7
+  checksum: 62ce76f5a26c62b6371e0ca621c42356904c164cc3fa7363c00a1b2b73971d2ef7bfd0dc6d760cd9f3e5f830b49643747cf4671e89c4a49290c89a662599becb
   languageName: node
   linkType: hard
 
-"graphql-elasticsearch-transformer@npm:5.2.81":
-  version: 5.2.81
-  resolution: "graphql-elasticsearch-transformer@npm:5.2.81"
+"graphql-elasticsearch-transformer@npm:5.2.82-gen2-migration-0809.0":
+  version: 5.2.82-gen2-migration-0809.0
+  resolution: "graphql-elasticsearch-transformer@npm:5.2.82-gen2-migration-0809.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
-  checksum: d48a3e26b2214e0eefba9c2efa31cba6d6031f6d9b424fd9ff29eb1b89f66d7d1e9461a1b23bb3f66731df6b8e59a35aeb017f22412e96b7785dcbbb1fea43bd
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
+  checksum: 17422e8b61e0077167b588c226abadecba72e06cc5e3b7a0f433d8b59035449d809a14955ae714091a1e4d4a04902addb2db3e7ea34f3bcc9baa866a15513004
   languageName: node
   linkType: hard
 
-"graphql-function-transformer@npm:3.3.71, graphql-function-transformer@npm:^3.3.71":
-  version: 3.3.71
-  resolution: "graphql-function-transformer@npm:3.3.71"
+"graphql-function-transformer@npm:3.3.72-gen2-migration-0809.0, graphql-function-transformer@npm:^3.3.72-gen1-migration-0214.0":
+  version: 3.3.72-gen2-migration-0809.0
+  resolution: "graphql-function-transformer@npm:3.3.72-gen2-migration-0809.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
-  checksum: 787bf7d711dde4c65138f6dcfa80d2a5b1532c159947d1e0e59d2ea552edea0952fce00da42dec59482d6da32374e193d346172a5147686714fdfc148aa26ea4
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
+  checksum: ee452544de78250c782657ec3c56a35193ba1542e242708380a75dec075073d25e2495ff4e2a79a3aa9ed0ef86323d1155697d4ff4f195c0e9e4e41c4e697d7b
   languageName: node
   linkType: hard
 
-"graphql-http-transformer@npm:5.2.80":
-  version: 5.2.80
-  resolution: "graphql-http-transformer@npm:5.2.80"
+"graphql-http-transformer@npm:5.2.81-gen2-migration-0809.0":
+  version: 5.2.81-gen2-migration-0809.0
+  resolution: "graphql-http-transformer@npm:5.2.81-gen2-migration-0809.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
-  checksum: 072bf9c3751c3b32e95b6c7689d225ba301bd6c5c30003aa7dd85fec870ee213a398e6cf52ba20092039c33d858b309313dc050ab574f1ff8fa197e32b1f34ac
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
+  checksum: 3eace7a4ecb67831a63dd26b699170325f6101e24547f98832736f5cfc37c70fe2762a9491398ebc3cb32bd66a86f57342be9468ea9e08ecb38fa824c8cb69a4
   languageName: node
   linkType: hard
 
@@ -18690,18 +19177,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-key-transformer@npm:3.2.80, graphql-key-transformer@npm:^3.2.80":
-  version: 3.2.80
-  resolution: "graphql-key-transformer@npm:3.2.80"
+"graphql-key-transformer@npm:3.2.81-gen2-migration-0809.0, graphql-key-transformer@npm:^3.2.81-gen1-migration-0214.0":
+  version: 3.2.81-gen2-migration-0809.0
+  resolution: "graphql-key-transformer@npm:3.2.81-gen2-migration-0809.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
-    graphql-dynamodb-transformer: 7.2.80
+    graphql-dynamodb-transformer: 7.2.81-gen2-migration-0809.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
     lodash: ^4.17.21
-  checksum: 119f3b4ae2387168e427270f464ddcf5af61732b5c4cf7d2f1dce53a2f495f8f905b018676d2456c332cd4a3a979156f776f4e76dea00a48a388ea70c98764e5
+  checksum: 5131bae8f40a918a6633226e13293efc42f75c66a2109ade8dae9913154a68e4fa353aecc2206162495441438b3b65f0171b003e1ceba687c927f8895c4484cd
   languageName: node
   linkType: hard
 
@@ -18726,29 +19213,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-predictions-transformer@npm:3.2.80":
-  version: 3.2.80
-  resolution: "graphql-predictions-transformer@npm:3.2.80"
+"graphql-predictions-transformer@npm:3.2.81-gen2-migration-0809.0":
+  version: 3.2.81-gen2-migration-0809.0
+  resolution: "graphql-predictions-transformer@npm:3.2.81-gen2-migration-0809.0"
   dependencies:
     cloudform-types: ^4.2.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
-  checksum: ecde317cad832d51c960744bf141ed39431f02408a1dea598e656922c6e1b16a379b62107ac34ac19e863d6f06511dd1e6c261aacd067a8948c3e9e0c543c879
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
+  checksum: 63f6b4cd661a4b7f5bacbbd2411e458999cbdb2aa23dbdc4a56342a9e73e7e21fb81b99c0dc90edf2093fe1e92a617920ac5ba978d8672ae27526ed74541adb6
   languageName: node
   linkType: hard
 
-"graphql-relational-schema-transformer@npm:2.21.34":
-  version: 2.21.34
-  resolution: "graphql-relational-schema-transformer@npm:2.21.34"
+"graphql-relational-schema-transformer@npm:2.21.35-gen2-migration-0809.0":
+  version: 2.21.35-gen2-migration-0809.0
+  resolution: "graphql-relational-schema-transformer@npm:2.21.35-gen2-migration-0809.0"
   dependencies:
     cloudform-types: ^4.2.0
     fs-extra: ^8.1.0
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-  checksum: 8613e4541149cac8508e88664edc4587b1beb77ef6706f70927e6e216c634b136abed9bbb33cb3e86f41904db685e2b5165995da2d1707ff45b262a1acce0f51
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+  checksum: baa52895c9ced38e72b20c747f4c60254037796768b3898805b5c8e9d8798129b042cec63d6d5f47add232dedfc815d168ccfce19401768416b87ac5ad8f165a
   languageName: node
   linkType: hard
 
@@ -18795,30 +19282,54 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-transformer-core@npm:8.2.13, graphql-transformer-core@npm:^8.2.13":
-  version: 8.2.13
-  resolution: "graphql-transformer-core@npm:8.2.13"
+"graphql-transformer-common@npm:4.32.0-gen1-migration-0214.0":
+  version: 4.32.0-gen1-migration-0214.0
+  resolution: "graphql-transformer-common@npm:4.32.0-gen1-migration-0214.0"
+  dependencies:
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    md5: ^2.2.1
+    pluralize: 8.0.0
+  checksum: 0771d6c1ea75b7b9b7a4a0e31437a306d5de12ea023c94f9f573f459c7be2c249aa172b303d4991ee2c260ad925b5f153a62f04d1ab42203c3b641f8592bf7cd
+  languageName: node
+  linkType: hard
+
+"graphql-transformer-common@npm:4.32.0-gen2-migration-0809.0":
+  version: 4.32.0-gen2-migration-0809.0
+  resolution: "graphql-transformer-common@npm:4.32.0-gen2-migration-0809.0"
+  dependencies:
+    graphql: ^15.5.0
+    graphql-mapping-template: 4.20.16
+    md5: ^2.2.1
+    pluralize: 8.0.0
+  checksum: 960d7f67dcf3ae38de4108a403d5bb02da08ca8eb528c63829f2c15bec1565ff764df12dcc1c96d00c918c54a78ae2ed8b5af21418a0e2dca242ab30ff4679b1
+  languageName: node
+  linkType: hard
+
+"graphql-transformer-core@npm:8.2.14-gen2-migration-0809.0, graphql-transformer-core@npm:^8.2.14-gen1-migration-0214.0":
+  version: 8.2.14-gen2-migration-0809.0
+  resolution: "graphql-transformer-core@npm:8.2.14-gen2-migration-0809.0"
   dependencies:
     cloudform-types: ^4.2.0
     deep-diff: ^1.0.2
     fs-extra: ^8.1.0
     glob: ^10.3.0
     graphql: ^15.5.0
-    graphql-transformer-common: 4.31.1
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
     lodash: ^4.17.21
-  checksum: d26e4cd3f54bfca61f48540b146dddbea7627eb383125934f23c616814a94a3998eb5c23bc28ef8d4f08ab669f1d0f33de6e25b2a8829c37aac8185898dd6a00
+  checksum: 9710d89ab883478f5d69de2f97d9cade891d4b9a0f2f44bc5766802b2fef72154ffbfaf461aa2f03f2a7f8ac75f33f933b6e9f375478b38493ee725c36648fd4
   languageName: node
   linkType: hard
 
-"graphql-versioned-transformer@npm:5.2.80, graphql-versioned-transformer@npm:^5.2.80":
-  version: 5.2.80
-  resolution: "graphql-versioned-transformer@npm:5.2.80"
+"graphql-versioned-transformer@npm:5.2.81-gen2-migration-0809.0, graphql-versioned-transformer@npm:^5.2.81-gen1-migration-0214.0":
+  version: 5.2.81-gen2-migration-0809.0
+  resolution: "graphql-versioned-transformer@npm:5.2.81-gen2-migration-0809.0"
   dependencies:
     graphql: ^15.5.0
     graphql-mapping-template: 4.20.16
-    graphql-transformer-common: 4.31.1
-    graphql-transformer-core: 8.2.13
-  checksum: 847e0b0461d6a6af95a5bed36d9b103b1046fe1e50d634ddab5b6e5b63baa17612bb3e19c78125cd57c3c85650d8acbbc22d4d34039ed7485f07eb0a41cbfbc4
+    graphql-transformer-common: 4.32.0-gen2-migration-0809.0
+    graphql-transformer-core: 8.2.14-gen2-migration-0809.0
+  checksum: 54e9dff3f089c50e018508ab1ad758bf86457c0d381d6fef4beb60fd51fc46deb399aeb718c27d1fd04f8f01b70d700a5681e689fd3529877fefb6f6bd3747be
   languageName: node
   linkType: hard
 
