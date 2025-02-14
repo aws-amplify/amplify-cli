@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-beta-latest.0...@aws-amplify/migrate@0.1.0-next.0) (2025-02-14)
+
+
+### Bug Fixes
+
+* added dynamic reference to the env name in backend.ts and fixed a few bugs ([59e6a01](https://github.com/aws-amplify/amplify-cli/commit/59e6a014a6aadc17c170e57e6278242bed054697))
+* conditional data codegen, phone attribute ([0d5c59f](https://github.com/aws-amplify/amplify-cli/commit/0d5c59fae2849277bced4e4f0c0529d916c0e165))
+
+
+
+
+
 # [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-alpha.1...@aws-amplify/migrate@0.1.0-beta-latest.0) (2025-02-12)
 
 
