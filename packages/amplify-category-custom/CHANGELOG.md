@@ -3,12 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.1.26-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.25...@aws-amplify/amplify-category-custom@3.1.26-beta-latest.0) (2025-02-12)
+## [3.1.26-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-custom@3.1.26-beta-latest.0...@aws-amplify/amplify-category-custom@3.1.26-log-hooks-executor.0) (2025-02-13)
 
 
-### Bug Fixes
+### Reverts
 
-* **amplify-cli-core:** use build script properly for overrides ([#14093](https://github.com/aws-amplify/amplify-cli/issues/14093)) ([aab715d](https://github.com/aws-amplify/amplify-cli/commit/aab715db07578b7790498b9ad791db7d3a0b4d5c)), closes [#11854](https://github.com/aws-amplify/amplify-cli/issues/11854) [#13858](https://github.com/aws-amplify/amplify-cli/issues/13858) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889) [#11889](https://github.com/aws-amplify/amplify-cli/issues/11889)
+* Revert "chore(release): Publish tagged release beta-latest" ([57171ac](https://github.com/aws-amplify/amplify-cli/commit/57171accc71ca92ecfac01ed3c5426fe846c39d6))
 
 
 

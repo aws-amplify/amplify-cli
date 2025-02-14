@@ -3,12 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [8.11.4-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.3...@aws-amplify/amplify-provider-awscloudformation@8.11.4-beta-latest.0) (2025-02-12)
+## [8.11.4-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.4-beta-latest.0...@aws-amplify/amplify-provider-awscloudformation@8.11.4-log-hooks-executor.0) (2025-02-13)
 
 
-### Bug Fixes
+### Reverts
 
-* load region from AWS client if the credentials are managed by AWS-SDK ([a7bcec4](https://github.com/aws-amplify/amplify-cli/commit/a7bcec426907197624c56ea7173af646bf50b1ed))
+* Revert "chore(release): Publish tagged release beta-latest" ([57171ac](https://github.com/aws-amplify/amplify-cli/commit/57171accc71ca92ecfac01ed3c5426fe846c39d6))
 
 
 

@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-alpha.1...@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-beta-latest.0) (2025-02-12)
+# [0.1.0-log-hooks-executor.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-beta-latest.0...@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-log-hooks-executor.0) (2025-02-13)
 
 
-### Bug Fixes
+### Reverts
 
-* dedupe lock, update api md ([7520e27](https://github.com/aws-amplify/amplify-cli/commit/7520e2760cc2fa0934f3c095f37aedc01b689161))
-* function migration adapter category ([afb1136](https://github.com/aws-amplify/amplify-cli/commit/afb1136d5c1eb82e0aa7baf6c12784b06a72de17))
-* gen1 function adapter test ([1038d85](https://github.com/aws-amplify/amplify-cli/commit/1038d8553ad3c670261070460dd4e740cb392b6e))
-* lint errros and warnings in amplify-migration ([8464c01](https://github.com/aws-amplify/amplify-cli/commit/8464c019b70cadbb786b281b9f0b02ca057c402e))
+* Revert "chore(release): Publish tagged release beta-latest" ([57171ac](https://github.com/aws-amplify/amplify-cli/commit/57171accc71ca92ecfac01ed3c5426fe846c39d6))
 
 
 
