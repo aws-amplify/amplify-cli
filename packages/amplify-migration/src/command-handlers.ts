@@ -338,6 +338,8 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
   const success = await templateGenerator.generate();
   if (success) {
     printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`));
+    await usageData.emitSuccess();
+  } else {
+    await usageData.emitError(new Error('Failed to run execute command'));
   }
-  await usageData.emitSuccess();
 }

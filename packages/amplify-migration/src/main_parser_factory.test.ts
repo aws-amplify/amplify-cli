@@ -26,4 +26,9 @@ describe('main parser', () => {
       },
     );
   });
+
+  it('sets CLI_ENV to production', async () => {
+    await runCommandAsync(parser, '--version');
+    assert(process.env.CLI_ENV === 'production');
+  });
 });
