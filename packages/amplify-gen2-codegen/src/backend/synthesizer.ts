@@ -781,17 +781,19 @@ export class BackendSynthesizer {
 
     // Add a tag commented out to force a deployment post refactor
     // Tags.of(backend.stack).add('gen1-migrated-app', 'true')
-    const tagAssignment = factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createCallExpression(factory.createIdentifier('// Tags.of'), undefined, [factory.createIdentifier('backend.stack')]),
-          factory.createIdentifier('add'),
+    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket) {
+      const tagAssignment = factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(factory.createIdentifier('// Tags.of'), undefined, [factory.createIdentifier('backend.stack')]),
+            factory.createIdentifier('add'),
+          ),
+          undefined,
+          [factory.createStringLiteral('gen1-migrated-app'), factory.createStringLiteral('true')],
         ),
-        undefined,
-        [factory.createStringLiteral('gen1-migrated-app'), factory.createStringLiteral('true')],
-      ),
-    );
-    nodes.push(tagAssignment);
+      );
+      nodes.push(tagAssignment);
+    }
 
     return factory.createNodeArray([...imports, ...errors, backendStatement, ...nodes], true);
   }

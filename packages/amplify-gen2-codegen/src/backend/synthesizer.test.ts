@@ -298,6 +298,19 @@ describe('BackendRenderer', () => {
         assert.match(output, regex);
       });
     });
+    describe('data', () => {
+      it('imports data from the specified import path', () => {
+        const dataImportLocation = 'data/resource.ts';
+        const renderer = new BackendSynthesizer();
+        const rendered = renderer.render({
+          data: { importFrom: dataImportLocation },
+        });
+        const output = printNodeArray(rendered);
+        const regex = getImportRegex('data', dataImportLocation);
+        assert.match(output, regex);
+        expect(output).not.toContain('// Tags.of(backend.stack).add("gen1-migrated-app", "true")');
+      });
+    });
   });
   describe('renders storage overrides', () => {
     it('renders s3 bucket name', () => {
