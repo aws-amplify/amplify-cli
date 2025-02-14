@@ -343,7 +343,8 @@ describe('BackendRenderer', () => {
       });
       const output = printNodeArray(rendered);
       assert(output.includes('// s3Bucket.applyRemovalPolicy'));
-      assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
+      assert(output.includes('import { RemovalPolicy, Tags } from "aws-cdk-lib";'));
+      assert(output.includes('// Tags.of(backend.stack).add("gen1-migrated-app", "true")'));
     });
   });
   describe('UserPoolClient Configuration using render()', () => {
@@ -484,7 +485,7 @@ describe('BackendRenderer', () => {
       const output = printNodeArray(rendered);
       assert(output.includes('// cfnUserPool.applyRemovalPolicy'));
       assert(output.includes('// cfnIdentityPool.applyRemovalPolicy'));
-      assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
+      assert(output.includes('import { RemovalPolicy, Tags } from "aws-cdk-lib";'));
     });
     it('renders user pool client configuration with default value for generateSecrets', () => {
       const renderer = new BackendSynthesizer();
@@ -506,7 +507,7 @@ describe('BackendRenderer', () => {
       expect(output).toContain('userPoolClientName: "MyApp"');
 
       // Additional settings
-      expect(output).toContain('generateSecret: false');
+      expect(output).toContain(`generateSecret: false\n});`);
     });
   });
 });

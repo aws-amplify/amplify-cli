@@ -139,6 +139,10 @@ cfnUserPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolic
 cfnIdentityPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
 \`\`\`
 
+\`\`\`
+Tags.of(backend.stack).add("gen1-migrated-app", "true");
+\`\`\`
+
 2.b) Deploy sandbox using the below command or trigger a CI/CD build via hosting by committing this file to your Git repository
 \`\`\`
 npx ampx sandbox
