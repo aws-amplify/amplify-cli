@@ -26,7 +26,8 @@ const GEN1_CATEGORY_STACK_ID = `arn:aws:cloudformation:us-east-1:1234567890:stac
 const GEN2_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-storage-ABCDE/12345';
 const GEN1_AUTH_CATEGORY_STACK_NAME = 'amplify-testauth-dev-12345-auth-ABCDE';
 const GEN1_AUTH_CATEGORY_STACK_ID = `arn:aws:cloudformation:us-east-1:1234567890:stack/${GEN1_AUTH_CATEGORY_STACK_NAME}/12345`;
-const GEN2_AUTH_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-auth-ABCDE/12345';
+const GEN2_AUTH_CATEGORY_STACK_ID =
+  'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-auth-ABCDE/12345';
 const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
 const GEN1_ANOTHER_S3_BUCKET_LOGICAL_ID = 'MyOtherS3Bucket';
