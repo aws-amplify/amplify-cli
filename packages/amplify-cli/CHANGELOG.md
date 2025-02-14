@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.14.4-data-migrations.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.3...@aws-amplify/cli-internal@12.14.4-data-migrations.0) (2025-02-14)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 ## [12.14.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.2...@aws-amplify/cli-internal@12.14.3) (2025-02-07)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal

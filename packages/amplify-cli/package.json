@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "12.14.3",
+  "version": "12.14.4-data-migrations.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
