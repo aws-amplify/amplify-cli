@@ -201,10 +201,12 @@ export class BackendSynthesizer {
     userPoolClientAttributesMap.set('ExplicitAuthFlows', 'authFlows');
     userPoolClientAttributesMap.set('AllowedOAuthFlows', 'flows');
 
-    const test = factory.createCallExpression(
-      factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
-      undefined,
-      [factory.createStringLiteral('NativeAppClient'), this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap)],
+    const nativeUserPoolClientExpressionStatement = factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
+        undefined,
+        [factory.createStringLiteral('NativeAppClient'), this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap)],
+      ),
     );
 
     if (this.importDurationFlag) {
@@ -223,7 +225,7 @@ export class BackendSynthesizer {
       }
     }
 
-    return test;
+    return nativeUserPoolClientExpressionStatement;
   }
 
   private createNestedObjectExpression(object: Record<string, any>, gen2PropertyMap: Map<string, string>): ts.ObjectLiteralExpression {
@@ -484,7 +486,9 @@ export class BackendSynthesizer {
     };
 
     if (renderArgs.auth || renderArgs.storage?.hasS3Bucket) {
-      imports.push(this.createImportStatement([factory.createIdentifier('RemovalPolicy')], 'aws-cdk-lib'));
+      imports.push(
+        this.createImportStatement([factory.createIdentifier('RemovalPolicy'), factory.createIdentifier('Tags')], 'aws-cdk-lib'),
+      );
     }
 
     if (renderArgs.auth) {
@@ -773,6 +777,22 @@ export class BackendSynthesizer {
           factory.createStringLiteral('aws-cdk-lib/aws-s3'),
         ),
       );
+    }
+
+    // Add a tag commented out to force a deployment post refactor
+    // Tags.of(backend.stack).add('gen1-migrated-app', 'true')
+    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket) {
+      const tagAssignment = factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createCallExpression(factory.createIdentifier('// Tags.of'), undefined, [factory.createIdentifier('backend.stack')]),
+            factory.createIdentifier('add'),
+          ),
+          undefined,
+          [factory.createStringLiteral('gen1-migrated-app'), factory.createStringLiteral('true')],
+        ),
+      );
+      nodes.push(tagAssignment);
     }
 
     return factory.createNodeArray([...imports, ...errors, backendStatement, ...nodes], true);
