@@ -46,7 +46,7 @@ export interface CFNTemplate {
   AWSTemplateFormatVersion: string;
   Conditions?: Record<string, CFNConditionFunction>;
   Resources: Record<string, CFNResource>;
-  Parameters: Record<string, CFNParameter>;
+  Parameters?: Record<string, CFNParameter>;
   Outputs: Record<string, CFNOutput>;
 }
 

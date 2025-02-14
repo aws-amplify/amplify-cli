@@ -1,7 +1,14 @@
 import { CloudFormationClient, DescribeStacksCommand, GetTemplateCommand, Stack } from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import assert from 'node:assert';
-import { CFN_CATEGORY_TYPE, CFNChangeTemplateWithParams, CFNResource, CFNStackRefactorTemplates, CFNTemplate } from './types';
+import {
+  CFN_AUTH_TYPE,
+  CFN_CATEGORY_TYPE,
+  CFNChangeTemplateWithParams,
+  CFNResource,
+  CFNStackRefactorTemplates,
+  CFNTemplate,
+} from './types';
 import CFNConditionResolver from './resolvers/cfn-condition-resolver';
 import CfnParameterResolver from './resolvers/cfn-parameter-resolver';
 import CfnOutputResolver from './resolvers/cfn-output-resolver';
@@ -13,6 +20,8 @@ import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-
 const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
+const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
+const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 
 class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
   private gen1DescribeStacksResponse: Stack | undefined;
@@ -99,7 +108,8 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     );
     // validate empty resources
     if (this.gen2ResourcesToRemove.size === 0) throw new Error('No resources to remove in Gen2 stack.');
-    const updatedGen2Template = this.removeGen2ResourcesFromGen2Stack(oldGen2Template, [...this.gen2ResourcesToRemove.keys()]);
+    const logicalResourceIds = [...this.gen2ResourcesToRemove.keys()];
+    const updatedGen2Template = this.removeGen2ResourcesFromGen2Stack(oldGen2Template, logicalResourceIds);
     return {
       oldTemplate: oldGen2Template,
       newTemplate: updatedGen2Template,
@@ -177,10 +187,19 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
         if (gen2Resource.Type !== gen1Resource.Type) {
           continue;
         }
-        gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen2ResourceLogicalId);
-        clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
-        clonedGen2ResourceMap.delete(gen2ResourceLogicalId);
-        break;
+        // Since we have 2 app clients, we want to map the corresponding app clients (Web->Web, Native->Native)
+        // In gen1, we differentiate clients with Web. In gen2, we differentiate with Native.
+        const isWebClient = gen1ResourceLogicalId === GEN1_WEB_APP_CLIENT && !gen2ResourceLogicalId.includes(GEN2_NATIVE_APP_CLIENT);
+        const isNativeClient = gen1ResourceLogicalId !== GEN1_WEB_APP_CLIENT && gen2ResourceLogicalId.includes(GEN2_NATIVE_APP_CLIENT);
+        if (
+          gen1Resource.Type !== CFN_AUTH_TYPE.UserPoolClient ||
+          (gen1Resource.Type === CFN_AUTH_TYPE.UserPoolClient && (isWebClient || isNativeClient))
+        ) {
+          gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen2ResourceLogicalId);
+          clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
+          clonedGen2ResourceMap.delete(gen2ResourceLogicalId);
+          break;
+        }
       }
     }
     return gen1ToGen2ResourceLogicalIdMapping;
