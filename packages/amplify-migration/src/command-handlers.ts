@@ -297,6 +297,7 @@ export async function execute() {
   const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`).start();
   // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
   const cwd = process.cwd();
+  await fs.rm(MIGRATION_DIR, { recursive: true });
   await fs.mkdir(MIGRATION_DIR, { recursive: true });
   await fs.rename(AMPLIFY_DIR, `${MIGRATION_DIR}/amplify`);
   await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
@@ -338,6 +339,8 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
   const success = await templateGenerator.generate();
   if (success) {
     printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`));
+    await usageData.emitSuccess();
+  } else {
+    await usageData.emitError(new Error('Failed to run execute command'));
   }
-  await usageData.emitSuccess();
 }
