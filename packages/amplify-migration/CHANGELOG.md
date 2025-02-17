@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next.0...@aws-amplify/migrate@0.1.0-next-1.0) (2025-02-17)
+
+
+### Bug Fixes
+
+* **migrate:** remove migration dir if exists prior to rename ([b62b487](https://github.com/aws-amplify/amplify-cli/commit/b62b4874ffba3c3fce64cb3e723d02930104b81d))
+* **migrate:** set CLI_ENV to production for usage metrics, emit error metrics when execute fails ([466e6c7](https://github.com/aws-amplify/amplify-cli/commit/466e6c7bebd2928ea76b513feb97db7b563a5037))
+
+
+
+
+
 # [0.1.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-beta-latest.0...@aws-amplify/migrate@0.1.0-next.0) (2025-02-14)
 
 
