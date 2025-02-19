@@ -108,11 +108,10 @@ const removeStackIdentifier = (str?: string): string | undefined => {
 };
 
 const anonymizePaths = (str: string): string => {
-  const result = str;
-  const matches = [...result.matchAll(filePathRegex)];
+  let result = str;
 
-  for (const match of matches) {
-    result.replace(match[0], processPaths([match[0]])[0]);
+  if (result.match(filePathRegex)) {
+    result = result.replaceAll(filePathRegex, '');
   }
 
   return result;

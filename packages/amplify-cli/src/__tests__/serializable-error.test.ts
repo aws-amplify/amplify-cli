@@ -67,7 +67,7 @@ describe('test serializabe error', () => {
 
   it('test SerializeError error message has no home directories in file paths', () => {
     const error = new AmplifyError('FileSystemPermissionsError', {
-      message: `Permission denied, open '${os.homedir()}/.amplify/logs/amplify-cli.log`,
+      message: `Permission denied, open '${os.homedir()}/.amplify/logs/amplify-cli-10371230.log`,
     });
 
     const serializableError = new SerializableError(error);
