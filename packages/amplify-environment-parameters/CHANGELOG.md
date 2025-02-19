@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.18-rc.aecb4ce81f0db80.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.9.17...@aws-amplify/amplify-environment-parameters@1.9.18-rc.aecb4ce81f0db80.0) (2025-02-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-environment-parameters
+
+
+
+
+
 ## [1.9.17](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.9.16...@aws-amplify/amplify-environment-parameters@1.9.17) (2025-02-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters
