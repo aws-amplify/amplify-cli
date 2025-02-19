@@ -15,6 +15,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Redactor } from '@aws-amplify/amplify-cli-logger';
 import { CLIFlowReport } from '../domain/amplify-usageData/FlowReport';
+import { homedir } from 'os';
 
 describe('Test FlowReport Logging', () => {
   beforeAll(() => {});
@@ -103,6 +104,20 @@ describe('Test FlowReport Logging', () => {
     expect(flowReport.optionFlowData[0].input).toContain(input.serviceConfiguration.mapStyle);
     expect(flowReport.optionFlowData[0].input).toEqual(Redactor(inputString));
   });
+
+  it('runtime does not contain home directory info', () => {
+    const flowReport = new CLIFlowReport();
+    flowReport.setInput(mockInputs.headlessInput('auth', 'add'));
+
+    expect(flowReport.runtime).not.toContain(homedir());
+  });
+
+  it('executable does not contain home directory info', () => {
+    const flowReport = new CLIFlowReport();
+    flowReport.setInput(mockInputs.headlessInput('auth', 'add'));
+
+    expect(flowReport.executable).not.toContain(homedir());
+  });
 });
 
 const redactValue = (key: string, value: unknown) => {
@@ -180,7 +195,7 @@ const mockInputs = {
   Geo: mockAddGeoInput,
   GraphQLAPI: mockAddAPIInput,
   headlessInput: (feature, command) => ({
-    argv: [],
+    argv: [`${homedir()}/.amplify/bin/amplify.exe`, `${homedir()}/amplify-cli/build/node_modules/@aws-amplify/cli-internal/bin/amplify`],
     plugin: feature,
     command,
   }),
