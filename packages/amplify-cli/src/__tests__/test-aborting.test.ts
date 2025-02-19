@@ -111,6 +111,7 @@ describe('test SIGINT with execute', () => {
 
     jest.mock('@aws-amplify/amplify-environment-parameters');
 
+    const originalExitCode = process.exitCode;
     setTimeout(() => {
       process.emit('SIGINT', 'SIGINT');
       process.exitCode = 2;
@@ -124,6 +125,8 @@ describe('test SIGINT with execute', () => {
     expect(mockContext.usageData.emitError).toHaveBeenCalledTimes(0);
     expect(mockContext.usageData.emitSuccess).toHaveBeenCalledTimes(0);
     expect(mockExit).toBeCalledWith(2);
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   }, 10000);
 });
 
