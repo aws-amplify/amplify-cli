@@ -4,7 +4,7 @@ import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import https from 'https';
 import { pick } from 'lodash';
 import { UrlWithStringQuery } from 'url';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid, v5 as uuidV5 } from 'uuid';
 import { CLIInput } from '../command-input';
 import {
   JSONUtilities,
@@ -23,6 +23,8 @@ import { getUrl } from './getUsageDataUrl';
 import redactInput from './identifiable-input-regex';
 import { Timer } from './Timer';
 import { UsageDataPayload } from './UsageDataPayload';
+
+const AMPLIFY_CLI_UUID_NAMESPACE = '7bf41e64-b0be-4a57-8d92-9cfbc1600f0f';
 
 /**
  * Singleton class that manages the lifecycle of usage data during a CLI command
@@ -63,7 +65,7 @@ export class UsageData implements IUsageData {
     processStartTimeStamp: number,
   ): void {
     this.installationUuid = installationUuid;
-    this.accountId = accountId;
+    this.accountId = uuidV5(accountId.slice(0, -2), AMPLIFY_CLI_UUID_NAMESPACE);
     this.projectSettings = projectSettings;
     this.version = version;
     this.inputOptions = input.options ? pick(input.options as InputOptions, ['sandboxId']) : {};
