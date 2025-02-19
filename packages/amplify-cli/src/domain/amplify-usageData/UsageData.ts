@@ -65,8 +65,7 @@ export class UsageData implements IUsageData {
     processStartTimeStamp: number,
   ): void {
     this.installationUuid = installationUuid;
-    const accountBucketId = Number(accountId.slice(0, -2)) / 100;
-    this.accountId = uuidV5(accountBucketId.toString(), AMPLIFY_CLI_UUID_NAMESPACE);
+    this.accountId = uuidV5(accountId.slice(0, -2), AMPLIFY_CLI_UUID_NAMESPACE);
     this.projectSettings = projectSettings;
     this.version = version;
     this.inputOptions = input.options ? pick(input.options as InputOptions, ['sandboxId']) : {};
