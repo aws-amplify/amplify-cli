@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.12...@aws-amplify/amplify-cli-core@4.4.0) (2025-02-20)
+
+
+### Features
+
+* add enableGen2Migration feature flag ([90d68c5](https://github.com/aws-amplify/amplify-cli/commit/90d68c5bee8866b74b92a11ce5af54f48e247d55))
+
+
+
+
+
 ## [4.3.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.11...@aws-amplify/amplify-cli-core@4.3.12) (2025-02-07)
 
 
