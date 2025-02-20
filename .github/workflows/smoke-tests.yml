@@ -11,7 +11,7 @@ on:
       os:
         required: false
         type: string
-        default: '["macos-latest-xl", "ubuntu-latest", "amplify-cli_windows-latest_8-core"]'
+        default: '["macos-latest-xlarge", "ubuntu-latest", "amplify-cli_windows-latest_8-core"]'
       versions:
         required: false
         type: string
