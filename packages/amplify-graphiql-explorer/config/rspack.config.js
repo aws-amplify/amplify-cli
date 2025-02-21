@@ -1,19 +1,16 @@
 const fs = require('fs');
 const path = require('path');
-const webpack = require('webpack');
+const rspack = require("@rspack/core");
 const resolve = require('resolve');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+const { RspackManifestPlugin } = require("rspack-manifest-plugin");
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+const WorkboxWebpackPlugin = require("@aaroon/workbox-rspack-plugin");
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-const ESLintPlugin = require('eslint-webpack-plugin');
+const ESLintPlugin = require("eslint-rspack-plugin");
 const paths = require('./paths');
 const modules = require('./modules');
 const getClientEnvironment = require('./env');
@@ -97,7 +94,7 @@ module.exports = function (webpackEnv) {
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
-        loader: MiniCssExtractPlugin.loader,
+        loader: rspack.CssExtractRspackPlugin.loader,
         // css is located in `static/css`, use '../../' to locate index.html folder
         // in production `paths.publicUrlOrPath` can be a relative path
         options: paths.publicUrlOrPath.startsWith('.') ? { publicPath: '../../' } : {},
@@ -219,7 +216,7 @@ module.exports = function (webpackEnv) {
       minimize: isEnvProduction,
       minimizer: [
         // This is only used in production mode
-        new TerserPlugin({
+        new rspack.SwcJsMinimizerRspackPlugin({
           terserOptions: {
             parse: {
               // We want terser to parse ecma 8 code. However, we don't want it
@@ -258,8 +255,7 @@ module.exports = function (webpackEnv) {
             },
           },
         }),
-        // This is only used in production mode
-        new CssMinimizerPlugin(),
+        new rspack.LightningCssMinimizerRspackPlugin(options),
       ],
     },
     resolve: {
@@ -516,14 +512,14 @@ module.exports = function (webpackEnv) {
       ].filter(Boolean),
     },
     plugins: [
-      new webpack.ProvidePlugin({
+      new rspack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
-      new webpack.ProvidePlugin({
+      new rspack.ProvidePlugin({
         process: 'process/browser',
       }),
       // Generates an `index.html` file with the <script> injected.
-      new HtmlWebpackPlugin(
+      new rspack.HtmlRspackPlugin(
         Object.assign(
           {},
           {
@@ -566,7 +562,7 @@ module.exports = function (webpackEnv) {
       // It is absolutely essential that NODE_ENV is set to production
       // during a production build.
       // Otherwise React will be compiled in the very slow development mode.
-      new webpack.DefinePlugin(env.stringified),
+      new rspack.DefinePlugin(env.stringified),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh
       isEnvDevelopment &&
@@ -579,7 +575,7 @@ module.exports = function (webpackEnv) {
       // See https://github.com/facebook/create-react-app/issues/240
       isEnvDevelopment && new CaseSensitivePathsPlugin(),
       isEnvProduction &&
-        new MiniCssExtractPlugin({
+        new rspack.CssExtractRspackPlugin({
           // Options similar to the same options in webpackOptions.output
           // both options are optional
           filename: 'static/css/[name].[contenthash:8].css',
@@ -591,7 +587,7 @@ module.exports = function (webpackEnv) {
       //   `index.html`
       // - "entrypoints" key: Array of files which are included in `index.html`,
       //   can be used to reconstruct the HTML if necessary
-      new WebpackManifestPlugin({
+      new RspackManifestPlugin({
         fileName: 'asset-manifest.json',
         publicPath: paths.publicUrlOrPath,
         generate: (seed, files, entrypoints) => {
@@ -612,7 +608,7 @@ module.exports = function (webpackEnv) {
       // solution that requires the user to opt into importing specific locales.
       // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
       // You can remove this if you don't use Moment.js:
-      new webpack.IgnorePlugin({
+      new rspack.IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,
         contextRegExp: /moment$/,
       }),
