@@ -4,7 +4,6 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnResource, Duration, Fn } from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
 import * as fs from 'fs-extra';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { AccessType } from '../service-utils/resourceParams';
@@ -94,7 +93,7 @@ export class PlaceIndexStack extends BaseStack {
     const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
       code: lambda.Code.fromInline(customPlaceIndexLambdaCode),
       handler: 'index.handler',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: new lambda.Runtime('nodejs22.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }),
       timeout: Duration.seconds(300),
     });
     customPlaceIndexLambda.addToRolePolicy(geoCreateIndexStatement);
