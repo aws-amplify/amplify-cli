@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-analytics",
-  "version": "5.0.39",
+  "version": "5.0.40-rc.9cd702273c4f7d8.0",
   "description": "amplify-cli analytics plugin",
   "repository": {
     "type": "git",

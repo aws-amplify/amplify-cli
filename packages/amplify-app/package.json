@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-app",
-  "version": "5.0.40",
+  "version": "5.0.41-rc.9cd702273c4f7d8.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
