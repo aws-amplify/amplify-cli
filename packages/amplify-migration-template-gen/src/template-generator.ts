@@ -61,8 +61,8 @@ const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
 const UNAUTH_ROLE_NAME = 'unauthenticated';
 const AUTH_ROLE_NAME = 'authenticated';
 const CFN_FN_GET_ATTTRIBUTE = 'Fn::GetAtt';
-export const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
-export const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
+const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
+const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
 const NO_RESOURCES_TO_MOVE_ERROR = 'No resources to move';
 
 class TemplateGenerator {

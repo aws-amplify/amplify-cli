@@ -1,4 +1,4 @@
-import { GEN1_AUTH_STACK_TYPE_DESCRIPTION, GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION, TemplateGenerator } from './template-generator';
+import { TemplateGenerator } from './template-generator';
 import CategoryTemplateGenerator from './category-template-generator';
 import {
   CloudFormationClient,
@@ -67,6 +67,8 @@ const GEN2_USER_POOL_GROUP_ROLE_LOGICAL_ID = `${GEN2_AUTH_LOGICAL_ID_PREFIX}myUs
 const GEN2_AUTH_ROLE_LOGICAL_ID = `${GEN2_AUTH_LOGICAL_ID_PREFIX}unauthenticatedUserRole${CDK_IDENTIFIER}`;
 const GEN2_UNAUTH_ROLE_LOGICAL_ID = `${GEN2_AUTH_LOGICAL_ID_PREFIX}authenticatedUserRole${CDK_IDENTIFIER}`;
 const STACK_CATEGORIES_TO_REFACTOR: CATEGORY[] = ['auth', 'auth-user-pool-group', 'storage'];
+export const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
+export const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
 
 const mockDescribeGen1StackResources: DescribeStackResourcesOutput = {
   StackResources: [
