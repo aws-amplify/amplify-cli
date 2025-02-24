@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises';
-import { CATEGORY, CFNTemplate, ResourceMapping } from './types';
-import extractStackNameFromId from './cfn-stack-name-extractor';
+import { CATEGORY } from './types';
 
 interface MigrationReadMeGeneratorOptions {
   path: string;

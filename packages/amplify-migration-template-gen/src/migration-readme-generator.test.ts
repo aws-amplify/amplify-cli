@@ -1,6 +1,5 @@
 import MigrationReadMeGenerator from './migration-readme-generator';
 import fs from 'node:fs/promises';
-import { CFNTemplate } from './types';
 
 jest.mock('node:fs/promises');
 

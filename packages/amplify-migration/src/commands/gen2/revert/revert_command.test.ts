@@ -2,11 +2,12 @@ import { Gen2RevertCommand } from './revert_command';
 import { runCommandAsync } from '../../../test-utils/command_runner';
 import yargs, { CommandModule } from 'yargs';
 import assert from 'node:assert';
+import { revertGen2Migration } from '../../../command-handlers';
 
 const mockHandler = jest.fn();
 jest.mock('../../../command-handlers', () => ({
   ...jest.requireActual('../../../command-handlers'),
-  executeStackRefactor: (from: string, to: string) => mockHandler(from, to),
+  revertGen2Migration: (from: string, to: string) => mockHandler(from, to),
 }));
 
 describe('Gen2RevertCommand', () => {

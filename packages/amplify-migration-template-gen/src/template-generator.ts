@@ -112,7 +112,7 @@ class TemplateGenerator {
     return await this.generateCategoryTemplates(true);
   }
 
-  private async parseCategoryStacks(isRevert: boolean = false): Promise<void> {
+  private async parseCategoryStacks(isRevert = false): Promise<void> {
     const sourceStackResourcesResponse = await this.cfnClient.send(
       new DescribeStackResourcesCommand({
         StackName: this.fromStack,
@@ -488,7 +488,7 @@ class TemplateGenerator {
       sourceLogicalIds,
       Outputs,
     );
-    let newSourceTemplateWithDepsResolved = new CfnDependencyResolver(newSourceTemplateWithOutputsResolved).resolve(sourceLogicalIds);
+    const newSourceTemplateWithDepsResolved = new CfnDependencyResolver(newSourceTemplateWithOutputsResolved).resolve(sourceLogicalIds);
     if (category === 'auth' || category === 'auth-user-pool-group') {
       const { StackResources: AuthStackResources } = await this.cfnClient.send(
         new DescribeStackResourcesCommand({
@@ -507,16 +507,16 @@ class TemplateGenerator {
         assert(typeof roles === 'object' && UNAUTH_ROLE_NAME in roles && AUTH_ROLE_NAME in roles);
         const unAuthRoleArn = roles[UNAUTH_ROLE_NAME];
         const authRoleArn = roles[AUTH_ROLE_NAME];
-        const physicalUnAuthRoleArn = this.resolveFnGetAttRoleArn(identityPoolRoleMapLogicalId, roleResources, unAuthRoleArn);
+        const physicalUnAuthRoleArn = this.resolveFnGetAttRoleArn(roleResources, unAuthRoleArn);
         assert(physicalUnAuthRoleArn);
         roles[UNAUTH_ROLE_NAME] = this.constructRoleArn(physicalUnAuthRoleArn);
-        const physicalAuthRoleArn = this.resolveFnGetAttRoleArn(identityPoolRoleMapLogicalId, roleResources, authRoleArn);
+        const physicalAuthRoleArn = this.resolveFnGetAttRoleArn(roleResources, authRoleArn);
         assert(physicalAuthRoleArn);
         roles[AUTH_ROLE_NAME] = this.constructRoleArn(physicalAuthRoleArn);
       } else if (category === 'auth-user-pool-group') {
         for (const sourceLogicalId of sourceLogicalIds) {
           const groupRoleArn = newSourceTemplateWithDepsResolved.Resources[sourceLogicalId].Properties.RoleArn;
-          const physicalGroupRoleArn = this.resolveFnGetAttRoleArn(sourceLogicalId, roleResources, groupRoleArn);
+          const physicalGroupRoleArn = this.resolveFnGetAttRoleArn(roleResources, groupRoleArn);
           assert(physicalGroupRoleArn);
           newSourceTemplateWithDepsResolved.Resources[sourceLogicalId].Properties.RoleArn = this.constructRoleArn(physicalGroupRoleArn);
         }
@@ -531,7 +531,7 @@ class TemplateGenerator {
     );
   }
 
-  private resolveFnGetAttRoleArn(logicalId: string, roleResources: StackResource[], roleArn: unknown) {
+  private resolveFnGetAttRoleArn(roleResources: StackResource[], roleArn: unknown) {
     if (
       roleArn &&
       typeof roleArn === 'object' &&
@@ -544,6 +544,7 @@ class TemplateGenerator {
       const role = roleResources.find((resource) => resource.LogicalResourceId === roleLogicalId);
       return role?.PhysicalResourceId;
     }
+    return undefined;
   }
 
   private getSourceToDestinationMessage(revert: boolean) {
