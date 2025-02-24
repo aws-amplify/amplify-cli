@@ -34,6 +34,7 @@ const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
 const CATEGORIES: CATEGORY[] = ['auth', 'storage'];
 const TEMPLATES_DIR = '.amplify/migration/templates';
 const SEPARATOR = ' to ';
+
 const SOURCE_TO_DESTINATION_STACKS = [`Gen1`, `Gen2`];
 const AUTH_RESOURCES_TO_REFACTOR = [
   CFN_AUTH_TYPE.UserPool,
@@ -548,7 +549,7 @@ class TemplateGenerator {
   }
 
   private getSourceToDestinationMessage(revert: boolean) {
-    return revert ? SOURCE_TO_DESTINATION_STACKS.reverse().join(SEPARATOR) : SOURCE_TO_DESTINATION_STACKS.join(SEPARATOR);
+    return revert ? [...SOURCE_TO_DESTINATION_STACKS].reverse().join(SEPARATOR) : SOURCE_TO_DESTINATION_STACKS.join(SEPARATOR);
   }
 
   private constructRoleArn(roleName: string) {
