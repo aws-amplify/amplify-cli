@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-beta-latest.0...@aws-amplify/amplify-gen2-codegen@0.1.0-next.0) (2025-02-14)
+
+
+### Bug Fixes
+
+* add tag to force deployment post refactor in gen2 codegen ([dc953af](https://github.com/aws-amplify/amplify-cli/commit/dc953afd376eb6d7f36729580c9b2cc0a1a09652))
+* add tags only for auth or storage categories ([203425d](https://github.com/aws-amplify/amplify-cli/commit/203425d4c61c71cd974efaa22d3d12fc1c060193))
+* added dynamic reference to the env name in backend.ts and fixed a few bugs ([59e6a01](https://github.com/aws-amplify/amplify-cli/commit/59e6a014a6aadc17c170e57e6278242bed054697))
+* conditional data codegen, phone attribute ([0d5c59f](https://github.com/aws-amplify/amplify-cli/commit/0d5c59fae2849277bced4e4f0c0529d916c0e165))
+
+
+
+
+
 # [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-alpha.1...@aws-amplify/amplify-gen2-codegen@0.1.0-beta-latest.0) (2025-02-12)
 
 

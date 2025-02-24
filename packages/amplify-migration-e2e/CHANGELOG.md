@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-beta-latest.0...@aws-amplify/amplify-migration-e2e@0.1.0-next.0) (2025-02-14)
+
+**Note:** Version bump only for package @aws-amplify/amplify-migration-e2e
+
+
+
+
+
 # [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-alpha.1...@aws-amplify/amplify-migration-e2e@0.1.0-beta-latest.0) (2025-02-12)
 
 

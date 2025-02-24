@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-storage-adapter@0.1.0-beta-latest.0...@aws-amplify/amplify-gen1-codegen-storage-adapter@0.1.0-next.0) (2025-02-14)
+
+
+### Bug Fixes
+
+* added dynamic reference to the env name in backend.ts and fixed a few bugs ([59e6a01](https://github.com/aws-amplify/amplify-cli/commit/59e6a014a6aadc17c170e57e6278242bed054697))
+
+
+
+
+
 # [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-storage-adapter@0.1.0-alpha.1...@aws-amplify/amplify-gen1-codegen-storage-adapter@0.1.0-beta-latest.0) (2025-02-12)
 
 **Note:** Version bump only for package @aws-amplify/amplify-gen1-codegen-storage-adapter

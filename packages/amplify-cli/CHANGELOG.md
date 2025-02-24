@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.15.0-next-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.15.0-next.0...@aws-amplify/cli-internal@12.15.0-next-1.0) (2025-02-17)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [12.15.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.15.0-beta-latest.0...@aws-amplify/cli-internal@12.15.0-next.0) (2025-02-14)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
 # [12.15.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.2...@aws-amplify/cli-internal@12.15.0-beta-latest.0) (2025-02-12)
 
 

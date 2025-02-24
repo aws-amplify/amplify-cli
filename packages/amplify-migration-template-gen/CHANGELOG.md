@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-beta-latest.0...@aws-amplify/migrate-template-gen@0.1.0-next.0) (2025-02-14)
+
+
+### Bug Fixes
+
+* add tag to force deployment post refactor in gen2 codegen ([dc953af](https://github.com/aws-amplify/amplify-cli/commit/dc953afd376eb6d7f36729580c9b2cc0a1a09652))
+* **migrate-template-gen:** add support for refactoring native client ([4dfc7e0](https://github.com/aws-amplify/amplify-cli/commit/4dfc7e0887eb2e608894fb5f60ec44a133b42772))
+* **migrate-template-gen:** extract conditionals into variables ([00de376](https://github.com/aws-amplify/amplify-cli/commit/00de3763843366746788931f9d149546b9d8038b))
+* **migrate-template-gen:** lint errors in category template generator test ([971a0c8](https://github.com/aws-amplify/amplify-cli/commit/971a0c80afe1293eb519a0f9ffd57d06d5ddbefe))
+
+
+
+
+
 # [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-alpha.1...@aws-amplify/migrate-template-gen@0.1.0-beta-latest.0) (2025-02-12)
 
 

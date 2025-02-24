@@ -1104,11 +1104,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-beta-latest.0, @aws-amplify/amplify-gen1-codegen-auth-adapter@workspace:packages/amplify-gen1-codegen-auth-adapter":
+"@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-next.0, @aws-amplify/amplify-gen1-codegen-auth-adapter@workspace:packages/amplify-gen1-codegen-auth-adapter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-auth-adapter@workspace:packages/amplify-gen1-codegen-auth-adapter"
   dependencies:
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-beta-latest.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-next.0
     "@aws-amplify/auth-construct": ^1.1.5
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-cognito-identity": ^3.592.0
@@ -1122,7 +1122,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-data-adapter@workspace:packages/amplify-gen1-codegen-data-adapter"
   dependencies:
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-beta-latest.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-next.0
     "@aws-amplify/auth-construct": ^1.1.5
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-cloudformation": ^3.592.0
@@ -1133,22 +1133,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-beta-latest.0, @aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter":
+"@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-next.0, @aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-function-adapter@workspace:packages/amplify-gen1-codegen-function-adapter"
   dependencies:
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-beta-latest.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-next.0
     "@aws-sdk/client-lambda": ^3.637.0
     jest: ^29.5.0
     typescript: ^5.4.5
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-gen1-codegen-storage-adapter@0.1.0-beta-latest.0, @aws-amplify/amplify-gen1-codegen-storage-adapter@workspace:packages/amplify-gen1-codegen-storage-adapter":
+"@aws-amplify/amplify-gen1-codegen-storage-adapter@0.1.0-next.0, @aws-amplify/amplify-gen1-codegen-storage-adapter@workspace:packages/amplify-gen1-codegen-storage-adapter":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen1-codegen-storage-adapter@workspace:packages/amplify-gen1-codegen-storage-adapter"
   dependencies:
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-beta-latest.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-next.0
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-cognito-identity": ^3.592.0
     "@aws-sdk/client-cognito-identity-provider": ^3.592.0
@@ -1158,7 +1158,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-gen2-codegen@0.1.0-beta-latest.0, @aws-amplify/amplify-gen2-codegen@workspace:packages/amplify-gen2-codegen":
+"@aws-amplify/amplify-gen2-codegen@0.1.0-next.0, @aws-amplify/amplify-gen2-codegen@workspace:packages/amplify-gen2-codegen":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-gen2-codegen@workspace:packages/amplify-gen2-codegen"
   dependencies:
@@ -1269,7 +1269,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.0-gen2-migration-test-alpha.0
     "@aws-amplify/amplify-e2e-core": 5.7.2-beta-latest.0
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-beta-latest.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-next.0
     "@aws-sdk/client-appsync": ^3.666.0
     "@aws-sdk/client-cloudcontrol": ^3.658.1
     "@aws-sdk/client-cognito-identity": ^3.670.0
@@ -1810,7 +1810,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/cli-internal@12.15.0-beta-latest.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@12.15.0-next-1.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1989,7 +1989,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 12.15.0-beta-latest.0
+    "@aws-amplify/cli-internal": 12.15.0-next-1.0
     "@types/tar": ^6.1.1
     axios: ^1.6.7
     rimraf: ^3.0.2
@@ -3055,7 +3055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/migrate-template-gen@0.1.0-beta-latest.0, @aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen":
+"@aws-amplify/migrate-template-gen@0.1.0-next.0, @aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen"
   dependencies:
@@ -3073,12 +3073,12 @@ __metadata:
   resolution: "@aws-amplify/migrate@workspace:packages/amplify-migration"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.3.10
-    "@aws-amplify/amplify-gen1-codegen-auth-adapter": 0.1.0-beta-latest.0
-    "@aws-amplify/amplify-gen1-codegen-function-adapter": 0.1.0-beta-latest.0
-    "@aws-amplify/amplify-gen1-codegen-storage-adapter": 0.1.0-beta-latest.0
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-beta-latest.0
+    "@aws-amplify/amplify-gen1-codegen-auth-adapter": 0.1.0-next.0
+    "@aws-amplify/amplify-gen1-codegen-function-adapter": 0.1.0-next.0
+    "@aws-amplify/amplify-gen1-codegen-storage-adapter": 0.1.0-next.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-next.0
     "@aws-amplify/cli-internal": 12.13.0-alpha.1
-    "@aws-amplify/migrate-template-gen": 0.1.0-beta-latest.0
+    "@aws-amplify/migrate-template-gen": 0.1.0-next.0
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-amplifybackend": ^3.592.0
     "@aws-sdk/client-cloudformation": ^3.592.0
