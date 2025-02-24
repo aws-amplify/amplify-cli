@@ -262,7 +262,7 @@ class TemplateGenerator {
     return { newTemplate, oldTemplate, parameters };
   }
 
-  private async initializeCategoryGenerators() {
+  private initializeCategoryGenerators() {
     assert(this.region);
 
     for (const [category, [sourceStackId, destinationStackId]] of this.categoryStackMap.entries()) {
@@ -434,7 +434,7 @@ class TemplateGenerator {
     return { success, failedRefactorMetadata };
   }
 
-  async rollbackGen2Stack(
+  private async rollbackGen2Stack(
     category: CATEGORY,
     gen2CategoryStackId: string,
     gen2StackParameters: Parameter[] | undefined,
@@ -446,7 +446,7 @@ class TemplateGenerator {
     console.log(`Rolled back Gen2 ${category} stack successfully`);
   }
 
-  async generateRefactorTemplatesForRevert(
+  private async generateRefactorTemplatesForRevert(
     newSourceTemplate: CFNTemplate,
     newDestinationTemplate: CFNTemplate,
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
@@ -515,7 +515,7 @@ class TemplateGenerator {
     );
   }
 
-  resolveFnGetAttRoleArn(logicalId: string, roleResources: StackResource[], roleArn: unknown) {
+  private resolveFnGetAttRoleArn(logicalId: string, roleResources: StackResource[], roleArn: unknown) {
     if (
       roleArn &&
       typeof roleArn === 'object' &&
@@ -530,15 +530,15 @@ class TemplateGenerator {
     }
   }
 
-  getSourceToDestinationMessage(revert: boolean) {
+  private getSourceToDestinationMessage(revert: boolean) {
     return revert ? SOURCE_TO_DESTINATION_STACKS.reverse().join(SEPARATOR) : SOURCE_TO_DESTINATION_STACKS.join(SEPARATOR);
   }
 
-  constructRoleArn(roleName: string) {
+  private constructRoleArn(roleName: string) {
     return `arn:aws:iam::${this.accountId}:role/${roleName}`;
   }
 
-  buildSourceToDestinationMapForRevert(sourceResourcesToRemove: Map<string, CFNResource>): Map<string, string> {
+  private buildSourceToDestinationMapForRevert(sourceResourcesToRemove: Map<string, CFNResource>): Map<string, string> {
     const sourceToDestinationLogicalIdsMap = new Map<string, string>();
     for (const [sourceLogicalId, resource] of sourceResourcesToRemove) {
       if (sourceLogicalId.includes(GEN2_NATIVE_APP_CLIENT)) {

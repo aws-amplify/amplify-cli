@@ -9,10 +9,20 @@ import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-
 import { SSMClient } from '@aws-sdk/client-ssm';
 
 // @public (undocumented)
+export const GEN1_AUTH_STACK_TYPE_DESCRIPTION = "auth-Cognito";
+
+// @public (undocumented)
+export const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = "auth-Cognito-UserPool-Groups";
+
+// @public (undocumented)
 export class TemplateGenerator {
     constructor(fromStack: string, toStack: string, accountId: string, cfnClient: CloudFormationClient, ssmClient: SSMClient, cognitoIdpClient: CognitoIdentityProviderClient, appId: string, environmentName: string);
     // (undocumented)
     generate(): Promise<boolean>;
+    // (undocumented)
+    revert(): Promise<boolean>;
+    // (undocumented)
+    setRegion(): Promise<void>;
 }
 
 // (No @packageDocumentation comment for this package)
