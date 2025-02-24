@@ -4,6 +4,7 @@ import assert from 'node:assert';
 import {
   CFN_AUTH_TYPE,
   CFN_CATEGORY_TYPE,
+  CFN_IAM_TYPE,
   CFNChangeTemplateWithParams,
   CFNResource,
   CFNStackRefactorTemplates,
@@ -121,7 +122,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     return this.generateRefactorTemplates(this.gen1ResourcesToMove, this.gen2ResourcesToRemove, gen1Template, gen2Template);
   }
 
-  private async readTemplate(stackId: string) {
+  public async readTemplate(stackId: string) {
     const getTemplateResponse = await this.cfnClient.send(
       new GetTemplateCommand({
         StackName: stackId,
@@ -132,7 +133,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     return JSON.parse(templateBody) as CFNTemplate;
   }
 
-  private async describeStack(stackId: string) {
+  public async describeStack(stackId: string) {
     return (
       await this.cfnClient.send(
         new DescribeStacksCommand({
@@ -192,8 +193,12 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
         const isWebClient = gen1ResourceLogicalId === GEN1_WEB_APP_CLIENT && !gen2ResourceLogicalId.includes(GEN2_NATIVE_APP_CLIENT);
         const isNativeClient = gen1ResourceLogicalId !== GEN1_WEB_APP_CLIENT && gen2ResourceLogicalId.includes(GEN2_NATIVE_APP_CLIENT);
         if (
-          gen1Resource.Type !== CFN_AUTH_TYPE.UserPoolClient ||
-          (gen1Resource.Type === CFN_AUTH_TYPE.UserPoolClient && (isWebClient || isNativeClient))
+          (gen1Resource.Type !== CFN_AUTH_TYPE.UserPoolClient &&
+            gen1Resource.Type !== CFN_AUTH_TYPE.UserPoolGroup &&
+            gen1Resource.Type !== CFN_IAM_TYPE.Role) ||
+          (gen1Resource.Type === CFN_AUTH_TYPE.UserPoolClient && (isWebClient || isNativeClient)) ||
+          (gen1Resource.Type === CFN_AUTH_TYPE.UserPoolGroup && gen2ResourceLogicalId.includes(gen1ResourceLogicalId)) ||
+          (gen1Resource.Type === CFN_IAM_TYPE.Role && gen2ResourceLogicalId.includes(gen1ResourceLogicalId))
         ) {
           gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen2ResourceLogicalId);
           clonedGen1ResourceMap.delete(gen1ResourceLogicalId);
@@ -219,16 +224,17 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     return resolvedRefsGen2Template;
   }
 
-  private generateRefactorTemplates(
+  public generateRefactorTemplates(
     gen1ResourcesToMove: Map<string, CFNResource>,
     gen2ResourcesToRemove: Map<string, CFNResource>,
     gen1Template: CFNTemplate,
     gen2Template: CFNTemplate,
+    sourceToDestinationResourceLogicalIdMapping?: Map<string, string>,
   ): CFNStackRefactorTemplates {
     const gen1LogicalResourceIds = [...gen1ResourcesToMove.keys()];
-    const gen1StackOutputs = this.gen1DescribeStacksResponse?.Outputs;
-    assert(gen1StackOutputs);
-    const gen1ToGen2ResourceLogicalIdMapping = this.buildGen1ToGen2ResourceLogicalIdMapping(gen1ResourcesToMove, gen2ResourcesToRemove);
+    const gen1ToGen2ResourceLogicalIdMapping =
+      sourceToDestinationResourceLogicalIdMapping ??
+      this.buildGen1ToGen2ResourceLogicalIdMapping(gen1ResourcesToMove, gen2ResourcesToRemove);
     const clonedGen1Template = JSON.parse(JSON.stringify(gen1Template));
     const clonedGen2Template = JSON.parse(JSON.stringify(gen2Template));
     const gen2TemplateForRefactor = this.addGen1ResourcesToGen2Stack(
@@ -237,6 +243,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
       gen1ToGen2ResourceLogicalIdMapping,
       clonedGen2Template,
     );
+
     const gen1TemplateForRefactor = this.removeGen1ResourcesFromGen1Stack(clonedGen1Template, gen1LogicalResourceIds);
     return {
       sourceTemplate: gen1TemplateForRefactor,

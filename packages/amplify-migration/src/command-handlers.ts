@@ -297,7 +297,7 @@ export async function execute() {
   const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`).start();
   // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
   const cwd = process.cwd();
-  await fs.rm(MIGRATION_DIR, { recursive: true });
+  await fs.rm(MIGRATION_DIR, { force: true, recursive: true });
   await fs.mkdir(MIGRATION_DIR, { recursive: true });
   await fs.rename(AMPLIFY_DIR, `${MIGRATION_DIR}/amplify`);
   await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
@@ -312,9 +312,30 @@ export async function execute() {
  * @param toStack
  */
 export async function executeStackRefactor(fromStack: string, toStack: string) {
-  const cfnClient = new CloudFormationClient();
-  const ssmClient = new SSMClient();
-  const cognitoIdpClient = new CognitoIdentityProviderClient();
+  const templateGenerator = await initializeTemplateGenerator(fromStack, toStack);
+  const success = await templateGenerator.generate();
+  const usageData = await getUsageDataMetric();
+  if (success) {
+    printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/templates directory.`));
+    await usageData.emitSuccess();
+  } else {
+    await usageData.emitError(new Error('Failed to run execute command'));
+  }
+}
+
+export async function revertGen2Migration(fromStack: string, toStack: string) {
+  const templateGenerator = await initializeTemplateGenerator(fromStack, toStack);
+  const success = await templateGenerator.revert();
+  const usageData = await getUsageDataMetric();
+  if (success) {
+    printer.print(format.success(`Moved resources back to Gen1 stack successfully.`));
+    await usageData.emitSuccess();
+  } else {
+    await usageData.emitError(new Error('Failed to run revert command'));
+  }
+}
+
+async function initializeTemplateGenerator(fromStack: string, toStack: string) {
   const accountId = await getAccountId();
   assert(accountId);
   const gen1MetaFile = await fs.readFile(`${MIGRATION_DIR}/${AMPLIFY_DIR}/backend/amplify-meta.json`, { encoding: 'utf-8' });
@@ -325,22 +346,9 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
   assert(stackName);
   const backendEnvironmentName = stackName.split('-')?.[2];
   assert(backendEnvironmentName);
-  const usageData = await getUsageDataMetric();
-  const templateGenerator = new TemplateGenerator(
-    fromStack,
-    toStack,
-    accountId,
-    cfnClient,
-    ssmClient,
-    cognitoIdpClient,
-    appId,
-    backendEnvironmentName,
-  );
-  const success = await templateGenerator.generate();
-  if (success) {
-    printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/<category>/templates directory.`));
-    await usageData.emitSuccess();
-  } else {
-    await usageData.emitError(new Error('Failed to run execute command'));
-  }
+  const cfnClient = new CloudFormationClient();
+  const ssmClient = new SSMClient();
+  const cognitoIdpClient = new CognitoIdentityProviderClient();
+
+  return new TemplateGenerator(fromStack, toStack, accountId, cfnClient, ssmClient, cognitoIdpClient, appId, backendEnvironmentName);
 }
