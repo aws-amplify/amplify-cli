@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.41-test-new-images.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.40...@aws-amplify/amplify-app@5.0.41-test-new-images.0) (2025-02-24)
+
+**Note:** Version bump only for package @aws-amplify/amplify-app
+
+
+
+
+
 ## [5.0.40](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.39...@aws-amplify/amplify-app@5.0.40) (2025-02-20)
 
 **Note:** Version bump only for package @aws-amplify/amplify-app
