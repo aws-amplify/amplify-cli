@@ -95,7 +95,7 @@ class TemplateGenerator {
     this.categoryTemplateGenerators = [];
   }
 
-  async setRegion() {
+  private async setRegion() {
     this.region = await this.cfnClient.config.region();
   }
 

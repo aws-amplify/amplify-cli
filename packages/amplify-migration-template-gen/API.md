@@ -15,8 +15,6 @@ export class TemplateGenerator {
     generate(): Promise<boolean>;
     // (undocumented)
     revert(): Promise<boolean>;
-    // (undocumented)
-    setRegion(): Promise<void>;
 }
 
 // (No @packageDocumentation comment for this package)
