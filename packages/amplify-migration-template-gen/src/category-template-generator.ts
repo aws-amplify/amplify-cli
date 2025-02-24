@@ -23,6 +23,11 @@ const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
 const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
 const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
+const RESOURCE_TYPES_WITH_MULTIPLE_RESOURCES = [
+  CFN_AUTH_TYPE.UserPoolClient.valueOf(),
+  CFN_AUTH_TYPE.UserPoolGroup.valueOf(),
+  CFN_IAM_TYPE.Role.valueOf(),
+];
 
 class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
   private gen1DescribeStacksResponse: Stack | undefined;
@@ -192,13 +197,15 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
         // In gen1, we differentiate clients with Web. In gen2, we differentiate with Native.
         const isWebClient = gen1ResourceLogicalId === GEN1_WEB_APP_CLIENT && !gen2ResourceLogicalId.includes(GEN2_NATIVE_APP_CLIENT);
         const isNativeClient = gen1ResourceLogicalId !== GEN1_WEB_APP_CLIENT && gen2ResourceLogicalId.includes(GEN2_NATIVE_APP_CLIENT);
+        const foundUserPoolClientPair = gen1Resource.Type === CFN_AUTH_TYPE.UserPoolClient && (isWebClient || isNativeClient);
+        const foundUserPoolGroupPair =
+          gen1Resource.Type === CFN_AUTH_TYPE.UserPoolGroup && gen2ResourceLogicalId.includes(gen1ResourceLogicalId);
+        const foundIamRolePair = gen1Resource.Type === CFN_IAM_TYPE.Role && gen2ResourceLogicalId.includes(gen1ResourceLogicalId);
         if (
-          (gen1Resource.Type !== CFN_AUTH_TYPE.UserPoolClient &&
-            gen1Resource.Type !== CFN_AUTH_TYPE.UserPoolGroup &&
-            gen1Resource.Type !== CFN_IAM_TYPE.Role) ||
-          (gen1Resource.Type === CFN_AUTH_TYPE.UserPoolClient && (isWebClient || isNativeClient)) ||
-          (gen1Resource.Type === CFN_AUTH_TYPE.UserPoolGroup && gen2ResourceLogicalId.includes(gen1ResourceLogicalId)) ||
-          (gen1Resource.Type === CFN_IAM_TYPE.Role && gen2ResourceLogicalId.includes(gen1ResourceLogicalId))
+          !RESOURCE_TYPES_WITH_MULTIPLE_RESOURCES.includes(gen1Resource.Type) ||
+          foundUserPoolClientPair ||
+          foundUserPoolGroupPair ||
+          foundIamRolePair
         ) {
           gen1ToGen2ResourceLogicalIdMapping.set(gen1ResourceLogicalId, gen2ResourceLogicalId);
           clonedGen1ResourceMap.delete(gen1ResourceLogicalId);

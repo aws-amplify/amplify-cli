@@ -347,7 +347,7 @@ class TemplateGenerator {
           logicalIdMappingForRefactor = logicalIdMapping;
         } catch (e) {
           if (typeof e === 'object' && 'message' in e && e.message.includes(NO_RESOURCES_TO_MOVE_ERROR)) {
-            console.log(`${category} category - ${e.message}.`);
+            console.log(e.message);
             continue;
           }
           throw e;
@@ -456,7 +456,7 @@ class TemplateGenerator {
       ),
     );
     if (sourceResourcesToRemove.size === 0) {
-      throw new Error(`${NO_RESOURCES_TO_MOVE_ERROR} in ${category} stack`);
+      throw new Error(`${NO_RESOURCES_TO_MOVE_ERROR} in ${category} stack.`);
     }
     const describeStackResponseForSourceTemplate = await categoryTemplateGenerator.describeStack(sourceCategoryStackId);
     assert(describeStackResponseForSourceTemplate);
