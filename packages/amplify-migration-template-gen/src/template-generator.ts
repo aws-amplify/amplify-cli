@@ -132,7 +132,7 @@ class TemplateGenerator {
     assert(sourceCategoryStacks && sourceCategoryStacks?.length > 0, 'No source category stack found');
     assert(destinationCategoryStacks && destinationCategoryStacks?.length > 0, 'No destination category stack found');
     for (const { LogicalResourceId: sourceLogicalResourceId, PhysicalResourceId: sourcePhysicalResourceId } of sourceCategoryStacks) {
-      let category = CATEGORIES.find((category) => sourceLogicalResourceId?.startsWith(category));
+      const category = CATEGORIES.find((category) => sourceLogicalResourceId?.startsWith(category));
       if (!category) continue;
       assert(sourcePhysicalResourceId);
       let destinationPhysicalResourceId: string | undefined;
@@ -169,16 +169,36 @@ class TemplateGenerator {
       }
 
       assert(destinationPhysicalResourceId);
-      // user pool groups and the auth resources are part of the same stack in Gen2, but different in Gen1
-      // Hence, we need to explicitly add auth category stack mapping in case of revert.
-      if (isRevert || !isUserPoolGroupStack) {
-        this.categoryStackMap.set(category, [sourcePhysicalResourceId, destinationPhysicalResourceId]);
-      }
-      if (isUserPoolGroupStack && !isRevert) {
-        this.categoryStackMap.set('auth-user-pool-group', [sourcePhysicalResourceId, destinationPhysicalResourceId]);
-      } else if (isUserPoolGroupStack && isRevert && userPoolGroupDestinationPhysicalResourceId) {
-        this.categoryStackMap.set('auth-user-pool-group', [sourcePhysicalResourceId, userPoolGroupDestinationPhysicalResourceId]);
-      }
+
+      this.updateCategoryStackMap(
+        category,
+        sourcePhysicalResourceId,
+        destinationPhysicalResourceId,
+        isUserPoolGroupStack,
+        isRevert,
+        userPoolGroupDestinationPhysicalResourceId,
+      );
+    }
+  }
+
+  private updateCategoryStackMap(
+    category: CATEGORY,
+    sourcePhysicalResourceId: string,
+    destinationPhysicalResourceId: string,
+    isUserPoolGroupStack: boolean,
+    isRevert: boolean,
+    userPoolGroupDestinationPhysicalResourceId?: string,
+  ): void {
+    // User pool groups and the auth resources are part of the same stack in Gen2, but different in Gen1
+    // Hence, we need to also add auth category stack mapping in case of revert (moving back to Gen1).
+    if (!isUserPoolGroupStack || isRevert) {
+      this.categoryStackMap.set(category, [sourcePhysicalResourceId, destinationPhysicalResourceId]);
+    }
+    if (isUserPoolGroupStack) {
+      const destinationId =
+        isRevert && userPoolGroupDestinationPhysicalResourceId ? userPoolGroupDestinationPhysicalResourceId : destinationPhysicalResourceId;
+
+      this.categoryStackMap.set('auth-user-pool-group', [sourcePhysicalResourceId, destinationId]);
     }
   }
 
