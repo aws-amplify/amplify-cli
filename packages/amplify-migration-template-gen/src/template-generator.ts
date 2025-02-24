@@ -322,16 +322,6 @@ class TemplateGenerator {
         newDestinationTemplate = newTemplate;
         oldDestinationTemplate = oldTemplate;
         destinationStackParameters = parameters;
-      } else {
-        const sourceCategoryTemplate = await categoryTemplateGenerator.readTemplate(sourceCategoryStackId);
-        const destinationCategoryTemplate = await categoryTemplateGenerator.readTemplate(destinationCategoryStackId);
-        newSourceTemplate = sourceCategoryTemplate;
-        newDestinationTemplate = destinationCategoryTemplate;
-      }
-      assert(newSourceTemplate);
-      assert(newDestinationTemplate);
-
-      if (!isRevert) {
         const { sourceTemplate, destinationTemplate, logicalIdMapping } = categoryTemplateGenerator.generateStackRefactorTemplates(
           newSourceTemplate,
           newDestinationTemplate,
@@ -340,6 +330,10 @@ class TemplateGenerator {
         destinationTemplateForRefactor = destinationTemplate;
         logicalIdMappingForRefactor = logicalIdMapping;
       } else {
+        const sourceCategoryTemplate = await categoryTemplateGenerator.readTemplate(sourceCategoryStackId);
+        const destinationCategoryTemplate = await categoryTemplateGenerator.readTemplate(destinationCategoryStackId);
+        newSourceTemplate = sourceCategoryTemplate;
+        newDestinationTemplate = destinationCategoryTemplate;
         try {
           const { sourceTemplate, destinationTemplate, logicalIdMapping } = await this.generateRefactorTemplatesForRevert(
             newSourceTemplate,
@@ -360,6 +354,8 @@ class TemplateGenerator {
         }
       }
 
+      assert(newSourceTemplate);
+      assert(newDestinationTemplate);
       const { success, failedRefactorMetadata } = await this.refactorResources(
         logicalIdMappingForRefactor,
         sourceCategoryStackId,
