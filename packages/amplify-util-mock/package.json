@@ -66,7 +66,7 @@
     "@aws-amplify/graphql-predictions-transformer": "^2.1.28",
     "@aws-amplify/graphql-relational-transformer": "^2.5.14",
     "@aws-amplify/graphql-searchable-transformer": "^2.7.12",
-    "@aws-amplify/graphql-transformer": "^1.1.0",
+    "@aws-amplify/graphql-transformer": "^1.7.0-gen1-migration-0924.0",
     "@aws-amplify/graphql-transformer-core": "^2.9.4",
     "@aws-amplify/graphql-transformer-interfaces": "^3.10.2",
     "@aws-amplify/graphql-transformer-migrator": "^2.2.28",
