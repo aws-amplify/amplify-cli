@@ -9,7 +9,6 @@ import {
   DescribeStacksCommand,
   DescribeStacksCommandOutput,
   ExecuteStackRefactorCommand,
-  GetTemplateCommand,
   StackRefactorExecutionStatus,
   StackRefactorStatus,
   StackStatus,
@@ -18,7 +17,7 @@ import {
 import fs from 'node:fs/promises';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
-import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_CATEGORY_TYPE, GEN2_AUTH_LOGICAL_RESOURCE_ID, CFN_IAM_TYPE } from './types';
+import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_IAM_TYPE } from './types';
 import assert from 'node:assert';
 
 jest.useFakeTimers();
