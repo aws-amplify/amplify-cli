@@ -1,4 +1,4 @@
-import ts, { ObjectLiteralElementLike } from 'typescript';
+import ts, { ObjectLiteralElementLike, VariableDeclaration, VariableStatement } from 'typescript';
 import { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../resource/resource';
 
@@ -15,15 +15,29 @@ export interface FunctionDefinition {
 
 const factory = ts.factory;
 
-const createParameter = (name: string, value: ts.LiteralExpression | ts.ObjectLiteralExpression): ts.PropertyAssignment =>
-  factory.createPropertyAssignment(factory.createIdentifier(name), value);
+const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
+
+const createParameter = (
+  name: string,
+  value: ts.LiteralExpression | ts.ObjectLiteralExpression | ts.TemplateExpression,
+): ts.PropertyAssignment => factory.createPropertyAssignment(factory.createIdentifier(name), value);
+
+const createVariableStatement = (variableDeclaration: VariableDeclaration): VariableStatement => {
+  return factory.createVariableStatement([], factory.createVariableDeclarationList([variableDeclaration], ts.NodeFlags.Const));
+};
+
+const createTemplateLiteral = (templateHead: string, templateSpan: string, templateTail: string) => {
+  return factory.createTemplateExpression(factory.createTemplateHead(templateHead), [
+    factory.createTemplateSpan(factory.createIdentifier(templateSpan), factory.createTemplateTail(templateTail)),
+  ]);
+};
 
 export function renderFunctions(definition: FunctionDefinition, appId?: string, backendEnvironmentName?: string | undefined) {
-  const groupsComment: (ts.CallExpression | ts.JSDoc)[] = [];
+  const postImportStatements = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineFunction');
 
-  groupsComment.push(
+  postImportStatements.push(
     factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
       factory.createStringLiteral(
         `Source code for this function can be found in your Amplify Gen 1 Directory. See .amplify/migration/amplify/backend/function/${definition.resourceName}/src`,
@@ -31,20 +45,30 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
     ]),
   );
 
-  const defineFunctionProperty = createFunctionDefinition(definition, groupsComment, namedImports, appId, backendEnvironmentName);
+  const defineFunctionProperty = createFunctionDefinition(definition, postImportStatements, namedImports, appId, backendEnvironmentName);
+
+  const amplifyGen1EnvStatement = createVariableStatement(
+    factory.createVariableDeclaration(
+      amplifyGen1EnvName,
+      undefined,
+      undefined,
+      factory.createIdentifier('process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox"'),
+    ),
+  );
+  postImportStatements.push(amplifyGen1EnvStatement);
 
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier(definition?.resourceName || 'sayHello'),
     functionCallParameter: factory.createObjectLiteralExpression(defineFunctionProperty, true),
     backendFunctionConstruct: 'defineFunction',
     additionalImportedBackendIdentifiers: namedImports,
-    postImportStatements: groupsComment,
+    postImportStatements,
   });
 }
 
 export function createFunctionDefinition(
   definition?: FunctionDefinition,
-  groupsComment?: (ts.CallExpression | ts.JSDoc)[],
+  postImportStatements?: (ts.CallExpression | ts.JSDoc)[],
   namedImports?: Record<string, Set<string>>,
   appId?: string,
   backendEnvironmentName?: string,
@@ -55,7 +79,12 @@ export function createFunctionDefinition(
     defineFunctionProperties.push(createParameter('entry', factory.createStringLiteral('./handler.ts')));
   }
   if (definition?.name) {
-    defineFunctionProperties.push(createParameter('name', factory.createStringLiteral(definition.name)));
+    const splitFuncName = definition.name.split('-');
+    const funcNameWithoutBackendEnvName = splitFuncName.slice(0, -1).join('-');
+
+    const funcNameAssignment = createTemplateLiteral(`${funcNameWithoutBackendEnvName}-`, amplifyGen1EnvName, '');
+
+    defineFunctionProperties.push(createParameter('name', funcNameAssignment));
   }
   if (definition?.timeoutSeconds) {
     defineFunctionProperties.push(createParameter('timeoutSeconds', factory.createNumericLiteral(definition.timeoutSeconds)));
@@ -71,7 +100,7 @@ export function createFunctionDefinition(
         factory.createObjectLiteralExpression(
           Object.entries(definition.environment.Variables).map(([key, value]) => {
             if (key == 'API_KEY' && value.startsWith(`/amplify/${appId}/${backendEnvironmentName}`)) {
-              groupsComment?.push(
+              postImportStatements?.push(
                 factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
                   // eslint-disable-next-line spellcheck/spell-checker
                   factory.createStringLiteral('Secrets need to be reset, use `npx ampx sandbox secret set API_KEY` to set the value'),
@@ -87,6 +116,9 @@ export function createFunctionDefinition(
                 key,
                 factory.createCallExpression(factory.createIdentifier('secret'), undefined, [factory.createStringLiteral('API_KEY')]),
               );
+            } else if (key == 'ENV') {
+              const envNameAssignment = createTemplateLiteral('', amplifyGen1EnvName, '');
+              return createParameter(key, envNameAssignment);
             }
 
             return createParameter(key, factory.createStringLiteral(value));

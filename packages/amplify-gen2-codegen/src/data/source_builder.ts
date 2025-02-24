@@ -1,21 +1,35 @@
 import ts, { ObjectLiteralElementLike, ObjectLiteralExpression } from 'typescript';
 import { renderResourceTsFile } from '../resource/resource';
-import { createTodoError } from '../todo_error';
 const factory = ts.factory;
 
 export type DataTableMapping = Record<string, string>;
 export type DataDefinition = {
   tableMappings: Record<string, DataTableMapping | undefined>;
+  schema: string;
 };
 
 const migratedAmplifyGen1DynamoDbTableMapKeyName = 'migratedAmplifyGen1DynamoDbTableMap';
-
-export const schemaPlaceholderComment = 'TODO: Add your existing graphql schema here';
 
 export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArray<ts.Node> => {
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineData');
+
+  const schemaStatements: ts.Node[] = [];
+
+  if (dataDefinition && dataDefinition.schema) {
+    const schemaVariableDeclaration = factory.createVariableDeclaration(
+      'schema',
+      undefined,
+      undefined,
+      factory.createNoSubstitutionTemplateLiteral(dataDefinition.schema),
+    );
+    const schemaStatementAssignment = factory.createVariableStatement(
+      [],
+      factory.createVariableDeclarationList([schemaVariableDeclaration], ts.NodeFlags.Const),
+    );
+    schemaStatements.push(schemaStatementAssignment);
+  }
 
   if (dataDefinition?.tableMappings) {
     const tableMappingEnvironments: ObjectLiteralExpression[] = [];
@@ -61,14 +75,12 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
       ),
     );
   }
-  dataRenderProperties.push(
-    factory.createPropertyAssignment(factory.createIdentifier('schema'), factory.createStringLiteral(schemaPlaceholderComment)),
-  );
+  dataRenderProperties.push(factory.createShorthandPropertyAssignment(factory.createIdentifier('schema')));
   return renderResourceTsFile({
     exportedVariableName: factory.createIdentifier('data'),
     functionCallParameter: factory.createObjectLiteralExpression(dataRenderProperties, true),
-    postExportStatements: [createTodoError('Add Gen 1 GraphQL schema')],
     backendFunctionConstruct: 'defineData',
+    postImportStatements: schemaStatements,
     additionalImportedBackendIdentifiers: namedImports,
   });
 };

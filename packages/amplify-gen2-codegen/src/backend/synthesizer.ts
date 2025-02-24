@@ -14,6 +14,7 @@ import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../storage/source_builder.js';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
+import ci from 'ci-info';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -557,13 +558,19 @@ export class BackendSynthesizer {
       factory.createVariableDeclarationList([backendVariable], ts.NodeFlags.Const),
     );
 
+    let envVariableIdentifier = 'process.env.AMPLIFY_GEN_1_ENV_NAME';
+    if (ci.isCI && !process.env.AMPLIFY_GEN_1_ENV_NAME) {
+      errors.push(
+        factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+          factory.createStringLiteral('Please set AMPLIFY_GEN_1_ENV_NAME environment variable in your branch'),
+        ]),
+      );
+    } else if (!ci.isCI) {
+      envVariableIdentifier = '"sandbox"';
+    }
+
     const amplifyGen1EnvStatement = this.createVariableStatement(
-      factory.createVariableDeclaration(
-        'AMPLIFY_GEN_1_ENV_NAME',
-        undefined,
-        undefined,
-        factory.createIdentifier('process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox"'),
-      ),
+      factory.createVariableDeclaration('AMPLIFY_GEN_1_ENV_NAME', undefined, undefined, factory.createIdentifier(envVariableIdentifier)),
     );
     nodes.push(amplifyGen1EnvStatement);
 
