@@ -66,7 +66,7 @@
                 },
                 "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
                 "Environment": {"Variables" : { "ENV": {"Ref": "env"}}},
-                "Runtime": "nodejs18.x",
+                "Runtime": "nodejs22.x",
                 "Timeout": 300
             }
         },

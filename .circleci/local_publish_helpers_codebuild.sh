@@ -86,22 +86,22 @@ function generatePkgCli {
   cp package.json ../build/node_modules/package.json
 
   if [[ "$@" =~ 'arm' ]]; then
-    npx pkg --no-bytecode --public-packages "*" --public -t node18-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
+    npx pkg --no-bytecode --public-packages "*" --public -t node22-linux-arm64 ../build/node_modules -o ../out/amplify-pkg-linux-arm64
     tar -czvf ../out/amplify-pkg-linux-arm64.tgz ../out/amplify-pkg-linux-arm64
   fi
 
   if [[ "$@" =~ 'linux' ]]; then
-    npx pkg -t node18-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
+    npx pkg -t node22-linux-x64 ../build/node_modules -o ../out/amplify-pkg-linux-x64
     tar -czvf ../out/amplify-pkg-linux-x64.tgz ../out/amplify-pkg-linux-x64
   fi
 
   if [[ "$@" =~ 'macos' ]]; then
-    npx pkg -t node18-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
+    npx pkg -t node22-macos-x64 ../build/node_modules -o ../out/amplify-pkg-macos-x64
     tar -czvf ../out/amplify-pkg-macos-x64.tgz ../out/amplify-pkg-macos-x64
   fi
 
   if [[ "$@" =~ 'win' ]]; then
-    npx pkg -t node18-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
+    npx pkg -t node22-win-x64 ../build/node_modules -o ../out/amplify-pkg-win-x64.exe
     tar -czvf ../out/amplify-pkg-win-x64.tgz ../out/amplify-pkg-win-x64.exe
   fi
 
@@ -139,9 +139,9 @@ function verifyPkgCli {
       fi
     }
 
-    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((900 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((900 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((890 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((930 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((930 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((930 * 1024 * 1024))
     verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((750 * 1024 * 1024))
 }
 

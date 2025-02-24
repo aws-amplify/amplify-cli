@@ -12,6 +12,7 @@ import {
   TypeOptionFlowData,
 } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { createHashedIdentifier } from '../../commands/helpers/encryption-helpers';
+import { homedir } from 'os';
 
 /**
  * Store the data and sequence of events of CLI walkthrough
@@ -31,6 +32,11 @@ export class CLIFlowReport implements IFlowData {
   projectEnvIdentifier?: string; // hash(ProjectName + Amplify AppId + EnvName)
   projectIdentifier?: string; // hash( ProjectName + Amplify App Id)
   envName?: string;
+
+  // (file:/+)? -> matches optional file url prefix
+  // homedir() -> users home directory, replacing \ with /
+  // [\\w.\\-_@\\\\/]+ -> matches nested directories and file name
+  filePathRegex = new RegExp(`(file:/+)?${homedir().replaceAll('\\', '/')}[\\w.\\-_@\\\\/]+`, 'g');
 
   constructor() {
     const currentTime = Date.now();
@@ -66,8 +72,15 @@ export class CLIFlowReport implements IFlowData {
    */
   setInput(input: CLIInput): void {
     this.input = input;
-    this.runtime = input.argv[0] as string;
-    this.executable = input.argv[1] as string;
+    for (let i = 0; i < input.argv.length; i++) {
+      if (input.argv[i].match(this.filePathRegex)) {
+        const arg = this.anonymizePath(input.argv[i]);
+        this.input.argv[i] = arg;
+      }
+    }
+
+    this.runtime = this.input.argv[0] as string;
+    this.executable = this.input.argv[1] as string;
     this.cmd = input.argv[2] as string;
     this.subCmd = input.argv[3] ? input.argv[3] : undefined;
     this.optionFlowData = []; // key-value store with ordering maintained
@@ -139,4 +152,12 @@ export class CLIFlowReport implements IFlowData {
     const timeStampedOption: IOptionFlowHeadlessData = { input: cleanOption, timestamp: new Date().valueOf() }; // attach unix-style timestamp
     this.optionFlowData.push(timeStampedOption);
   }
+
+  private anonymizePath = (str: string): string => {
+    let result = str;
+    if (result.match(this.filePathRegex)) {
+      result = result.replace(this.filePathRegex, '');
+    }
+    return result;
+  };
 }
