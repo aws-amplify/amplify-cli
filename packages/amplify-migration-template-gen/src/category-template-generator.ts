@@ -138,7 +138,7 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     return JSON.parse(templateBody) as CFNTemplate;
   }
 
-   async describeStack(stackId: string) {
+   public async describeStack(stackId: string) {
     return (
       await this.cfnClient.send(
         new DescribeStacksCommand({
