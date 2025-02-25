@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [13.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.4...@aws-amplify/cli-internal@13.0.0) (2025-02-25)
+
+
+* feat!: Update node to 22 (#14121) ([ae8aeaf](https://github.com/aws-amplify/amplify-cli/commit/ae8aeaf275937d283253ad46156fcd627dcf1f3c)), closes [#14121](https://github.com/aws-amplify/amplify-cli/issues/14121)
+
+
+### BREAKING CHANGES
+
+* Update node to 22
+
+
+
+
+
 ## [12.14.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.3...@aws-amplify/cli-internal@12.14.4) (2025-02-20)
 
 
