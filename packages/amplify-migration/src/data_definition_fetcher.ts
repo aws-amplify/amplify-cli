@@ -1,11 +1,63 @@
+import path from 'node:path';
+import * as fs from 'fs-extra';
+import glob from 'glob';
+import assert from 'node:assert';
+
 import { DataDefinition } from '@aws-amplify/amplify-gen2-codegen';
 import { AmplifyStackParser } from './amplify_stack_parser.js';
 import { BackendEnvironmentResolver } from './backend_environment_selector.js';
+import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 
 const dataSourceMappingOutputKey = 'DataSourceMappingOutput';
 
 export class DataDefinitionFetcher {
   constructor(private backendEnvironmentResolver: BackendEnvironmentResolver, private amplifyStackClient: AmplifyStackParser) {}
+
+  getSchema = async (): Promise<string> => {
+    try {
+      let apiName;
+      const meta = stateManager.getMeta();
+      const apis = meta?.api ?? {};
+      Object.keys(apis).forEach((api) => {
+        const apiObj = apis[api];
+        if (apiObj.service === 'AppSync') {
+          apiName = api;
+        }
+      });
+
+      assert(apiName);
+
+      const rootDir = pathManager.findProjectRoot();
+      assert(rootDir);
+      const apiPath = path.join(rootDir, 'amplify', 'backend', 'api', apiName);
+
+      // Check for schema folder first
+      const schemaFolderPath = path.join(apiPath, 'schema');
+      if (fs.existsSync(schemaFolderPath) && fs.statSync(schemaFolderPath).isDirectory()) {
+        // Read all .graphql files from schema folder
+        const graphqlFiles = glob.sync(path.join(schemaFolderPath, '*.graphql'));
+        if (graphqlFiles.length > 0) {
+          let mergedSchema = '';
+          for (const file of graphqlFiles) {
+            const content = fs.readFileSync(file, 'utf8');
+            mergedSchema += content + '\n';
+          }
+          return mergedSchema.trim();
+        }
+      }
+
+      // If schema folder doesn't exist or is empty, check for schema.graphql file
+      const schemaFilePath = path.join(apiPath, 'schema.graphql');
+      if (fs.existsSync(schemaFilePath)) {
+        return fs.readFileSync(schemaFilePath, 'utf8');
+      }
+
+      throw new Error('No GraphQL schema found in the project');
+    } catch (error) {
+      throw new Error(`Error reading GraphQL schema: ${error.message}`);
+    }
+  };
+
   getDefinition = async (): Promise<DataDefinition | undefined> => {
     const backendEnvironments = await this.backendEnvironmentResolver.getAllBackendEnvironments();
     const tableMappings = await Promise.all(
@@ -28,8 +80,12 @@ export class DataDefinitionFetcher {
         return [backendEnvironment.environmentName, undefined];
       }),
     );
+
+    const schema = await this.getSchema();
+
     return {
       tableMappings: Object.fromEntries(tableMappings),
+      schema,
     };
   };
 }
