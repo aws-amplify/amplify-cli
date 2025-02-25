@@ -65,7 +65,7 @@ export interface CFNStackRefactorTemplates {
   logicalIdMapping: Map<string, string>;
 }
 
-export type CATEGORY = 'auth' | 'storage';
+export type CATEGORY = 'auth' | 'storage' | 'auth-user-pool-group';
 
 export interface ResourceMappingLocation {
   StackName: string;
@@ -83,7 +83,7 @@ export enum CFN_AUTH_TYPE {
   IdentityPool = 'AWS::Cognito::IdentityPool',
   IdentityPoolRoleAttachment = 'AWS::Cognito::IdentityPoolRoleAttachment',
   UserPoolDomain = 'AWS::Cognito::UserPoolDomain',
-  UserPoolGroups = 'AWS::Cognito::UserPoolGroup',
+  UserPoolGroup = 'AWS::Cognito::UserPoolGroup',
 }
 
 export enum CFN_S3_TYPE {
@@ -98,7 +98,7 @@ export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE;
 
 export type AWS_RESOURCE_ATTRIBUTES = 'Arn';
 
-export type CFN_CATEGORY_TYPE = CFN_AUTH_TYPE | CFN_S3_TYPE;
+export type CFN_CATEGORY_TYPE = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE;
 
 export enum CFN_PSEUDO_PARAMETERS_REF {
   StackName = 'AWS::StackName',
@@ -121,3 +121,7 @@ export type FailedRefactorResponse = {
   stackRefactorId: string;
   status: StackRefactorStatus | StackRefactorExecutionStatus | undefined;
 };
+
+export enum GEN2_AUTH_LOGICAL_RESOURCE_ID {
+  IDENTITY_POOL_ROLE_ATTACHMENT = 'IdentityPoolRoleAttachment',
+}

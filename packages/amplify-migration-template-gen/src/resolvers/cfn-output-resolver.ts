@@ -94,7 +94,9 @@ class CfnOutputResolver {
           case 'AWS::IAM::Role':
             return {
               // output is already in ARN format
-              Arn: resourceIdentifier,
+              Arn: resourceIdentifier.startsWith('arn:aws:iam')
+                ? resourceIdentifier
+                : `arn:aws:iam::${this.accountId}:role/${resourceIdentifier}`,
             };
           default:
             return undefined;
