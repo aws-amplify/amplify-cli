@@ -676,7 +676,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs18.x',
+      runtime: 'nodejs22.x',
       timeout: 300,
     });
 
@@ -760,7 +760,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('UserPoolClientRole', 'Arn').toString(),
-      runtime: 'nodejs18.x',
+      runtime: 'nodejs22.x',
       timeout: 300,
     });
 
@@ -906,7 +906,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('MFALambdaRole', 'Arn').toString(),
-      runtime: 'nodejs18.x',
+      runtime: 'nodejs22.x',
       timeout: 300,
     });
     this.mfaLambda.addDependency(this.mfaLambdaRole);
@@ -1047,7 +1047,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       },
       handler: 'index.handler',
       role: cdk.Fn.getAtt('OpenIdLambdaRole', 'Arn').toString(),
-      runtime: 'nodejs18.x',
+      runtime: 'nodejs22.x',
       timeout: 300,
     });
     this.openIdLambda.addDependency(this.openIdLambdaRole);

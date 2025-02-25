@@ -47,7 +47,7 @@ runs:
 
       # For iOS tests
     - name: Setup Ruby
-      uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939 # v1.152.0
+      uses: ruby/setup-ruby@22fdc77bf4148f810455b226c90fb81b5cbc00a7 # v1.171.0
       if: runner.os == 'macOS'
       with:
         ruby-version: '3.2.1'
@@ -57,7 +57,7 @@ runs:
       if: runner.os == 'macOS'
       shell: bash
       run: |
-        sudo xcode-select -s "/Applications/Xcode_14.1.app"
+        sudo xcode-select -s "/Applications/Xcode_15.1.app"
         xcodebuild -version
 
     - name: Run Smoke Tests
