@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import assert from 'node:assert';
 import { v4 as uuid } from 'uuid';
 
-import { createGen2Renderer, Gen2RenderingOptions } from '@aws-amplify/amplify-gen2-codegen';
+import { createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 
 import { getProjectSettings, UsageData } from '@aws-amplify/cli-internal';
 import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
