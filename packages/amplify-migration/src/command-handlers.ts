@@ -125,7 +125,7 @@ const getUsageDataMetric = async (envName: string): Promise<IUsageData> => {
     },
     accountId,
     {
-      envName
+      envName,
     },
     Date.now(),
   );
@@ -353,5 +353,8 @@ async function initializeTemplateGenerator(fromStack: string, toStack: string) {
   const ssmClient = new SSMClient();
   const cognitoIdpClient = new CognitoIdentityProviderClient();
 
-  return [new TemplateGenerator(fromStack, toStack, accountId, cfnClient, ssmClient, cognitoIdpClient, appId, backendEnvironmentName), backendEnvironmentName];
+  return [
+    new TemplateGenerator(fromStack, toStack, accountId, cfnClient, ssmClient, cognitoIdpClient, appId, backendEnvironmentName),
+    backendEnvironmentName,
+  ];
 }
