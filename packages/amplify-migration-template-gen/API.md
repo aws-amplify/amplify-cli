@@ -13,6 +13,8 @@ export class TemplateGenerator {
     constructor(fromStack: string, toStack: string, accountId: string, cfnClient: CloudFormationClient, ssmClient: SSMClient, cognitoIdpClient: CognitoIdentityProviderClient, appId: string, environmentName: string);
     // (undocumented)
     generate(): Promise<boolean>;
+    // (undocumented)
+    revert(): Promise<boolean>;
 }
 
 // (No @packageDocumentation comment for this package)
