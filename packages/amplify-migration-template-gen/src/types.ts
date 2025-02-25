@@ -123,7 +123,5 @@ export type FailedRefactorResponse = {
 };
 
 export enum GEN2_AUTH_LOGICAL_RESOURCE_ID {
-  UNAUTH_ROLE = 'amplifyAuthunauthenticatedUserRole',
-  AUTH_ROLE = 'amplifyAuthauthenticatedUserRole',
   IDENTITY_POOL_ROLE_ATTACHMENT = 'IdentityPoolRoleAttachment',
 }
