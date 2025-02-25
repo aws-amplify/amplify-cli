@@ -7,8 +7,14 @@ console.log('Running codegen...');
 run();
 
 async function run() {
-  const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
-  const modelGen = spawn(amplify, ['codegen', 'model'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+  const isWindows = /^win/.test(process.platform);
+  const amplify = process.env.AMPLIFY_PATH ? process.env.AMPLIFY_PATH : isWindows ? 'amplify.cmd' : 'amplify';
+  const modelGen = spawn(amplify, ['codegen', 'model'], {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: 'inherit',
+    shell: isWindows ? true : undefined,
+  });
 
   modelGen.on('exit', (code) => {
     if (code === 0) {

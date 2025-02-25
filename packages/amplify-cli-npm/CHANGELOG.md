@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [12.15.0-next-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.15.0-next.0...@aws-amplify/cli@12.15.0-next-1.0) (2025-02-17)
+## [12.14.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.14.3...@aws-amplify/cli@12.14.4) (2025-02-20)
 
 **Note:** Version bump only for package @aws-amplify/cli
 
@@ -11,26 +11,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [12.15.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.15.0-beta-latest.0...@aws-amplify/cli@12.15.0-next.0) (2025-02-14)
+## [12.14.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.14.2...@aws-amplify/cli@12.14.3) (2025-02-07)
 
 **Note:** Version bump only for package @aws-amplify/cli
-
-
-
-
-
-# [12.15.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.14.2...@aws-amplify/cli@12.15.0-beta-latest.0) (2025-02-12)
-
-
-### Bug Fixes
-
-* touch npm package to fix version mismatch ([38ac5c8](https://github.com/aws-amplify/amplify-cli/commit/38ac5c8fb61c5604926b7fd1e376e4a01cf1c65d))
-* update comment in cli-npm package to force version bump ([ebfe782](https://github.com/aws-amplify/amplify-cli/commit/ebfe782b26c1498dceaf557b14f55b0167b6b1db))
-
-
-### Features
-
-* bump version ([c0e7dfb](https://github.com/aws-amplify/amplify-cli/commit/c0e7dfbaeaf31711d7f70fc43772da12efb47cf0))
 
 
 

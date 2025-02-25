@@ -678,7 +678,6 @@ export class FeatureFlags {
         defaultValueForNewProjects: false,
       },
       {
-        // TODO: review name before release
         name: 'enableGen2Migration',
         type: 'boolean',
         defaultValueForExistingProjects: false,

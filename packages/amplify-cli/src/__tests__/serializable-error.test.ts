@@ -54,4 +54,23 @@ describe('test serializabe error', () => {
     expect(serializableError.name).toBe('NotImplementedError');
     expect(serializableError.details).toBe('some error details with arn: <escaped ARN> and arn: <escaped ARN> and something else');
   });
+
+  it('test SerializableError has no stack arns in error message', () => {
+    const testStack = 'amplify-someStackName-dev-u9910';
+    const error = new AmplifyError('NotImplementedError', {
+      message: `Could not initialize ${testStack}`,
+    });
+
+    const serializableError = new SerializableError(error);
+    expect(serializableError.message).toBe('Could not initialize <escaped stack>');
+  });
+
+  it('test SerializeError error message has no home directories in file paths', () => {
+    const error = new AmplifyError('FileSystemPermissionsError', {
+      message: `Permission denied, open '${os.homedir()}/.amplify/logs/amplify-cli-10371230.log`,
+    });
+
+    const serializableError = new SerializableError(error);
+    expect(serializableError.message).not.toContain(os.homedir());
+  });
 });

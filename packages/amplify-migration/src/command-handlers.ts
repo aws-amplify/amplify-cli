@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 import { createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 
-import { getProjectSettings, UsageData } from '@aws-amplify/cli-internal';
+import { UsageData } from '@aws-amplify/cli-internal';
 import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
@@ -79,7 +79,8 @@ const generateGen2Code = async ({
   const gen2Codegen = ora('Generating your Gen 2 backend code').start();
   assert(gen2RenderOptions);
   const pipeline = createGen2Renderer(gen2RenderOptions);
-  const usageData = await getUsageDataMetric();
+  assert(backendEnvironmentName);
+  const usageData = await getUsageDataMetric(backendEnvironmentName);
 
   try {
     await pipeline.render();
@@ -110,7 +111,7 @@ const getFunctionPath = (functionName: string) => {
   return path.join('amplify', 'backend', 'function', functionName, 'src');
 };
 
-const getUsageDataMetric = async (): Promise<IUsageData> => {
+const getUsageDataMetric = async (envName: string): Promise<IUsageData> => {
   const usageData = UsageData.Instance;
   const accountId = await getAccountId();
   assert(accountId);
@@ -123,7 +124,9 @@ const getUsageDataMetric = async (): Promise<IUsageData> => {
       argv: process.argv,
     },
     accountId,
-    getProjectSettings(),
+    {
+      envName
+    },
     Date.now(),
   );
 
@@ -312,9 +315,9 @@ export async function execute() {
  * @param toStack
  */
 export async function executeStackRefactor(fromStack: string, toStack: string) {
-  const templateGenerator = await initializeTemplateGenerator(fromStack, toStack);
+  const [templateGenerator, envName] = await initializeTemplateGenerator(fromStack, toStack);
   const success = await templateGenerator.generate();
-  const usageData = await getUsageDataMetric();
+  const usageData = await getUsageDataMetric(envName);
   if (success) {
     printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/templates directory.`));
     await usageData.emitSuccess();
@@ -324,9 +327,9 @@ export async function executeStackRefactor(fromStack: string, toStack: string) {
 }
 
 export async function revertGen2Migration(fromStack: string, toStack: string) {
-  const templateGenerator = await initializeTemplateGenerator(fromStack, toStack);
+  const [templateGenerator, envName] = await initializeTemplateGenerator(fromStack, toStack);
   const success = await templateGenerator.revert();
-  const usageData = await getUsageDataMetric();
+  const usageData = await getUsageDataMetric(envName);
   if (success) {
     printer.print(format.success(`Moved resources back to Gen1 stack successfully.`));
     await usageData.emitSuccess();
@@ -350,5 +353,5 @@ async function initializeTemplateGenerator(fromStack: string, toStack: string) {
   const ssmClient = new SSMClient();
   const cognitoIdpClient = new CognitoIdentityProviderClient();
 
-  return new TemplateGenerator(fromStack, toStack, accountId, cfnClient, ssmClient, cognitoIdpClient, appId, backendEnvironmentName);
+  return [new TemplateGenerator(fromStack, toStack, accountId, cfnClient, ssmClient, cognitoIdpClient, appId, backendEnvironmentName), backendEnvironmentName];
 }

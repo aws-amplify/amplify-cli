@@ -1,9 +1,17 @@
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { homedir } from 'os';
 import * as path from 'path';
 
 const stackTraceRegex = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
 const ARNRegex =
   /arn:[a-z0-9][-.a-z0-9]{0,62}:[A-Za-z0-9][A-Za-z0-9_/.-]{0,62}:[A-Za-z0-9_/.-]{0,63}:[A-Za-z0-9_/.-]{0,63}:[A-Za-z0-9][A-Za-z0-9:_/+=,@.-]{0,1023}/g;
+
+// Gen1 stacks have same structure as Gen2 stacks
+const stackRegex = /amplify-[a-zA-Z0-9-]+/g;
+// (file:/+)? -> matches optional file url prefix
+// homedir() -> users home directory, replacing \ with /
+// [\\w.\\-_@\\\\/]+ -> matches nested directories and file name
+const filePathRegex = new RegExp(`(file:/+)?${homedir().replaceAll('\\', '/')}[\\w.\\-_@\\\\/]+`, 'g');
 
 /**
  * Wrapper around Error.name
@@ -16,7 +24,7 @@ export class SerializableError {
   trace?: Trace[];
   constructor(error: Error) {
     this.name = error.name;
-    this.message = removeARN(error.message)!;
+    this.message = anonymizePaths(sanitize(error.message)!);
     this.details = removeARN((error as $TSAny)?.details);
     this.code = (error as $TSAny)?.code;
     this.trace = extractStackTrace(error);
@@ -83,8 +91,30 @@ const processPaths = (paths: string[]): string[] => {
   });
 };
 
+const sanitize = (str?: string): string | undefined => {
+  let result = str;
+  result = removeARN(result);
+  result = removeStackIdentifier(result);
+
+  return result;
+};
+
 const removeARN = (str?: string): string | undefined => {
   return str?.replace(ARNRegex, '<escaped ARN>');
+};
+
+const removeStackIdentifier = (str?: string): string | undefined => {
+  return str?.replace(stackRegex, '<escaped stack>') ?? '';
+};
+
+const anonymizePaths = (str: string): string => {
+  let result = str;
+
+  if (result.match(filePathRegex)) {
+    result = result.replaceAll(filePathRegex, '');
+  }
+
+  return result;
 };
 
 type Trace = {
