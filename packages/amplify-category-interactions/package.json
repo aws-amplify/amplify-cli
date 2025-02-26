@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-interactions",
-  "version": "5.1.32",
+  "version": "5.1.33",
   "description": "amplify-cli interactions plugin",
   "repository": {
     "type": "git",
