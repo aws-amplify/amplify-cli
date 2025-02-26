@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-frontend-javascript",
-  "version": "3.10.21",
+  "version": "3.10.22-next-2.0",
   "description": "amplify-cli front-end plugin for JavaScript projects",
   "scripts": {
     "test": "jest --logHeapUsage",
@@ -23,7 +23,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.0",
+    "@aws-amplify/amplify-cli-core": "4.4.1-next-2.0",
     "@babel/core": "^7.23.2",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "chalk": "^4.1.1",

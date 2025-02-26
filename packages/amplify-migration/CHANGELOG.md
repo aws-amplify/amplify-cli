@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-1.0...@aws-amplify/migrate@0.1.0-next-2.0) (2025-02-26)
+
+
+### Bug Fixes
+
+* **migrate:** lint errors ([a3c75b3](https://github.com/aws-amplify/amplify-cli/commit/a3c75b3a98719970e11733043a405c7764350e53))
+* **migrate:** lint errors ([98dced2](https://github.com/aws-amplify/amplify-cli/commit/98dced209aeea4c26aec86d3d5aba19830091b4a))
+* **migrate:** remove unused import in test ([7b10b3b](https://github.com/aws-amplify/amplify-cli/commit/7b10b3ba880212b8abbbbbe2b67b92c883d9696b))
+* **migrate:** run prettier ([74d87c9](https://github.com/aws-amplify/amplify-cli/commit/74d87c9c5d2ae515ed9c7b92d10cf70e7ebf373c))
+* **migrate:** use latest cli-internal version ([b5b83b3](https://github.com/aws-amplify/amplify-cli/commit/b5b83b3b3d4e8024dc7d0b08c175db6f49610347))
+
+
+### Features
+
+* **migrate:** add revert, userpool group refactor ([38eed7e](https://github.com/aws-amplify/amplify-cli/commit/38eed7e57e785cece232ce967ddc9171390af312))
+
+
+
+
+
 # [0.1.0-next-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next.0...@aws-amplify/migrate@0.1.0-next-1.0) (2025-02-17)
 
 
