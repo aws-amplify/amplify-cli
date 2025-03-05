@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-extensibility-helper",
-  "version": "3.0.38-next-2.0",
+  "version": "3.0.38-next-3.0",
   "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "3.1.28-next-2.0",
-    "@aws-amplify/amplify-cli-core": "4.4.1-next-2.0",
+    "@aws-amplify/amplify-category-custom": "3.1.28-next-3.0",
+    "@aws-amplify/amplify-cli-core": "4.4.1-next-3.0",
     "aws-cdk-lib": "~2.177.0"
   },
   "jest": {
