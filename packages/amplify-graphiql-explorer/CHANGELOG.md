@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.6.0...@aws-amplify/amplify-graphiql-explorer@2.6.1-12.14.4-lerna-v8.0) (2025-03-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-graphiql-explorer
+
+
+
+
+
 # [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-graphiql-explorer@2.5.14...@aws-amplify/amplify-graphiql-explorer@2.6.0) (2024-05-07)
 
 

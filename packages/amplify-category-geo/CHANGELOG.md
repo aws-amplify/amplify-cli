@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.21-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-geo@3.5.20...@aws-amplify/amplify-category-geo@3.5.21-12.14.4-lerna-v8.0) (2025-03-10)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-geo
+
+
+
+
+
 ## [3.5.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-geo@3.5.19...@aws-amplify/amplify-category-geo@3.5.20) (2025-02-25)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-geo

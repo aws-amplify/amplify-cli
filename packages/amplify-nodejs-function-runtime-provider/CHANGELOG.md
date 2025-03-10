@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.29-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.5.28...amplify-nodejs-function-runtime-provider@2.5.29-12.14.4-lerna-v8.0) (2025-03-10)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
 ## [2.5.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.5.27...amplify-nodejs-function-runtime-provider@2.5.28) (2025-02-25)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider

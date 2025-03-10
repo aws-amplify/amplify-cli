@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-appsync-simulator",
-  "version": "2.16.11",
+  "version": "2.16.12-12.14.4-lerna-v8.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.0",
+    "@aws-amplify/amplify-cli-core": "4.4.1-12.14.4-lerna-v8.0",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "@graphql-tools/schema": "^8.3.1",
     "@graphql-tools/utils": "^8.5.1",
@@ -58,7 +58,7 @@
     "ws": "^8.5.0"
   },
   "devDependencies": {
-    "@aws-amplify/amplify-graphiql-explorer": "2.6.0",
+    "@aws-amplify/amplify-graphiql-explorer": "2.6.1-12.14.4-lerna-v8.0",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
     "@types/node": "^12.12.6",

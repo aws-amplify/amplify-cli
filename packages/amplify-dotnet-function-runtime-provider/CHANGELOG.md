@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.4-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.1.3...amplify-dotnet-function-runtime-provider@2.1.4-12.14.4-lerna-v8.0) (2025-03-10)
+
+**Note:** Version bump only for package amplify-dotnet-function-runtime-provider
+
+
+
+
+
 ## [2.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@2.1.2...amplify-dotnet-function-runtime-provider@2.1.3) (2025-02-20)
 
 **Note:** Version bump only for package amplify-dotnet-function-runtime-provider

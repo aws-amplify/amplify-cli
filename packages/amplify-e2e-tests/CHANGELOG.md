@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.6-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.5...amplify-e2e-tests@4.11.6-12.14.4-lerna-v8.0) (2025-03-10)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 ## [4.11.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.4...amplify-e2e-tests@4.11.5) (2025-02-25)
 
 **Note:** Version bump only for package amplify-e2e-tests
