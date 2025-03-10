@@ -23,3 +23,6 @@ packages/amplify-frontend-ios/tests/sample**
 # Exceptions:
 !packages/amplify-category-hosting/lib
 !packages/amplify-frontend-*/lib
+
+/.nx/cache
+/.nx/workspace-data

@@ -5,5 +5,9 @@
     "rootDir": "./src",
     "allowJs": true,
     "useUnknownInCatchVariables": false
-  }
+  },
+  "include": [
+    "src",
+    "resources"
+  ]
 }
