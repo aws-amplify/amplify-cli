@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.9.19-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.9.18...@aws-amplify/amplify-environment-parameters@1.9.19-12.14.4-lerna-v8.0) (2025-03-10)
-
-**Note:** Version bump only for package @aws-amplify/amplify-environment-parameters
-
-
-
-
-
 ## [1.9.18](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-environment-parameters@1.9.17...@aws-amplify/amplify-environment-parameters@1.9.18) (2025-02-20)
 
 **Note:** Version bump only for package @aws-amplify/amplify-environment-parameters

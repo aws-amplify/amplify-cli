@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.9.23-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.9.22...amplify-dynamodb-simulator@2.9.23-12.14.4-lerna-v8.0) (2025-03-10)
-
-**Note:** Version bump only for package amplify-dynamodb-simulator
-
-
-
-
-
 ## [2.9.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@2.9.21...amplify-dynamodb-simulator@2.9.22) (2025-02-20)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

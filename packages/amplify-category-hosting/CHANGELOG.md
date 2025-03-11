@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.5.41-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.40...@aws-amplify/amplify-category-hosting@3.5.41-12.14.4-lerna-v8.0) (2025-03-10)
-
-**Note:** Version bump only for package @aws-amplify/amplify-category-hosting
-
-
-
-
-
 ## [3.5.40](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.39...@aws-amplify/amplify-category-hosting@3.5.40) (2025-02-20)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-hosting

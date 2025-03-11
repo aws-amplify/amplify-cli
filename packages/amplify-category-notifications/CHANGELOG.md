@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.26.31-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.30...@aws-amplify/amplify-category-notifications@2.26.31-12.14.4-lerna-v8.0) (2025-03-10)
-
-**Note:** Version bump only for package @aws-amplify/amplify-category-notifications
-
-
-
-
-
 ## [2.26.30](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-notifications@2.26.29...@aws-amplify/amplify-category-notifications@2.26.30) (2025-02-25)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-notifications

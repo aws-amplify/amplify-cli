@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-graphiql-explorer",
-  "version": "2.6.1-12.14.4-lerna-v8.0",
+  "version": "2.6.0",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.23.2",

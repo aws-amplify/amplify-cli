@@ -3,17 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.4.1-12.14.4-lerna-v8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.0...@aws-amplify/amplify-cli-core@4.4.1-12.14.4-lerna-v8.0) (2025-03-10)
-
-
-### Bug Fixes
-
-* lerna update ([db67952](https://github.com/aws-amplify/amplify-cli/commit/db6795291e5d27902aefc5043701b351f59b194e))
-
-
-
-
-
 # [4.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.3.12...@aws-amplify/amplify-cli-core@4.4.0) (2025-02-20)
 
 
