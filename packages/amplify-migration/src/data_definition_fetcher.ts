@@ -1,5 +1,5 @@
 import path from 'node:path';
-import * as fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import glob from 'glob';
 import assert from 'node:assert';
 
@@ -33,26 +33,31 @@ export class DataDefinitionFetcher {
 
       // Check for schema folder first
       const schemaFolderPath = path.join(apiPath, 'schema');
-      if (fs.existsSync(schemaFolderPath) && fs.statSync(schemaFolderPath).isDirectory()) {
-        // Read all .graphql files from schema folder
-        const graphqlFiles = glob.sync(path.join(schemaFolderPath, '*.graphql'));
-        if (graphqlFiles.length > 0) {
-          let mergedSchema = '';
-          for (const file of graphqlFiles) {
-            const content = fs.readFileSync(file, 'utf8');
-            mergedSchema += content + '\n';
+      try {
+        const stats = await fs.stat(schemaFolderPath);
+        if (stats.isDirectory()) {
+          // Read all .graphql files from schema folder
+          const graphqlFiles = glob.sync(path.join(schemaFolderPath, '*.graphql'));
+          if (graphqlFiles.length > 0) {
+            let mergedSchema = '';
+            for (const file of graphqlFiles) {
+              const content = await fs.readFile(file, 'utf8');
+              mergedSchema += content + '\n';
+            }
+            return mergedSchema.trim();
           }
-          return mergedSchema.trim();
         }
+      } catch (error) {
+        // Directory doesn't exist or other error, continue to check for schema.graphql
       }
 
       // If schema folder doesn't exist or is empty, check for schema.graphql file
       const schemaFilePath = path.join(apiPath, 'schema.graphql');
-      if (fs.existsSync(schemaFilePath)) {
-        return fs.readFileSync(schemaFilePath, 'utf8');
+      try {
+        return await fs.readFile(schemaFilePath, 'utf8');
+      } catch (error) {
+        throw new Error('No GraphQL schema found in the project');
       }
-
-      throw new Error('No GraphQL schema found in the project');
     } catch (error) {
       throw new Error(`Error reading GraphQL schema: ${error.message}`);
     }

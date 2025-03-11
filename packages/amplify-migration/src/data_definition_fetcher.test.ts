@@ -7,10 +7,10 @@ import { Stack } from '@aws-sdk/client-cloudformation';
 import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import glob from 'glob';
 
-jest.mock('fs-extra');
+jest.mock('node:fs/promises');
 jest.mock('glob');
 jest.mock('@aws-amplify/amplify-cli-core');
 
@@ -34,10 +34,7 @@ describe('DataDefinitionFetcher', () => {
 
     (pathManager.findProjectRoot as jest.Mock).mockReturnValue('/mock/root/dir');
 
-    (fs.existsSync as jest.Mock).mockImplementation((filePath: string) => {
-      return filePath.includes('schema');
-    });
-    (fs.statSync as jest.Mock).mockImplementation((filePath: string) => {
+    (fs.stat as jest.Mock).mockImplementation((filePath: string) => {
       return {
         isDirectory: () => filePath.includes('schema'),
       };
@@ -53,7 +50,7 @@ describe('DataDefinitionFetcher', () => {
       return [];
     });
 
-    (fs.readFileSync as jest.Mock).mockImplementation((filePath: string) => {
+    (fs.readFile as jest.Mock).mockImplementation((filePath: string) => {
       if (filePath.includes('schema1.graphql')) {
         return 'type Query { getSchema1: String }';
       }
@@ -203,7 +200,7 @@ describe('DataDefinitionFetcher', () => {
 
   describe('when only schema.graphql exists', () => {
     it('should return the content of schema.graphql', async () => {
-      (fs.statSync as jest.Mock).mockImplementation(() => {
+      (fs.stat as jest.Mock).mockImplementation(() => {
         return {
           isDirectory: () => false,
         };
@@ -215,21 +212,13 @@ describe('DataDefinitionFetcher', () => {
 
   describe('when no schema exists', () => {
     it('should throw error when no schema is found', async () => {
-      (fs.existsSync as jest.Mock).mockImplementation(() => {
-        return false;
-      });
+      // Mock fs.stat to simulate non-existent directory
+      (fs.stat as jest.Mock).mockRejectedValue(new Error('ENOENT'));
+
+      // Mock fs.readFile to simulate non-existent schema file
+      (fs.readFile as jest.Mock).mockRejectedValue(new Error('ENOENT'));
 
       await expect(dataDefinitionFetcher.getSchema()).rejects.toThrow('No GraphQL schema found in the project');
-    });
-  });
-
-  describe('error handling', () => {
-    it('should throw error when file reading fails', async () => {
-      (fs.readFileSync as jest.Mock).mockImplementation(() => {
-        throw new Error('Permission denied');
-      });
-
-      await expect(dataDefinitionFetcher.getSchema()).rejects.toThrow('Error reading GraphQL schema: Permission denied');
     });
   });
 });

@@ -14,7 +14,6 @@ import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../storage/source_builder.js';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
-import ci from 'ci-info';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -463,6 +462,66 @@ export class BackendSynthesizer {
     );
   }
 
+  private createAmplifyEnvNameLogic() {
+    // Create: let AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME;
+    const variableDeclaration = factory.createVariableStatement(
+      undefined,
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME'),
+            undefined,
+            undefined,
+            factory.createPropertyAccessExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('process'), factory.createIdentifier('env')),
+              factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME'),
+            ),
+          ),
+        ],
+        ts.NodeFlags.Let,
+      ),
+    );
+
+    // Create: if (ci.isCI && !AMPLIFY_GEN_1_ENV_NAME) { ... } else if (!ci.isCI) { ... }
+    const ifStatement = factory.createIfStatement(
+      // Condition: ci.isCI && !AMPLIFY_GEN_1_ENV_NAME
+      factory.createLogicalAnd(
+        factory.createPropertyAccessExpression(factory.createIdentifier('ci'), factory.createIdentifier('isCI')),
+        factory.createLogicalNot(factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME')),
+      ),
+      // Then block: throw new Error('...')
+      factory.createBlock(
+        [
+          factory.createThrowStatement(
+            factory.createNewExpression(factory.createIdentifier('Error'), undefined, [
+              factory.createStringLiteral('AMPLIFY_GEN_1_ENV_NAME is required in CI environment'),
+            ]),
+          ),
+        ],
+        true,
+      ),
+      // Else block: if (!ci.isCI) { ... }
+      factory.createIfStatement(
+        factory.createLogicalNot(factory.createPropertyAccessExpression(factory.createIdentifier('ci'), factory.createIdentifier('isCI'))),
+        // Then block: AMPLIFY_GEN_1_ENV_NAME = 'sandbox';
+        factory.createBlock(
+          [
+            factory.createExpressionStatement(
+              factory.createBinaryExpression(
+                factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME'),
+                factory.createToken(ts.SyntaxKind.EqualsToken),
+                factory.createStringLiteral('sandbox'),
+              ),
+            ),
+          ],
+          true,
+        ),
+      ),
+    );
+
+    return [variableDeclaration, ifStatement];
+  }
+
   render(renderArgs: BackendRenderParameters): NodeArray<Node> {
     const authFunctionIdentifier = factory.createIdentifier('auth');
     const storageFunctionIdentifier = factory.createIdentifier('storage');
@@ -470,7 +529,7 @@ export class BackendSynthesizer {
     const backendFunctionIdentifier = factory.createIdentifier('defineBackend');
 
     const imports = [];
-    const errors: ts.CallExpression[] = [];
+    const errors = [];
     const defineBackendProperties = [];
     const nodes = [];
 
@@ -551,28 +610,22 @@ export class BackendSynthesizer {
       }
     }
 
+    const ciInfoImportStatement = factory.createImportDeclaration(
+      undefined,
+      factory.createImportClause(false, factory.createIdentifier('ci'), undefined),
+      factory.createStringLiteral('ci-info'),
+    );
+
+    imports.push(ciInfoImportStatement);
+    const envNameStatements = this.createAmplifyEnvNameLogic();
+    errors.push(...envNameStatements);
+
     const callBackendFn = this.defineBackendCall(backendFunctionIdentifier, defineBackendProperties);
     const backendVariable = factory.createVariableDeclaration('backend', undefined, undefined, callBackendFn);
     const backendStatement = factory.createVariableStatement(
       [],
       factory.createVariableDeclarationList([backendVariable], ts.NodeFlags.Const),
     );
-
-    let envVariableIdentifier = 'process.env.AMPLIFY_GEN_1_ENV_NAME';
-    if (ci.isCI && !process.env.AMPLIFY_GEN_1_ENV_NAME) {
-      errors.push(
-        factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-          factory.createStringLiteral('Please set AMPLIFY_GEN_1_ENV_NAME environment variable in your branch'),
-        ]),
-      );
-    } else if (!ci.isCI) {
-      envVariableIdentifier = '"sandbox"';
-    }
-
-    const amplifyGen1EnvStatement = this.createVariableStatement(
-      factory.createVariableDeclaration('AMPLIFY_GEN_1_ENV_NAME', undefined, undefined, factory.createIdentifier(envVariableIdentifier)),
-    );
-    nodes.push(amplifyGen1EnvStatement);
 
     if (renderArgs.auth?.userPoolOverrides && !renderArgs?.auth?.referenceAuth) {
       const cfnUserPoolVariableStatement = this.createVariableStatement(

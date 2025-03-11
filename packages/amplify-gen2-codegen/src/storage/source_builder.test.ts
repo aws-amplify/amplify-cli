@@ -34,11 +34,11 @@ describe('Storage source generation', () => {
         assert(!output.includes(`name:`));
       });
       it('renders `name` if the `storageIdentifier` is passed', () => {
-        const storageIdentifier = 'my-cool-bucket';
+        const storageIdentifier = 'my-cool-bucket-dev';
         const rendered = renderStorage({ storageIdentifier });
         const output = printNodeArray(rendered);
 
-        assert(output.includes(`name: "${storageIdentifier}"`));
+        assert(output.includes('name: `my-cool-bucket-${AMPLIFY_GEN_1_ENV_NAME}`'));
       });
       const permissions: Permission[] = ['read', 'write', 'delete'];
 
