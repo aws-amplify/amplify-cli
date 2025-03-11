@@ -1,5 +1,5 @@
 import CategoryTemplateGenerator from './category-template-generator';
-import { CFN_PSEUDO_PARAMETERS_REF, CFN_S3_TYPE, CFNTemplate } from './types';
+import { CFN_AUTH_TYPE, CFN_PSEUDO_PARAMETERS_REF, CFN_S3_TYPE, CFNTemplate } from './types';
 import {
   CloudFormationClient,
   DescribeStacksCommand,
@@ -21,14 +21,27 @@ const stubCfnClientSend = jest.fn();
 const stubSsmClientSend = jest.fn();
 const stubCognitoClientSend = jest.fn();
 
-const GEN1_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-testauth-dev-12345-auth-ABCDE/12345';
-const GEN2_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-auth-ABCDE/12345';
+const GEN1_STORAGE_CATEGORY_STACK_NAME = 'amplify-testauth-dev-12345-storage-ABCDE';
+const GEN1_CATEGORY_STACK_ID = `arn:aws:cloudformation:us-east-1:1234567890:stack/${GEN1_STORAGE_CATEGORY_STACK_NAME}/12345`;
+const GEN2_CATEGORY_STACK_ID = 'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-storage-ABCDE/12345';
+const GEN1_AUTH_CATEGORY_STACK_NAME = 'amplify-testauth-dev-12345-auth-ABCDE';
+const GEN1_AUTH_CATEGORY_STACK_ID = `arn:aws:cloudformation:us-east-1:1234567890:stack/${GEN1_AUTH_CATEGORY_STACK_NAME}/12345`;
+const GEN2_AUTH_CATEGORY_STACK_ID =
+  'arn:aws:cloudformation:us-east-1:1234567890:stack/amplify-mygen2app-test-sandbox-12345-auth-ABCDE/12345';
 const GEN1_S3_BUCKET_LOGICAL_ID = 'S3Bucket';
 const GEN2_S3_BUCKET_LOGICAL_ID = 'Gen2S3Bucket';
 const GEN1_ANOTHER_S3_BUCKET_LOGICAL_ID = 'MyOtherS3Bucket';
 const GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID = 'MyOtherGen2S3Bucket';
 const MOCK_APP_ID = 'd123456';
 const ENV_NAME = 'test';
+const GEN1_AUTH_USER_POOL_LOGICAL_ID = 'UserPool';
+const GEN1_AUTH_IDENTITY_POOL_LOGICAL_ID = 'IdentityPool';
+const GEN1_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID = 'UserPoolClient';
+const GEN1_AUTH_USER_POOL_CLIENT_WEB_LOGICAL_ID = 'UserPoolClientWeb';
+const GEN2_AUTH_USER_POOL_LOGICAL_ID = 'Gen2UserPool';
+const GEN2_AUTH_IDENTITY_POOL_LOGICAL_ID = 'Gen2IdentityPool';
+const GEN2_AUTH_USER_POOL_CLIENT_WEB_LOGICAL_ID = 'UserPoolAppClient';
+const GEN2_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID = 'UserPoolNativeAppClient';
 
 const oldGen1Template: CFNTemplate = {
   AWSTemplateFormatVersion: '2010-09-09',
@@ -122,7 +135,7 @@ const newGen1Template: CFNTemplate = {
     [GEN1_S3_BUCKET_LOGICAL_ID]: {
       Type: CFN_S3_TYPE.Bucket,
       Properties: {
-        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', 'amplify-testauth-dev-12345-auth-ABCDE']] },
+        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', GEN1_STORAGE_CATEGORY_STACK_NAME]] },
       },
     },
     MyS3BucketPolicy: {
@@ -182,7 +195,7 @@ const newGen1TemplateWithPredicate: CFNTemplate = {
     [GEN1_S3_BUCKET_LOGICAL_ID]: {
       Type: CFN_S3_TYPE.Bucket,
       Properties: {
-        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', 'amplify-testauth-dev-12345-auth-ABCDE']] },
+        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', GEN1_STORAGE_CATEGORY_STACK_NAME]] },
       },
     },
     MyS3BucketPolicy: {
@@ -356,7 +369,7 @@ const refactoredGen2Template: CFNTemplate = {
     [GEN2_S3_BUCKET_LOGICAL_ID]: {
       Type: CFN_S3_TYPE.Bucket,
       Properties: {
-        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', 'amplify-testauth-dev-12345-auth-ABCDE']] },
+        BucketName: { 'Fn::Join': ['-', ['my-test-bucket', 'dev', GEN1_STORAGE_CATEGORY_STACK_NAME]] },
       },
     },
     [GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID]: {
@@ -377,6 +390,184 @@ const oldGen2TemplateWithoutS3Bucket = JSON.parse(JSON.stringify(oldGen2Template
 delete oldGen2TemplateWithoutS3Bucket.Resources[GEN2_S3_BUCKET_LOGICAL_ID];
 delete oldGen2TemplateWithoutS3Bucket.Resources[GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID];
 
+const oldGen1AuthTemplate: CFNTemplate = {
+  AWSTemplateFormatVersion: '2010-09-09',
+  Description: 'Test template',
+  Parameters: {
+    Environment: {
+      Type: 'String',
+      Description: 'Environment',
+    },
+    hostedUIProviderMeta: {
+      Type: 'String',
+      Description: 'HostedUIProviderMeta',
+    },
+    hostedUIProviderCreds: {
+      Type: 'String',
+      Description: 'HostedUIProviderCreds',
+      NoEcho: true,
+    },
+  },
+  Outputs: {
+    UserPoolId: {
+      Description: 'User pool id',
+      Value: 'userPoolId',
+    },
+  },
+  Resources: {
+    [GEN1_AUTH_USER_POOL_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPool,
+      Properties: {
+        UserPoolName: { 'Fn::Join': ['-', 'my-user-pool', { Ref: 'Environment' }] },
+      },
+    },
+    [GEN1_AUTH_IDENTITY_POOL_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.IdentityPool,
+      Properties: {
+        IdentityPoolName: { 'Fn::Join': ['-', 'my-identity-pool', { Ref: 'Environment' }] },
+      },
+    },
+    [GEN1_AUTH_USER_POOL_CLIENT_WEB_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPoolClient,
+      Properties: {
+        ClientName: 'WebClient',
+      },
+    },
+    [GEN1_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPoolClient,
+      Properties: {
+        ClientName: 'NativeClient',
+      },
+    },
+    DummyResource: {
+      Type: 'AWS::CloudFormation::WaitConditionHandle',
+      Properties: {},
+    },
+  },
+};
+
+const oldGen2AuthTemplate: CFNTemplate = {
+  AWSTemplateFormatVersion: '2010-09-09',
+  Description: 'Test template',
+  Outputs: {
+    UserPoolId: {
+      Description: 'User pool id',
+      Value: 'userPoolId',
+    },
+  },
+  Resources: {
+    [GEN2_AUTH_USER_POOL_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPool,
+      Properties: {
+        UserPoolName: 'my-gen2-user-pool',
+      },
+    },
+    [GEN2_AUTH_IDENTITY_POOL_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.IdentityPool,
+      Properties: {
+        IdentityPoolName: 'my-gen2-identity-pool',
+      },
+    },
+    [GEN2_AUTH_USER_POOL_CLIENT_WEB_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPoolClient,
+      Properties: {
+        ClientName: 'Gen2WebClient',
+      },
+    },
+    [GEN2_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPoolClient,
+      Properties: {
+        ClientName: 'Gen2NativeClient',
+      },
+    },
+    AuthRole: {
+      Type: 'AWS::IAM::Role',
+      Properties: {},
+    },
+  },
+};
+
+const newGen1AuthTemplate: CFNTemplate = {
+  ...oldGen1AuthTemplate,
+  Resources: {
+    [GEN1_AUTH_USER_POOL_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPool,
+      Properties: {
+        UserPoolName: 'my-user-pool-dev',
+      },
+    },
+    [GEN1_AUTH_IDENTITY_POOL_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.IdentityPool,
+      Properties: {
+        IdentityPoolName: 'my-identity-pool-dev',
+      },
+    },
+    [GEN1_AUTH_USER_POOL_CLIENT_WEB_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPoolClient,
+      Properties: {
+        ClientName: 'WebClient',
+      },
+    },
+    [GEN1_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPoolClient,
+      Properties: {
+        ClientName: 'NativeClient',
+      },
+    },
+  },
+};
+
+const newGen2AuthTemplate: CFNTemplate = {
+  ...oldGen2AuthTemplate,
+  Resources: {
+    AuthRole: {
+      Type: 'AWS::IAM::Role',
+      Properties: {},
+    },
+  },
+};
+
+const refactoredGen1AuthTemplate: CFNTemplate = {
+  ...newGen1AuthTemplate,
+  Resources: {
+    DummyResource: {
+      Type: 'AWS::CloudFormation::WaitConditionHandle',
+      Properties: {},
+    },
+  },
+};
+
+const refactoredGen2AuthTemplate: CFNTemplate = {
+  ...newGen2AuthTemplate,
+  Resources: {
+    ...oldGen2AuthTemplate.Resources,
+    [GEN2_AUTH_USER_POOL_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPool,
+      Properties: {
+        UserPoolName: { 'Fn::Join': ['-', 'my-user-pool', 'dev'] },
+      },
+    },
+    [GEN2_AUTH_IDENTITY_POOL_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.IdentityPool,
+      Properties: {
+        IdentityPoolName: { 'Fn::Join': ['-', 'my-identity-pool', 'dev'] },
+      },
+    },
+    [GEN2_AUTH_USER_POOL_CLIENT_WEB_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPoolClient,
+      Properties: {
+        ClientName: 'WebClient',
+      },
+    },
+    [GEN2_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID]: {
+      Type: CFN_AUTH_TYPE.UserPoolClient,
+      Properties: {
+        ClientName: 'NativeClient',
+      },
+    },
+  },
+};
+
 const generateDescribeStacksResponse = (command: DescribeStacksCommand): DescribeStacksOutput => ({
   Stacks: [
     {
@@ -386,7 +577,7 @@ const generateDescribeStacksResponse = (command: DescribeStacksCommand): Describ
       Tags: [
         {
           Key: 'amplify:category-stack',
-          Value: 'amplify-testauth-dev-12345-auth-ABCDE',
+          Value: GEN1_AUTH_CATEGORY_STACK_NAME,
         },
       ],
       CreationTime: new Date(),
@@ -409,9 +600,33 @@ const generateDescribeStacksResponse = (command: DescribeStacksCommand): Describ
   ],
 });
 
-const generateGetTemplateResponse = (command: GetTemplateCommand): GetTemplateOutput => ({
-  TemplateBody: command.input.StackName === GEN1_CATEGORY_STACK_ID ? JSON.stringify(oldGen1Template) : JSON.stringify(oldGen2Template),
-});
+const generateGetTemplateResponse = (command: GetTemplateCommand): GetTemplateOutput => {
+  const stackName = command.input.StackName;
+  let templateBody;
+  switch (stackName) {
+    case GEN1_CATEGORY_STACK_ID: {
+      templateBody = JSON.stringify(oldGen1Template);
+      break;
+    }
+    case GEN2_CATEGORY_STACK_ID: {
+      templateBody = JSON.stringify(oldGen2Template);
+      break;
+    }
+    case GEN1_AUTH_CATEGORY_STACK_ID: {
+      templateBody = JSON.stringify(oldGen1AuthTemplate);
+      break;
+    }
+    case GEN2_AUTH_CATEGORY_STACK_ID: {
+      templateBody = JSON.stringify(oldGen2AuthTemplate);
+      break;
+    }
+    default:
+      throw new Error(`Unknown stack name: ${stackName}`);
+  }
+  return {
+    TemplateBody: templateBody,
+  };
+};
 
 const generateDescribeIdentityProviderResponse = ({ input }: DescribeIdentityProviderCommand): DescribeIdentityProviderResponse => ({
   IdentityProvider: {
@@ -526,6 +741,19 @@ describe('CategoryTemplateGenerator', () => {
     [CFN_S3_TYPE.Bucket],
   );
 
+  const authTemplateGenerator = new CategoryTemplateGenerator(
+    GEN1_AUTH_CATEGORY_STACK_ID,
+    GEN2_AUTH_CATEGORY_STACK_ID,
+    'us-east-1',
+    '12345',
+    new CloudFormationClient(),
+    new SSMClient(),
+    new CognitoIdentityProviderClient(),
+    MOCK_APP_ID,
+    ENV_NAME,
+    [CFN_AUTH_TYPE.UserPoolClient, CFN_AUTH_TYPE.UserPool, CFN_AUTH_TYPE.IdentityPool, CFN_AUTH_TYPE.UserPoolDomain],
+  );
+
   it('should preprocess gen1 template prior to refactor', async () => {
     await expect(s3TemplateGenerator.generateGen1PreProcessTemplate()).resolves.toEqual({
       oldTemplate: oldGen1Template,
@@ -563,6 +791,25 @@ describe('CategoryTemplateGenerator', () => {
       new Map<string, string>([
         [GEN1_S3_BUCKET_LOGICAL_ID, GEN2_S3_BUCKET_LOGICAL_ID],
         [GEN1_ANOTHER_S3_BUCKET_LOGICAL_ID, GEN2_ANOTHER_S3_BUCKET_LOGICAL_ID],
+      ]),
+    );
+  });
+
+  it('should refactor auth gen1 resources into gen2 stack', async () => {
+    const { newTemplate: newGen1Template } = await authTemplateGenerator.generateGen1PreProcessTemplate();
+    const { newTemplate: newGen2Template } = await authTemplateGenerator.generateGen2ResourceRemovalTemplate();
+    const { sourceTemplate, destinationTemplate, logicalIdMapping } = authTemplateGenerator.generateStackRefactorTemplates(
+      newGen1Template,
+      newGen2Template,
+    );
+    expect(sourceTemplate).toEqual<CFNTemplate>(refactoredGen1AuthTemplate);
+    expect(destinationTemplate).toEqual<CFNTemplate>(refactoredGen2AuthTemplate);
+    expect(logicalIdMapping).toEqual(
+      new Map<string, string>([
+        [GEN1_AUTH_USER_POOL_LOGICAL_ID, GEN2_AUTH_USER_POOL_LOGICAL_ID],
+        [GEN1_AUTH_IDENTITY_POOL_LOGICAL_ID, GEN2_AUTH_IDENTITY_POOL_LOGICAL_ID],
+        [GEN1_AUTH_USER_POOL_CLIENT_WEB_LOGICAL_ID, GEN2_AUTH_USER_POOL_CLIENT_WEB_LOGICAL_ID],
+        [GEN1_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID, GEN2_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID],
       ]),
     );
   });

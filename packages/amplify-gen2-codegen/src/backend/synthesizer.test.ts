@@ -298,6 +298,19 @@ describe('BackendRenderer', () => {
         assert.match(output, regex);
       });
     });
+    describe('data', () => {
+      it('imports data from the specified import path', () => {
+        const dataImportLocation = 'data/resource.ts';
+        const renderer = new BackendSynthesizer();
+        const rendered = renderer.render({
+          data: { importFrom: dataImportLocation },
+        });
+        const output = printNodeArray(rendered);
+        const regex = getImportRegex('data', dataImportLocation);
+        assert.match(output, regex);
+        expect(output).not.toContain('// Tags.of(backend.stack).add("gen1-migrated-app", "true")');
+      });
+    });
   });
   describe('renders storage overrides', () => {
     it('renders s3 bucket name', () => {
@@ -343,7 +356,8 @@ describe('BackendRenderer', () => {
       });
       const output = printNodeArray(rendered);
       assert(output.includes('// s3Bucket.applyRemovalPolicy'));
-      assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
+      assert(output.includes('import { RemovalPolicy, Tags } from "aws-cdk-lib";'));
+      assert(output.includes('// Tags.of(backend.stack).add("gen1-migrated-app", "true")'));
     });
   });
   describe('UserPoolClient Configuration using render()', () => {
@@ -484,7 +498,7 @@ describe('BackendRenderer', () => {
       const output = printNodeArray(rendered);
       assert(output.includes('// cfnUserPool.applyRemovalPolicy'));
       assert(output.includes('// cfnIdentityPool.applyRemovalPolicy'));
-      assert(output.includes('import { RemovalPolicy } from "aws-cdk-lib";'));
+      assert(output.includes('import { RemovalPolicy, Tags } from "aws-cdk-lib";'));
     });
     it('renders user pool client configuration with default value for generateSecrets', () => {
       const renderer = new BackendSynthesizer();
@@ -506,7 +520,7 @@ describe('BackendRenderer', () => {
       expect(output).toContain('userPoolClientName: "MyApp"');
 
       // Additional settings
-      expect(output).toContain('generateSecret: false');
+      expect(output).toContain(`generateSecret: false\n});`);
     });
   });
   describe('environment variables', () => {

@@ -35,6 +35,7 @@ describe('test exception handler', () => {
     init(contextMock);
   });
   it('error handler should call usageData emitError', async () => {
+    const originalExitCode = process.exitCode;
     const amplifyError = new AmplifyError('NotImplementedError', {
       message: 'Test Not implemented',
       resolution: 'Test Not implemented',
@@ -42,9 +43,12 @@ describe('test exception handler', () => {
     await handleException(amplifyError);
 
     expect(contextMock.usageData.emitError).toHaveBeenCalledWith(amplifyError);
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   });
 
   it('error handler should send error report', async () => {
+    const originalExitCode = process.exitCode;
     const amplifyError = new AmplifyError('NotImplementedError', {
       message: 'Test Not implemented',
       resolution: 'Test Not implemented',
@@ -53,9 +57,12 @@ describe('test exception handler', () => {
 
     expect(reportErrorMock).toHaveBeenCalledWith(contextMock, amplifyError);
     expect(processExit).toHaveBeenCalledWith(1);
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   });
 
   it('error handler should print error', async () => {
+    const originalExitCode = process.exitCode;
     const amplifyError = new AmplifyError('NotImplementedError', {
       message: 'Test Not implemented(message)',
       details: 'Test Not implemented(details)',
@@ -69,9 +76,12 @@ describe('test exception handler', () => {
     expect(printerMock.info).toHaveBeenNthCalledWith(1, `Resolution: ${amplifyError.resolution}`);
     expect(printerMock.info).toHaveBeenLastCalledWith('Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/');
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   });
 
   it('error handler should handle encountered errors gracefully', async () => {
+    const originalExitCode = process.exitCode;
     const amplifyError = new AmplifyError('NotImplementedError', {
       message: 'Test Not implemented(message)',
       details: 'Test Not implemented(details)',
@@ -87,9 +97,12 @@ describe('test exception handler', () => {
     expect(printerMock.info).toHaveBeenLastCalledWith('Learn more at: https://docs.amplify.aws/cli/project/troubleshooting/');
     expect(printerMock.debug).toHaveBeenCalledWith(amplifyError.stack);
     expect(printerMock.error).toHaveBeenCalledWith('Failed to report error: MockTestError');
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   });
 
   it('error handler should handle nodejs file permission errors for log files', async () => {
+    const originalExitCode = process.exitCode;
     const code = 'EACCES';
     const path = '/user/name/.amplify/path/to/log';
     const nodeJSError = new Error(`permission denied, open ${path}`) as NodeJS.ErrnoException;
@@ -102,9 +115,12 @@ describe('test exception handler', () => {
       new AmplifyError('FileSystemPermissionsError', { message: `permission denied, open ${path}` }),
     );
     expect(printerMock.info).toHaveBeenCalledWith(`Resolution: Try running 'sudo chown -R $(whoami):$(id -gn) ~/.amplify' to fix this`);
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   });
 
   it('error handler should handle nodejs file permission errors for ~/.aws/amplify files', async () => {
+    const originalExitCode = process.exitCode;
     const code = 'EACCES';
     const path = '/user/name/.aws/amplify/someFile';
     const nodeJSError = new Error(`permission denied, open ${path}`) as NodeJS.ErrnoException;
@@ -117,9 +133,12 @@ describe('test exception handler', () => {
       new AmplifyError('FileSystemPermissionsError', { message: `permission denied, open ${path}` }),
     );
     expect(printerMock.info).toHaveBeenCalledWith(`Resolution: Try running 'sudo chown -R $(whoami):$(id -gn) ~/.aws/amplify' to fix this`);
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   });
 
   it('error handler should handle nodejs file permission errors for amplify project', async () => {
+    const originalExitCode = process.exitCode;
     const code = 'EACCES';
     const path = '/user/name/workspace/amplify/path/to/manifest';
     const nodeJSError = new Error(`permission denied, open ${path}`) as NodeJS.ErrnoException;
@@ -135,9 +154,12 @@ describe('test exception handler', () => {
     expect(printerMock.info).toHaveBeenCalledWith(
       `Resolution: Try running 'sudo chown -R $(whoami):$(id -gn) <your amplify app directory>' to fix this`,
     );
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   });
 
   it('error handler should handle nodejs file permission errors for other files', async () => {
+    const originalExitCode = process.exitCode;
     const code = 'EACCES';
     const path = '/usr/name/.aws/config';
     const nodeJSError = new Error(`permission denied, open ${path}`) as NodeJS.ErrnoException;
@@ -151,6 +173,8 @@ describe('test exception handler', () => {
     );
     // different resolution based on the file path compared to last test
     expect(printerMock.info).toHaveBeenCalledWith(`Resolution: Try running 'sudo chown -R $(whoami):$(id -gn) ${path}' to fix this`);
+    // Setting exitCode back to original, see https://github.com/jestjs/jest/issues/9324#issuecomment-1808090455
+    process.exitCode = originalExitCode;
   });
 });
 

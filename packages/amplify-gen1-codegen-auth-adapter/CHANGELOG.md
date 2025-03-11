@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-beta-latest.0...@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-next.0) (2025-02-14)
+
+
+### Bug Fixes
+
+* conditional data codegen, phone attribute ([0d5c59f](https://github.com/aws-amplify/amplify-cli/commit/0d5c59fae2849277bced4e4f0c0529d916c0e165))
+
+
+
+
+
 # [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-alpha.1...@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-beta-latest.0) (2025-02-12)
 
 **Note:** Version bump only for package @aws-amplify/amplify-gen1-codegen-auth-adapter

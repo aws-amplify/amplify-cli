@@ -3,7 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.7.12-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.11...@aws-amplify/amplify-category-function@5.7.12-beta-latest.0) (2025-02-12)
+## [5.7.14-next-3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.14-next-2.0...@aws-amplify/amplify-category-function@5.7.14-next-3.0) (2025-03-05)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.14-next-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.13...@aws-amplify/amplify-category-function@5.7.14-next-2.0) (2025-02-26)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.13](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.12...@aws-amplify/amplify-category-function@5.7.13) (2025-02-20)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
+## [5.7.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.7.11...@aws-amplify/amplify-category-function@5.7.12) (2025-02-07)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-function
 

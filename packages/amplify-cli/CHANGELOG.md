@@ -3,7 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [12.15.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.2...@aws-amplify/cli-internal@12.15.0-beta-latest.0) (2025-02-12)
+# [12.15.0-next-3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.15.0-next-2.0...@aws-amplify/cli-internal@12.15.0-next-3.0) (2025-03-05)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
+
+
+
+
+
+# [12.15.0-next-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.4...@aws-amplify/cli-internal@12.15.0-next-2.0) (2025-02-26)
 
 
 ### Bug Fixes
@@ -18,6 +26,28 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **cli:** initial migration merge ([#13856](https://github.com/aws-amplify/amplify-cli/issues/13856)) ([ebe5cd0](https://github.com/aws-amplify/amplify-cli/commit/ebe5cd046cfb18c38ffdce17610ed3a133cc9d44))
 * **migrate:** make as an independent executable ([0aeffb9](https://github.com/aws-amplify/amplify-cli/commit/0aeffb96b9fad75549d76d19778725eb522ad64e))
+
+
+
+
+
+## [12.14.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.3...@aws-amplify/cli-internal@12.14.4) (2025-02-20)
+
+
+### Bug Fixes
+
+* hopefully fix test ([f5a6892](https://github.com/aws-amplify/amplify-cli/commit/f5a689294e8619dd33c32756bc4408fb43bc7bfc))
+* improve anonymization ([ded7ebc](https://github.com/aws-amplify/amplify-cli/commit/ded7ebcbcfc923e169937c7f257544c46a174e0b))
+* remove user data from telemetry ([78667d5](https://github.com/aws-amplify/amplify-cli/commit/78667d526b2728ffaf7550a78e64de7dadec1ae6))
+* update to error ([fe771d5](https://github.com/aws-amplify/amplify-cli/commit/fe771d5f63abd5ce393af219c96e46d39df002f1))
+
+
+
+
+
+## [12.14.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.14.2...@aws-amplify/cli-internal@12.14.3) (2025-02-07)
+
+**Note:** Version bump only for package @aws-amplify/cli-internal
 
 
 

@@ -9,7 +9,8 @@ import {
   StackRefactorStatus,
 } from '@aws-sdk/client-cloudformation';
 import assert from 'node:assert';
-import { FailedRefactorResponse } from './types';
+import { CFNStackStatus, FailedRefactorResponse } from './types';
+import { pollStackForCompletionState } from './cfn-stack-updater';
 
 const POLL_ATTEMPTS = 30;
 const POLL_INTERVAL_MS = 1500;
@@ -78,6 +79,16 @@ export async function tryRefactorStack(
       },
     ];
   }
+
+  const sourceStackName = createStackRefactorCommandInput.StackDefinitions?.[0].StackName;
+  const destinationStackName = createStackRefactorCommandInput.StackDefinitions?.[1].StackName;
+  assert(sourceStackName);
+  assert(destinationStackName);
+  const sourceStackStatus = await pollStackForCompletionState(cfnClient, sourceStackName);
+  assert(sourceStackStatus === CFNStackStatus.UPDATE_COMPLETE, `${sourceStackName} was not updated successfully.`);
+  const destinationStackStatus = await pollStackForCompletionState(cfnClient, destinationStackName);
+  assert(destinationStackStatus === CFNStackStatus.UPDATE_COMPLETE, `${destinationStackName} was not updated successfully.`);
+
   return [true, undefined];
 }
 

@@ -179,7 +179,7 @@ export const createGen2Renderer = ({
     };
   }
 
-  if (data) {
+  if (data && data.tableMappings && backendEnvironmentName && data.tableMappings[backendEnvironmentName] !== undefined) {
     renderers.push(new EnsureDirectory(path.join(outputDir, 'amplify', 'data')));
     renderers.push(
       new TypescriptNodeArrayRenderer(

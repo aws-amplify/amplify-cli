@@ -67,6 +67,41 @@ describe('test usageData', () => {
     expect(a).toEqual(b);
   });
 
+  it('expects accountId to be a valid UUID', () => {
+    const a = UsageData.Instance;
+    const timeStamp = Date.now();
+    const testAccountID = '123456789012';
+    a.init(
+      uuid.v4(),
+      '',
+      new CommandLineInput([]),
+      testAccountID,
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' } as unknown as ProjectSettings,
+      timeStamp,
+    );
+
+    expect(uuid.validate(a.getUsageDataPayload(null, 'SUCCESS').accountId)).toEqual(true);
+  });
+
+  it('returns cached accountId on subsequent calls', () => {
+    const a = UsageData.Instance;
+    const timeStamp = Date.now();
+    const testAccountID = '123456789012';
+    a.init(
+      uuid.v4(),
+      '',
+      new CommandLineInput([]),
+      testAccountID,
+      { editor: 'vscode', framework: 'react', frontend: 'javascript' } as unknown as ProjectSettings,
+      timeStamp,
+    );
+
+    const accountId1 = a.getUsageDataPayload(null, 'SUCCESS').accountId;
+    const accountId2 = a.getUsageDataPayload(null, 'SUCCESS').accountId;
+
+    expect(accountId1).toEqual(accountId2);
+  });
+
   it('records specified code path timer', async () => {
     const usageData = UsageData.Instance;
     usageData.startCodePathTimer(ManuallyTimedCodePath.PLUGIN_TIME);

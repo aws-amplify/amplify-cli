@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-cli-core",
-  "version": "4.4.0-beta-latest.0",
+  "version": "4.4.1-next-3.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "@aws-amplify/amplify-cli-logger": "1.3.8",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.6",
-    "@aws-amplify/graphql-transformer-interfaces": "^3.10.2",
+    "@aws-amplify/graphql-transformer-interfaces": "^3.12.0",
     "@aws-sdk/util-arn-parser": "^3.310.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",

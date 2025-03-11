@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-next.0...@aws-amplify/migrate-template-gen@0.1.0-next-2.0) (2025-02-26)
+
+
+### Bug Fixes
+
+* **migrate-template-gen:** add explicit public modifier for describeStack ([dffc611](https://github.com/aws-amplify/amplify-cli/commit/dffc611ba019f7c08cce77f500d77f3becb86b86))
+* **migrate-template-gen:** clone array before reverse ([9564e16](https://github.com/aws-amplify/amplify-cli/commit/9564e16ed0485e2937ffc2cbe17e5168dbb56672))
+* **migrate-template-gen:** format error ([13e68f1](https://github.com/aws-amplify/amplify-cli/commit/13e68f1ae0f30b72f588ccc2a064632f361bedfa))
+* **migrate-template-gen:** remove public modifier for describeStack ([9a42e41](https://github.com/aws-amplify/amplify-cli/commit/9a42e41fe9348e0d5ea8094b990d8cf8686c2433))
+* **migrate-template-gen:** remove unused enum member ([a7d3f92](https://github.com/aws-amplify/amplify-cli/commit/a7d3f92363b5ea5ca83430bd0e446942162510ca))
+* **migrate-template-gen:** update API.md ([70406a3](https://github.com/aws-amplify/amplify-cli/commit/70406a372fe6cde47332372f82efd8f8e1ab8246))
+* **migrate-template-gen:** update API.md ([0cd9423](https://github.com/aws-amplify/amplify-cli/commit/0cd9423bf9a491d15743e715c28d08e0318b2664))
+* **migrate:** lint errors ([98dced2](https://github.com/aws-amplify/amplify-cli/commit/98dced209aeea4c26aec86d3d5aba19830091b4a))
+
+
+### Features
+
+* **migrate:** add revert, userpool group refactor ([38eed7e](https://github.com/aws-amplify/amplify-cli/commit/38eed7e57e785cece232ce967ddc9171390af312))
+
+
+
+
+
+# [0.1.0-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-beta-latest.0...@aws-amplify/migrate-template-gen@0.1.0-next.0) (2025-02-14)
+
+
+### Bug Fixes
+
+* add tag to force deployment post refactor in gen2 codegen ([dc953af](https://github.com/aws-amplify/amplify-cli/commit/dc953afd376eb6d7f36729580c9b2cc0a1a09652))
+* **migrate-template-gen:** add support for refactoring native client ([4dfc7e0](https://github.com/aws-amplify/amplify-cli/commit/4dfc7e0887eb2e608894fb5f60ec44a133b42772))
+* **migrate-template-gen:** extract conditionals into variables ([00de376](https://github.com/aws-amplify/amplify-cli/commit/00de3763843366746788931f9d149546b9d8038b))
+* **migrate-template-gen:** lint errors in category template generator test ([971a0c8](https://github.com/aws-amplify/amplify-cli/commit/971a0c80afe1293eb519a0f9ffd57d06d5ddbefe))
+
+
+
+
+
 # [0.1.0-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-alpha.1...@aws-amplify/migrate-template-gen@0.1.0-beta-latest.0) (2025-02-12)
 
 

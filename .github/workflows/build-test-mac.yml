@@ -10,7 +10,7 @@ env:
 
 jobs:
   build-and-test:
-    runs-on: macos-latest-xl
+    runs-on: macos-latest-xlarge
     steps:
       - name: Checkout Code
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
