@@ -775,7 +775,6 @@ __metadata:
     "@aws-sdk/client-s3": ^3.651.1
     "@types/node": ^20.14.2
     aws-cdk-lib: ^2.127.0
-    ci-info: ^3.8.0
     jest: ^29.5.0
     typescript: ^5.4.5
   languageName: unknown
