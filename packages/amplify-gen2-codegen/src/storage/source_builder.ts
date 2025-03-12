@@ -1,9 +1,11 @@
-import ts from 'typescript';
+import ts, { VariableDeclaration, VariableStatement } from 'typescript';
 import { getAccessPatterns } from './access';
 import { renderResourceTsFile } from '../resource/resource';
 import { createTriggersProperty, Lambda } from '../function/lambda';
 import { BucketAccelerateStatus, BucketVersioningStatus, ServerSideEncryptionByDefault } from '@aws-sdk/client-s3';
 const factory = ts.factory;
+
+const amplifyGen1EnvName = 'AMPLIFY_GEN_1_ENV_NAME';
 
 export type S3TriggerDefinition = Record<string, never>;
 export type Permission = 'read' | 'write' | 'create' | 'delete';
@@ -34,23 +36,46 @@ export interface StorageRenderParameters {
   accelerateConfiguration?: BucketAccelerateStatus;
   versioningConfiguration?: BucketVersioningStatus;
 }
+
+const createVariableStatement = (variableDeclaration: VariableDeclaration): VariableStatement => {
+  return factory.createVariableStatement([], factory.createVariableDeclarationList([variableDeclaration], ts.NodeFlags.Const));
+};
+
+const createTemplateLiteral = (templateHead: string, templateSpan: string, templateTail: string) => {
+  return factory.createTemplateExpression(factory.createTemplateHead(templateHead), [
+    factory.createTemplateSpan(factory.createIdentifier(templateSpan), factory.createTemplateTail(templateTail)),
+  ]);
+};
+
 export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
   const propertyAssignments: ts.PropertyAssignment[] = [];
   const namedImports: Record<string, Set<string>> = { '@aws-amplify/backend': new Set() };
   namedImports['@aws-amplify/backend'].add('defineStorage');
   const triggers = storageParams.triggers || {};
 
+  const postImportStatements = [];
+  const amplifyGen1EnvStatement = createVariableStatement(
+    factory.createVariableDeclaration(
+      amplifyGen1EnvName,
+      undefined,
+      undefined,
+      factory.createIdentifier('process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox"'),
+    ),
+  );
+  postImportStatements.push(amplifyGen1EnvStatement);
+
   if (storageParams.storageIdentifier) {
-    propertyAssignments.push(
-      factory.createPropertyAssignment(factory.createIdentifier('name'), factory.createStringLiteral(storageParams.storageIdentifier)),
-    );
+    const splitStorageIdentifier = storageParams.storageIdentifier.split('-');
+    const storageNameWithoutBackendEnvName = splitStorageIdentifier.slice(0, -1).join('-');
+
+    const storageNameAssignment = createTemplateLiteral(`${storageNameWithoutBackendEnvName}-`, amplifyGen1EnvName, '');
+    propertyAssignments.push(factory.createPropertyAssignment(factory.createIdentifier('name'), storageNameAssignment));
   }
   if (storageParams.accessPatterns) {
     propertyAssignments.push(getAccessPatterns(storageParams.accessPatterns));
   }
-  const groupsComment = [];
   if (storageParams.accessPatterns?.groups) {
-    groupsComment.push(
+    postImportStatements.push(
       factory.createJSDocComment(
         factory.createNodeArray([
           factory.createJSDocText('TODO: Your project uses group permissions. Group permissions have changed in Gen 2. '),
@@ -77,7 +102,7 @@ export const renderStorage = (storageParams: StorageRenderParameters = {}) => {
     backendFunctionConstruct: 'defineStorage',
     exportedVariableName: factory.createIdentifier('storage'),
     functionCallParameter: storageArgs,
-    postImportStatements: groupsComment,
+    postImportStatements,
     additionalImportedBackendIdentifiers: namedImports,
   });
 };

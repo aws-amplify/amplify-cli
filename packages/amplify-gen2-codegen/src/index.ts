@@ -94,6 +94,7 @@ export const createGen2Renderer = ({
       return patchNpmPackageJson(packageJson, {
         'aws-cdk': '^2',
         'aws-cdk-lib': '^2',
+        'ci-info': '^3.8.0',
         constructs: '^10.0.0',
         typescript: '^5.0.0',
       });
