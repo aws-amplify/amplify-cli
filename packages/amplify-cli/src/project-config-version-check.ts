@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
-import glob from 'glob';
+import * as glob from 'glob';
 import { coerce, lt } from 'semver';
 import { Context } from './domain/context';
 import { ConfirmQuestion } from 'inquirer';
@@ -65,7 +65,7 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
   const filesToUpdate: string[] = [];
 
   if (fs.existsSync(backendDirPath)) {
-    const globOptions: glob.IOptions = {
+    const globOptions: glob.GlobOptionsWithFileTypesUnset = {
       absolute: false,
       cwd: backendDirPath,
       follow: false,

@@ -1,4 +1,4 @@
-import glob from 'glob';
+import { glob } from 'glob';
 import path from 'path';
 import * as fs from 'fs-extra';
 import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';

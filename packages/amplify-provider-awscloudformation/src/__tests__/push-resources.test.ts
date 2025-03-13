@@ -2,7 +2,7 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getCfnFiles } from '../push-resources';
-import glob from 'glob';
+import { glob } from 'glob';
 
 // Mock data
 const dummyCFNFiles: readonly string[] = ['fileA', 'fileB'];
@@ -19,14 +19,16 @@ const pathManager_mock = jest.mocked(pathManager);
 pathManager_mock.getBackendDirPath.mockReturnValue(testBackendDirPath);
 
 const glob_mock = glob as jest.Mocked<typeof glob>;
+
 glob_mock.sync.mockImplementation((pattern) => {
   switch (pattern) {
     case '*template*.+(yaml|yml|json)':
       return [...dummyCFNFiles];
     case 'stacks/*.+(yaml|yml|json)':
       return [...dummyNestedCFNFiles];
+    default:
+      return [];
   }
-  return [];
 });
 
 const fs_mock = jest.mocked(fs);

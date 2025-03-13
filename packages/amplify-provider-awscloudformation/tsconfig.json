@@ -6,9 +6,17 @@
     "strict": false,
     "allowJs": true,
     "checkJs": false,
-    "lib": ["ESNext", "dom"]
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
   },
-  "exclude": ["lib", "coverage", "src/__tests__", "resources/overrides-resource/override.ts"],
+  "exclude": [
+    "lib",
+    "coverage",
+    "src/__tests__",
+    "resources/overrides-resource/override.ts"
+  ],
   "references": [
     {
       "path": "../amplify-cli-core"
