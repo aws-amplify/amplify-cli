@@ -332,6 +332,11 @@ export async function revertGen2Migration(fromStack: string, toStack: string) {
   const usageData = await getUsageDataMetric(envName);
   if (success) {
     printer.print(format.success(`Moved resources back to Gen1 stack successfully.`));
+    const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(AMPLIFY_DIR)}`).start();
+    // Move gen1 amplify from .amplify/migration/amplify to amplify
+    await fs.rm(AMPLIFY_DIR, { force: true, recursive: true });
+    await fs.rename(`${MIGRATION_DIR}/amplify`, AMPLIFY_DIR);
+    movingGen1BackendFiles.succeed(`Moved your Gen1 backend files to ${format.highlight(AMPLIFY_DIR)}`);
     await usageData.emitSuccess();
   } else {
     await usageData.emitError(new Error('Failed to run revert command'));

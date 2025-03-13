@@ -37,6 +37,28 @@ describe('CFNOutputResolver', () => {
           'Fn::GetAtt': ['SNSRole', 'Arn'],
         },
       },
+      HostedUIDomain: {
+        Description: 'HostedUIDomain',
+        Value: {
+          'Fn::If': [
+            'ShouldNotCreateEnvResources',
+            'HostedUIDomainLogicalId',
+            {
+              'Fn::Join': [
+                '-',
+                [
+                  {
+                    Ref: 'hostedUIDomainName',
+                  },
+                  {
+                    Ref: 'env',
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+      },
     },
     Resources: {
       MyS3Bucket: {
@@ -182,6 +204,10 @@ describe('CFNOutputResolver', () => {
         Description: 'role arn',
         Value: 'arn:aws:iam::12345:role/sns12345-dev',
       },
+      HostedUIDomain: {
+        Description: 'HostedUIDomain',
+        Value: 'my-hosted-UI-domain',
+      },
     },
     Resources: {
       MyS3Bucket: {
@@ -320,6 +346,10 @@ describe('CFNOutputResolver', () => {
           {
             OutputKey: 'CreatedSNSRole',
             OutputValue: 'arn:aws:iam::12345:role/sns12345-dev',
+          },
+          {
+            OutputKey: 'HostedUIDomain',
+            OutputValue: 'my-hosted-UI-domain',
           },
         ],
       ),
