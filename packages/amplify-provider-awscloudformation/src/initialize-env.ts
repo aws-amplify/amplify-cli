@@ -1,6 +1,6 @@
 import { $TSContext, $TSMeta, AmplifyError, JSONUtilities, PathConstants, stateManager } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
-import glob from 'glob';
+import * as glob from 'glob';
 import _ from 'lodash';
 import path from 'path';
 import Cloudformation from './aws-utils/aws-cfn';

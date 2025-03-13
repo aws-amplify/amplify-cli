@@ -1,7 +1,7 @@
 import { execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
 import { PackageRequest, PackageResult, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import * as glob from 'glob';
 import * as path from 'path';
 import { getPipenvDir, getPythonBinaryName, majMinPyVersion } from './pyUtils';
 

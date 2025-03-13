@@ -1,7 +1,7 @@
 import { join } from 'path';
 import * as execa from 'execa';
 import fs from 'fs-extra';
-import glob from 'glob';
+import * as glob from 'glob';
 import { packageName, relativeShimJarPath, relativeShimSrcPath } from './constants';
 import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
 import { AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';

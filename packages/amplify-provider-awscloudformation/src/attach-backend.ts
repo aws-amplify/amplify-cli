@@ -1,7 +1,7 @@
 import aws from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
-import glob from 'glob';
+import * as glob from 'glob';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import { exitOnNextTick, pathManager, PathConstants, AmplifyError, extract } from '@aws-amplify/amplify-cli-core';

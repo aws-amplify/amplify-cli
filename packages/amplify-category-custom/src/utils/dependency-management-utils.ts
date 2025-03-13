@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { byValues, printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
-import { glob } from 'glob';
+import * as glob from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
 import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';

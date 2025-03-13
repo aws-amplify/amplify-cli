@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
-import glob from 'glob';
+import * as glob from 'glob';
 import execa from 'execa';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 

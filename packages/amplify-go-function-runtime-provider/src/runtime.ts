@@ -10,7 +10,7 @@ import * as which from 'which';
 import execa from 'execa';
 import archiver from 'archiver';
 import fs from 'fs-extra';
-import glob from 'glob';
+import * as glob from 'glob';
 import path from 'path';
 import { SemVer, coerce, gte, lt } from 'semver';
 import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';

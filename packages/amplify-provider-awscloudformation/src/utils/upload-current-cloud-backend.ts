@@ -1,7 +1,7 @@
 import { $TSContext, AmplifyFault, PathConstants, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import * as glob from 'glob';
 import * as path from 'path';
 import { S3 } from '../aws-utils/aws-s3';
 import archiver from './archiver';
