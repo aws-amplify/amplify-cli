@@ -40,6 +40,8 @@ class CfnOutputResolver {
         stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(outputRegexp, `"${stackOutputValue}"`);
       } else if (GET_ATT in value && Array.isArray(value[GET_ATT])) {
         logicalResourceId = value[GET_ATT][0];
+      } else {
+        return;
       }
       assert(logicalResourceId);
 
