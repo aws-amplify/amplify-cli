@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 
 import { UsageData } from '@aws-amplify/cli-internal';
-import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
+import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
@@ -21,7 +21,7 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { Analytics, AppAnalytics } from './analytics';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
-import { AmplifyCategories, IUsageData, stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyCategories, IUsageData, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
@@ -214,6 +214,35 @@ const unsupportedCategories = (): Map<string, string> => {
   return unsupportedCategoriesList;
 };
 
+export async function updateAmplifyYmlFile(amplifyClient: AmplifyClient, appId: string) {
+  const rootDir = pathManager.findProjectRoot();
+  assert(rootDir);
+  const amplifyYmlPath = path.join(rootDir, 'amplify.yml');
+
+  try {
+    // Read the content of amplify.yml file if it exists
+    await fs.access(amplifyYmlPath);
+    const amplifyYmlContent = await fs.readFile(amplifyYmlPath, 'utf-8');
+
+    await writeToAmplifyYmlFile(amplifyYmlPath, amplifyYmlContent);
+  } catch (error) {
+    // If amplify.yml file doesn't exist, make a getApp call to get buildSpec
+    const getAppResponse = await amplifyClient.send(new GetAppCommand({ appId }));
+
+    assert(getAppResponse.app, 'App not found');
+    const buildSpec = getAppResponse.app.buildSpec;
+    assert(buildSpec, 'buildSpec not found in the app');
+
+    await writeToAmplifyYmlFile(amplifyYmlPath, buildSpec);
+  }
+}
+
+async function writeToAmplifyYmlFile(amplifyYmlPath: string, content: string) {
+  // Replace 'amplifyPush --simple' with 'npx ampx pipeline-deploy'
+  content = content.replace(/amplifyPush --simple/g, 'npx ampx pipeline-deploy');
+  await fs.writeFile(amplifyYmlPath, content, { encoding: 'utf-8' });
+}
+
 async function updateGitIgnoreForGen2() {
   const cwd = process.cwd();
   const updateGitIgnore = ora('Updating gitignore contents').start();
@@ -294,6 +323,8 @@ export async function execute() {
     backendEnvironmentName: backendEnvironment?.environmentName,
     appId: appId,
   });
+
+  await updateAmplifyYmlFile(amplifyClient, appId);
 
   await updateGitIgnoreForGen2();
 
