@@ -41,22 +41,33 @@ describe('render function', () => {
       const source = printNodeArray(rendered);
       assert.match(source, /name: /);
     });
-    test.each([[Runtime.nodejs16x], [Runtime.nodejs18x], [Runtime.nodejs20x], [Runtime.nodejs22x]])('does render runtime property for %s nodejs.', (nodejsRuntime: Runtime) => {
-      const definition: FunctionDefinition = {};
-      definition.runtime = nodejsRuntime;
+    test.each([[Runtime.nodejs16x], [Runtime.nodejs18x], [Runtime.nodejs20x], [Runtime.nodejs22x]])(
+      'does render runtime property for %s nodejs.',
+      (nodejsRuntime: Runtime) => {
+        const definition: FunctionDefinition = {};
+        definition.runtime = nodejsRuntime;
 
-      const rendered = renderFunctions(definition);
-      const source = printNodeArray(rendered);
-      const expectedRuntime = nodejsRuntime.split('nodejs')[1].split('.')[0];
-      assert(expectedRuntime);
-      assert.match(source, new RegExp(`runtime: ${expectedRuntime}`));
-    });
+        const rendered = renderFunctions(definition);
+        const source = printNodeArray(rendered);
+        const expectedRuntime = nodejsRuntime.split('nodejs')[1].split('.')[0];
+        assert(expectedRuntime);
+        assert.match(source, new RegExp(`runtime: ${expectedRuntime}`));
+      },
+    );
 
     it('throws error for unsupported nodejs runtime', () => {
       const definition: FunctionDefinition = {};
       definition.runtime = Runtime.nodejs14x;
 
       assert.throws(() => renderFunctions(definition), /Unsupported nodejs runtime/);
+    });
+    it('does not render runtime property for unsupported runtimes', () => {
+      const definition: FunctionDefinition = {};
+      definition.runtime = Runtime.dotnet8;
+
+      const rendered = renderFunctions(definition);
+      const source = printNodeArray(rendered);
+      assert.doesNotMatch(source, /runtime: /);
     });
     it('does render timeoutSeconds property', () => {
       const definition: FunctionDefinition = {};

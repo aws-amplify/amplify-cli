@@ -97,9 +97,9 @@ export function createFunctionDefinition(
     );
   }
 
-  let nodeRuntime = 0;
   const runtime = definition?.runtime;
-  if (runtime) {
+  if (runtime && runtime.includes('nodejs')) {
+    let nodeRuntime: number | undefined;
     switch (runtime) {
       case Runtime.nodejs16x:
         nodeRuntime = 16;
@@ -116,6 +116,7 @@ export function createFunctionDefinition(
       default:
         throw new Error(`Unsupported nodejs runtime for function: ${runtime}`);
     }
+    assert(nodeRuntime, 'Expected nodejs version to be set');
 
     defineFunctionProperties.push(createParameter('runtime', factory.createNumericLiteral(nodeRuntime)));
   }
