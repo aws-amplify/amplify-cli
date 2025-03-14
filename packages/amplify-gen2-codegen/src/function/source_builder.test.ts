@@ -51,6 +51,13 @@ describe('render function', () => {
       assert(expectedRuntime);
       assert.match(source, new RegExp(`runtime: ${expectedRuntime}`));
     });
+
+    it('throws error for unsupported nodejs runtime', () => {
+      const definition: FunctionDefinition = {};
+      definition.runtime = Runtime.nodejs14x;
+
+      assert.throws(() => renderFunctions(definition), /Unsupported nodejs runtime/);
+    });
     it('does render timeoutSeconds property', () => {
       const definition: FunctionDefinition = {};
       definition.timeoutSeconds = 3;
