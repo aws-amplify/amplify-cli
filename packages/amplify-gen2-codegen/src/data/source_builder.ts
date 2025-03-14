@@ -8,7 +8,7 @@ export type DataDefinition = {
   schema: string;
 };
 
-const migratedAmplifyGen1DynamoDbTableMapKeyName = 'migratedAmplifyGen1DynamoDbTableMap';
+const migratedAmplifyGen1DynamoDbTableMappingsKeyName = 'migratedAmplifyGen1DynamoDbTableMappings';
 
 export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArray<ts.Node> => {
   const dataRenderProperties: ObjectLiteralElementLike[] = [];
@@ -50,7 +50,7 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
         true,
       );
       let tableMappingExpression = factory.createPropertyAssignment(
-        'modelTableNameMap',
+        'modelNameToTableNameMapping',
         factory.createObjectLiteralExpression(tableMappingProperties),
       );
       if (tableMappingProperties.length === 0) {
@@ -70,7 +70,7 @@ export const generateDataSource = (dataDefinition?: DataDefinition): ts.NodeArra
     }
     dataRenderProperties.push(
       factory.createPropertyAssignment(
-        migratedAmplifyGen1DynamoDbTableMapKeyName,
+        migratedAmplifyGen1DynamoDbTableMappingsKeyName,
         factory.createArrayLiteralExpression(tableMappingEnvironments),
       ),
     );
