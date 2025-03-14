@@ -1,6 +1,7 @@
 import ts, { ObjectLiteralElementLike } from 'typescript';
 import { EnvironmentResponse, Runtime } from '@aws-sdk/client-lambda';
 import { renderResourceTsFile } from '../resource/resource';
+import assert from 'node:assert';
 
 export interface FunctionDefinition {
   category?: string;
@@ -97,12 +98,23 @@ export function createFunctionDefinition(
   }
 
   let nodeRuntime = 0;
-  if (definition?.runtime) {
-    const runtime = definition?.runtime;
-    if (runtime === Runtime.nodejs16x) {
-      nodeRuntime = 16;
-    } else if (runtime === Runtime.nodejs18x) {
-      nodeRuntime = 18;
+  const runtime = definition?.runtime;
+  if (runtime) {
+    switch (runtime) {
+      case Runtime.nodejs16x:
+        nodeRuntime = 16;
+        break;
+      case Runtime.nodejs18x:
+        nodeRuntime = 18;
+        break;
+      case Runtime.nodejs20x:
+        nodeRuntime = 20;
+        break;
+      case Runtime.nodejs22x:
+        nodeRuntime = 22;
+        break;
+      default:
+        throw new Error(`Unsupported nodejs runtime for function: ${runtime}`);
     }
 
     defineFunctionProperties.push(createParameter('runtime', factory.createNumericLiteral(nodeRuntime)));

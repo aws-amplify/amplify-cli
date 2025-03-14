@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import { FunctionDefinition, renderFunctions } from './source_builder';
 import { printNodeArray } from '../test_utils/ts_node_printer';
+import { Runtime } from '@aws-sdk/client-lambda';
 
 describe('render function', () => {
   describe('import', () => {
@@ -40,13 +41,15 @@ describe('render function', () => {
       const source = printNodeArray(rendered);
       assert.match(source, /name: /);
     });
-    it('does render runtime property', () => {
+    test.each([[Runtime.nodejs16x], [Runtime.nodejs18x], [Runtime.nodejs20x], [Runtime.nodejs22x]])('does render runtime property for %s nodejs.', (nodejsRuntime: Runtime) => {
       const definition: FunctionDefinition = {};
-      definition.runtime = 'nodejs18.x';
+      definition.runtime = nodejsRuntime;
 
       const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
-      assert.match(source, /runtime: 18/);
+      const expectedRuntime = nodejsRuntime.split('nodejs')[1].split('.')[0];
+      assert(expectedRuntime);
+      assert.match(source, new RegExp(`runtime: ${expectedRuntime}`));
     });
     it('does render timeoutSeconds property', () => {
       const definition: FunctionDefinition = {};
