@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import { FunctionDefinition, renderFunctions } from './source_builder';
 import { printNodeArray } from '../test_utils/ts_node_printer';
+import { Runtime } from '@aws-sdk/client-lambda';
 
 describe('render function', () => {
   describe('import', () => {
@@ -40,13 +41,33 @@ describe('render function', () => {
       const source = printNodeArray(rendered);
       assert.match(source, /name: /);
     });
-    it('does render runtime property', () => {
+    test.each([[Runtime.nodejs16x], [Runtime.nodejs18x], [Runtime.nodejs20x], [Runtime.nodejs22x]])(
+      'does render runtime property for %s nodejs.',
+      (nodejsRuntime: Runtime) => {
+        const definition: FunctionDefinition = {};
+        definition.runtime = nodejsRuntime;
+
+        const rendered = renderFunctions(definition);
+        const source = printNodeArray(rendered);
+        const expectedRuntime = nodejsRuntime.split('nodejs')[1].split('.')[0];
+        assert(expectedRuntime);
+        assert.match(source, new RegExp(`runtime: ${expectedRuntime}`));
+      },
+    );
+
+    it('throws error for unsupported nodejs runtime', () => {
       const definition: FunctionDefinition = {};
-      definition.runtime = 'nodejs18.x';
+      definition.runtime = Runtime.nodejs14x;
+
+      assert.throws(() => renderFunctions(definition), /Unsupported nodejs runtime/);
+    });
+    it('does not render runtime property for unsupported runtimes', () => {
+      const definition: FunctionDefinition = {};
+      definition.runtime = Runtime.dotnet8;
 
       const rendered = renderFunctions(definition);
       const source = printNodeArray(rendered);
-      assert.match(source, /runtime: 18/);
+      assert.doesNotMatch(source, /runtime: /);
     });
     it('does render timeoutSeconds property', () => {
       const definition: FunctionDefinition = {};
