@@ -13,6 +13,9 @@ jest.mock('@aws-amplify/amplify-cli-core');
 
 jest.mock('@aws-sdk/client-amplify');
 
+const GEN1_COMMAND = 'amplifyPush --simple';
+const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
+
 describe('updateAmplifyYmlFile', () => {
   const amplifyClient = new AmplifyClient();
   const mockAppId = 'testAppId';
@@ -46,19 +49,18 @@ frontend:
   });
 
   it('should update amplify.yml file if it exists', async () => {
-    (fs.access as jest.Mock).mockResolvedValue(undefined);
     (fs.readFile as jest.Mock).mockResolvedValue(mockBuildSpec);
 
     await updateAmplifyYmlFile(amplifyClient, mockAppId);
 
     expect(fs.readFile).toHaveBeenCalledWith(amplifyYmlPath, 'utf-8');
-    expect(fs.writeFile).toHaveBeenCalledWith(amplifyYmlPath, mockBuildSpec.replace(/amplifyPush --simple/g, 'npx ampx pipeline-deploy'), {
+    expect(fs.writeFile).toHaveBeenCalledWith(amplifyYmlPath, mockBuildSpec.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND), {
       encoding: 'utf-8',
     });
   });
 
   it('should create amplify.yml file with updated buildSpec if it does not exist', async () => {
-    (fs.access as jest.Mock).mockRejectedValue(new Error('File not found'));
+    (fs.readFile as jest.Mock).mockRejectedValue({ code: 'ENOENT' });
     (AmplifyClient.prototype.send as jest.Mock).mockResolvedValue({
       app: { buildSpec: mockBuildSpec },
     });
@@ -66,13 +68,13 @@ frontend:
     await updateAmplifyYmlFile(amplifyClient, mockAppId);
 
     expect(AmplifyClient.prototype.send).toHaveBeenCalledWith(expect.any(GetAppCommand));
-    expect(fs.writeFile).toHaveBeenCalledWith(amplifyYmlPath, mockBuildSpec.replace(/amplifyPush --simple/g, 'npx ampx pipeline-deploy'), {
+    expect(fs.writeFile).toHaveBeenCalledWith(amplifyYmlPath, mockBuildSpec.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND), {
       encoding: 'utf-8',
     });
   });
 
   it('should throw an error if buildSpec is not found in the app', async () => {
-    (fs.access as jest.Mock).mockRejectedValue(new Error('File not found'));
+    (fs.readFile as jest.Mock).mockRejectedValue({ code: 'ENOENT' });
     (AmplifyClient.prototype.send as jest.Mock).mockResolvedValue({
       app: {},
     });
@@ -81,9 +83,16 @@ frontend:
   });
 
   it('should throw an error if app is not found', async () => {
-    (fs.access as jest.Mock).mockRejectedValue(new Error('File not found'));
+    (fs.readFile as jest.Mock).mockRejectedValue({ code: 'ENOENT' });
     (AmplifyClient.prototype.send as jest.Mock).mockResolvedValue({});
 
     await expect(updateAmplifyYmlFile(amplifyClient, mockAppId)).rejects.toThrow('App not found');
+  });
+
+  it('should throw the original error if it is not related to file not found', async () => {
+    const error = new Error('Some other error');
+    (fs.readFile as jest.Mock).mockRejectedValue(error);
+
+    await expect(updateAmplifyYmlFile(amplifyClient, mockAppId)).rejects.toThrow(error);
   });
 });

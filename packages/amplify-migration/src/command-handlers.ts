@@ -46,6 +46,8 @@ interface CodegenCommandParameters {
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
 const MIGRATION_DIR = '.amplify/migration';
+const GEN1_COMMAND = 'amplifyPush --simple';
+const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
 
 enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   DOT_AMPLIFY = '.amplify',
@@ -221,25 +223,29 @@ export async function updateAmplifyYmlFile(amplifyClient: AmplifyClient, appId: 
 
   try {
     // Read the content of amplify.yml file if it exists
-    await fs.access(amplifyYmlPath);
     const amplifyYmlContent = await fs.readFile(amplifyYmlPath, 'utf-8');
 
     await writeToAmplifyYmlFile(amplifyYmlPath, amplifyYmlContent);
   } catch (error) {
-    // If amplify.yml file doesn't exist, make a getApp call to get buildSpec
-    const getAppResponse = await amplifyClient.send(new GetAppCommand({ appId }));
+    if (error.code === 'ENOENT') {
+      // If amplify.yml file doesn't exist, make a getApp call to get buildSpec
+      const getAppResponse = await amplifyClient.send(new GetAppCommand({ appId }));
 
-    assert(getAppResponse.app, 'App not found');
-    const buildSpec = getAppResponse.app.buildSpec;
-    assert(buildSpec, 'buildSpec not found in the app');
+      assert(getAppResponse.app, 'App not found');
+      const buildSpec = getAppResponse.app.buildSpec;
+      assert(buildSpec, 'buildSpec not found in the app');
 
-    await writeToAmplifyYmlFile(amplifyYmlPath, buildSpec);
+      await writeToAmplifyYmlFile(amplifyYmlPath, buildSpec);
+    } else {
+      // Throw the original error if it's not related to file not found
+      throw error;
+    }
   }
 }
 
 async function writeToAmplifyYmlFile(amplifyYmlPath: string, content: string) {
   // Replace 'amplifyPush --simple' with 'npx ampx pipeline-deploy'
-  content = content.replace(/amplifyPush --simple/g, 'npx ampx pipeline-deploy');
+  content = content.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND);
   await fs.writeFile(amplifyYmlPath, content, { encoding: 'utf-8' });
 }
 
