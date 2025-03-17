@@ -12,7 +12,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings, schema: 'schema' }));
       assert.match(
         source,
-        /migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}]/,
+        /migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}]/,
       );
     });
     it('includes multiple table mappings', () => {
@@ -23,7 +23,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings, schema: 'schema' }));
       assert.match(
         source,
-        /migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}, {\n\s+\/\/ Replace the environment name \(prod\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]prod['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping-prod['"] }\n\s+}]/,
+        /migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}, {\n\s+\/\/ Replace the environment name \(prod\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]prod['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping-prod['"] }\n\s+}]/,
       );
     });
     it('includes a comment for missing table mappings', () => {
@@ -33,7 +33,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings, schema: 'schema' }));
       assert.match(
         source,
-        /\/\*\*\n\s+\* Unable to find the table mapping for this environment.\n\s+\* This could be due the enableGen2Migration feature flag not being set to true for this environment.\n\s+\* Please enable the feature flag and push the backend resources.\n\s+\* If you are not planning to migrate this environment, you can remove this key.\n\s+\*\/\n\s+modelTableNameMap: {}/,
+        /\/\*\*\n\s+\* Unable to find the table mapping for this environment.\n\s+\* This could be due the enableGen2Migration feature flag not being set to true for this environment.\n\s+\* Please enable the feature flag and push the backend resources.\n\s+\* If you are not planning to migrate this environment, you can remove this key.\n\s+\*\/\n\s+modelNameToTableNameMapping: {}/,
       );
     });
     it('has each each key in defineData', () => {
@@ -41,7 +41,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings, schema: 'schema' }));
       assert.match(
         source,
-        /const schema \= \`schema\`\;\nexport const data \= defineData\({\n\s+migratedAmplifyGen1DynamoDbTableMap: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelTableNameMap: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema\n}\)/,
+        /const schema \= \`schema\`\;\nexport const data \= defineData\({\n\s+migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema\n}\)/,
       );
     });
   });
