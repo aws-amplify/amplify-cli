@@ -63,7 +63,6 @@ const createFileWriter = (path: string) => async (content: string) => fs.writeFi
 
 export const createGen2Renderer = ({
   outputDir,
-  appId,
   backendEnvironmentName,
   auth,
   storage,

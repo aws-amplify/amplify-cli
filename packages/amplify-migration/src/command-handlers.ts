@@ -36,7 +36,6 @@ interface CodegenCommandParameters {
   logger: AppContextLogger;
   outputDirectory: string;
   backendEnvironmentName: string | undefined;
-  appId: string;
   dataDefinitionFetcher: DataDefinitionFetcher;
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
@@ -59,7 +58,6 @@ enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
 const generateGen2Code = async ({
   outputDirectory,
   backendEnvironmentName,
-  appId,
   authDefinitionFetcher,
   dataDefinitionFetcher,
   storageDefinitionFetcher,
@@ -68,7 +66,6 @@ const generateGen2Code = async ({
   const fetchingAWSResourceDetails = ora('Fetching resource details from AWS').start();
   const gen2RenderOptions = {
     outputDir: outputDirectory,
-    appId: appId,
     backendEnvironmentName: backendEnvironmentName,
     auth: await authDefinitionFetcher.getDefinition(),
     storage: await storageDefinitionFetcher.getDefinition(),
@@ -322,12 +319,11 @@ export async function execute() {
       () => getAuthTriggersConnections(),
       ccbFetcher,
     ),
-    dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
+    dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), amplifyStackParser),
     functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(lambdaClient, backendEnvironmentResolver, stateManager),
     analytics: new AppAnalytics(appId),
     logger: new AppContextLogger(appId),
     backendEnvironmentName: backendEnvironment?.environmentName,
-    appId: appId,
   });
 
   await updateAmplifyYmlFile(amplifyClient, appId);

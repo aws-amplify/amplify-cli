@@ -29,7 +29,7 @@ export const getFunctionDefinition = (
     funcDef.runtime = configuration?.Runtime;
     const functionName = configuration?.FunctionName;
     assert(functionName);
-    const functionRecordInMeta = Object.entries(meta.function).find(([_, value]) => value.output.Name === functionName);
+    const functionRecordInMeta = Object.entries(meta.function).find(([, value]) => value.output.Name === functionName);
     assert(functionRecordInMeta);
     funcDef.category = functionCategoryMap.get(functionRecordInMeta[0]) ?? 'function';
     funcDef.resourceName = functionRecordInMeta[0];

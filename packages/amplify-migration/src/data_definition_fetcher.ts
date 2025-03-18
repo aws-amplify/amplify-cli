@@ -6,18 +6,28 @@ import assert from 'node:assert';
 import { DataDefinition } from '@aws-amplify/amplify-gen2-codegen';
 import { AmplifyStackParser } from './amplify_stack_parser.js';
 import { BackendEnvironmentResolver } from './backend_environment_selector.js';
-import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { BackendDownloader } from './backend_downloader.js';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
+import { fileOrDirectoryExists } from './directory_exists';
 
 const dataSourceMappingOutputKey = 'DataSourceMappingOutput';
 
 export class DataDefinitionFetcher {
-  constructor(private backendEnvironmentResolver: BackendEnvironmentResolver, private amplifyStackClient: AmplifyStackParser) {}
+  constructor(
+    private backendEnvironmentResolver: BackendEnvironmentResolver,
+    private ccbFetcher: BackendDownloader,
+    private amplifyStackClient: AmplifyStackParser,
+  ) {}
 
-  getSchema = async (): Promise<string> => {
+  private readJsonFile = async (filePath: string) => {
+    const contents = await fs.readFile(filePath, { encoding: 'utf8' });
+    return JSON.parse(contents);
+  };
+
+  getSchema = async (apis: any): Promise<string> => {
     try {
       let apiName;
-      const meta = stateManager.getMeta();
-      const apis = meta?.api ?? {};
+
       Object.keys(apis).forEach((api) => {
         const apiObj = apis[api];
         if (apiObj.service === 'AppSync') {
@@ -65,32 +75,50 @@ export class DataDefinitionFetcher {
 
   getDefinition = async (): Promise<DataDefinition | undefined> => {
     const backendEnvironments = await this.backendEnvironmentResolver.getAllBackendEnvironments();
-    const tableMappings = await Promise.all(
-      backendEnvironments.map(async (backendEnvironment) => {
-        if (!backendEnvironment?.stackName) {
+
+    const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
+    if (!backendEnvironment?.deploymentArtifacts) return undefined;
+
+    const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
+
+    const amplifyMetaPath = path.join(currentCloudBackendDirectory, 'amplify-meta.json');
+
+    if (!(await fileOrDirectoryExists(amplifyMetaPath))) {
+      throw new Error('Could not find amplify-meta.json');
+    }
+
+    const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
+
+    if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length) {
+      const tableMappings = await Promise.all(
+        backendEnvironments.map(async (backendEnvironment) => {
+          if (!backendEnvironment?.stackName) {
+            return [backendEnvironment.environmentName, undefined];
+          }
+          const amplifyStacks = await this.amplifyStackClient.getAmplifyStacks(backendEnvironment?.stackName);
+          if (amplifyStacks.dataStack) {
+            const tableMappingText = amplifyStacks.dataStack?.Outputs?.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
+            if (!tableMappingText) {
+              return [backendEnvironment.environmentName, undefined];
+            }
+            try {
+              return [backendEnvironment.environmentName, JSON.parse(tableMappingText)];
+            } catch (e) {
+              return [backendEnvironment.environmentName, undefined];
+            }
+          }
           return [backendEnvironment.environmentName, undefined];
-        }
-        const amplifyStacks = await this.amplifyStackClient.getAmplifyStacks(backendEnvironment?.stackName);
-        if (amplifyStacks.dataStack) {
-          const tableMappingText = amplifyStacks.dataStack?.Outputs?.find((o) => o.OutputKey === dataSourceMappingOutputKey)?.OutputValue;
-          if (!tableMappingText) {
-            return [backendEnvironment.environmentName, undefined];
-          }
-          try {
-            return [backendEnvironment.environmentName, JSON.parse(tableMappingText)];
-          } catch (e) {
-            return [backendEnvironment.environmentName, undefined];
-          }
-        }
-        return [backendEnvironment.environmentName, undefined];
-      }),
-    );
+        }),
+      );
 
-    const schema = await this.getSchema();
+      const schema = await this.getSchema(amplifyMeta.api);
 
-    return {
-      tableMappings: Object.fromEntries(tableMappings),
-      schema,
-    };
+      return {
+        tableMappings: Object.fromEntries(tableMappings),
+        schema,
+      };
+    }
+
+    return undefined;
   };
 }
