@@ -35,7 +35,7 @@
     "aws-cdk-lib": "~2.177.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "^8.2.15",
+    "graphql-transformer-core": "^8.2.16",
     "lodash": "^4.17.21",
     "semver": "^7.5.4",
     "strip-ansi": "^6.0.0",
