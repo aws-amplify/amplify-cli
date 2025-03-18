@@ -89,7 +89,7 @@ export class DataDefinitionFetcher {
 
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
 
-    if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length) {
+    if ('api' in amplifyMeta && Object.keys(amplifyMeta.api).length > 0) {
       const tableMappings = await Promise.all(
         backendEnvironments.map(async (backendEnvironment) => {
           if (!backendEnvironment?.stackName) {
