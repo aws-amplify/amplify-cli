@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-4.0...@aws-amplify/migrate@0.1.0-next-5.0) (2025-03-19)
+
+
+### Bug Fixes
+
+* **migrate-template-gen:** return early if output is not Fn:GetAtt or a Ref ([5a985f0](https://github.com/aws-amplify/amplify-cli/commit/5a985f0ea48a8b32ed51d04af83fbbf6baa29528))
+* update amplify.yml file with the gen2 command ([4d4434f](https://github.com/aws-amplify/amplify-cli/commit/4d4434f29b8c598cabe1740df8f03e0c4970fda7))
+
+
+
+
+
 # [0.1.0-next-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-3.0...@aws-amplify/migrate@0.1.0-next-4.0) (2025-03-12)
 
 **Note:** Version bump only for package @aws-amplify/migrate

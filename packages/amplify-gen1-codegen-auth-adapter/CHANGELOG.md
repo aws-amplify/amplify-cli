@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-next-4.0...@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-next-5.0) (2025-03-19)
+
+**Note:** Version bump only for package @aws-amplify/amplify-gen1-codegen-auth-adapter
+
+
+
+
+
 # [0.1.0-next-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-next.0...@aws-amplify/amplify-gen1-codegen-auth-adapter@0.1.0-next-4.0) (2025-03-12)
 
 **Note:** Version bump only for package @aws-amplify/amplify-gen1-codegen-auth-adapter

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-next-4.0...@aws-amplify/amplify-gen2-codegen@0.1.0-next-5.0) (2025-03-19)
+
+
+### Bug Fixes
+
+* **amplify-gen2-codegen:** add node 20 and 22 version support for functions ([9fc8294](https://github.com/aws-amplify/amplify-cli/commit/9fc82944d962a56b0e0c9bde2ffb7b824f97bd15))
+* **amplify-gen2-codegen:** skip setting runtime for unsupported runtimes in function ([91486f1](https://github.com/aws-amplify/amplify-cli/commit/91486f1e4761db29ba2296bc8f6acba752636b55))
+* update data prop names ([#14139](https://github.com/aws-amplify/amplify-cli/issues/14139)) ([416d561](https://github.com/aws-amplify/amplify-cli/commit/416d5612f1b2e5faa2e736250cbf673476451aeb))
+
+
+
+
+
 # [0.1.0-next-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-next.0...@aws-amplify/amplify-gen2-codegen@0.1.0-next-4.0) (2025-03-12)
 
 **Note:** Version bump only for package @aws-amplify/amplify-gen2-codegen
