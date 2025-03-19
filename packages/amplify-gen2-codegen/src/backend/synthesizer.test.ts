@@ -485,6 +485,12 @@ describe('BackendRenderer', () => {
       expect(output).toContain('enableTokenRevocation: true');
       expect(output).toContain('enablePropagateAdditionalUserContextData: true');
       expect(output).toContain('generateSecret: true');
+
+      expect(output).toContain(
+        'const providerSetupResult = (backend.auth.stack.node.children.find(child => child.node.id === "amplifyAuth") as any).providerSetupResult;',
+      );
+      expect(output).toContain('Object.keys(providerSetupResult).forEach(provider => {');
+      expect(output).toContain('userPoolClient.node.addDependency(providerSetupPropertyValue)');
     });
     it('renders userpool and identitypool deletion policy', () => {
       const renderer = new BackendSynthesizer();

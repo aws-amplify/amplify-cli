@@ -40,7 +40,7 @@ export class AppAuthDefinitionFetcher {
     return JSON.parse(contents);
   };
 
-  private getReferenceAuth = async () => {
+  private authCategory = async () => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     if (!backendEnvironment?.deploymentArtifacts) return undefined;
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
@@ -51,12 +51,19 @@ export class AppAuthDefinitionFetcher {
     }
 
     const amplifyMeta = (await this.readJsonFile(amplifyMetaPath)) ?? {};
-    const isImported =
-      'auth' in amplifyMeta &&
-      Object.keys(amplifyMeta.auth).length > 0 &&
-      Object.entries(amplifyMeta.auth).some(
-        ([, value]) => typeof value === 'object' && value !== null && 'serviceType' in value && value.serviceType === 'imported',
-      );
+    const authCategory = 'auth' in amplifyMeta && Object.keys(amplifyMeta.auth).length > 0;
+
+    if (authCategory) {
+      return amplifyMeta.auth;
+    } else {
+      return undefined;
+    }
+  };
+
+  private getReferenceAuth = async (authCategory: any) => {
+    const isImported = Object.entries(authCategory).some(
+      ([, value]) => typeof value === 'object' && value !== null && 'serviceType' in value && value.serviceType === 'imported',
+    );
     if (!isImported) {
       return undefined;
     }
@@ -65,7 +72,7 @@ export class AppAuthDefinitionFetcher {
       UserPoolId: userPoolId,
       AppClientIDWeb: userPoolClientId,
       IdentityPoolId: identityPoolId,
-    } = Object.keys(amplifyMeta.auth).map((key) => amplifyMeta.auth[key])[0].output;
+    } = Object.keys(authCategory).map((key) => authCategory[key])[0].output;
     if (!userPoolId && !userPoolClientId && !identityPoolId) {
       throw new Error('No user pool or identity pool found for import.');
     }
@@ -116,7 +123,11 @@ export class AppAuthDefinitionFetcher {
   };
 
   getDefinition = async (): Promise<AuthDefinition | undefined> => {
-    const referenceAuth = await this.getReferenceAuth();
+    const authCategory = await this.authCategory();
+    if (!authCategory) {
+      return undefined;
+    }
+    const referenceAuth = await this.getReferenceAuth(authCategory);
     if (referenceAuth) {
       return {
         referenceAuth,
