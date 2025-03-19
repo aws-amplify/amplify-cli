@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
 
 import { UsageData } from '@aws-amplify/cli-internal';
-import { AmplifyClient, UpdateAppCommand } from '@aws-sdk/client-amplify';
+import { AmplifyClient, UpdateAppCommand, GetAppCommand } from '@aws-sdk/client-amplify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
@@ -21,7 +21,7 @@ import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { Analytics, AppAnalytics } from './analytics';
 import { AppAuthDefinitionFetcher } from './app_auth_definition_fetcher';
 import { AppStorageDefinitionFetcher } from './app_storage_definition_fetcher';
-import { AmplifyCategories, IUsageData, stateManager } from '@aws-amplify/amplify-cli-core';
+import { AmplifyCategories, IUsageData, stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-adapter';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
@@ -36,7 +36,6 @@ interface CodegenCommandParameters {
   logger: AppContextLogger;
   outputDirectory: string;
   backendEnvironmentName: string | undefined;
-  appId: string;
   dataDefinitionFetcher: DataDefinitionFetcher;
   authDefinitionFetcher: AppAuthDefinitionFetcher;
   storageDefinitionFetcher: AppStorageDefinitionFetcher;
@@ -46,6 +45,8 @@ interface CodegenCommandParameters {
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
 const MIGRATION_DIR = '.amplify/migration';
+const GEN1_COMMAND = 'amplifyPush --simple';
+const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
 
 enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   DOT_AMPLIFY = '.amplify',
@@ -57,7 +58,6 @@ enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
 const generateGen2Code = async ({
   outputDirectory,
   backendEnvironmentName,
-  appId,
   authDefinitionFetcher,
   dataDefinitionFetcher,
   storageDefinitionFetcher,
@@ -66,7 +66,6 @@ const generateGen2Code = async ({
   const fetchingAWSResourceDetails = ora('Fetching resource details from AWS').start();
   const gen2RenderOptions = {
     outputDir: outputDirectory,
-    appId: appId,
     backendEnvironmentName: backendEnvironmentName,
     auth: await authDefinitionFetcher.getDefinition(),
     storage: await storageDefinitionFetcher.getDefinition(),
@@ -214,6 +213,39 @@ const unsupportedCategories = (): Map<string, string> => {
   return unsupportedCategoriesList;
 };
 
+export async function updateAmplifyYmlFile(amplifyClient: AmplifyClient, appId: string) {
+  const rootDir = pathManager.findProjectRoot();
+  assert(rootDir);
+  const amplifyYmlPath = path.join(rootDir, 'amplify.yml');
+
+  try {
+    // Read the content of amplify.yml file if it exists
+    const amplifyYmlContent = await fs.readFile(amplifyYmlPath, 'utf-8');
+
+    await writeToAmplifyYmlFile(amplifyYmlPath, amplifyYmlContent);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      // If amplify.yml file doesn't exist, make a getApp call to get buildSpec
+      const getAppResponse = await amplifyClient.send(new GetAppCommand({ appId }));
+
+      assert(getAppResponse.app, 'App not found');
+      const buildSpec = getAppResponse.app.buildSpec;
+      assert(buildSpec, 'buildSpec not found in the app');
+
+      await writeToAmplifyYmlFile(amplifyYmlPath, buildSpec);
+    } else {
+      // Throw the original error if it's not related to file not found
+      throw error;
+    }
+  }
+}
+
+async function writeToAmplifyYmlFile(amplifyYmlPath: string, content: string) {
+  // Replace 'amplifyPush --simple' with 'npx ampx pipeline-deploy'
+  content = content.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND);
+  await fs.writeFile(amplifyYmlPath, content, { encoding: 'utf-8' });
+}
+
 async function updateGitIgnoreForGen2() {
   const cwd = process.cwd();
   const updateGitIgnore = ora('Updating gitignore contents').start();
@@ -287,13 +319,14 @@ export async function execute() {
       () => getAuthTriggersConnections(),
       ccbFetcher,
     ),
-    dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser),
+    dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), amplifyStackParser),
     functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(lambdaClient, backendEnvironmentResolver, stateManager),
     analytics: new AppAnalytics(appId),
     logger: new AppContextLogger(appId),
     backendEnvironmentName: backendEnvironment?.environmentName,
-    appId: appId,
   });
+
+  await updateAmplifyYmlFile(amplifyClient, appId);
 
   await updateGitIgnoreForGen2();
 

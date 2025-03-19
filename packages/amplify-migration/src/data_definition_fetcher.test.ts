@@ -1,56 +1,111 @@
 import assert from 'node:assert';
 import { BackendEnvironment } from '@aws-sdk/client-amplify';
+import { Stack } from '@aws-sdk/client-cloudformation';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser, AmplifyStacks } from './amplify_stack_parser';
-import { Stack } from '@aws-sdk/client-cloudformation';
-import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
+import { BackendDownloader } from './backend_downloader';
+import { fileOrDirectoryExists } from './directory_exists';
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
-
 import fs from 'node:fs/promises';
 import glob from 'glob';
 
 jest.mock('node:fs/promises');
 jest.mock('glob');
 jest.mock('@aws-amplify/amplify-cli-core');
+jest.mock('./directory_exists');
+
+// Test constants
+const MOCK_ROOT_DIR = '/mock/root/dir';
+const MOCK_CLOUD_BACKEND = '/mock/cloud/backend';
+const MOCK_APP_ID = 'mockAppId';
+
+// Type definitions
+interface MockBackendEnvironment extends BackendEnvironmentResolver {
+  getAllBackendEnvironments: () => Promise<BackendEnvironment[]>;
+  selectBackendEnvironment: () => Promise<BackendEnvironment>;
+}
+
+// Test helpers
+const createMockBackendResolver = (environmentName = 'dev'): MockBackendEnvironment =>
+  ({
+    getAllBackendEnvironments: async () =>
+      [
+        {
+          environmentName,
+          stackName: 'asdf',
+        },
+      ] as BackendEnvironment[],
+    selectBackendEnvironment: async () =>
+      ({
+        environmentName,
+        stackName: 'asdf',
+        deploymentArtifacts: 'asdf',
+      } as BackendEnvironment),
+  } as MockBackendEnvironment);
+
+const createMockAmplifyStackParser = (stackData: Partial<Stack> = {}): AmplifyStackParser =>
+  ({
+    getAmplifyStacks: async () =>
+      ({
+        dataStack: stackData as Stack,
+      } as AmplifyStacks),
+  } as unknown as AmplifyStackParser);
 
 describe('DataDefinitionFetcher', () => {
   let dataDefinitionFetcher: DataDefinitionFetcher;
   let backendEnvironmentResolver: BackendEnvironmentResolver;
   let amplifyStackParser: AmplifyStackParser;
+  let ccbFetcher: BackendDownloader;
+  let mockAmplifyMeta: Record<string, any>;
 
   beforeEach(() => {
-    backendEnvironmentResolver = new BackendEnvironmentResolver('mockAppId', {} as any);
+    // Setup basic mocks
+    backendEnvironmentResolver = new BackendEnvironmentResolver(MOCK_APP_ID, {} as any);
     amplifyStackParser = new AmplifyStackParser({} as any);
-    dataDefinitionFetcher = new DataDefinitionFetcher(backendEnvironmentResolver, amplifyStackParser);
+    ccbFetcher = {
+      getCurrentCloudBackend: jest.fn().mockResolvedValue(MOCK_CLOUD_BACKEND),
+    } as unknown as BackendDownloader;
 
-    (stateManager.getMeta as jest.Mock).mockReturnValue({
+    // Initialize fetcher
+    dataDefinitionFetcher = new DataDefinitionFetcher(backendEnvironmentResolver, ccbFetcher, amplifyStackParser);
+
+    // Setup mock data
+    mockAmplifyMeta = {
       api: {
         mockResource: {
           service: 'AppSync',
         },
       },
-    });
+    };
 
-    (pathManager.findProjectRoot as jest.Mock).mockReturnValue('/mock/root/dir');
+    // Setup common mocks
+    (pathManager.findProjectRoot as jest.Mock).mockReturnValue(MOCK_ROOT_DIR);
+    (fileOrDirectoryExists as jest.Mock).mockResolvedValue(true);
 
-    (fs.stat as jest.Mock).mockImplementation((filePath: string) => {
-      return {
-        isDirectory: () => filePath.includes('schema'),
-      };
-    });
+    // Setup file system mocks
+    setupFileSystemMocks();
+  });
 
-    (glob.sync as jest.Mock).mockImplementation((pattern: string) => {
-      if (pattern.includes('schema')) {
-        return [
-          path.join('/mock/root/dir/amplify/backend/api/mockResource/schema/schema1.graphql'),
-          path.join('/mock/root/dir/amplify/backend/api/mockResource/schema/schema2.graphql'),
-        ];
-      }
-      return [];
-    });
+  const setupFileSystemMocks = () => {
+    (fs.stat as jest.Mock).mockImplementation((filePath: string) => ({
+      isDirectory: () => filePath.includes('schema'),
+    }));
+
+    (glob.sync as jest.Mock).mockImplementation((pattern: string) =>
+      pattern.includes('schema')
+        ? [
+            path.join(MOCK_ROOT_DIR, 'amplify/backend/api/mockResource/schema/schema1.graphql'),
+            path.join(MOCK_ROOT_DIR, 'amplify/backend/api/mockResource/schema/schema2.graphql'),
+          ]
+        : [],
+    );
 
     (fs.readFile as jest.Mock).mockImplementation((filePath: string) => {
+      if (filePath.includes('amplify-meta.json')) {
+        return JSON.stringify(mockAmplifyMeta);
+      }
       if (filePath.includes('schema1.graphql')) {
         return 'type Query { getSchema1: String }';
       }
@@ -59,166 +114,103 @@ describe('DataDefinitionFetcher', () => {
       }
       return 'type Query { getSchema: String }';
     });
-  });
+  };
 
-  describe('if data stack is defined', () => {
-    describe('table mapping is defined', () => {
-      it('maps cloudformation stack output to table mapping', async () => {
+  describe('Table Mapping Tests', () => {
+    describe('with defined data stack', () => {
+      it('should correctly map cloudformation stack output to table mapping', async () => {
         const mapping = { hello: 'world' };
-        const mockBackendEnvResolver: BackendEnvironmentResolver = {
-          getAllBackendEnvironments: async () => {
-            return [
-              {
-                environmentName: 'dev',
-                stackName: 'asdf',
-              },
-            ] as BackendEnvironment[];
-          },
-        } as BackendEnvironmentResolver;
-        const mockAmplifyStackParser: AmplifyStackParser = {
-          getAmplifyStacks: async () =>
-            ({
-              dataStack: {
-                Outputs: [
-                  {
-                    OutputKey: 'DataSourceMappingOutput',
-                    OutputValue: JSON.stringify(mapping),
-                  },
-                ],
-              } as unknown as Stack,
-            } as AmplifyStacks),
-        } as unknown as AmplifyStackParser;
-        const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
-        const results = await dataDefinitionFetcher.getDefinition();
+        const mockResolver = createMockBackendResolver();
+        const mockParser = createMockAmplifyStackParser({
+          Outputs: [
+            {
+              OutputKey: 'DataSourceMappingOutput',
+              OutputValue: JSON.stringify(mapping),
+            },
+          ],
+        });
+
+        const fetcher = new DataDefinitionFetcher(mockResolver, ccbFetcher, mockParser);
+        const results = await fetcher.getDefinition();
+
         assert(results?.tableMappings);
       });
-      it('return undefined for mapping if json cannot be parsed', async () => {
-        const mockBackendEnvResolver: BackendEnvironmentResolver = {
-          getAllBackendEnvironments: async () => {
-            return [
-              {
-                environmentName: 'dev',
-                stackName: 'asdf',
-              },
-            ] as BackendEnvironment[];
-          },
-        } as BackendEnvironmentResolver;
-        const mockAmplifyStackParser: AmplifyStackParser = {
-          getAmplifyStacks: async () =>
-            ({
-              dataStack: {
-                Outputs: [
-                  {
-                    OutputKey: 'DataSourceMappingOutput',
-                    OutputValue: '(}',
-                  },
-                ],
-              } as unknown as Stack,
-            } as AmplifyStacks),
-        } as unknown as AmplifyStackParser;
-        const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
-        const results = await dataDefinitionFetcher.getDefinition();
+
+      it('should return undefined mapping when JSON parsing fails', async () => {
+        const mockResolver = createMockBackendResolver();
+        const mockParser = createMockAmplifyStackParser({
+          Outputs: [
+            {
+              OutputKey: 'DataSourceMappingOutput',
+              OutputValue: '(}', // Invalid JSON
+            },
+          ],
+        });
+
+        const fetcher = new DataDefinitionFetcher(mockResolver, ccbFetcher, mockParser);
+        const results = await fetcher.getDefinition();
+
         assert(results?.tableMappings);
-        assert.equal(JSON.stringify(results?.tableMappings), JSON.stringify({ dev: undefined }));
+        assert.deepStrictEqual(results?.tableMappings, { dev: undefined });
       });
     });
+
     describe('table mapping is not defined', () => {
       it('return undefined for table mapping', async () => {
-        const mockBackendEnvResolver: BackendEnvironmentResolver = {
-          getAllBackendEnvironments: async () => {
-            return [
-              {
-                environmentName: 'dev',
-                stackName: 'asdf',
-              },
-            ] as BackendEnvironment[];
-          },
-        } as BackendEnvironmentResolver;
-        const mockAmplifyStackParser: AmplifyStackParser = {
-          getAmplifyStacks: async () =>
-            ({
-              dataStack: {},
-            } as AmplifyStacks),
-        } as unknown as AmplifyStackParser;
-        const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
-        const results = await dataDefinitionFetcher.getDefinition();
+        const mockResolver = createMockBackendResolver();
+        const mockParser = createMockAmplifyStackParser({});
+
+        const fetcher = new DataDefinitionFetcher(mockResolver, ccbFetcher, mockParser);
+        const results = await fetcher.getDefinition();
         assert(results?.tableMappings);
         assert.equal(JSON.stringify(results?.tableMappings), JSON.stringify({ dev: undefined }));
       });
     });
-  });
-  describe('if data stack is undefined', () => {
-    it('does not reject with table mapping assertion', async () => {
-      const mockBackendEnvResolver: BackendEnvironmentResolver = {
-        getAllBackendEnvironments: async () => {
-          return [
-            {
-              environmentName: 'dev',
-              stackName: 'asdf',
-            },
-          ] as BackendEnvironment[];
-        },
-      } as BackendEnvironmentResolver;
-      const mockAmplifyStackParser: AmplifyStackParser = {
-        getAmplifyStacks: async () =>
-          ({
-            dataStack: undefined,
-          } as AmplifyStacks),
-      } as unknown as AmplifyStackParser;
-      const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
-      await assert.doesNotReject(dataDefinitionFetcher.getDefinition);
-    });
-    it('returns undefined for table mapping', async () => {
-      const mockBackendEnvResolver: BackendEnvironmentResolver = {
-        getAllBackendEnvironments: async () => {
-          return [
-            {
-              environmentName: 'dev',
-              stackName: 'asdf',
-            },
-          ] as BackendEnvironment[];
-        },
-      } as BackendEnvironmentResolver;
-      const mockAmplifyStackParser: AmplifyStackParser = {
-        getAmplifyStacks: async () =>
-          ({
-            dataStack: undefined,
-          } as AmplifyStacks),
-      } as unknown as AmplifyStackParser;
-      const dataDefinitionFetcher = new DataDefinitionFetcher(mockBackendEnvResolver, mockAmplifyStackParser);
-      const results = await dataDefinitionFetcher.getDefinition();
-      assert(results?.tableMappings);
-      assert.equal(JSON.stringify(results?.tableMappings), JSON.stringify({ dev: undefined }));
-    });
-  });
 
-  it('should return merged schema from schema folder', async () => {
-    const schema = await dataDefinitionFetcher.getSchema();
-    expect(schema).toContain('type Query { getSchema1: String }');
-    expect(schema).toContain('type Mutation { updateSchema2: String }');
-  });
+    describe('with undefined data stack', () => {
+      it('should handle undefined data stack gracefully', async () => {
+        const mockResolver = createMockBackendResolver();
+        const mockParser = createMockAmplifyStackParser(undefined);
 
-  describe('when only schema.graphql exists', () => {
-    it('should return the content of schema.graphql', async () => {
-      (fs.stat as jest.Mock).mockImplementation(() => {
-        return {
-          isDirectory: () => false,
-        };
+        const fetcher = new DataDefinitionFetcher(mockResolver, ccbFetcher, mockParser);
+        await assert.doesNotReject(fetcher.getDefinition);
+        const results = await fetcher.getDefinition();
+
+        assert(results?.tableMappings);
+        assert.deepStrictEqual(results?.tableMappings, { dev: undefined });
       });
-      const schema = await dataDefinitionFetcher.getSchema();
+    });
+  });
+
+  describe('Schema Tests', () => {
+    it('should merge multiple schema files from schema folder', async () => {
+      const schema = await dataDefinitionFetcher.getSchema({
+        mockResource: { service: 'AppSync' },
+      });
+
+      expect(schema).toContain('type Query { getSchema1: String }');
+      expect(schema).toContain('type Mutation { updateSchema2: String }');
+    });
+
+    it('should return single schema.graphql content when only it exists', async () => {
+      (fs.stat as jest.Mock).mockImplementation(() => ({
+        isDirectory: () => false,
+      }));
+
+      const schema = await dataDefinitionFetcher.getSchema({
+        mockResource: { service: 'AppSync' },
+      });
+
       expect(schema).toBe('type Query { getSchema: String }');
     });
-  });
 
-  describe('when no schema exists', () => {
     it('should throw error when no schema is found', async () => {
-      // Mock fs.stat to simulate non-existent directory
       (fs.stat as jest.Mock).mockRejectedValue(new Error('ENOENT'));
-
-      // Mock fs.readFile to simulate non-existent schema file
       (fs.readFile as jest.Mock).mockRejectedValue(new Error('ENOENT'));
 
-      await expect(dataDefinitionFetcher.getSchema()).rejects.toThrow('No GraphQL schema found in the project');
+      await expect(dataDefinitionFetcher.getSchema({ mockResource: { service: 'AppSync' } })).rejects.toThrow(
+        'No GraphQL schema found in the project',
+      );
     });
   });
 });
