@@ -201,11 +201,25 @@ export class BackendSynthesizer {
     userPoolClientAttributesMap.set('ExplicitAuthFlows', 'authFlows');
     userPoolClientAttributesMap.set('AllowedOAuthFlows', 'flows');
 
-    const nativeUserPoolClientExpressionStatement = factory.createExpressionStatement(
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
-        undefined,
-        [factory.createStringLiteral('NativeAppClient'), this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap)],
+    const userPoolClientDeclaration = factory.createVariableStatement(
+      undefined,
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            factory.createIdentifier('userPoolClient'),
+            undefined,
+            undefined,
+            factory.createCallExpression(
+              factory.createPropertyAccessExpression(factory.createIdentifier('userPool'), factory.createIdentifier('addClient')),
+              undefined,
+              [
+                factory.createStringLiteral('NativeAppClient'),
+                this.createNestedObjectExpression(userPoolClient, userPoolClientAttributesMap),
+              ],
+            ),
+          ),
+        ],
+        ts.NodeFlags.Const,
       ),
     );
 
@@ -225,7 +239,157 @@ export class BackendSynthesizer {
       }
     }
 
-    return nativeUserPoolClientExpressionStatement;
+    return userPoolClientDeclaration;
+  }
+
+  private createPropertyAccessChain(identifiers: string[]): ts.Expression {
+    return identifiers
+      .slice(1)
+      .reduce<ts.Expression>(
+        (acc, curr) => factory.createPropertyAccessExpression(acc, factory.createIdentifier(curr)),
+        factory.createIdentifier(identifiers[0]),
+      );
+  }
+
+  private getProviderSetupDeclaration(): ts.VariableStatement {
+    const providerSetupResult = 'providerSetupResult';
+    return factory.createVariableStatement(
+      undefined,
+      factory.createVariableDeclarationList(
+        [
+          factory.createVariableDeclaration(
+            factory.createIdentifier(providerSetupResult),
+            undefined,
+            undefined,
+            factory.createPropertyAccessExpression(
+              factory.createParenthesizedExpression(
+                factory.createAsExpression(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      this.createPropertyAccessChain(['backend', 'auth', 'stack', 'node', 'children']),
+                      factory.createIdentifier('find'),
+                    ),
+                    undefined,
+                    [
+                      factory.createArrowFunction(
+                        undefined,
+                        undefined,
+                        [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('child'))],
+                        undefined,
+                        factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+                        factory.createBinaryExpression(
+                          this.createPropertyAccessChain(['child', 'node', 'id']),
+                          factory.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+                          factory.createStringLiteral('amplifyAuth'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+                ),
+              ),
+              factory.createIdentifier(providerSetupResult),
+            ),
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
+  }
+
+  private getProviderSetupForeachStatement(): ExpressionStatement {
+    const providerSetupResult = 'providerSetupResult';
+    return factory.createExpressionStatement(
+      factory.createCallExpression(
+        factory.createPropertyAccessExpression(
+          factory.createCallExpression(
+            factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('keys')),
+            undefined,
+            [factory.createIdentifier(providerSetupResult)],
+          ),
+          factory.createIdentifier('forEach'),
+        ),
+        undefined,
+        [
+          factory.createArrowFunction(
+            undefined,
+            undefined,
+            [factory.createParameterDeclaration(undefined, undefined, factory.createIdentifier('provider'))],
+            undefined,
+            factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+            factory.createBlock(
+              [
+                // const providerSetupPropertyValue = providerSetupResult[provider]
+                factory.createVariableStatement(
+                  undefined,
+                  factory.createVariableDeclarationList(
+                    [
+                      factory.createVariableDeclaration(
+                        factory.createIdentifier('providerSetupPropertyValue'),
+                        undefined,
+                        undefined,
+                        factory.createElementAccessExpression(
+                          factory.createIdentifier(providerSetupResult),
+                          factory.createIdentifier('provider'),
+                        ),
+                      ),
+                    ],
+                    ts.NodeFlags.Const,
+                  ),
+                ),
+                // if condition
+                factory.createIfStatement(
+                  factory.createLogicalAnd(
+                    factory.createPropertyAccessExpression(
+                      factory.createIdentifier('providerSetupPropertyValue'),
+                      factory.createIdentifier('node'),
+                    ),
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createCallExpression(
+                          factory.createPropertyAccessExpression(
+                            this.createPropertyAccessChain(['providerSetupPropertyValue', 'node', 'id']),
+                            factory.createIdentifier('toLowerCase'),
+                          ),
+                          undefined,
+                          [],
+                        ),
+                        factory.createIdentifier('endsWith'),
+                      ),
+                      undefined,
+                      [factory.createStringLiteral('idp')],
+                    ),
+                  ),
+                  factory.createBlock(
+                    [
+                      factory.createExpressionStatement(
+                        factory.createCallExpression(
+                          this.createPropertyAccessChain(['userPoolClient', 'node', 'addDependency']),
+                          undefined,
+                          [factory.createIdentifier('providerSetupPropertyValue')],
+                        ),
+                      ),
+                    ],
+                    true,
+                  ),
+                ),
+              ],
+              true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  private createProviderSetupCode(): ts.Statement[] {
+    // Create const providerSetupResult = (backend.auth.stack.node.children.find(child => child.node.id === "amplifyAuth") as any).providerSetupResult;
+    const providerSetupDeclaration = this.getProviderSetupDeclaration();
+
+    // Create Object.keys(providerSetupResult).forEach(...)
+    const forEachStatement = this.getProviderSetupForeachStatement();
+
+    return [providerSetupDeclaration, forEachStatement];
   }
 
   private createNestedObjectExpression(object: Record<string, any>, gen2PropertyMap: Map<string, string>): ts.ObjectLiteralExpression {
@@ -743,6 +907,9 @@ export class BackendSynthesizer {
       const userPoolVariableStatement = this.createVariableStatement(this.createVariableDeclaration('userPool', 'auth.resources.userPool'));
       nodes.push(userPoolVariableStatement);
       nodes.push(this.createUserPoolClientAssignment(renderArgs.auth?.userPoolClient, imports));
+
+      const idpStatements = this.createProviderSetupCode();
+      nodes.push(...idpStatements);
     }
 
     if (renderArgs.storage && renderArgs.storage.hasS3Bucket) {
