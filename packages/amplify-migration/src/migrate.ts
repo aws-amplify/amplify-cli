@@ -9,6 +9,8 @@ const parser = createMainParser(libraryVersion);
 const errorHandler = generateCommandFailureHandler(parser);
 parser.parseAsync(hideBin(process.argv)).catch(async (e) => {
   if (e instanceof Error) {
-    await errorHandler(e.message, e);
+    await errorHandler(e.message, e, isDebugFlagEnabled());
   }
 });
+
+const isDebugFlagEnabled = (): boolean => process.argv.includes('--debug');

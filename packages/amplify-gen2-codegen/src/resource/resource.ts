@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import { newLineIdentifier } from '../ts_factory_utils';
 const factory = ts.factory;
 export type ResourceTsParameters = {
   additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
@@ -25,7 +26,14 @@ export function renderResourceTsFile({
     factory.createVariableDeclarationList([exportedVariable], ts.NodeFlags.Const),
   );
 
-  return factory.createNodeArray([...importStatements, ...(postImportStatements ?? []), exportStatement, ...(postExportStatements ?? [])]);
+  return factory.createNodeArray([
+    ...importStatements,
+    newLineIdentifier,
+    ...(postImportStatements ?? []),
+    exportStatement,
+    newLineIdentifier,
+    ...(postExportStatements ?? []),
+  ]);
 }
 
 export type ResourceTsParametersList = {
@@ -50,8 +58,11 @@ export function renderResourceTsFilesForFunction({
 
   return factory.createNodeArray([
     ...importStatements,
+    newLineIdentifier,
     ...(postImportStatements ?? []),
+    newLineIdentifier,
     ...(exportStatements ?? []),
+    newLineIdentifier,
     ...(postExportStatements ?? []),
   ]);
 }

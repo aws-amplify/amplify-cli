@@ -27,6 +27,7 @@ import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-
 import { tryRefactorStack } from './cfn-stack-refactor-updater';
 import CfnOutputResolver from './resolvers/cfn-output-resolver';
 import CfnDependencyResolver from './resolvers/cfn-dependency-resolver';
+import CfnParameterResolver from './resolvers/cfn-parameter-resolver';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
@@ -482,10 +483,11 @@ class TemplateGenerator {
     const describeStackResponseForSourceTemplate = await categoryTemplateGenerator.describeStack(sourceCategoryStackId);
     assert(describeStackResponseForSourceTemplate);
     const sourceLogicalIds = [...sourceResourcesToRemove.keys()];
-    const { Outputs } = describeStackResponseForSourceTemplate;
+    const { Outputs, Parameters } = describeStackResponseForSourceTemplate;
     assert(Outputs);
     assert(this.region);
-    const newSourceTemplateWithOutputsResolved = new CfnOutputResolver(newSourceTemplate, this.region, this.accountId).resolve(
+    const newSourceTemplateWithParametersResolved = new CfnParameterResolver(newSourceTemplate).resolve(Parameters ?? []);
+    const newSourceTemplateWithOutputsResolved = new CfnOutputResolver(newSourceTemplateWithParametersResolved, this.region, this.accountId).resolve(
       sourceLogicalIds,
       Outputs,
     );

@@ -47,6 +47,7 @@ const AMPLIFY_DIR = 'amplify';
 const MIGRATION_DIR = '.amplify/migration';
 const GEN1_COMMAND = 'amplifyPush --simple';
 const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
+const GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX = 'your Gen 2 backend code';
 
 enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   DOT_AMPLIFY = '.amplify',
@@ -75,7 +76,7 @@ const generateGen2Code = async ({
   };
   fetchingAWSResourceDetails.succeed('Fetched resource details from AWS');
 
-  const gen2Codegen = ora('Generating your Gen 2 backend code').start();
+  const gen2Codegen = ora(`Generating ${GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX}`).start();
   assert(gen2RenderOptions);
   const pipeline = createGen2Renderer(gen2RenderOptions);
   assert(backendEnvironmentName);
@@ -86,8 +87,10 @@ const generateGen2Code = async ({
     await usageData.emitSuccess();
   } catch (e) {
     await usageData.emitError(e);
+    gen2Codegen.fail(`Failed to generate ${GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX}`);
+    throw e;
   }
-  gen2Codegen.succeed('Generated your Gen 2 backend code');
+  gen2Codegen.succeed(`Generated ${GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX}`);
 };
 
 type AmplifyMetaAuth = {
@@ -153,11 +156,10 @@ const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof Lambda
         // If not a valid JSON string, assume it's an array of JSON strings
         triggerConnections = authInputs.cognitoConfig.authTriggerConnections.map((connection: string) => JSON.parse(connection));
       }
-      const connections = triggerConnections.reduce((prev, curr) => {
+      return triggerConnections.reduce((prev, curr) => {
         prev[curr.triggerType] = getFunctionPath(curr.lambdaFunctionName);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
-      return connections;
     } catch (e) {
       throw new Error('Error parsing auth trigger connections');
     }

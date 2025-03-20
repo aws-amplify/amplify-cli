@@ -8,6 +8,7 @@ type HandleErrorProps = {
   message?: string;
   command?: string;
   preambleMessage?: () => void;
+  debug: boolean;
 };
 
 /**
@@ -18,13 +19,14 @@ type HandleErrorProps = {
  * This generator allows us to inject the yargs parser into the callback so that we can call parser.exit() from the failure handler
  * This prevents our top-level error handler from being invoked after the yargs error handler has already been invoked
  */
-export const generateCommandFailureHandler = (parser: Argv): ((message: string, error: Error) => Promise<void>) => {
+export const generateCommandFailureHandler = (parser: Argv): ((message: string, error: Error, debug?: boolean) => Promise<void>) => {
   /**
    * Format error output when a command fails
    * @param message error message set by the yargs:check validations
    * @param error error thrown by yargs handler
+   * @param debug whether to print the stack trace
    */
-  const handleCommandFailure = async (message: string, error?: Error) => {
+  const handleCommandFailure = async (message: string, error?: Error, debug = false) => {
     const printHelp = () => {
       printer.printNewLine();
       parser.showHelp();
@@ -35,6 +37,7 @@ export const generateCommandFailureHandler = (parser: Argv): ((message: string, 
       preambleMessage: printHelp,
       error,
       message,
+      debug
     });
     parser.exit(1, error || new Error(message));
   };
@@ -55,7 +58,7 @@ const isUserForceClosePromptError = (err?: Error): boolean => {
   return !!err && err?.message.includes('User force closed the prompt');
 };
 
-const handleError = async ({ error, message, preambleMessage }: HandleErrorProps) => {
+const handleError = async ({ error, message, preambleMessage, debug }: HandleErrorProps) => {
   // If yargs threw an error because the customer force-closed a prompt (ie Ctrl+C during a prompt,
   // then the intent to exit the process is clear
   if (isUserForceClosePromptError(error)) {
@@ -65,4 +68,7 @@ const handleError = async ({ error, message, preambleMessage }: HandleErrorProps
   preambleMessage?.();
 
   printer.print(format.error(message || String(error)));
+  if (debug && error && error.stack) {
+    printer.print(format.error(error.stack));
+  }
 };

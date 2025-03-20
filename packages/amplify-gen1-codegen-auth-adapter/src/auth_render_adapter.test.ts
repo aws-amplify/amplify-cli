@@ -462,6 +462,7 @@ void describe('auth codegen', () => {
       ['DefineAuthChallenge', 'defineAuthChallenge'],
       ['CreateAuthChallenge', 'createAuthChallenge'],
       ['VerifyAuthChallengeResponse', 'verifyAuthChallengeResponse'],
+      ['PreTokenGenerationConfig', 'preTokenGeneration'],
     ];
     for (const [lambdaConfigKey, authEventKey] of testCases) {
       void it(`adapts user pool lambda config key ${lambdaConfigKey} to triggers ${authEventKey}`, () => {
@@ -469,7 +470,11 @@ void describe('auth codegen', () => {
           userPool: { LambdaConfig: { [lambdaConfigKey]: {} } },
         });
         assert(result.lambdaTriggers);
-        assert.deepEqual(result.lambdaTriggers[authEventKey], { source: '' });
+        if (lambdaConfigKey === 'PreTokenGenerationConfig') {
+          expect(result.lambdaTriggers[authEventKey]).toBeUndefined();
+        } else {
+          assert.deepEqual(result.lambdaTriggers[authEventKey], { source: '' });
+        }
       });
     }
   });
