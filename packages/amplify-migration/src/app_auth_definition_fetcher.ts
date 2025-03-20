@@ -40,7 +40,7 @@ export class AppAuthDefinitionFetcher {
     return JSON.parse(contents);
   };
 
-  private authCategory = async () => {
+  private getAuthCategory = async () => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     if (!backendEnvironment?.deploymentArtifacts) return undefined;
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
@@ -123,7 +123,7 @@ export class AppAuthDefinitionFetcher {
   };
 
   getDefinition = async (): Promise<AuthDefinition | undefined> => {
-    const authCategory = await this.authCategory();
+    const authCategory = await this.getAuthCategory();
     if (!authCategory) {
       return undefined;
     }

@@ -251,14 +251,14 @@ export class BackendSynthesizer {
       );
   }
 
-  private createProviderSetupCode(): ts.Statement[] {
-    // Create const providerSetupResult = (backend.auth.stack.node.children.find(child => child.node.id === "amplifyAuth") as any).providerSetupResult;
-    const providerSetupDeclaration = factory.createVariableStatement(
+  private getProviderSetupDeclaration(): ts.VariableStatement {
+    const providerSetupResult = 'providerSetupResult';
+    return factory.createVariableStatement(
       undefined,
       factory.createVariableDeclarationList(
         [
           factory.createVariableDeclaration(
-            factory.createIdentifier('providerSetupResult'),
+            factory.createIdentifier(providerSetupResult),
             undefined,
             undefined,
             factory.createPropertyAccessExpression(
@@ -288,22 +288,24 @@ export class BackendSynthesizer {
                   factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
                 ),
               ),
-              factory.createIdentifier('providerSetupResult'),
+              factory.createIdentifier(providerSetupResult),
             ),
           ),
         ],
         ts.NodeFlags.Const,
       ),
     );
+  }
 
-    // Create Object.keys(providerSetupResult).forEach(...)
-    const forEachStatement = factory.createExpressionStatement(
+  private getProviderSetupForeachStatement(): ExpressionStatement {
+    const providerSetupResult = 'providerSetupResult';
+    return factory.createExpressionStatement(
       factory.createCallExpression(
         factory.createPropertyAccessExpression(
           factory.createCallExpression(
             factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('keys')),
             undefined,
-            [factory.createIdentifier('providerSetupResult')],
+            [factory.createIdentifier(providerSetupResult)],
           ),
           factory.createIdentifier('forEach'),
         ),
@@ -327,7 +329,7 @@ export class BackendSynthesizer {
                         undefined,
                         undefined,
                         factory.createElementAccessExpression(
-                          factory.createIdentifier('providerSetupResult'),
+                          factory.createIdentifier(providerSetupResult),
                           factory.createIdentifier('provider'),
                         ),
                       ),
@@ -378,6 +380,14 @@ export class BackendSynthesizer {
         ],
       ),
     );
+  }
+
+  private createProviderSetupCode(): ts.Statement[] {
+    // Create const providerSetupResult = (backend.auth.stack.node.children.find(child => child.node.id === "amplifyAuth") as any).providerSetupResult;
+    const providerSetupDeclaration = this.getProviderSetupDeclaration();
+
+    // Create Object.keys(providerSetupResult).forEach(...)
+    const forEachStatement = this.getProviderSetupForeachStatement();
 
     return [providerSetupDeclaration, forEachStatement];
   }
