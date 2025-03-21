@@ -41,7 +41,7 @@ export const patchNpmPackageJson = (packageJson: PackageJson, packageVersions: P
       esbuild: withDefault(packageVersions.esbuild),
       tsx: withDefault(packageVersions.tsx),
       typescript: withDefault(packageVersions.typescript),
-      '@types/node': withDefault(packageVersions['@types/node'])
+      '@types/node': withDefault(packageVersions['@types/node']),
     },
     dependencies: {
       ...(packageJson.dependencies ?? {}),

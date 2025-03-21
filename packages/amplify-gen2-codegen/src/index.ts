@@ -96,7 +96,7 @@ export const createGen2Renderer = ({
         'ci-info': '^3.8.0',
         constructs: '^10.0.0',
         typescript: '^5.0.0',
-        '@types/node': '*'
+        '@types/node': '*',
       });
     },
     (content) => fileWriter(content, path.join(outputDir, 'package.json')),

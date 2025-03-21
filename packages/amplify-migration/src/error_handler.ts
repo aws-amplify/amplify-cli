@@ -37,7 +37,7 @@ export const generateCommandFailureHandler = (parser: Argv): ((message: string, 
       preambleMessage: printHelp,
       error,
       message,
-      debug
+      debug,
     });
     parser.exit(1, error || new Error(message));
   };

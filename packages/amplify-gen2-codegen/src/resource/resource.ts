@@ -28,11 +28,10 @@ export function renderResourceTsFile({
 
   return factory.createNodeArray([
     ...importStatements,
+    ...(postImportStatements !== undefined && postImportStatements.length > 0 ? [newLineIdentifier, ...postImportStatements] : []),
     newLineIdentifier,
-    ...(postImportStatements ?? []),
     exportStatement,
-    newLineIdentifier,
-    ...(postExportStatements ?? []),
+    ...(postExportStatements !== undefined && postExportStatements.length > 0 ? [newLineIdentifier, ...postExportStatements] : []),
   ]);
 }
 
@@ -58,12 +57,9 @@ export function renderResourceTsFilesForFunction({
 
   return factory.createNodeArray([
     ...importStatements,
-    newLineIdentifier,
-    ...(postImportStatements ?? []),
-    newLineIdentifier,
-    ...(exportStatements ?? []),
-    newLineIdentifier,
-    ...(postExportStatements ?? []),
+    ...(postImportStatements !== undefined && postImportStatements.length > 0 ? [newLineIdentifier, ...postImportStatements] : []),
+    ...(exportStatements ? [newLineIdentifier, ...exportStatements] : []),
+    ...(postExportStatements !== undefined && postExportStatements.length > 0 ? [newLineIdentifier, ...postExportStatements] : []),
   ]);
 }
 

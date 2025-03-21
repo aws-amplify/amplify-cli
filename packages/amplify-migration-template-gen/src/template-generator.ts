@@ -487,10 +487,11 @@ class TemplateGenerator {
     assert(Outputs);
     assert(this.region);
     const newSourceTemplateWithParametersResolved = new CfnParameterResolver(newSourceTemplate).resolve(Parameters ?? []);
-    const newSourceTemplateWithOutputsResolved = new CfnOutputResolver(newSourceTemplateWithParametersResolved, this.region, this.accountId).resolve(
-      sourceLogicalIds,
-      Outputs,
-    );
+    const newSourceTemplateWithOutputsResolved = new CfnOutputResolver(
+      newSourceTemplateWithParametersResolved,
+      this.region,
+      this.accountId,
+    ).resolve(sourceLogicalIds, Outputs);
     const newSourceTemplateWithDepsResolved = new CfnDependencyResolver(newSourceTemplateWithOutputsResolved).resolve(sourceLogicalIds);
     if (category === 'auth' || category === 'auth-user-pool-group') {
       const { StackResources: AuthStackResources } = await this.cfnClient.send(

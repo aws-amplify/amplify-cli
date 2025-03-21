@@ -855,7 +855,7 @@ export class BackendSynthesizer {
     }
 
     return factory.createNodeArray(
-      [...imports, newLineIdentifier, ...errors, newLineIdentifier, backendStatement, newLineIdentifier, ...nodes],
+      [...imports, newLineIdentifier, ...errors, newLineIdentifier, backendStatement, ...nodes],
       true,
     );
   }

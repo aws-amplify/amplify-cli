@@ -9,8 +9,8 @@ jest.mock('./format', () => ({
     error: jest.fn((message) => message),
     command: jest.fn((command) => command),
     highlight: jest.fn((command) => command),
-    success: jest.fn((message) => message)
-  }
+    success: jest.fn((message) => message),
+  },
 }));
 
 jest.mock('yargs', () => {
