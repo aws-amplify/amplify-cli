@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-next-5.0...@aws-amplify/migrate-template-gen@0.1.0-next-6.0) (2025-03-21)
+
+
+### Bug Fixes
+
+* **amplify-gen2-codegen:** remove extraneous newline ([aaf6dba](https://github.com/aws-amplify/amplify-cli/commit/aaf6dba696091933bc99583a2262f23dc96ea0ec))
+* migration qa feedback ([0f50d1c](https://github.com/aws-amplify/amplify-cli/commit/0f50d1c0ff2607c63cd3bcdd1589d38940a2b6d4))
+
+
+
+
+
 # [0.1.0-next-5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-next-2.0...@aws-amplify/migrate-template-gen@0.1.0-next-5.0) (2025-03-19)
 
 
