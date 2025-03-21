@@ -854,9 +854,6 @@ export class BackendSynthesizer {
       nodes.push(tagAssignment);
     }
 
-    return factory.createNodeArray(
-      [...imports, newLineIdentifier, ...errors, newLineIdentifier, backendStatement, ...nodes],
-      true,
-    );
+    return factory.createNodeArray([...imports, newLineIdentifier, ...errors, newLineIdentifier, backendStatement, ...nodes], true);
   }
 }
