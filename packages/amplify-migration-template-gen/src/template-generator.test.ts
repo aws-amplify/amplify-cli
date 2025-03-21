@@ -17,7 +17,7 @@ import {
 import fs from 'node:fs/promises';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
-import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_IAM_TYPE } from './types';
+import { CATEGORY, CFN_AUTH_TYPE, CFN_S3_TYPE, CFN_IAM_TYPE, CFNTemplate } from './types';
 import assert from 'node:assert';
 
 jest.useFakeTimers();
@@ -69,6 +69,7 @@ const GEN2_UNAUTH_ROLE_LOGICAL_ID = `${GEN2_AUTH_LOGICAL_ID_PREFIX}authenticated
 const STACK_CATEGORIES_TO_REFACTOR: CATEGORY[] = ['auth', 'auth-user-pool-group', 'storage'];
 export const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
 export const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
+const USER_POOL_PARAM_NAME = 'authUserPoolId';
 
 const mockDescribeGen1StackResources: DescribeStackResourcesOutput = {
   StackResources: [
@@ -228,12 +229,21 @@ jest.mock('./migration-readme-generator', () => {
     };
   };
 });
-const stubReadTemplate = {
+const stubReadTemplate: CFNTemplate = {
+  AWSTemplateFormatVersion: 'AWSTemplateFormatVersion',
+  Description: 'Gen2 template',
+  Parameters: {
+    [USER_POOL_PARAM_NAME]: {
+      Type: 'String',
+      Description: 'Cognito User Pool ID',
+    },
+  },
   Resources: {
     [GEN2_AUTH_USER_POOL_LOGICAL_ID]: {
       Type: CFN_AUTH_TYPE.UserPool,
       Properties: {
         UserPoolName: { 'Fn::Join': ['-', 'my-user-pool', 'dev'] },
+        UserPoolId: { Ref: 'authUserPoolId' },
       },
     },
     [GEN2_AUTH_IDENTITY_POOL_LOGICAL_ID]: {
@@ -274,6 +284,9 @@ const stubReadTemplate = {
       },
     },
     [GEN2_S3_BUCKET_LOGICAL_ID]: {
+      Properties: {
+        BucketName: 'S3BucketName',
+      },
       Type: CFN_S3_TYPE.Bucket,
     },
   },
@@ -331,6 +344,12 @@ const stubCategoryTemplateGenerator = {
       {
         OutputKey: GEN2_AUTH_USER_POOL_CLIENT_NATIVE_LOGICAL_ID,
         OutputValue: 'native-client-id',
+      },
+    ],
+    Parameters: [
+      {
+        ParameterKey: USER_POOL_PARAM_NAME,
+        ParameterValue: 'user-pool-id',
       },
     ],
   }),

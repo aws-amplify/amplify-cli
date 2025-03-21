@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import { newLineIdentifier } from '../ts_factory_utils';
 const factory = ts.factory;
 export type ResourceTsParameters = {
   additionalImportedBackendIdentifiers?: Record<string, Set<string>>;
@@ -25,7 +26,13 @@ export function renderResourceTsFile({
     factory.createVariableDeclarationList([exportedVariable], ts.NodeFlags.Const),
   );
 
-  return factory.createNodeArray([...importStatements, ...(postImportStatements ?? []), exportStatement, ...(postExportStatements ?? [])]);
+  return factory.createNodeArray([
+    ...importStatements,
+    ...(postImportStatements !== undefined && postImportStatements.length > 0 ? [newLineIdentifier, ...postImportStatements] : []),
+    newLineIdentifier,
+    exportStatement,
+    ...(postExportStatements !== undefined && postExportStatements.length > 0 ? [newLineIdentifier, ...postExportStatements] : []),
+  ]);
 }
 
 export type ResourceTsParametersList = {
@@ -50,9 +57,9 @@ export function renderResourceTsFilesForFunction({
 
   return factory.createNodeArray([
     ...importStatements,
-    ...(postImportStatements ?? []),
-    ...(exportStatements ?? []),
-    ...(postExportStatements ?? []),
+    ...(postImportStatements !== undefined && postImportStatements.length > 0 ? [newLineIdentifier, ...postImportStatements] : []),
+    ...(exportStatements ? [newLineIdentifier, ...exportStatements] : []),
+    ...(postExportStatements !== undefined && postExportStatements.length > 0 ? [newLineIdentifier, ...postExportStatements] : []),
   ]);
 }
 

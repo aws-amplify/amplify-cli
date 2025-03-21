@@ -1,7 +1,8 @@
 import { Parameter, StackRefactorExecutionStatus, StackRefactorStatus } from '@aws-sdk/client-cloudformation';
 
+// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
 export interface CFNOutput {
-  Description: string;
+  Description?: string;
   Value: string | object;
 }
 

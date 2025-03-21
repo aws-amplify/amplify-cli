@@ -61,6 +61,8 @@ export const DEFAULT_PASSWORD_SETTINGS: PasswordPolicyType = {
   TemporaryPasswordValidityDays: 3,
 };
 
+const COGNITO_TRIGGERS_TO_SKIP = ['PreTokenGenerationConfig'];
+
 const getPasswordPolicyOverrides = (passwordPolicy: Partial<PasswordPolicyType>): Partial<PolicyOverrides> => {
   const policyOverrides: Partial<PolicyOverrides> = {};
   const passwordOverridePath = (policyKey: keyof PasswordPolicyType): PasswordPolicyPath => `Policies.PasswordPolicy.${policyKey}`;
@@ -217,11 +219,17 @@ const getAuthTriggers = (
   lambdaConfig: LambdaConfigType,
   triggerSourceFiles: AuthTriggerConnectionSourceMap,
 ): Partial<Record<AuthTriggerEvents, Lambda>> => {
-  return Object.keys(lambdaConfig).reduce((prev, key) => {
-    const typedKey = key as keyof LambdaConfigType;
-    prev[mappedLambdaConfigKey(typedKey)] = { source: triggerSourceFiles[typedKey] ?? '' };
-    return prev;
-  }, {} as Partial<Record<AuthTriggerEvents, Lambda>>);
+  return (
+    Object.keys(lambdaConfig)
+      // There is PreTokenGenerationConfig that is duplicated, but is of a different format. Cognito introduced this at a later stage.
+      // We look for PreTokenGeneration which is maintained for legacy reasons and is always populated.
+      .filter((triggerName) => !COGNITO_TRIGGERS_TO_SKIP.includes(triggerName))
+      .reduce((prev, key) => {
+        const typedKey = key as keyof LambdaConfigType;
+        prev[mappedLambdaConfigKey(typedKey)] = { source: triggerSourceFiles[typedKey] ?? '' };
+        return prev;
+      }, {} as Partial<Record<AuthTriggerEvents, Lambda>>)
+  );
 };
 
 function filterAttributeMapping(

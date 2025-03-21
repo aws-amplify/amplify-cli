@@ -14,6 +14,7 @@ import { BucketAccelerateStatus, BucketVersioningStatus } from '@aws-sdk/client-
 import { AccessPatterns, ServerSideEncryptionConfiguration } from '../storage/source_builder.js';
 import { ExplicitAuthFlowsType, OAuthFlowType, UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import assert from 'assert';
+import { newLineIdentifier } from '../ts_factory_utils';
 
 const factory = ts.factory;
 export interface BackendRenderParameters {
@@ -734,10 +735,8 @@ export class BackendSynthesizer {
     }
 
     if (renderArgs.function) {
-      const functionIdentifiers: Identifier[] = [];
       const functionNameCategories = renderArgs.function.functionNamesAndCategories;
       for (const [functionName, category] of functionNameCategories) {
-        functionIdentifiers.push(factory.createIdentifier(functionName));
         const functionProperty = factory.createShorthandPropertyAssignment(factory.createIdentifier(functionName));
         defineBackendProperties.push(functionProperty);
         imports.push(this.createImportStatement([factory.createIdentifier(functionName)], `./${category}/${functionName}/resource`));
@@ -1022,6 +1021,6 @@ export class BackendSynthesizer {
       nodes.push(tagAssignment);
     }
 
-    return factory.createNodeArray([...imports, ...errors, backendStatement, ...nodes], true);
+    return factory.createNodeArray([...imports, newLineIdentifier, ...errors, newLineIdentifier, backendStatement, ...nodes], true);
   }
 }

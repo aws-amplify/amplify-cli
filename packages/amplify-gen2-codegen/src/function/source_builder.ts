@@ -39,11 +39,13 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
   namedImports['@aws-amplify/backend'].add('defineFunction');
 
   postImportStatements.push(
-    factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-      factory.createStringLiteral(
-        `Source code for this function can be found in your Amplify Gen 1 Directory. See .amplify/migration/amplify/backend/function/${definition.resourceName}/src`,
-      ),
-    ]),
+    factory.createExpressionStatement(
+      factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+        factory.createStringLiteral(
+          `Source code for this function can be found in your Amplify Gen 1 Directory. See .amplify/migration/amplify/backend/function/${definition.resourceName}/src`,
+        ),
+      ]),
+    ),
   );
 
   const defineFunctionProperty = createFunctionDefinition(definition, postImportStatements, namedImports, appId, backendEnvironmentName);
@@ -69,7 +71,7 @@ export function renderFunctions(definition: FunctionDefinition, appId?: string, 
 
 export function createFunctionDefinition(
   definition?: FunctionDefinition,
-  postImportStatements?: (ts.CallExpression | ts.JSDoc)[],
+  postImportStatements?: (ts.CallExpression | ts.JSDoc | ts.ExpressionStatement)[],
   namedImports?: Record<string, Set<string>>,
   appId?: string,
   backendEnvironmentName?: string,

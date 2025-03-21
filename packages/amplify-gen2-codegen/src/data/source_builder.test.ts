@@ -41,7 +41,7 @@ describe('Data Category code generation', () => {
       const source = printNodeArray(generateDataSource({ tableMappings, schema: 'schema' }));
       assert.match(
         source,
-        /const schema \= \`schema\`\;\nexport const data \= defineData\({\n\s+migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema\n}\)/,
+        /const schema \= \`schema\`\;\n\nexport const data \= defineData\({\n\s+migratedAmplifyGen1DynamoDbTableMappings: \[\{\n\s+\/\/ Replace the environment name \(dev\) with the corresponding branch name. Use ['"]sandbox['"] for your sandbox environment.\n\s+branchName: ['"]dev['"],\n\s+modelNameToTableNameMapping: { Todo: ['"]my-todo-mapping['"] }\n\s+}],\n\s+schema\n}\)/,
       );
     });
   });

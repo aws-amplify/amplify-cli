@@ -96,6 +96,7 @@ export const createGen2Renderer = ({
         'ci-info': '^3.8.0',
         constructs: '^10.0.0',
         typescript: '^5.0.0',
+        '@types/node': '*',
       });
     },
     (content) => fileWriter(content, path.join(outputDir, 'package.json')),
@@ -143,9 +144,7 @@ export const createGen2Renderer = ({
           new TypescriptNodeArrayRenderer(
             async () => renderFunctions(func),
             (content) => {
-              return fileWriter(content, path.join(dirPath, 'resource.ts'))
-                .then(() => fileWriter('', path.join(dirPath, 'handler.ts')))
-                .catch(console.error);
+              return fileWriter(content, path.join(dirPath, 'resource.ts')).then(() => fileWriter('', path.join(dirPath, 'handler.ts')));
             },
           ),
         );

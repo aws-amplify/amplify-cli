@@ -24,6 +24,7 @@ const installedDependencies: Record<keyof AmplifyPackageVersions, IsDevDependenc
   '@aws-amplify/backend': true,
   '@aws-amplify/backend-cli': true,
   'ci-info': true,
+  '@types/node': true,
 };
 
 describe('package.json renderer', () => {
