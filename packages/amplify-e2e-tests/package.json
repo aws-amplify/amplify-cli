@@ -41,7 +41,7 @@
     "amplify-storage-simulator": "1.11.6",
     "aws-amplify": "^5.3.16",
     "aws-appsync": "^4.1.1",
-    "aws-cdk-lib": "~2.177.0",
+    "aws-cdk-lib": "~2.184.0",
     "aws-sdk": "^2.1464.0",
     "axios": "^1.6.7",
     "constructs": "^10.0.5",
