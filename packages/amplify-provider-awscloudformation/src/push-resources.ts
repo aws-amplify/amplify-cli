@@ -17,7 +17,7 @@
 import _ from 'lodash';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { glob, GlobOptionsWithFileTypesFalse } from 'glob';
+import * as glob from 'glob';
 import {
   AmplifyCategories,
   AmplifySupportedService,
@@ -726,13 +726,13 @@ const getAllUniqueCategories = (resources: $TSObject[]): $TSObject[] => {
 };
 
 /**
- *
+ * switched from IOptions to GlobOptionsWithFileTypesFalse, see: https://github.com/isaacs/node-glob/issues/529
  */
 export const getCfnFiles = (
   category: string,
   resourceName: string,
   includeAllNestedStacks = false,
-  options?: GlobOptionsWithFileTypesFalse,
+  options?: glob.GlobOptionsWithFileTypesFalse,
 ) => {
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));

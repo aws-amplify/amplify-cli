@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { glob, GlobOptionsWithFileTypesFalse } from 'glob';
+import * as glob from 'glob';
 import chalk from 'chalk';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { $TSAny, generateCustomPoliciesInTemplate, pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
@@ -92,7 +92,7 @@ interface IResourcePaths {
  */
 export const globCFNFilePath = (fileFolder: string): string => {
   if (fs.existsSync(fileFolder)) {
-    const globOptions: GlobOptionsWithFileTypesFalse = {
+    const globOptions: glob.GlobOptionsWithFileTypesFalse = {
       absolute: false,
       cwd: fileFolder,
       follow: false,
