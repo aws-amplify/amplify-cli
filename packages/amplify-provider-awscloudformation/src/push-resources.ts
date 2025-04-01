@@ -17,7 +17,7 @@
 import _ from 'lodash';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import glob from 'glob';
+import { glob, GlobOptionsWithFileTypesFalse } from 'glob';
 import {
   AmplifyCategories,
   AmplifySupportedService,
@@ -728,7 +728,12 @@ const getAllUniqueCategories = (resources: $TSObject[]): $TSObject[] => {
 /**
  *
  */
-export const getCfnFiles = (category: string, resourceName: string, includeAllNestedStacks = false, options?: glob.IOptions) => {
+export const getCfnFiles = (
+  category: string,
+  resourceName: string,
+  includeAllNestedStacks = false,
+  options?: GlobOptionsWithFileTypesFalse,
+) => {
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
