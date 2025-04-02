@@ -16,7 +16,7 @@ export abstract class AppSyncBaseResolver {
       throw new Error(`Missing request mapping template ${e.message}`);
     }
   }
-  // abstract async resolve(source, args, context, info): Promise<any>;
+  // abstract async resolve(source, args, context, info): Promise<any>; 
 
   protected getResponseMappingTemplate(): VelocityTemplate {
     if (this.config.responseMappingTemplate) {
