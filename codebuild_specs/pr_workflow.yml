@@ -22,6 +22,7 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+      debug-session: true
     - identifier: test
       buildspec: codebuild_specs/test.yml
       depend-on:
