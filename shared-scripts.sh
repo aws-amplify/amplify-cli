@@ -93,8 +93,8 @@ function _installAndCacheDependencies {
 
 function _buildLinux {
     echo Linux Build
-    codebuild-breakpoint
     yarn --immutable --inline-builds
+    codebuild-breakpoint
     yarn production-build
     yarn build-tests
     ./.circleci/cb-publish-step-1-set-versions.sh
