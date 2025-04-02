@@ -93,7 +93,6 @@ function _installAndCacheDependencies {
 
 function _buildLinux {
     echo Linux Build
-    codebuild-breakpoint
     yarn --immutable --inline-builds
     yarn production-build
     yarn build-tests
