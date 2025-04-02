@@ -169,7 +169,7 @@ describe('deployment state machine', () => {
 
           expect(rollbackMock).toHaveBeenCalledTimes(2);
 
-          // rollback of second stack as the thrid stack is automatically rolled back by CFN
+          // rollback of second stack as the third stack is automatically rolled back by CFN
           expect(rollbackMock.mock.calls[0][0]).toEqual(secoondStackRollbackArg);
           expect(tableReadWaitMock.mock.calls[3]).toContainEqual(secoondStackRollbackArg);
 
