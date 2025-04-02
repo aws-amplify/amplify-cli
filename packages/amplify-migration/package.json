@@ -54,6 +54,7 @@
     "@aws-sdk/client-amplify": "^3.592.0",
     "@aws-sdk/client-amplifybackend": "^3.592.0",
     "@aws-sdk/client-cloudformation": "^3.592.0",
+    "@aws-sdk/client-cloudwatch-events": "^3.592.0",
     "@aws-sdk/client-cognito-identity": "^3.592.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.592.0",
     "@aws-sdk/client-lambda": "^3.637.0",

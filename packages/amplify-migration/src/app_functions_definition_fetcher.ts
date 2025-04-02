@@ -2,7 +2,8 @@ import assert from 'node:assert';
 import { FunctionDefinition } from '@aws-amplify/amplify-gen2-codegen';
 import { getFunctionDefinition } from '@aws-amplify/amplify-gen1-codegen-function-adapter';
 import { BackendEnvironmentResolver } from './backend_environment_selector';
-import { GetFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import { GetFunctionCommand, GetPolicyCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import { DescribeRuleCommand, CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { StateManager } from '@aws-amplify/amplify-cli-core';
 
 interface AuthConfig {
@@ -21,6 +22,7 @@ export interface AppFunctionsDefinitionFetcher {
 export class AppFunctionsDefinitionFetcher {
   constructor(
     private lambdaClient: LambdaClient,
+    private cloudWatchEventsClient: CloudWatchEventsClient,
     private backendEnvironmentResolver: BackendEnvironmentResolver,
     private stateManager: StateManager,
   ) {}
@@ -87,6 +89,34 @@ export class AppFunctionsDefinitionFetcher {
       .map((functionResponse) => functionResponse.Configuration ?? null)
       .filter((config): config is NonNullable<typeof config> => config !== null);
 
-    return getFunctionDefinition(functionConfigurations, functionCategoryMap, meta);
+    // Fetch schedules for functions
+    const getFunctionSchedulePromises = Object.keys(functions).map(async (key) => {
+      const functionName = meta.function[key].output.Name;
+
+      // Fetch the Lambda policy to get the CloudWatch rule name
+      const policyResponse = await this.lambdaClient.send(new GetPolicyCommand({ FunctionName: functionName }));
+
+      const policy = JSON.parse(policyResponse.Policy ?? '{}');
+      const ruleName = policy.Statement?.find((statement: any) => statement.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'))
+        ?.Condition.ArnLike['AWS:SourceArn'].split('/')
+        .pop();
+
+      let scheduleExpression: string | undefined;
+
+      if (ruleName) {
+        // Use DescribeRuleCommand to get the schedule expression
+        const ruleResponse = await this.cloudWatchEventsClient.send(new DescribeRuleCommand({ Name: ruleName }));
+        scheduleExpression = ruleResponse.ScheduleExpression;
+      }
+
+      return {
+        functionName,
+        scheduleExpression,
+      };
+    });
+
+    const functionSchedules = await Promise.all(getFunctionSchedulePromises);
+
+    return getFunctionDefinition(functionConfigurations, functionSchedules, functionCategoryMap, meta);
   };
 }

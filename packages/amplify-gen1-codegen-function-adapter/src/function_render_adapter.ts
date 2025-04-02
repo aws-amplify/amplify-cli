@@ -8,12 +8,18 @@ export type AmplifyMetaFunction = {
   output: Record<string, string>;
 };
 
+type FunctionSchedule = {
+  functionName: string;
+  scheduleExpression: string | undefined;
+};
+
 export type AmplifyMetaWithFunction = {
   function: Record<string, AmplifyMetaFunction>;
 };
 
 export const getFunctionDefinition = (
   functionConfigurations: FunctionConfiguration[],
+  functionSchedules: FunctionSchedule[],
   functionCategoryMap: Map<string, string>,
   meta: AmplifyMetaWithFunction,
 ): FunctionDefinition[] => {
@@ -33,6 +39,7 @@ export const getFunctionDefinition = (
     assert(functionRecordInMeta);
     funcDef.category = functionCategoryMap.get(functionRecordInMeta[0]) ?? 'function';
     funcDef.resourceName = functionRecordInMeta[0];
+    funcDef.schedule = functionSchedules.find((schedule) => schedule.functionName === functionName)?.scheduleExpression;
 
     funcDefList.push(funcDef);
   }

@@ -13,6 +13,7 @@ import { CognitoIdentityProviderClient, LambdaConfigType } from '@aws-sdk/client
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { S3Client } from '@aws-sdk/client-s3';
 import { LambdaClient } from '@aws-sdk/client-lambda';
+import { CloudWatchEventsClient } from '@aws-sdk/client-cloudwatch-events';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import { BackendDownloader } from './backend_downloader';
@@ -48,6 +49,9 @@ const MIGRATION_DIR = '.amplify/migration';
 const GEN1_COMMAND = 'amplifyPush --simple';
 const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
 const GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX = 'your Gen 2 backend code';
+const CUSTOM_DIR = 'custom';
+const TYPES_DIR = 'types';
+const BACKEND_DIR = 'backend';
 
 enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   DOT_AMPLIFY = '.amplify',
@@ -72,6 +76,7 @@ const generateGen2Code = async ({
     storage: await storageDefinitionFetcher.getDefinition(),
     data: await dataDefinitionFetcher.getDefinition(),
     functions: await functionsDefinitionFetcher.getDefinition(),
+    customResources: getCustomResources(),
     unsupportedCategories: unsupportedCategories(),
   };
   fetchingAWSResourceDetails.succeed('Fetched resource details from AWS');
@@ -110,7 +115,7 @@ type AmplifyMeta = {
 };
 
 const getFunctionPath = (functionName: string) => {
-  return path.join('amplify', 'backend', 'function', functionName, 'src');
+  return path.join(AMPLIFY_DIR, BACKEND_DIR, 'function', functionName, 'src');
 };
 
 const getUsageDataMetric = async (envName: string): Promise<IUsageData> => {
@@ -182,7 +187,6 @@ const unsupportedCategories = (): Map<string, string> => {
   unsupportedCategories.set('predictions', `${urlPrefix}/predictions/`);
   unsupportedCategories.set('notifications', `${urlPrefix}/in-app-messaging/`);
   unsupportedCategories.set('interactions', `${urlPrefix}/interactions/`);
-  unsupportedCategories.set('custom', `${urlPrefix}/custom-resources/`);
   unsupportedCategories.set('rest api', `${urlPrefix}/rest-api/`);
 
   const meta = stateManager.getMeta();
@@ -282,6 +286,102 @@ async function updateGitIgnoreForGen2() {
   updateGitIgnore.succeed('Updated gitignore contents');
 }
 
+const getCustomResources = (): string[] => {
+  const meta = stateManager.getMeta();
+  const customCategory = meta?.custom;
+
+  // If the custom category exists, return its resource names; otherwise, return an empty array
+  return customCategory ? Object.keys(customCategory) : [];
+};
+
+export async function updateCustomResources() {
+  const customResources = getCustomResources();
+  if (customResources.length > 0) {
+    const rootDir = pathManager.findProjectRoot();
+    assert(rootDir);
+    const amplifyGen1BackendDir = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR);
+    const amplifyGen2Dir = path.join(TEMP_GEN_2_OUTPUT_DIR, AMPLIFY_DIR);
+    const sourceCustomResourcePath = path.join(amplifyGen1BackendDir, CUSTOM_DIR);
+    const destinationCustomResourcePath = path.join(amplifyGen2Dir, CUSTOM_DIR);
+    const filterFiles = ['package.json', 'yarn.lock'];
+    await fs.mkdir(destinationCustomResourcePath, { recursive: true });
+    // Copy the custom resources, excluding package.json and yarn.lock files
+    await fs.cp(sourceCustomResourcePath, destinationCustomResourcePath, {
+      recursive: true,
+      filter: (src) => {
+        const fileName = path.basename(src);
+        return !filterFiles.includes(fileName);
+      },
+    });
+
+    const sourceTypesPath = path.join(amplifyGen1BackendDir, TYPES_DIR);
+    const destinationTypesPath = path.join(amplifyGen2Dir, TYPES_DIR);
+    await fs.mkdir(destinationTypesPath, { recursive: true });
+    await fs.cp(sourceTypesPath, destinationTypesPath, { recursive: true });
+
+    await updateCdkStackFile(customResources, destinationCustomResourcePath, rootDir);
+  } else {
+    console.log(`Custom resource category does not exist in the meta`);
+  }
+}
+
+export async function updateCdkStackFile(customResources: string[], destinationCustomResourcePath: string, rootDir: string) {
+  const projectInfo = await getProjectInfo(rootDir);
+
+  for (const resource of customResources) {
+    const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
+    const amplifyHelpersImport = /import\s+\*\s+as\s+AmplifyHelpers\s+from\s+['"]@aws-amplify\/cli-extensibility-helper['"];\n?/;
+
+    try {
+      let cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
+
+      // Check for existence of AmplifyHelpers.addResourceDependency and throw an error if found
+      if (cdkStackContent.includes('AmplifyHelpers.addResourceDependency')) {
+        cdkStackContent = cdkStackContent.replace(
+          /export class cdkStack/,
+          `throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency');\n\nexport class cdkStack`,
+        );
+      }
+
+      // Replace AmplifyHelpers.getProjectInfo() with {envName: 'envName', projectName: 'projectName'}
+      cdkStackContent = cdkStackContent.replace(/AmplifyHelpers\.getProjectInfo\(\)/g, projectInfo);
+
+      // Replace AmplifyHelpers.AmplifyResourceProps with {category: 'custom', resourceName: resource}
+      cdkStackContent = cdkStackContent.replace(
+        /AmplifyHelpers\.AmplifyResourceProps/g,
+        `{category: 'custom', resourceName: '${resource}' }`,
+      );
+
+      // Remove the import statement for AmplifyHelpers
+      cdkStackContent = cdkStackContent.replace(amplifyHelpersImport, '');
+
+      await fs.writeFile(cdkStackFilePath, cdkStackContent, { encoding: 'utf-8' });
+    } catch (error) {
+      console.error(`Error updating ${cdkStackFilePath}: ${error.message}`);
+    }
+  }
+}
+
+export async function getProjectInfo(rootDir: string) {
+  const configDir = path.join(rootDir, AMPLIFY_DIR, '.config');
+  const localEnvInfoFilePath = path.join(configDir, 'local-env-info.json');
+  const localEnvInfo = await fs.readFile(localEnvInfoFilePath, { encoding: 'utf-8' });
+  const envInfo = JSON.parse(localEnvInfo);
+  if (!envInfo.envName) {
+    throw new Error('Environment name not found in local-env-info.json');
+  }
+
+  const projectConfigFilePath = path.join(configDir, 'project-config.json');
+  const projectConfig = await fs.readFile(projectConfigFilePath, { encoding: 'utf-8' });
+
+  const projectConfigJson = JSON.parse(projectConfig);
+  if (!projectConfigJson.projectName) {
+    throw new Error('Project name not found in project-config.json');
+  }
+
+  return `{envName: '${envInfo.envName}', projectName: '${projectConfigJson.projectName}'}`;
+}
+
 export async function execute() {
   const appId = resolveAppId();
   const inspectApp = await ora(`Inspecting Amplify app ${appId} with current backend`).start();
@@ -299,6 +399,7 @@ export async function execute() {
   const lambdaClient = new LambdaClient({
     region: stateManager.getCurrentRegion(),
   });
+  const cloudWatchEventsClient = new CloudWatchEventsClient();
   const amplifyStackParser = new AmplifyStackParser(cloudFormationClient);
   const ccbFetcher = new BackendDownloader(s3Client);
   inspectApp.stop();
@@ -324,7 +425,12 @@ export async function execute() {
       ccbFetcher,
     ),
     dataDefinitionFetcher: new DataDefinitionFetcher(backendEnvironmentResolver, new BackendDownloader(s3Client), amplifyStackParser),
-    functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(lambdaClient, backendEnvironmentResolver, stateManager),
+    functionsDefinitionFetcher: new AppFunctionsDefinitionFetcher(
+      lambdaClient,
+      cloudWatchEventsClient,
+      backendEnvironmentResolver,
+      stateManager,
+    ),
     analytics: new AppAnalytics(appId),
     logger: new AppContextLogger(appId),
     backendEnvironmentName: backendEnvironment?.environmentName,
@@ -333,6 +439,8 @@ export async function execute() {
   await updateAmplifyYmlFile(amplifyClient, appId);
 
   await updateGitIgnoreForGen2();
+
+  await updateCustomResources();
 
   const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`).start();
   // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.

@@ -544,4 +544,33 @@ describe('BackendRenderer', () => {
       assert(output.includes('AMPLIFY_GEN_1_ENV_NAME = "sandbox"'));
     });
   });
+  describe('Custom resources are rendered()', () => {
+    it('renders custom resources', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        customResources: ['resource1', 'resource2'],
+      });
+
+      const output = printNodeArray(rendered);
+
+      const normalizedOutput = output.replace(/\s+/g, ' ').trim();
+
+      expect(normalizedOutput).toContain(
+        `new resource1(backend.root, "resource1", undefined, { category: "custom", resourceName: "resource1" });`,
+      );
+      expect(normalizedOutput).toContain(
+        `new resource2(backend.root, "resource2", undefined, { category: "custom", resourceName: "resource2" });`,
+      );
+    });
+
+    it('does not render custom resources when none are provided', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({});
+
+      const output = printNodeArray(rendered);
+
+      expect(output).not.toContain('new resource1');
+      expect(output).not.toContain('category: "custom"');
+    });
+  });
 });

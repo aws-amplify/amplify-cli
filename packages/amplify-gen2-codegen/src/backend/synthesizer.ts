@@ -46,6 +46,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
   };
+  customResources?: string[];
   unsupportedCategories?: Map<string, string>;
 }
 
@@ -761,19 +762,45 @@ export class BackendSynthesizer {
       const categories = renderArgs.unsupportedCategories;
 
       for (const [key, value] of categories) {
-        if (key == 'custom') {
-          errors.push(
-            factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-              factory.createStringLiteral(`Category ${key} has changed, learn more ${value}`),
+        errors.push(
+          factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
+            factory.createStringLiteral(`Category ${key} is unsupported, please follow ${value}`),
+          ]),
+        );
+      }
+    }
+
+    if (renderArgs.customResources) {
+      for (const resource of renderArgs.customResources) {
+        const importStatement = factory.createImportDeclaration(
+          undefined,
+          factory.createImportClause(
+            false,
+            undefined,
+            factory.createNamedImports([
+              factory.createImportSpecifier(false, factory.createIdentifier('cdkStack'), factory.createIdentifier(`${resource}`)),
             ]),
-          );
-        } else {
-          errors.push(
-            factory.createCallExpression(factory.createIdentifier('throw new Error'), undefined, [
-              factory.createStringLiteral(`Category ${key} is unsupported, please follow ${value}`),
-            ]),
-          );
-        }
+          ),
+          factory.createStringLiteral(`./custom/${resource}/cdk-stack`),
+          undefined,
+        );
+
+        imports.push(importStatement);
+
+        const customResourceExpression = factory.createNewExpression(factory.createIdentifier(`${resource}`), undefined, [
+          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('root')),
+          factory.createStringLiteral(`${resource}`),
+          factory.createIdentifier('undefined'),
+          factory.createObjectLiteralExpression(
+            [
+              factory.createPropertyAssignment(factory.createIdentifier('category'), factory.createStringLiteral('custom')),
+              factory.createPropertyAssignment(factory.createIdentifier('resourceName'), factory.createStringLiteral(`${resource}`)),
+            ],
+            true,
+          ),
+        ]);
+
+        nodes.push(factory.createExpressionStatement(customResourceExpression));
       }
     }
 
