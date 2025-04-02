@@ -36,11 +36,7 @@ s3Bucket.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: 
 1.a) Uncomment the following lines in \`amplify/backend.ts\` file
 ${this.categories.includes('storage') ? s3BucketChanges : ''}
 \`\`\`
-cfnUserPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
-\`\`\`
-
-\`\`\`
-cfnIdentityPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
+backend.auth.resources.userPool.node.tryRemoveChild('UserPoolDomain');
 \`\`\`
 
 \`\`\`
