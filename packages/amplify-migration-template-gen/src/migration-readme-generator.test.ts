@@ -28,10 +28,6 @@ s3Bucket.bucketName = YOUR_GEN1_BUCKET_NAME;
 \`\`\`
 
 \`\`\`
-s3Bucket.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
-\`\`\`
-
-\`\`\`
 backend.auth.resources.userPool.node.tryRemoveChild('UserPoolDomain');
 \`\`\`
 

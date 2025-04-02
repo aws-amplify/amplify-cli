@@ -164,20 +164,6 @@ export class BackendSynthesizer {
     return factory.createPropertyAssignment(factory.createIdentifier(identifier), factory.createStringLiteral(stringLiteral));
   }
 
-  private addRemovalPolicyAssignment(identifier: string) {
-    return factory.createCallExpression(
-      factory.createPropertyAccessExpression(factory.createIdentifier(`// ${identifier}`), factory.createIdentifier('applyRemovalPolicy')),
-      undefined,
-      [
-        factory.createIdentifier('RemovalPolicy.RETAIN'),
-        factory.createObjectLiteralExpression(
-          [factory.createPropertyAssignment(factory.createIdentifier('applyToUpdateReplacePolicy'), factory.createTrue())],
-          false,
-        ),
-      ],
-    );
-  }
-
   private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: ts.ImportDeclaration[]) {
     const userPoolClientAttributesMap = new Map<string, string>();
     userPoolClientAttributesMap.set('ClientName', 'userPoolClientName');
@@ -927,7 +913,6 @@ export class BackendSynthesizer {
         '',
       );
       nodes.push(bucketNameAssignment);
-      nodes.push(this.addRemovalPolicyAssignment('s3Bucket'));
     }
 
     if (

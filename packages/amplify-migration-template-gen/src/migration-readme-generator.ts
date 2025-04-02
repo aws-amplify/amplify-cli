@@ -25,10 +25,6 @@ class MigrationReadmeGenerator {
     const s3BucketChanges = `\`\`\`
 s3Bucket.bucketName = YOUR_GEN1_BUCKET_NAME;
 \`\`\`
-
-\`\`\`
-s3Bucket.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
-\`\`\`
 `;
     await fs.appendFile(
       this.migrationReadMePath,
