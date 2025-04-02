@@ -232,9 +232,10 @@ export async function updateAmplifyYmlFile(amplifyClient: AmplifyClient, appId: 
 
       assert(getAppResponse.app, 'App not found');
       const buildSpec = getAppResponse.app.buildSpec;
-      assert(buildSpec, 'buildSpec not found in the app');
 
-      await writeToAmplifyYmlFile(amplifyYmlPath, buildSpec);
+      if (buildSpec) {
+        await writeToAmplifyYmlFile(amplifyYmlPath, buildSpec);
+      }
     } else {
       // Throw the original error if it's not related to file not found
       throw error;
@@ -243,6 +244,7 @@ export async function updateAmplifyYmlFile(amplifyClient: AmplifyClient, appId: 
 }
 
 async function writeToAmplifyYmlFile(amplifyYmlPath: string, content: string) {
+  // eslint-disable-next-line spellcheck/spell-checker
   // Replace 'amplifyPush --simple' with 'npx ampx pipeline-deploy'
   content = content.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND);
   await fs.writeFile(amplifyYmlPath, content, { encoding: 'utf-8' });

@@ -491,7 +491,20 @@ describe('BackendRenderer', () => {
       );
       expect(output).toContain('Object.keys(providerSetupResult).forEach(provider => {');
       expect(output).toContain('userPoolClient.node.addDependency(providerSetupPropertyValue)');
-      expect(output).toContain('// backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");');
+    });
+    it('renders userpool and identitypool deletion policy', () => {
+      const renderer = new BackendSynthesizer();
+      const rendered = renderer.render({
+        auth: {
+          importFrom: 'auth/resource.ts',
+          identityPoolName: 'testIdentityPool',
+          userPoolOverrides: {},
+        },
+      });
+      const output = printNodeArray(rendered);
+      assert(output.includes('// cfnUserPool.applyRemovalPolicy'));
+      assert(output.includes('// cfnIdentityPool.applyRemovalPolicy'));
+      assert(output.includes('import { RemovalPolicy, Tags } from "aws-cdk-lib";'));
     });
     it('renders user pool client configuration with default value for generateSecrets', () => {
       const renderer = new BackendSynthesizer();

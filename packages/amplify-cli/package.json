@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-internal",
-  "version": "12.15.0-next-5.0",
+  "version": "12.15.0-next-6.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",

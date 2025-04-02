@@ -73,13 +73,13 @@ frontend:
     });
   });
 
-  it('should throw an error if buildSpec is not found in the app', async () => {
+  it('should not throw an error if buildSpec is not found in the app', async () => {
     (fs.readFile as jest.Mock).mockRejectedValue({ code: 'ENOENT' });
     (AmplifyClient.prototype.send as jest.Mock).mockResolvedValue({
       app: {},
     });
 
-    await expect(updateAmplifyYmlFile(amplifyClient, mockAppId)).rejects.toThrow('buildSpec not found in the app');
+    await expect(updateAmplifyYmlFile(amplifyClient, mockAppId)).resolves.not.toThrow();
   });
 
   it('should throw an error if app is not found', async () => {
