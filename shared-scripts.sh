@@ -93,8 +93,11 @@ function _installAndCacheDependencies {
 
 function _buildLinux {
     echo Linux Build
+    echo "Running yarn --immutable"
     yarn --immutable
+    echo "Running yarn production-build"
     yarn production-build
+    echo "Running yarn build-tests"
     yarn build-tests
     ./.circleci/cb-publish-step-1-set-versions.sh
     storeCache $CODEBUILD_SRC_DIR repo
