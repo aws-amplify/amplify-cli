@@ -159,7 +159,9 @@ export function createFunctionDefinition(
   if (definition?.schedule) {
     const rawScheduleExpression = definition.schedule;
     let scheduleExpression: string | undefined;
-    const scheduleValue = rawScheduleExpression.match(/\(([^)]+)\)/)?.[1];
+    const startIndex = rawScheduleExpression.indexOf('(') + 1;
+    const endIndex = rawScheduleExpression.lastIndexOf(')');
+    const scheduleValue = startIndex > 0 && endIndex > startIndex ? rawScheduleExpression.slice(startIndex, endIndex) : undefined;
     if (rawScheduleExpression?.startsWith('rate(')) {
       // Convert rate expression to a more readable format
       const rateValue = scheduleValue;

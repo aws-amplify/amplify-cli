@@ -92,14 +92,17 @@ export class AppFunctionsDefinitionFetcher {
     // Fetch schedules for functions
     const getFunctionSchedulePromises = Object.keys(functions).map(async (key) => {
       const functionName = meta.function[key].output.Name;
-
       // Fetch the Lambda policy to get the CloudWatch rule name
-      const policyResponse = await this.lambdaClient.send(new GetPolicyCommand({ FunctionName: functionName }));
-
-      const policy = JSON.parse(policyResponse.Policy ?? '{}');
-      const ruleName = policy.Statement?.find((statement: any) => statement.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'))
-        ?.Condition.ArnLike['AWS:SourceArn'].split('/')
-        .pop();
+      let ruleName: string | undefined;
+      try {
+        const policyResponse = await this.lambdaClient.send(new GetPolicyCommand({ FunctionName: functionName }));
+        const policy = JSON.parse(policyResponse.Policy ?? '{}');
+        ruleName = policy.Statement?.find((statement: any) => statement.Condition?.ArnLike?.['AWS:SourceArn']?.includes('rule/'))
+          ?.Condition.ArnLike['AWS:SourceArn'].split('/')
+          .pop();
+      } catch (error) {
+        return { functionName, scheduleExpression: undefined };
+      }
 
       let scheduleExpression: string | undefined;
 

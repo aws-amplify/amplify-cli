@@ -320,8 +320,6 @@ export async function updateCustomResources() {
     await fs.cp(sourceTypesPath, destinationTypesPath, { recursive: true });
 
     await updateCdkStackFile(customResources, destinationCustomResourcePath, rootDir);
-  } else {
-    console.log(`Custom resource category does not exist in the meta`);
   }
 }
 
@@ -357,7 +355,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
       await fs.writeFile(cdkStackFilePath, cdkStackContent, { encoding: 'utf-8' });
     } catch (error) {
-      console.error(`Error updating ${cdkStackFilePath}: ${error.message}`);
+      throw error(`Error updating the custom resource ${resource}`);
     }
   }
 }

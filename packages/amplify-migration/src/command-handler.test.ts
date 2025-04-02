@@ -13,8 +13,6 @@ jest.mock('node:fs/promises', () => ({
   cp: jest.fn(),
 }));
 
-// jest.mock('@aws-amplify/amplify-cli-core');
-
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {
     findProjectRoot: jest.fn(),
