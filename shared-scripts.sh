@@ -662,8 +662,14 @@ function _downloadReportsFromS3 {
 }
 
 function _buildTestsStandalone {
-    echo "Running yarn install --immutable"
-    yarn install --immutable
+    {
+        echo "Running yarn install --immutable"
+        yarn install --immutable
+    } || {
+        echo "yarn install --immutable failed, running rm -rf node_modules and trying again"
+        rm -rf node_modules
+        yarn install --immutable
+    }
     echo "Running yarn build-tests"
     yarn build-tests
 }
