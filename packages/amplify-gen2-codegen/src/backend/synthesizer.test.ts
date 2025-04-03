@@ -477,6 +477,7 @@ describe('BackendRenderer', () => {
       );
       expect(output).toContain('Object.keys(providerSetupResult).forEach(provider => {');
       expect(output).toContain('userPoolClient.node.addDependency(providerSetupPropertyValue)');
+      expect(output).toContain('// backend.auth.resources.userPool.node.tryRemoveChild("UserPoolDomain");');
     });
     it('renders user pool client configuration with default value for generateSecrets', () => {
       const renderer = new BackendSynthesizer();
