@@ -93,14 +93,10 @@ function _installAndCacheDependencies {
 
 function _buildLinux {
     echo Linux Build
+    echo "Running yarn clean"
+    yarn clean
     echo "Running yarn --immutable"
-    {
-        yarn --immutable
-    } || {
-        echo "yarn --immutable failed, running rm -rf node_modules and trying again"
-        rm -rf node_modules
-        yarn --immutable
-    }
+    yarn --immutable
     echo "Running yarn production-build"
     yarn production-build
     echo "Running yarn build-tests"
@@ -666,6 +662,8 @@ function _downloadReportsFromS3 {
 }
 
 function _buildTestsStandalone {
+    echo "Running yarn clean"
+    yarn clean
     echo "Running yarn install --immutable"
     yarn install --immutable
     echo "Running yarn build-tests"
