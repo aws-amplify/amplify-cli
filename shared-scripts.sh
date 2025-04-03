@@ -94,7 +94,14 @@ function _installAndCacheDependencies {
 function _buildLinux {
     echo Linux Build
     echo "Running yarn --immutable"
-    yarn --immutable
+    {
+        yarn --immutable
+    } || {
+        echo "Running yarn install"
+        yarn install
+        git diff
+        exit 1
+    }
     echo "Running yarn production-build"
     yarn production-build
     echo "Running yarn build-tests"
