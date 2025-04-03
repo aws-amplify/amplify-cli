@@ -97,8 +97,10 @@ function _buildLinux {
     {
         yarn --immutable
     } || {
-        echo "Running yarn install"
-        yarn install
+        echo "yarn --immutable failed, running yarn cache clean and trying again"
+        yarn cache clean
+        yarn --immutable
+        echo "Running git diff"
         git diff
         exit 1
     }
