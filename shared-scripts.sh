@@ -662,8 +662,6 @@ function _downloadReportsFromS3 {
 }
 
 function _buildTestsStandalone {
-    echo "Running yarn clean"
-    yarn clean
     echo "Running yarn install --immutable"
     yarn install --immutable
     echo "Running yarn build-tests"
