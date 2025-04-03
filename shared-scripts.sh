@@ -95,14 +95,11 @@ function _buildLinux {
     echo Linux Build
     echo "Running yarn --immutable"
     {
-        yarn --immutable --verbose
+        yarn --immutable
     } || {
         echo "yarn --immutable failed, running rm -rf node_modules and trying again"
         rm -rf node_modules
         yarn --immutable
-        echo "Running git diff"
-        git diff
-        exit 1
     }
     echo "Running yarn production-build"
     yarn production-build
