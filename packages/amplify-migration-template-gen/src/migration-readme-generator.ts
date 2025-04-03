@@ -25,10 +25,6 @@ class MigrationReadmeGenerator {
     const s3BucketChanges = `\`\`\`
 s3Bucket.bucketName = YOUR_GEN1_BUCKET_NAME;
 \`\`\`
-
-\`\`\`
-s3Bucket.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
-\`\`\`
 `;
     await fs.appendFile(
       this.migrationReadMePath,
@@ -36,11 +32,7 @@ s3Bucket.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: 
 1.a) Uncomment the following lines in \`amplify/backend.ts\` file
 ${this.categories.includes('storage') ? s3BucketChanges : ''}
 \`\`\`
-cfnUserPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
-\`\`\`
-
-\`\`\`
-cfnIdentityPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
+backend.auth.resources.userPool.node.tryRemoveChild('UserPoolDomain');
 \`\`\`
 
 \`\`\`

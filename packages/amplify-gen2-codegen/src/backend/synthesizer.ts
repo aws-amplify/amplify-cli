@@ -164,20 +164,6 @@ export class BackendSynthesizer {
     return factory.createPropertyAssignment(factory.createIdentifier(identifier), factory.createStringLiteral(stringLiteral));
   }
 
-  private addRemovalPolicyAssignment(identifier: string) {
-    return factory.createCallExpression(
-      factory.createPropertyAccessExpression(factory.createIdentifier(`// ${identifier}`), factory.createIdentifier('applyRemovalPolicy')),
-      undefined,
-      [
-        factory.createIdentifier('RemovalPolicy.RETAIN'),
-        factory.createObjectLiteralExpression(
-          [factory.createPropertyAssignment(factory.createIdentifier('applyToUpdateReplacePolicy'), factory.createTrue())],
-          false,
-        ),
-      ],
-    );
-  }
-
   private createUserPoolClientAssignment(userPoolClient: UserPoolClientType, imports: ts.ImportDeclaration[]) {
     const userPoolClientAttributesMap = new Map<string, string>();
     userPoolClientAttributesMap.set('ClientName', 'userPoolClientName');
@@ -834,7 +820,6 @@ export class BackendSynthesizer {
           policies as number | string | boolean | string[] | object,
         ),
       );
-      nodes.push(this.addRemovalPolicyAssignment('cfnUserPool'));
     }
 
     if (renderArgs.auth?.guestLogin === false || (renderArgs.auth?.identityPoolName && !renderArgs?.auth?.referenceAuth)) {
@@ -859,7 +844,6 @@ export class BackendSynthesizer {
       if (renderArgs.auth?.guestLogin === false) {
         nodes.push(this.setPropertyValue(factory.createIdentifier('cfnIdentityPool'), 'allowUnauthenticatedIdentities', false));
       }
-      nodes.push(this.addRemovalPolicyAssignment('cfnIdentityPool'));
     }
 
     if (
@@ -906,9 +890,6 @@ export class BackendSynthesizer {
       const userPoolVariableStatement = this.createVariableStatement(this.createVariableDeclaration('userPool', 'auth.resources.userPool'));
       nodes.push(userPoolVariableStatement);
       nodes.push(this.createUserPoolClientAssignment(renderArgs.auth?.userPoolClient, imports));
-
-      const idpStatements = this.createProviderSetupCode();
-      nodes.push(...idpStatements);
     }
 
     if (renderArgs.storage && renderArgs.storage.hasS3Bucket) {
@@ -929,7 +910,6 @@ export class BackendSynthesizer {
         '',
       );
       nodes.push(bucketNameAssignment);
-      nodes.push(this.addRemovalPolicyAssignment('s3Bucket'));
     }
 
     if (
@@ -1003,6 +983,35 @@ export class BackendSynthesizer {
           factory.createStringLiteral('aws-cdk-lib/aws-s3'),
         ),
       );
+    }
+
+    if (
+      renderArgs.auth?.userPoolClient &&
+      renderArgs.auth.userPoolClient.SupportedIdentityProviders &&
+      renderArgs.auth.userPoolClient.SupportedIdentityProviders.length > 0
+    ) {
+      const idpStatements = this.createProviderSetupCode();
+      nodes.push(...idpStatements);
+
+      // Gen1 doesn't manage UserPoolDomains in CFN while Gen2 creates a default one for oauth apps.
+      // This causes an invalid domain request error when updating Gen2 post stack refactor.
+      // We are adding a commented line to remove the domain from Gen2 CDK. This will be
+      // uncommented by users post refactor (instructions will be in README.md).
+      // backend.auth.resources.userPool.node.tryRemoveChild('UserPoolDomain');
+      const userPoolDomainRemovalStatementCommented = factory.createExpressionStatement(
+        factory.createCallExpression(
+          factory.createPropertyAccessExpression(
+            factory.createPropertyAccessExpression(
+              factory.createIdentifier('// backend.auth.resources.userPool'),
+              factory.createIdentifier('node'),
+            ),
+            factory.createIdentifier('tryRemoveChild'),
+          ),
+          undefined,
+          [factory.createStringLiteral('UserPoolDomain')],
+        ),
+      );
+      nodes.push(userPoolDomainRemovalStatementCommented);
     }
 
     // Add a tag commented out to force a deployment post refactor

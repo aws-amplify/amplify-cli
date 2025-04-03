@@ -28,15 +28,7 @@ s3Bucket.bucketName = YOUR_GEN1_BUCKET_NAME;
 \`\`\`
 
 \`\`\`
-s3Bucket.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
-\`\`\`
-
-\`\`\`
-cfnUserPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
-\`\`\`
-
-\`\`\`
-cfnIdentityPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
+backend.auth.resources.userPool.node.tryRemoveChild('UserPoolDomain');
 \`\`\`
 
 \`\`\`
@@ -64,11 +56,7 @@ npx ampx sandbox
 1.a) Uncomment the following lines in \`amplify/backend.ts\` file
 
 \`\`\`
-cfnUserPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
-\`\`\`
-
-\`\`\`
-cfnIdentityPool.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: true });
+backend.auth.resources.userPool.node.tryRemoveChild('UserPoolDomain');
 \`\`\`
 
 \`\`\`
