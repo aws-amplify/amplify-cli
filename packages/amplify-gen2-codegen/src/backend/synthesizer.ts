@@ -890,9 +890,6 @@ export class BackendSynthesizer {
       const userPoolVariableStatement = this.createVariableStatement(this.createVariableDeclaration('userPool', 'auth.resources.userPool'));
       nodes.push(userPoolVariableStatement);
       nodes.push(this.createUserPoolClientAssignment(renderArgs.auth?.userPoolClient, imports));
-
-      const idpStatements = this.createProviderSetupCode();
-      nodes.push(...idpStatements);
     }
 
     if (renderArgs.storage && renderArgs.storage.hasS3Bucket) {
