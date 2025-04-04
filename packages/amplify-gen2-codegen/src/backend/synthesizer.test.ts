@@ -556,10 +556,10 @@ describe('BackendRenderer', () => {
       const normalizedOutput = output.replace(/\s+/g, ' ').trim();
 
       expect(normalizedOutput).toContain(
-        `new resource1(backend.root, "resource1", undefined, { category: "custom", resourceName: "resource1" });`,
+        `new resource1(backend.stack, "resource1", undefined, { category: "custom", resourceName: "resource1" });`,
       );
       expect(normalizedOutput).toContain(
-        `new resource2(backend.root, "resource2", undefined, { category: "custom", resourceName: "resource2" });`,
+        `new resource2(backend.stack, "resource2", undefined, { category: "custom", resourceName: "resource2" });`,
       );
     });
 
