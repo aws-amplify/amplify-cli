@@ -97,8 +97,8 @@ function _buildLinux {
         echo "Running yarn --immutable"
         yarn --immutable
     } || {
-        echo "yarn --immutable failed, running yarn clean and trying again"
-        yarn clean
+        echo "yarn --immutable failed, running rm -rf node_modules and trying again"
+        rm -rf node_modules
         echo "Running yarn --immutable"
         yarn --immutable
     }
