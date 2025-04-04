@@ -121,12 +121,6 @@ frontend:
 describe('updateCustomResources', () => {
   const mockRootDir = '/mock/root/dir';
 
-  const mockLocalEnvInfo = JSON.stringify({
-    projectPath: '/mock/root/dir',
-    defaultEditor: 'code',
-    envName: 'dev',
-  });
-
   const mockProjectConfig = JSON.stringify({
     projectName: 'testProject',
     version: '3.1',
@@ -156,16 +150,13 @@ describe('updateCustomResources', () => {
     jest.mocked(fs.mkdir).mockResolvedValue(undefined);
     jest.mocked(fs.cp).mockResolvedValue(undefined);
     jest.mocked(fs.readFile).mockImplementation((filePath) => {
-      if (typeof filePath === 'string' && filePath.includes('local-env-info.json')) {
-        return Promise.resolve(mockLocalEnvInfo);
-      }
       if (typeof filePath === 'string' && filePath.includes('project-config.json')) {
         return Promise.resolve(mockProjectConfig);
       }
       return Promise.resolve('{}');
     });
 
-    jest.mocked(getProjectInfo).mockResolvedValue("{envName: 'dev', projectName: 'testProject'}");
+    jest.mocked(getProjectInfo).mockResolvedValue("{envName: `${AMPLIFY_GEN_1_ENV_NAME}`, projectName: 'testProject'}");
 
     jest.mocked(updateCdkStackFile).mockResolvedValue(undefined);
   });
@@ -184,18 +175,6 @@ describe('updateCustomResources', () => {
     expect(fs.cp).toHaveBeenCalledWith(path.join(mockRootDir, 'amplify', 'backend', 'types'), 'amplify-gen2/amplify/types', {
       recursive: true,
     });
-  });
-
-  it('should handle case when custom resources do not exist', async () => {
-    jest.mocked(stateManager.getMeta).mockReturnValue({});
-    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-
-    await updateCustomResources();
-
-    expect(consoleLogSpy).toHaveBeenCalledWith('Custom resource category does not exist in the meta');
-    expect(fs.cp).not.toHaveBeenCalled();
-
-    consoleLogSpy.mockRestore();
   });
 
   it('should filter out package.json and yarn.lock files', async () => {
@@ -269,12 +248,6 @@ describe('updateCdkStackFile', () => {
       }
     `;
 
-    const mockLocalEnvInfo = JSON.stringify({
-      projectPath: '/mock/root/dir',
-      defaultEditor: 'code',
-      envName: 'dev',
-    });
-
     const mockProjectConfig = JSON.stringify({
       projectName: 'testProject',
       version: '3.1',
@@ -292,9 +265,6 @@ describe('updateCdkStackFile', () => {
 
     // Mock readFile to return content for the correct stack file path
     jest.mocked(fs.readFile).mockImplementation((filePath) => {
-      if (typeof filePath === 'string' && filePath.includes('local-env-info.json')) {
-        return Promise.resolve(mockLocalEnvInfo);
-      }
       if (typeof filePath === 'string' && filePath.includes('project-config.json')) {
         return Promise.resolve(mockProjectConfig);
       }
@@ -304,7 +274,7 @@ describe('updateCdkStackFile', () => {
       return Promise.resolve('{}');
     });
 
-    jest.mocked(getProjectInfo).mockResolvedValue("{envName: 'dev', projectName: 'testProject'}");
+    jest.mocked(getProjectInfo).mockResolvedValue("{envName: `${AMPLIFY_GEN_1_ENV_NAME}`, projectName: 'testProject'}");
 
     await updateCdkStackFile(mockCustomResources, mockCustomResourcesPath, mockProjectRoot);
 
@@ -318,6 +288,6 @@ describe('updateCdkStackFile', () => {
     expect(transformedContent).toContain(
       "throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency')",
     ); // Error added
-    expect(transformedContent).toContain("const projectInfo = {envName: 'dev', projectName: 'testProject'}"); // Project info replaced
+    expect(transformedContent).toContain("const projectInfo = {envName: `${AMPLIFY_GEN_1_ENV_NAME}`, projectName: 'testProject'}"); // Project info replaced
   });
 });

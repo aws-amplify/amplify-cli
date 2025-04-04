@@ -788,7 +788,7 @@ export class BackendSynthesizer {
         imports.push(importStatement);
 
         const customResourceExpression = factory.createNewExpression(factory.createIdentifier(`${resource}`), undefined, [
-          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('root')),
+          factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('stack')),
           factory.createStringLiteral(`${resource}`),
           factory.createIdentifier('undefined'),
           factory.createObjectLiteralExpression(

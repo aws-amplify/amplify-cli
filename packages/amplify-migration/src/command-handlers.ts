@@ -341,6 +341,23 @@ export async function updateCdkStackFile(customResources: string[], destinationC
         );
       }
 
+      cdkStackContent = cdkStackContent.replace(
+        /export class cdkStack/,
+        `const AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox";\n\nexport class cdkStack`,
+      );
+
+      cdkStackContent = cdkStackContent.replace(/extends cdk.Stack/, `extends cdk.NestedStack`);
+
+      // Replace the cdk.CfnParameter definition to include the default property
+      cdkStackContent = cdkStackContent.replace(
+        /new cdk\.CfnParameter\(this, "env", {[\s\S]*?}\);/,
+        `new cdk.CfnParameter(this, "env", {
+                type: "String",
+                description: "Current Amplify CLI env name",
+                default: \`\${AMPLIFY_GEN_1_ENV_NAME}\`
+              });`,
+      );
+
       // Replace AmplifyHelpers.getProjectInfo() with {envName: 'envName', projectName: 'projectName'}
       cdkStackContent = cdkStackContent.replace(/AmplifyHelpers\.getProjectInfo\(\)/g, projectInfo);
 
@@ -362,13 +379,6 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
 export async function getProjectInfo(rootDir: string) {
   const configDir = path.join(rootDir, AMPLIFY_DIR, '.config');
-  const localEnvInfoFilePath = path.join(configDir, 'local-env-info.json');
-  const localEnvInfo = await fs.readFile(localEnvInfoFilePath, { encoding: 'utf-8' });
-  const envInfo = JSON.parse(localEnvInfo);
-  if (!envInfo.envName) {
-    throw new Error('Environment name not found in local-env-info.json');
-  }
-
   const projectConfigFilePath = path.join(configDir, 'project-config.json');
   const projectConfig = await fs.readFile(projectConfigFilePath, { encoding: 'utf-8' });
 
@@ -377,7 +387,7 @@ export async function getProjectInfo(rootDir: string) {
     throw new Error('Project name not found in project-config.json');
   }
 
-  return `{envName: '${envInfo.envName}', projectName: '${projectConfigJson.projectName}'}`;
+  return `{envName: \`\${AMPLIFY_GEN_1_ENV_NAME}\`, projectName: '${projectConfigJson.projectName}'}`;
 }
 
 export async function execute() {
