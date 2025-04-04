@@ -124,8 +124,8 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
       'arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:(([a-z]{2}|\\*)(-gov)?-[a-z-*]+-(\\d{1}|\\*)|\\*)?:(\\d{12}|\\*)?:(.*)',
     );
     const actionRegex = new RegExp('[a-zA-Z0-9]+:[a-z|A-Z|0-9|*]+');
-    const wrongResourcesRegex = [];
-    const wrongActionsRegex = [];
+    const wrongResourcesRegex: string[] = [];
+    const wrongActionsRegex: string[] = [];
     let errorMessage = '';
 
     for (const resource of resources) {
