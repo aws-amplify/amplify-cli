@@ -131,8 +131,12 @@ describe('removeGen1ConfigurationFiles', () => {
       config: {
         SourceDir: sourceDir,
         DistributionDir: 'dist',
-
-  const mockProjectConfig = JSON.stringify({
+        },
+      },
+    },
+  };
+  
+  const mockProjectConfigString = JSON.stringify({
     projectName: 'testProject',
     version: '3.1',
     frontend: 'javascript',
@@ -153,14 +157,13 @@ describe('removeGen1ConfigurationFiles', () => {
   });
 
   it('should remove all gen1 configuration files', async () => {
-    jest.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockProjectConfig));
+    jest.mocked(fs.readFile).mockResolvedValue(mockProjectConfigString);
 
     await removeGen1ConfigurationFiles();
 
     GEN1_CONFIGURATION_FILES.forEach((file) => {
       expect(fs.rm).toHaveBeenCalledWith(`${sourceDir}/${file}`);
     });
-  });
 
   it('should not throw an error when project-config json is not found', async () => {
     jest.mocked(fs.readFile).mockRejectedValue({ code: 'ENOENT' });
