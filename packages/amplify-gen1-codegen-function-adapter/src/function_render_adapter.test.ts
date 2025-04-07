@@ -15,7 +15,9 @@ void describe('function codegen', () => {
       functionConf1.Environment = { Variables: { ENV: 'dev', REGION: 'us-west-2' } };
       configurations.push(functionConf1);
 
-      const result = getFunctionDefinition(configurations, new Map([['function1', 'function']]), {
+      const functionSchedules = [{ functionName: 'function1', scheduleExpression: 'rate(5 minutes)' }];
+
+      const result = getFunctionDefinition(configurations, functionSchedules, new Map([['function1', 'function']]), {
         function: {
           function1: {
             providerPlugin: 'awscloudformation',
@@ -40,6 +42,7 @@ void describe('function codegen', () => {
         assert.equal(func.memoryMB, 128);
         assert.deepEqual(func.environment, { Variables: { ENV: 'dev', REGION: 'us-west-2' } });
         assert.equal(func.entry, 'index.handler');
+        assert.equal(func.schedule, 'rate(5 minutes)');
       }
     });
   });
