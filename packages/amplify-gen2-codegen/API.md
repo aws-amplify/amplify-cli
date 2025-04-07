@@ -64,7 +64,7 @@ export type AuthLambdaTriggers = Record<AuthTriggerEvents, Lambda>;
 export type AuthTriggerEvents = 'createAuthChallenge' | 'customMessage' | 'defineAuthChallenge' | 'postAuthentication' | 'postConfirmation' | 'preAuthentication' | 'preSignUp' | 'preTokenGeneration' | 'userMigration' | 'verifyAuthChallengeResponse';
 
 // @public (undocumented)
-export const createGen2Renderer: ({ outputDir, backendEnvironmentName, auth, storage, data, functions, unsupportedCategories, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
+export const createGen2Renderer: ({ outputDir, backendEnvironmentName, auth, storage, data, functions, customResources, unsupportedCategories, fileWriter, }: Readonly<Gen2RenderingOptions>) => Renderer;
 
 // @public (undocumented)
 export type CustomAttribute = {
@@ -111,6 +111,8 @@ export interface FunctionDefinition {
     // (undocumented)
     runtime?: Runtime | string;
     // (undocumented)
+    schedule?: string;
+    // (undocumented)
     timeoutSeconds?: number;
 }
 
@@ -122,6 +124,8 @@ export interface Gen2RenderingOptions {
     auth?: AuthDefinition;
     // (undocumented)
     backendEnvironmentName?: string | undefined;
+    // (undocumented)
+    customResources?: string[];
     // (undocumented)
     data?: DataDefinition;
     // (undocumented)

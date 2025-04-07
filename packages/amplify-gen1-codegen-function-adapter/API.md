@@ -19,8 +19,10 @@ export type AmplifyMetaWithFunction = {
     function: Record<string, AmplifyMetaFunction>;
 };
 
+// Warning: (ae-forgotten-export) The symbol "FunctionSchedule" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export const getFunctionDefinition: (functionConfigurations: FunctionConfiguration[], functionCategoryMap: Map<string, string>, meta: AmplifyMetaWithFunction) => FunctionDefinition[];
+export const getFunctionDefinition: (functionConfigurations: FunctionConfiguration[], functionSchedules: FunctionSchedule[], functionCategoryMap: Map<string, string>, meta: AmplifyMetaWithFunction) => FunctionDefinition[];
 
 // (No @packageDocumentation comment for this package)
 

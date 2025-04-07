@@ -12,6 +12,7 @@ export interface FunctionDefinition {
   environment?: EnvironmentResponse;
   runtime?: Runtime | string;
   resourceName?: string;
+  schedule?: string;
 }
 
 const factory = ts.factory;
@@ -153,6 +154,37 @@ export function createFunctionDefinition(
     assert(nodeRuntime, 'Expected nodejs version to be set');
 
     defineFunctionProperties.push(createParameter('runtime', factory.createNumericLiteral(nodeRuntime)));
+  }
+
+  if (definition?.schedule) {
+    const rawScheduleExpression = definition.schedule;
+    let scheduleExpression: string | undefined;
+    const startIndex = rawScheduleExpression.indexOf('(') + 1;
+    const endIndex = rawScheduleExpression.lastIndexOf(')');
+    const scheduleValue = startIndex > 0 && endIndex > startIndex ? rawScheduleExpression.slice(startIndex, endIndex) : undefined;
+    if (rawScheduleExpression?.startsWith('rate(')) {
+      // Convert rate expression to a more readable format
+      const rateValue = scheduleValue;
+      if (rateValue) {
+        const [value, unit] = rateValue.split(' ');
+        const unitMap: Record<string, string> = {
+          minute: 'm',
+          minutes: 'm',
+          hour: 'h',
+          hours: 'h',
+          day: 'd',
+          days: 'd',
+        };
+        scheduleExpression = `every ${value}${unitMap[unit]}`;
+      }
+    } else if (rawScheduleExpression?.startsWith('cron(')) {
+      // Extract the cron expression as-is
+      scheduleExpression = scheduleValue;
+    }
+
+    if (scheduleExpression) {
+      defineFunctionProperties.push(createParameter('schedule', factory.createStringLiteral(scheduleExpression)));
+    }
   }
 
   return defineFunctionProperties;
