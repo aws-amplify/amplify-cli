@@ -133,7 +133,6 @@ describe('removeGen1ConfigurationFiles', () => {
         DistributionDir: 'dist',
         },
       },
-    },
   });
 
   it('should remove all gen1 configuration files', async () => {
