@@ -121,7 +121,7 @@ frontend:
 
 describe('removeGen1ConfigurationFiles', () => {
   const sourceDir = 'src';
-  const mockProjectConfig = {
+  const mockProjectConfigString = JSON.stringify({
     whyContinueWithGen1: 'Prefer not to answer',
     projectName: 'testgen1',
     version: '3.1',
@@ -134,26 +134,6 @@ describe('removeGen1ConfigurationFiles', () => {
         },
       },
     },
-  };
-  
-  const mockProjectConfigString = JSON.stringify({
-    projectName: 'testProject',
-    version: '3.1',
-    frontend: 'javascript',
-    javascript: {
-      framework: 'react',
-      config: {
-        SourceDir: 'src',
-        DistributionDir: 'build',
-        BuildCommand: 'npm run-script build',
-        StartCommand: 'npm run-script start',
-      },
-    },
-    providers: ['awscloudformation'],
-  });
-  
-  beforeEach(() => {
-    jest.clearAllMocks();
   });
 
   it('should remove all gen1 configuration files', async () => {
@@ -175,7 +155,7 @@ describe('removeGen1ConfigurationFiles', () => {
   });
 
   it('should not throw an error when a configuration file is not found', async () => {
-    jest.mocked(fs.readFile).mockResolvedValue(JSON.stringify(mockProjectConfig));
+    jest.mocked(fs.readFile).mockResolvedValue(mockProjectConfigString);
     jest.mocked(fs.rm).mockRejectedValueOnce({ code: 'ENOENT' });
 
     await expect(removeGen1ConfigurationFiles()).resolves.not.toThrow();
@@ -187,6 +167,21 @@ describe('removeGen1ConfigurationFiles', () => {
  
  describe('updateCustomResources', () => {
   const mockRootDir = '/mock/root/dir';
+
+  const mockProjectConfig = JSON.stringify({
+    projectName: 'testProject',
+    version: '3.1',
+    frontend: 'javascript',
+    javascript: {
+      framework: 'react',
+      config: {
+        SourceDir: 'src',
+        DistributionDir: 'build',
+        BuildCommand: 'npm run-script build',
+        StartCommand: 'npm run-script start',
+      },
+    },
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
