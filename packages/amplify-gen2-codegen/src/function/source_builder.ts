@@ -175,7 +175,7 @@ export function createFunctionDefinition(
           day: 'd',
           days: 'd',
         };
-        scheduleExpression = `every ${value}${unitMap[unit] || unit}`;
+        scheduleExpression = `every ${value}${unitMap[unit]}`;
       }
     } else if (rawScheduleExpression?.startsWith('cron(')) {
       // Extract the cron expression as-is

@@ -52,6 +52,7 @@ const GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX = 'your Gen 2 backend code';
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
 const BACKEND_DIR = 'backend';
+const AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME;
 
 enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   DOT_AMPLIFY = '.amplify',
@@ -343,7 +344,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
       cdkStackContent = cdkStackContent.replace(
         /export class cdkStack/,
-        `const AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox";\n\nexport class cdkStack`,
+        `const AMPLIFY_GEN_1_ENV_NAME = ${AMPLIFY_GEN_1_ENV_NAME} ?? "sandbox";\n\nexport class cdkStack`,
       );
 
       cdkStackContent = cdkStackContent.replace(/extends cdk.Stack/, `extends cdk.NestedStack`);
