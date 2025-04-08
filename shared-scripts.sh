@@ -86,14 +86,15 @@ function _loadTestAccountCredentials {
 # Use this in workflows that do not require building from CLI sources
 function _installAndCacheDependencies {
     echo Install Dependencies
-    yarn --immutable
+    yarn install --immutable
     storeCache $CODEBUILD_SRC_DIR repo
     storeCache $HOME/.cache .cache
 }
 
 function _buildLinux {
     echo Linux Build
-    yarn --immutable
+    yarn install --immutable
+    echo Finished installation starting production build
     yarn production-build
     yarn build-tests
     ./.circleci/cb-publish-step-1-set-versions.sh
