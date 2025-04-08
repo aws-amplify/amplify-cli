@@ -143,6 +143,7 @@ describe('removeGen1ConfigurationFiles', () => {
     GEN1_CONFIGURATION_FILES.forEach((file) => {
       expect(fs.rm).toHaveBeenCalledWith(`${sourceDir}/${file}`);
     });
+  });
 
   it('should not throw an error when project-config json is not found', async () => {
     jest.mocked(fs.readFile).mockRejectedValue({ code: 'ENOENT' });
@@ -163,6 +164,7 @@ describe('removeGen1ConfigurationFiles', () => {
       expect(fs.rm).toHaveBeenCalledWith(`${sourceDir}/${file}`);
     });
   });
+ });
  
  describe('updateCustomResources', () => {
   const mockRootDir = '/mock/root/dir';
