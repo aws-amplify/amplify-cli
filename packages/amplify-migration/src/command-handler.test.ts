@@ -135,6 +135,10 @@ describe('removeGen1ConfigurationFiles', () => {
       },
   });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should remove all gen1 configuration files', async () => {
     jest.mocked(fs.readFile).mockResolvedValue(mockProjectConfigString);
 
