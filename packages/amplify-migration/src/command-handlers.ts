@@ -49,6 +49,8 @@ const MIGRATION_DIR = '.amplify/migration';
 const GEN1_COMMAND = 'amplifyPush --simple';
 const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
 const GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX = 'your Gen 2 backend code';
+const GEN1_REMOVE_CONFIGURATION_MESSAGE_SUFFIX = 'your Gen1 configuration files';
+export const GEN1_CONFIGURATION_FILES = ['aws-exports.js', 'amplifyconfiguration.json', 'awsconfiguration.json'];
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
 const BACKEND_DIR = 'backend';
@@ -449,6 +451,8 @@ export async function execute() {
 
   await updateGitIgnoreForGen2();
 
+  await removeGen1ConfigurationFiles();
+  
   await updateCustomResources();
 
   const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`).start();
@@ -463,6 +467,31 @@ export async function execute() {
   movingGen1BackendFiles.succeed(`Moved your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`);
 }
 
+export async function removeGen1ConfigurationFiles() {
+  const removingGen1ConfigurationFiles = ora(`Removing ${GEN1_REMOVE_CONFIGURATION_MESSAGE_SUFFIX}`).start();
+  try {
+    const projectConfig = JSON.parse(await fs.readFile(`${AMPLIFY_DIR}/.config/project-config.json`, { encoding: 'utf-8' }));
+    if ('frontend' in projectConfig && typeof projectConfig.frontend === 'string') {
+      const frontendFramework = projectConfig.frontend;
+      const frontendFrameworkKey = projectConfig[frontendFramework];
+      if (
+        frontendFramework in projectConfig &&
+        'config' in frontendFrameworkKey &&
+        typeof frontendFrameworkKey.config === 'object' &&
+        'SourceDir' in frontendFrameworkKey.config &&
+        typeof frontendFrameworkKey.config.SourceDir === 'string' &&
+        frontendFrameworkKey.config.SourceDir !== undefined
+      ) {
+        const sourceDirLocation = frontendFrameworkKey.config.SourceDir;
+        await Promise.all(GEN1_CONFIGURATION_FILES.map((file) => fs.rm(`${sourceDirLocation}/${file}`)));
+      }
+    }
+  } catch (e) {
+    // Swallow errors from not being able to locate or read config files as its not in the core migration path
+  } finally {
+    removingGen1ConfigurationFiles.succeed(`Removed ${GEN1_REMOVE_CONFIGURATION_MESSAGE_SUFFIX}`);
+  }
+}
 /**
  * Executes the stack refactor operation to move Gen1 resources from Gen1 stack into Gen2 stack
  * @param fromStack
