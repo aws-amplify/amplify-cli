@@ -93,7 +93,9 @@ function _installAndCacheDependencies {
 
 function _buildLinux {
     echo Linux Build
-    yarn install --immutable
+    yarn install --inline-builds
+    echo Checking if there is a git diff
+    git diff
     echo Finished installation starting production build
     yarn production-build
     yarn build-tests
