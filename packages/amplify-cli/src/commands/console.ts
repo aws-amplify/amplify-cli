@@ -16,6 +16,7 @@ export const run = async (context: $TSContext): Promise<void> => {
   });
 
   const { envName } = localEnvInfo;
+  // eslint-disable-next-line no-unsafe-optional-chaining
   const { Region, AmplifyAppId } = stateManager.getMeta()?.providers?.[providerName];
 
   if (envName && AmplifyAppId) {
