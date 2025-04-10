@@ -3,7 +3,7 @@ import { $TSObject, getPackageManager, JSONUtilities, AmplifyError, PackageManag
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import * as glob from 'glob';
 import * as path from 'path';
 
 /**

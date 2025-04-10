@@ -32,7 +32,7 @@
     "execa": "^5.1.1",
     "exit": "^0.1.2",
     "fs-extra": "^8.1.0",
-    "glob": "^7.2.0"
+    "glob": "^11.0.1"
   },
   "devDependencies": {
     "@types/exit": "^0.1.31",

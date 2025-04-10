@@ -1,4 +1,4 @@
-import glob from 'glob';
+import { glob } from 'glob';
 import fs from 'fs-extra';
 import { buildResource } from '../../../src/utils/legacyBuild';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';

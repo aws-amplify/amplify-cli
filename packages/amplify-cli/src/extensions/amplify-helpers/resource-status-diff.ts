@@ -92,7 +92,7 @@ interface IResourcePaths {
  */
 export const globCFNFilePath = (fileFolder: string): string => {
   if (fs.existsSync(fileFolder)) {
-    const globOptions: glob.IOptions = {
+    const globOptions: glob.GlobOptionsWithFileTypesFalse = {
       absolute: false,
       cwd: fileFolder,
       follow: false,

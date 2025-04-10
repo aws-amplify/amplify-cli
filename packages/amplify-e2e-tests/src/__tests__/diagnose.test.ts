@@ -13,7 +13,7 @@ import {
 import { extract } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import glob from 'glob';
+import { glob } from 'glob';
 
 const PARAMETERS_JSON = 'parameters.json';
 const BUILD = 'build';

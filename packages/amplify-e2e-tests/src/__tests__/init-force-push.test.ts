@@ -55,6 +55,7 @@ describe('init --forcePush', () => {
 
     // remote env param from ParameterStore
     const meta = getProjectMeta(projRoot);
+    // eslint-disable-next-line no-unsafe-optional-chaining
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     await deleteSSMParameter(region, appId, 'testtest', 'function', funcName, 'fooBar');
 
