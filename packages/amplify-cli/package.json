@@ -36,7 +36,7 @@
   "dependencies": {
     "@aws-amplify/amplify-app": "5.0.41",
     "@aws-amplify/amplify-category-analytics": "5.0.40",
-    "@aws-amplify/amplify-category-api": "^5.14.2",
+    "@aws-amplify/amplify-category-api": "^5.15.0",
     "@aws-amplify/amplify-category-auth": "3.7.20",
     "@aws-amplify/amplify-category-custom": "3.1.27",
     "@aws-amplify/amplify-category-function": "5.7.13",
@@ -87,7 +87,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^11.0.1",
     "graphql": "^15.5.0",
-    "graphql-transformer-core": "^8.2.16",
+    "graphql-transformer-core": "^8.2.17",
     "gunzip-maybe": "^1.4.2",
     "hidefile": "^3.0.0",
     "ini": "^1.3.5",
