@@ -1,4 +1,4 @@
-import * as glob from 'glob';
+import { glob } from 'glob';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import * as yaml from 'js-yaml';

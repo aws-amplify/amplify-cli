@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import * as rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import { v4 as uuid } from 'uuid';
 import { JSONUtilities } from '../jsonUtilities';
 
