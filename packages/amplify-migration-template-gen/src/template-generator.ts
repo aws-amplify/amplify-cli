@@ -248,7 +248,7 @@ class TemplateGenerator {
       const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
 
       assert(gen1StackParameters);
-      updatingGen1CategoryStack = ora(`Updating Gen1 ${category} stack...`);
+      updatingGen1CategoryStack = ora(`Updating Gen1 ${category} stack...`).start();
 
       const gen1StackUpdateStatus = await tryUpdateStack(this.cfnClient, sourceCategoryStackId, gen1StackParameters, newTemplate);
 
@@ -276,7 +276,7 @@ class TemplateGenerator {
   }> {
     const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
 
-    const updatingGen2CategoryStack = ora(`Updating Gen2 ${category} stack...`);
+    const updatingGen2CategoryStack = ora(`Updating Gen2 ${category} stack...`).start();
 
     const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
 
@@ -379,7 +379,7 @@ class TemplateGenerator {
 
       assert(newSourceTemplate);
       assert(newDestinationTemplate);
-      const refactorResources = ora(`Moving ${category} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`);
+      const refactorResources = ora(`Moving ${category} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`).start();
       const { success, failedRefactorMetadata } = await this.refactorResources(
         logicalIdMappingForRefactor,
         sourceCategoryStackId,
@@ -459,7 +459,7 @@ class TemplateGenerator {
     gen2StackParameters: Parameter[] | undefined,
     oldGen2Template: CFNTemplate,
   ) {
-    const rollingBackGen2Stack = ora(`Rolling back Gen2 ${category} stack...`);
+    const rollingBackGen2Stack = ora(`Rolling back Gen2 ${category} stack...`).start();
     const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], oldGen2Template);
     assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen2 Stack in a failed state: ${gen2StackUpdateStatus}.`);
     rollingBackGen2Stack.succeed(`Rolled back Gen2 ${category} stack successfully`);
