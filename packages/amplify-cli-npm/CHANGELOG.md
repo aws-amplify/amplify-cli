@@ -3,44 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [12.15.0-next-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.15.0-next-5.0...@aws-amplify/cli@12.15.0-next-6.0) (2025-03-21)
-
-**Note:** Version bump only for package @aws-amplify/cli
+# [13.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.14.4...@aws-amplify/cli@13.0.0) (2025-02-25)
 
 
+* feat!: Update node to 22 (#14121) ([ae8aeaf](https://github.com/aws-amplify/amplify-cli/commit/ae8aeaf275937d283253ad46156fcd627dcf1f3c)), closes [#14121](https://github.com/aws-amplify/amplify-cli/issues/14121)
 
 
+### BREAKING CHANGES
 
-# [12.15.0-next-5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.15.0-next-4.0...@aws-amplify/cli@12.15.0-next-5.0) (2025-03-19)
-
-**Note:** Version bump only for package @aws-amplify/cli
-
-
-
-
-
-# [12.15.0-next-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.15.0-next-3.0...@aws-amplify/cli@12.15.0-next-4.0) (2025-03-12)
-
-**Note:** Version bump only for package @aws-amplify/cli
-
-
-
-
-
-# [12.15.0-next-3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.15.0-next-2.0...@aws-amplify/cli@12.15.0-next-3.0) (2025-03-05)
-
-**Note:** Version bump only for package @aws-amplify/cli
-
-
-
-
-
-# [12.15.0-next-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@12.14.4...@aws-amplify/cli@12.15.0-next-2.0) (2025-02-26)
-
-
-### Features
-
-* bump version ([4040dd4](https://github.com/aws-amplify/amplify-cli/commit/4040dd4f5d24f5250fa0658b8d06089f458467ce))
+* Update node to 22
 
 
 

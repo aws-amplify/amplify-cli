@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-e2e-core",
-  "version": "5.7.4-next-4.0",
+  "version": "5.7.3",
   "description": "",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.1-next-4.0",
+    "@aws-amplify/amplify-cli-core": "4.4.0",
     "@aws-sdk/client-sts": "3.624.0",
     "@aws-sdk/credential-providers": "3.624.0",
     "amplify-headless-interface": "1.17.7",
@@ -33,7 +33,7 @@
     "dotenv": "^8.2.0",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "^8.2.16",
+    "graphql-transformer-core": "^8.2.17",
     "ini": "^1.3.5",
     "jest-circus": "^27.0.0",
     "jest-environment-node": "^26.6.2",

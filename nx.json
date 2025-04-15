@@ -1,15 +1,10 @@
 {
-  "extends": "nx/presets/npm.json",
-  "npmScope": "amplify-cli",
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "test", "lint", "package", "prepare", "extract-api"],
-        "parallel": 8
-      }
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": false
     }
   },
+  "extends": "nx/presets/npm.json",
   "namedInputs": {
     "default": [
       "{projectRoot}/**/*",
@@ -29,7 +24,8 @@
   "targetDefaults": {
     "build": {
       "inputs": ["default", "^production"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "cache": true
     },
     "build-tests": {
       "inputs": ["default", "^production"],
@@ -37,11 +33,13 @@
     },
     "prepare": {
       "inputs": ["default", "^default"],
-      "dependsOn": ["^prepare"]
+      "dependsOn": ["^prepare"],
+      "cache": true
     },
     "package": {
       "inputs": ["default", "^default"],
-      "dependsOn": ["^package"]
+      "dependsOn": ["^package"],
+      "cache": true
     },
     "smoketest": {
       "inputs": ["default", "^production"],
@@ -49,20 +47,19 @@
     },
     "test": {
       "inputs": ["default", "^production"],
-      "dependsOn": ["build"]
+      "dependsOn": ["build"],
+      "cache": true
     },
     "extract-api": {
       "dependsOn": ["build"],
       "inputs": ["{projectRoot}/src/**/*", "!{projectRoot}/src/__tests__/**/*"],
-      "outputs": ["{projectRoot}/API.md"]
+      "outputs": ["{projectRoot}/API.md"],
+      "cache": true
+    },
+    "lint": {
+      "cache": true
     }
   },
-  "affected": {
-    "defaultBase": "dev"
-  },
-  "pluginsConfig": {
-    "@nrwl/js": {
-      "analyzeSourceFiles": false
-    }
-  }
+  "parallel": 8,
+  "defaultBase": "dev"
 }
