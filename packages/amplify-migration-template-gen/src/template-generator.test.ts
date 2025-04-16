@@ -480,6 +480,32 @@ describe('TemplateGenerator', () => {
     assertCFNCalls(false, ['auth']);
   });
 
+  it('should refactor custom resources from Gen1 to Gen2 successfully', async () => {
+    // Arrange
+    const customResourceMap = [
+      {
+        Source: { LogicalResourceId: 'CustomResource1', StackName: GEN1_ROOT_STACK_NAME },
+        Destination: { LogicalResourceId: 'CustomResource1', StackName: GEN2_ROOT_STACK_NAME },
+      },
+    ];
+    // Act
+    const generator = new TemplateGenerator(
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+    );
+    await generator.generate(customResourceMap);
+
+    // Assert
+    successfulCustomResourcesAssertions();
+    assertCFNCalls();
+  });
+
   it('should fail to generate when no applicable categories are found', async () => {
     const generator = new TemplateGenerator(
       GEN1_ROOT_STACK_NAME,
@@ -808,6 +834,7 @@ describe('TemplateGenerator', () => {
         CFN_AUTH_TYPE.IdentityPoolRoleAttachment,
         CFN_AUTH_TYPE.UserPoolDomain,
       ],
+      expect.any(Function),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
@@ -821,6 +848,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_AUTH_TYPE.UserPoolGroup],
+      expect.any(Function),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
@@ -834,6 +862,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_S3_TYPE.Bucket],
+      expect.any(Function),
     );
   }
 
@@ -863,6 +892,7 @@ describe('TemplateGenerator', () => {
         CFN_AUTH_TYPE.IdentityPoolRoleAttachment,
         CFN_AUTH_TYPE.UserPoolDomain,
       ],
+      expect.any(Function),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
@@ -876,6 +906,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_AUTH_TYPE.UserPoolGroup],
+      expect.any(Function),
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
@@ -889,6 +920,79 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_S3_TYPE.Bucket],
+      expect.any(Function),
+    );
+  }
+
+  function successfulCustomResourcesAssertions() {
+    expect(fs.mkdir).toBeCalledTimes(1);
+    expect(mockGenerateGen1PreProcessTemplate).toBeCalledTimes(4);
+    expect(mockGenerateGen2ResourceRemovalTemplate).toBeCalledTimes(4);
+    expect(mockGenerateStackRefactorTemplates).toBeCalledTimes(3);
+    expect(mockReadMeInitialize).toBeCalledTimes(1);
+    expect(mockReadMeRenderStep1).toBeCalledTimes(1);
+    expect(CategoryTemplateGenerator).toBeCalledTimes(4);
+    expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
+      1,
+      GEN1_AUTH_STACK_ID,
+      GEN2_AUTH_STACK_ID,
+      REGION,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+      [
+        CFN_AUTH_TYPE.UserPool,
+        CFN_AUTH_TYPE.UserPoolClient,
+        CFN_AUTH_TYPE.IdentityPool,
+        CFN_AUTH_TYPE.IdentityPoolRoleAttachment,
+        CFN_AUTH_TYPE.UserPoolDomain,
+      ],
+      expect.any(Function),
+    );
+    expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
+      2,
+      GEN1_AUTH_USER_POOL_GROUP_STACK_ID,
+      GEN2_AUTH_STACK_ID,
+      REGION,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+      [CFN_AUTH_TYPE.UserPoolGroup],
+      expect.any(Function),
+    );
+    expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
+      3,
+      GEN1_STORAGE_STACK_ID,
+      GEN2_STORAGE_STACK_ID,
+      REGION,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+      [CFN_S3_TYPE.Bucket],
+      expect.any(Function),
+    );
+    expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
+      4,
+      GEN1_ROOT_STACK_NAME,
+      GEN2_ROOT_STACK_NAME,
+      REGION,
+      ACCOUNT_ID,
+      STUB_CFN_CLIENT,
+      STUB_SSM_CLIENT,
+      STUB_COGNITO_IDP_CLIENT,
+      APP_ID,
+      ENV_NAME,
+      [],
+      expect.any(Function),
     );
   }
 
