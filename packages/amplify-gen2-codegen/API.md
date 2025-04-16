@@ -125,7 +125,7 @@ export interface Gen2RenderingOptions {
     // (undocumented)
     backendEnvironmentName?: string | undefined;
     // (undocumented)
-    customResources?: string[];
+    customResources?: Map<string, string>;
     // (undocumented)
     data?: DataDefinition;
     // (undocumented)
