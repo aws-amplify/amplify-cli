@@ -11,3 +11,6 @@ Once this command runs successfully, the Gen1 project is converted to Gen2 with 
 For executing the migration of resources from Gen1 to Gen2, run the following command:
 
 `npx @aws-amplify/migrate to-gen-2 execute --from <GEN1_ROOT_STACK_NAME> --to <GEN2_ROOT_STACK_NAME>`
+
+For moving the resources back from Gen2 to Gen1, run the following command:
+`npx @aws-amplify/migrate to-gen-2 revert --from <GEN2_ROOT_STACK_NAME> --to <GEN1_ROOT_STACK_NAME>`

@@ -1,4 +1,11 @@
-import { CloudFormationClient, DescribeStacksCommand, GetTemplateCommand, Stack } from '@aws-sdk/client-cloudformation';
+import {
+  CloudFormationClient,
+  DescribeStacksCommand,
+  DescribeStackResourcesCommand,
+  GetTemplateCommand,
+  Stack,
+  Parameter,
+} from '@aws-sdk/client-cloudformation';
 import { SSMClient } from '@aws-sdk/client-ssm';
 import assert from 'node:assert';
 import {
@@ -32,8 +39,10 @@ const RESOURCE_TYPES_WITH_MULTIPLE_RESOURCES = [
 class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
   private gen1DescribeStacksResponse: Stack | undefined;
   private gen2DescribeStacksResponse: Stack | undefined;
-  private gen1ResourcesToMove: Map<string, CFNResource>;
-  private gen2ResourcesToRemove: Map<string, CFNResource>;
+  public gen1ResourcesToMove: Map<string, CFNResource>;
+  public gen2ResourcesToRemove: Map<string, CFNResource>;
+  public gen2Template: CFNTemplate | undefined;
+  public gen2StackParameters: Parameter[] | undefined;
   constructor(
     private readonly gen1StackId: string,
     private readonly gen2StackId: string,
@@ -72,9 +81,12 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     const gen1ParametersResolvedTemplate = new CfnParameterResolver(oldGen1Template, extractStackNameFromId(this.gen1StackId)).resolve(
       Parameters,
     );
+
+    const stackResources = await this.describeStackResources(this.gen1StackId);
     const gen1TemplateWithOutputsResolved = new CfnOutputResolver(gen1ParametersResolvedTemplate, this.region, this.accountId).resolve(
       logicalResourceIds,
       Outputs,
+      stackResources,
     );
     const gen1TemplateWithDepsResolved = new CfnDependencyResolver(gen1TemplateWithOutputsResolved).resolve(logicalResourceIds);
     const gen1TemplateWithConditionsResolved = new CFNConditionResolver(gen1TemplateWithDepsResolved).resolve(Parameters);
@@ -106,16 +118,21 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     assert(this.gen2DescribeStacksResponse);
     const { Parameters, Outputs } = this.gen2DescribeStacksResponse;
     assert(Outputs);
+    this.gen2StackParameters = Parameters;
     const oldGen2Template = await this.readTemplate(this.gen2StackId);
+    this.gen2Template = oldGen2Template;
     this.gen2ResourcesToRemove = new Map(
-      Object.entries(oldGen2Template.Resources).filter(([, value]) =>
-        this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type),
-      ),
+      Object.entries(oldGen2Template.Resources).filter(([logicalId, value]) => {
+        return (
+          this.resourcesToMovePredicate?.(this.resourcesToMove, [logicalId, value]) ??
+          this.resourcesToMove.some((resourceToMove) => resourceToMove.valueOf() === value.Type)
+        );
+      }),
     );
     // validate empty resources
     if (this.gen2ResourcesToRemove.size === 0) throw new Error('No resources to remove in Gen2 stack.');
     const logicalResourceIds = [...this.gen2ResourcesToRemove.keys()];
-    const updatedGen2Template = this.removeGen2ResourcesFromGen2Stack(oldGen2Template, logicalResourceIds);
+    const updatedGen2Template = await this.removeGen2ResourcesFromGen2Stack(oldGen2Template, logicalResourceIds);
     return {
       oldTemplate: oldGen2Template,
       newTemplate: updatedGen2Template,
@@ -146,6 +163,18 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
         }),
       )
     ).Stacks?.[0];
+  }
+
+  private async describeStackResources(stackId: string) {
+    const { StackResources } = await this.cfnClient.send(
+      new DescribeStackResourcesCommand({
+        StackName: stackId,
+      }),
+    );
+
+    assert(StackResources && StackResources.length > 0);
+
+    return StackResources;
   }
 
   private removeGen1ResourcesFromGen1Stack(gen1Template: CFNTemplate, resourcesToRefactor: string[]) {
@@ -217,13 +246,16 @@ class CategoryTemplateGenerator<CFNCategoryType extends CFN_CATEGORY_TYPE> {
     return gen1ToGen2ResourceLogicalIdMapping;
   }
 
-  private removeGen2ResourcesFromGen2Stack(gen2Template: CFNTemplate, resourcesToRemove: string[]) {
+  private async removeGen2ResourcesFromGen2Stack(gen2Template: CFNTemplate, resourcesToRemove: string[]) {
     const clonedGen2Template = JSON.parse(JSON.stringify(gen2Template));
     const stackOutputs = this.gen2DescribeStacksResponse?.Outputs;
     assert(stackOutputs);
-    const resolvedRefsGen2Template = new CfnOutputResolver(clonedGen2Template, this.region, this.accountId).resolve(
+    const stackResources = await this.describeStackResources(this.gen2StackId);
+    const gen2TemplateWithDepsResolved = new CfnDependencyResolver(clonedGen2Template).resolve(resourcesToRemove);
+    const resolvedRefsGen2Template = new CfnOutputResolver(gen2TemplateWithDepsResolved, this.region, this.accountId).resolve(
       resourcesToRemove,
       stackOutputs,
+      stackResources,
     );
     resourcesToRemove.forEach((logicalResourceId) => {
       delete resolvedRefsGen2Template.Resources[logicalResourceId];

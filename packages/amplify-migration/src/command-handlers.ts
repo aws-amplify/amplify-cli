@@ -30,6 +30,7 @@ import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetche
 import { TemplateGenerator } from '@aws-amplify/migrate-template-gen';
 import { printer } from './printer';
 import { format } from './format';
+import { ResourceMapping } from '@aws-amplify/migrate-template-gen';
 import ora from 'ora';
 
 interface CodegenCommandParameters {
@@ -54,7 +55,6 @@ export const GEN1_CONFIGURATION_FILES = ['aws-exports.js', 'amplifyconfiguration
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
 const BACKEND_DIR = 'backend';
-const AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME;
 
 enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   DOT_AMPLIFY = '.amplify',
@@ -79,7 +79,7 @@ const generateGen2Code = async ({
     storage: await storageDefinitionFetcher.getDefinition(),
     data: await dataDefinitionFetcher.getDefinition(),
     functions: await functionsDefinitionFetcher.getDefinition(),
-    customResources: getCustomResources(),
+    customResources: await getCustomResourceMap(),
     unsupportedCategories: unsupportedCategories(),
   };
   fetchingAWSResourceDetails.succeed('Fetched resource details from AWS');
@@ -297,6 +297,27 @@ const getCustomResources = (): string[] => {
   return customCategory ? Object.keys(customCategory) : [];
 };
 
+const getCustomResourceMap = async (): Promise<Map<string, string>> => {
+  const customResources = getCustomResources();
+  const customResourceMap = new Map<string, string>();
+
+  const rootDir = pathManager.findProjectRoot();
+  assert(rootDir);
+  const amplifyGen1BackendDir = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR);
+  const sourceCustomResourcePath = path.join(amplifyGen1BackendDir, CUSTOM_DIR);
+
+  for (const resource of customResources) {
+    const cdkStackFilePath = path.join(sourceCustomResourcePath, resource, 'cdk-stack.ts');
+    const cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
+    const className = cdkStackContent.match(/export class (\w+)/)?.[1];
+    if (className) {
+      customResourceMap.set(resource, className);
+    }
+  }
+
+  return customResourceMap;
+};
+
 export async function updateCustomResources() {
   const customResources = getCustomResources();
   if (customResources.length > 0) {
@@ -331,6 +352,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
   for (const resource of customResources) {
     const cdkStackFilePath = path.join(destinationCustomResourcePath, resource, 'cdk-stack.ts');
+
     const amplifyHelpersImport = /import\s+\*\s+as\s+AmplifyHelpers\s+from\s+['"]@aws-amplify\/cli-extensibility-helper['"];\n?/;
 
     try {
@@ -339,14 +361,14 @@ export async function updateCdkStackFile(customResources: string[], destinationC
       // Check for existence of AmplifyHelpers.addResourceDependency and throw an error if found
       if (cdkStackContent.includes('AmplifyHelpers.addResourceDependency')) {
         cdkStackContent = cdkStackContent.replace(
-          /export class cdkStack/,
-          `throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency');\n\nexport class cdkStack`,
+          /export class/,
+          `throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency');\n\nexport class`,
         );
       }
 
       cdkStackContent = cdkStackContent.replace(
-        /export class cdkStack/,
-        `const AMPLIFY_GEN_1_ENV_NAME = ${AMPLIFY_GEN_1_ENV_NAME} ?? "sandbox";\n\nexport class cdkStack`,
+        /export class/,
+        `const AMPLIFY_GEN_1_ENV_NAME = process.env.AMPLIFY_GEN_1_ENV_NAME ?? "sandbox";\n\nexport class`,
       );
 
       cdkStackContent = cdkStackContent.replace(/extends cdk.Stack/, `extends cdk.NestedStack`);
@@ -452,7 +474,7 @@ export async function execute() {
   await updateGitIgnoreForGen2();
 
   await removeGen1ConfigurationFiles();
-  
+
   await updateCustomResources();
 
   const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`).start();
@@ -497,9 +519,9 @@ export async function removeGen1ConfigurationFiles() {
  * @param fromStack
  * @param toStack
  */
-export async function executeStackRefactor(fromStack: string, toStack: string) {
+export async function executeStackRefactor(fromStack: string, toStack: string, customResourceMap?: ResourceMapping[]) {
   const [templateGenerator, envName] = await initializeTemplateGenerator(fromStack, toStack);
-  const success = await templateGenerator.generate();
+  const success = await templateGenerator.generate(customResourceMap);
   const usageData = await getUsageDataMetric(envName);
   if (success) {
     printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/templates directory.`));
