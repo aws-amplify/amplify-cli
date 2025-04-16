@@ -1,10 +1,13 @@
 import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs';
+import { promises as fs } from 'fs';
 import { executeStackRefactor } from '../../../command-handlers';
 import assert from 'node:assert';
+import { ResourceMapping } from '@aws-amplify/migrate-template-gen';
 
 export interface ExecuteCommandOptions {
   from: string | undefined;
   to: string | undefined;
+  customResourceMap: string | undefined; // New argument
 }
 
 /**
@@ -38,12 +41,29 @@ export class Gen2ExecuteCommand implements CommandModule<object, ExecuteCommandO
         describe: 'Gen2 Amplify stack',
         type: 'string',
         demandOption: true,
+      })
+      .option('customResourceMap', {
+        describe: 'Path to the custom category resource map JSON file',
+        type: 'string',
+        demandOption: false,
       });
   };
   handler = async (args: ArgumentsCamelCase<ExecuteCommandOptions>): Promise<void> => {
-    const { from, to } = args;
+    const { from, to, customResourceMap } = args;
     assert(from);
     assert(to);
-    await executeStackRefactor(from, to);
+
+    let parsedcustomResourceMap: ResourceMapping[] | undefined = undefined;
+
+    if (customResourceMap) {
+      try {
+        const fileContent = await fs.readFile(customResourceMap, { encoding: 'utf-8' });
+        parsedcustomResourceMap = JSON.parse(fileContent) as ResourceMapping[];
+      } catch (error) {
+        throw new Error(`Failed to load customResourceMap from ${customResourceMap}: ${error.message}`);
+      }
+    }
+
+    await executeStackRefactor(from, to, parsedcustomResourceMap);
   };
 }
