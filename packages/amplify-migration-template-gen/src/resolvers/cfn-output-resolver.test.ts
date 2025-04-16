@@ -59,6 +59,12 @@ describe('CFNOutputResolver', () => {
           ],
         },
       },
+      snsTopicArn: {
+        Description: 'SnsTopicArn',
+        Value: {
+          Ref: 'snstopic',
+        },
+      },
     },
     Resources: {
       MyS3Bucket: {
@@ -169,6 +175,30 @@ describe('CFNOutputResolver', () => {
           },
         },
       },
+      sqsqueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: {
+            'Fn::Join': ['', ['sqs-queue-amplifyCodegen-', 'dev']],
+          },
+        },
+      },
+      snsSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: {
+            'Fn::GetAtt': ['sqsqueue', 'Arn'],
+          },
+          Protocol: 'sqs',
+          TopicArn: { Ref: 'snsTopic' },
+        },
+      },
+      snsTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'snsTopic',
+        },
+      },
     },
   };
   const expectedTemplate: CFNTemplate = {
@@ -207,6 +237,10 @@ describe('CFNOutputResolver', () => {
       HostedUIDomain: {
         Description: 'HostedUIDomain',
         Value: 'my-hosted-UI-domain',
+      },
+      snsTopicArn: {
+        Description: 'SnsTopicArn',
+        Value: 'arn:aws:sns:us-east-1:12345:snsTopic',
       },
     },
     Resources: {
@@ -316,6 +350,28 @@ describe('CFNOutputResolver', () => {
           },
         },
       },
+      sqsqueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: {
+            'Fn::Join': ['', ['sqs-queue-amplifyCodegen-', 'dev']],
+          },
+        },
+      },
+      snsSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'arn:aws:sqs:us-east-1:12345:physicalIdSqs',
+          Protocol: 'sqs',
+          TopicArn: { Ref: 'snsTopic' },
+        },
+      },
+      snsTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'snsTopic',
+        },
+      },
     },
   };
   it('should resolve output references', () => {
@@ -350,6 +406,30 @@ describe('CFNOutputResolver', () => {
           {
             OutputKey: 'HostedUIDomain',
             OutputValue: 'my-hosted-UI-domain',
+          },
+          {
+            OutputKey: 'snsTopicArn',
+            OutputValue: 'arn:aws:sns:us-east-1:12345:snsTopic',
+          },
+        ],
+        [
+          {
+            StackName: 'amplify-amplifycodegen-dev',
+            StackId: 'arn:aws:cloudformation:us-west-2:123456789:stack/amplify-amplifycodegen-dev',
+            LogicalResourceId: 'sqsqueue',
+            PhysicalResourceId: 'physicalIdSqs',
+            ResourceType: 'AWS::SQS::Queue',
+            Timestamp: new Date('2025-04-02T22:27:41.603000+00:00'),
+            ResourceStatus: 'CREATE_COMPLETE',
+          },
+          {
+            StackName: 'amplify-amplifycodegen-dev',
+            StackId: 'arn:aws:cloudformation:us-west-2:123456789:stack/amplify-amplifycodegen-dev',
+            LogicalResourceId: 'snsSubscription',
+            PhysicalResourceId: 'physicalIdSns',
+            ResourceType: 'AWS::SNS::Subscription',
+            Timestamp: new Date('2025-04-02T22:27:41.603000+00:00'),
+            ResourceStatus: 'CREATE_COMPLETE',
           },
         ],
       ),
