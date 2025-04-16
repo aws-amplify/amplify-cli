@@ -3,6 +3,7 @@ import { CFN_AUTH_TYPE, CFN_PSEUDO_PARAMETERS_REF, CFN_S3_TYPE, CFNTemplate } fr
 import {
   CloudFormationClient,
   DescribeStacksCommand,
+  DescribeStackResourcesCommand,
   DescribeStacksOutput,
   GetTemplateCommand,
   GetTemplateOutput,
@@ -659,6 +660,20 @@ jest.mock('@aws-sdk/client-cloudformation', () => {
             return Promise.resolve(generateDescribeStacksResponse(command));
           } else if (command instanceof GetTemplateCommand) {
             return Promise.resolve(generateGetTemplateResponse(command));
+          } else if (command instanceof DescribeStackResourcesCommand) {
+            return Promise.resolve({
+              StackResources: [
+                {
+                  StackId: command.input.StackName,
+                  StackName: command.input.StackName,
+                  LogicalResourceId: GEN1_S3_BUCKET_LOGICAL_ID,
+                  PhysicalResourceId: GEN1_S3_BUCKET_LOGICAL_ID,
+                  ResourceType: CFN_S3_TYPE.Bucket,
+                  ResourceStatus: 'CREATE_COMPLETE',
+                  Timestamp: new Date(),
+                },
+              ],
+            });
           }
           return Promise.resolve({});
         }),
@@ -845,10 +860,25 @@ describe('CategoryTemplateGenerator', () => {
               ? JSON.stringify(oldGen1Template)
               : JSON.stringify(oldGen2TemplateWithoutS3Bucket),
         });
+      } else if (command instanceof DescribeStackResourcesCommand) {
+        return Promise.resolve({
+          StackResources: [
+            {
+              StackId: command.input.StackName,
+              StackName: command.input.StackName,
+              LogicalResourceId: GEN1_S3_BUCKET_LOGICAL_ID,
+              PhysicalResourceId: GEN1_S3_BUCKET_LOGICAL_ID,
+              ResourceType: CFN_S3_TYPE.Bucket,
+              ResourceStatus: 'CREATE_COMPLETE',
+              Timestamp: new Date(),
+            },
+          ],
+        });
       }
       return Promise.resolve({});
     };
     stubCfnClientSend
+      .mockImplementationOnce(sendFailureMock)
       .mockImplementationOnce(sendFailureMock)
       .mockImplementationOnce(sendFailureMock)
       .mockImplementationOnce(sendFailureMock)
