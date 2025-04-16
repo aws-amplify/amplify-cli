@@ -56,7 +56,7 @@ export interface Gen2RenderingOptions {
   storage?: StorageRenderParameters;
   data?: DataDefinition;
   functions?: FunctionDefinition[];
-  customResources?: string[];
+  customResources?: Map<string, string>;
   unsupportedCategories?: Map<string, string>;
   fileWriter?: (content: string, path: string) => Promise<void>;
 }
@@ -215,7 +215,7 @@ export const createGen2Renderer = ({
     };
   }
 
-  if (customResources && customResources.length > 0) {
+  if (customResources && customResources.size > 0) {
     backendRenderOptions.customResources = customResources;
   }
 

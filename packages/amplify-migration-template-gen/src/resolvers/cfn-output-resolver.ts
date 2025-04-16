@@ -1,6 +1,6 @@
 import { AWS_RESOURCE_ATTRIBUTES, CFN_RESOURCE_TYPES, CFNTemplate } from '../types';
 import assert from 'node:assert';
-import { Output } from '@aws-sdk/client-cloudformation';
+import { Output, StackResource } from '@aws-sdk/client-cloudformation';
 
 const REF = 'Ref';
 const GET_ATT = 'Fn::GetAtt';
@@ -12,7 +12,7 @@ const GET_ATT = 'Fn::GetAtt';
 class CfnOutputResolver {
   constructor(private readonly template: CFNTemplate, private readonly region: string, private readonly accountId: string) {}
 
-  public resolve(logicalResourceIds: string[], stackOutputs: Output[]): CFNTemplate {
+  public resolve(logicalResourceIds: string[], stackOutputs: Output[], stackResources: StackResource[]): CFNTemplate {
     const resources = this.template?.Resources;
     assert(resources);
     const clonedStackTemplate = JSON.parse(JSON.stringify(this.template)) as CFNTemplate;
@@ -59,6 +59,44 @@ class CfnOutputResolver {
       }
     });
 
+    const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["(?<LogicalResourceId>\\w+)","(?<AttributeName>\\w+)"]}`, 'g');
+    const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp);
+
+    for (const fnGetAttRegExpResultItem of fnGetAttRegExpResult) {
+      const groups = fnGetAttRegExpResultItem.groups;
+      if (groups && groups.LogicalResourceId) {
+        const stackResourceWithMatchingLogicalId = stackResources.find(
+          (resource) => resource.LogicalResourceId === groups.LogicalResourceId,
+        );
+        if (stackResourceWithMatchingLogicalId) {
+          const fnGetAttRegExpPerLogicalId = new RegExp(`{"${GET_ATT}":\\["${groups.LogicalResourceId}","(?<AttributeName>\\w+)"]}`, 'g');
+          const stackResourcePhysicalId = stackResourceWithMatchingLogicalId.PhysicalResourceId;
+          assert(stackResourcePhysicalId);
+          if (groups.AttributeName === 'Arn') {
+            const resourceId = stackResourcePhysicalId.startsWith('http') ? stackResourcePhysicalId.split('/')[2] : stackResourcePhysicalId;
+            const resourceArn = this.getResourceAttribute(
+              groups.AttributeName,
+              stackResourceWithMatchingLogicalId.ResourceType as CFN_RESOURCE_TYPES,
+              resourceId,
+            );
+            if (resourceArn) {
+              stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(fnGetAttRegExpPerLogicalId, `"${resourceArn.Arn}"`);
+            } else {
+              stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(
+                fnGetAttRegExpPerLogicalId,
+                `"${stackResourcePhysicalId}"`,
+              );
+            }
+          } else {
+            stackTemplateResourcesString = stackTemplateResourcesString.replaceAll(
+              fnGetAttRegExpPerLogicalId,
+              `"${stackResourcePhysicalId}"`,
+            );
+          }
+        }
+      }
+    }
+
     clonedStackTemplate.Resources = JSON.parse(stackTemplateResourcesString);
     Object.entries(clonedStackTemplate.Outputs).forEach(([outputKey]) => {
       const stackOutputValue = stackOutputs?.find((op) => op.OutputKey === outputKey)?.OutputValue;
@@ -99,6 +137,10 @@ class CfnOutputResolver {
               Arn: resourceIdentifier.startsWith('arn:aws:iam')
                 ? resourceIdentifier
                 : `arn:aws:iam::${this.accountId}:role/${resourceIdentifier}`,
+            };
+          case 'AWS::SQS::Queue':
+            return {
+              Arn: `arn:aws:sqs:${this.region}:${this.accountId}:${resourceIdentifier}`,
             };
           default:
             return undefined;

@@ -46,7 +46,7 @@ export interface BackendRenderParameters {
     importFrom: string;
     functionNamesAndCategories: Map<string, string>;
   };
-  customResources?: string[];
+  customResources?: Map<string, string>;
   unsupportedCategories?: Map<string, string>;
 }
 
@@ -697,7 +697,7 @@ export class BackendSynthesizer {
       TemporaryPasswordValidityDays: 'temporaryPasswordValidityDays',
     };
 
-    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket) {
+    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket || renderArgs.customResources) {
       imports.push(
         this.createImportStatement([factory.createIdentifier('RemovalPolicy'), factory.createIdentifier('Tags')], 'aws-cdk-lib'),
       );
@@ -757,30 +757,30 @@ export class BackendSynthesizer {
     }
 
     if (renderArgs.customResources) {
-      for (const resource of renderArgs.customResources) {
+      for (const [resourceName, className] of renderArgs.customResources) {
         const importStatement = factory.createImportDeclaration(
           undefined,
           factory.createImportClause(
             false,
             undefined,
             factory.createNamedImports([
-              factory.createImportSpecifier(false, factory.createIdentifier('cdkStack'), factory.createIdentifier(`${resource}`)),
+              factory.createImportSpecifier(false, factory.createIdentifier(`${className}`), factory.createIdentifier(`${resourceName}`)),
             ]),
           ),
-          factory.createStringLiteral(`./custom/${resource}/cdk-stack`),
+          factory.createStringLiteral(`./custom/${resourceName}/cdk-stack`),
           undefined,
         );
 
         imports.push(importStatement);
 
-        const customResourceExpression = factory.createNewExpression(factory.createIdentifier(`${resource}`), undefined, [
+        const customResourceExpression = factory.createNewExpression(factory.createIdentifier(`${resourceName}`), undefined, [
           factory.createPropertyAccessExpression(factory.createIdentifier('backend'), factory.createIdentifier('stack')),
-          factory.createStringLiteral(`${resource}`),
+          factory.createStringLiteral(`${resourceName}`),
           factory.createIdentifier('undefined'),
           factory.createObjectLiteralExpression(
             [
               factory.createPropertyAssignment(factory.createIdentifier('category'), factory.createStringLiteral('custom')),
-              factory.createPropertyAssignment(factory.createIdentifier('resourceName'), factory.createStringLiteral(`${resource}`)),
+              factory.createPropertyAssignment(factory.createIdentifier('resourceName'), factory.createStringLiteral(`${resourceName}`)),
             ],
             true,
           ),
@@ -1043,7 +1043,7 @@ export class BackendSynthesizer {
 
     // Add a tag commented out to force a deployment post refactor
     // Tags.of(backend.stack).add('gen1-migrated-app', 'true')
-    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket) {
+    if (renderArgs.auth || renderArgs.storage?.hasS3Bucket || renderArgs.customResources) {
       const tagAssignment = factory.createExpressionStatement(
         factory.createCallExpression(
           factory.createPropertyAccessExpression(

@@ -66,7 +66,17 @@ export interface CFNStackRefactorTemplates {
   logicalIdMapping: Map<string, string>;
 }
 
-export type CATEGORY = 'auth' | 'storage' | 'auth-user-pool-group';
+export enum NON_CUSTOM_RESOURCE_CATEGORY {
+  AUTH = 'auth',
+  STORAGE = 'storage',
+  AUTH_USER_POOL_GROUP = 'auth-user-pool-group',
+}
+
+export type CATEGORY =
+  | NON_CUSTOM_RESOURCE_CATEGORY.AUTH
+  | NON_CUSTOM_RESOURCE_CATEGORY.STORAGE
+  | NON_CUSTOM_RESOURCE_CATEGORY.AUTH_USER_POOL_GROUP
+  | string;
 
 export interface ResourceMappingLocation {
   StackName: string;
@@ -95,11 +105,15 @@ export enum CFN_IAM_TYPE {
   Role = 'AWS::IAM::Role',
 }
 
-export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE;
+export enum CFN_SQS_TYPE {
+  Queue = 'AWS::SQS::Queue',
+}
+
+export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE | CFN_SQS_TYPE;
 
 export type AWS_RESOURCE_ATTRIBUTES = 'Arn';
 
-export type CFN_CATEGORY_TYPE = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE;
+export type CFN_CATEGORY_TYPE = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE | string;
 
 export enum CFN_PSEUDO_PARAMETERS_REF {
   StackName = 'AWS::StackName',

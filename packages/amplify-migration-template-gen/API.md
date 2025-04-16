@@ -9,10 +9,20 @@ import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-
 import { SSMClient } from '@aws-sdk/client-ssm';
 
 // @public (undocumented)
+export interface ResourceMapping {
+    // (undocumented)
+    Destination: ResourceMappingLocation;
+    // Warning: (ae-forgotten-export) The symbol "ResourceMappingLocation" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    Source: ResourceMappingLocation;
+}
+
+// @public (undocumented)
 export class TemplateGenerator {
     constructor(fromStack: string, toStack: string, accountId: string, cfnClient: CloudFormationClient, ssmClient: SSMClient, cognitoIdpClient: CognitoIdentityProviderClient, appId: string, environmentName: string);
     // (undocumented)
-    generate(): Promise<boolean>;
+    generate(customResourceMap?: ResourceMapping[]): Promise<boolean>;
     // (undocumented)
     revert(): Promise<boolean>;
 }

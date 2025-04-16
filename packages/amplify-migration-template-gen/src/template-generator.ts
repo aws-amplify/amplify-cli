@@ -10,6 +10,7 @@ import CategoryTemplateGenerator from './category-template-generator';
 import fs from 'node:fs/promises';
 import {
   CATEGORY,
+  NON_CUSTOM_RESOURCE_CATEGORY,
   CFN_AUTH_TYPE,
   CFN_CATEGORY_TYPE,
   CFN_IAM_TYPE,
@@ -19,6 +20,7 @@ import {
   CFNStackStatus,
   CFNTemplate,
   GEN2_AUTH_LOGICAL_RESOURCE_ID,
+  ResourceMapping,
 } from './types';
 import MigrationReadmeGenerator from './migration-readme-generator';
 import { pollStackForCompletionState, tryUpdateStack } from './cfn-stack-updater';
@@ -67,6 +69,7 @@ const CFN_FN_GET_ATTTRIBUTE = 'Fn::GetAtt';
 const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
 const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
 const NO_RESOURCES_TO_MOVE_ERROR = 'No resources to move';
+const NO_RESOURCES_TO_REMOVE_ERROR = 'No resources to remove';
 
 class TemplateGenerator {
   private readonly categoryStackMap: Map<CATEGORY, [string, string]>;
@@ -102,11 +105,16 @@ class TemplateGenerator {
     this.region = await this.cfnClient.config.region();
   }
 
-  public async generate() {
+  public async generate(customResourceMap?: ResourceMapping[]) {
     await fs.mkdir(TEMPLATES_DIR, { recursive: true });
     await this.setRegion();
     await this.parseCategoryStacks();
-    return await this.generateCategoryTemplates();
+    if (customResourceMap) {
+      for (const { Source, Destination } of customResourceMap) {
+        this.updateCategoryStackMap(Source.LogicalResourceId, Source.StackName, Destination.StackName, false, false);
+      }
+    }
+    return await this.generateCategoryTemplates(false, customResourceMap);
   }
 
   public async revert() {
@@ -185,7 +193,7 @@ class TemplateGenerator {
   }
 
   private updateCategoryStackMap(
-    category: CATEGORY,
+    category: CATEGORY | string,
     sourcePhysicalResourceId: string,
     destinationPhysicalResourceId: string,
     isUserPoolGroupStack: boolean,
@@ -234,7 +242,8 @@ class TemplateGenerator {
       typeof error === 'object' &&
       error !== null &&
       'message' in error &&
-      (error as { message: string }).message.includes(NO_RESOURCES_TO_MOVE_ERROR)
+      typeof error.message === 'string' &&
+      (error.message.includes(NO_RESOURCES_TO_MOVE_ERROR) || error.message.includes(NO_RESOURCES_TO_REMOVE_ERROR))
     );
   }
 
@@ -274,19 +283,30 @@ class TemplateGenerator {
     oldTemplate: CFNTemplate;
     parameters?: Parameter[];
   }> {
-    const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
+    
+    try {
+      const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
 
-    const updatingGen2CategoryStack = ora(`Updating Gen2 ${category} stack...`).start();
+      const updatingGen2CategoryStack = ora(`Updating Gen2 ${category} stack...`).start();
 
-    const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
+      const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
 
-    assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
-    updatingGen2CategoryStack.succeed(`Updated Gen2 ${category} stack successfully`);
+      assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
+      updatingGen2CategoryStack.succeed(`Updated Gen2 ${category} stack successfully`);
 
-    return { newTemplate, oldTemplate, parameters };
+      return { newTemplate, oldTemplate, parameters };
+    } catch (e) {
+      if (this.isNoResourcesError(e)) {
+        const currentTemplate = categoryTemplateGenerator.gen2Template;
+        assert(currentTemplate);
+        const parameters = categoryTemplateGenerator.gen2StackParameters;
+        return { newTemplate: currentTemplate, oldTemplate: currentTemplate, parameters };
+      }
+      throw e;
+    }
   }
 
-  private initializeCategoryGenerators() {
+  private initializeCategoryGenerators(customResourceMap?: ResourceMapping[]) {
     assert(this.region);
 
     for (const [category, [sourceStackId, destinationStackId]] of this.categoryStackMap.entries()) {
@@ -299,6 +319,13 @@ class TemplateGenerator {
           destinationStackId,
           this.createCategoryTemplateGenerator(sourceStackId, destinationStackId, config.resourcesToRefactor),
         ]);
+      } else if (customResourceMap && !Object.values(NON_CUSTOM_RESOURCE_CATEGORY).includes(category as NON_CUSTOM_RESOURCE_CATEGORY)) {
+        this.categoryTemplateGenerators.push([
+          category,
+          sourceStackId,
+          destinationStackId,
+          this.createCategoryTemplateGenerator(sourceStackId, destinationStackId, [], customResourceMap),
+        ]);
       }
     }
   }
@@ -307,6 +334,7 @@ class TemplateGenerator {
     sourceStackId: string,
     destinationStackId: string,
     resourcesToRefactor: CFN_CATEGORY_TYPE[],
+    customResourceMap?: ResourceMapping[],
   ): CategoryTemplateGenerator<CFN_CATEGORY_TYPE> {
     assert(this.region);
     return new CategoryTemplateGenerator(
@@ -320,11 +348,22 @@ class TemplateGenerator {
       this.appId,
       this.environmentName,
       resourcesToRefactor,
+      (_resourcesToMove: CFN_CATEGORY_TYPE[], cfnResource: [string, CFNResource]) => {
+        const [logicalId] = cfnResource;
+
+        // Check if customResourceMap contains the logical ID
+        return (
+          customResourceMap?.some(
+            (resourceMapping) =>
+              resourceMapping.Source.LogicalResourceId === logicalId || resourceMapping.Destination.LogicalResourceId === logicalId,
+          ) ?? false
+        );
+      },
     );
   }
 
-  private async generateCategoryTemplates(isRevert = false) {
-    this.initializeCategoryGenerators();
+  private async generateCategoryTemplates(isRevert = false, customResourceMap?: ResourceMapping[]) {
+    this.initializeCategoryGenerators(customResourceMap);
     for (const [category, sourceCategoryStackId, destinationCategoryStackId, categoryTemplateGenerator] of this
       .categoryTemplateGenerators) {
       let newSourceTemplate: CFNTemplate | undefined;
@@ -335,7 +374,36 @@ class TemplateGenerator {
       let destinationTemplateForRefactor: CFNTemplate | undefined;
       let logicalIdMappingForRefactor: Map<string, string> | undefined;
 
-      if (!isRevert) {
+      if (customResourceMap && !Object.values(NON_CUSTOM_RESOURCE_CATEGORY).includes(category as NON_CUSTOM_RESOURCE_CATEGORY)) {
+        newSourceTemplate = await this.processGen1Stack(category, categoryTemplateGenerator, sourceCategoryStackId);
+        if (!newSourceTemplate) continue;
+        const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator, destinationCategoryStackId);
+
+        newDestinationTemplate = newTemplate;
+
+        const sourceToDestinationMap = new Map<string, string>();
+
+        for (const resourceMapping of customResourceMap) {
+          const sourceLogicalId = resourceMapping.Source.LogicalResourceId;
+          const destinationLogicalId = resourceMapping.Destination.LogicalResourceId;
+
+          if (sourceLogicalId && destinationLogicalId) {
+            sourceToDestinationMap.set(sourceLogicalId, destinationLogicalId);
+          }
+        }
+
+        const { sourceTemplate, destinationTemplate, logicalIdMapping } = categoryTemplateGenerator.generateRefactorTemplates(
+          categoryTemplateGenerator.gen1ResourcesToMove,
+          categoryTemplateGenerator.gen2ResourcesToRemove,
+          newSourceTemplate,
+          newDestinationTemplate,
+          sourceToDestinationMap,
+        );
+
+        sourceTemplateForRefactor = sourceTemplate;
+        destinationTemplateForRefactor = destinationTemplate;
+        logicalIdMappingForRefactor = logicalIdMapping;
+      } else if (!isRevert) {
         newSourceTemplate = await this.processGen1Stack(category, categoryTemplateGenerator, sourceCategoryStackId);
         if (!newSourceTemplate) continue;
         const { newTemplate, oldTemplate, parameters } = await this.processGen2Stack(
@@ -379,6 +447,7 @@ class TemplateGenerator {
 
       assert(newSourceTemplate);
       assert(newDestinationTemplate);
+
       const refactorResources = ora(`Moving ${category} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`).start();
       const { success, failedRefactorMetadata } = await this.refactorResources(
         logicalIdMappingForRefactor,
@@ -419,7 +488,7 @@ class TemplateGenerator {
     logicalIdMappingForRefactor: Map<string, string>,
     sourceCategoryStackId: string,
     destinationCategoryStackId: string,
-    category: 'auth' | 'storage' | 'auth-user-pool-group',
+    category: 'auth' | 'storage' | 'auth-user-pool-group' | string,
     isRevert: boolean,
     sourceTemplateForRefactor: CFNTemplate,
     destinationTemplateForRefactor: CFNTemplate,
@@ -492,7 +561,7 @@ class TemplateGenerator {
       newSourceTemplateWithParametersResolved,
       this.region,
       this.accountId,
-    ).resolve(sourceLogicalIds, Outputs);
+    ).resolve(sourceLogicalIds, Outputs, []);
     const newSourceTemplateWithDepsResolved = new CfnDependencyResolver(newSourceTemplateWithOutputsResolved).resolve(sourceLogicalIds);
     if (category === 'auth' || category === 'auth-user-pool-group') {
       const { StackResources: AuthStackResources } = await this.cfnClient.send(

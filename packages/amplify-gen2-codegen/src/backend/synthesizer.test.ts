@@ -521,7 +521,10 @@ describe('BackendRenderer', () => {
     it('renders custom resources', () => {
       const renderer = new BackendSynthesizer();
       const rendered = renderer.render({
-        customResources: ['resource1', 'resource2'],
+        customResources: new Map([
+          ['resource1', 'resource1Value'],
+          ['resource2', 'resource2Value'],
+        ]),
       });
 
       const output = printNodeArray(rendered);
