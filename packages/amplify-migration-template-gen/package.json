@@ -11,7 +11,8 @@
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.744.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.592.0",
-    "@aws-sdk/client-ssm": "^3.592.0"
+    "@aws-sdk/client-ssm": "^3.592.0",
+    "ora": "^4.0.3"
   },
   "jest": {
     "collectCoverageFrom": [

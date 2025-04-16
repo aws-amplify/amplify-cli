@@ -30,6 +30,7 @@ import { tryRefactorStack } from './cfn-stack-refactor-updater';
 import CfnOutputResolver from './resolvers/cfn-output-resolver';
 import CfnDependencyResolver from './resolvers/cfn-dependency-resolver';
 import CfnParameterResolver from './resolvers/cfn-parameter-resolver';
+import ora from 'ora';
 
 const CFN_RESOURCE_STACK_TYPE = 'AWS::CloudFormation::Stack';
 const GEN2_AMPLIFY_AUTH_LOGICAL_ID_PREFIX = 'amplifyAuth';
@@ -251,21 +252,22 @@ class TemplateGenerator {
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
     sourceCategoryStackId: string,
   ): Promise<CFNTemplate | undefined> {
+    let updatingGen1CategoryStack;
     try {
       const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
 
       assert(gen1StackParameters);
-      console.log(`Updating Gen1 ${category} stack...`);
+      updatingGen1CategoryStack = ora(`Updating Gen1 ${category} stack...`).start();
 
       const gen1StackUpdateStatus = await tryUpdateStack(this.cfnClient, sourceCategoryStackId, gen1StackParameters, newTemplate);
 
       assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
-      console.log(`Updated Gen1 ${category} stack successfully`);
+      updatingGen1CategoryStack.succeed(`Updated Gen1 ${category} stack successfully`);
 
       return newTemplate;
     } catch (e) {
       if (this.isNoResourcesError(e)) {
-        console.log(e.message);
+        updatingGen1CategoryStack?.succeed(`No resources found to move in Gen1 ${category} stack. Skipping update.`);
         return undefined;
       }
       throw e;
@@ -281,14 +283,17 @@ class TemplateGenerator {
     oldTemplate: CFNTemplate;
     parameters?: Parameter[];
   }> {
+    
     try {
       const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
 
-      console.log(`Updating Gen2 ${category} stack...`);
+      const updatingGen2CategoryStack = ora(`Updating Gen2 ${category} stack...`).start();
 
       const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
+
       assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
-      console.log(`Updated Gen2 ${category} stack successfully`);
+      updatingGen2CategoryStack.succeed(`Updated Gen2 ${category} stack successfully`);
+
       return { newTemplate, oldTemplate, parameters };
     } catch (e) {
       if (this.isNoResourcesError(e)) {
@@ -434,7 +439,6 @@ class TemplateGenerator {
           logicalIdMappingForRefactor = logicalIdMapping;
         } catch (e) {
           if (typeof e === 'object' && 'message' in e && e.message.includes(NO_RESOURCES_TO_MOVE_ERROR)) {
-            console.log(e.message);
             continue;
           }
           throw e;
@@ -444,6 +448,7 @@ class TemplateGenerator {
       assert(newSourceTemplate);
       assert(newDestinationTemplate);
 
+      const refactorResources = ora(`Moving ${category} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`).start();
       const { success, failedRefactorMetadata } = await this.refactorResources(
         logicalIdMappingForRefactor,
         sourceCategoryStackId,
@@ -454,7 +459,7 @@ class TemplateGenerator {
         destinationTemplateForRefactor,
       );
       if (!success) {
-        console.log(
+        refactorResources.fail(
           `Moving ${category} resources from ${this.getSourceToDestinationMessage(isRevert)} stack failed. Reason: ${
             failedRefactorMetadata?.reason
           }. Status: ${failedRefactorMetadata?.status}. RefactorId: ${failedRefactorMetadata?.stackRefactorId}.`,
@@ -465,7 +470,7 @@ class TemplateGenerator {
         }
         return false;
       } else {
-        console.log(`Moved ${category} resources from ${this.getSourceToDestinationMessage(isRevert)} stack successfully`);
+        refactorResources.succeed(`Moved ${category} resources from ${this.getSourceToDestinationMessage(isRevert)} stack successfully`);
       }
     }
     if (!isRevert) {
@@ -501,7 +506,6 @@ class TemplateGenerator {
         },
       });
     }
-    console.log(`Moving ${category} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`);
     const [success, failedRefactorMetadata] = await tryRefactorStack(this.cfnClient, {
       StackDefinitions: [
         {
@@ -524,10 +528,10 @@ class TemplateGenerator {
     gen2StackParameters: Parameter[] | undefined,
     oldGen2Template: CFNTemplate,
   ) {
-    console.log(`Rolling back Gen2 ${category} stack...`);
+    const rollingBackGen2Stack = ora(`Rolling back Gen2 ${category} stack...`).start();
     const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, gen2CategoryStackId, gen2StackParameters ?? [], oldGen2Template);
     assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen2 Stack in a failed state: ${gen2StackUpdateStatus}.`);
-    console.log(`Rolled back Gen2 ${category} stack successfully`);
+    rollingBackGen2Stack.succeed(`Rolled back Gen2 ${category} stack successfully`);
   }
 
   private async generateRefactorTemplatesForRevert(
