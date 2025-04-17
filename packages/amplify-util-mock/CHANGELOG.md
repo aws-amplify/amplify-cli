@@ -3,32 +3,9 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.10.14-next-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.14-next-3.0...@aws-amplify/amplify-util-mock@5.10.14-next-4.0) (2025-03-12)
+## [5.10.14](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.13...@aws-amplify/amplify-util-mock@5.10.14) (2025-02-25)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock
-
-
-
-
-
-## [5.10.14-next-3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.14-next-2.0...@aws-amplify/amplify-util-mock@5.10.14-next-3.0) (2025-03-05)
-
-**Note:** Version bump only for package @aws-amplify/amplify-util-mock
-
-
-
-
-
-## [5.10.14-next-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.13...@aws-amplify/amplify-util-mock@5.10.14-next-2.0) (2025-02-26)
-
-
-### Bug Fixes
-
-* graphql-transformer dependency ([f524945](https://github.com/aws-amplify/amplify-cli/commit/f524945fcc28743e210bbab0f872bb20c8293606))
-* merge issues ([4fb77af](https://github.com/aws-amplify/amplify-cli/commit/4fb77afbcd85dee95603808ad9610b3e93980046))
-* missed some pins ([5543630](https://github.com/aws-amplify/amplify-cli/commit/554363023bcf5f874fc485c6a9f566df9b504b77))
-* remove enableGen2Migration flag in util-mock ([904e58f](https://github.com/aws-amplify/amplify-cli/commit/904e58f1905ce09c5c3fa1892bbf60c2b20ea6b7))
-* update transformer version in util-mock ([a810d50](https://github.com/aws-amplify/amplify-cli/commit/a810d505456b79758bf9487121fcc31579ca7652))
 
 
 

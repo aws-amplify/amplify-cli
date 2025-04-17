@@ -283,7 +283,6 @@ class TemplateGenerator {
     oldTemplate: CFNTemplate;
     parameters?: Parameter[];
   }> {
-    
     try {
       const { newTemplate, oldTemplate, parameters } = await categoryTemplateGenerator.generateGen2ResourceRemovalTemplate();
 

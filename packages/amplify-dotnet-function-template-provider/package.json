@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-dotnet-function-template-provider",
-  "version": "2.7.4-next-4.0",
+  "version": "2.7.3",
   "description": ".NET templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -25,9 +25,9 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.1-next-4.0",
+    "@aws-amplify/amplify-cli-core": "4.4.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
-    "graphql-transformer-core": "^8.2.16"
+    "graphql-transformer-core": "^8.2.17"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",

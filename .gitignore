@@ -103,3 +103,6 @@ packages/amplify-category-notifications/lib
 packages/amplify-category-interactions/lib/
 packages/amplify-environment-parameters/lib/
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
+
+.nx/cache
+.nx/workspace-data

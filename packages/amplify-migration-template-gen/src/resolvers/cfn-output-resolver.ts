@@ -59,6 +59,28 @@ class CfnOutputResolver {
       }
     });
 
+    // If not available in outputs, try to replace with their physical id counterparts.
+    stackTemplateResourcesString = this.tryReplaceLogicalResourceRefWithPhysicalId(stackTemplateResourcesString, stackResources);
+
+    clonedStackTemplate.Resources = JSON.parse(stackTemplateResourcesString);
+    Object.entries(clonedStackTemplate.Outputs).forEach(([outputKey]) => {
+      const stackOutputValue = stackOutputs?.find((op) => op.OutputKey === outputKey)?.OutputValue;
+      assert(stackOutputValue);
+      clonedStackTemplate.Outputs[outputKey].Value = stackOutputValue;
+    });
+
+    return clonedStackTemplate;
+  }
+
+  /**
+   * Currently, we only look for Fn:GetAtt references in the template and try to replace with physical resource ids (if they are not available in outputs)
+   * before performing the refactor. We can expand to look for other cases if need be.
+   * If this function expands, we can always move it into its own resolver.
+   * @param stackTemplateResourcesString
+   * @param stackResources
+   * @private
+   */
+  private tryReplaceLogicalResourceRefWithPhysicalId(stackTemplateResourcesString: string, stackResources: StackResource[]) {
     const fnGetAttRegExp = new RegExp(`{"${GET_ATT}":\\["(?<LogicalResourceId>\\w+)","(?<AttributeName>\\w+)"]}`, 'g');
     const fnGetAttRegExpResult = stackTemplateResourcesString.matchAll(fnGetAttRegExp);
 
@@ -73,6 +95,7 @@ class CfnOutputResolver {
           const stackResourcePhysicalId = stackResourceWithMatchingLogicalId.PhysicalResourceId;
           assert(stackResourcePhysicalId);
           if (groups.AttributeName === 'Arn') {
+            // Few resources like SQS have their physical ids as their HTTP URLs. We need to construct the arn manually in such cases.
             const resourceId = stackResourcePhysicalId.startsWith('http') ? stackResourcePhysicalId.split('/')[2] : stackResourcePhysicalId;
             const resourceArn = this.getResourceAttribute(
               groups.AttributeName,
@@ -96,15 +119,7 @@ class CfnOutputResolver {
         }
       }
     }
-
-    clonedStackTemplate.Resources = JSON.parse(stackTemplateResourcesString);
-    Object.entries(clonedStackTemplate.Outputs).forEach(([outputKey]) => {
-      const stackOutputValue = stackOutputs?.find((op) => op.OutputKey === outputKey)?.OutputValue;
-      assert(stackOutputValue);
-      clonedStackTemplate.Outputs[outputKey].Value = stackOutputValue;
-    });
-
-    return clonedStackTemplate;
+    return stackTemplateResourcesString;
   }
 
   /**
@@ -152,7 +167,7 @@ class CfnOutputResolver {
   }
 
   /**
-   * Build a custom replacer function to replace Fn::GetAtt references with resource attribute values.
+   * Build a custom replace function to replace Fn::GetAtt references with resource attribute values.
    * @param record
    * @private
    */

@@ -2,7 +2,14 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
-import { updateAmplifyYmlFile, updateCustomResources, updateCdkStackFile, getProjectInfo, removeGen1ConfigurationFiles, GEN1_CONFIGURATION_FILES } from './command-handlers';
+import {
+  updateAmplifyYmlFile,
+  updateCustomResources,
+  updateCdkStackFile,
+  getProjectInfo,
+  removeGen1ConfigurationFiles,
+  GEN1_CONFIGURATION_FILES,
+} from './command-handlers';
 import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 jest.mock('node:fs/promises', () => ({
@@ -131,8 +138,8 @@ describe('removeGen1ConfigurationFiles', () => {
       config: {
         SourceDir: sourceDir,
         DistributionDir: 'dist',
-        },
       },
+    },
   });
 
   beforeEach(() => {
@@ -168,9 +175,9 @@ describe('removeGen1ConfigurationFiles', () => {
       expect(fs.rm).toHaveBeenCalledWith(`${sourceDir}/${file}`);
     });
   });
- });
- 
- describe('updateCustomResources', () => {
+});
+
+describe('updateCustomResources', () => {
   const mockRootDir = '/mock/root/dir';
 
   const mockProjectConfig = JSON.stringify({
