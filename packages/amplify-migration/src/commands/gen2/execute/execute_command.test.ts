@@ -52,6 +52,17 @@ describe('Gen2ExecuteCommand', () => {
     );
   });
 
+  it('should fail command when resourceMappings only has file://', async () => {
+    const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
+    await assert.rejects(
+      () => runCommandAsync(parser, 'execute --from foo --to bar --resourceMappings file://'),
+      (err: Error) => {
+        assert.equal(err.message, 'Expected resourceMap to have a path after file://');
+        return true;
+      },
+    );
+  });
+
   it('should fail command when resourceMappings is invalid JSON', async () => {
     stubReadFile.mockResolvedValue('invalid json');
     const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
