@@ -10,7 +10,7 @@ export const createGen2Command = (): CommandModule => {
   const gen2RevertCommand = new Gen2RevertCommand();
   return new Gen2Command([
     gen2PrepareCommand,
-    (gen2ExecuteCommand as unknown) as CommandModule,
-    (gen2RevertCommand as unknown) as CommandModule,
+    gen2ExecuteCommand as unknown as CommandModule,
+    gen2RevertCommand as unknown as CommandModule,
   ]);
 };

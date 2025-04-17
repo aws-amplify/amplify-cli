@@ -197,11 +197,11 @@ const unsupportedCategories = (): Map<string, string> => {
 
   const unsupportedCategoriesList = new Map<string, string>();
 
-  categories.forEach(category => {
+  categories.forEach((category) => {
     if (category == 'api') {
       const apiList = meta?.api;
       if (apiList) {
-        Object.keys(apiList).forEach(api => {
+        Object.keys(apiList).forEach((api) => {
           const apiObj = apiList[api];
           if (apiObj.service == 'API Gateway') {
             const restAPIDocsLink = unsupportedCategories.get(restAPIKey);
@@ -332,7 +332,7 @@ export async function updateCustomResources() {
     // Copy the custom resources, excluding package.json and yarn.lock files
     await fs.cp(sourceCustomResourcePath, destinationCustomResourcePath, {
       recursive: true,
-      filter: src => {
+      filter: (src) => {
         const fileName = path.basename(src);
         return !filterFiles.includes(fileName);
       },
@@ -504,7 +504,7 @@ export async function removeGen1ConfigurationFiles() {
         typeof frontendFrameworkKey.config.SourceDir === 'string'
       ) {
         const sourceDirLocation = frontendFrameworkKey.config.SourceDir;
-        await Promise.all(GEN1_CONFIGURATION_FILES.map(file => fs.rm(`${sourceDirLocation}/${file}`)));
+        await Promise.all(GEN1_CONFIGURATION_FILES.map((file) => fs.rm(`${sourceDirLocation}/${file}`)));
       }
     }
   } catch (e) {

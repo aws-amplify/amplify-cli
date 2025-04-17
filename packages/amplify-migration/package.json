@@ -49,7 +49,7 @@
     "@aws-amplify/amplify-gen1-codegen-function-adapter": "0.1.0-next-6.0",
     "@aws-amplify/amplify-gen1-codegen-storage-adapter": "0.1.0-next-6.0",
     "@aws-amplify/amplify-gen2-codegen": "0.1.0-next-6.0",
-    "@aws-amplify/cli-internal": "12.15.0-next-6.0",
+    "@aws-amplify/cli-internal": "^13.0.0",
     "@aws-amplify/migrate-template-gen": "0.1.0-next-6.0",
     "@aws-sdk/client-amplify": "^3.592.0",
     "@aws-sdk/client-amplifybackend": "^3.592.0",

@@ -28,21 +28,21 @@ describe('Gen2ExecuteCommand', () => {
   });
 
   it('should run command successfully', async () => {
-    const parser = yargs().command((new Gen2ExecuteCommand() as unknown) as CommandModule);
+    const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
     await runCommandAsync(parser, 'execute --from foo --to bar');
     expect(mockHandler).toHaveBeenCalledTimes(1);
     expect(mockHandler).toHaveBeenCalledWith('foo', 'bar', undefined);
   });
 
   it('should run command successfully with resourceMappings option', async () => {
-    const parser = yargs().command((new Gen2ExecuteCommand() as unknown) as CommandModule);
+    const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
     await runCommandAsync(parser, 'execute --from foo --to bar --resourceMappings file://resourceMap.json');
     expect(mockHandler).toHaveBeenCalledTimes(1);
     expect(mockHandler).toHaveBeenCalledWith('foo', 'bar', resourceMappings);
   });
 
   it('should fail command when resourceMappings does not start with file protocol', async () => {
-    const parser = yargs().command((new Gen2ExecuteCommand() as unknown) as CommandModule);
+    const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
     await assert.rejects(
       () => runCommandAsync(parser, 'execute --from foo --to bar --resourceMappings resourceMap.json'),
       (err: Error) => {
@@ -54,7 +54,7 @@ describe('Gen2ExecuteCommand', () => {
 
   it('should fail command when resourceMappings is invalid JSON', async () => {
     stubReadFile.mockResolvedValue('invalid json');
-    const parser = yargs().command((new Gen2ExecuteCommand() as unknown) as CommandModule);
+    const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
     await assert.rejects(
       () => runCommandAsync(parser, 'execute --from foo --to bar --resourceMappings file://resourceMap.json'),
       (err: Error) => {
@@ -69,7 +69,7 @@ describe('Gen2ExecuteCommand', () => {
 
   it('should fail command when resourceMappings is not an array', async () => {
     stubReadFile.mockResolvedValue(JSON.stringify({}));
-    const parser = yargs().command((new Gen2ExecuteCommand() as unknown) as CommandModule);
+    const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
     await assert.rejects(
       () => runCommandAsync(parser, 'execute --from foo --to bar --resourceMappings file://resourceMap.json'),
       (err: Error) => {
@@ -83,7 +83,7 @@ describe('Gen2ExecuteCommand', () => {
     const clonedResourceMappings = JSON.parse(JSON.stringify(resourceMappings)) as ResourceMapping[];
     delete clonedResourceMappings[0].Source;
     stubReadFile.mockResolvedValue(JSON.stringify(clonedResourceMappings));
-    const parser = yargs().command((new Gen2ExecuteCommand() as unknown) as CommandModule);
+    const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
     await assert.rejects(
       () => runCommandAsync(parser, 'execute --from foo --to bar --resourceMappings file://resourceMap.json'),
       (err: Error) => {
@@ -94,7 +94,7 @@ describe('Gen2ExecuteCommand', () => {
   });
 
   it('should fail command when required arguments are not provided', async () => {
-    const parser = yargs().command((new Gen2ExecuteCommand() as unknown) as CommandModule);
+    const parser = yargs().command(new Gen2ExecuteCommand() as unknown as CommandModule);
     await assert.rejects(
       () => runCommandAsync(parser, 'execute'),
       (err: Error) => {
