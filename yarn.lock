@@ -1497,7 +1497,7 @@ __metadata:
     amplify-nodejs-function-runtime-provider: 2.5.28
     amplify-storage-simulator: 1.11.6
     aws-appsync: ^4.1.4
-    aws-cdk-lib: ~2.187.0
+    aws-cdk-lib: ~2.177.0
     aws-sdk: ^2.1464.0
     aws-sdk-mock: ^6.2.0
     axios: ^1.6.7
