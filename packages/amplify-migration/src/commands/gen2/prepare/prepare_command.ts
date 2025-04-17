@@ -1,12 +1,12 @@
 import { Argv, CommandModule } from 'yargs';
-import { execute } from '../../../command-handlers';
+import { prepare } from '../../../command-handlers';
 
-export type Gen2StartCommandOptions = Record<string, never>;
+export type Gen2PrepareCommandOptions = Record<string, never>;
 
 /**
- * Command that starts Gen2 migration.
+ * Command that prepares for Gen2 migration.
  */
-export class Gen2StartCommand implements CommandModule<object, Gen2StartCommandOptions> {
+export class Gen2PrepareCommand implements CommandModule<object, Gen2PrepareCommandOptions> {
   /**
    * @inheritDoc
    */
@@ -26,6 +26,6 @@ export class Gen2StartCommand implements CommandModule<object, Gen2StartCommandO
     return yargs.version(false);
   };
   handler = async (): Promise<void> => {
-    await execute();
+    await prepare();
   };
 }

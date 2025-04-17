@@ -197,11 +197,11 @@ const unsupportedCategories = (): Map<string, string> => {
 
   const unsupportedCategoriesList = new Map<string, string>();
 
-  categories.forEach((category) => {
+  categories.forEach(category => {
     if (category == 'api') {
       const apiList = meta?.api;
       if (apiList) {
-        Object.keys(apiList).forEach((api) => {
+        Object.keys(apiList).forEach(api => {
           const apiObj = apiList[api];
           if (apiObj.service == 'API Gateway') {
             const restAPIDocsLink = unsupportedCategories.get(restAPIKey);
@@ -332,7 +332,7 @@ export async function updateCustomResources() {
     // Copy the custom resources, excluding package.json and yarn.lock files
     await fs.cp(sourceCustomResourcePath, destinationCustomResourcePath, {
       recursive: true,
-      filter: (src) => {
+      filter: src => {
         const fileName = path.basename(src);
         return !filterFiles.includes(fileName);
       },
@@ -415,9 +415,9 @@ export async function getProjectInfo(rootDir: string) {
   return `{envName: \`\${AMPLIFY_GEN_1_ENV_NAME}\`, projectName: '${projectConfigJson.projectName}'}`;
 }
 
-export async function execute() {
+export async function prepare() {
   const appId = resolveAppId();
-  const inspectApp = await ora(`Inspecting Amplify app ${appId} with current backend`).start();
+  const inspectApp = ora(`Inspecting Amplify app ${appId} with current backend`).start();
   const amplifyClient = new AmplifyClient();
   const backendEnvironmentResolver = new BackendEnvironmentResolver(appId, amplifyClient);
   const backendEnvironment = await backendEnvironmentResolver.selectBackendEnvironment();
@@ -501,11 +501,10 @@ export async function removeGen1ConfigurationFiles() {
         'config' in frontendFrameworkKey &&
         typeof frontendFrameworkKey.config === 'object' &&
         'SourceDir' in frontendFrameworkKey.config &&
-        typeof frontendFrameworkKey.config.SourceDir === 'string' &&
-        frontendFrameworkKey.config.SourceDir !== undefined
+        typeof frontendFrameworkKey.config.SourceDir === 'string'
       ) {
         const sourceDirLocation = frontendFrameworkKey.config.SourceDir;
-        await Promise.all(GEN1_CONFIGURATION_FILES.map((file) => fs.rm(`${sourceDirLocation}/${file}`)));
+        await Promise.all(GEN1_CONFIGURATION_FILES.map(file => fs.rm(`${sourceDirLocation}/${file}`)));
       }
     }
   } catch (e) {
@@ -518,10 +517,11 @@ export async function removeGen1ConfigurationFiles() {
  * Executes the stack refactor operation to move Gen1 resources from Gen1 stack into Gen2 stack
  * @param fromStack
  * @param toStack
+ * @param resourceMappings
  */
-export async function executeStackRefactor(fromStack: string, toStack: string, customResourceMap?: ResourceMapping[]) {
+export async function executeStackRefactor(fromStack: string, toStack: string, resourceMappings?: ResourceMapping[]) {
   const [templateGenerator, envName] = await initializeTemplateGenerator(fromStack, toStack);
-  const success = await templateGenerator.generate(customResourceMap);
+  const success = await templateGenerator.generate(resourceMappings);
   const usageData = await getUsageDataMetric(envName);
   if (success) {
     printer.print(format.success(`Generated .README file(s) successfully under ${MIGRATION_DIR}/templates directory.`));
