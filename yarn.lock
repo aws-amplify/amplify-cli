@@ -458,7 +458,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-cli-core@4.4.1-next-4.0, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
+"@aws-amplify/amplify-cli-core@4.4.0, @aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-cli-core@workspace:packages/amplify-cli-core"
   dependencies:
@@ -550,14 +550,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/amplify-cli-core@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@aws-amplify/amplify-cli-core@npm:4.4.0"
+"@aws-amplify/amplify-cli-core@npm:4.4.1-next-4.0":
+  version: 4.4.1-next-4.0
+  resolution: "@aws-amplify/amplify-cli-core@npm:4.4.1-next-4.0"
   dependencies:
     "@aws-amplify/amplify-cli-logger": 1.3.8
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-prompts": 2.8.6
-    "@aws-amplify/graphql-transformer-interfaces": ^3.10.2
+    "@aws-amplify/graphql-transformer-interfaces": ^3.12.0
     "@aws-sdk/util-arn-parser": ^3.310.0
     "@yarnpkg/lockfile": ^1.1.0
     ajv: ^6.12.6
@@ -585,7 +585,7 @@ __metadata:
     which: ^2.0.2
     yaml: ^2.2.2
     yauzl: ^3.1.3
-  checksum: f2955354ea7f15ac1c25f015dd8628f0a9ba6e34bd5c98cba07153cac4a2e5ebcb47d970cc271dcd9c7d6b28f4b7a963e0c9a5db6e1115cf90d835815615f14d
+  checksum: 322e01420f895953c41e9299a9398a2ce42afc819ac035535896b415fd32aaa33c061c6c636705f9a4c8dbd838d56289b1e0ed3ffddf8ef42615714533c3a345
   languageName: node
   linkType: hard
 
@@ -1222,7 +1222,7 @@ __metadata:
     amplify-nodejs-function-runtime-provider: 2.5.28
     amplify-storage-simulator: 1.11.6
     aws-appsync: ^4.1.4
-    aws-cdk-lib: ~2.177.0
+    aws-cdk-lib: ~2.187.0
     aws-sdk: ^2.1464.0
     aws-sdk-mock: ^6.2.0
     axios: ^1.6.7
@@ -1944,7 +1944,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/graphql-transformer-interfaces@npm:3.12.0, @aws-amplify/graphql-transformer-interfaces@npm:^3.10.1, @aws-amplify/graphql-transformer-interfaces@npm:^3.10.2, @aws-amplify/graphql-transformer-interfaces@npm:^3.12.0":
+"@aws-amplify/graphql-transformer-interfaces@npm:3.12.0, @aws-amplify/graphql-transformer-interfaces@npm:^3.10.1, @aws-amplify/graphql-transformer-interfaces@npm:^3.12.0":
   version: 3.12.0
   resolution: "@aws-amplify/graphql-transformer-interfaces@npm:3.12.0"
   dependencies:

@@ -6,7 +6,8 @@
 
 /// <reference types="node" />
 
-import { CommandLineInput } from '@aws-amplify/amplify-cli-core';
+import { CommandLineInput } from '@aws-amplify/amplify-cli-core/src/types';
+import { CommandLineInput as CommandLineInput_2 } from '@aws-amplify/amplify-cli-core';
 import { IAmplifyLogger } from '@aws-amplify/amplify-cli-logger';
 import { ICommandInput } from '@aws-amplify/amplify-cli-shared-interfaces';
 import { IFlowData } from '@aws-amplify/amplify-cli-shared-interfaces';
