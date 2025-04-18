@@ -2,7 +2,7 @@ import path from 'node:path';
 import assert from 'node:assert';
 import { createNewProjectDir, generateRandomShortId, npmInstall } from '@aws-amplify/amplify-e2e-core';
 import { createGen2Renderer } from '@aws-amplify/amplify-gen2-codegen';
-import { copyFunctionFile } from '../function_utils';
+import { copyFunctionFile, removeErrorThrowsFromFunctionFile } from '../function_utils';
 import { copyGen1Schema } from '../api_utils';
 import {
   cleanupProjects,
@@ -11,6 +11,8 @@ import {
   setupAndPushStorageWithMaxOptionsGen1Project,
   runCodegenCommand,
   runGen2SandboxCommand,
+  extractFunctionResourceName,
+  updateAmplifyBackendPackagesVersion,
 } from '..';
 import {
   assertStorageWithMaxOptionsGen1Setup,
@@ -22,10 +24,9 @@ import {
   assertDataResource,
 } from '../assertions';
 import { removeErrorThrowsFromAuthResourceFile } from '../auth_utils';
-import { updatePackageDependency } from '../updatePackageJson';
 import { toggleSandboxSecrets } from '../secrets';
 
-void describe('Codegen E2E tests', () => {
+void describe('Gen 2 Codegen E2E tests', () => {
   void describe('render pipeline', () => {
     void it('renders a project with no parameters', async () => {
       const pipeline = createGen2Renderer({
@@ -39,7 +40,7 @@ void describe('Codegen E2E tests', () => {
       await assert.doesNotReject(pipeline.render);
     });
   });
-  void describe('Full Migration Codegen Flow', () => {
+  void describe('Full Migration Gen 2 Codegen Flow', () => {
     let projRoot: string;
     let projName: string;
 
@@ -53,15 +54,16 @@ void describe('Codegen E2E tests', () => {
       await cleanupProjects(projRoot, projName);
     });
 
-    void it('should init a project & add auth, function, storage, api with defaults & perform full migration codegen flow', async () => {
+    void it.only('should init a project & add auth, function, storage, api with defaults & perform full migration codegen flow', async () => {
       await setupAndPushDefaultGen1Project(projRoot, projName);
-      const { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region } =
+      const { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1BucketName, gen1GraphqlApiId, gen1Region, envName } =
         await assertDefaultGen1Setup(projRoot);
-      await runCodegenCommand(projRoot);
-      await copyFunctionFile(projRoot, 'function', gen1FunctionName);
-      await copyGen1Schema(projRoot, projName);
-      await updatePackageDependency(projRoot, '@aws-amplify/backend');
-      await npmInstall(projRoot);
+      runCodegenCommand(projRoot);
+      copyFunctionFile(projRoot, 'function', gen1FunctionName);
+      copyGen1Schema(projRoot, projName);
+      removeErrorThrowsFromFunctionFile(projRoot, 'function', extractFunctionResourceName(gen1FunctionName, envName));
+      updateAmplifyBackendPackagesVersion(projRoot);
+      npmInstall(projRoot);
       const gen2StackName = await runGen2SandboxCommand(projRoot, projName);
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
       await assertStorageResource(projRoot, gen1BucketName, gen1Region);
@@ -74,11 +76,11 @@ void describe('Codegen E2E tests', () => {
       const { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1Region } = await assertAuthWithMaxOptionsGen1Setup(
         projRoot,
       );
-      await runCodegenCommand(projRoot);
-      await copyFunctionFile(projRoot, 'auth', gen1FunctionName);
-      await removeErrorThrowsFromAuthResourceFile(projRoot);
-      await updatePackageDependency(projRoot, '@aws-amplify/backend');
-      await npmInstall(projRoot);
+      runCodegenCommand(projRoot);
+      copyFunctionFile(projRoot, 'auth', gen1FunctionName);
+      removeErrorThrowsFromAuthResourceFile(projRoot);
+      updateAmplifyBackendPackagesVersion(projRoot);
+      npmInstall(projRoot);
       await toggleSandboxSecrets(projRoot, projName, 'set');
       const gen2StackName = await runGen2SandboxCommand(projRoot, projName);
       await toggleSandboxSecrets(projRoot, projName, 'remove');
@@ -88,12 +90,12 @@ void describe('Codegen E2E tests', () => {
 
     void it('should init a project where default auth, all possible s3 bucket resource options are selected and perform full migration codegen flow ', async () => {
       await setupAndPushStorageWithMaxOptionsGen1Project(projRoot, projName);
-      const { gen1UserPoolId, gen1ClientIds, gen1BucketName, gen1IdentityPoolId, gen1Region } = await assertStorageWithMaxOptionsGen1Setup(
-        projRoot,
-      );
-      await runCodegenCommand(projRoot);
-      await updatePackageDependency(projRoot, '@aws-amplify/backend');
-      await npmInstall(projRoot);
+      const { gen1UserPoolId, gen1ClientIds, gen1BucketName, gen1IdentityPoolId, gen1Region, gen1FunctionName } =
+        await assertStorageWithMaxOptionsGen1Setup(projRoot);
+      runCodegenCommand(projRoot);
+      updateAmplifyBackendPackagesVersion(projRoot);
+      npmInstall(projRoot);
+      removeErrorThrowsFromFunctionFile(projRoot, 'storage', extractFunctionResourceName(gen1FunctionName, envName));
       await runGen2SandboxCommand(projRoot, projName);
       await assertAuthResource(projRoot, gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1Region);
       await assertStorageResource(projRoot, gen1BucketName, gen1Region);

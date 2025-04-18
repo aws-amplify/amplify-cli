@@ -8,7 +8,7 @@ import { getRollbackCommandsFromReadme, getStackRefactorCommandsFromReadme, read
 import { envVariable } from './envVariables';
 import { getGen1ResourceDetails } from './gen1ResourceDetailsFetcher';
 import { getGen2ResourceDetails } from './gen2ResourceDetailsFetcher';
-import { removeProperties } from '.';
+import { MIGRATE_TOOL_VERSION, removeProperties } from '.';
 
 export type RefactorCategory = 'auth' | 'storage';
 
@@ -24,11 +24,21 @@ const STATUS_EXECUTE_COMPLETE = 'EXECUTE_COMPLETE';
 const STATUS_UPDATE_COMPLETE = 'UPDATE_COMPLETE';
 const STATUS_FAILED = 'FAILED';
 
-export function runTemplategenCommand(cwd: string, gen1StackName: string, gen2StackName: string) {
+export function runExecuteCommand(cwd: string, gen1StackName: string, gen2StackName: string) {
   const parentDir = path.resolve(cwd, '..');
   const processResult = execa.sync(
     getNpxPath(),
-    ['--prefix', parentDir, '@aws-amplify/migrate', 'to-gen-2', 'generate-templates', '--from', gen1StackName, '--to', gen2StackName],
+    [
+      '--prefix',
+      parentDir,
+      `@aws-amplify/migrate@${MIGRATE_TOOL_VERSION}`,
+      'to-gen-2',
+      'execute',
+      '--from',
+      gen1StackName,
+      '--to',
+      gen2StackName,
+    ],
     {
       cwd,
       env: { ...process.env, npm_config_user_agent: 'npm' },
@@ -37,7 +47,34 @@ export function runTemplategenCommand(cwd: string, gen1StackName: string, gen2St
   );
 
   if (processResult.exitCode !== 0) {
-    throw new Error(`Templategen command exit code: ${processResult.exitCode}, message: ${processResult.stderr}`);
+    throw new Error(`Execute command exit code: ${processResult.exitCode}, message: ${processResult.stderr}`);
+  }
+}
+
+export function runRevertCommand(cwd: string, gen1StackName: string, gen2StackName: string, version = 'latest') {
+  const parentDir = path.resolve(cwd, '..');
+  const processResult = execa.sync(
+    getNpxPath(),
+    [
+      '--prefix',
+      parentDir,
+      `@aws-amplify/migrate@${MIGRATE_TOOL_VERSION}`,
+      'to-gen-2',
+      'revert',
+      '--from',
+      gen1StackName,
+      '--to',
+      gen2StackName,
+    ],
+    {
+      cwd,
+      env: { ...process.env, npm_config_user_agent: 'npm' },
+      encoding: 'utf-8',
+    },
+  );
+
+  if (processResult.exitCode !== 0) {
+    throw new Error(`Revert command exit code: ${processResult.exitCode}, message: ${processResult.stderr}`);
   }
 }
 

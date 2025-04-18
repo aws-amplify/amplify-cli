@@ -62,13 +62,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
     disableCIDetection: s.disableCIDetection,
   });
 
-  if (s.includeGen2RecommendationPrompt) {
-    chain
-      .wait('Do you want to continue with Amplify Gen 1?')
-      .sendYes()
-      .wait('Why would you like to use Amplify Gen 1?')
-      .sendCarriageReturn();
-  }
+  chain.wait('Do you want to continue with Amplify Gen 1?').sendYes().wait('Why would you like to use Amplify Gen 1?').sendCarriageReturn();
 
   chain
     .wait('Enter a name for the project')

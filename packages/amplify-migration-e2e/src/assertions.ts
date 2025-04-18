@@ -43,6 +43,7 @@ async function assertFunction(gen1Meta: $TSAny, gen1Region: string) {
   const { Arn: gen1FunctionArn, Name: gen1FunctionName } = Object.keys(gen1Meta.function).map((key) => gen1Meta.function[key])[0].output;
   expect(gen1FunctionArn).toBeDefined();
   expect(gen1FunctionName).toBeDefined();
+  assert(typeof gen1FunctionName === 'string');
   const cloudFunction = await getFunction(gen1FunctionName, gen1Region);
   expect(cloudFunction.Configuration?.FunctionArn).toEqual(gen1FunctionArn);
   return { gen1FunctionName };
@@ -51,6 +52,7 @@ async function assertFunction(gen1Meta: $TSAny, gen1Region: string) {
 export async function assertStorage(gen1Meta: $TSAny, gen1Region: string) {
   const { BucketName: gen1BucketName } = Object.keys(gen1Meta.storage).map((key) => gen1Meta.storage[key])[0].output;
   expect(gen1BucketName).toBeDefined();
+  assert(typeof gen1BucketName === 'string');
   const bucketExists = await checkIfBucketExists(gen1BucketName, gen1Region);
   expect(bucketExists).toMatchObject({});
   return { gen1BucketName };
@@ -90,6 +92,8 @@ export async function assertDefaultGen1Setup(projRoot: string) {
   const gen1Meta = getProjectMeta(projRoot);
   const gen1StackName = gen1Meta.providers.awscloudformation.StackName;
   const gen1Region = gen1Meta.providers.awscloudformation.Region;
+  assert(gen1StackName && typeof gen1StackName === 'string', 'Gen1 stack name not found in meta file');
+  const envName = gen1StackName.split('-')[2];
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
   const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
   assert.doesNotMatch(gen1FunctionName, /PostConfirmation/);
@@ -106,6 +110,7 @@ export async function assertDefaultGen1Setup(projRoot: string) {
     gen1BucketName,
     gen1GraphqlApiId,
     gen1Region,
+    envName,
   };
 }
 
@@ -132,7 +137,7 @@ export async function assertStorageWithMaxOptionsGen1Setup(projRoot: string) {
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
 
-  return { gen1UserPoolId, gen1ClientIds, gen1BucketName, gen1IdentityPoolId, gen1Region };
+  return { gen1UserPoolId, gen1ClientIds, gen1BucketName, gen1IdentityPoolId, gen1Region, gen1FunctionName };
 }
 
 async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, gen1Region: string) {

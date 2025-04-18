@@ -8,7 +8,9 @@ export async function runGen2SandboxCommand(cwd: string, identifier: string) {
     env: { ...process.env, npm_config_user_agent: 'npm' },
     encoding: 'utf-8',
   });
+  console.log('runGen2SandboxCommand', processResult);
   if (processResult.exitCode === 0) {
+    console.log(processResult.stdout);
     const match = processResult.stdout.match(/arn:aws:cloudformation:.*:stack\/([^/]+)\//);
     if (match) {
       return match[1];

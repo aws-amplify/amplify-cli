@@ -350,6 +350,26 @@ function _runE2ETestsLinux {
     _loadTestAccountCredentials
     retry runE2eTestCb
 }
+
+function _runGen2MigrationE2ETestsLinux {
+    echo RUN Gen2 Migration E2E Tests Linux
+    _loadE2ECache
+    _install_packaged_cli_linux
+    # select region
+    export CLI_REGION=$(yarn ts-node ./scripts/select-region-for-e2e-test.ts)
+    echo "Test will run in $CLI_REGION"
+    # verify installation
+    which amplify
+    amplify version
+    source .circleci/local_publish_helpers_codebuild.sh && startLocalRegistry "$CODEBUILD_SRC_DIR/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    changeNpmGlobalPath
+    amplify version
+    cd packages/amplify-migration-e2e
+    _loadTestAccountCredentials
+    retry runE2eTestCb
+}
+
 function _unassumeTestAccountCredentials {
     echo "Unassume Role"
     unset AWS_ACCESS_KEY_ID
