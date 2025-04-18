@@ -71,11 +71,11 @@ export class Gen2ExecuteCommand implements CommandModule<object, ExecuteCommandO
 
     if (resourceMappings) {
       if (!resourceMappings.startsWith(FILE_PROTOCOL_PREFIX)) {
-        throw new Error(`Expected resourceMap to start with ${FILE_PROTOCOL_PREFIX}`);
+        throw new Error(`Expected resourceMappings to start with ${FILE_PROTOCOL_PREFIX}`);
       }
       const resourceMapPath = resourceMappings.split(FILE_PROTOCOL_PREFIX)[1];
       if (!resourceMapPath) {
-        throw new Error(`Expected resourceMap to have a path after ${FILE_PROTOCOL_PREFIX}`);
+        throw new Error(`Expected resourceMappings to have a path after ${FILE_PROTOCOL_PREFIX}`);
       }
       const resourceMappingsFromFile = await fs.readFile(resourceMapPath, { encoding: 'utf-8' });
       try {

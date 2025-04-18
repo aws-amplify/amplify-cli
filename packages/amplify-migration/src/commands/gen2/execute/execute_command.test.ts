@@ -46,7 +46,7 @@ describe('Gen2ExecuteCommand', () => {
     await assert.rejects(
       () => runCommandAsync(parser, 'execute --from foo --to bar --resourceMappings resourceMap.json'),
       (err: Error) => {
-        assert.equal(err.message, 'Expected resourceMap to start with file://');
+        assert.equal(err.message, 'Expected resourceMappings to start with file://');
         return true;
       },
     );
@@ -57,7 +57,7 @@ describe('Gen2ExecuteCommand', () => {
     await assert.rejects(
       () => runCommandAsync(parser, 'execute --from foo --to bar --resourceMappings file://'),
       (err: Error) => {
-        assert.equal(err.message, 'Expected resourceMap to have a path after file://');
+        assert.equal(err.message, 'Expected resourceMappings to have a path after file://');
         return true;
       },
     );
