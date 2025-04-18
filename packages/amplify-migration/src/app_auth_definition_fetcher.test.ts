@@ -209,6 +209,12 @@ describe('Auth definition Fetcher tests', () => {
     mockReadFile.mockResolvedValueOnce(
       JSON.stringify({
         api: {},
+        auth: {
+          nonImportedResource: {
+            service: 'Cognito',
+            output: {},
+          },
+        },
       }),
     );
     // act + assert
@@ -242,5 +248,20 @@ describe('Auth definition Fetcher tests', () => {
       }),
     );
     await expect(appAuthDefinitionFetcher.getDefinition()).rejects.toEqual(new Error('No user pool or identity pool found for import.'));
+  });
+
+  it('should throw error with invalid auth configuration structure for imported auth', async () => {
+    mockReadFile.mockResolvedValueOnce(
+      JSON.stringify({
+        auth: {
+          importedAuth: {
+            service: 'Cognito',
+            serviceType: 'imported',
+            output: 'invalid output',
+          },
+        },
+      }),
+    );
+    await expect(appAuthDefinitionFetcher.getDefinition()).rejects.toEqual(new Error('Invalid auth configuration structure'));
   });
 });
