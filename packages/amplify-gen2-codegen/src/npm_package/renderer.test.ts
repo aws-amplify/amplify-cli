@@ -23,6 +23,7 @@ const installedDependencies: Record<keyof AmplifyPackageVersions, IsDevDependenc
   'aws-cdk-lib': true,
   '@aws-amplify/backend': true,
   '@aws-amplify/backend-cli': true,
+  '@aws-amplify/backend-data': true,
   'ci-info': true,
   '@types/node': true,
 };

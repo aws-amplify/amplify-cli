@@ -1,6 +1,7 @@
 export type AmplifyDevDependencies = {
   '@aws-amplify/backend': string;
   '@aws-amplify/backend-cli': string;
+  '@aws-amplify/backend-data': string;
   'aws-cdk': string;
   'aws-cdk-lib': string;
   'ci-info': string;
@@ -34,6 +35,7 @@ export const patchNpmPackageJson = (packageJson: PackageJson, packageVersions: P
       ...(packageJson.devDependencies ?? {}),
       '@aws-amplify/backend': withDefault(packageVersions['@aws-amplify/backend']),
       '@aws-amplify/backend-cli': withDefault(packageVersions['@aws-amplify/backend-cli']),
+      '@aws-amplify/backend-data': withDefault(packageVersions['@aws-amplify/backend-data']),
       'aws-cdk': withDefault(packageVersions['aws-cdk']),
       'aws-cdk-lib': withDefault(packageVersions['aws-cdk-lib']),
       'ci-info': withDefault(packageVersions['ci-info']),

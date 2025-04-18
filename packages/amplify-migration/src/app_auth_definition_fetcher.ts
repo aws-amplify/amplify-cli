@@ -25,6 +25,18 @@ export interface AppAuthDefinitionFetcher {
   getDefinition(): Promise<AuthDefinition | undefined>;
 }
 
+interface AuthOutput {
+  output: {
+    UserPoolId?: string;
+    AppClientIDWeb?: string;
+    IdentityPoolId?: string;
+  };
+}
+
+const isAuthOutput = (value: unknown): value is AuthOutput => {
+  return typeof value === 'object' && value !== null && 'output' in value && typeof value.output === 'object';
+};
+
 export class AppAuthDefinitionFetcher {
   constructor(
     private cognitoIdentityPoolClient: CognitoIdentityClient,
@@ -40,7 +52,7 @@ export class AppAuthDefinitionFetcher {
     return JSON.parse(contents);
   };
 
-  private getAuthCategory = async () => {
+  private getAuthCategory = async (): Promise<Record<string, unknown> | undefined> => {
     const backendEnvironment = await this.backendEnvironmentResolver.selectBackendEnvironment();
     if (!backendEnvironment?.deploymentArtifacts) return undefined;
     const currentCloudBackendDirectory = await this.ccbFetcher.getCurrentCloudBackend(backendEnvironment.deploymentArtifacts);
@@ -60,7 +72,7 @@ export class AppAuthDefinitionFetcher {
     }
   };
 
-  private getReferenceAuth = async (authCategory: any) => {
+  private getReferenceAuth = async (authCategory: Record<string, unknown>) => {
     const isImported = Object.entries(authCategory).some(
       ([, value]) => typeof value === 'object' && value !== null && 'serviceType' in value && value.serviceType === 'imported',
     );
@@ -68,11 +80,13 @@ export class AppAuthDefinitionFetcher {
       return undefined;
     }
 
-    const {
-      UserPoolId: userPoolId,
-      AppClientIDWeb: userPoolClientId,
-      IdentityPoolId: identityPoolId,
-    } = Object.keys(authCategory).map((key) => authCategory[key])[0].output;
+    const firstAuth = Object.values(authCategory)[0];
+    if (!isAuthOutput(firstAuth)) {
+      throw new Error('Invalid auth configuration structure');
+    }
+
+    const { UserPoolId: userPoolId, AppClientIDWeb: userPoolClientId, IdentityPoolId: identityPoolId } = firstAuth.output;
+
     if (!userPoolId && !userPoolClientId && !identityPoolId) {
       throw new Error('No user pool or identity pool found for import.');
     }

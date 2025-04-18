@@ -136,6 +136,12 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
       depend-on:
         - upb
+    - identifier: gen2_migrations_e2e_test
+      buildspec: codebuild_specs/run_gen2_migrations_e2e_tests_linux.yml
+      depend-on:
+        - build_linux
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
     - identifier: cleanup_resources
       buildspec: codebuild_specs/cleanup_resources.yml
       depend-on:

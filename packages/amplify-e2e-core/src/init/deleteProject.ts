@@ -27,6 +27,6 @@ export const deleteProject = async (
       .wait('Project deleted locally.')
       .runAsync();
   } catch (e) {
-    console.log('Error on deleting project at:', cwd);
+    console.log('Error on deleting project at:', cwd, e);
   }
 };

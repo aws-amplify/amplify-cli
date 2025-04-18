@@ -380,7 +380,7 @@ export class BackendSynthesizer {
     return [providerSetupDeclaration, forEachStatement];
   }
 
-  private createNestedObjectExpression(object: Record<string, any>, gen2PropertyMap: Map<string, string>): ts.ObjectLiteralExpression {
+  private createNestedObjectExpression(object: any, gen2PropertyMap: Map<string, string>): ts.ObjectLiteralExpression {
     const objectLiterals = [];
     const clientSecretKey = 'ClientSecret';
 
@@ -467,7 +467,7 @@ export class BackendSynthesizer {
               objectLiterals.push(this.createListPropertyAssignment(mappedProperty, value));
             }
           }
-        } else if (typeof value == 'object') {
+        } else if (typeof value == 'object' && value !== null) {
           objectLiterals.push(
             factory.createPropertyAssignment(factory.createIdentifier(key), this.createNestedObjectExpression(value, gen2PropertyMap)),
           );
