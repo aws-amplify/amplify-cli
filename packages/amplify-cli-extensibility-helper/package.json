@@ -30,7 +30,7 @@
   "dependencies": {
     "@aws-amplify/amplify-category-custom": "3.1.28",
     "@aws-amplify/amplify-cli-core": "4.4.1",
-    "aws-cdk-lib": "~2.187.0"
+    "aws-cdk-lib": "^2.189.1"
   },
   "jest": {
     "transform": {
