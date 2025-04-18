@@ -31,9 +31,13 @@ s3Bucket.bucketName = YOUR_GEN1_BUCKET_NAME;
       `## REDEPLOY GEN2 APPLICATION
 1.a) Uncomment the following lines in \`amplify/backend.ts\` file
 ${this.categories.includes('storage') ? s3BucketChanges : ''}
-\`\`\`
+${
+  this.categories.includes('auth')
+    ? `\`\`\`
 backend.auth.resources.userPool.node.tryRemoveChild('UserPoolDomain');
-\`\`\`
+\`\`\``
+    : ''
+}
 
 \`\`\`
 Tags.of(backend.stack).add("gen1-migrated-app", "true");

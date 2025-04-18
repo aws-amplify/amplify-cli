@@ -50,7 +50,8 @@ const MIGRATION_DIR = '.amplify/migration';
 const GEN1_COMMAND = 'amplifyPush --simple';
 const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
 const GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX = 'your Gen 2 backend code';
-const GEN1_REMOVE_CONFIGURATION_MESSAGE_SUFFIX = 'your Gen1 configuration files';
+const GEN1_REMOVE_CONFIGURATION_MESSAGE_SUFFIX = 'your Gen 1 configuration files';
+const GEN1_CUSTOM_RESOURCES_SUFFIX = 'your Gen 1 custom resources';
 export const GEN1_CONFIGURATION_FILES = ['aws-exports.js', 'amplifyconfiguration.json', 'awsconfiguration.json'];
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
@@ -321,6 +322,7 @@ const getCustomResourceMap = async (): Promise<Map<string, string>> => {
 export async function updateCustomResources() {
   const customResources = getCustomResources();
   if (customResources.length > 0) {
+    const movingGen1CustomResources = ora(`Moving ${GEN1_CUSTOM_RESOURCES_SUFFIX}`).start();
     const rootDir = pathManager.findProjectRoot();
     assert(rootDir);
     const amplifyGen1BackendDir = path.join(rootDir, AMPLIFY_DIR, BACKEND_DIR);
@@ -344,6 +346,7 @@ export async function updateCustomResources() {
     await fs.cp(sourceTypesPath, destinationTypesPath, { recursive: true });
 
     await updateCdkStackFile(customResources, destinationCustomResourcePath, rootDir);
+    movingGen1CustomResources.succeed(`Moved ${GEN1_CUSTOM_RESOURCES_SUFFIX}`);
   }
 }
 
@@ -359,7 +362,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
       let cdkStackContent = await fs.readFile(cdkStackFilePath, { encoding: 'utf-8' });
 
       // Check for existence of AmplifyHelpers.addResourceDependency and throw an error if found
-      if (cdkStackContent.includes('AmplifyHelpers.addResourceDependency')) {
+      if (hasUncommentedDependency(cdkStackContent, 'AmplifyHelpers.addResourceDependency')) {
         cdkStackContent = cdkStackContent.replace(
           /export class/,
           `throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency');\n\nexport class`,
@@ -375,7 +378,7 @@ export async function updateCdkStackFile(customResources: string[], destinationC
 
       // Replace the cdk.CfnParameter definition to include the default property
       cdkStackContent = cdkStackContent.replace(
-        /new cdk\.CfnParameter\(this, "env", {[\s\S]*?}\);/,
+        /new cdk\.CfnParameter\(this, ['"]env['"], {[\s\S]*?}\);/,
         `new cdk.CfnParameter(this, "env", {
                 type: "String",
                 description: "Current Amplify CLI env name",
@@ -401,6 +404,29 @@ export async function updateCdkStackFile(customResources: string[], destinationC
     }
   }
 }
+
+const hasUncommentedDependency = (fileContent: string, matchString: string) => {
+  // Split the content into lines
+  const lines = fileContent.split('\n');
+
+  // Check each line
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    // Check if the line contains the dependency and is not commented
+    if (
+      trimmedLine.includes(matchString) &&
+      !trimmedLine.startsWith('//') &&
+      !trimmedLine.startsWith('/*') &&
+      !trimmedLine.includes('*/') &&
+      !trimmedLine.match(/^\s*\*/)
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 export async function getProjectInfo(rootDir: string) {
   const configDir = path.join(rootDir, AMPLIFY_DIR, '.config');
@@ -477,7 +503,7 @@ export async function prepare() {
 
   await updateCustomResources();
 
-  const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`).start();
+  const movingGen1BackendFiles = ora(`Moving your Gen 1 backend files to ${format.highlight(MIGRATION_DIR)}`).start();
   // Move gen1 amplify to .amplify/migrations and move gen2 amplify from amplify-gen2 to amplify dir to convert current app to gen2.
   const cwd = process.cwd();
   await fs.rm(MIGRATION_DIR, { force: true, recursive: true });
@@ -486,7 +512,7 @@ export async function prepare() {
   await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/amplify`, `${cwd}/amplify`);
   await fs.rename(`${TEMP_GEN_2_OUTPUT_DIR}/package.json`, `${cwd}/package.json`);
   await fs.rm(TEMP_GEN_2_OUTPUT_DIR, { recursive: true });
-  movingGen1BackendFiles.succeed(`Moved your Gen1 backend files to ${format.highlight(MIGRATION_DIR)}`);
+  movingGen1BackendFiles.succeed(`Moved your Gen 1 backend files to ${format.highlight(MIGRATION_DIR)}`);
 }
 
 export async function removeGen1ConfigurationFiles() {
@@ -536,12 +562,12 @@ export async function revertGen2Migration(fromStack: string, toStack: string) {
   const success = await templateGenerator.revert();
   const usageData = await getUsageDataMetric(envName);
   if (success) {
-    printer.print(format.success(`Moved resources back to Gen1 stack successfully.`));
-    const movingGen1BackendFiles = ora(`Moving your Gen1 backend files to ${format.highlight(AMPLIFY_DIR)}`).start();
+    printer.print(format.success(`Moved resources back to Gen 1 stack successfully.`));
+    const movingGen1BackendFiles = ora(`Moving your Gen 1 backend files to ${format.highlight(AMPLIFY_DIR)}`).start();
     // Move gen1 amplify from .amplify/migration/amplify to amplify
     await fs.rm(AMPLIFY_DIR, { force: true, recursive: true });
     await fs.rename(`${MIGRATION_DIR}/amplify`, AMPLIFY_DIR);
-    movingGen1BackendFiles.succeed(`Moved your Gen1 backend files to ${format.highlight(AMPLIFY_DIR)}`);
+    movingGen1BackendFiles.succeed(`Moved your Gen 1 backend files to ${format.highlight(AMPLIFY_DIR)}`);
     await usageData.emitSuccess();
   } else {
     await usageData.emitError(new Error('Failed to run revert command'));

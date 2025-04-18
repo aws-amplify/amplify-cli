@@ -270,21 +270,7 @@ describe('updateCdkStackFile', () => {
   const mockCustomResourcesPath = 'amplify-gen2/amplify/custom';
   const mockProjectRoot = '/mockRootDir';
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.mocked(updateCdkStackFile).mockImplementation(actualUpdateCdkStackFile);
-    jest.mocked(getProjectInfo).mockImplementation(actualGetProjectInfoFile);
-    jest.mocked(pathManager.findProjectRoot).mockReturnValue('/mockRootDir');
-  });
-
-  afterEach(() => {
-    // Reset to the mock after each test if needed
-    jest.mocked(updateCdkStackFile).mockReset();
-    jest.mocked(getProjectInfo).mockReset();
-  });
-
-  it('should correctly transform CDK stack file content', async () => {
-    const originalCdkContent = `
+  const originalCdkContentWithError = `
       import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
       import * as cdk from 'aws-cdk-lib';
       
@@ -307,6 +293,46 @@ describe('updateCdkStackFile', () => {
       }
     `;
 
+  const originalCdkContentWithoutError = `
+      import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
+      import * as cdk from 'aws-cdk-lib';
+      
+      export class cdkStack extends cdk.Stack {
+        constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+          super(scope, id, props);
+          
+          const projectInfo = AmplifyHelpers.getProjectInfo();
+          /* AmplifyHelpers.addResourceDependency(this, 
+            {
+              category: "custom",
+              resourceName: "customResource1",
+            },
+            {
+              category: "auth",
+              resourceName: "authResource1",
+            }
+          ); */
+        }
+      }
+    `;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.mocked(updateCdkStackFile).mockImplementation(actualUpdateCdkStackFile);
+    jest.mocked(getProjectInfo).mockImplementation(actualGetProjectInfoFile);
+    jest.mocked(pathManager.findProjectRoot).mockReturnValue('/mockRootDir');
+  });
+
+  afterEach(() => {
+    // Reset to the mock after each test if needed
+    jest.mocked(updateCdkStackFile).mockReset();
+    jest.mocked(getProjectInfo).mockReset();
+  });
+
+  test.each([
+    [originalCdkContentWithError, true],
+    [originalCdkContentWithoutError, false],
+  ])('should correctly transform CDK stack file content', async (originalCdkContent, shouldThrowError) => {
     const mockProjectConfig = JSON.stringify({
       projectName: 'testProject',
       version: '3.1',
@@ -344,9 +370,11 @@ describe('updateCdkStackFile', () => {
 
     // Verify specific transformations
     expect(transformedContent).not.toContain('import { AmplifyHelpers }'); // Import removed
-    expect(transformedContent).toContain(
-      "throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency')",
-    ); // Error added
+    if (shouldThrowError) {
+      expect(transformedContent).toContain(
+        "throw new Error('Follow https://docs.amplify.aws/react/start/migrate-to-gen2/ to update the resource dependency')",
+      );
+    } // Error added
     expect(transformedContent).toContain("const projectInfo = {envName: `${AMPLIFY_GEN_1_ENV_NAME}`, projectName: 'testProject'}"); // Project info replaced
   });
 });
