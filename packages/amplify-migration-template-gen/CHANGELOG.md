@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-next-6.0...@aws-amplify/migrate-template-gen@0.1.0-next-7.0) (2025-04-19)
+
+
+### Bug Fixes
+
+* add domain removal statement ([341cdb1](https://github.com/aws-amplify/amplify-cli/commit/341cdb19260cac829317518731cbae61c7394723))
+* custom resource error handling, formatting messages ([199b138](https://github.com/aws-amplify/amplify-cli/commit/199b13815df81846abbbcd41793d1cccabae9533))
+* lint errors ([00b25b7](https://github.com/aws-amplify/amplify-cli/commit/00b25b756915e40001d07eceb795aa1b35289cb3))
+* **migrate-template-gen:** add start call for ora ([1926c8b](https://github.com/aws-amplify/amplify-cli/commit/1926c8b0b2511843ed9a94a718f4022bcdbc1e7c))
+* **migrate-template-gen:** replace console logs with ora for async tasks ([f12636c](https://github.com/aws-amplify/amplify-cli/commit/f12636ce7f3db7741ab30aa2cbe24a3fb8b33991))
+* refactor customResourceMappings in execute command ([000d660](https://github.com/aws-amplify/amplify-cli/commit/000d6608ade3ee4c65724df59200ffc00584e84c))
+* remove s3 deletion policy ([7c5abf3](https://github.com/aws-amplify/amplify-cli/commit/7c5abf310df3c9c9ae60fd367d49bf402d248a97))
+
+
+
+
+
 # [0.1.0-next-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-next-5.0...@aws-amplify/migrate-template-gen@0.1.0-next-6.0) (2025-03-21)
 
 

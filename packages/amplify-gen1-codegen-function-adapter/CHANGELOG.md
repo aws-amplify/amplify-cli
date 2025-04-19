@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-next-6.0...@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-next-7.0) (2025-04-19)
+
+
+### Bug Fixes
+
+* codegen custom resources and added function scheduling ([1e25182](https://github.com/aws-amplify/amplify-cli/commit/1e251820905291bc8c6ca058ce5397b7ddec5e5b))
+
+
+
+
+
 # [0.1.0-next-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-next-5.0...@aws-amplify/amplify-gen1-codegen-function-adapter@0.1.0-next-6.0) (2025-03-21)
 
 **Note:** Version bump only for package @aws-amplify/amplify-gen1-codegen-function-adapter
