@@ -260,13 +260,12 @@ class TemplateGenerator {
     let updatingGen1CategoryStack;
     try {
       const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
-
       assert(gen1StackParameters);
       updatingGen1CategoryStack = ora(`Updating Gen 1 ${this.getStackCategoryName(category)} stack...`).start();
 
       const gen1StackUpdateStatus = await tryUpdateStack(this.cfnClient, sourceCategoryStackId, gen1StackParameters, newTemplate);
 
-      assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
+      assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 1 stack is in an invalid state: ${gen1StackUpdateStatus}`);
       updatingGen1CategoryStack.succeed(`Updated Gen 1 ${this.getStackCategoryName(category)} stack successfully`);
 
       return newTemplate;
@@ -297,7 +296,7 @@ class TemplateGenerator {
 
       const gen2StackUpdateStatus = await tryUpdateStack(this.cfnClient, destinationCategoryStackId, parameters ?? [], newTemplate);
 
-      assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE);
+      assert(gen2StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 2 stack is in an invalid state: ${gen2StackUpdateStatus}`);
       updatingGen2CategoryStack.succeed(`Updated Gen 2 ${this.getStackCategoryName(category)} stack successfully`);
 
       return { newTemplate, oldTemplate, parameters };
@@ -325,7 +324,7 @@ class TemplateGenerator {
           destinationStackId,
           this.createCategoryTemplateGenerator(sourceStackId, destinationStackId, config.resourcesToRefactor),
         ]);
-      } else if (customResourceMap && !Object.values(NON_CUSTOM_RESOURCE_CATEGORY).includes(category as NON_CUSTOM_RESOURCE_CATEGORY)) {
+      } else if (customResourceMap && this.isCustomResource(category)) {
         this.categoryTemplateGenerators.push([
           category,
           sourceStackId,
@@ -354,17 +353,19 @@ class TemplateGenerator {
       this.appId,
       this.environmentName,
       resourcesToRefactor,
-      (_resourcesToMove: CFN_CATEGORY_TYPE[], cfnResource: [string, CFNResource]) => {
-        const [logicalId] = cfnResource;
+      customResourceMap
+        ? (_resourcesToMove: CFN_CATEGORY_TYPE[], cfnResource: [string, CFNResource]) => {
+            const [logicalId] = cfnResource;
 
-        // Check if customResourceMap contains the logical ID
-        return (
-          customResourceMap?.some(
-            (resourceMapping) =>
-              resourceMapping.Source.LogicalResourceId === logicalId || resourceMapping.Destination.LogicalResourceId === logicalId,
-          ) ?? false
-        );
-      },
+            // Check if customResourceMap contains the logical ID
+            return (
+              customResourceMap?.some(
+                (resourceMapping) =>
+                  resourceMapping.Source.LogicalResourceId === logicalId || resourceMapping.Destination.LogicalResourceId === logicalId,
+              ) ?? false
+            );
+          }
+        : undefined,
     );
   }
 

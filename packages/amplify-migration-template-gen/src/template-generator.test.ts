@@ -834,7 +834,7 @@ describe('TemplateGenerator', () => {
         CFN_AUTH_TYPE.IdentityPoolRoleAttachment,
         CFN_AUTH_TYPE.UserPoolDomain,
       ],
-      expect.any(Function),
+      undefined,
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
@@ -848,7 +848,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_AUTH_TYPE.UserPoolGroup],
-      expect.any(Function),
+      undefined,
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
@@ -862,7 +862,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_S3_TYPE.Bucket],
-      expect.any(Function),
+      undefined,
     );
   }
 
@@ -892,7 +892,7 @@ describe('TemplateGenerator', () => {
         CFN_AUTH_TYPE.IdentityPoolRoleAttachment,
         CFN_AUTH_TYPE.UserPoolDomain,
       ],
-      expect.any(Function),
+      undefined,
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
@@ -906,7 +906,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_AUTH_TYPE.UserPoolGroup],
-      expect.any(Function),
+      undefined,
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
@@ -920,7 +920,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_S3_TYPE.Bucket],
-      expect.any(Function),
+      undefined,
     );
   }
 
@@ -950,7 +950,7 @@ describe('TemplateGenerator', () => {
         CFN_AUTH_TYPE.IdentityPoolRoleAttachment,
         CFN_AUTH_TYPE.UserPoolDomain,
       ],
-      expect.any(Function),
+      undefined,
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       2,
@@ -964,7 +964,7 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_AUTH_TYPE.UserPoolGroup],
-      expect.any(Function),
+      undefined,
     );
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       3,
@@ -978,8 +978,9 @@ describe('TemplateGenerator', () => {
       APP_ID,
       ENV_NAME,
       [CFN_S3_TYPE.Bucket],
-      expect.any(Function),
+      undefined,
     );
+    // custom resource category
     expect(CategoryTemplateGenerator).toHaveBeenNthCalledWith(
       4,
       GEN1_ROOT_STACK_NAME,
