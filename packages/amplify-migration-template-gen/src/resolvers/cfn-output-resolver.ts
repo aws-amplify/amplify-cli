@@ -157,6 +157,10 @@ class CfnOutputResolver {
             return {
               Arn: `arn:aws:sqs:${this.region}:${this.accountId}:${resourceIdentifier}`,
             };
+          case 'AWS::Lambda::Function':
+            return {
+              Arn: `arn:aws:lambda:${this.region}:${this.accountId}:function:${resourceIdentifier}`,
+            };
           default:
             return undefined;
         }

@@ -199,6 +199,28 @@ describe('CFNOutputResolver', () => {
           TopicName: 'snsTopic',
         },
       },
+      CustomS3AutoDeleteObjectsCustomResourceProviderHandler: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          FunctionName: 'CustomS3AutoDeleteObjectsCustomResourceProviderHandler',
+          Handler: 'index.handler',
+          Code: {
+            ZipFile: 'exports.handler = function() {}',
+          },
+          Runtime: 'nodejs14.x',
+        },
+      },
+      CustomS3AutoDeleteObjects: {
+        Type: 'Custom::S3AutoDeleteObjects',
+        Properties: {
+          ServiceToken: {
+            'Fn::GetAtt': ['CustomS3AutoDeleteObjectsCustomResourceProviderHandler', 'Arn'],
+          },
+          BucketName: {
+            Ref: 'MyS3Bucket',
+          },
+        },
+      },
     },
   };
   const expectedTemplate: CFNTemplate = {
@@ -372,8 +394,27 @@ describe('CFNOutputResolver', () => {
           TopicName: 'snsTopic',
         },
       },
+      CustomS3AutoDeleteObjectsCustomResourceProviderHandler: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          FunctionName: 'CustomS3AutoDeleteObjectsCustomResourceProviderHandler',
+          Handler: 'index.handler',
+          Code: {
+            ZipFile: 'exports.handler = function() {}',
+          },
+          Runtime: 'nodejs14.x',
+        },
+      },
+      CustomS3AutoDeleteObjects: {
+        Type: 'Custom::S3AutoDeleteObjects',
+        Properties: {
+          ServiceToken: 'arn:aws:lambda:us-east-1:12345:function:mycustomS3AutoDeleteObjectsLambdaFunction',
+          BucketName: 'test-bucket',
+        },
+      },
     },
   };
+
   it('should resolve output references', () => {
     expect(
       new CfnOutputResolver(template, 'us-east-1', '12345').resolve(
@@ -428,6 +469,15 @@ describe('CFNOutputResolver', () => {
             LogicalResourceId: 'snsSubscription',
             PhysicalResourceId: 'physicalIdSns',
             ResourceType: 'AWS::SNS::Subscription',
+            Timestamp: new Date('2025-04-02T22:27:41.603000+00:00'),
+            ResourceStatus: 'CREATE_COMPLETE',
+          },
+          {
+            StackName: 'amplify-amplifycodegen-dev',
+            StackId: 'arn:aws:cloudformation:us-west-2:123456789:stack/amplify-amplifycodegen-dev',
+            LogicalResourceId: 'CustomS3AutoDeleteObjectsCustomResourceProviderHandler',
+            PhysicalResourceId: 'mycustomS3AutoDeleteObjectsLambdaFunction',
+            ResourceType: 'AWS::Lambda::Function',
             Timestamp: new Date('2025-04-02T22:27:41.603000+00:00'),
             ResourceStatus: 'CREATE_COMPLETE',
           },
