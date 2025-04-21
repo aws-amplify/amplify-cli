@@ -6,7 +6,7 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.4.0",
     "@aws-amplify/amplify-e2e-core": "5.7.3",
-    "@aws-amplify/amplify-gen2-codegen": "0.1.0-next-7.0",
+    "@aws-amplify/amplify-gen2-codegen": "0.1.0-next-6.0",
     "@aws-sdk/client-appsync": "^3.666.0",
     "@aws-sdk/client-cloudcontrol": "^3.658.1",
     "@aws-sdk/client-cognito-identity": "^3.670.0",
