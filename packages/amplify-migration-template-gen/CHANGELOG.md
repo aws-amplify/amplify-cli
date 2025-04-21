@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-next-7.0...@aws-amplify/migrate-template-gen@0.1.0-next-8.0) (2025-04-21)
+
+
+### Bug Fixes
+
+* **migrate-template-gen:** initialize non-custom category generator without custom predicate ([84e1933](https://github.com/aws-amplify/amplify-cli/commit/84e193373ba0b3c05b1d65d69a323ac00d8c0f06))
+
+
+
+
+
 # [0.1.0-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate-template-gen@0.1.0-next-6.0...@aws-amplify/migrate-template-gen@0.1.0-next-7.0) (2025-04-19)
 
 
