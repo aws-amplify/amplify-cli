@@ -35,7 +35,7 @@
     "@aws-sdk/util-arn-parser": "^3.310.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "^6.12.6",
-    "aws-cdk-lib": "~2.187.0",
+    "aws-cdk-lib": "^2.189.1",
     "chalk": "^4.1.1",
     "ci-info": "^3.8.0",
     "cli-table3": "^0.6.0",
