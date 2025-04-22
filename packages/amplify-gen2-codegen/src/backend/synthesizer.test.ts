@@ -418,7 +418,7 @@ describe('BackendRenderer', () => {
             CallbackURLs: ['XXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXX'],
             LogoutURLs: ['XXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXXXXX'],
             DefaultRedirectURI: 'XXXXXXXXXXXXXXXXXX',
-            SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon'],
+            SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'SignInWithApple'],
             AuthSessionValidity: 3,
             EnableTokenRevocation: true,
             EnablePropagateAdditionalUserContextData: true,
@@ -467,6 +467,7 @@ describe('BackendRenderer', () => {
       expect(output).toContain(`UserPoolClientIdentityProvider.COGNITO`);
       expect(output).toContain(`UserPoolClientIdentityProvider.FACEBOOK`);
       expect(output).toContain(`UserPoolClientIdentityProvider.AMAZON`);
+      expect(output).toContain(`UserPoolClientIdentityProvider.APPLE`);
       expect(output).toContain('authSessionValidity: Duration.minutes(3)');
       expect(output).toContain('enableTokenRevocation: true');
       expect(output).toContain('enablePropagateAdditionalUserContextData: true');
@@ -513,6 +514,7 @@ describe('BackendRenderer', () => {
       const output = printNodeArray(rendered);
       assert(output.includes('process.env.AMPLIFY_GEN_1_ENV_NAME'));
       assert(output.includes('ci.isCI && !AMPLIFY_GEN_1_ENV_NAME'));
+      assert(output.includes('!ci.isCI && !AMPLIFY_GEN_1_ENV_NAME'));
       assert(output.includes('throw new Error("AMPLIFY_GEN_1_ENV_NAME is required in CI environment")'));
       assert(output.includes('AMPLIFY_GEN_1_ENV_NAME = "sandbox"'));
     });

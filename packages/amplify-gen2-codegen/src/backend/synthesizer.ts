@@ -444,6 +444,8 @@ export class BackendSynthesizer {
                 value.map((provider) => {
                   if (provider.toUpperCase() == 'LOGINWITHAMAZON') {
                     return 'AMAZON';
+                  } else if (provider.toUpperCase() === 'SIGNINWITHAPPLE') {
+                    return 'APPLE';
                   }
                   return provider.toUpperCase();
                 }),
@@ -654,9 +656,14 @@ export class BackendSynthesizer {
         ],
         true,
       ),
-      // Else block: if (!ci.isCI) { ... }
+      // Else block: if (!ci.isCI && !AMPLIFY_GEN_1_ENV_NAME) { ... }
       factory.createIfStatement(
-        factory.createLogicalNot(factory.createPropertyAccessExpression(factory.createIdentifier('ci'), factory.createIdentifier('isCI'))),
+        factory.createLogicalAnd(
+          factory.createLogicalNot(
+            factory.createPropertyAccessExpression(factory.createIdentifier('ci'), factory.createIdentifier('isCI')),
+          ),
+          factory.createLogicalNot(factory.createIdentifier('AMPLIFY_GEN_1_ENV_NAME')),
+        ),
         // Then block: AMPLIFY_GEN_1_ENV_NAME = 'sandbox';
         factory.createBlock(
           [
