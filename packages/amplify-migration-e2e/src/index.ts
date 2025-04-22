@@ -33,7 +33,7 @@ export * from './sandbox';
 
 export const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
-export const MIGRATE_TOOL_VERSION = '0.1.0-next-6.0';
+export const MIGRATE_TOOL_VERSION = '0.1.0-next-9.0';
 export const BACKEND_DATA_VERSION = '0.0.0-test-20250416182614';
 
 export async function setupAndPushDefaultGen1Project(projRoot: string, projName: string) {
@@ -44,9 +44,9 @@ export async function setupAndPushDefaultGen1Project(projRoot: string, projName:
   await addS3WithGuestAccess(projRoot);
   await addApiWithoutSchema(projRoot, { transformerVersion: 2 });
   updateApiSchema(projRoot, projName, 'simple_model.graphql');
-  await amplifyPush(projRoot);
+  await amplifyPush(projRoot, true);
   addFeatureFlag(projRoot, 'graphqltransformer', 'enablegen2migration', true);
-  await amplifyPushForce(projRoot);
+  await amplifyPushForce(projRoot, true);
 }
 
 export async function setupAndPushAuthWithMaxOptionsGen1Project(projRoot: string, projName: string) {
@@ -60,7 +60,7 @@ export async function setupAndPushAuthWithMaxOptionsGen1Project(projRoot: string
     updateSigninUrl: 'https://updatesignin1.com/',
     updateSignoutUrl: 'https://updatesignout1.com/',
   });
-  await amplifyPushAuth(projRoot);
+  await amplifyPushAuth(projRoot, true);
 }
 
 export async function setupAndPushStorageWithMaxOptionsGen1Project(projRoot: string, projName: string) {
@@ -68,7 +68,7 @@ export async function setupAndPushStorageWithMaxOptionsGen1Project(projRoot: str
   await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
   await addAuthWithDefault(projRoot);
   await addS3WithTrigger(projRoot);
-  await amplifyPushAuth(projRoot);
+  await amplifyPushAuth(projRoot, true);
   console.log(`pushed auth successfully`);
 }
 
@@ -79,7 +79,6 @@ export function runCodegenCommand(cwd: string) {
     env: { ...process.env, npm_config_user_agent: 'npm' },
     encoding: 'utf-8',
   });
-  console.log(processResult);
   if (processResult.exitCode !== 0) {
     throw new Error(`Codegen command exit code: ${processResult.exitCode}, message: ${processResult.stderr}`);
   }
@@ -114,3 +113,5 @@ export function updateAmplifyBackendPackagesVersion(projRoot: string) {
   updatePackageDependency(projRoot, '@aws-amplify/backend-data', BACKEND_DATA_VERSION);
   updatePackageDependency(projRoot, '@aws-amplify/backend', BACKEND_DATA_VERSION);
 }
+
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

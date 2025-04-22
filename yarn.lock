@@ -741,6 +741,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@aws-amplify/amplify-gen2-codegen@npm:0.1.0-next-9.0":
+  version: 0.1.0-next-9.0
+  resolution: "@aws-amplify/amplify-gen2-codegen@npm:0.1.0-next-9.0"
+  dependencies:
+    "@aws-amplify/auth-construct": ^1.1.5
+    "@aws-sdk/client-cognito-identity-provider": ^3.592.0
+    "@aws-sdk/client-lambda": ^3.651.1
+    "@aws-sdk/client-s3": ^3.651.1
+    aws-cdk-lib: ~2.187.0
+    typescript: ^5.4.5
+  checksum: 03959471343955a36da3cc3e942c6050b287992185d5419b255679c58aeee12813935009b1b87fee51619418985f8ecfd987a1d75faa50f1f1d179edf7d7e578
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/amplify-go-function-template-provider@1.4.8, @aws-amplify/amplify-go-function-template-provider@workspace:packages/amplify-go-function-template-provider":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-go-function-template-provider@workspace:packages/amplify-go-function-template-provider"
@@ -837,7 +851,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.0
     "@aws-amplify/amplify-e2e-core": 5.7.3
-    "@aws-amplify/amplify-gen2-codegen": 0.1.0-next-6.0
+    "@aws-amplify/amplify-gen2-codegen": 0.1.0-next-9.0
     "@aws-sdk/client-appsync": ^3.666.0
     "@aws-sdk/client-cloudcontrol": ^3.658.1
     "@aws-sdk/client-cognito-identity": ^3.670.0

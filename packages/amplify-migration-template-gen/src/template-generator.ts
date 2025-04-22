@@ -1,25 +1,17 @@
-import {
-  CloudFormationClient,
-  DescribeStackResourcesCommand,
-  DescribeStacksCommand,
-  Parameter,
-  StackResource,
-} from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, DescribeStackResourcesCommand, DescribeStacksCommand, Parameter } from '@aws-sdk/client-cloudformation';
 import assert from 'node:assert';
-import CategoryTemplateGenerator from './category-template-generator';
+import CategoryTemplateGenerator, { HOSTED_PROVIDER_META_PARAMETER_NAME } from './category-template-generator';
 import fs from 'node:fs/promises';
 import {
   CATEGORY,
   NON_CUSTOM_RESOURCE_CATEGORY,
   CFN_AUTH_TYPE,
   CFN_CATEGORY_TYPE,
-  CFN_IAM_TYPE,
   CFN_RESOURCE_TYPES,
   CFN_S3_TYPE,
   CFNResource,
   CFNStackStatus,
   CFNTemplate,
-  GEN2_AUTH_LOGICAL_RESOURCE_ID,
   ResourceMapping,
 } from './types';
 import MigrationReadmeGenerator from './migration-readme-generator';
@@ -64,9 +56,6 @@ const LOGICAL_IDS_TO_REMOVE_FOR_REVERT_MAP = new Map<CATEGORY, CFN_RESOURCE_TYPE
   ['storage', [CFN_S3_TYPE.Bucket]],
 ]);
 const GEN2_NATIVE_APP_CLIENT = 'UserPoolNativeAppClient';
-const UNAUTH_ROLE_NAME = 'unauthenticated';
-const AUTH_ROLE_NAME = 'authenticated';
-const CFN_FN_GET_ATTTRIBUTE = 'Fn::GetAtt';
 const GEN1_USER_POOL_GROUPS_STACK_TYPE_DESCRIPTION = 'auth-Cognito-UserPool-Groups';
 const GEN1_AUTH_STACK_TYPE_DESCRIPTION = 'auth-Cognito';
 const NO_RESOURCES_TO_MOVE_ERROR = 'No resources to move';
@@ -256,7 +245,7 @@ class TemplateGenerator {
     category: string,
     categoryTemplateGenerator: CategoryTemplateGenerator<CFN_CATEGORY_TYPE>,
     sourceCategoryStackId: string,
-  ): Promise<CFNTemplate | undefined> {
+  ): Promise<[CFNTemplate, Parameter[]] | undefined> {
     let updatingGen1CategoryStack;
     try {
       const { newTemplate, parameters: gen1StackParameters } = await categoryTemplateGenerator.generateGen1PreProcessTemplate();
@@ -268,7 +257,7 @@ class TemplateGenerator {
       assert(gen1StackUpdateStatus === CFNStackStatus.UPDATE_COMPLETE, `Gen 1 stack is in an invalid state: ${gen1StackUpdateStatus}`);
       updatingGen1CategoryStack.succeed(`Updated Gen 1 ${this.getStackCategoryName(category)} stack successfully`);
 
-      return newTemplate;
+      return [newTemplate, gen1StackParameters];
     } catch (e) {
       if (this.isNoResourcesError(e)) {
         updatingGen1CategoryStack?.succeed(
@@ -377,21 +366,26 @@ class TemplateGenerator {
 
   private async generateCategoryTemplates(isRevert = false, customResourceMap?: ResourceMapping[]) {
     this.initializeCategoryGenerators(customResourceMap);
+    let hasOAuthEnabled = false;
     for (const [category, sourceCategoryStackId, destinationCategoryStackId, categoryTemplateGenerator] of this
       .categoryTemplateGenerators) {
       let newSourceTemplate: CFNTemplate | undefined;
       let newDestinationTemplate: CFNTemplate | undefined;
       let oldDestinationTemplate: CFNTemplate | undefined;
+      let sourceStackParameters: Parameter[] | undefined;
       let destinationStackParameters: Parameter[] | undefined;
       let sourceTemplateForRefactor: CFNTemplate | undefined;
       let destinationTemplateForRefactor: CFNTemplate | undefined;
       let logicalIdMappingForRefactor: Map<string, string> | undefined;
 
       if (customResourceMap && this.isCustomResource(category)) {
-        newSourceTemplate = await this.processGen1Stack(category, categoryTemplateGenerator, sourceCategoryStackId);
-        if (!newSourceTemplate) continue;
-        const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator, destinationCategoryStackId);
+        const processGen1StackResponse = await this.processGen1Stack(category, categoryTemplateGenerator, sourceCategoryStackId);
+        if (!processGen1StackResponse) continue;
+        const [newGen1Template, gen1StackParameters] = processGen1StackResponse;
+        newSourceTemplate = newGen1Template;
+        sourceStackParameters = gen1StackParameters;
 
+        const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator, destinationCategoryStackId);
         newDestinationTemplate = newTemplate;
 
         const sourceToDestinationMap = new Map<string, string>();
@@ -417,8 +411,14 @@ class TemplateGenerator {
         destinationTemplateForRefactor = destinationTemplate;
         logicalIdMappingForRefactor = logicalIdMapping;
       } else if (!isRevert) {
-        newSourceTemplate = await this.processGen1Stack(category, categoryTemplateGenerator, sourceCategoryStackId);
-        if (!newSourceTemplate) continue;
+        const processGen1StackResponse = await this.processGen1Stack(category, categoryTemplateGenerator, sourceCategoryStackId);
+        if (!processGen1StackResponse) continue;
+        const [newGen1Template, gen1StackParameters] = processGen1StackResponse;
+        sourceStackParameters = gen1StackParameters;
+        newSourceTemplate = newGen1Template;
+        if (category === 'auth' && sourceStackParameters?.find((param) => param.ParameterKey === HOSTED_PROVIDER_META_PARAMETER_NAME)) {
+          hasOAuthEnabled = true;
+        }
         const { newTemplate, oldTemplate, parameters } = await this.processGen2Stack(
           category,
           categoryTemplateGenerator,
@@ -434,7 +434,9 @@ class TemplateGenerator {
         sourceTemplateForRefactor = sourceTemplate;
         destinationTemplateForRefactor = destinationTemplate;
         logicalIdMappingForRefactor = logicalIdMapping;
-      } else {
+      }
+      // revert scenario
+      else {
         const sourceCategoryTemplate = await categoryTemplateGenerator.readTemplate(sourceCategoryStackId);
         const destinationCategoryTemplate = await categoryTemplateGenerator.readTemplate(destinationCategoryStackId);
         newSourceTemplate = sourceCategoryTemplate;
@@ -496,6 +498,7 @@ class TemplateGenerator {
       const migrationReadMeGenerator = new MigrationReadmeGenerator({
         path: `${TEMPLATES_DIR}`,
         categories: [...this.categoryStackMap.keys()],
+        hasOAuthEnabled,
       });
       await migrationReadMeGenerator.initialize();
       await migrationReadMeGenerator.renderStep1();
@@ -575,46 +578,19 @@ class TemplateGenerator {
     const { Outputs, Parameters } = describeStackResponseForSourceTemplate;
     assert(Outputs);
     assert(this.region);
+    const { StackResources } = await this.cfnClient.send(
+      new DescribeStackResourcesCommand({
+        StackName: sourceCategoryStackId,
+      }),
+    );
+    assert(StackResources);
     const newSourceTemplateWithParametersResolved = new CfnParameterResolver(newSourceTemplate).resolve(Parameters ?? []);
     const newSourceTemplateWithOutputsResolved = new CfnOutputResolver(
       newSourceTemplateWithParametersResolved,
       this.region,
       this.accountId,
-    ).resolve(sourceLogicalIds, Outputs, []);
+    ).resolve(sourceLogicalIds, Outputs, StackResources);
     const newSourceTemplateWithDepsResolved = new CfnDependencyResolver(newSourceTemplateWithOutputsResolved).resolve(sourceLogicalIds);
-    if (category === 'auth' || category === 'auth-user-pool-group') {
-      const { StackResources: AuthStackResources } = await this.cfnClient.send(
-        new DescribeStackResourcesCommand({
-          StackName: sourceCategoryStackId,
-        }),
-      );
-      assert(AuthStackResources);
-      const roleResources = AuthStackResources.filter((resource) => resource.ResourceType === CFN_IAM_TYPE.Role);
-      assert(roleResources.length > 0);
-      if (category === 'auth') {
-        const identityPoolRoleMapLogicalId = sourceLogicalIds.find((sourceLogicalId) =>
-          sourceLogicalId.includes(GEN2_AUTH_LOGICAL_RESOURCE_ID.IDENTITY_POOL_ROLE_ATTACHMENT),
-        );
-        assert(identityPoolRoleMapLogicalId);
-        const roles = newSourceTemplateWithDepsResolved.Resources[identityPoolRoleMapLogicalId].Properties.Roles;
-        assert(typeof roles === 'object' && UNAUTH_ROLE_NAME in roles && AUTH_ROLE_NAME in roles);
-        const unAuthRoleArn = roles[UNAUTH_ROLE_NAME];
-        const authRoleArn = roles[AUTH_ROLE_NAME];
-        const physicalUnAuthRoleArn = this.resolveFnGetAttRoleArn(roleResources, unAuthRoleArn);
-        assert(physicalUnAuthRoleArn);
-        roles[UNAUTH_ROLE_NAME] = this.constructRoleArn(physicalUnAuthRoleArn);
-        const physicalAuthRoleArn = this.resolveFnGetAttRoleArn(roleResources, authRoleArn);
-        assert(physicalAuthRoleArn);
-        roles[AUTH_ROLE_NAME] = this.constructRoleArn(physicalAuthRoleArn);
-      } else if (category === 'auth-user-pool-group') {
-        for (const sourceLogicalId of sourceLogicalIds) {
-          const groupRoleArn = newSourceTemplateWithDepsResolved.Resources[sourceLogicalId].Properties.RoleArn;
-          const physicalGroupRoleArn = this.resolveFnGetAttRoleArn(roleResources, groupRoleArn);
-          assert(physicalGroupRoleArn);
-          newSourceTemplateWithDepsResolved.Resources[sourceLogicalId].Properties.RoleArn = this.constructRoleArn(physicalGroupRoleArn);
-        }
-      }
-    }
     return categoryTemplateGenerator.generateRefactorTemplates(
       sourceResourcesToRemove,
       new Map<string, CFNResource>(),
@@ -624,29 +600,9 @@ class TemplateGenerator {
     );
   }
 
-  private resolveFnGetAttRoleArn(roleResources: StackResource[], roleArn: unknown) {
-    if (
-      roleArn &&
-      typeof roleArn === 'object' &&
-      CFN_FN_GET_ATTTRIBUTE in roleArn &&
-      Array.isArray(roleArn[CFN_FN_GET_ATTTRIBUTE]) &&
-      roleArn[CFN_FN_GET_ATTTRIBUTE].length > 0 &&
-      roleArn[CFN_FN_GET_ATTTRIBUTE][1] === 'Arn'
-    ) {
-      const roleLogicalId = roleArn[CFN_FN_GET_ATTTRIBUTE][0];
-      const role = roleResources.find((resource) => resource.LogicalResourceId === roleLogicalId);
-      return role?.PhysicalResourceId;
-    }
-    return undefined;
-  }
-
   private getSourceToDestinationMessage(revert: boolean) {
     const SOURCE_TO_DESTINATION_STACKS = [GEN1, GEN2];
     return revert ? SOURCE_TO_DESTINATION_STACKS.reverse().join(SEPARATOR) : SOURCE_TO_DESTINATION_STACKS.join(SEPARATOR);
-  }
-
-  private constructRoleArn(roleName: string) {
-    return `arn:aws:iam::${this.accountId}:role/${roleName}`;
   }
 
   private buildSourceToDestinationMapForRevert(sourceResourcesToRemove: Map<string, CFNResource>): Map<string, string> {
