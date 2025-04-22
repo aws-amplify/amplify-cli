@@ -36,7 +36,7 @@
     "@aws-amplify/cli-extensibility-helper": "3.0.38",
     "amplify-headless-interface": "1.17.7",
     "amplify-util-headless-input": "1.9.18",
-    "aws-cdk-lib": "^2.189.1",
+    "aws-cdk-lib": "~2.189.1",
     "aws-sdk": "^2.1464.0",
     "axios": "^1.6.7",
     "chalk": "^4.1.1",

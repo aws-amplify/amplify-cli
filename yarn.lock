@@ -221,7 +221,7 @@ __metadata:
     "@types/mime-types": ^2.1.1
     amplify-headless-interface: 1.17.7
     amplify-util-headless-input: 1.9.18
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
     axios: ^1.6.7
     chalk: ^4.1.1
@@ -248,7 +248,7 @@ __metadata:
     "@aws-amplify/amplify-cli-core": 4.4.1
     "@aws-amplify/amplify-prompts": 2.8.6
     "@types/lodash": ^4.14.149
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     execa: ^5.1.1
     fs-extra: ^8.1.0
     glob: ^7.2.0
@@ -297,7 +297,7 @@ __metadata:
     ajv: ^6.12.6
     amplify-headless-interface: 1.17.7
     amplify-util-headless-input: 1.9.18
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
     constructs: ^10.0.5
     fs-extra: ^8.1.0
@@ -377,7 +377,7 @@ __metadata:
     "@aws-amplify/cli-extensibility-helper": 3.0.38
     amplify-headless-interface: 1.17.7
     amplify-util-headless-input: 1.9.18
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
     chalk: ^4.1.1
     cloudform-types: ^4.2.0
@@ -412,7 +412,7 @@ __metadata:
     "@types/yarnpkg__lockfile": ^1.1.5
     "@yarnpkg/lockfile": ^1.1.0
     ajv: ^6.12.6
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     chalk: ^4.1.1
     ci-info: ^3.8.0
     cli-table3: ^0.6.0
@@ -733,7 +733,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.624.0
     amplify-headless-interface: 1.17.7
     aws-amplify: ^5.3.16
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     constructs: ^10.0.5
     fs-extra: ^8.1.0
     graphql-transformer-core: ^8.2.17
@@ -816,7 +816,7 @@ __metadata:
     "@types/uuid": ^8.0.0
     amplify-codegen: ^4.10.3
     archiver: ^5.3.0
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
     bottleneck: 2.19.5
     chalk: ^4.1.1
@@ -906,7 +906,7 @@ __metadata:
     amplify-nodejs-function-runtime-provider: 2.5.29
     amplify-storage-simulator: 1.11.6
     aws-appsync: ^4.1.4
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
     aws-sdk-mock: ^6.2.0
     axios: ^1.6.7
@@ -1068,7 +1068,7 @@ __metadata:
   dependencies:
     "@aws-amplify/amplify-category-custom": 3.1.28
     "@aws-amplify/amplify-cli-core": 4.4.1
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
   languageName: unknown
   linkType: soft
 
@@ -1130,7 +1130,7 @@ __metadata:
     amplify-java-function-template-provider: 1.5.24
     amplify-nodejs-function-runtime-provider: 2.5.29
     amplify-python-function-runtime-provider: 2.4.51
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
     chalk: ^4.1.1
     ci-info: ^3.8.0
@@ -11766,7 +11766,7 @@ __metadata:
     amplify-storage-simulator: 1.11.6
     aws-amplify: ^5.3.16
     aws-appsync: ^4.1.1
-    aws-cdk-lib: ^2.189.1
+    aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
     axios: ^1.6.7
     constructs: ^10.0.5
@@ -12642,7 +12642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-cdk-lib@npm:^2.189.1":
+"aws-cdk-lib@npm:~2.189.1":
   version: 2.189.1
   resolution: "aws-cdk-lib@npm:2.189.1"
   dependencies:
