@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-next-7.0...@aws-amplify/amplify-gen2-codegen@0.1.0-next-9.0) (2025-04-22)
+
+
+### Bug Fixes
+
+* **migrate:** codegen triggers created outside of standard triggers flow ([bc7010a](https://github.com/aws-amplify/amplify-cli/commit/bc7010ab5928681d2a208d6576296b80f09d6e78))
+
+
+
+
+
 # [0.1.0-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-next-6.0...@aws-amplify/amplify-gen2-codegen@0.1.0-next-7.0) (2025-04-19)
 
 

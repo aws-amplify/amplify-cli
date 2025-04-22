@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-8.0...@aws-amplify/migrate@0.1.0-next-9.0) (2025-04-22)
+
+
+### Bug Fixes
+
+* **migrate:** codegen triggers created outside of standard triggers flow ([bc7010a](https://github.com/aws-amplify/amplify-cli/commit/bc7010ab5928681d2a208d6576296b80f09d6e78))
+* remove extraneous console log ([8741187](https://github.com/aws-amplify/amplify-cli/commit/874118705ea86672389c33626044e0181fc3aa24))
+
+
+
+
+
 # [0.1.0-next-8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-7.0...@aws-amplify/migrate@0.1.0-next-8.0) (2025-04-21)
 
 **Note:** Version bump only for package @aws-amplify/migrate
