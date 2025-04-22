@@ -9,8 +9,16 @@ import {
   getProjectInfo,
   removeGen1ConfigurationFiles,
   GEN1_CONFIGURATION_FILES,
+  getAuthTriggersConnections,
+  executeStackRefactor,
+  revertGen2Migration,
 } from './command-handlers';
 import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
+import { SSMClient } from '@aws-sdk/client-ssm';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { ResourceMapping, TemplateGenerator } from '@aws-amplify/migrate-template-gen';
+import { printer } from './printer';
 
 jest.mock('node:fs/promises', () => ({
   access: jest.fn(),
@@ -19,6 +27,7 @@ jest.mock('node:fs/promises', () => ({
   rm: jest.fn(),
   mkdir: jest.fn(),
   cp: jest.fn(),
+  rename: jest.fn(),
 }));
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
@@ -27,8 +36,20 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
   stateManager: {
     getMeta: jest.fn(),
+    getResourceInputsJson: jest.fn(),
+    getCurrentRegion: jest.fn(),
+  },
+  AmplifyCategories: {
+    AUTH: 'auth',
   },
 }));
+
+jest.mock('@aws-sdk/client-cloudformation');
+jest.mock('@aws-sdk/client-ssm');
+jest.mock('@aws-sdk/client-cognito-identity-provider');
+jest.mock('@aws-sdk/client-sts');
+jest.mock('@aws-amplify/migrate-template-gen');
+jest.mock('./printer');
 
 const actualUpdateCdkStackFile = jest.requireActual('./command-handlers').updateCdkStackFile;
 const actualGetProjectInfoFile = jest.requireActual('./command-handlers').getProjectInfo;
@@ -40,10 +61,60 @@ jest.mock('./command-handlers', () => ({
   getProjectInfo: jest.fn(),
 }));
 
+jest.mock('uuid', () => ({
+  v4: jest.fn().mockReturnValue('mock-uuid'),
+}));
+
+jest.mock('@aws-amplify/cli-internal', () => ({
+  UsageData: {
+    Instance: {
+      init: jest.fn(),
+      emitSuccess: jest.fn(),
+      emitError: jest.fn(),
+    },
+  },
+}));
+
 jest.mock('@aws-sdk/client-amplify');
+
+const generateMock = jest.fn().mockResolvedValue(true);
+const revertMock = jest.fn().mockResolvedValue(true);
+
+jest.mocked(TemplateGenerator).mockImplementation(
+  () =>
+    ({
+      generate: generateMock,
+      revert: revertMock,
+    } as unknown as TemplateGenerator),
+);
+
+const mockAccountId = '123456789012';
+jest.requireMock('@aws-sdk/client-sts').GetCallerIdentityCommand = jest.fn();
+jest.requireMock('@aws-sdk/client-sts').STSClient.prototype.send = jest.fn().mockResolvedValue({
+  Account: mockAccountId,
+});
 
 const GEN1_COMMAND = 'amplifyPush --simple';
 const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
+
+const mockFromStack = 'mockFromStack';
+const mockToStack = 'mockToStack';
+const mockEnvName = 'mockEnvName';
+const mockAppId = 'mockAppId';
+const mockGen1MetaContent = JSON.stringify({
+  providers: {
+    awscloudformation: {
+      AmplifyAppId: mockAppId,
+      StackName: `amplify-stack-${mockEnvName}`,
+    },
+  },
+});
+const mockFsReadFileForRefactorOperations = (filePath: unknown) => {
+  if (typeof filePath === 'string' && filePath.includes('amplify-meta.json')) {
+    return Promise.resolve(mockGen1MetaContent);
+  }
+  return Promise.resolve('{}');
+};
 
 describe('updateAmplifyYmlFile', () => {
   const amplifyClient = new AmplifyClient();
@@ -265,6 +336,155 @@ describe('updateCustomResources', () => {
   });
 });
 
+describe('getAuthTriggersConnections', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return empty object when no auth resources exist', async () => {
+    jest.mocked(stateManager.getMeta).mockReturnValue({});
+
+    const result = await getAuthTriggersConnections();
+
+    expect(result).toEqual({});
+  });
+
+  it('should return empty object when auth resource exists but no trigger connections', async () => {
+    jest.mocked(stateManager.getMeta).mockReturnValue({
+      auth: {
+        myAuthResource: {
+          service: 'Cognito',
+          providerPlugin: 'awscloudformation',
+        },
+      },
+    });
+
+    jest.mocked(stateManager.getResourceInputsJson).mockReturnValue({
+      cognitoConfig: {},
+    });
+
+    const result = await getAuthTriggersConnections();
+
+    expect(result).toEqual({});
+  });
+
+  it('should parse authTriggerConnections when provided as JSON string', async () => {
+    jest.mocked(stateManager.getMeta).mockReturnValue({
+      auth: {
+        myAuthResource: {
+          service: 'Cognito',
+          providerPlugin: 'awscloudformation',
+        },
+      },
+    });
+
+    const mockTriggerConnections = JSON.stringify([
+      {
+        triggerType: 'PreSignUp',
+        lambdaFunctionName: 'myPreSignUpFunction',
+      },
+      {
+        triggerType: 'PostConfirmation',
+        lambdaFunctionName: 'myPostConfirmationFunction',
+      },
+    ]);
+
+    jest.mocked(stateManager.getResourceInputsJson).mockReturnValue({
+      cognitoConfig: {
+        authTriggerConnections: mockTriggerConnections,
+      },
+    });
+
+    const result = await getAuthTriggersConnections();
+
+    expect(result).toEqual({
+      PreSignUp: 'amplify/backend/function/myPreSignUpFunction/src',
+      PostConfirmation: 'amplify/backend/function/myPostConfirmationFunction/src',
+    });
+  });
+
+  it('should parse authTriggerConnections when provided as array of JSON strings', async () => {
+    jest.mocked(stateManager.getMeta).mockReturnValue({
+      auth: {
+        myAuthResource: {
+          service: 'Cognito',
+          providerPlugin: 'awscloudformation',
+        },
+      },
+    });
+
+    const mockTriggerConnections = [
+      JSON.stringify({
+        triggerType: 'PreSignUp',
+        lambdaFunctionName: 'myPreSignUpFunction',
+      }),
+      JSON.stringify({
+        triggerType: 'PostConfirmation',
+        lambdaFunctionName: 'myPostConfirmationFunction',
+      }),
+    ];
+
+    jest.mocked(stateManager.getResourceInputsJson).mockReturnValue({
+      cognitoConfig: {
+        authTriggerConnections: mockTriggerConnections,
+      },
+    });
+
+    const result = await getAuthTriggersConnections();
+
+    expect(result).toEqual({
+      PreSignUp: 'amplify/backend/function/myPreSignUpFunction/src',
+      PostConfirmation: 'amplify/backend/function/myPostConfirmationFunction/src',
+    });
+  });
+
+  it('should handle triggers defined directly in cognitoConfig', async () => {
+    jest.mocked(stateManager.getMeta).mockReturnValue({
+      auth: {
+        myAuthResource: {
+          service: 'Cognito',
+          providerPlugin: 'awscloudformation',
+        },
+      },
+    });
+
+    jest.mocked(stateManager.getResourceInputsJson).mockReturnValue({
+      cognitoConfig: {
+        triggers: {
+          PreSignUp: true,
+          PostConfirmation: true,
+        },
+      },
+    });
+
+    const result = await getAuthTriggersConnections();
+
+    expect(result).toEqual({
+      PreSignUp: 'amplify/backend/function/myAuthResourcePreSignUp/src',
+      PostConfirmation: 'amplify/backend/function/myAuthResourcePostConfirmation/src',
+    });
+  });
+
+  it('should throw error when authTriggerConnections is invalid', async () => {
+    jest.mocked(stateManager.getMeta).mockReturnValue({
+      auth: {
+        myAuthResource: {
+          service: 'Cognito',
+          providerPlugin: 'awscloudformation',
+        },
+      },
+    });
+
+    jest.mocked(stateManager.getResourceInputsJson).mockReturnValue({
+      cognitoConfig: {
+        authTriggerConnections: 'invalid-json',
+      },
+    });
+
+    await expect(getAuthTriggersConnections()).rejects.toThrow('Error parsing auth trigger connections');
+  });
+});
+
 describe('updateCdkStackFile', () => {
   const mockCustomResources = ['resource1'];
   const mockCustomResourcesPath = 'amplify-gen2/amplify/custom';
@@ -376,5 +596,115 @@ describe('updateCdkStackFile', () => {
       );
     } // Error added
     expect(transformedContent).toContain("const projectInfo = {envName: `${AMPLIFY_GEN_1_ENV_NAME}`, projectName: 'testProject'}"); // Project info replaced
+  });
+});
+
+describe('executeStackRefactor', () => {
+  const mockFromStack = 'mockFromStack';
+  const mockToStack = 'mockToStack';
+  const mockResourceMappings: ResourceMapping[] = [
+    {
+      Source: { StackName: 'gen1Stack', LogicalResourceId: 'SourceLogicalId' },
+      Destination: {
+        StackName: 'gen2Stack',
+        LogicalResourceId: 'DestinationLogicalId',
+      },
+    },
+  ];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    jest.mocked(fs.readFile).mockImplementation(mockFsReadFileForRefactorOperations);
+  });
+
+  it('should initialize TemplateGenerator with correct parameters and call generate', async () => {
+    await executeStackRefactor(mockFromStack, mockToStack, mockResourceMappings);
+
+    // Verify TemplateGenerator was initialized correctly
+    expect(TemplateGenerator).toHaveBeenCalledWith(
+      mockFromStack,
+      mockToStack,
+      mockAccountId,
+      expect.any(CloudFormationClient),
+      expect.any(SSMClient),
+      expect.any(CognitoIdentityProviderClient),
+      mockAppId,
+      mockEnvName,
+    );
+
+    expect(generateMock).toHaveBeenCalledWith(mockResourceMappings);
+    expect(generateMock).toHaveBeenCalledTimes(1);
+
+    expect(printer.print).toHaveBeenCalled();
+  });
+
+  it('should handle errors when generate fails', async () => {
+    jest.mocked(TemplateGenerator).mockImplementationOnce(
+      () =>
+        ({
+          generate: jest.fn().mockResolvedValue(false),
+          revert: jest.fn(),
+        } as unknown as TemplateGenerator),
+    );
+
+    await executeStackRefactor(mockFromStack, mockToStack);
+
+    const mockUsageData = jest.requireMock('@aws-amplify/cli-internal').UsageData.Instance;
+    expect(mockUsageData.emitError).toHaveBeenCalled();
+    expect(mockUsageData.emitSuccess).not.toHaveBeenCalled();
+  });
+
+  it('should work without resource mappings', async () => {
+    await executeStackRefactor(mockFromStack, mockToStack);
+
+    expect(generateMock).toHaveBeenCalledWith(undefined);
+    expect(generateMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('revertGen2Migration', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    jest.mocked(fs.readFile).mockImplementation(mockFsReadFileForRefactorOperations);
+  });
+
+  it('should initialize TemplateGenerator with correct parameters and call revert', async () => {
+    await revertGen2Migration(mockFromStack, mockToStack);
+
+    expect(TemplateGenerator).toHaveBeenCalledWith(
+      mockFromStack,
+      mockToStack,
+      mockAccountId,
+      expect.any(CloudFormationClient),
+      expect.any(SSMClient),
+      expect.any(CognitoIdentityProviderClient),
+      mockAppId,
+      mockEnvName,
+    );
+
+    expect(revertMock).toHaveBeenCalledTimes(1);
+    expect(printer.print).toHaveBeenCalled();
+    expect(fs.rm).toHaveBeenCalledWith('amplify', { force: true, recursive: true });
+    expect(fs.rename).toHaveBeenCalledWith('.amplify/migration/amplify', 'amplify');
+  });
+
+  it('should handle errors when revert fails', async () => {
+    jest.mocked(TemplateGenerator).mockImplementationOnce(
+      () =>
+        ({
+          generate: jest.fn(),
+          revert: jest.fn().mockResolvedValue(false),
+        } as unknown as TemplateGenerator),
+    );
+
+    await revertGen2Migration(mockFromStack, mockToStack);
+
+    const mockUsageData = jest.requireMock('@aws-amplify/cli-internal').UsageData.Instance;
+    expect(mockUsageData.emitError).toHaveBeenCalled();
+    expect(mockUsageData.emitSuccess).not.toHaveBeenCalled();
+    expect(fs.rm).not.toHaveBeenCalled();
+    expect(fs.rename).not.toHaveBeenCalled();
   });
 });

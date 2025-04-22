@@ -150,27 +150,39 @@ const getAccountId = async (): Promise<string | undefined> => {
   return callerIdentityResult.Account;
 };
 
-const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
+export const getAuthTriggersConnections = async (): Promise<Partial<Record<keyof LambdaConfigType, string>>> => {
   const amplifyMeta: AmplifyMeta = stateManager.getMeta();
+  if (!amplifyMeta.auth) {
+    return {};
+  }
   const resourceName = Object.entries(amplifyMeta.auth).find(([, resource]) => resource.service === 'Cognito')?.[0];
   assert(resourceName);
   const authInputs = stateManager.getResourceInputsJson(undefined, AmplifyCategories.AUTH, resourceName);
-  if ('cognitoConfig' in authInputs && 'authTriggerConnections' in authInputs.cognitoConfig) {
-    try {
-      let triggerConnections: AuthTriggerConnection[];
-      // Check if authTriggerConnections is a valid JSON string
-      if (typeof authInputs.cognitoConfig.authTriggerConnections === 'string') {
-        triggerConnections = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
-      } else {
-        // If not a valid JSON string, assume it's an array of JSON strings
-        triggerConnections = authInputs.cognitoConfig.authTriggerConnections.map((connection: string) => JSON.parse(connection));
+  if (authInputs && typeof authInputs === 'object' && 'cognitoConfig' in authInputs && typeof authInputs.cognitoConfig === 'object') {
+    let triggerConnections: AuthTriggerConnection[] = [];
+    if ('authTriggerConnections' in authInputs.cognitoConfig) {
+      try {
+        // Check if authTriggerConnections is a valid JSON string
+        if (typeof authInputs.cognitoConfig.authTriggerConnections === 'string') {
+          triggerConnections = JSON.parse(authInputs.cognitoConfig.authTriggerConnections);
+        } else {
+          // If not a valid JSON string, assume it's an array of JSON strings
+          triggerConnections = authInputs.cognitoConfig.authTriggerConnections.map((connection: string) => JSON.parse(connection));
+        }
+        return triggerConnections.reduce((prev, curr) => {
+          prev[curr.triggerType] = getFunctionPath(curr.lambdaFunctionName);
+          return prev;
+        }, {} as Partial<Record<keyof LambdaConfigType, string>>);
+      } catch (e) {
+        throw new Error('Error parsing auth trigger connections');
       }
-      return triggerConnections.reduce((prev, curr) => {
-        prev[curr.triggerType] = getFunctionPath(curr.lambdaFunctionName);
+    } else if ('triggers' in authInputs.cognitoConfig && typeof authInputs.cognitoConfig.triggers === 'object') {
+      const authTriggers = authInputs.cognitoConfig.triggers;
+      return Object.keys(authTriggers).reduce((prev, authTrigger) => {
+        const triggerResourceName = `${resourceName}${authTrigger}`;
+        prev[authTrigger as keyof LambdaConfigType] = getFunctionPath(triggerResourceName);
         return prev;
       }, {} as Partial<Record<keyof LambdaConfigType, string>>);
-    } catch (e) {
-      throw new Error('Error parsing auth trigger connections');
     }
   }
   return {};
