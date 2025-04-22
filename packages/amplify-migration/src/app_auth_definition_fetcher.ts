@@ -215,7 +215,6 @@ export class AppAuthDefinitionFetcher {
     );
 
     const authTriggerConnections = await this.getAuthTriggerConnections();
-    console.log('authTriggerConnections', authTriggerConnections);
 
     assert(userPool, 'User pool not found');
     return getAuthDefinition({
