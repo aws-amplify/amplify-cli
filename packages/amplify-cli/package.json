@@ -73,7 +73,7 @@
     "amplify-java-function-template-provider": "1.5.24",
     "amplify-nodejs-function-runtime-provider": "2.5.29",
     "amplify-python-function-runtime-provider": "2.4.51",
-    "aws-cdk-lib": "^2.189.1",
+    "aws-cdk-lib": "~2.189.1",
     "aws-sdk": "^2.1464.0",
     "chalk": "^4.1.1",
     "ci-info": "^3.8.0",

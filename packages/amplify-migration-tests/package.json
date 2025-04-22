@@ -32,7 +32,7 @@
     "@aws-sdk/client-s3": "3.624.0",
     "amplify-headless-interface": "1.17.7",
     "aws-amplify": "^5.3.16",
-    "aws-cdk-lib": "^2.189.1",
+    "aws-cdk-lib": "~2.189.1",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "^8.2.17",
