@@ -36,7 +36,7 @@
     "enquirer": "^2.3.6"
   },
   "devDependencies": {
-    "rimraf": "^6.0.1"
+    "rimraf": "^3.0.0"
   },
   "jest": {
     "collectCoverage": true,

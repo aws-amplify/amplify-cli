@@ -12,7 +12,7 @@ import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
-import { rimraf } from 'rimraf';
+import rimraf from 'rimraf';
 // eslint-disable-next-line import/no-cycle
 import { ResourceExport } from './resource-package/resource-export';
 import { ResourceDefinition, StackIncludeDetails, StackParameters } from './resource-package/types';

@@ -7,7 +7,7 @@ import { createGunzip } from 'zlib';
 import stream from 'stream';
 import os from 'os';
 import axios from 'axios';
-import { rimraf } from 'rimraf';
+import rimraf from 'rimraf';
 import { name, version } from './package.json';
 
 const BINARY_LOCATION = 'https://package.cli.amplify.aws';

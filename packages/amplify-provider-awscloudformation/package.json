@@ -65,7 +65,7 @@
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "proxy-agent": "^6.3.0",
-    "rimraf": "^6.0.1",
+    "rimraf": "^3.0.0",
     "xstate": "^4.14.0"
   },
   "devDependencies": {

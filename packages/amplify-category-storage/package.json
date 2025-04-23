@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "cloudform-types": "^4.2.0",
-    "rimraf": "^6.0.1"
+    "rimraf": "^3.0.0"
   },
   "jest": {
     "testEnvironmentOptions": {

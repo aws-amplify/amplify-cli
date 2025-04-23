@@ -32,13 +32,13 @@
   },
   "dependencies": {
     "axios": "^1.6.7",
-    "rimraf": "^6.0.1",
+    "rimraf": "^3.0.0",
     "tar-stream": "^2.2.0"
   },
   "devDependencies": {
     "@aws-amplify/cli-internal": "13.0.1",
     "@types/tar": "^6.1.1",
-    "rimraf": "^6.0.1"
+    "rimraf": "3.0.0"
   },
   "berry": {
     "plugins": [

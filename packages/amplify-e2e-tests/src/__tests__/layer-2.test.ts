@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { rimraf } from 'rimraf';
+import * as rimraf from 'rimraf';
 import {
   addFunction,
   addLayer,
