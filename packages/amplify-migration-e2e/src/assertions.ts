@@ -145,7 +145,7 @@ export async function assertStorageWithMaxOptionsGen1Setup(projRoot: string) {
 }
 
 const extractUserPoolNamePrefix = (userPoolName: string) => {
-  const [userPoolNamePrefix, _] = userPoolName.split('-');
+  const [userPoolNamePrefix] = userPoolName.split('-');
   return userPoolNamePrefix;
 };
 
@@ -165,7 +165,6 @@ async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, 
   const gen2UserPoolId = gen2Meta.auth.user_pool_id;
   const gen2Region = gen2Meta.auth.aws_region;
   const gen2Resource = await getResourceDetails('AWS::Cognito::UserPool', gen2UserPoolId, gen2Region);
-  console.log(gen1Resource, gen2Resource);
   gen1Resource.UserPoolName = extractUserPoolNamePrefix(gen1Resource.UserPoolName);
   gen2Resource.UserPoolName = extractUserPoolNamePrefix(gen2Resource.UserPoolName);
   if (gen1Resource.LambdaConfig.PostConfirmation) assert(gen2Resource.LambdaConfig.PostConfirmation);

@@ -1,5 +1,4 @@
 import { getProjectOutputs } from './projectOutputs';
-import { getResourceDetails } from './sdk_calls';
 import { RefactorCategory } from './templategen';
 
 async function getGen2AuthResourceDetails(projRoot: string) {

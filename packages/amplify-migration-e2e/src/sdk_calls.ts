@@ -22,7 +22,7 @@ export async function getResourceDetails(
   identifier: string,
   region: string,
   attempts = MAX_ATTEMPTS,
-): Promise<any | undefined> {
+): Promise<Record<string, unknown> | undefined> {
   if (attempts <= 0) {
     return undefined;
   }
