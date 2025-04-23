@@ -163,6 +163,18 @@ const mockDescribeGen2AuthStackResources: DescribeStackResourcesOutput = {
   ],
 };
 
+const mockDescribeGen2StorageStackResources: DescribeStackResourcesOutput = {
+  StackResources: [
+    {
+      ResourceType: CFN_S3_TYPE.Bucket,
+      ResourceStatus: 'CREATE_COMPLETE',
+      LogicalResourceId: GEN2_S3_BUCKET_LOGICAL_ID,
+      PhysicalResourceId: `myGen1BucketAfterRefactor`,
+      Timestamp: new Date(),
+    },
+  ],
+};
+
 const mockDescribeGen1AuthStackResources: DescribeStackResourcesOutput = {
   StackResources: [
     {
@@ -373,6 +385,8 @@ const describeStackResourcesResponse = (stackName: string | undefined) => {
       return Promise.resolve(mockDescribeGen2AuthStackResources);
     case GEN1_AUTH_USER_POOL_GROUP_STACK_ID:
       return Promise.resolve(mockDescribeGen1AuthUserPoolGroupStackResources);
+    case GEN2_STORAGE_STACK_ID:
+      return Promise.resolve(mockDescribeGen2StorageStackResources);
     default:
       throw new Error(`Unexpected stack: ${stackName}`);
   }
@@ -778,8 +792,9 @@ describe('TemplateGenerator', () => {
     // 1 describe stack resources call for Gen2 auth stack to get physical ids for auth roles
     let callIndex = assertStackRefactorCommands('auth', 5, false, false, true);
     // 1 describe stack resources call for Gen2 auth stack to get physical ids for user group roles
+    // 1 describe stack resources call for Gen2 storage stack to get physical ids for user group roles
     callIndex = assertStackRefactorCommands('auth-user-pool-group', callIndex + 2, false, false, true);
-    assertStackRefactorCommands('storage', callIndex + 1, false, false, true);
+    assertStackRefactorCommands('storage', callIndex + 2, false, false, true);
   });
 
   it('should revert resources from Gen2 to Gen1 successfully, skipping categories that have already been updated previously', async () => {

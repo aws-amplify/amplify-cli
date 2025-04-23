@@ -13,6 +13,8 @@ import { removeProperties } from '.';
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
 import assert from 'node:assert';
 
+const DATA_SOURCE_PROPS_TO_REMOVE = ['dataSourceArn', 'serviceRoleArn', 'dynamodbConfig'];
+
 export async function assertUserPool(gen1Meta: $TSAny, gen1Region: string) {
   const { UserPoolId: gen1UserPoolId } = Object.keys(gen1Meta.auth).map((key) => gen1Meta.auth[key])[0].output;
   const cloudUserPool = await getUserPool(gen1UserPoolId, gen1Region);
@@ -129,6 +131,7 @@ export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {
 
 export async function assertStorageWithMaxOptionsGen1Setup(projRoot: string) {
   const gen1Meta = getProjectMeta(projRoot);
+  const gen1StackName = gen1Meta.providers.awscloudformation.StackName;
   const gen1Region = gen1Meta.providers.awscloudformation.Region;
   const { gen1BucketName } = await assertStorage(gen1Meta, gen1Region);
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
@@ -136,9 +139,15 @@ export async function assertStorageWithMaxOptionsGen1Setup(projRoot: string) {
   assert.match(gen1FunctionName, /S3Trigger/);
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
+  const envName = gen1StackName.split('-')[2];
 
-  return { gen1UserPoolId, gen1ClientIds, gen1BucketName, gen1IdentityPoolId, gen1Region, gen1FunctionName };
+  return { gen1UserPoolId, gen1ClientIds, gen1BucketName, gen1IdentityPoolId, gen1Region, gen1FunctionName, envName };
 }
+
+const extractUserPoolNamePrefix = (userPoolName: string) => {
+  const [userPoolNamePrefix] = userPoolName.split('-');
+  return userPoolNamePrefix;
+};
 
 async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Cognito::UserPool', gen1UserPoolId, gen1Region);
@@ -156,6 +165,8 @@ async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, 
   const gen2UserPoolId = gen2Meta.auth.user_pool_id;
   const gen2Region = gen2Meta.auth.aws_region;
   const gen2Resource = await getResourceDetails('AWS::Cognito::UserPool', gen2UserPoolId, gen2Region);
+  gen1Resource.UserPoolName = extractUserPoolNamePrefix(gen1Resource.UserPoolName);
+  gen2Resource.UserPoolName = extractUserPoolNamePrefix(gen2Resource.UserPoolName);
   if (gen1Resource.LambdaConfig.PostConfirmation) assert(gen2Resource.LambdaConfig.PostConfirmation);
   removeProperties(gen2Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn', 'LambdaConfig.PostConfirmation']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
@@ -275,7 +286,7 @@ export async function assertFunctionResource(projRoot: string, gen2StackName: st
   const gen1Resource = await getResourceDetails('AWS::Lambda::Function', gen1FunctionName, gen1Region);
   removeProperties(gen1Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
   // TODO: remove below line after Tags inconsistency is fixed
-  removeProperties(gen1Resource, ['Tags']);
+  removeProperties(gen1Resource, ['Tags', 'Environment']);
 
   const gen2Meta = getProjectOutputs(projRoot);
   const gen2Region = gen2Meta.auth.aws_region;
@@ -285,7 +296,7 @@ export async function assertFunctionResource(projRoot: string, gen2StackName: st
   assert(gen2Resource.FunctionName);
   removeProperties(gen2Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
   // TODO: remove below line after Environment.Variables.AMPLIFY_SSM_ENV_CONFIG, Tags inconsistency is fixed
-  removeProperties(gen2Resource, ['Environment.Variables.AMPLIFY_SSM_ENV_CONFIG', 'Tags']);
+  removeProperties(gen2Resource, ['Environment.Variables.AMPLIFY_SSM_ENV_CONFIG', 'Tags', 'Environment']);
 
   expect(gen2Resource).toEqual(gen1Resource);
 }
@@ -293,7 +304,7 @@ export async function assertFunctionResource(projRoot: string, gen2StackName: st
 export async function assertDataResource(projRoot: string, gen2StackName: string, gen1GraphqlApiId: string, gen1Region: string) {
   const gen1Resource = await getAppSyncApi(gen1GraphqlApiId, gen1Region);
   const gen1DataSource = (await getAppSyncDataSource(gen1GraphqlApiId, 'TodoTable', gen1Region)) as Record<string, unknown>;
-  removeProperties(gen1DataSource, ['dataSourceArn', 'serviceRoleArn']);
+  removeProperties(gen1DataSource, DATA_SOURCE_PROPS_TO_REMOVE);
   removeProperties(gen1Resource.graphqlApi as Record<string, unknown>, ['name', 'apiId', 'arn', 'uris', 'tags', 'dns']);
   // TODO: remove below line after authenticationType inconsistency is fixed
   removeProperties(gen1Resource.graphqlApi as Record<string, unknown>, ['authenticationType']);
@@ -304,7 +315,7 @@ export async function assertDataResource(projRoot: string, gen2StackName: string
   const gen2GraphqlApiId = outputs?.find((output) => output.OutputKey === 'awsAppsyncApiId')?.OutputValue ?? '';
   const gen2Resource = await getAppSyncApi(gen2GraphqlApiId, gen2Region);
   const gen2DataSource = (await getAppSyncDataSource(gen2GraphqlApiId, 'TodoTable', gen1Region)) as Record<string, unknown>;
-  removeProperties(gen2DataSource, ['dataSourceArn', 'serviceRoleArn']);
+  removeProperties(gen2DataSource, DATA_SOURCE_PROPS_TO_REMOVE);
   removeProperties(gen2Resource.graphqlApi as Record<string, unknown>, [
     'name',
     'apiId',

@@ -25,7 +25,7 @@ import extractStackNameFromId from './cfn-stack-name-extractor';
 import retrieveOAuthValues from './oauth-values-retriever';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 
-const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
+export const HOSTED_PROVIDER_META_PARAMETER_NAME = 'hostedUIProviderMeta';
 const HOSTED_PROVIDER_CREDENTIALS_PARAMETER_NAME = 'hostedUIProviderCreds';
 const USER_POOL_ID_OUTPUT_KEY_NAME = 'UserPoolId';
 const GEN1_WEB_APP_CLIENT = 'UserPoolClientWeb';
