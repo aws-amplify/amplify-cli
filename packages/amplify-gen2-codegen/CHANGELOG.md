@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-next-7.0...@aws-amplify/amplify-gen2-codegen@0.1.0-next-9.0) (2025-04-22)
+
+
+### Bug Fixes
+
+* **migrate:** codegen triggers created outside of standard triggers flow ([bc7010a](https://github.com/aws-amplify/amplify-cli/commit/bc7010ab5928681d2a208d6576296b80f09d6e78))
+
+
+
+
+
+# [0.1.0-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-next-6.0...@aws-amplify/amplify-gen2-codegen@0.1.0-next-7.0) (2025-04-19)
+
+
+### Bug Fixes
+
+* add amplify data as a dependency to amplify-gen2-codegen ([3f0713b](https://github.com/aws-amplify/amplify-cli/commit/3f0713b9777e37a240e9c16c0840c533c880e753))
+* add domain removal statement ([341cdb1](https://github.com/aws-amplify/amplify-cli/commit/341cdb19260cac829317518731cbae61c7394723))
+* added error handling ([a4647df](https://github.com/aws-amplify/amplify-cli/commit/a4647df76b7e6c8a470690dd43320a96a0a45e97))
+* codegen custom resources and added function scheduling ([1e25182](https://github.com/aws-amplify/amplify-cli/commit/1e251820905291bc8c6ca058ce5397b7ddec5e5b))
+* fixed test ([b56171e](https://github.com/aws-amplify/amplify-cli/commit/b56171e4f354baf882d70ffa6997fe6a32914690))
+* lint errors, add type gauard for auth output ([4b74382](https://github.com/aws-amplify/amplify-cli/commit/4b7438270634b04cd73c302610e814790fb4328a))
+* remove extraneous provider setup code ([5b91485](https://github.com/aws-amplify/amplify-cli/commit/5b9148547026ead6a04628e8b56cb5eeccce97c6))
+* remove s3 deletion policy ([7c5abf3](https://github.com/aws-amplify/amplify-cli/commit/7c5abf310df3c9c9ae60fd367d49bf402d248a97))
+
+
+
+
+
 # [0.1.0-next-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-gen2-codegen@0.1.0-next-5.0...@aws-amplify/amplify-gen2-codegen@0.1.0-next-6.0) (2025-03-21)
 
 

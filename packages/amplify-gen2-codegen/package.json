@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-gen2-codegen",
-  "version": "0.1.0-next-6.0",
+  "version": "0.1.0-next-9.0",
   "main": "lib/index.js",
   "type": "commonjs",
   "scripts": {

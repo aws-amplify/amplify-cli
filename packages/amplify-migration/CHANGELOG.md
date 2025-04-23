@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-8.0...@aws-amplify/migrate@0.1.0-next-9.0) (2025-04-22)
+
+
+### Bug Fixes
+
+* **migrate:** codegen triggers created outside of standard triggers flow ([bc7010a](https://github.com/aws-amplify/amplify-cli/commit/bc7010ab5928681d2a208d6576296b80f09d6e78))
+* remove extraneous console log ([8741187](https://github.com/aws-amplify/amplify-cli/commit/874118705ea86672389c33626044e0181fc3aa24))
+
+
+
+
+
+# [0.1.0-next-8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-7.0...@aws-amplify/migrate@0.1.0-next-8.0) (2025-04-21)
+
+**Note:** Version bump only for package @aws-amplify/migrate
+
+
+
+
+
+# [0.1.0-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-6.0...@aws-amplify/migrate@0.1.0-next-7.0) (2025-04-19)
+
+
+### Bug Fixes
+
+* add amplify data as a dependency to amplify-gen2-codegen ([3f0713b](https://github.com/aws-amplify/amplify-cli/commit/3f0713b9777e37a240e9c16c0840c533c880e753))
+* added error handling ([a4647df](https://github.com/aws-amplify/amplify-cli/commit/a4647df76b7e6c8a470690dd43320a96a0a45e97))
+* codegen custom resources and added function scheduling ([1e25182](https://github.com/aws-amplify/amplify-cli/commit/1e251820905291bc8c6ca058ce5397b7ddec5e5b))
+* custom resource error handling, formatting messages ([199b138](https://github.com/aws-amplify/amplify-cli/commit/199b13815df81846abbbcd41793d1cccabae9533))
+* lint errors ([00b25b7](https://github.com/aws-amplify/amplify-cli/commit/00b25b756915e40001d07eceb795aa1b35289cb3))
+* lint errors, add type gauard for auth output ([4b74382](https://github.com/aws-amplify/amplify-cli/commit/4b7438270634b04cd73c302610e814790fb4328a))
+* **migrate:** add validation for path after file:// ([0173f7f](https://github.com/aws-amplify/amplify-cli/commit/0173f7fd66a36a9cb25f0baf9a2306dd6948d877))
+* refactor customResourceMappings in execute command ([000d660](https://github.com/aws-amplify/amplify-cli/commit/000d6608ade3ee4c65724df59200ffc00584e84c))
+* update lock file ([699f9e7](https://github.com/aws-amplify/amplify-cli/commit/699f9e7c48039f77dd6620bf8346fe2840a6166c))
+
+
+### Features
+
+* **migrate:** remove gen1 config files in prepare command ([2d72d51](https://github.com/aws-amplify/amplify-cli/commit/2d72d5109aaccff31025813b14ac14e529d85b21))
+
+
+
+
+
 # [0.1.0-next-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-5.0...@aws-amplify/migrate@0.1.0-next-6.0) (2025-03-21)
 
 
