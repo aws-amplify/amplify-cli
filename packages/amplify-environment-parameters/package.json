@@ -34,7 +34,7 @@
   "devDependencies": {
     "aws-sdk": "^2.1464.0",
     "mkdirp": "^1.0.4",
-    "ts-json-schema-generator": "^2.3.0"
+    "ts-json-schema-generator": "~1.1.2"
   },
   "jest": {
     "collectCoverage": true,

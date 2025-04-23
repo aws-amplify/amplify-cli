@@ -16,7 +16,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
-    "rimraf": "^3.0.0",
+    "rimraf": "^3.0.2",
     "ts-node": "^10.4.0",
     "typescript-json-schema": "~0.52.0"
   },
