@@ -381,9 +381,8 @@ class TemplateGenerator {
       if (customResourceMap && this.isCustomResource(category)) {
         const processGen1StackResponse = await this.processGen1Stack(category, categoryTemplateGenerator, sourceCategoryStackId);
         if (!processGen1StackResponse) continue;
-        const [newGen1Template, gen1StackParameters] = processGen1StackResponse;
+        const [newGen1Template] = processGen1StackResponse;
         newSourceTemplate = newGen1Template;
-        sourceStackParameters = gen1StackParameters;
 
         const { newTemplate } = await this.processGen2Stack(category, categoryTemplateGenerator, destinationCategoryStackId);
         newDestinationTemplate = newTemplate;
