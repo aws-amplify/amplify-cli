@@ -459,9 +459,6 @@ class TemplateGenerator {
         }
       }
 
-      assert(newSourceTemplate);
-      assert(newDestinationTemplate);
-
       const refactorResources = ora(
         `Moving ${this.getStackCategoryName(category)} resources from ${this.getSourceToDestinationMessage(isRevert)} stack...`,
       ).start();
