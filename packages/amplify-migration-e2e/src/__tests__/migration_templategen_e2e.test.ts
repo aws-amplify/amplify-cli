@@ -11,7 +11,14 @@ import {
   updateAmplifyBackendPackagesVersion,
 } from '..';
 import { copyFunctionFile, removeErrorThrowsFromFunctionFile } from '../function_utils';
-import { assertExecuteCommand, RefactorCategory, runExecuteCommand, runGen2DeployPostExecute, runRevertCommand } from '../templategen';
+import {
+  assertExecuteCommand,
+  assertRevertCommand,
+  RefactorCategory,
+  runExecuteCommand,
+  runGen2DeployPostExecute,
+  runRevertCommand,
+} from '../templategen';
 
 const CATEGORIES_TO_MOVE: RefactorCategory[] = ['auth', 'storage'];
 
@@ -19,6 +26,7 @@ void describe('Templategen E2E tests', () => {
   void describe('Full Migration Templategen Flow', () => {
     let projRoot: string;
     let projName: string;
+    let gen2StackName: string;
 
     beforeEach(async () => {
       const baseDir = process.env.INIT_CWD ?? process.cwd();
@@ -27,10 +35,10 @@ void describe('Templategen E2E tests', () => {
     });
 
     afterEach(async () => {
-      await cleanupProjects(projRoot, projName);
+      await cleanupProjects(projRoot, projName, true, gen2StackName);
     });
 
-    void it('should init a project & add auth, function, storage, api with defaults & perform refactor', async () => {
+    void it('should init a project with auth, function, storage, api & perform execute followed by revert', async () => {
       // Arrange
       await setupAndPushDefaultGen1Project(projRoot, projName);
 
@@ -45,7 +53,7 @@ void describe('Templategen E2E tests', () => {
       // Below env is only needed for CI/CD deployments and is expected to be set by customers for their app
       // To emulate the migration in sandbox, we set it explicitly.
       process.env.AMPLIFY_GEN_1_ENV_NAME = envName;
-      const gen2StackName = await runGen2SandboxCommand(projRoot, projName);
+      gen2StackName = await runGen2SandboxCommand(projRoot, projName);
       assert(gen2StackName);
 
       runExecuteCommand(projRoot, gen1StackName, gen2StackName);
@@ -55,6 +63,7 @@ void describe('Templategen E2E tests', () => {
       await assertExecuteCommand(projRoot, CATEGORIES_TO_MOVE);
 
       runRevertCommand(projRoot, gen1StackName, gen2StackName);
+      await assertRevertCommand(projRoot, CATEGORIES_TO_MOVE);
     });
   });
 });

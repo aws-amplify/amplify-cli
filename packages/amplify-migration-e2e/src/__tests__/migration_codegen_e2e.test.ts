@@ -87,15 +87,15 @@ void describe('Gen 2 Codegen E2E tests', () => {
       await setupAndPushAuthWithMaxOptionsGen1Project(projRoot, projName);
 
       // Act
-      const { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1Region } = await assertAuthWithMaxOptionsGen1Setup(
-        projRoot,
-      );
+      const { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1Region, envName } =
+        await assertAuthWithMaxOptionsGen1Setup(projRoot);
       runCodegenCommand(projRoot);
       copyFunctionFile(projRoot, 'auth', gen1FunctionName);
       removeErrorThrowsFromAuthResourceFile(projRoot);
       updateAmplifyBackendPackagesVersion(projRoot);
       npmInstall(projRoot);
       await toggleSandboxSecrets(projRoot, projName, 'set');
+      removeErrorThrowsFromFunctionFile(projRoot, 'auth', extractFunctionResourceName(gen1FunctionName, envName));
       const gen2StackName = await runGen2SandboxCommand(projRoot, projName);
       await toggleSandboxSecrets(projRoot, projName, 'remove');
 
