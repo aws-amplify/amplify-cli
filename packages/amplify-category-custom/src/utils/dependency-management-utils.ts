@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { byValues, printer, prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
-import { glob } from 'glob';
+import { globSync } from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
 import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';
@@ -26,7 +26,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
    * Otherwise falls back to the default behavior.
    */
   if (fs.existsSync(resourceBuildDir)) {
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+    const cfnFiles = globSync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
       ignore: [AUTH_TRIGGER_TEMPLATE],
     });
@@ -45,7 +45,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
   }
   if (!cfnFilePath) {
     // For categories which do not store cfn files in build/ dir
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+    const cfnFiles = globSync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
       ignore: [AUTH_TRIGGER_TEMPLATE],
     });

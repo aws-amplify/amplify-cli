@@ -2,7 +2,7 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getCfnFiles } from '../push-resources';
-import { glob } from 'glob';
+import * as glob from 'glob';
 
 // Mock data
 const dummyCFNFiles: readonly string[] = ['fileA', 'fileB'];
@@ -19,7 +19,7 @@ const pathManager_mock = jest.mocked(pathManager);
 pathManager_mock.getBackendDirPath.mockReturnValue(testBackendDirPath);
 
 const glob_mock = glob as jest.Mocked<typeof glob>;
-glob_mock.sync.mockImplementation((pattern) => {
+glob_mock.globSync.mockImplementation((pattern) => {
   //eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (pattern) {
     case '*template*.+(yaml|yml|json)':
@@ -42,7 +42,7 @@ describe('test getCfnFiles', () => {
   it('does return API category stack from the build directory', async () => {
     // The build path generated have files, so should be returned.
     fs_mock.existsSync.mockReturnValue(true);
-    glob_mock.sync.mockImplementationOnce(() => [...dummyCFNFiles]);
+    glob_mock.globSync.mockImplementationOnce(() => [...dummyCFNFiles]);
 
     // call the function under test
     const { resourceDir, cfnFiles } = getCfnFiles('api', 'api-resource-name');
@@ -67,7 +67,7 @@ describe('test getCfnFiles', () => {
   it('does not return the build directory since it does not exist', async () => {
     // The build path generated doesn't have files so fall back to the top level.
     fs_mock.existsSync.mockReturnValue(false);
-    glob_mock.sync.mockImplementationOnce(() => [...dummyCFNFiles]);
+    glob_mock.globSync.mockImplementationOnce(() => [...dummyCFNFiles]);
 
     // call the function under test
     const { resourceDir, cfnFiles } = getCfnFiles('api', 'api-resource-name');

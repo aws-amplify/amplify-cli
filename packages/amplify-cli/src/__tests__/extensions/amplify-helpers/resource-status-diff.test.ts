@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import * as glob from 'glob';
 import path from 'path';
 import * as fs from 'fs-extra';
 import { stateManager, pathManager } from '@aws-amplify/amplify-cli-core';
@@ -21,7 +21,7 @@ const allFiles: string[] = [
   'schema.graphql',
 ];
 const templateMatchRegex = '.*template.(json|yaml|yml)$';
-globMock.sync.mockImplementation(() => allFiles.filter((fname) => fname.match(templateMatchRegex)));
+globMock.globSync.mockImplementation(() => allFiles.filter((fname) => fname.match(templateMatchRegex)));
 
 // Mock fs to pass all file-system checks
 jest.mock('fs-extra', () => ({
@@ -86,8 +86,8 @@ describe('resource-status-diff helpers', () => {
     };
 
     const cfnFilename = globCFNFilePath(stubFileFolder);
-    expect(globMock.sync.mock.calls.length).toBe(1);
-    expect(globMock.sync).toBeCalledWith('**/*template.{yaml,yml,json}', expectedGlobOptions);
+    expect(globMock.globSync.mock.calls.length).toBe(1);
+    expect(globMock.globSync).toBeCalledWith('**/*template.{yaml,yml,json}', expectedGlobOptions);
     expect(cfnFilename).toBe(`${stubFileFolder}/${mockCloudFormationTemplateName}`);
   });
 

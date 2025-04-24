@@ -13,7 +13,7 @@ import {
 import { extract } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { glob } from 'glob';
+import { globSync } from 'glob';
 
 const PARAMETERS_JSON = 'parameters.json';
 const BUILD = 'build';
@@ -104,10 +104,8 @@ const unzipAndReturnFiles = async (zipPath: string, unzippedDir: string): Promis
   fs.ensureDirSync(unzippedDir);
   await extract(zipPath, { dir: unzippedDir });
   console.log(unzippedDir);
-  return glob
-    .sync('**/*.*', {
-      cwd: unzippedDir,
-      absolute: true,
-    })
-    .sort();
+  return globSync('**/*.*', {
+    cwd: unzippedDir,
+    absolute: true,
+  }).sort();
 };

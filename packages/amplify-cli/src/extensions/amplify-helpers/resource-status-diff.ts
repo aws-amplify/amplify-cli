@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as glob from 'glob';
+import type { GlobOptionsWithFileTypesFalse } from 'glob';
+import { globSync } from 'glob';
 import chalk from 'chalk';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { $TSAny, generateCustomPoliciesInTemplate, pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
@@ -92,14 +93,14 @@ interface IResourcePaths {
  */
 export const globCFNFilePath = (fileFolder: string): string => {
   if (fs.existsSync(fileFolder)) {
-    const globOptions: glob.GlobOptionsWithFileTypesFalse = {
+    const globOptions: GlobOptionsWithFileTypesFalse = {
       absolute: false,
       cwd: fileFolder,
       follow: false,
       // eslint-disable-next-line spellcheck/spell-checker
       nodir: true,
     };
-    const templateFileNames = glob.sync('**/*template.{yaml,yml,json}', globOptions);
+    const templateFileNames = globSync('**/*template.{yaml,yml,json}', globOptions);
     for (const templateFileName of templateFileNames) {
       const absolutePath = path.join(fileFolder, templateFileName);
       return absolutePath; // only the top level cloudformation ( nested templates are picked after parsing this file )

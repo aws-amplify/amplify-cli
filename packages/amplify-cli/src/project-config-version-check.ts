@@ -2,7 +2,8 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
-import * as glob from 'glob';
+import type { GlobOptionsWithFileTypesFalse } from 'glob';
+import { globSync } from 'glob';
 import { coerce, lt } from 'semver';
 import { Context } from './domain/context';
 import { ConfirmQuestion } from 'inquirer';
@@ -65,14 +66,14 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
   const filesToUpdate: string[] = [];
 
   if (fs.existsSync(backendDirPath)) {
-    const globOptions: glob.GlobOptionsWithFileTypesFalse = {
+    const globOptions: GlobOptionsWithFileTypesFalse = {
       absolute: false,
       cwd: backendDirPath,
       follow: false,
       nodir: true,
     };
 
-    const templateFileNames = glob.sync('**/*template.{yaml,yml,json}', globOptions);
+    const templateFileNames = globSync('**/*template.{yaml,yml,json}', globOptions);
 
     for (const templateFileName of templateFileNames) {
       const absolutePath = path.join(backendDirPath, templateFileName);

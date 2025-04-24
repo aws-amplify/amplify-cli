@@ -1,7 +1,7 @@
 import { $TSContext, AmplifyFault, PathConstants, pathManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifySpinner } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 import { S3 } from '../aws-utils/aws-s3';
 import archiver from './archiver';
@@ -27,7 +27,7 @@ const uploadStudioBackendFiles = async (s3: S3, bucketName: string) => {
     'transform.conf.json',
     'parameters.json',
   ]
-    .flatMap((baseName) => glob.sync(`**/${baseName}`, { cwd: amplifyDirPath, ignore: ['**/node_modules/**'] }))
+    .flatMap((baseName) => globSync(`**/${baseName}`, { cwd: amplifyDirPath, ignore: ['**/node_modules/**'] }))
     .filter((filePath) => !filePath.startsWith('backend'))
     .map((filePath) => ({
       Body: fs.createReadStream(path.join(amplifyDirPath, filePath)),
@@ -61,7 +61,7 @@ export const storeCurrentCloudBackend = async (context: $TSContext) => {
       fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
     }
 
-    const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
+    const cliJSONFiles = globSync(PathConstants.CLIJSONFileNameGlob, {
       cwd: pathManager.getAmplifyDirPath(),
       absolute: true,
     });

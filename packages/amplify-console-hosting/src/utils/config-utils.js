@@ -2,7 +2,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const { pathManager, PathConstants, stateManager } = require('@aws-amplify/amplify-cli-core');
-const glob = require('glob');
+const { globSync } = require('glob');
 const constants = require('../constants/plugin-constants');
 const utils = require('../utils/amplify-context-utils');
 const clientFactory = require('../utils/client-factory');
@@ -153,7 +153,7 @@ async function storeCurrentCloudBackend(context) {
 
   try {
     const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-    const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
+    const cliJSONFiles = globSync(PathConstants.CLIJSONFileNameGlob, {
       cwd: pathManager.getAmplifyDirPath(),
       absolute: true,
     });

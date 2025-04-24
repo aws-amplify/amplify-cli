@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
-import glob from 'glob';
+import { globSync } from 'glob';
 import execa from 'execa';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 
@@ -25,8 +25,8 @@ function isBuildStale(resourceDir: string, lastBuildTimeStamp: Date) {
   if (dirTime > lastBuildTimeStamp) {
     return true;
   }
-  const fileUpdatedAfterLastBuild = glob
-    .sync(`${resourceDir}/**`, { ignore: ['**/dist/**', '**/__pycache__/**'] })
-    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+  const fileUpdatedAfterLastBuild = globSync(`${resourceDir}/**`, { ignore: ['**/dist/**', '**/__pycache__/**'] }).find(
+    (file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp,
+  );
   return !!fileUpdatedAfterLastBuild;
 }
