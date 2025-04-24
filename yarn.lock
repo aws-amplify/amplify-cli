@@ -1237,7 +1237,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/cli-internal@14.0.0-next-9.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
+"@aws-amplify/cli-internal@14.0.0-next-10.0, @aws-amplify/cli-internal@workspace:packages/amplify-cli":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli-internal@workspace:packages/amplify-cli"
   dependencies:
@@ -1337,7 +1337,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/cli@workspace:packages/amplify-cli-npm"
   dependencies:
-    "@aws-amplify/cli-internal": 14.0.0-next-9.0
+    "@aws-amplify/cli-internal": 14.0.0-next-10.0
     "@types/tar": ^6.1.1
     axios: ^1.6.7
     rimraf: ^3.0.2
@@ -1850,7 +1850,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-amplify/migrate-template-gen@0.1.0-next-8.0, @aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen":
+"@aws-amplify/migrate-template-gen@0.1.0-next-10.0, @aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/migrate-template-gen@workspace:packages/amplify-migration-template-gen"
   dependencies:
@@ -1873,8 +1873,8 @@ __metadata:
     "@aws-amplify/amplify-gen1-codegen-function-adapter": 0.1.0-next-9.0
     "@aws-amplify/amplify-gen1-codegen-storage-adapter": 0.1.0-next-9.0
     "@aws-amplify/amplify-gen2-codegen": 0.1.0-next-9.0
-    "@aws-amplify/cli-internal": 14.0.0-next-9.0
-    "@aws-amplify/migrate-template-gen": 0.1.0-next-8.0
+    "@aws-amplify/cli-internal": 14.0.0-next-10.0
+    "@aws-amplify/migrate-template-gen": 0.1.0-next-10.0
     "@aws-sdk/client-amplify": ^3.592.0
     "@aws-sdk/client-amplifybackend": ^3.592.0
     "@aws-sdk/client-cloudformation": ^3.592.0
