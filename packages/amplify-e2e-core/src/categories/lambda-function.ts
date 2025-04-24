@@ -692,6 +692,7 @@ export function validateNodeModulesDirRemoval(projRoot) {
   const nodeModulesDirs = globSync('**/node_modules', {
     cwd: functionDir,
     absolute: true,
+    dotRelative: true,
   });
   expect(nodeModulesDirs.length).toBe(0);
 }
