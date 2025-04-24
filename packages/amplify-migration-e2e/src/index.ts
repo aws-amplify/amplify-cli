@@ -21,7 +21,7 @@ import {
 import path from 'node:path';
 import { unset } from 'lodash';
 import execa from 'execa';
-import { deleteGen2Sandbox } from './sandbox';
+import { deleteGen2Sandbox, deleteGen2SandboxStack } from './sandbox';
 import assert from 'node:assert';
 import { updatePackageDependency } from './updatePackageJson';
 
@@ -33,7 +33,7 @@ export * from './sandbox';
 
 export const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
-export const MIGRATE_TOOL_VERSION = '0.1.0-next-9.0';
+export const MIGRATE_TOOL_VERSION = '0.1.0-next-10.0';
 export const BACKEND_DATA_VERSION = '0.0.0-test-20250416182614';
 
 export async function setupAndPushDefaultGen1Project(projRoot: string, projName: string) {
@@ -84,10 +84,18 @@ export function runCodegenCommand(cwd: string) {
   }
 }
 
-export async function cleanupProjects(cwd: string, projName: string) {
-  await deleteGen1Project(path.join(cwd, '.amplify', 'migration'));
-  await deleteGen2Sandbox(cwd, projName);
+export async function cleanupProjects(cwd: string, projName: string, isRevert = false, gen2StackName: string | undefined = undefined) {
+  console.log(`cleaning up project ${projName} at ${cwd}...`);
+  if (isRevert) {
+    await deleteGen1Project(cwd);
+    assert(gen2StackName, 'gen2StackName is required for revert');
+    await deleteGen2SandboxStack(cwd, gen2StackName);
+  } else {
+    await deleteGen1Project(path.join(cwd, '.amplify', 'migration'));
+    await deleteGen2Sandbox(cwd, projName);
+  }
   deleteProjectDir(cwd);
+  console.log(`cleaned up project ${projName} at ${cwd}`);
 }
 
 export function removeProperties(obj: Record<string, unknown>, propertiesToRemove: string[]) {

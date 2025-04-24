@@ -1,5 +1,5 @@
 import { getNpxPath, nspawn as spawn } from '@aws-amplify/amplify-e2e-core';
-import { pushTimeoutMS } from '.';
+import { deleteStack, getProjectOutputs, pushTimeoutMS } from '.';
 import execa from 'execa';
 
 export async function runGen2SandboxCommand(cwd: string, identifier: string) {
@@ -33,4 +33,10 @@ export function deleteGen2Sandbox(cwd: string, identifier: string) {
     .sendConfirmYes()
     .wait('Finished deleting.')
     .runAsync();
+}
+
+export async function deleteGen2SandboxStack(projRoot: string, stackName: string) {
+  const gen2Meta = getProjectOutputs(projRoot);
+  const region = gen2Meta.auth.aws_region;
+  await deleteStack(stackName, region);
 }

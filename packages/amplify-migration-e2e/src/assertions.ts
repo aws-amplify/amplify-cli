@@ -118,6 +118,7 @@ export async function assertDefaultGen1Setup(projRoot: string) {
 
 export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {
   const gen1Meta = getProjectMeta(projRoot);
+  const gen1StackName = gen1Meta.providers.awscloudformation.StackName;
   const gen1Region = gen1Meta.providers.awscloudformation.Region;
   const { gen1UserPoolId } = await assertUserPool(gen1Meta, gen1Region);
   const { gen1FunctionName } = await assertFunction(gen1Meta, gen1Region);
@@ -125,8 +126,9 @@ export async function assertAuthWithMaxOptionsGen1Setup(projRoot: string) {
   const { gen1IdentityPoolId } = await assertIdentityPool(gen1Meta, gen1Region);
   const { gen1ClientIds } = await assertUserPoolClients(gen1Meta, gen1Region);
   await assertUserPoolGroups(gen1Meta);
+  const envName = gen1StackName.split('-')[2];
 
-  return { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1Region };
+  return { gen1UserPoolId, gen1ClientIds, gen1IdentityPoolId, gen1FunctionName, gen1Region, envName };
 }
 
 export async function assertStorageWithMaxOptionsGen1Setup(projRoot: string) {
@@ -165,9 +167,17 @@ async function assertUserPoolResource(projRoot: string, gen1UserPoolId: string, 
   const gen2UserPoolId = gen2Meta.auth.user_pool_id;
   const gen2Region = gen2Meta.auth.aws_region;
   const gen2Resource = await getResourceDetails('AWS::Cognito::UserPool', gen2UserPoolId, gen2Region);
+  assert(typeof gen1Resource.UserPoolName === 'string');
+  assert(typeof gen2Resource.UserPoolName === 'string');
   gen1Resource.UserPoolName = extractUserPoolNamePrefix(gen1Resource.UserPoolName);
   gen2Resource.UserPoolName = extractUserPoolNamePrefix(gen2Resource.UserPoolName);
-  if (gen1Resource.LambdaConfig.PostConfirmation) assert(gen2Resource.LambdaConfig.PostConfirmation);
+  if (
+    'LambdaConfig' in gen2Resource &&
+    gen2Resource.LambdaConfig &&
+    typeof gen2Resource.LambdaConfig === 'object' &&
+    'PostConfirmation' in gen2Resource.LambdaConfig
+  )
+    assert(gen2Resource.LambdaConfig.PostConfirmation);
   removeProperties(gen2Resource, ['ProviderURL', 'ProviderName', 'UserPoolId', 'Arn', 'LambdaConfig.PostConfirmation']);
   // TODO: remove below line after EmailMessage, EmailSubject, SmsMessage, SmsVerificationMessage, EmailVerificationMessage, EmailVerificationSubject, AccountRecoverySetting inconsistency is fixed
   removeProperties(gen2Resource, [
@@ -218,6 +228,7 @@ async function assertUserPoolClientsResource(projRoot: string, gen1UserPoolId: s
 
 async function assertIdentityPoolResource(projRoot: string, gen1IdentityPoolId: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Cognito::IdentityPool', gen1IdentityPoolId, gen1Region);
+  assert(gen1Resource);
   removeProperties(gen1Resource, ['CognitoIdentityProviders', 'Id', 'IdentityPoolName', 'IdentityPoolTags', 'Name']);
   // TODO: remove below line after SupportedLoginProviders inconsistency is fixed
   removeProperties(gen1Resource, ['SupportedLoginProviders']);
@@ -225,6 +236,7 @@ async function assertIdentityPoolResource(projRoot: string, gen1IdentityPoolId: 
   const gen2IdentityPoolId = gen2Meta.auth.identity_pool_id;
   const gen2Region = gen2Meta.auth.aws_region;
   const gen2Resource = await getResourceDetails('AWS::Cognito::IdentityPool', gen2IdentityPoolId, gen2Region);
+  assert(gen2Resource);
   removeProperties(gen2Resource, ['CognitoIdentityProviders', 'Id', 'IdentityPoolName', 'IdentityPoolTags', 'Name']);
   // TODO: remove below line after SupportedLoginProviders inconsistency is fixed
   removeProperties(gen2Resource, ['SupportedLoginProviders']);
@@ -245,6 +257,7 @@ export async function assertAuthResource(
 
 export async function assertStorageResource(projRoot: string, gen1BucketName: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::S3::Bucket', gen1BucketName, gen1Region);
+  assert(gen1Resource);
   removeProperties(gen1Resource, [
     'DualStackDomainName',
     'DomainName',
@@ -263,7 +276,14 @@ export async function assertStorageResource(projRoot: string, gen1BucketName: st
   const gen2BucketName = gen2Meta.storage.bucket_name;
   const gen2Region = gen2Meta.storage.aws_region;
   const gen2Resource = await getResourceDetails('AWS::S3::Bucket', gen2BucketName, gen2Region);
-  if (gen1Resource.NotificationConfiguration) {
+  assert(gen2Resource);
+  if (
+    gen1Resource.NotificationConfiguration &&
+    gen2Resource.NotificationConfiguration &&
+    typeof gen2Resource.NotificationConfiguration === 'object' &&
+    'LambdaConfigurations' in gen2Resource.NotificationConfiguration &&
+    Array.isArray(gen2Resource.NotificationConfiguration.LambdaConfigurations)
+  ) {
     assert(gen2Resource.NotificationConfiguration.LambdaConfigurations[0].Function);
     assert(gen2Resource.NotificationConfiguration.LambdaConfigurations[1].Function);
   }
@@ -284,6 +304,7 @@ export async function assertStorageResource(projRoot: string, gen1BucketName: st
 
 export async function assertFunctionResource(projRoot: string, gen2StackName: string, gen1FunctionName: string, gen1Region: string) {
   const gen1Resource = await getResourceDetails('AWS::Lambda::Function', gen1FunctionName, gen1Region);
+  assert(gen1Resource);
   removeProperties(gen1Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
   // TODO: remove below line after Tags inconsistency is fixed
   removeProperties(gen1Resource, ['Tags', 'Environment']);
@@ -293,6 +314,7 @@ export async function assertFunctionResource(projRoot: string, gen2StackName: st
   const outputs = (await describeCloudFormationStack(gen2StackName, gen2Region)).Outputs;
   const gen2FunctionName = JSON.parse(outputs?.find((output) => output.OutputKey === 'definedFunctions')?.OutputValue ?? '[]')[0];
   const gen2Resource = await getResourceDetails('AWS::Lambda::Function', gen2FunctionName, gen2Region);
+  assert(gen2Resource);
   assert(gen2Resource.FunctionName);
   removeProperties(gen2Resource, ['Arn', 'FunctionName', 'LoggingConfig.LogGroup', 'Role']);
   // TODO: remove below line after Environment.Variables.AMPLIFY_SSM_ENV_CONFIG, Tags inconsistency is fixed

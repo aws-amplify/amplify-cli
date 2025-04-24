@@ -840,6 +840,7 @@ __metadata:
     "@aws-amplify/amplify-gen2-codegen": 0.1.0-next-9.0
     "@aws-sdk/client-appsync": ^3.666.0
     "@aws-sdk/client-cloudcontrol": ^3.658.1
+    "@aws-sdk/client-cloudformation": ^3.787.0
     "@aws-sdk/client-cognito-identity": ^3.670.0
     "@aws-sdk/client-s3": ^3.674.0
     execa: ^5.1.1
@@ -2567,7 +2568,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudformation@npm:^3.592.0, @aws-sdk/client-cloudformation@npm:^3.744.0":
+"@aws-sdk/client-cloudformation@npm:^3.592.0, @aws-sdk/client-cloudformation@npm:^3.744.0, @aws-sdk/client-cloudformation@npm:^3.787.0":
   version: 3.787.0
   resolution: "@aws-sdk/client-cloudformation@npm:3.787.0"
   dependencies:
