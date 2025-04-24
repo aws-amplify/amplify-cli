@@ -42,7 +42,7 @@ artifacts:
   files:
     - '$E2E_TEST_COVERAGE_DIR/*'
     - amplify-e2e-reports/*
-  base-directory: packages/amplify-e2e-tests/
+  base-directory: packages/amplify-migration-e2e/
 reports:
   e2e-reports:
     files:
