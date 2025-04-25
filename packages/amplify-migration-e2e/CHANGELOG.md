@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-next-9.0...@aws-amplify/amplify-migration-e2e@0.1.0-next-10.0) (2025-04-24)
+
+
+### Bug Fixes
+
+* lint errors in migration e2e ([094e7a7](https://github.com/aws-amplify/amplify-cli/commit/094e7a75d2b83c30d200375d297ab2329541160f))
+* remove extraneous console log ([2f87078](https://github.com/aws-amplify/amplify-cli/commit/2f8707850db40a274508e1b423c0d62def8fc2a5))
+
+
+
+
+
 # [0.1.0-next-9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-next-7.0...@aws-amplify/amplify-migration-e2e@0.1.0-next-9.0) (2025-04-22)
 
 **Note:** Version bump only for package @aws-amplify/amplify-migration-e2e
