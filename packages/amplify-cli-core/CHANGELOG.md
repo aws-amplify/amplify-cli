@@ -3,34 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.4.1-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.1-next-4.0...@aws-amplify/amplify-cli-core@4.4.1-next-7.0) (2025-04-19)
-
-
-### Bug Fixes
-
-* versions in cli-core ([c36be0f](https://github.com/aws-amplify/amplify-cli/commit/c36be0f3e7bd51984b56b7b28a148c49fd6fb4b4))
-
-
-
-
-
-## [4.4.1-next-4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.1-next-3.0...@aws-amplify/amplify-cli-core@4.4.1-next-4.0) (2025-03-12)
-
-**Note:** Version bump only for package @aws-amplify/amplify-cli-core
-
-
-
-
-
-## [4.4.1-next-3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.1-next-2.0...@aws-amplify/amplify-cli-core@4.4.1-next-3.0) (2025-03-05)
-
-**Note:** Version bump only for package @aws-amplify/amplify-cli-core
-
-
-
-
-
-## [4.4.1-next-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.0...@aws-amplify/amplify-cli-core@4.4.1-next-2.0) (2025-02-26)
+## [4.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-cli-core@4.4.0...@aws-amplify/amplify-cli-core@4.4.1) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-cli-core
 

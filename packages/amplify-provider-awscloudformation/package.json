@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-provider-awscloudformation",
-  "version": "8.11.7-next-7.0",
+  "version": "8.11.7",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -28,18 +28,18 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "3.1.28-next-7.0",
-    "@aws-amplify/amplify-cli-core": "4.4.1-next-7.0",
+    "@aws-amplify/amplify-category-custom": "3.1.28",
+    "@aws-amplify/amplify-cli-core": "4.4.1",
     "@aws-amplify/amplify-cli-logger": "1.3.8",
-    "@aws-amplify/amplify-environment-parameters": "1.9.19-next-7.0",
+    "@aws-amplify/amplify-environment-parameters": "1.9.19",
     "@aws-amplify/amplify-prompts": "2.8.6",
     "@aws-amplify/amplify-util-import": "2.8.3",
-    "@aws-amplify/cli-extensibility-helper": "3.0.38-next-7.0",
+    "@aws-amplify/cli-extensibility-helper": "3.0.38",
     "@aws-amplify/graphql-transformer-core": "^2.11.1",
     "@aws-amplify/graphql-transformer-interfaces": "^3.12.0",
     "amplify-codegen": "^4.10.3",
     "archiver": "^5.3.0",
-    "aws-cdk-lib": "~2.187.0",
+    "aws-cdk-lib": "~2.189.1",
     "aws-sdk": "^2.1464.0",
     "bottleneck": "2.19.5",
     "chalk": "^4.1.1",

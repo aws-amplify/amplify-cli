@@ -3,43 +3,9 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [14.0.0-next-9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.0.0-next-8.0...@aws-amplify/cli-internal@14.0.0-next-9.0) (2025-04-22)
+## [13.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@13.0.0...@aws-amplify/cli-internal@13.0.1) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/cli-internal
-
-
-
-
-
-# [14.0.0-next-8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@14.0.0-next-7.0...@aws-amplify/cli-internal@14.0.0-next-8.0) (2025-04-21)
-
-**Note:** Version bump only for package @aws-amplify/cli-internal
-
-
-
-
-
-# [14.0.0-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-internal@12.15.0-next-6.0...@aws-amplify/cli-internal@14.0.0-next-7.0) (2025-04-19)
-
-
-### Bug Fixes
-
-* add amplify data as a dependency to amplify-gen2-codegen ([3f0713b](https://github.com/aws-amplify/amplify-cli/commit/3f0713b9777e37a240e9c16c0840c533c880e753))
-* import path for types ([fde06aa](https://github.com/aws-amplify/amplify-cli/commit/fde06aab3af6f1d06636784a1d817f475b544f5f))
-* update lock file ([699f9e7](https://github.com/aws-amplify/amplify-cli/commit/699f9e7c48039f77dd6620bf8346fe2840a6166c))
-* versions in cli-core ([c36be0f](https://github.com/aws-amplify/amplify-cli/commit/c36be0f3e7bd51984b56b7b28a148c49fd6fb4b4))
-
-
-
-# 13.0.0 (2025-02-24)
-
-
-* feat!: Update node to 22 (#14121) ([ae8aeaf](https://github.com/aws-amplify/amplify-cli/commit/ae8aeaf275937d283253ad46156fcd627dcf1f3c)), closes [#14121](https://github.com/aws-amplify/amplify-cli/issues/14121)
-
-
-### BREAKING CHANGES
-
-* Update node to 22
 
 
 
