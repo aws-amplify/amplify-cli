@@ -367,7 +367,7 @@ function _runGen2MigrationE2ETestsLinux {
     amplify version
     cd packages/amplify-migration-e2e
     _loadTestAccountCredentials
-    retry runE2eTestCb
+    retry runGen2MigrationsE2ETestCb
 }
 
 function _unassumeTestAccountCredentials {

@@ -297,6 +297,29 @@ function runE2eTestCb {
     fi
 }
 
+function runGen2MigrationsE2ETestCb {
+    _setupCoverage
+    FAILED_TEST_REGEX_FILE="./amplify-migration-e2e-reports/amplify-migration-e2e-failed-test.txt"
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        if [[ ! -z "$DISABLE_COVERAGE" ]]; then
+            echo Running WITHOUT coverage
+            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        else
+            NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e-migration --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        fi
+    else
+        if [[ ! -z "$DISABLE_COVERAGE" ]]; then
+            echo Running WITHOUT coverage
+            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        else
+            NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e-migration --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+        fi
+    fi
+}
+
 function _setupCoverage {
     _teardownCoverage
     echo "Setup Coverage ($E2E_TEST_COVERAGE_DIR)"
