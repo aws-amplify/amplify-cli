@@ -37,11 +37,11 @@ phases:
     commands:
       - source ./shared-scripts.sh && _convertCoverage # && _uploadCoverageLinux (disabled while troubleshooting E2E test failures during initial CodeBuild setup)
       - source ./shared-scripts.sh && _scanArtifacts
-      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-e2e-tests
+      - source ./shared-scripts.sh && _uploadReportsToS3 $CODEBUILD_SOURCE_VERSION $CODEBUILD_BATCH_BUILD_IDENTIFIER amplify-migration-e2e
 artifacts:
   files:
     - '$E2E_TEST_COVERAGE_DIR/*'
-    - amplify-e2e-reports/*
+    - amplify-migration-e2e-reports/*
   base-directory: packages/amplify-migration-e2e/
 reports:
   e2e-reports:
