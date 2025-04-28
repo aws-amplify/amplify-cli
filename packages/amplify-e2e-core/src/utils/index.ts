@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as rimraf from 'rimraf';
+import { rimrafSync } from 'rimraf';
 import { config } from 'dotenv';
 import execa from 'execa';
 import { v4 as uuid } from 'uuid';
@@ -52,7 +52,7 @@ config();
  */
 export const deleteProjectDir = (root: string): void => {
   try {
-    rimraf.sync(root);
+    rimrafSync(root);
   } catch (e) {
     // directory does not exist/was already deleted
   }
@@ -62,7 +62,7 @@ export const deleteProjectDir = (root: string): void => {
  * delete <project-root>/amplify directory
  */
 export const deleteAmplifyDir = (root: string): void => {
-  rimraf.sync(path.join(root, 'amplify'));
+  rimrafSync(path.join(root, 'amplify'));
 };
 
 /**

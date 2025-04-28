@@ -2,7 +2,7 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import * as rimraf from 'rimraf';
+import { rimrafSync } from 'rimraf';
 import { v4 as uuid } from 'uuid';
 import {
   EnvVarFormatError,
@@ -58,7 +58,7 @@ describe('feature flags', () => {
         expect(updatedConfig.usageTracking).toBeDefined();
         expect(updatedConfig.features).toMatchObject(FeatureFlags.getNewProjectDefaults());
       } finally {
-        rimraf.sync(tempProjectDir);
+        rimrafSync(tempProjectDir);
       }
     });
 
@@ -87,7 +87,7 @@ describe('feature flags', () => {
 
         expect(updatedConfig).toEqual(originalConfig);
       } finally {
-        rimraf.sync(tempProjectDir);
+        rimrafSync(tempProjectDir);
       }
     });
 
@@ -111,7 +111,7 @@ describe('feature flags', () => {
 
         expect(createdConfig).not.toBe('');
       } finally {
-        rimraf.sync(tempProjectDir);
+        rimrafSync(tempProjectDir);
       }
     });
 
@@ -136,7 +136,7 @@ describe('feature flags', () => {
 
         expect(FeatureFlags.getBoolean('graphQLTransformer.validateTypeNameReservedWords')).toBe(false);
       } finally {
-        rimraf.sync(tempProjectDir);
+        rimrafSync(tempProjectDir);
       }
     });
 
@@ -185,7 +185,7 @@ describe('feature flags', () => {
         expect(customTransformerVersion).toBe(5);
         expect(isDefaultQueryEnabled).toBe(true);
       } finally {
-        rimraf.sync(tempProjectDir);
+        rimrafSync(tempProjectDir);
       }
     });
 

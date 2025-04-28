@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as rimraf from 'rimraf';
+import { rimrafSync } from 'rimraf';
 import {
   addFunction,
   addLayer,
@@ -346,7 +346,7 @@ describe('amplify add lambda layer with changes', () => {
       getLayerDirectoryName({ projName: settings.projName, layerName: settings.layerName }),
     );
 
-    rimraf.sync(path.join(layerPath, 'lib', 'nodejs', 'node_modules'));
+    rimrafSync(path.join(layerPath, 'lib', 'nodejs', 'node_modules'));
 
     await amplifyStatus(projRoot, 'No Change');
 
@@ -415,7 +415,7 @@ describe('amplify add lambda layer with changes', () => {
       getLayerDirectoryName({ projName: settings.projName, layerName: settings.layerName }),
     );
 
-    rimraf.sync(path.join(layerPath, 'lib', 'python', 'lib'));
+    rimrafSync(path.join(layerPath, 'lib', 'python', 'lib'));
 
     await amplifyStatus(projRoot, 'No Change');
 

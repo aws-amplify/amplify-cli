@@ -58,7 +58,7 @@
     "moment": "^2.24.0",
     "node-fetch": "^2.6.7",
     "node-pty": "^1.0.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^6.0.1",
     "title-case": "^3.0.3",
     "upper-case": "^2.0.2",
     "uuid": "^8.3.2",
