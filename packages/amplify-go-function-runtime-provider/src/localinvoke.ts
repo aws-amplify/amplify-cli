@@ -39,7 +39,7 @@ const startLambda = (request: InvocationRequest, portNumber: number, lambda: { e
 
   envVars['_LAMBDA_SERVER_PORT'] = portNumber.toString();
 
-  const lambdaProcess: ExecaChildProcess = execa.command(lambda.executable, {
+  const lambdaProcess: ExecaChildProcess = execa(lambda.executable, [], {
     env: envVars,
     extendEnv: false,
     cwd: lambda.cwd,

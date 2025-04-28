@@ -3,13 +3,9 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.10.15-next-7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.14-next-4.0...@aws-amplify/amplify-util-mock@5.10.15-next-7.0) (2025-04-19)
+## [5.10.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.14...@aws-amplify/amplify-util-mock@5.10.15) (2025-04-17)
 
-
-### Bug Fixes
-
-* lock file ([fdb2079](https://github.com/aws-amplify/amplify-cli/commit/fdb2079ae17fb832c8f5c3022583ffc8b5a010e4))
-* versions in cli-core ([c36be0f](https://github.com/aws-amplify/amplify-cli/commit/c36be0f3e7bd51984b56b7b28a148c49fd6fb4b4))
+**Note:** Version bump only for package @aws-amplify/amplify-util-mock
 
 
 
