@@ -94,9 +94,6 @@ jest.requireMock('@aws-sdk/client-sts').STSClient.prototype.send = jest.fn().moc
   Account: mockAccountId,
 });
 
-const GEN1_COMMAND = 'amplifyPush --simple';
-const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
-
 const mockFromStack = 'mockFromStack';
 const mockToStack = 'mockToStack';
 const mockEnvName = 'mockEnvName';
@@ -143,6 +140,30 @@ frontend:
     paths:
       - .npm/**/*`;
 
+  const expectedTransformedGen2BuildSpec = `version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - '# Execute Amplify CLI with the helper script'
+        - npm ci --cache .npm --prefer-offline
+        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci --cache .npm --prefer-offline
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - .npm/**/*`;
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.mocked(pathManager.findProjectRoot).mockReturnValue('/mockRootDir');
@@ -154,7 +175,7 @@ frontend:
     await updateAmplifyYmlFile(amplifyClient, mockAppId);
 
     expect(fs.readFile).toHaveBeenCalledWith(amplifyYmlPath, 'utf-8');
-    expect(fs.writeFile).toHaveBeenCalledWith(amplifyYmlPath, mockBuildSpec.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND), {
+    expect(fs.writeFile).toHaveBeenCalledWith(amplifyYmlPath, expectedTransformedGen2BuildSpec, {
       encoding: 'utf-8',
     });
   });
@@ -168,7 +189,7 @@ frontend:
     await updateAmplifyYmlFile(amplifyClient, mockAppId);
 
     expect(AmplifyClient.prototype.send).toHaveBeenCalledWith(expect.any(GetAppCommand));
-    expect(fs.writeFile).toHaveBeenCalledWith(amplifyYmlPath, mockBuildSpec.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND), {
+    expect(fs.writeFile).toHaveBeenCalledWith(amplifyYmlPath, expectedTransformedGen2BuildSpec, {
       encoding: 'utf-8',
     });
   });

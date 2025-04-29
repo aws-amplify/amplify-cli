@@ -37,7 +37,7 @@ export const MIGRATE_TOOL_VERSION = '0.1.0-next-10.0';
 export const BACKEND_DATA_VERSION = '0.0.0-test-20250416182614';
 
 export async function setupAndPushDefaultGen1Project(projRoot: string, projName: string) {
-  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, });
   await addAuthWithDefault(projRoot);
   await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
   await functionBuild(projRoot);
@@ -50,7 +50,7 @@ export async function setupAndPushDefaultGen1Project(projRoot: string, projName:
 }
 
 export async function setupAndPushAuthWithMaxOptionsGen1Project(projRoot: string, projName: string) {
-  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false });
   await addAuthWithGroupTrigger(projRoot);
   await updateAuthAddUserGroups(projRoot, ['Admins', 'Users']);
   await updateAuthToAddSignInSignOutUrlAfterPull(projRoot, {
@@ -64,12 +64,10 @@ export async function setupAndPushAuthWithMaxOptionsGen1Project(projRoot: string
 }
 
 export async function setupAndPushStorageWithMaxOptionsGen1Project(projRoot: string, projName: string) {
-  console.log(`initializing project ${projName} at ${projRoot}`);
-  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, includeGen2RecommendationPrompt: false });
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false });
   await addAuthWithDefault(projRoot);
   await addS3WithTrigger(projRoot);
   await amplifyPushAuth(projRoot, true);
-  console.log(`pushed auth successfully`);
 }
 
 export function runCodegenCommand(cwd: string) {

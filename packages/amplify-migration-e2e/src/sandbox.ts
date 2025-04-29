@@ -11,7 +11,8 @@ export async function runGen2SandboxCommand(cwd: string, identifier: string) {
   console.log('runGen2SandboxCommand', processResult);
   if (processResult.exitCode === 0) {
     console.log(processResult.stdout);
-    const match = processResult.stdout.match(/arn:aws:cloudformation:.*:stack\/([^/]+)\//);
+    const match = processResult.stdout.match(/Stack:\s+(.+)/);
+    console.log('sandbox stack name', match?.[1]);
     if (match) {
       return match[1];
     } else {
