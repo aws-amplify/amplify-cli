@@ -10,9 +10,6 @@
   "include": ["src/**/*"],
   "references": [
     {
-      "path": "../amplify-migration"
-    },
-    {
       "path": "../amplify-category-function"
     },
     {

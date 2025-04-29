@@ -306,14 +306,14 @@ function runGen2MigrationsE2ETestCb {
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
         if [[ ! -z "$DISABLE_COVERAGE" ]]; then
             echo Running WITHOUT coverage
-            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+            yarn e2e-migration --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
         else
             NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e-migration --forceExit --no-cache --maxWorkers=4 $TEST_SUITE -t "$failedTests"
         fi
     else
         if [[ ! -z "$DISABLE_COVERAGE" ]]; then
             echo Running WITHOUT coverage
-            yarn e2e --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
+            yarn e2e-migration --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
         else
             NODE_V8_COVERAGE=$E2E_TEST_COVERAGE_DIR yarn e2e-migration --forceExit --no-cache --maxWorkers=4 $TEST_SUITE
         fi
