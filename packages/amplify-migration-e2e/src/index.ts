@@ -37,7 +37,7 @@ export const MIGRATE_TOOL_VERSION = '0.1.0-next-10.0';
 export const BACKEND_DATA_VERSION = '0.0.0-test-20250416182614';
 
 export async function setupAndPushDefaultGen1Project(projRoot: string, projName: string) {
-  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false, });
+  await initJSProjectWithProfile(projRoot, { name: projName, disableAmplifyAppCreation: false });
   await addAuthWithDefault(projRoot);
   await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
   await functionBuild(projRoot);

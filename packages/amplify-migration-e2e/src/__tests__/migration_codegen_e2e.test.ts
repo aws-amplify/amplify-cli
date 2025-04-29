@@ -53,7 +53,7 @@ void describe('Gen 2 Codegen E2E tests', () => {
       await cleanupProjects(projRoot, projName);
     });
 
-    void it.only('should init a project & add auth, function, storage, api with defaults & perform full migration codegen flow', async () => {
+    void it('should init a project & add auth, function, storage, api with defaults & perform full migration codegen flow', async () => {
       // Arrange
       await setupAndPushDefaultGen1Project(projRoot, projName);
       // Act
