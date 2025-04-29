@@ -20,6 +20,7 @@
     "coverage": "codecov || exit 0",
     "deep-clean-install": "yarn verdaccio-clean && yarn cache clean && yarn clean && git clean -fdx -e .vscode -e .env && yarn",
     "e2e": "lerna run e2e",
+    "e2e-migration": "lerna run e2e-migration",
     "extract-api": "lerna run extract-api --concurrency 4",
     "extract-formatting-changes": "yarn ts-node ./scripts/extract-formatting-changes.ts",
     "finish-release": "ts-node ./scripts/finish-release.ts",
