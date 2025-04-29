@@ -675,7 +675,7 @@ __metadata:
     css-minimizer-webpack-plugin: ^7.0.0
     dotenv: ^10.0.0
     dotenv-expand: ^5.1.0
-    eslint: 8.57.1
+    eslint: ^8.57.1
     eslint-config-react-app: ^7.0.0
     eslint-webpack-plugin: ^3.1.1
     file-loader: ^6.2.0
@@ -11712,7 +11712,7 @@ __metadata:
     babel-loader: ^8.3.0
     codecov: ^3.7.0
     copyfiles: ^2.2.0
-    eslint: 8.57.1
+    eslint: ^8.57.1
     eslint-config-airbnb: ^18.0.1
     eslint-config-prettier: ^8.5.0
     eslint-import-resolver-typescript: ^3.5.5
@@ -16960,7 +16960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.57.1":
+"eslint@npm:^8.57.1":
   version: 8.57.1
   resolution: "eslint@npm:8.57.1"
   dependencies:
