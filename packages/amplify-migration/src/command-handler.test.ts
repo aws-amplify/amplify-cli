@@ -12,6 +12,7 @@ import {
   getAuthTriggersConnections,
   executeStackRefactor,
   revertGen2Migration,
+  updateGitIgnoreForGen2,
 } from './command-handlers';
 import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
@@ -727,5 +728,60 @@ describe('revertGen2Migration', () => {
     expect(mockUsageData.emitSuccess).not.toHaveBeenCalled();
     expect(fs.rm).not.toHaveBeenCalled();
     expect(fs.rename).not.toHaveBeenCalled();
+  });
+});
+
+// add tests for updateGitIgnoreForGen2
+describe('updateGitIgnoreForGen2', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  const mockGen1GitIgnore = `#amplify-do-not-edit-begin
+amplify/\\#current-cloud-backend
+amplify/.config/local-*
+amplify/logs
+amplify/mock-data
+amplify/mock-api-resources
+amplify/backend/amplify-meta.json
+amplify/backend/.temp
+build/
+dist/
+node_modules/
+aws-exports.js
+awsconfiguration.json
+amplifyconfiguration.json
+amplifyconfiguration.dart
+amplify-build-config.json
+amplify-gradle-config.json
+amplifytools.xcconfig
+.secret-*
+**.sample
+#amplify-do-not-edit-end`;
+
+  const expectedGen2Gitignore = `# amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*
+# node_modules
+node_modules
+build
+dist`;
+
+  const expectedFileEncoding = { encoding: 'utf-8' };
+  const expectedFilePath = `${process.cwd()}/.gitignore`;
+
+  it('should add gen2 migration files to gitignore', async () => {
+    jest.mocked(fs.readFile).mockResolvedValue(mockGen1GitIgnore);
+
+    await updateGitIgnoreForGen2();
+
+    expect(fs.writeFile).toHaveBeenCalledWith(expectedFilePath, expectedGen2Gitignore, expectedFileEncoding);
+  });
+
+  it('should not add gen2 migration files to gitignore if it does not exist', async () => {
+    jest.mocked(fs.readFile).mockRejectedValue(new Error('File does not exist'));
+    await updateGitIgnoreForGen2();
+
+    expect(fs.writeFile).toHaveBeenCalledWith(expectedFilePath, expectedGen2Gitignore, expectedFileEncoding);
   });
 });

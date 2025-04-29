@@ -63,6 +63,8 @@ enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   AMPLIFY_OUTPUTS = 'amplify_outputs*',
   AMPLIFY_CONFIGURATION = 'amplifyconfiguration*',
   NODE_MODULES = 'node_modules',
+  BUILD = 'build',
+  DIST = 'dist',
 }
 
 const generateGen2Code = async ({
@@ -271,7 +273,7 @@ async function writeToAmplifyYmlFile(amplifyYmlPath: string, content: string) {
   await fs.writeFile(amplifyYmlPath, content, { encoding: 'utf-8' });
 }
 
-async function updateGitIgnoreForGen2() {
+export async function updateGitIgnoreForGen2() {
   const cwd = process.cwd();
   const updateGitIgnore = ora('Updating gitignore contents').start();
   // Rewrite .gitignore to support gen2 related files
@@ -296,6 +298,12 @@ async function updateGitIgnoreForGen2() {
   }
   if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.NODE_MODULES)) {
     newGitIgnore = `${newGitIgnore}\n# node_modules\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.NODE_MODULES}`;
+  }
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.BUILD)) {
+    newGitIgnore = `${newGitIgnore}\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.BUILD}`;
+  }
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.DIST)) {
+    newGitIgnore = `${newGitIgnore}\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.DIST}`;
   }
   // remove empty lines
   newGitIgnore = newGitIgnore.replace(/^\s*[\r\n]/gm, '');
