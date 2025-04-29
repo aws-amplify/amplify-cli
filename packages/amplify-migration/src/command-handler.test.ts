@@ -731,7 +731,6 @@ describe('revertGen2Migration', () => {
   });
 });
 
-// add tests for updateGitIgnoreForGen2
 describe('updateGitIgnoreForGen2', () => {
   beforeEach(() => {
     jest.clearAllMocks();
