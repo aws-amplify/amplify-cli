@@ -81,12 +81,24 @@ export async function deleteStack(stackName: string, region: string) {
   await cloudformation.send(new DeleteStackCommand({ StackName: stackName }));
   let stackStatus = '';
   do {
-    const response = await cloudformation.send(new DescribeStacksCommand({ StackName: stackName }));
-    stackStatus = response.Stacks?.[0].StackStatus ?? '';
-    assert(stackStatus !== '', 'Expected stackStatus to be defined');
-    await delay(1000);
+    try {
+      const response = await cloudformation.send(new DescribeStacksCommand({ StackName: stackName }));
+      stackStatus = response.Stacks?.[0].StackStatus ?? '';
+      assert(stackStatus !== '', 'Expected stackStatus to be defined');
+      await delay(1000);
+    } catch (e) {
+      // Need to account for the case where stack is already deleted by the next poll.
+      if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string' && e.message.includes('does not exist')) {
+        logStackDeleteSuccess(stackName, region);
+        return;
+      }
+      throw e;
+    }
   } while (stackStatus.endsWith(CFN_IN_PROGRESS_STATUS));
 
   assert(stackStatus === CFN_DELETE_COMPLETE_STATUS, `Expected stack ${stackName} to be deleted but it's in ${stackStatus} state.`);
-  console.log(`Stack ${stackName} deleted successfully in ${region} region`);
+  logStackDeleteSuccess(stackName, region);
 }
+
+const logStackDeleteSuccess = (stackName: string, region: string) =>
+  console.log(`Stack ${stackName} deleted successfully in ${region} region`);

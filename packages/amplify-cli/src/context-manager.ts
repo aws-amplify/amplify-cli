@@ -66,7 +66,7 @@ const getSafeAccountId = (): string => {
 
 const getVersion = (context: Context): string => context.pluginPlatform.plugins.core[0].packageVersion;
 
-export const getProjectSettings = (): ProjectSettings => {
+const getProjectSettings = (): ProjectSettings => {
   const projectSettings: ProjectSettings = {} as unknown as ProjectSettings;
   if (stateManager.projectConfigExists()) {
     const projectConfig = stateManager.getProjectConfig();

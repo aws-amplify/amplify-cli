@@ -14,7 +14,7 @@ module.exports = {
   testEnvironmentOptions: {
     url: 'http://localhost',
   },
-  testRegex: 'src/__tests__/migration_codegen_e2e.test.ts',
+  testRegex: 'src/__tests__/.*\\.test\\.ts$',
   collectCoverage: false,
   collectCoverageFrom: ['src/**/*.ts', '!**/node_modules/**', '!src/__tests__/**', '!src/**/*.test.(ts|tsx|js|jsx)$', '!**/*.d.ts'],
   reporters: [

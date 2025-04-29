@@ -27,10 +27,9 @@ import { AuthTriggerConnection } from '@aws-amplify/amplify-gen1-codegen-auth-ad
 import { DataDefinitionFetcher } from './data_definition_fetcher';
 import { AmplifyStackParser } from './amplify_stack_parser';
 import { AppFunctionsDefinitionFetcher } from './app_functions_definition_fetcher';
-import { TemplateGenerator } from '@aws-amplify/migrate-template-gen';
+import { TemplateGenerator, ResourceMapping } from '@aws-amplify/migrate-template-gen';
 import { printer } from './printer';
 import { format } from './format';
-import { ResourceMapping } from '@aws-amplify/migrate-template-gen';
 import ora from 'ora';
 
 interface CodegenCommandParameters {
@@ -47,8 +46,9 @@ interface CodegenCommandParameters {
 const TEMP_GEN_2_OUTPUT_DIR = 'amplify-gen2';
 const AMPLIFY_DIR = 'amplify';
 const MIGRATION_DIR = '.amplify/migration';
-const GEN1_COMMAND = 'amplifyPush --simple';
-const GEN2_COMMAND = 'npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
+const GEN1_COMMAND = '- amplifyPush --simple';
+const GEN2_INSTALL_COMMAND = '- npm ci --cache .npm --prefer-offline';
+const GEN2_COMMAND = '- npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID';
 const GEN2_COMMAND_GENERATION_MESSAGE_SUFFIX = 'your Gen 2 backend code';
 const GEN1_REMOVE_CONFIGURATION_MESSAGE_SUFFIX = 'your Gen 1 configuration files';
 const GEN1_CUSTOM_RESOURCES_SUFFIX = 'your Gen 1 custom resources';
@@ -56,12 +56,15 @@ export const GEN1_CONFIGURATION_FILES = ['aws-exports.js', 'amplifyconfiguration
 const CUSTOM_DIR = 'custom';
 const TYPES_DIR = 'types';
 const BACKEND_DIR = 'backend';
+const GEN2_COMMAND_REPLACE_STRING = `${GEN2_INSTALL_COMMAND}\n${' '.repeat(8)}${GEN2_COMMAND}`;
 
 enum GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS {
   DOT_AMPLIFY = '.amplify',
   AMPLIFY_OUTPUTS = 'amplify_outputs*',
   AMPLIFY_CONFIGURATION = 'amplifyconfiguration*',
   NODE_MODULES = 'node_modules',
+  BUILD = 'build',
+  DIST = 'dist',
 }
 
 const generateGen2Code = async ({
@@ -266,11 +269,11 @@ export async function updateAmplifyYmlFile(amplifyClient: AmplifyClient, appId: 
 async function writeToAmplifyYmlFile(amplifyYmlPath: string, content: string) {
   // eslint-disable-next-line spellcheck/spell-checker
   // Replace 'amplifyPush --simple' with 'npx ampx pipeline-deploy'
-  content = content.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND);
+  content = content.replace(new RegExp(GEN1_COMMAND, 'g'), GEN2_COMMAND_REPLACE_STRING);
   await fs.writeFile(amplifyYmlPath, content, { encoding: 'utf-8' });
 }
 
-async function updateGitIgnoreForGen2() {
+export async function updateGitIgnoreForGen2() {
   const cwd = process.cwd();
   const updateGitIgnore = ora('Updating gitignore contents').start();
   // Rewrite .gitignore to support gen2 related files
@@ -295,6 +298,12 @@ async function updateGitIgnoreForGen2() {
   }
   if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.NODE_MODULES)) {
     newGitIgnore = `${newGitIgnore}\n# node_modules\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.NODE_MODULES}`;
+  }
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.BUILD)) {
+    newGitIgnore = `${newGitIgnore}\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.BUILD}`;
+  }
+  if (!newGitIgnore.includes(GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.DIST)) {
+    newGitIgnore = `${newGitIgnore}\n${GEN2_AMPLIFY_GITIGNORE_FILES_OR_DIRS.DIST}`;
   }
   // remove empty lines
   newGitIgnore = newGitIgnore.replace(/^\s*[\r\n]/gm, '');

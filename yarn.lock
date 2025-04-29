@@ -14557,27 +14557,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-storage-simulator@npm:1.11.6":
-  version: 1.11.6
-  resolution: "amplify-storage-simulator@npm:1.11.6"
-  dependencies:
-    body-parser: ^1.19.2
-    cors: ^2.8.5
-    etag: ^1.8.1
-    express: ^4.21.2
-    fs-extra: ^8.1.0
-    glob: ^7.2.0
-    object-to-xml: ^2.0.0
-    promise-toolbox: ^0.20.0
-    serve-static: ^1.14.2
-    uuid: ^8.3.2
-    xml: ^1.0.1
-    xml-js: ^1.6.11
-  checksum: af743d535da556d6d0d53b9ee6620fbc6ff675881f1abbc3fc514adf97b48b9738135ac357f1db0f0c8f62fd0ade1c82b23fc315a0144788597ff4fb1d974ce7
-  languageName: node
-  linkType: hard
-
-"amplify-storage-simulator@workspace:packages/amplify-storage-simulator":
+"amplify-storage-simulator@1.11.6, amplify-storage-simulator@workspace:packages/amplify-storage-simulator":
   version: 0.0.0-use.local
   resolution: "amplify-storage-simulator@workspace:packages/amplify-storage-simulator"
   dependencies:
@@ -14615,18 +14595,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"amplify-velocity-template@npm:1.4.15":
-  version: 1.4.15
-  resolution: "amplify-velocity-template@npm:1.4.15"
-  dependencies:
-    lodash: ^4.17.21
-  bin:
-    velocity: bin/velocity
-  checksum: ea808cead64979b801ec703d66331fa4838ef947b64782b99e5b4b6bbd240b66ab72fc6460bd2f8c831a1d9e97c60f0f0fb2a92a52cd57f7b9cfd6faffbe9ea8
-  languageName: node
-  linkType: hard
-
-"amplify-velocity-template@workspace:packages/amplify-velocity-template":
+"amplify-velocity-template@1.4.15, amplify-velocity-template@workspace:packages/amplify-velocity-template":
   version: 0.0.0-use.local
   resolution: "amplify-velocity-template@workspace:packages/amplify-velocity-template"
   dependencies:
