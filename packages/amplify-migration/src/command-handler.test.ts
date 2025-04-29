@@ -778,7 +778,7 @@ dist`;
     expect(fs.writeFile).toHaveBeenCalledWith(expectedFilePath, expectedGen2Gitignore, expectedFileEncoding);
   });
 
-  it('should not add gen2 migration files to gitignore if it does not exist', async () => {
+  it('should add gen2 migration files to gitignore if it does not exist', async () => {
     jest.mocked(fs.readFile).mockRejectedValue(new Error('File does not exist'));
     await updateGitIgnoreForGen2();
 
