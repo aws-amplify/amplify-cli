@@ -97,7 +97,8 @@ describe('function secret value', () => {
 
     // check that ssm param doesn't exist
     const meta = getProjectMeta(projRoot);
-    const { AmplifyAppId: appId, Region: region } = meta!.providers!.awscloudformation;
+    const appId = meta?.providers?.awscloudformation.AmplifyAppId ?? undefined;
+    const region = meta?.providers?.awscloudformation.Region ?? undefined;
     expect(appId).toBeDefined();
     await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
   });
@@ -124,7 +125,8 @@ describe('function secret value', () => {
 
     // check that ssm param doesn't exist
     const meta = getProjectMeta(projRoot);
-    const { AmplifyAppId: appId, Region: region } = meta!.providers!.awscloudformation;
+    const appId = meta?.providers?.awscloudformation.AmplifyAppId ?? undefined;
+    const region = meta?.providers?.awscloudformation.Region ?? undefined;
     expect(appId).toBeDefined();
     await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
   });
@@ -163,7 +165,8 @@ describe('function secret value', () => {
 
     // check that ssm param still exists
     const meta = getProjectMeta(projRoot);
-    const { AmplifyAppId: appId, Region: region } = meta!.providers!.awscloudformation;
+    const appId = meta?.providers?.awscloudformation.AmplifyAppId ?? undefined;
+    const region = meta?.providers?.awscloudformation.Region ?? undefined;
     expect(appId).toBeDefined();
     await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, 'integtest', funcName);
 
@@ -198,7 +201,8 @@ describe('function secret value', () => {
 
     // check that ssm param still exists
     const meta = getProjectMeta(projRoot);
-    const { AmplifyAppId: appId, Region: region } = meta!.providers!.awscloudformation;
+    const appId = meta?.providers?.awscloudformation.AmplifyAppId ?? undefined;
+    const region = meta?.providers?.awscloudformation.Region ?? undefined;
     expect(appId).toBeDefined();
     await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, 'integtest', funcName);
 
@@ -231,7 +235,8 @@ describe('function secret value', () => {
 
     // check that ssm param exists for new env
     const meta = getProjectMeta(projRoot);
-    const { AmplifyAppId: appId, Region: region } = meta!.providers!.awscloudformation;
+    const appId = meta?.providers?.awscloudformation.AmplifyAppId ?? undefined;
+    const region = meta?.providers?.awscloudformation.Region ?? undefined;
     expect(appId).toBeDefined();
     await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, newEnvName, funcName);
 
@@ -273,7 +278,8 @@ describe('function secret value', () => {
     await amplifyPushMissingFuncSecret(projRoot, 'anewtestsecretvalue');
 
     const meta = getProjectMeta(projRoot);
-    const { AmplifyAppId: appId, Region: region } = meta!.providers!.awscloudformation;
+    const appId = meta?.providers?.awscloudformation.AmplifyAppId ?? undefined;
+    const region = meta?.providers?.awscloudformation.Region ?? undefined;
     expect(appId).toBeDefined();
 
     // check that old value is removed and new one is added
