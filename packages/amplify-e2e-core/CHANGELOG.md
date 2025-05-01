@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.5-next-11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.7.4-next-7.0...@aws-amplify/amplify-e2e-core@5.7.5-next-11.0) (2025-05-01)
+
+
+### Bug Fixes
+
+* migration test file extension ([74b58eb](https://github.com/aws-amplify/amplify-cli/commit/74b58ebf250b9a0ffbf7469fae76ca758a7b077a))
+
+
+
+
+
 ## [5.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-e2e-core@5.7.3...@aws-amplify/amplify-e2e-core@5.7.4) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-e2e-core

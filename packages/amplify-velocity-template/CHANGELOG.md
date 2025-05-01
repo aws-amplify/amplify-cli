@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.16-next-11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.16-beta-latest.0...amplify-velocity-template@1.4.16-next-11.0) (2025-05-01)
+
+
+### Bug Fixes
+
+* migration test file extension ([74b58eb](https://github.com/aws-amplify/amplify-cli/commit/74b58ebf250b9a0ffbf7469fae76ca758a7b077a))
+
+
+
+
+
 ## [1.4.16-beta-latest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.15...amplify-velocity-template@1.4.16-beta-latest.0) (2025-02-12)
 
 **Note:** Version bump only for package amplify-velocity-template

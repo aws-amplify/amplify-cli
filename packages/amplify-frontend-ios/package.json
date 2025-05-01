@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-frontend-ios",
-  "version": "3.7.12",
+  "version": "3.7.13-next-11.0",
   "description": "amplify-cli front-end plugin for xcode projects",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.1",
+    "@aws-amplify/amplify-cli-core": "4.4.2-next-11.0",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",

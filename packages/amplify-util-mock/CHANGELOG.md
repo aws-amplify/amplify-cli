@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.16-next-11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.15-next-7.0...@aws-amplify/amplify-util-mock@5.10.16-next-11.0) (2025-05-01)
+
+
+### Bug Fixes
+
+* pin CDK version again ([#14186](https://github.com/aws-amplify/amplify-cli/issues/14186)) ([ef7f5eb](https://github.com/aws-amplify/amplify-cli/commit/ef7f5ebe0136049865554c6ec0235abc9b816fea))
+
+
+
+
+
 ## [5.10.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-util-mock@5.10.14...@aws-amplify/amplify-util-mock@5.10.15) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-util-mock

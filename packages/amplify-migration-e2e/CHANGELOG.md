@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-next-10.0...@aws-amplify/amplify-migration-e2e@0.1.0-next-11.0) (2025-05-01)
+
+
+### Bug Fixes
+
+* add junit xml to .gitignore ([a150cdd](https://github.com/aws-amplify/amplify-cli/commit/a150cddcf1ccd539d4fa5e015197e342b94fcf47))
+* **amplify-migration-e2e:** account for stack already deleted before next poll ([ee5a251](https://github.com/aws-amplify/amplify-cli/commit/ee5a251a0771f585780ad38e7f8fc500efa43a14))
+* migration test file extension ([74b58eb](https://github.com/aws-amplify/amplify-cli/commit/74b58ebf250b9a0ffbf7469fae76ca758a7b077a))
+* remove junit.xml ([04a08d6](https://github.com/aws-amplify/amplify-cli/commit/04a08d6f626cc3e81726a0b32031b0b09470494f))
+* revert gen2 migration e2e test ([f96799f](https://github.com/aws-amplify/amplify-cli/commit/f96799f23ccd1b78a39214f2b006f465430c396c))
+
+
+
+
+
 # [0.1.0-next-10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-migration-e2e@0.1.0-next-9.0...@aws-amplify/amplify-migration-e2e@0.1.0-next-10.0) (2025-04-24)
 
 

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.1.0-next-11.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-10.0...@aws-amplify/migrate@0.1.0-next-11.0) (2025-05-01)
+
+
+### Bug Fixes
+
+* migration test file extension ([74b58eb](https://github.com/aws-amplify/amplify-cli/commit/74b58ebf250b9a0ffbf7469fae76ca758a7b077a))
+* remove junit.xml ([04a08d6](https://github.com/aws-amplify/amplify-cli/commit/04a08d6f626cc3e81726a0b32031b0b09470494f))
+* update lock file ([8bb071b](https://github.com/aws-amplify/amplify-cli/commit/8bb071be0b29498bbfed7d72bb9ce172326a150e))
+* update lock file for cli-core ([4b75048](https://github.com/aws-amplify/amplify-cli/commit/4b7504849588229c03dd4f572973b94001b10f64))
+
+
+
+
+
 # [0.1.0-next-10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/migrate@0.1.0-next-9.0...@aws-amplify/migrate@0.1.0-next-10.0) (2025-04-24)
 
 **Note:** Version bump only for package @aws-amplify/migrate
