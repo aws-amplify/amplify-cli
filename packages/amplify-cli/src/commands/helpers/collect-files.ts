@@ -1,7 +1,7 @@
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as glob from 'glob';
+import { globSync } from 'glob';
 
 const parametersJson = 'parameters.json';
 const buildParametersJson = path.join('build', parametersJson);
@@ -51,9 +51,9 @@ export const collectFiles = (
     if (resource.service === 'AppSync' && !fs.existsSync(path.join(resourceDirectory, 'schema.graphql'))) {
       const schemaDirectoryPath = path.join(resourceDirectory, 'schema');
       if (fs.existsSync(schemaDirectoryPath)) {
-        const schemaFiles = glob
-          .sync('**/*.graphql', { cwd: schemaDirectoryPath })
-          .map((fileName) => path.join(schemaDirectoryPath, fileName));
+        const schemaFiles = globSync('**/*.graphql', { cwd: schemaDirectoryPath }).map((fileName) =>
+          path.join(schemaDirectoryPath, fileName),
+        );
         schemaFiles
           .map((r) => ({
             filePath: r,
@@ -110,7 +110,7 @@ const getCfnFiles = (resourceDir: string): string[] => {
    * Otherwise falls back to the default behavior.
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+    const cfnFiles = globSync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
       absolute: true,
       ignore: [parametersJson],
@@ -121,7 +121,7 @@ const getCfnFiles = (resourceDir: string): string[] => {
     }
   }
 
-  const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+  const cfnFiles = globSync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
     absolute: true,
     ignore: [parametersJson],

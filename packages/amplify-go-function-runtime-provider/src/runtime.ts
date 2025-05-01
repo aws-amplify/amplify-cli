@@ -10,7 +10,7 @@ import * as which from 'which';
 import execa from 'execa';
 import archiver from 'archiver';
 import fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import path from 'path';
 import { SemVer, coerce, gte, lt } from 'semver';
 import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
@@ -47,7 +47,7 @@ export const executeCommand = (
 
 const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: string) => {
   // If output directory does not exists or empty, rebuild required
-  if (!fs.existsSync(outDir) || glob.sync(`${outDir}/**`).length == 0) {
+  if (!fs.existsSync(outDir) || globSync(`${outDir}/**`).length == 0) {
     return true;
   }
 
@@ -59,9 +59,9 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: str
     return true;
   }
 
-  const fileUpdatedAfterLastBuild = glob
-    .sync(`${resourceDir}/${SRC}/**`)
-    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+  const fileUpdatedAfterLastBuild = globSync(`${resourceDir}/${SRC}/**`).find(
+    (file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp,
+  );
 
   return !!fileUpdatedAfterLastBuild;
 };

@@ -212,7 +212,7 @@ const mockResource: DeploymentResources = {
 };
 
 jest.mock('glob', () => ({
-  sync: jest.fn((_, { cwd }) => [path.join(cwd, 'cfntemplate.json')]),
+  globSync: jest.fn((_, { cwd }) => [path.join(cwd, 'cfntemplate.json')]),
 }));
 
 const lambdaTemplate = {

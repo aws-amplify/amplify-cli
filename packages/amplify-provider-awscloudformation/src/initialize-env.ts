@@ -1,6 +1,6 @@
 import { $TSContext, $TSMeta, AmplifyError, JSONUtilities, PathConstants, stateManager } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import _ from 'lodash';
 import path from 'path';
 import Cloudformation from './aws-utils/aws-cfn';
@@ -44,7 +44,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
 
     // Move out cli.*json if exists in the temp directory into the amplify directory before copying backend and
     // current cloud backend directories.
-    const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
+    const cliJSONFiles = globSync(PathConstants.CLIJSONFileNameGlob, {
       cwd: unzippedDir,
       absolute: true,
     });

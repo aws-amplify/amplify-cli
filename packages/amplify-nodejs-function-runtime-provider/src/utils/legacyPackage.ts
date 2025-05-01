@@ -1,7 +1,7 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { PackageRequest, PackageResult, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 
 export async function packageResource(request: PackageRequest, context: $TSContext): Promise<PackageResult> {
@@ -10,7 +10,7 @@ export async function packageResource(request: PackageRequest, context: $TSConte
     const packageHash = !request.skipHashing ? await context.amplify.hashDir(resourcePath, ['node_modules']) : undefined;
     const zipEntries: ZipEntry[] = [];
     if (request.service) {
-      const libGlob = glob.sync(resourcePath);
+      const libGlob = globSync(resourcePath);
       const layerDirPath = path.join(request.srcRoot, '..', '..');
       const optPath = path.join(layerDirPath, 'opt');
 

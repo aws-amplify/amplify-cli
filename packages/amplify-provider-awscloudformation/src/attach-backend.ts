@@ -1,7 +1,7 @@
 import aws from 'aws-sdk';
 import fs from 'fs-extra';
 import path from 'path';
-import glob from 'glob';
+import { globSync } from 'glob';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import { exitOnNextTick, pathManager, PathConstants, AmplifyError, extract } from '@aws-amplify/amplify-cli-core';
@@ -348,7 +348,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
 
     // Move out cli.*json if exists in the temp directory into the amplify directory before copying backend and
     // current cloud backend directories.
-    const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
+    const cliJSONFiles = globSync(PathConstants.CLIJSONFileNameGlob, {
       cwd: unzippedDirPath,
       absolute: true,
     });

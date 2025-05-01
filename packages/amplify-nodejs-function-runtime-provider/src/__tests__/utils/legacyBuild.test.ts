@@ -1,4 +1,4 @@
-import glob from 'glob';
+import * as glob from 'glob';
 import fs from 'fs-extra';
 import { buildResource } from '../../../src/utils/legacyBuild';
 import { BuildType } from '@aws-amplify/amplify-function-plugin-interface';
@@ -21,7 +21,7 @@ const stubFileTimestamps = new Map<string, number>([
 
 describe('legacy build resource', () => {
   it('checks resource directory excluding node_modules and dist for changes', async () => {
-    glob_mock.sync.mockImplementationOnce(() => Array.from(stubFileTimestamps.keys()));
+    glob_mock.globSync.mockImplementationOnce(() => Array.from(stubFileTimestamps.keys()));
     fs_mock.statSync.mockImplementation((file) => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
 
     const result = await buildResource({
@@ -33,12 +33,12 @@ describe('legacy build resource', () => {
     });
 
     expect(result.rebuilt).toEqual(false);
-    expect(glob_mock.sync.mock.calls.length).toBe(1);
+    expect(glob_mock.globSync.mock.calls.length).toBe(1);
     expect(fs_mock.statSync.mock.calls.length).toBe(5);
   });
 
   it('checks lastBuildType difference triggers rebuild', async () => {
-    glob_mock.sync.mockImplementationOnce(() => Array.from(stubFileTimestamps.keys()));
+    glob_mock.globSync.mockImplementationOnce(() => Array.from(stubFileTimestamps.keys()));
     fs_mock.statSync.mockImplementation((file) => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
 
     const result = await buildResource({

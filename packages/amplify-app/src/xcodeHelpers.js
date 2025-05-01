@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const glob = require('glob');
+const { globSync } = require('glob');
 const path = require('path');
 const xcode = require('xcode');
 
@@ -118,7 +118,7 @@ function groupHasFile(group, name) {
  */
 function getSchemaFile(rootDir) {
   const schemaFilePattern = path.join(rootDir, 'amplify', 'backend', 'api', '*', GRAPHQL_SCHEMA);
-  const [schemaFile] = glob.sync(schemaFilePattern);
+  const [schemaFile] = globSync(schemaFilePattern);
   return schemaFile;
 }
 
@@ -137,7 +137,7 @@ function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
 
   // add generated model
   const modelsFilePattern = path.join(rootDir, 'amplify', 'generated', 'models', '*.swift');
-  const modelFiles = glob.sync(modelsFilePattern).map((file) => {
+  const modelFiles = globSync(modelsFilePattern).map((file) => {
     return path.relative(rootDir, file);
   });
   if (modelFiles && modelFiles.length > 0) {

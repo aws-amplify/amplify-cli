@@ -7,7 +7,7 @@ import * as bodyParser from 'body-parser';
 import * as convert from 'xml-js';
 import { fromEvent } from 'promise-toolbox';
 import serveStatic from 'serve-static';
-import * as glob from 'glob';
+import { globSync } from 'glob';
 import o2x from 'object-to-xml';
 import { v4 as uuid } from 'uuid';
 import etag from 'etag';
@@ -174,7 +174,7 @@ export class StorageServer extends EventEmitter {
     // getting folders recursively
     const dirPath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
 
-    const files = glob.sync('**/*', {
+    const files = globSync('**/*', {
       cwd: dirPath,
       absolute: true,
     });

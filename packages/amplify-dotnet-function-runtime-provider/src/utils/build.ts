@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import * as execa from 'execa';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
@@ -66,9 +66,9 @@ const isBuildStale = (sourceFolder: string, lastBuildTimeStamp: Date) => {
     return true;
   }
 
-  const fileUpdatedAfterLastBuild = glob
-    .sync('**/*', { cwd: sourceFolder, ignore: ['bin', 'obj', '+(bin|obj)/**/*'] })
-    .find((file) => new Date(fs.statSync(path.join(sourceFolder, file)).mtime) > lastBuildTimeStamp);
+  const fileUpdatedAfterLastBuild = globSync('**/*', { cwd: sourceFolder, ignore: ['bin', 'obj', '+(bin|obj)/**/*'] }).find(
+    (file) => new Date(fs.statSync(path.join(sourceFolder, file)).mtime) > lastBuildTimeStamp,
+  );
 
   return !!fileUpdatedAfterLastBuild;
 };

@@ -91,7 +91,7 @@ export const initializeEnv = async (
     const initializationTasks: (() => Promise<$TSAny>)[] = [];
     const providerPushTasks: (() => Promise<$TSAny>)[] = [];
 
-    for (const provider of context.exeInfo?.projectConfig?.providers) {
+    for (const provider of context.exeInfo?.projectConfig?.providers ?? []) {
       try {
         const providerModule = await import(providerPlugins[provider]);
         initializationTasks.push(() => providerModule.initEnv(context, amplifyMeta.providers[provider]));

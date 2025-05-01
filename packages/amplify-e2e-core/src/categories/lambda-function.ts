@@ -1,7 +1,7 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
 import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
-import * as glob from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 import _ from 'lodash';
 import { loadFeatureFlags } from '../utils/feature-flags';
@@ -689,7 +689,7 @@ const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
 
 export function validateNodeModulesDirRemoval(projRoot) {
   const functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
-  const nodeModulesDirs = glob.sync('**/node_modules', {
+  const nodeModulesDirs = globSync('**/node_modules', {
     cwd: functionDir,
     absolute: true,
   });

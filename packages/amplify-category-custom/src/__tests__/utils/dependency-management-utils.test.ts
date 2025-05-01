@@ -1,5 +1,5 @@
 import { $TSContext, CFNTemplateFormat, readCFNTemplate, pathManager, stateManager, writeCFNTemplate } from '@aws-amplify/amplify-cli-core';
-import { glob } from 'glob';
+import * as glob from 'glob';
 import { prompter } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as cdk from 'aws-cdk-lib';
@@ -37,7 +37,7 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
       templateFormat: CFNTemplateFormat.JSON,
       cfnTemplate: { Outputs: { mockKey: { Value: 'mockValue' } } },
     });
-    glob_mock.sync.mockReturnValueOnce(['mockFileName']);
+    glob_mock.globSync.mockReturnValueOnce(['mockFileName']);
 
     expect(getResourceCfnOutputAttributes('mockCategory', 'mockResourceName')).toEqual(['mockKey']);
   });
@@ -50,7 +50,7 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
       cfnTemplate: { Outputs: { mockKey: { Value: 'mockValue' } } },
     });
 
-    glob_mock.sync.mockReturnValueOnce(['mockFileName1', 'mockFileName2']);
+    glob_mock.globSync.mockReturnValueOnce(['mockFileName1', 'mockFileName2']);
 
     expect(getResourceCfnOutputAttributes('mockCategory', 'mockResourceName')).toEqual([]);
   });
@@ -62,7 +62,7 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
       templateFormat: CFNTemplateFormat.JSON,
       cfnTemplate: { Outputs: { mockKey: { Value: 'mockValue' } } },
     });
-    glob_mock.sync.mockReturnValueOnce(['mockFileName']);
+    glob_mock.globSync.mockReturnValueOnce(['mockFileName']);
 
     expect(getResourceCfnOutputAttributes('mockCategory', 'mockResourceName')).toEqual(['mockKey']);
   });
@@ -74,14 +74,14 @@ describe('getResourceCfnOutputAttributes() scenarios', () => {
       templateFormat: CFNTemplateFormat.JSON,
       cfnTemplate: { Outputs: { mockKey: { Value: 'mockValue' } } },
     });
-    glob_mock.sync.mockReturnValueOnce(['mockFileName1', 'mockFileName2']);
+    glob_mock.globSync.mockReturnValueOnce(['mockFileName1', 'mockFileName2']);
 
     expect(getResourceCfnOutputAttributes('mockCategory', 'mockResourceName')).toEqual([]);
   });
 
   it('get resource attr for resources without any cfn files', async () => {
     fs_mock.existsSync.mockReturnValue(false); // if build dir exists
-    glob_mock.sync.mockReturnValueOnce([]);
+    glob_mock.globSync.mockReturnValueOnce([]);
 
     expect(getResourceCfnOutputAttributes('mockCategory', 'mockResourceName')).toEqual([]);
   });
@@ -100,7 +100,7 @@ describe('getAllResources() scenarios', () => {
       cfnTemplate: { Outputs: { mockKey: { Value: 'mockValue' } } },
     });
 
-    glob_mock.sync.mockReturnValue(['mockFileName']);
+    glob_mock.globSync.mockReturnValue(['mockFileName']);
 
     stateManager.getMeta = jest.fn().mockReturnValue({
       mockCategory1: {
@@ -131,7 +131,7 @@ describe('addCDKResourceDependency() scenarios', () => {
       cfnTemplate: { Outputs: { mockKey: { Value: 'mockValue' } } },
     });
 
-    glob_mock.sync.mockReturnValue(['mockFileName']);
+    glob_mock.globSync.mockReturnValue(['mockFileName']);
 
     const mockBackendConfig = {
       mockCategory1: {
@@ -263,7 +263,7 @@ describe('addCFNResourceDependency() scenarios', () => {
       cfnTemplate: { Outputs: { mockKey: { Value: 'mockValue' } } },
     });
 
-    glob_mock.sync.mockReturnValue(['mockFileName']);
+    glob_mock.globSync.mockReturnValue(['mockFileName']);
 
     const mockBackendConfig = {
       mockCategory1: {

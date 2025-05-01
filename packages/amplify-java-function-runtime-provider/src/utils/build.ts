@@ -1,7 +1,7 @@
 import { join } from 'path';
 import * as execa from 'execa';
 import fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import { packageName, relativeShimJarPath, relativeShimSrcPath } from './constants';
 import { BuildRequest, BuildResult } from '@aws-amplify/amplify-function-plugin-interface';
 import { AmplifyError, pathManager } from '@aws-amplify/amplify-cli-core';
@@ -53,9 +53,9 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date) => {
     return true;
   }
 
-  const fileUpdatedAfterLastBuild = glob
-    .sync(`${resourceDir}/*/!(build | dist)/**`)
-    .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
+  const fileUpdatedAfterLastBuild = globSync(`${resourceDir}/*/!(build | dist)/**`).find(
+    (file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp,
+  );
 
   return !!fileUpdatedAfterLastBuild;
 };

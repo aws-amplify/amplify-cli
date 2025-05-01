@@ -55,7 +55,8 @@ describe('init --forcePush', () => {
 
     // remote env param from ParameterStore
     const meta = getProjectMeta(projRoot);
-    const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
+    const appId = meta?.providers?.awscloudformation.AmplifyAppId ?? undefined;
+    const region = meta?.providers?.awscloudformation.Region ?? undefined;
     await deleteSSMParameter(region, appId, 'testtest', 'function', funcName, 'fooBar');
 
     // init --forcePush should fail due to missing param

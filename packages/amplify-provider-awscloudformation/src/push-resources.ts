@@ -17,7 +17,8 @@
 import _ from 'lodash';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import glob from 'glob';
+import type { GlobOptionsWithFileTypesFalse } from 'glob';
+import { globSync } from 'glob';
 import {
   AmplifyCategories,
   AmplifySupportedService,
@@ -619,7 +620,7 @@ const prepareResource = async (context: $TSContext, resource: $TSAny) => {
   const backendDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backendDir, category, resourceName));
 
-  const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+  const cfnFiles = globSync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
     ignore: [parametersJson],
   });
@@ -726,9 +727,14 @@ const getAllUniqueCategories = (resources: $TSObject[]): $TSObject[] => {
 };
 
 /**
- *
+ * switched from IOptions to GlobOptionsWithFileTypesFalse, see: https://github.com/isaacs/node-glob/issues/529
  */
-export const getCfnFiles = (category: string, resourceName: string, includeAllNestedStacks = false, options?: glob.IOptions) => {
+export const getCfnFiles = (
+  category: string,
+  resourceName: string,
+  includeAllNestedStacks = false,
+  options?: GlobOptionsWithFileTypesFalse,
+) => {
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
@@ -739,7 +745,7 @@ export const getCfnFiles = (category: string, resourceName: string, includeAllNe
    * Otherwise falls back to the default behavior.
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
-    const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+    const cfnFiles = globSync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
       ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
       ...options,
@@ -747,7 +753,7 @@ export const getCfnFiles = (category: string, resourceName: string, includeAllNe
 
     if (includeAllNestedStacks) {
       cfnFiles.push(
-        ...glob.sync(nestedStackTemplateGlobPattern, {
+        ...globSync(nestedStackTemplateGlobPattern, {
           cwd: resourceBuildDir,
           ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
           ...options,
@@ -763,7 +769,7 @@ export const getCfnFiles = (category: string, resourceName: string, includeAllNe
     }
   }
 
-  const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
+  const cfnFiles = globSync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
     ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
     ...options,

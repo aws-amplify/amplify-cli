@@ -53,7 +53,7 @@ it('should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
   );
 
   const meta = getProjectMeta(projRoot);
-  const { Region: region } = meta?.providers?.awscloudformation;
+  const region = meta?.providers?.awscloudformation.Region ?? undefined;
 
   // Put SSM parameter
   const ssmClient = new SSMClient({ region });

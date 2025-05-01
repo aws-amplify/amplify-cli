@@ -1,4 +1,4 @@
-import * as glob from 'glob';
+import { globSync } from 'glob';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import * as yaml from 'js-yaml';
@@ -124,7 +124,7 @@ export function saveConfig(config: any): void {
   fs.writeFileSync(`${CODEBUILD_GENERATE_CONFIG_PATH}.yml`, output.join('\n'));
 }
 export function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
-  return glob.sync(pattern, { cwd: dir });
+  return globSync(pattern, { cwd: dir });
 }
 type COMPUTE_TYPE = 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE';
 type BatchBuildJob = {

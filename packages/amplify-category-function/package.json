@@ -30,7 +30,7 @@
     "@aws-amplify/amplify-environment-parameters": "1.9.19",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.6",
-    "archiver": "^5.3.0",
+    "archiver": "^7.0.1",
     "aws-sdk": "^2.1464.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@types/folder-hash": "^4.0.1",
-    "jest": "^29.5.0"
+    "jest": "^29.7.0"
   },
   "jest": {
     "collectCoverage": true,

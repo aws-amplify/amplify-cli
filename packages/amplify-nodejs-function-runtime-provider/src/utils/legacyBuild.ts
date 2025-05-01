@@ -3,7 +3,7 @@ import { $TSObject, getPackageManager, JSONUtilities, AmplifyError, PackageManag
 import { BuildRequest, BuildResult, BuildType } from '@aws-amplify/amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 
 /**
@@ -105,8 +105,7 @@ const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, buildType: 
   if (dirTime > lastBuildTimeStamp || buildType !== lastBuildType) {
     return true;
   }
-  const fileUpdatedAfterLastBuild = glob
-    .sync(`${resourceDir}/**`)
+  const fileUpdatedAfterLastBuild = globSync(`${resourceDir}/**`)
     .filter((p) => !p.includes('dist'))
     .filter((p) => !p.includes('node_modules'))
     .find((file) => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);

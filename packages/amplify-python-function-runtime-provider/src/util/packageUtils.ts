@@ -1,7 +1,7 @@
 import { execWithOutputAsString } from '@aws-amplify/amplify-cli-core';
 import { PackageRequest, PackageResult, ZipEntry } from '@aws-amplify/amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 import { getPipenvDir, getPythonBinaryName, majMinPyVersion } from './pyUtils';
 
@@ -17,7 +17,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       const pipEnvDir = await getPipenvDir(params.srcRoot);
       // copy from virtualenv to layer path to maintain layer required structure
       fs.copySync(pipEnvDir, layerPythonPath, { overwrite: true });
-      const libGlob = glob.sync(path.join(params.srcRoot, '..'));
+      const libGlob = globSync(path.join(params.srcRoot, '..'));
       const layerDirPath = path.join(params.srcRoot, '..', '..');
       const optPath = path.join(layerDirPath, 'opt');
 
