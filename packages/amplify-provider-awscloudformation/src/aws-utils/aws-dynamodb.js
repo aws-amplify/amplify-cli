@@ -1,5 +1,6 @@
 const aws = require('./aws.js');
 const configurationManager = require('../configuration-manager');
+const { proxyAgent } = require('./aws-globals.js');
 
 class DynamoDB {
   constructor(context, options = {}) {
@@ -11,7 +12,14 @@ class DynamoDB {
         // ignore errors
       }
       this.context = context;
-      this.dynamodb = new aws.DynamoDB({ ...cred, ...options });
+
+      this.dynamodb = new aws.DynamoDB({
+        ...cred,
+        ...options,
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      });
       return this;
     })();
   }

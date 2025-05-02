@@ -2,6 +2,7 @@ import { $TSAny, $TSContext, AmplifyCategories, AmplifyError } from '@aws-amplif
 import { printer } from '@aws-amplify/amplify-prompts';
 import ora from 'ora';
 import os from 'os';
+import { ProxyAgent } from 'proxy-agent';
 
 const providerName = 'awscloudformation';
 const policyNamePrefix = 'pinpoint_amplify-';
@@ -150,8 +151,13 @@ const getIamClient = async (context: $TSContext, action: string | undefined): Pr
   const providerPlugins = context.amplify.getProviderPlugins(context);
   // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
   const provider = require(providerPlugins[providerName]);
+  let httpAgent = undefined;
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  if (httpProxy) {
+    httpAgent = new ProxyAgent();
+  }
   const aws = await provider.getConfiguredAWSClient(context, AmplifyCategories.NOTIFICATIONS, action);
-  return new aws.IAM();
+  return new aws.IAM({ httpOptions: { agent: httpAgent } });
 };
 
 const getPolicyDoc = (context: $TSContext): string => {

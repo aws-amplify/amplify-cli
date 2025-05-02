@@ -2,6 +2,7 @@ const aws = require('aws-sdk');
 const { ProxyAgent } = require('proxy-agent');
 const configurationManager = require('../configuration-manager');
 const { regions: amplifyServiceRegions } = require('../aws-regions');
+const { proxyAgent } = require('./aws-globals');
 
 async function getConfiguredAmplifyClient(context, options = {}) {
   let cred = {};
@@ -21,15 +22,23 @@ async function getConfiguredAmplifyClient(context, options = {}) {
     };
   }
 
-  if (httpProxy) {
-    aws.config.update({
-      httpOptions: {
-        agent: new ProxyAgent(),
-      },
-    });
-  }
+  // **affected by SDK migrations
+  // if (httpProxy) {
+  //   aws.config.update({
+  //     httpOptions: {
+  //       agent: new ProxyAgent(),
+  //     },
+  //   });
+  // }
 
-  const config = { ...cred, ...defaultOptions, ...options };
+  const config = {
+    ...cred,
+    ...defaultOptions,
+    ...options,
+    httpOptions: {
+      agent: proxyAgent(),
+    },
+  };
 
   // this is the "project" config level case, creds and region are explicitly set or retrieved from a profile
   if (config.region) {

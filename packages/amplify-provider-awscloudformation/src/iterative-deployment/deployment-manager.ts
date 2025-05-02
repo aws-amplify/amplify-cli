@@ -20,6 +20,8 @@ import { loadConfiguration } from '../configuration-manager';
 import { fileLogger, Logger } from '../utils/aws-logger';
 import { EventMap } from '../utils/progress-bar-helpers';
 import { StackProgressPrinter } from './stack-progress-printer';
+import { ProxyAgent } from 'proxy-agent';
+import { proxyAgent } from '../aws-utils/aws-globals';
 
 interface DeploymentManagerOptions {
   throttleDelay?: number;
@@ -127,8 +129,13 @@ export class DeploymentManager {
     };
     this.eventMap = eventMap;
     this.s3Client = new aws.S3(creds);
-    this.cfnClient = new aws.CloudFormation({ ...creds, maxRetries: 10, customUserAgent: this.options.userAgent });
-    this.ddbClient = new aws.DynamoDB({ ...creds, region, maxRetries: 10 });
+    this.cfnClient = new aws.CloudFormation({
+      ...creds,
+      maxRetries: 10,
+      customUserAgent: this.options.userAgent,
+      httpOptions: { agent: proxyAgent() },
+    });
+    this.ddbClient = new aws.DynamoDB({ ...creds, region, maxRetries: 10, httpOptions: { agent: proxyAgent() } });
     this.logger = fileLogger('deployment-manager');
     this.printer = new StackProgressPrinter(eventMap);
     this.spinner = new AmplifySpinner();

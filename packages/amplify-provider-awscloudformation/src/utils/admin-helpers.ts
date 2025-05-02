@@ -73,6 +73,7 @@ export async function getTempCredsWithAdminTokens(context: $TSContext, appId: st
   // use tokens to get creds and assign to config
   const awsConfigInfo = await getAdminCognitoCredentials(idToken, IdentityId, region);
 
+  // **affected by SDK migrations
   aws.config.update(awsConfigInfo);
 
   // need to use Cognito creds to get STS creds - otherwise
@@ -103,6 +104,7 @@ async function getAdminAppState(appId: string, region: string): Promise<AppState
 }
 
 async function getAdminCognitoCredentials(idToken: CognitoIdToken, identityId: string, region: string): Promise<AwsSdkConfig> {
+  // **affected by SDSK migrations
   const cognitoIdentity = new aws.CognitoIdentity({ region });
   const login = idToken.payload.iss.replace('https://', '');
   const { Credentials } = await cognitoIdentity
@@ -124,6 +126,7 @@ async function getAdminCognitoCredentials(idToken: CognitoIdToken, identityId: s
 }
 
 async function getAdminStsCredentials(idToken: CognitoIdToken, region: string): Promise<AwsSdkConfig> {
+  // **affected by SDK migrations
   const sts = new aws.STS({
     stsRegionalEndpoints: 'regional',
   });
@@ -148,6 +151,7 @@ async function getRefreshedTokens(context: $TSContext, appId: string) {
   const authConfig: AdminAuthConfig = stateManager.getAmplifyAdminConfigEntry(appId);
 
   if (isJwtExpired(authConfig.idToken)) {
+    // **affected by SDK migrations
     let refreshedTokens: aws.CognitoIdentityServiceProvider.AuthenticationResultType;
     try {
       refreshedTokens = (await refreshJWTs(authConfig)).AuthenticationResult;
@@ -170,6 +174,7 @@ function isJwtExpired(token: CognitoAccessToken | CognitoIdToken) {
 }
 
 async function refreshJWTs(authConfig: AdminAuthConfig) {
+  // **affected by SDK migrations
   const CognitoISP = new aws.CognitoIdentityServiceProvider({ region: authConfig.region });
   return await CognitoISP.initiateAuth({
     AuthFlow: 'REFRESH_TOKEN',

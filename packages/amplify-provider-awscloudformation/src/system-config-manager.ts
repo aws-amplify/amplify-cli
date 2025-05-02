@@ -124,12 +124,12 @@ export const getProfiledAwsConfig = async (
   }
 
   // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
-  if (httpProxy) {
-    awsConfigInfo = {
-      ...awsConfigInfo,
-      httpOptions: { agent: new ProxyAgent() },
-    };
-  }
+  // if (httpProxy) {
+  //   awsConfigInfo = {
+  //     ...awsConfigInfo,
+  //     httpOptions: { agent: new ProxyAgent() },
+  //   };
+  // }
 
   return awsConfigInfo;
 };

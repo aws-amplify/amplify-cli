@@ -1,5 +1,6 @@
 const aws = require('./aws.js');
 const configurationManager = require('../configuration-manager');
+const { proxyAgent } = require('./aws-globals.js');
 
 const serviceRegionMap = {
   'us-east-1': 'us-east-1',
@@ -35,7 +36,14 @@ class Lex {
         // ignore missing config
       }
       this.context = context;
-      this.lex = new aws.LexModelBuildingService({ ...cred, ...options, apiVersion: '2017-04-19' });
+      this.lex = new aws.LexModelBuildingService({
+        ...cred,
+        ...options,
+        apiVersion: '2017-04-19',
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      });
       return this;
     })();
   }

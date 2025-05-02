@@ -8,6 +8,8 @@ const configFilePath = path.join(dotAWSDirPath, 'config');
 
 let aws;
 
+// **affected by SDK migrations
+// this may need to be entirely gutted
 try {
   delete require.cache[require.resolve('aws-sdk')];
   if (fs.existsSync(credentialsFilePath) && fs.existsSync(configFilePath)) {
@@ -32,13 +34,13 @@ aws.configureWithCreds = async (context) => {
     aws.config.update(config);
   }
 
-  if (httpProxy) {
-    aws.config.update({
-      httpOptions: {
-        agent: new ProxyAgent(httpProxy),
-      },
-    });
-  }
+  // if (httpProxy) {
+  //   aws.config.update({
+  //     httpOptions: {
+  //       agent: new ProxyAgent(httpProxy),
+  //     },
+  //   });
+  // }
 
   return aws;
 };

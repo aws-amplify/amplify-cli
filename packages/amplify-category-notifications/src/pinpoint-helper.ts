@@ -543,17 +543,19 @@ export const getPinpointClient = async (
     region: pinpointApp?.Region ?? (await mapServiceRegion(context, cred?.region || resolveRegion())),
     customUserAgent: formUserAgentParam(context, userAgentAction),
   };
+  let httpAgent = undefined;
 
   // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   if (httpProxy) {
-    aws.config.update({
-      httpOptions: {
-        agent: new ProxyAgent(),
-      },
-    });
+    httpAgent = new ProxyAgent();
+    // aws.config.update({
+    //   httpOptions: {
+    //     agent: new ProxyAgent(),
+    //   },
+    // });
   }
 
-  return new aws.Pinpoint({ ...cred, ...defaultOptions });
+  return new aws.Pinpoint({ ...cred, ...defaultOptions, httpOptions: { agent: httpAgent } });
 };
 
 export const mapServiceRegion = async (context: $TSContext, region: string): Promise<string> => {

@@ -1,6 +1,7 @@
 import aws from './aws.js';
 import { loadConfiguration } from '../configuration-manager';
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { proxyAgent } from './aws-globals.js';
 
 export class STS {
   private static instance: STS;
@@ -23,7 +24,13 @@ export class STS {
 
   private constructor(context: $TSContext, cred: $TSAny, options = {}) {
     this.context = context;
-    this.sts = new aws.STS({ ...cred, options });
+    this.sts = new aws.STS({
+      ...cred,
+      options,
+      httpOptions: {
+        agent: proxyAgent(),
+      },
+    });
   }
 
   async getCallerIdentity(): Promise<AWS.STS.GetCallerIdentityResponse> {

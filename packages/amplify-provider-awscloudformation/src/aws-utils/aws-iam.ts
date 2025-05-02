@@ -4,6 +4,7 @@ import { IAM } from 'aws-sdk';
 import { AwsSdkConfig } from '../utils/auth-types.js';
 import { getAwsConfig } from '../configuration-manager';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { proxyAgent } from './aws-globals.js';
 
 export class IAMClient {
   private static instance: IAMClient;
@@ -24,6 +25,12 @@ export class IAMClient {
   }
 
   private constructor(creds: AwsSdkConfig, options: IAM.ClientConfiguration = {}) {
-    this.client = new (aws as typeof awstype).IAM({ ...creds, ...options });
+    this.client = new (aws as typeof awstype).IAM({
+      ...creds,
+      ...options,
+      httpOptions: {
+        agent: proxyAgent(),
+      },
+    });
   }
 }

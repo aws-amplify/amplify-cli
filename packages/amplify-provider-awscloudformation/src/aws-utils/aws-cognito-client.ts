@@ -2,6 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import aws from './aws.js';
 import * as AWS from 'aws-sdk';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
+import { proxyAgent } from './aws-globals.js';
 
 export class CognitoUserPoolClientProvider {
   private static instance: CognitoUserPoolClientProvider;
@@ -22,6 +23,12 @@ export class CognitoUserPoolClientProvider {
   }
 
   constructor(creds: AwsSecrets, options = {}) {
-    this.client = new aws.CognitoIdentityServiceProvider({ ...creds, ...options });
+    this.client = new aws.CognitoIdentityServiceProvider({
+      ...creds,
+      ...options,
+      httpOptions: {
+        agent: proxyAgent(),
+      },
+    });
   }
 }

@@ -1,5 +1,6 @@
 const aws = require('./aws.js');
 const configurationManager = require('../configuration-manager');
+const { proxyAgent } = require('./aws-globals.js');
 
 class AppSync {
   constructor(context, options = {}) {
@@ -12,7 +13,13 @@ class AppSync {
       }
 
       this.context = context;
-      this.appSync = new aws.AppSync({ ...cred, ...options });
+      this.appSync = new aws.AppSync({
+        ...cred,
+        ...options,
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      });
       return this;
     })();
   }

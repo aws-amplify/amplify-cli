@@ -2,6 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import aws from './aws.js';
 import { APIGateway as APIGW } from 'aws-sdk';
 import { loadConfiguration } from '../configuration-manager';
+import { proxyAgent } from './aws-globals.js';
 
 export class APIGateway {
   private static instance: APIGateway;
@@ -24,6 +25,12 @@ export class APIGateway {
 
   constructor(context: $TSContext, creds, options = {}) {
     this.context = context;
-    this.apigw = new aws.APIGateway({ ...creds, ...options });
+    this.apigw = new aws.APIGateway({
+      ...creds,
+      ...options,
+      httpOptions: {
+        agent: proxyAgent(),
+      },
+    });
   }
 }

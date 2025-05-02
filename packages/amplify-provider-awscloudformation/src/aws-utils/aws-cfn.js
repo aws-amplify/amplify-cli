@@ -20,6 +20,7 @@ const { initializeProgressBars } = require('./aws-cfn-progress-formatter');
 const { getStatusToErrorMsg, collectStackErrorMessages } = require('./cloudformation-error-serializer');
 
 const { printer } = require('@aws-amplify/amplify-prompts');
+const { proxyAgent } = require('./aws-globals');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = (process.env.IS_AMPLIFY_CI ? 30 : 5) * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -55,7 +56,14 @@ class CloudFormation {
         userAgentOption.customUserAgent = userAgentParam;
       }
 
-      this.cfn = new aws.CloudFormation({ ...cred, ...options, ...userAgentOption });
+      this.cfn = new aws.CloudFormation({
+        ...cred,
+        ...options,
+        ...userAgentOption,
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      });
       this.context = context;
       if (Object.keys(eventMap).length) {
         this.eventMap = eventMap;

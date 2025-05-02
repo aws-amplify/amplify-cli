@@ -106,6 +106,7 @@ async function getConfiguredAWSClient(context, category, action) {
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
+  // **affected by SDK migrations
   aws.config.update({
     customUserAgent: formUserAgentParam(context, userAgentAction),
   });

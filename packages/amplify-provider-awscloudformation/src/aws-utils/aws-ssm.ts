@@ -2,6 +2,7 @@ import { $TSContext, $TSObject } from '@aws-amplify/amplify-cli-core';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import aws from './aws.js';
 import * as AWS from 'aws-sdk';
+import { proxyAgent } from './aws-globals';
 
 export class SSM {
   private static instance: SSM;
@@ -22,6 +23,12 @@ export class SSM {
   }
 
   private constructor(cred: AwsSecrets, options = {}) {
-    this.client = new aws.SSM({ ...cred, ...options });
+    this.client = new aws.SSM({
+      ...cred,
+      ...options,
+      httpOptions: {
+        agent: proxyAgent(),
+      },
+    });
   }
 }
