@@ -2,7 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import aws from './aws.js';
 import { APIGateway as APIGW } from 'aws-sdk';
 import { loadConfiguration } from '../configuration-manager';
-import { proxyAgent } from './aws-globals.js';
+import { proxyAgent } from './aws-globals';
 
 export class APIGateway {
   private static instance: APIGateway;

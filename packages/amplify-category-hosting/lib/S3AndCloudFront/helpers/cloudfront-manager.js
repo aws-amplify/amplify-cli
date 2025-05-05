@@ -1,5 +1,6 @@
 const chalk = require('chalk');
 const constants = require('../../constants');
+const aws = require('@aws-amplify/amplify-provider-awscloudformation/src/aws-utils/aws');
 
 const providerName = 'awscloudformation';
 
@@ -43,8 +44,9 @@ async function invalidate(context) {
 async function getCloudFrontClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
-  return new aws.CloudFront();
+  // const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
+  aws.configureWithCreds(context);
+  return new aws.CloudFront({ customUserAgent: await provider.getUserAgentAction(context, constants.CategoryName, action) });
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 import aws from './aws.js';
 import { loadConfiguration } from '../configuration-manager';
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
-import { proxyAgent } from './aws-globals.js';
+import { proxyAgent } from './aws-globals';
 
 export class STS {
   private static instance: STS;

@@ -1,6 +1,6 @@
 const aws = require('./aws.js');
 const configurationManager = require('../configuration-manager');
-const { proxyAgent } = require('./aws-globals.js');
+const { proxyAgent } = require('./aws-globals');
 
 class DynamoDB {
   constructor(context, options = {}) {

@@ -101,16 +101,24 @@ function configure(context) {
   return configManager.configure(context);
 }
 
+// replacing this with getUserAgentAction
 async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
   // **affected by SDK migrations
-  aws.config.update({
-    customUserAgent: formUserAgentParam(context, userAgentAction),
-  });
+  // aws.config.update({
+  //   customUserAgent: formUserAgentParam(context, userAgentAction),
+  // });
   return aws;
+}
+
+async function getUserAgentAction(context, category, action) {
+  category = category || 'missing';
+  action = action || ['missing'];
+  const userAgentAction = `${category}:${action[0]}`;
+  return formUserAgentParam(context, userAgentAction);
 }
 
 function getConfiguredAmplifyClient(context, category, action, options = {}) {
@@ -170,6 +178,7 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
+  getUserAgentAction,
   getLexRegionMapping,
   getConfiguredAmplifyClient,
   showHelpfulLinks,

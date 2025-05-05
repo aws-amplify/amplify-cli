@@ -1,6 +1,6 @@
 const aws = require('./aws.js');
 const configurationManager = require('../configuration-manager');
-const { proxyAgent } = require('./aws-globals.js');
+const { proxyAgent } = require('./aws-globals');
 
 const serviceRegionMap = {
   'us-east-1': 'us-east-1',

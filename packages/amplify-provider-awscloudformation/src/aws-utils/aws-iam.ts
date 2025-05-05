@@ -4,7 +4,7 @@ import { IAM } from 'aws-sdk';
 import { AwsSdkConfig } from '../utils/auth-types.js';
 import { getAwsConfig } from '../configuration-manager';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { proxyAgent } from './aws-globals.js';
+import { proxyAgent } from './aws-globals';
 
 export class IAMClient {
   private static instance: IAMClient;

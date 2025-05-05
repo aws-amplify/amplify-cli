@@ -2,7 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import aws from './aws.js';
 import * as AWS from 'aws-sdk';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
-import { proxyAgent } from './aws-globals.js';
+import { proxyAgent } from './aws-globals';
 
 export class CognitoUserPoolClientProvider {
   private static instance: CognitoUserPoolClientProvider;

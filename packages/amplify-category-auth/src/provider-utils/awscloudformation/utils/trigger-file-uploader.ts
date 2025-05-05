@@ -10,8 +10,9 @@ const providerName = 'awscloudformation';
 const getS3Client = async (context: $TSContext, action: string): Promise<S3> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = await import(providerPlugins[providerName]);
+  // I will deal with you later
   const aws = await provider.getConfiguredAWSClient(context, AmplifyCategories.AUTH, action);
-  return new aws.S3();
+  return new aws.S3({ customUserAgent: await provider.getUserAgentAction(context, AmplifyCategories.AUTH, action) });
 };
 
 /**
