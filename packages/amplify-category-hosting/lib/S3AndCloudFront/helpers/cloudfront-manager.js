@@ -45,7 +45,7 @@ async function getCloudFrontClient(context, action) {
   const provider = require(providerPlugins[providerName]);
   const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
   //const config = provider.getAWSConfiguration(context, constants.CategoryName, action);
-  return new aws.CloudFront(config);
+  return new aws.CloudFront();
 }
 
 module.exports = {
