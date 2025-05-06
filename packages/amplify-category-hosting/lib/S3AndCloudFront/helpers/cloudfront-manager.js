@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const constants = require('../../constants');
-const aws = require('@aws-amplify/amplify-provider-awscloudformation/src/aws-utils/aws');
+
 
 const providerName = 'awscloudformation';
 
