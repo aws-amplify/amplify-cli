@@ -7,20 +7,27 @@ const route = '/mock-testing';
 const bucket = 'mock-testing';
 const localDirS3 = __dirname + '/test-data/';
 
+const fakeAccessId = 'fakeaccesskeyidfortesting';
+const fakeSecretKey = 'fakeaccesssecretkeyfortesting';
+const fakeRegion = 'eu-west-2';
+
 let s3client;
 let simulator;
 
 jest.setTimeout(2000000);
 
 beforeAll(async () => {
-  AWS.config.update({
-    accessKeyId: 'fakeaccesskeyidfortesting',
-    secretAccessKey: 'fakeaccesssecretkeyfortesting',
-    region: 'eu-west-2',
-  });
+  // AWS.config.update({
+  //   accessKeyId: 'fakeaccesskeyidfortesting',
+  //   secretAccessKey: 'fakeaccesssecretkeyfortesting',
+  //   region: 'eu-west-2',
+  // });
 
   const ep = new AWS.Endpoint('http://localhost:20005');
   s3client = new AWS.S3({
+    accessKeyId: fakeAccessId,
+    secretAccessKey: fakeSecretKey,
+    region: fakeRegion,
     apiVersion: '2006-03-01',
     endpoint: ep.href,
     s3BucketEndpoint: true,

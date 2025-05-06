@@ -101,9 +101,9 @@ function configure(context) {
   return configManager.configure(context);
 }
 
-// replacing this with getUserAgentAction
+// replacing this with getAWSConfiguration
 async function getConfiguredAWSClient(context, category, action) {
-  await aws.configureWithCreds(context);
+  // await aws.configureWithCreds(context);
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
@@ -114,11 +114,16 @@ async function getConfiguredAWSClient(context, category, action) {
   return aws;
 }
 
-async function getUserAgentAction(context, category, action) {
+async function getAWSConfiguration(context, category, action) {
+  const credsConfig = await loadConfiguration(context);
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
-  return formUserAgentParam(context, userAgentAction);
+  const config = {
+    credentials: credsConfig,
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+  };
+  return config;
 }
 
 function getConfiguredAmplifyClient(context, category, action, options = {}) {
@@ -178,7 +183,7 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
-  getUserAgentAction,
+  getAWSConfiguration,
   getLexRegionMapping,
   getConfiguredAmplifyClient,
   showHelpfulLinks,

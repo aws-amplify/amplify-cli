@@ -73,12 +73,28 @@ export async function getTempCredsWithAdminTokens(context: $TSContext, appId: st
   // use tokens to get creds and assign to config
   const awsConfigInfo = await getAdminCognitoCredentials(idToken, IdentityId, region);
 
-  // **affected by SDK migrations
-  aws.config.update(awsConfigInfo);
+  // aws.config.update(awsConfigInfo);
 
   // need to use Cognito creds to get STS creds - otherwise
   // users will not be able to provision Cognito resources
-  return await getAdminStsCredentials(idToken, region);
+  const sts = new aws.STS({
+    ...awsConfigInfo,
+    stsRegionalEndpoints: 'regional',
+  });
+  const { Credentials } = await sts
+    .assumeRole({
+      RoleArn: idToken.payload['cognito:preferred_role'],
+      RoleSessionName: 'amplifyadmin',
+    })
+    .promise();
+
+  return {
+    accessKeyId: Credentials.AccessKeyId,
+    expiration: Credentials.Expiration,
+    region,
+    secretAccessKey: Credentials.SecretAccessKey,
+    sessionToken: Credentials.SessionToken,
+  };
 }
 
 type AppStateResponse = {

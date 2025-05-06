@@ -44,8 +44,7 @@ async function invalidate(context) {
 async function getCloudFrontClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  // const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
-  aws.configureWithCreds(context);
+  const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
   return new aws.CloudFront({ customUserAgent: await provider.getUserAgentAction(context, constants.CategoryName, action) });
 }
 
