@@ -1,5 +1,5 @@
 const aws = require('aws-sdk');
-const { ProxyAgent } = require('proxy-agent');
+// const { ProxyAgent } = require('proxy-agent');
 const configurationManager = require('../configuration-manager');
 const { regions: amplifyServiceRegions } = require('../aws-regions');
 const { proxyAgent } = require('./aws-globals');
@@ -7,7 +7,7 @@ const { proxyAgent } = require('./aws-globals');
 async function getConfiguredAmplifyClient(context, options = {}) {
   let cred = {};
   let defaultOptions = {};
-  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  // const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const envVarEndpoint = process.env.AWS_AMPLIFY_ENDPOINT;
 
   try {

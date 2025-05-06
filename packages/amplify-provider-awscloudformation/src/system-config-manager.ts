@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as ini from 'ini';
 import * as inquirer from 'inquirer';
-import { ProxyAgent } from 'proxy-agent';
+// import { ProxyAgent } from 'proxy-agent';
 import * as constants from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { AwsSdkConfig } from './utils/auth-types';
@@ -79,7 +79,7 @@ export const getProfiledAwsConfig = async (
   isRoleSourceProfile?: boolean,
 ): Promise<AwsSdkConfig> => {
   let awsConfigInfo: AwsSdkConfig;
-  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  // const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     logger('getProfiledAwsConfig.profileConfig', [profileConfig])();

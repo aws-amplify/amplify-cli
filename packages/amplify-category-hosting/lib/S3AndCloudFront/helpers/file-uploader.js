@@ -42,7 +42,7 @@ async function getS3Client(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
-  return new aws.S3({ customUserAgent: await provider.getUserAgentAction(context, constants.CategoryName, action) });
+  return new aws.S3();
 }
 
 function getHostingBucketName(context) {

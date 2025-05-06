@@ -13,7 +13,7 @@ import chalk from 'chalk';
 import { prompt } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { ProxyAgent } from 'proxy-agent';
+// import { ProxyAgent } from 'proxy-agent';
 import { STS } from 'aws-sdk';
 import awsRegions from './aws-regions';
 import constants from './constants';
@@ -796,7 +796,7 @@ function getConfigLevel(context: $TSContext): ProjectType {
 
 export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
   const { awsConfigInfo } = context.exeInfo;
-  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  // const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
   let resultAWSConfigInfo: AwsSdkConfig;
 
