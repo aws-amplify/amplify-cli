@@ -20,7 +20,6 @@ import { loadConfiguration } from '../configuration-manager';
 import { fileLogger, Logger } from '../utils/aws-logger';
 import { EventMap } from '../utils/progress-bar-helpers';
 import { StackProgressPrinter } from './stack-progress-printer';
-import { ProxyAgent } from 'proxy-agent';
 import { proxyAgent } from '../aws-utils/aws-globals';
 
 interface DeploymentManagerOptions {
