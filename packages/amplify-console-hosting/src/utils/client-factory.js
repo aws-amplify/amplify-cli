@@ -11,16 +11,10 @@ async function getS3Client(context) {
   return new AWS.S3(config);
 }
 
-// **this is a problem and needs to be fixed
 async function getAWSClient(context) {
   const providerPlugin = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugin[constants.PROVIDER]);
   return await provider.getConfiguredAWSClient(context, constants.CATEGORY, 'create');
-}
-
-function getAWSProvider(context) {
-  const providerPlugin = context.amplify.getProviderPlugins(context);
-  return require(providerPlugin[constants.PROVIDER]);
 }
 
 module.exports = {
