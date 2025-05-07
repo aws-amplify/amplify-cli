@@ -1,15 +1,13 @@
 const constants = require('../constants/plugin-constants');
-const { AWS } = require('aws-sdk');
+const AWS = require('aws-sdk');
 
 async function getAmplifyClient(context) {
   const config = await getAWSClient(context);
-  const provider = getAWSProvider(context);
   return new AWS.Amplify(config);
 }
 
 async function getS3Client(context) {
   const config = await getAWSClient(context);
-  const provider = getAWSProvider(context);
   return new AWS.S3(config);
 }
 

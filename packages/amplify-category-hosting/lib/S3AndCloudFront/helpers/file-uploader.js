@@ -3,7 +3,7 @@ const sequential = require('promise-sequential');
 const fileScanner = require('./file-scanner');
 const constants = require('../../constants');
 const { uploadFile } = require('./upload-file');
-const { AWS } = require('aws-sdk');
+const AWS = require('aws-sdk');
 
 const serviceName = 'S3AndCloudFront';
 const providerName = 'awscloudformation';
