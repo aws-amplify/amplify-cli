@@ -8,5 +8,3 @@ export const proxyAgent = () => {
   }
   return httpAgent;
 };
-
-// credentials and customUserAgent will also go in here

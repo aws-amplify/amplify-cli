@@ -6,8 +6,7 @@ const AWS = require('aws-sdk');
 export async function getS3Client(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[constants.providerName]);
-  //const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
-  const config = await provider.getAWSConfiguration(context, constants.CategoryName, action);
+  const config = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
   return new AWS.S3(config);
 }
 

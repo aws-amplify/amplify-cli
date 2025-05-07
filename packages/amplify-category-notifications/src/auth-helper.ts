@@ -157,9 +157,7 @@ const getIamClient = async (context: $TSContext, action: string | undefined): Pr
   if (httpProxy) {
     httpAgent = new ProxyAgent();
   }
-  // I will deal with you later
-  //const aws = await provider.getConfiguredAWSClient(context, AmplifyCategories.NOTIFICATIONS, action);
-  const config = await provider.getAWSConfiguration(context, AmplifyCategories.NOTIFICATIONS, action);
+  const config = await provider.getConfiguredAWSClient(context, AmplifyCategories.NOTIFICATIONS, action);
   return new AWS.IAM({
     ...config,
     httpOptions: { agent: httpAgent },
