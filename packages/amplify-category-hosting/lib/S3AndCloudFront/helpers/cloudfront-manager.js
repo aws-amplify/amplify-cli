@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const constants = require('../../constants');
-const AWS = require('aws-sdk');
+const CloudFront = require('aws-sdk/clients/cloudfront');
 
 const providerName = 'awscloudformation';
 
@@ -45,7 +45,7 @@ async function getCloudFrontClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   const config = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
-  return new AWS.CloudFront(config);
+  return new CloudFront(config);
 }
 
 module.exports = {

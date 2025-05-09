@@ -13,7 +13,6 @@ import chalk from 'chalk';
 import { prompt } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-// import { ProxyAgent } from 'proxy-agent';
 import { STS } from 'aws-sdk';
 import awsRegions from './aws-regions';
 import constants from './constants';
@@ -32,6 +31,7 @@ import {
   updateOrRemoveQuestion,
   retryAuthConfig,
 } from './question-flows/configuration-questions';
+import { proxyAgent } from './aws-utils/aws-globals';
 
 interface AwsConfig extends AwsSecrets {
   useProfile?: boolean;
@@ -796,7 +796,7 @@ function getConfigLevel(context: $TSContext): ProjectType {
 
 export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
   const { awsConfigInfo } = context.exeInfo;
-  // const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
   let resultAWSConfigInfo: AwsSdkConfig;
 
@@ -839,12 +839,12 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
   }
 
   // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
-  // if (httpProxy) {
-  //   resultAWSConfigInfo = {
-  //     ...resultAWSConfigInfo,
-  //     httpOptions: { agent: new ProxyAgent() },
-  //   };
-  // }
+  if (httpProxy) {
+    resultAWSConfigInfo = {
+      ...resultAWSConfigInfo,
+      httpOptions: { agent: proxyAgent() },
+    };
+  }
 
   return resultAWSConfigInfo;
 }

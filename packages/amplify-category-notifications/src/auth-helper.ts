@@ -3,7 +3,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import ora from 'ora';
 import os from 'os';
 import { ProxyAgent } from 'proxy-agent';
-import AWS from 'aws-sdk';
+import IAM from 'aws-sdk/clients/iam';
 
 const providerName = 'awscloudformation';
 const policyNamePrefix = 'pinpoint_amplify-';
@@ -158,7 +158,7 @@ const getIamClient = async (context: $TSContext, action: string | undefined): Pr
     httpAgent = new ProxyAgent();
   }
   const config = await provider.getConfiguredAWSClient(context, AmplifyCategories.NOTIFICATIONS, action);
-  return new AWS.IAM({
+  return new IAM({
     ...config,
     httpOptions: { agent: httpAgent },
   });
