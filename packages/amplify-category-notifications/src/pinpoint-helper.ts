@@ -548,11 +548,6 @@ export const getPinpointClient = async (
   // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   if (httpProxy) {
     httpAgent = new ProxyAgent();
-    // aws.config.update({
-    //   httpOptions: {
-    //     agent: new ProxyAgent(),
-    //   },
-    // });
   }
 
   return new aws.Pinpoint({ ...cred, ...defaultOptions, httpOptions: { agent: httpAgent } });

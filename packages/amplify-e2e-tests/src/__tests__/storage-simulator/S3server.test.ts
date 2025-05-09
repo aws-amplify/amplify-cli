@@ -17,12 +17,6 @@ let simulator;
 jest.setTimeout(2000000);
 
 beforeAll(async () => {
-  // AWS.config.update({
-  //   accessKeyId: 'fakeaccesskeyidfortesting',
-  //   secretAccessKey: 'fakeaccesssecretkeyfortesting',
-  //   region: 'eu-west-2',
-  // });
-
   const ep = new AWS.Endpoint('http://localhost:20005');
   s3client = new AWS.S3({
     accessKeyId: fakeAccessId,

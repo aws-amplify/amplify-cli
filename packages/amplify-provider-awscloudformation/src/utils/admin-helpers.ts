@@ -73,8 +73,6 @@ export async function getTempCredsWithAdminTokens(context: $TSContext, appId: st
   // use tokens to get creds and assign to config
   const awsConfigInfo = await getAdminCognitoCredentials(idToken, IdentityId, region);
 
-  // aws.config.update(awsConfigInfo);
-
   // need to use Cognito creds to get STS creds - otherwise
   // users will not be able to provision Cognito resources
   const sts = new aws.STS({

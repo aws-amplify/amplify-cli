@@ -8,8 +8,6 @@ const configFilePath = path.join(dotAWSDirPath, 'config');
 
 let aws;
 
-// **affected by SDK migrations
-// this may need to be entirely gutted
 try {
   delete require.cache[require.resolve('aws-sdk')];
   if (fs.existsSync(credentialsFilePath) && fs.existsSync(configFilePath)) {
@@ -24,24 +22,7 @@ try {
   aws = require('aws-sdk');
 }
 
-const { ProxyAgent } = require('proxy-agent');
-const configurationManager = require('../configuration-manager');
-
 aws.configureWithCreds = async (context) => {
-  // const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-  // const config = await configurationManager.loadConfiguration(context, aws);
-  // if (config) {
-  //   aws.config.update(config);
-  // }
-
-  // if (httpProxy) {
-  //   aws.config.update({
-  //     httpOptions: {
-  //       agent: new ProxyAgent(httpProxy),
-  //     },
-  //   });
-  // }
-
   return aws;
 };
 

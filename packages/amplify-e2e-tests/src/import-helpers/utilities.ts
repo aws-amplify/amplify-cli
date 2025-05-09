@@ -296,7 +296,6 @@ const addAppClient = async (
   const projectDetails = getProjectMeta(projectRoot);
   const authDetails = getAuthProjectDetails(projectRoot);
   const creds = new aws.SharedIniFileCredentials({ profile: profileName });
-  //aws.config.credentials = creds;
 
   const cognitoClient = new aws.CognitoIdentityServiceProvider({
     credentials: creds,
@@ -335,7 +334,6 @@ export const deleteAppClient = async (profileName: string, projectRoot: string, 
   const authDetails = getAuthProjectDetails(projectRoot);
   const projectDetails = getProjectMeta(projectRoot);
   const creds = new aws.SharedIniFileCredentials({ profile: profileName });
-  //aws.config.credentials = creds;
 
   const cognitoClient = new aws.CognitoIdentityServiceProvider({
     credentials: creds,

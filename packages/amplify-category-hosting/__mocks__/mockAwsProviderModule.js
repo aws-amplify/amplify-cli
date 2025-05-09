@@ -1,12 +1,3 @@
-// async function getConfiguredAWSClient() {
-//   return {
-//     S3,
-//     IAM,
-//     Pinpoint,
-//     CloudFront,
-//   };
-// }
-
 async function getConfiguredAWSClient() {
   return {
     credentials: 'some credentials',
@@ -16,31 +7,6 @@ async function getConfiguredAWSClient() {
 
 async function getConfiguredPinpointClient() {
   return new Pinpoint();
-}
-
-class S3 {
-  upload() {
-    return {
-      promise: () => Promise.resolve({}),
-    };
-  }
-}
-
-class IAM {
-  createPolicy() {
-    return {
-      promise: () =>
-        Promise.resolve({
-          Policy: {},
-        }),
-    };
-  }
-
-  attachRolePolicy() {
-    return {
-      promise: () => Promise.resolve({}),
-    };
-  }
 }
 
 class Pinpoint {
@@ -74,14 +40,6 @@ class Pinpoint {
         Promise.resolve({
           ApplicationResponse: {},
         }),
-    };
-  }
-}
-
-class CloudFront {
-  createInvalidation() {
-    return {
-      promise: () => Promise.resolve({}),
     };
   }
 }

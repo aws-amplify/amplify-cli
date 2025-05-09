@@ -37,8 +37,6 @@ function confirm() {
     Username: userName,
   };
 
-  // AWS.config.region = region;
-
   var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({ region: region });
 
   cognitoidentityserviceprovider.confirmSignUp(params, function (err, data) {
