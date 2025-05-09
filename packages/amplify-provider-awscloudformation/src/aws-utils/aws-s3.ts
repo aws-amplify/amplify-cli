@@ -16,6 +16,7 @@ import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier }
 import { pagedAWSCall } from './paged-call';
 import { loadConfiguration } from '../configuration-manager';
 import aws from './aws';
+import { proxyAgent } from './aws-globals';
 
 const providerName = require('../constants').ProviderName;
 const consumers = require('stream/consumers');
@@ -63,7 +64,13 @@ export class S3 {
 
   private constructor(context: $TSContext, cred: $TSAny, options = {}) {
     this.context = context;
-    this.s3 = new aws.S3({ ...cred, ...options });
+    this.s3 = new aws.S3({
+      ...cred,
+      ...options,
+      httpOptions: {
+        agent: proxyAgent(),
+      },
+    });
   }
 
   /**

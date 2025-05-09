@@ -1,6 +1,7 @@
 // @ts-check
 const aws = require('./aws.js');
 const configurationManager = require('../configuration-manager');
+const { proxyAgent } = require('./aws-globals');
 
 class SecretsManager {
   constructor(context, options = {}) {
@@ -15,7 +16,13 @@ class SecretsManager {
       this.context = context;
 
       /** @type {AWS.SecretsManager} */
-      this.secretsManager = new aws.SecretsManager({ ...cred, ...options });
+      this.secretsManager = new aws.SecretsManager({
+        ...cred,
+        ...options,
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      });
 
       return this;
     })();

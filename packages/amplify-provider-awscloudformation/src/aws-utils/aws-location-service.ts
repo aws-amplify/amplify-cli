@@ -2,6 +2,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as AWS from 'aws-sdk';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import aws from './aws.js';
+import { proxyAgent } from './aws-globals';
 
 export class LocationService {
   private static instance: LocationService;
@@ -21,6 +22,12 @@ export class LocationService {
   }
 
   private constructor(cred: AwsSecrets, options = {}) {
-    this.client = new aws.Location({ ...cred, ...options });
+    this.client = new aws.Location({
+      ...cred,
+      ...options,
+      httpOptions: {
+        agent: proxyAgent(),
+      },
+    });
   }
 }

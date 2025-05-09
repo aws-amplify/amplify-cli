@@ -1,4 +1,4 @@
-import aws from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import fs from 'fs-extra';
 import path from 'path';
 import { globSync } from 'glob';
@@ -118,7 +118,7 @@ async function ensureAmplifyMeta(context, amplifyApp, awsConfigInfo) {
 
 async function storeArtifactsForAmplifyService(context, awsConfigInfo, deploymentBucketName) {
   const projectPath = process.cwd();
-  const s3Client = new aws.S3(awsConfigInfo);
+  const s3Client = new S3(awsConfigInfo);
   const amplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(projectPath);
   const backendConfigFilePath = context.amplify.pathManager.getCurrentBackendConfigFilePath(projectPath);
   await uploadFile(s3Client, deploymentBucketName, amplifyMetaFilePath);
@@ -313,7 +313,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
   const backendDir = context.amplify.pathManager.getBackendDirPath(projectPath);
   const zipFileName = constants.S3BackendZipFileName;
 
-  const s3Client = new aws.S3(awsConfigInfo);
+  const s3Client = new S3(awsConfigInfo);
   const deploymentBucketName = backendEnv.deploymentArtifacts;
 
   const params = {

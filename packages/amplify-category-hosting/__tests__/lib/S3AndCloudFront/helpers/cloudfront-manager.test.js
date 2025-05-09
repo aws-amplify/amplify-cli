@@ -1,5 +1,3 @@
-const mockAwsProviderModule = require('../../../../__mocks__/mockAwsProviderModule');
-
 const cloudFrontManager = require('../../../../lib/S3AndCloudFront/helpers/cloudfront-manager');
 
 describe('cloudfront-manager', () => {
@@ -76,14 +74,9 @@ describe('cloudfront-manager', () => {
     }
   }
 
-  mockAwsProviderModule.getConfiguredAWSClient = () => {
-    return {
-      CloudFront: mockCloudFront,
-    };
-  };
-
   test('invalidateCloudFront', async () => {
-    const result = await cloudFrontManager.invalidateCloudFront(mockContext);
+    const mockCloudFrontClient = async (context, action) => Promise.resolve(new mockCloudFront());
+    const result = await cloudFrontManager.invalidateCloudFront(mockContext, mockCloudFrontClient);
     expect(result).toBe(mockContext);
     expect(mockInvalidateMethod).toBeCalled();
     expect(mockContext.exeInfo.cftInvalidationData).toEqual(mockcftInvalidationData);

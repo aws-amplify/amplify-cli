@@ -1,6 +1,7 @@
 // @ts-check
 const aws = require('./aws.js');
 const configurationManager = require('../configuration-manager');
+const { proxyAgent } = require('./aws-globals');
 
 class Route53 {
   constructor(context, options = {}) {
@@ -15,7 +16,13 @@ class Route53 {
       this.context = context;
 
       /** @type {AWS.Route53} */
-      this.route53 = new aws.Route53({ ...cred, ...options });
+      this.route53 = new aws.Route53({
+        ...cred,
+        ...options,
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      });
 
       return this;
     })();

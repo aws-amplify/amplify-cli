@@ -5,10 +5,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as ini from 'ini';
 import * as inquirer from 'inquirer';
-import { ProxyAgent } from 'proxy-agent';
 import * as constants from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { AwsSdkConfig } from './utils/auth-types';
+import { proxyAgent } from './aws-utils/aws-globals';
 
 const logger = fileLogger('system-config-manager');
 
@@ -79,7 +79,6 @@ export const getProfiledAwsConfig = async (
   isRoleSourceProfile?: boolean,
 ): Promise<AwsSdkConfig> => {
   let awsConfigInfo: AwsSdkConfig;
-  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     logger('getProfiledAwsConfig.profileConfig', [profileConfig])();
@@ -106,6 +105,9 @@ export const getProfiledAwsConfig = async (
         secretAccessKey: credentials.secretAccessKey,
         sessionToken: credentials.sessionToken,
         expiration: credentials.expireTime,
+        httpOptions: {
+          agent: proxyAgent(),
+        },
       };
       process.env.AWS_SDK_LOAD_CONFIG = sdkLoadConfigOriginal;
     } else {
@@ -122,15 +124,6 @@ export const getProfiledAwsConfig = async (
       message: `Profile configuration is missing for: ${profileName}`,
     });
   }
-
-  // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
-  if (httpProxy) {
-    awsConfigInfo = {
-      ...awsConfigInfo,
-      httpOptions: { agent: new ProxyAgent() },
-    };
-  }
-
   return awsConfigInfo;
 };
 
