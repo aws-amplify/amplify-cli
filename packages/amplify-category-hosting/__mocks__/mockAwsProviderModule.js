@@ -1,9 +1,16 @@
+// async function getConfiguredAWSClient() {
+//   return {
+//     S3,
+//     IAM,
+//     Pinpoint,
+//     CloudFront,
+//   };
+// }
+
 async function getConfiguredAWSClient() {
   return {
-    S3,
-    IAM,
-    Pinpoint,
-    CloudFront,
+    credentials: 'some credentials',
+    customUserAgent: 'someCustomUserAgent',
   };
 }
 

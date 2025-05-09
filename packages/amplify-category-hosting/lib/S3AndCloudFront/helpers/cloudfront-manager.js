@@ -4,18 +4,18 @@ const AWS = require('aws-sdk');
 
 const providerName = 'awscloudformation';
 
-function invalidateCloudFront(context) {
+function invalidateCloudFront(context, cloudFrontClient = getCloudFrontClient) {
   if (context.parameters.options.invalidateCache || context.parameters.options.invalidateCloudFront || context.parameters.options.c) {
-    return invalidate(context);
+    return invalidate(context, cloudFrontClient);
   }
 }
 
-async function invalidate(context) {
+async function invalidate(context, cloudFrontClient = getCloudFrontClient) {
   if (context.exeInfo.serviceMeta && context.exeInfo.serviceMeta.output && context.exeInfo.serviceMeta.output.CloudFrontDistributionID) {
     const { CloudFrontDistributionID } = context.exeInfo.serviceMeta.output;
     const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
 
-    const cloudFront = await getCloudFrontClient(context, 'update');
+    const cloudFront = await cloudFrontClient(context, 'update');
     const invalidateParams = {
       DistributionId: CloudFrontDistributionID,
       InvalidationBatch: {
