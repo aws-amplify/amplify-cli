@@ -50,6 +50,10 @@ export function checkFile(file: string, prefix: string, delimiter: string) {
 
 // removing chunk siognature from request payload if present
 export function stripChunkSignature(buf: Buffer) {
+  if (!Buffer.isBuffer(buf)) {
+    // If buf is not a Buffer, return it unchanged or handle the error
+    return buf;
+  }
   const str = buf.toString();
   const regex = /^[A-Fa-f0-9]+;chunk-signature=[0-9a-f]{64}/gm;
   let m;
