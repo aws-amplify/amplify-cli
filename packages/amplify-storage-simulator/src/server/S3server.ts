@@ -125,32 +125,61 @@ export class StorageServer extends EventEmitter {
   }
 
   private async handleRequestGet(request, response) {
-    const filePath = path.normalize(path.join(this.localDirectoryPath, request.params.path));
-    if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-          console.log('error');
-        }
-        response.send(data);
-      });
-    } else {
-      // fix up the key name for proper error message since it is normalized for the given platform
-      // remove the leading path separator and replace the remaining ones.
-      let keyName = request.params.path.replace(/\\/g, '/');
-      if (keyName.startsWith('/')) {
-        keyName = keyName.slice(1);
+    try {
+      const filePath = path.resolve(this.localDirectoryPath, request.params.path);
+      if (!filePath.startsWith(this.localDirectoryPath)) {
+        response.set('Content-Type', 'text/xml');
+        response.status(403);
+        response.send(
+          o2x({
+            '?xml version="1.0" encoding="utf-8"?': null,
+            Error: {
+              Code: 'AccessDenied',
+              Message: 'Access to the specified resource is denied.',
+            },
+          }),
+        );
+        return;
       }
+
+      if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
+        fs.readFile(filePath, (err, data) => {
+          if (err) {
+            console.log('error');
+          }
+          response.send(data);
+        });
+      } else {
+        // fix up the key name for proper error message since it is normalized for the given platform
+        // remove the leading path separator and replace the remaining ones.
+        let keyName = request.params.path.replace(/\\/g, '/');
+        if (keyName.startsWith('/')) {
+          keyName = keyName.slice(1);
+        }
+        response.set('Content-Type', 'text/xml');
+        response.status(404);
+        response.send(
+          o2x({
+            '?xml version="1.0" encoding="utf-8"?': null,
+            Error: {
+              Code: 'NoSuchKey',
+              Message: 'The specified key does not exist.',
+              Key: keyName,
+              RequestId: '',
+              HostId: '',
+            },
+          }),
+        );
+      }
+    } catch (err) {
       response.set('Content-Type', 'text/xml');
-      response.status(404);
+      response.status(500);
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
           Error: {
-            Code: 'NoSuchKey',
-            Message: 'The specified key does not exist.',
-            Key: keyName,
-            RequestId: '',
-            HostId: '',
+            Code: 'InternalServerException',
+            Message: err.message,
           },
         }),
       );
