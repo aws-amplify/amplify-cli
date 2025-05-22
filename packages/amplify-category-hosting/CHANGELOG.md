@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.42-sdk-v2-with-data-0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.41...@aws-amplify/amplify-category-hosting@3.5.42-sdk-v2-with-data-0.0) (2025-05-09)
+
+
+### Bug Fixes
+
+* failing test, will need to revisit this later ([6d47fdd](https://github.com/aws-amplify/amplify-cli/commit/6d47fddc561d6cafeebb9a75564a028ad751632b))
+* install sdk in hosting category ([495465c](https://github.com/aws-amplify/amplify-cli/commit/495465c8bfc0333f4e22f0bffab7f91eb03d5124))
+* lint errors and test failures ([e61fb0a](https://github.com/aws-amplify/amplify-cli/commit/e61fb0a69303db86bb0d252169220bc17f01d852))
+* test failures ([ce19265](https://github.com/aws-amplify/amplify-cli/commit/ce19265cbc83283d7d7d5d12448d8317c18201f4))
+* testing issues (hopefully) ([6ac59f1](https://github.com/aws-amplify/amplify-cli/commit/6ac59f1385f667054da61015b0102e32c25832f2))
+
+
+
+
+
 ## [3.5.41](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.40...@aws-amplify/amplify-category-hosting@3.5.41) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-hosting

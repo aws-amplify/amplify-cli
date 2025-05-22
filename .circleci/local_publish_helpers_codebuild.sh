@@ -139,10 +139,11 @@ function verifyPkgCli {
       fi
     }
 
-    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((930 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((930 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((930 * 1024 * 1024))
-    verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((750 * 1024 * 1024))
+    # TODO: After V3 migrations are done, decrease 995 back to 930 and 825 back to 750
+    verifySinglePkg "amplify-pkg-linux-x64" "amplify-pkg-linux-x64.tgz" $((995 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-macos-x64" "amplify-pkg-macos-x64.tgz" $((995 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-win-x64.exe" "amplify-pkg-win-x64.tgz" $((995 * 1024 * 1024))
+    verifySinglePkg "amplify-pkg-linux-arm64" "amplify-pkg-linux-arm64.tgz" $((825 * 1024 * 1024))
 }
 
 function unsetNpmRegistryUrl {

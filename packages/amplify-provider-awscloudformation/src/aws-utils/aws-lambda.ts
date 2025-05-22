@@ -4,6 +4,7 @@ import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsRespo
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
+import { proxyAgent } from './aws-globals';
 
 const aws = require('./aws');
 
@@ -20,7 +21,13 @@ export class Lambda {
       } catch (e) {
         // ignore missing config
       }
-      this.lambda = new aws.Lambda({ ...cred, ...options });
+      this.lambda = new aws.Lambda({
+        ...cred,
+        ...options,
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      });
       return this;
     })() as $TSAny;
   }

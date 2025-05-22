@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.8-sdk-v2-with-data-0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.7...@aws-amplify/amplify-provider-awscloudformation@8.11.8-sdk-v2-with-data-0.0) (2025-05-09)
+
+
+### Bug Fixes
+
+* lint errors and test failures ([e61fb0a](https://github.com/aws-amplify/amplify-cli/commit/e61fb0a69303db86bb0d252169220bc17f01d852))
+* pin CDK version again ([#14186](https://github.com/aws-amplify/amplify-cli/issues/14186)) ([ef7f5eb](https://github.com/aws-amplify/amplify-cli/commit/ef7f5ebe0136049865554c6ec0235abc9b816fea))
+* upgrade most packages that use `rimraf` and `glob` ([#14153](https://github.com/aws-amplify/amplify-cli/issues/14153)) ([c85ed14](https://github.com/aws-amplify/amplify-cli/commit/c85ed14b2fe61c09a026f7bb7c82857b5227dff2))
+
+
+
+
+
 ## [8.11.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.6...@aws-amplify/amplify-provider-awscloudformation@8.11.7) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation

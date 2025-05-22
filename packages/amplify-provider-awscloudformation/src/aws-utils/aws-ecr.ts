@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 import aws from './aws';
 import { loadConfiguration } from '../configuration-manager';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
+import { proxyAgent } from './aws-globals';
 class ECR {
   public ecr: AWS.ECR;
 
@@ -14,7 +15,13 @@ class ECR {
         // ignore missing config
       }
 
-      this.ecr = new (aws as typeof AWS).ECR({ ...cred, ...options });
+      this.ecr = new (aws as typeof AWS).ECR({
+        ...cred,
+        ...options,
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      });
 
       return this;
     })();

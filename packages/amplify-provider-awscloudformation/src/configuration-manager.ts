@@ -13,7 +13,6 @@ import chalk from 'chalk';
 import { prompt } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { ProxyAgent } from 'proxy-agent';
 import { STS } from 'aws-sdk';
 import awsRegions from './aws-regions';
 import constants from './constants';
@@ -32,6 +31,7 @@ import {
   updateOrRemoveQuestion,
   retryAuthConfig,
 } from './question-flows/configuration-questions';
+import { proxyAgent } from './aws-utils/aws-globals';
 
 interface AwsConfig extends AwsSecrets {
   useProfile?: boolean;
@@ -842,7 +842,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
   if (httpProxy) {
     resultAWSConfigInfo = {
       ...resultAWSConfigInfo,
-      httpOptions: { agent: new ProxyAgent() },
+      httpOptions: { agent: proxyAgent() },
     };
   }
 

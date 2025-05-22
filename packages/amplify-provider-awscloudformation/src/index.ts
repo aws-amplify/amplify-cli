@@ -102,14 +102,15 @@ function configure(context) {
 }
 
 async function getConfiguredAWSClient(context, category, action) {
-  await aws.configureWithCreds(context);
+  const credsConfig = await loadConfiguration(context);
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
-  aws.config.update({
+  const config = {
+    credentials: credsConfig,
     customUserAgent: formUserAgentParam(context, userAgentAction),
-  });
-  return aws;
+  };
+  return config;
 }
 
 function getConfiguredAmplifyClient(context, category, action, options = {}) {

@@ -3,7 +3,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import { existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
-import aws from 'aws-sdk';
+import Location from 'aws-sdk/clients/location';
 import { ServiceName } from '../service-utils/constants';
 import { validateGeoJSONObj } from '../service-utils/validateGeoJSONObj';
 import {
@@ -112,7 +112,7 @@ export const importResource = async (context: $TSContext) => {
 const bulkUploadGeofence = async (context: $TSContext, params: ImportParams, region: string) => {
   printer.info('Updating your Geofences in the collection...');
   try {
-    const { client } = await context.amplify.invokePluginMethod<{ client: aws.Location }>(
+    const { client } = await context.amplify.invokePluginMethod<{ client: Location }>(
       context,
       'awscloudformation',
       undefined,
