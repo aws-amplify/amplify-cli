@@ -24020,11 +24020,11 @@ __metadata:
   linkType: hard
 
 "openpgp@npm:^5.10.2":
-  version: 5.10.2
-  resolution: "openpgp@npm:5.10.2"
+  version: 5.11.3
+  resolution: "openpgp@npm:5.11.3"
   dependencies:
     asn1.js: ^5.0.0
-  checksum: 2978a8f3b39c74da92aea268def44a75e9e41665157f6a60bd753d5c0d44d2ea659ae17c6095be6d3d1485fd556d65a31403ef63cf24451fc113794e7f2e74a9
+  checksum: 0e7b9c562d6eb9fefb132a6c70675ad149b3f7bbec8d60b79f198f4834fcd54c15c0d199809b2c01e787c5769e50a9a18f950d9f49416d8c28587ac84bc171c1
   languageName: node
   linkType: hard
 
