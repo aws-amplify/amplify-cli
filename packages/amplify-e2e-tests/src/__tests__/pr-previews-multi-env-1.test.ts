@@ -18,6 +18,7 @@ describe('environment commands with functions secrets handling', () => {
   let projRoot: string;
 
   beforeAll(async () => {
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
     projRoot = await createNewProjectDir('env-test');
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, envName: 'dev' });
     await addManualHosting(projRoot);
@@ -25,6 +26,7 @@ describe('environment commands with functions secrets handling', () => {
   });
 
   afterAll(async () => {
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'false';
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });

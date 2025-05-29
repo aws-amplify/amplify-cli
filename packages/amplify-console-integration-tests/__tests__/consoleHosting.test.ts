@@ -31,11 +31,13 @@ describe('amplify console add hosting', () => {
   };
 
   beforeEach(async () => {
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'true';
     projRoot = await createTestProject();
     await initJSProjectWithProfile(projRoot, { providerConfig: providersParam, disableAmplifyAppCreation: false });
   });
 
   afterEach(async () => {
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT === 'false';
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
