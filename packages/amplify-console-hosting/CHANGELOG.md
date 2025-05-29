@@ -3,19 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.5.39-sdk-v2-with-data-0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.38...@aws-amplify/amplify-console-hosting@2.5.39-sdk-v2-with-data-0.0) (2025-05-09)
-
-
-### Bug Fixes
-
-* install sdk in hosting category ([495465c](https://github.com/aws-amplify/amplify-cli/commit/495465c8bfc0333f4e22f0bffab7f91eb03d5124))
-* removed unnecessary function ([c929ee7](https://github.com/aws-amplify/amplify-cli/commit/c929ee759937a70bce905762e95152f0e757b28d))
-* upgrade most packages that use `rimraf` and `glob` ([#14153](https://github.com/aws-amplify/amplify-cli/issues/14153)) ([c85ed14](https://github.com/aws-amplify/amplify-cli/commit/c85ed14b2fe61c09a026f7bb7c82857b5227dff2))
-
-
-
-
-
 ## [2.5.38](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.37...@aws-amplify/amplify-console-hosting@2.5.38) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-hosting
