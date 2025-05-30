@@ -3,11 +3,13 @@ const AWS = require('aws-sdk');
 
 async function getAmplifyClient(context) {
   const config = await getAWSClient(context);
+  console.log(config);
   return new AWS.Amplify(config);
 }
 
 async function getS3Client(context) {
   const config = await getAWSClient(context);
+  console.log(config);
   return new AWS.S3(config);
 }
 
