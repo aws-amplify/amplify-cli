@@ -56,6 +56,7 @@ import { getApiKeyConfig } from './utils/api-key-helpers';
 import { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
 export { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
 import { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/ssm-utils/env-parameter-ssm-helpers';
+import { proxyAgent } from './aws-utils/aws-globals';
 export {
   getEnvParametersUploadHandler,
   getEnvParametersDownloadHandler,
@@ -109,6 +110,10 @@ async function getConfiguredAWSClient(context, category, action) {
   const config = {
     credentials: credsConfig,
     customUserAgent: formUserAgentParam(context, userAgentAction),
+    httpOptions: {
+      agent: proxyAgent(),
+    },
+    region: credsConfig.region,
   };
   return config;
 }
