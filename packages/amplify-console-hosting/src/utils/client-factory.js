@@ -2,11 +2,13 @@ const constants = require('../constants/plugin-constants');
 
 async function getAmplifyClient(context) {
   const AWS = await getAWSClient(context);
+  console.log(AWS.config);
   return new AWS.Amplify();
 }
 
 async function getS3Client(context) {
   const AWS = await getAWSClient(context);
+  console.log(AWS.config);
   return new AWS.S3();
 }
 
