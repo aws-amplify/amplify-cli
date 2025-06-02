@@ -608,7 +608,7 @@ function removeProjectConfig(envName: string) {
   }
 }
 
-export async function loadConfiguration(context: $TSContext): Promise<AwsSecrets> {
+export async function loadConfiguration(context: $TSContext): Promise<AwsSdkConfig> {
   const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
   const config = await loadConfigurationForEnv(context, envName);
   return config;
