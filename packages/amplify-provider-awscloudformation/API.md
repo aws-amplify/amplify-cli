@@ -50,13 +50,11 @@ export const getLocationRegionMapping: () => $TSObject;
 // @public (undocumented)
 export const getLocationSupportedRegion: (region: string) => string;
 
-// Warning: (ae-forgotten-export) The symbol "AwsSecrets" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export function loadConfiguration(context: $TSContext): Promise<AwsSecrets>;
-
 // Warning: (ae-forgotten-export) The symbol "AwsSdkConfig" needs to be exported by the entry point index.d.ts
 //
+// @public (undocumented)
+export function loadConfiguration(context: $TSContext): Promise<AwsSdkConfig>;
+
 // @public (undocumented)
 export function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string): Promise<AwsSdkConfig>;
 
