@@ -48,7 +48,7 @@ const DISABLE_COVERAGE = [
   'src/__tests__/smoke-tests/smoketest-amplify-app.test.ts',
 ];
 const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
-  l: ['src/__tests__/interactions.test.ts', 'src/__tests__/interactions-1.test.ts', 'src/__tests__/interactions-2.test.ts'],
+  l: [],
   w: [
     /* TEMPORARY-PR12830: Remove after we ship PR12830 */
     'src/__tests__/custom_resources.test.ts',
@@ -97,9 +97,6 @@ const TEST_EXCLUSIONS: { l: string[]; w: string[] } = {
     'src/__tests__/import_s3_2a.test.ts',
     'src/__tests__/import_s3_2b.test.ts',
     'src/__tests__/import_s3_2c.test.ts',
-    'src/__tests__/interactions.test.ts',
-    'src/__tests__/interactions-1.test.ts',
-    'src/__tests__/interactions-2.test.ts',
     'src/__tests__/layer-2.test.ts',
     'src/__tests__/mock-api.test.ts',
     'src/__tests__/pull.test.ts',
