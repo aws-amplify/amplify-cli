@@ -1,35 +1,15 @@
 const subcommand = 'add';
-const category = 'interactions';
-const { servicesMetadata } = require(`../../provider-utils/supported-services`);
-
-let options;
 
 module.exports = {
   name: subcommand,
   run: async (context) => {
-    const { amplify } = context;
+    context.print.warning('The interactions category cannot be added.');
 
-    return amplify
-      .serviceSelectionPrompt(context, category, servicesMetadata)
-      .then((result) => {
-        options = {
-          service: result.service,
-          providerPlugin: result.providerName,
-          build: true,
-        };
-        const providerController = require(`../../provider-utils/${result.providerName}/index`);
-        if (!providerController) {
-          context.print.error('Provider not configured for this category');
-          return undefined;
-        }
-        return providerController.addResource(context, category, result.service, options);
-      })
-      .then(() => context.print.success('Successfully added resource'))
-      .catch((err) => {
-        context.print.info(err.stack);
-        context.print.error('There was an error adding the interactions resource');
-        context.usageData.emitError(err);
-        process.exitCode = 1;
-      });
+    return context.print.info(
+      `
+      Amazon Lex V1 is reaching end of life on September 15, 2025 and no longer allows creation of new bots as of March 31, 2025. 
+      If you wish to create a new bot with Lex in your Amplify application, we recommend you follow the steps outlined here to create a bot with Lex V2: https://docs.amplify.aws/gen1/react/build-a-backend/more-features/interactions/set-up-interactions/#setup-aws-lexv2-bot
+      `,
+    );
   },
 };
