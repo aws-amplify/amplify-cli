@@ -2,7 +2,6 @@ import { $TSAny, $TSContext, AmplifyCategories, AmplifyError } from '@aws-amplif
 import { printer } from '@aws-amplify/amplify-prompts';
 import ora from 'ora';
 import os from 'os';
-import { ProxyAgent } from 'proxy-agent';
 import IAM from 'aws-sdk/clients/iam';
 
 const providerName = 'awscloudformation';

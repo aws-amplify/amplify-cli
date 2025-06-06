@@ -8,7 +8,6 @@ const constants = require('./constants');
 const configManager = require('./configuration-manager');
 const setupNewUser = require('./setup-new-user');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
-const aws = require('./aws-utils/aws');
 const { getLexRegionMapping } = require('./aws-utils/aws-lex');
 const amplifyService = require('./aws-utils/aws-amplify');
 const consoleCommand = require('./console');
