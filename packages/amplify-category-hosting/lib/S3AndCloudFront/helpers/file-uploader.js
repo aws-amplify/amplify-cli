@@ -42,7 +42,7 @@ function sortUploadFiles(fileList) {
 async function getS3Client(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  const config = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
+  const config = await provider.getConfiguredAWSClientConfig(context, constants.CategoryName, action);
   return new S3(config);
 }
 

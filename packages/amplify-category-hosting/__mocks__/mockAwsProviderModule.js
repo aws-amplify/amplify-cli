@@ -1,4 +1,4 @@
-async function getConfiguredAWSClient() {
+async function getConfiguredAWSClientConfig() {
   return {
     credentials: 'some credentials',
     customUserAgent: 'someCustomUserAgent',
@@ -45,6 +45,6 @@ class Pinpoint {
 }
 
 module.exports = {
-  getConfiguredAWSClient,
+  getConfiguredAWSClientConfig,
   getConfiguredPinpointClient,
 };

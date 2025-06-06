@@ -44,7 +44,7 @@ async function invalidate(context, cloudFrontClient = getCloudFrontClient) {
 async function getCloudFrontClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  const config = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
+  const config = await provider.getConfiguredAWSClientConfig(context, constants.CategoryName, action);
   return new CloudFront(config);
 }
 

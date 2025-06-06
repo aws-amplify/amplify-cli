@@ -152,15 +152,9 @@ const getIamClient = async (context: $TSContext, action: string | undefined): Pr
   const providerPlugins = context.amplify.getProviderPlugins(context);
   // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
   const provider = require(providerPlugins[providerName]);
-  let httpAgent = undefined;
-  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-  if (httpProxy) {
-    httpAgent = new ProxyAgent();
-  }
-  const config = await provider.getConfiguredAWSClient(context, AmplifyCategories.NOTIFICATIONS, action);
+  const config = await provider.getConfiguredAWSClientConfig(context, AmplifyCategories.NOTIFICATIONS, action);
   return new IAM({
     ...config,
-    httpOptions: { agent: httpAgent },
   });
 };
 

@@ -63,6 +63,7 @@ export {
   DownloadHandler,
   PrimitiveRecord,
 } from './utils/ssm-utils/env-parameter-ssm-helpers';
+export { AwsSdkConfig } from './utils/auth-types';
 
 function init(context) {
   return initializer.run(context);
@@ -102,7 +103,7 @@ function configure(context) {
   return configManager.configure(context);
 }
 
-async function getConfiguredAWSClient(context, category, action) {
+async function getConfiguredAWSClientConfig(context, category, action) {
   const credsConfig = await loadConfiguration(context);
   category = category || 'missing';
   action = action || ['missing'];
@@ -174,7 +175,7 @@ module.exports = {
   storeCurrentCloudBackend,
   providerUtils,
   setupNewUser,
-  getConfiguredAWSClient,
+  getConfiguredAWSClientConfig,
   getLexRegionMapping,
   getConfiguredAmplifyClient,
   showHelpfulLinks,
