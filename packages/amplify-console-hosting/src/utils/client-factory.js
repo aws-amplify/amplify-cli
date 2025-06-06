@@ -18,6 +18,6 @@ async function getAWSClientConfig(context) {
 }
 
 module.exports = {
-  getAWSClientConfig,
+  getAmplifyClient,
   getS3Client,
 };
