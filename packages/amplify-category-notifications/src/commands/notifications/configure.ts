@@ -1,5 +1,5 @@
 import { $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { prompter } from '@aws-amplify/amplify-prompts';
+import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import * as pinpointHelper from '../../pinpoint-helper';
 import * as notificationManager from '../../notifications-manager';
 import { IChannelAPIResponse } from '../../channel-types';
@@ -25,6 +25,10 @@ export const alias = 'update';
  * @returns context with notifications metadata updated
  */
 export const run = async (context: $TSContext): Promise<$TSContext> => {
+  printer.warn(`Amazon Pinpoint is reaching end of life on October 30, 2026 and no longer accepts new customers as of May 20, 2025.
+      It is recommended you use use AWS End User Messaging for push notifications and SMS, Amazon Simple Email Service for sending emails, Amazon Connect for campaigns, journeys, endpoints, and engagement analytics.
+      For more information see: https://docs.aws.amazon.com/pinpoint/latest/userguide/migrate.html`);
+
   const availableChannelViewNames = getAvailableChannelViewNames();
   let channelViewName = context.parameters.first ? getChannelViewName(context.parameters.first) : undefined;
 

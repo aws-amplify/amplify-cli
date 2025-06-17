@@ -1,4 +1,5 @@
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 
 const subcommand = 'push';
 const category = 'analytics';
@@ -11,6 +12,8 @@ export const run = async (context: $TSContext): Promise<$TSAny> => {
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
   context.amplify.constructExeInfo(context);
+  printer.warn(`Amazon Pinpoint is reaching end of life on October 30, 2026 and no longer accepts new customers as of May 20, 2025.
+      If you are using Pinpoint, we recommended you use Kinesis for event collection and mobile analytics instead.`);
   return amplify.pushResources(context, category, resourceName);
 };
 
