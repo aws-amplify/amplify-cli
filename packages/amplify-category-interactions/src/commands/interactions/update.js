@@ -9,7 +9,7 @@ module.exports = {
     const { amplify } = context;
     context.print
       .warning(`Amazon Lex V1 is reaching end of life on September 15, 2025 and no longer allows creation of new bots as of March 31, 2025. 
-      It is recommended that you migrate your bot to Amazon Lex V2 before September 15.`);
+      It is recommended that you migrate your bot to Amazon Lex V2 before September 15. \n`);
 
     return amplify
       .serviceSelectionPrompt(context, category, servicesMetadata)
