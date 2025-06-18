@@ -3,17 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [8.11.8-pr-0-sdk-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.8-sdk-v2-with-data-0.0...@aws-amplify/amplify-provider-awscloudformation@8.11.8-pr-0-sdk-1.0) (2025-06-18)
-
-
-### Bug Fixes
-
-* update config ([239c710](https://github.com/aws-amplify/amplify-cli/commit/239c710a3cd165d46a52a4cdb6c3472d729bceb6))
-
-
-
-
-
 ## [8.11.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.6...@aws-amplify/amplify-provider-awscloudformation@8.11.7) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation

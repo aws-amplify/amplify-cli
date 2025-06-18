@@ -3,17 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.5.39-pr-0-sdk-1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.39-sdk-v2-with-data-0.0...@aws-amplify/amplify-console-hosting@2.5.39-pr-0-sdk-1.0) (2025-06-18)
-
-
-### Bug Fixes
-
-* accidentally swapped exports ([ec02598](https://github.com/aws-amplify/amplify-cli/commit/ec0259893c72312d8d3fc8f6f02bcbb6390f19e5))
-
-
-
-
-
 ## [2.5.38](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-console-hosting@2.5.37...@aws-amplify/amplify-console-hosting@2.5.38) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-console-hosting
