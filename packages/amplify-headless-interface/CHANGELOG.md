@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.8-pr-0-sdk-1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.8-sdk-v2-with-data-0.0...amplify-headless-interface@1.17.8-pr-0-sdk-1.0) (2025-06-18)
+
+**Note:** Version bump only for package amplify-headless-interface
+
+
+
+
+
 ## [1.17.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.17.6...amplify-headless-interface@1.17.7) (2024-05-07)
 
 
