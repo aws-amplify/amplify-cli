@@ -8,6 +8,7 @@ const constants = require('./constants');
 const configManager = require('./configuration-manager');
 const setupNewUser = require('./setup-new-user');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
+const aws = require('./aws-utils/aws');
 const { getLexRegionMapping } = require('./aws-utils/aws-lex');
 const amplifyService = require('./aws-utils/aws-amplify');
 const consoleCommand = require('./console');
@@ -118,6 +119,19 @@ async function getConfiguredAWSClientConfig(context, category, action) {
   return config;
 }
 
+// TODO: get rid of this function after data Gen1 releases
+async function getConfiguredAWSClient(context, category, action) {
+  await aws.configureWithCreds(context);
+  category = category || 'missing';
+  action = action || ['missing'];
+  const userAgentAction = `${category}:${action[0]}`;
+
+  aws.config.update({
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+  });
+  return aws;
+}
+
 function getConfiguredAmplifyClient(context, category, action, options = {}) {
   return amplifyService.getConfiguredAmplifyClient(context, options);
 }
@@ -174,6 +188,7 @@ module.exports = {
   storeCurrentCloudBackend,
   providerUtils,
   setupNewUser,
+  getConfiguredAWSClient,
   getConfiguredAWSClientConfig,
   getLexRegionMapping,
   getConfiguredAmplifyClient,

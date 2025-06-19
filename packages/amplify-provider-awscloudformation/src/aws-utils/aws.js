@@ -22,7 +22,24 @@ try {
   aws = require('aws-sdk');
 }
 
+// TODO: get rid of configureWithCreds after data Gen1 releases
+const { ProxyAgent } = require('proxy-agent');
+const configurationManager = require('../configuration-manager');
+
 aws.configureWithCreds = async (context) => {
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+  const config = await configurationManager.loadConfiguration(context, aws);
+  if (config) {
+    aws.config.update(config);
+  }
+
+  if (httpProxy) {
+    aws.config.update({
+      httpOptions: {
+        agent: new ProxyAgent(httpProxy),
+      },
+    });
+  }
   return aws;
 };
 
