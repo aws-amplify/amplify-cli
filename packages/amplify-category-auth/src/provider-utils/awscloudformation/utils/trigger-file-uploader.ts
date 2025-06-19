@@ -4,14 +4,15 @@ import { createReadStream, readdirSync, existsSync } from 'fs-extra';
 import mime from 'mime-types';
 import * as path from 'path';
 import { getAuthResourceName } from '../../../utils/getAuthResourceName';
+import s3 from 'aws-sdk/clients/s3';
 
 const providerName = 'awscloudformation';
 
 const getS3Client = async (context: $TSContext, action: string): Promise<S3> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = await import(providerPlugins[providerName]);
-  const aws = await provider.getConfiguredAWSClient(context, AmplifyCategories.AUTH, action);
-  return new aws.S3();
+  const config = await provider.getConfiguredAWSClientConfig(context, AmplifyCategories.AUTH, action);
+  return new s3(config);
 };
 
 /**

@@ -296,9 +296,11 @@ const addAppClient = async (
   const projectDetails = getProjectMeta(projectRoot);
   const authDetails = getAuthProjectDetails(projectRoot);
   const creds = new aws.SharedIniFileCredentials({ profile: profileName });
-  aws.config.credentials = creds;
 
-  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
+  const cognitoClient = new aws.CognitoIdentityServiceProvider({
+    credentials: creds,
+    region: projectDetails.providers.awscloudformation.Region,
+  });
   const response = await cognitoClient
     .createUserPoolClient({
       ClientName: clientName,
@@ -332,9 +334,11 @@ export const deleteAppClient = async (profileName: string, projectRoot: string, 
   const authDetails = getAuthProjectDetails(projectRoot);
   const projectDetails = getProjectMeta(projectRoot);
   const creds = new aws.SharedIniFileCredentials({ profile: profileName });
-  aws.config.credentials = creds;
 
-  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
+  const cognitoClient = new aws.CognitoIdentityServiceProvider({
+    credentials: creds,
+    region: projectDetails.providers.awscloudformation.Region,
+  });
   await cognitoClient.deleteUserPoolClient({ ClientId: clientId, UserPoolId: authDetails.meta.UserPoolId }).promise();
 };
 

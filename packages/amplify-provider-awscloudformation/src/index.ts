@@ -56,12 +56,14 @@ import { getApiKeyConfig } from './utils/api-key-helpers';
 import { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
 export { deleteEnvironmentParametersFromService } from './utils/ssm-utils/delete-ssm-parameters';
 import { getEnvParametersUploadHandler, getEnvParametersDownloadHandler } from './utils/ssm-utils/env-parameter-ssm-helpers';
+import { proxyAgent } from './aws-utils/aws-globals';
 export {
   getEnvParametersUploadHandler,
   getEnvParametersDownloadHandler,
   DownloadHandler,
   PrimitiveRecord,
 } from './utils/ssm-utils/env-parameter-ssm-helpers';
+export { AwsSdkConfig } from './utils/auth-types';
 
 function init(context) {
   return initializer.run(context);
@@ -101,11 +103,29 @@ function configure(context) {
   return configManager.configure(context);
 }
 
+async function getConfiguredAWSClientConfig(context, category, action) {
+  const credsConfig = await loadConfiguration(context);
+  category = category || 'missing';
+  action = action || ['missing'];
+  const userAgentAction = `${category}:${action[0]}`;
+  const config = {
+    credentials: credsConfig,
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+    httpOptions: {
+      agent: proxyAgent(),
+    },
+    region: credsConfig.region,
+  };
+  return config;
+}
+
+// TODO: get rid of this function after data Gen1 releases
 async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
+
   aws.config.update({
     customUserAgent: formUserAgentParam(context, userAgentAction),
   });
@@ -169,6 +189,7 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
+  getConfiguredAWSClientConfig,
   getLexRegionMapping,
   getConfiguredAmplifyClient,
   showHelpfulLinks,

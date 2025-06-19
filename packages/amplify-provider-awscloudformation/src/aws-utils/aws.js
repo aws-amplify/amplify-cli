@@ -22,6 +22,7 @@ try {
   aws = require('aws-sdk');
 }
 
+// TODO: get rid of configureWithCreds after data Gen1 releases
 const { ProxyAgent } = require('proxy-agent');
 const configurationManager = require('../configuration-manager');
 
@@ -39,7 +40,6 @@ aws.configureWithCreds = async (context) => {
       },
     });
   }
-
   return aws;
 };
 

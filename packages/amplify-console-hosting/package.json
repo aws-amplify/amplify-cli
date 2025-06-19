@@ -10,6 +10,7 @@
     "@aws-amplify/amplify-cli-core": "4.4.1",
     "@aws-amplify/amplify-environment-parameters": "1.9.19",
     "archiver": "^7.0.1",
+    "aws-sdk": "^2.1692.0",
     "chalk": "^4.1.1",
     "cli-table3": "^0.6.0",
     "execa": "^5.1.1",

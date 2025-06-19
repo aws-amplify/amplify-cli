@@ -1,20 +1,21 @@
 const chalk = require('chalk');
 const constants = require('../../constants');
+const CloudFront = require('aws-sdk/clients/cloudfront');
 
 const providerName = 'awscloudformation';
 
-function invalidateCloudFront(context) {
+function invalidateCloudFront(context, cloudFrontClient = getCloudFrontClient) {
   if (context.parameters.options.invalidateCache || context.parameters.options.invalidateCloudFront || context.parameters.options.c) {
-    return invalidate(context);
+    return invalidate(context, cloudFrontClient);
   }
 }
 
-async function invalidate(context) {
+async function invalidate(context, cloudFrontClient = getCloudFrontClient) {
   if (context.exeInfo.serviceMeta && context.exeInfo.serviceMeta.output && context.exeInfo.serviceMeta.output.CloudFrontDistributionID) {
     const { CloudFrontDistributionID } = context.exeInfo.serviceMeta.output;
     const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
 
-    const cloudFront = await getCloudFrontClient(context, 'update');
+    const cloudFront = await cloudFrontClient(context, 'update');
     const invalidateParams = {
       DistributionId: CloudFrontDistributionID,
       InvalidationBatch: {
@@ -43,8 +44,8 @@ async function invalidate(context) {
 async function getCloudFrontClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
-  return new aws.CloudFront();
+  const config = await provider.getConfiguredAWSClientConfig(context, constants.CategoryName, action);
+  return new CloudFront(config);
 }
 
 module.exports = {

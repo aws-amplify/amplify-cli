@@ -1,6 +1,7 @@
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import aws from './aws.js';
+import { proxyAgent } from './aws-globals';
 
 // Currently SNS is used only by Cognito for sending SMS and  has the following SNS mapping
 // https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html
@@ -36,7 +37,13 @@ export class SNS {
   }
 
   private constructor(context: $TSContext, cred: $TSAny, options = {}) {
-    this.sns = new aws.SNS({ ...cred, ...options });
+    this.sns = new aws.SNS({
+      ...cred,
+      ...options,
+      httpOptions: {
+        agent: proxyAgent(),
+      },
+    });
   }
 
   public async isInSandboxMode(): Promise<boolean> {

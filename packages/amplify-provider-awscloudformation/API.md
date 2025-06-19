@@ -12,6 +12,24 @@ import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import { Template } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
+export interface AwsSdkConfig {
+    // (undocumented)
+    accessKeyId: string;
+    // (undocumented)
+    expiration?: Date;
+    // (undocumented)
+    httpOptions?: {
+        agent: $TSAny;
+    };
+    // (undocumented)
+    region: string;
+    // (undocumented)
+    secretAccessKey: string;
+    // (undocumented)
+    sessionToken?: string;
+}
+
+// @public (undocumented)
 export const cfnRootStackFileName = "root-cloudformation-stack.json";
 
 // @public (undocumented)
@@ -50,13 +68,9 @@ export const getLocationRegionMapping: () => $TSObject;
 // @public (undocumented)
 export const getLocationSupportedRegion: (region: string) => string;
 
-// Warning: (ae-forgotten-export) The symbol "AwsSecrets" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export function loadConfiguration(context: $TSContext): Promise<AwsSecrets>;
+export function loadConfiguration(context: $TSContext): Promise<AwsSdkConfig>;
 
-// Warning: (ae-forgotten-export) The symbol "AwsSdkConfig" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string): Promise<AwsSdkConfig>;
 

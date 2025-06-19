@@ -26,7 +26,7 @@ import { PinpointName } from './pinpoint-name';
 import { isChannelDeploymentDeferred } from './notifications-backend-cfg-channel-api';
 import { constructResourceMeta, addPartialNotificationsAppMeta } from './notifications-amplify-meta-api';
 import { addPartialNotificationsBackendConfig } from './notifications-backend-cfg-api';
-import aws from 'aws-sdk';
+import Pinpoint from 'aws-sdk/clients/pinpoint';
 import {
   formUserAgentParam,
   loadConfiguration,
@@ -524,12 +524,7 @@ const getConfiguredCredentials = async (context: $TSContext, envName?: string): 
   }
 };
 
-export const getPinpointClient = async (
-  context: $TSContext,
-  category: string,
-  action?: string,
-  envName?: string,
-): Promise<aws.Pinpoint> => {
+export const getPinpointClient = async (context: $TSContext, category: string, action?: string, envName?: string): Promise<Pinpoint> => {
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const cred = await getConfiguredCredentials(context, envName);
 
@@ -543,17 +538,14 @@ export const getPinpointClient = async (
     region: pinpointApp?.Region ?? (await mapServiceRegion(context, cred?.region || resolveRegion())),
     customUserAgent: formUserAgentParam(context, userAgentAction),
   };
+  let httpAgent = undefined;
 
   // HTTP_PROXY & HTTPS_PROXY env vars are read automatically by ProxyAgent, but we check to see if they are set before using the proxy
   if (httpProxy) {
-    aws.config.update({
-      httpOptions: {
-        agent: new ProxyAgent(),
-      },
-    });
+    httpAgent = new ProxyAgent();
   }
 
-  return new aws.Pinpoint({ ...cred, ...defaultOptions });
+  return new Pinpoint({ ...cred, ...defaultOptions, httpOptions: { agent: httpAgent } });
 };
 
 export const mapServiceRegion = async (context: $TSContext, region: string): Promise<string> => {
