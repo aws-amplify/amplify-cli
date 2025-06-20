@@ -43,6 +43,7 @@ describe('import auth headless', () => {
   const IDENTITY_POOL_ID = 'identity-pool-123';
   const NATIVE_CLIENT_ID = 'native-app-client-123';
   const WEB_CLIENT_ID = 'web-app-client-123';
+  const REGION = 'us-east-1';
   const defaultUserPoolClients = [
     {
       UserPoolId: USER_POOL_ID,
@@ -161,7 +162,7 @@ describe('import auth headless', () => {
     expect(listUserPoolClientsMock).toBeCalledWith(USER_POOL_ID);
     expect(getUserPoolMfaConfigMock).toBeCalledWith(USER_POOL_ID);
     expect(listIdentityPoolDetailsMock).toBeCalledWith();
-    expect(getIdentityPoolRolesMock).toBeCalledWith(IDENTITY_POOL_ID);
+    expect(getIdentityPoolRolesMock).toBeCalledWith(IDENTITY_POOL_ID, REGION);
   });
 
   it('should warn if auth has already been added', async () => {

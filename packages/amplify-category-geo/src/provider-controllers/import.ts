@@ -3,7 +3,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { prompter, printer } from '@aws-amplify/amplify-prompts';
 import { existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
-import Location from 'aws-sdk/clients/location';
+import { LocationClient, BatchPutGeofenceCommand } from '@aws-sdk/client-location';
 import { ServiceName } from '../service-utils/constants';
 import { validateGeoJSONObj } from '../service-utils/validateGeoJSONObj';
 import {
@@ -112,7 +112,7 @@ export const importResource = async (context: $TSContext) => {
 const bulkUploadGeofence = async (context: $TSContext, params: ImportParams, region: string) => {
   printer.info('Updating your Geofences in the collection...');
   try {
-    const { client } = await context.amplify.invokePluginMethod<{ client: Location }>(
+    const { client } = await context.amplify.invokePluginMethod<{ client: LocationClient }>(
       context,
       'awscloudformation',
       undefined,
@@ -127,7 +127,8 @@ const bulkUploadGeofence = async (context: $TSContext, params: ImportParams, reg
         CollectionName: params.collectionToImport,
         Entries: geofenceEntries.splice(0, MAX_ENTRIES_PER_BATCH),
       };
-      uploadTasks.push(client.batchPutGeofence(geofenceCollectionPerBatch).promise());
+      const command = new BatchPutGeofenceCommand(geofenceCollectionPerBatch);
+      uploadTasks.push(client.send(command));
     }
     await Promise.all(uploadTasks);
     printer.success(`Successfully added/updated ${totalGeofenceCount} Geofences in your "${params.collectionToImport}" collection`);

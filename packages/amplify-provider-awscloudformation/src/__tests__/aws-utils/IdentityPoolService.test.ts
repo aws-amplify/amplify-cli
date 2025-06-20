@@ -35,7 +35,7 @@ jest.mock('../../configuration-manager', () => {
 describe('IdentityPoolService', () => {
   it('should correctly parse arn if it contains multiple forward slashes', async () => {
     const idpService = await createIdentityPoolService({} as unknown as $TSContext, {});
-    const identityPoolRoles = await idpService.getIdentityPoolRoles('mockIdpId');
+    const identityPoolRoles = await idpService.getIdentityPoolRoles('mockIdpId', 'mock-region');
 
     // ensure role names match regex for IAM
     // see: https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html
@@ -57,7 +57,7 @@ describe('IdentityPoolService', () => {
       unauthenticated: 'arn:aws:iam::123456789012:role/my-unauth-role',
     };
 
-    const identityPoolRoles = await idpService.getIdentityPoolRoles('mockIdpId');
+    const identityPoolRoles = await idpService.getIdentityPoolRoles('mockIdpId', 'mock-region');
 
     // ensure role names match regex for IAM
     // see: https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html
@@ -79,6 +79,6 @@ describe('IdentityPoolService', () => {
       unauthenticated: 'arn:aws:iam::123456789012:my-unauth-role',
     };
 
-    await expect(idpService.getIdentityPoolRoles('mockIdpId')).rejects.toBeDefined();
+    await expect(idpService.getIdentityPoolRoles('mockIdpId', 'mock-region')).rejects.toBeDefined();
   });
 });
