@@ -9,6 +9,7 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { $TSObject } from '@aws-amplify/amplify-cli-core';
 import * as AWS_2 from 'aws-sdk';
 import { IAmplifyResource } from '@aws-amplify/amplify-cli-core';
+import { LocationClient } from '@aws-sdk/client-location';
 import { Template } from '@aws-amplify/amplify-cli-core';
 
 // @public (undocumented)
