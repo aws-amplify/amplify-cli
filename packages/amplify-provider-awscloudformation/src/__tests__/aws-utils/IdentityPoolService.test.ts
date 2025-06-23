@@ -13,7 +13,7 @@ jest.mock('aws-sdk', () => {
   return {
     CognitoIdentity: jest.fn(() => {
       return {
-        config: { region: 'us-east-1' },
+        config: {},
         getIdentityPoolRoles: jest.fn().mockImplementation(() => ({
           promise: async () => {
             return {
@@ -28,7 +28,7 @@ jest.mock('aws-sdk', () => {
 
 jest.mock('../../configuration-manager', () => {
   return {
-    loadConfiguration: jest.fn().mockReturnValue({}) as jest.MockedFunction<typeof loadConfiguration>,
+    loadConfiguration: jest.fn().mockReturnValue({ region: 'us-east-1' }) as jest.MockedFunction<typeof loadConfiguration>,
   };
 });
 

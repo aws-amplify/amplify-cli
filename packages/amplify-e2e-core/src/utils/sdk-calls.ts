@@ -208,11 +208,11 @@ export const getUserPoolDomain = async (domain: string, region: string) => {
   return res;
 };
 
-export const getIdentityPoolRoles = async (identityPoolId: string) => {
+export const getIdentityPoolRoles = async (identityPoolId: string, region: string) => {
   let res;
 
   try {
-    res = await new CognitoIdentity({}).getIdentityPoolRoles({ IdentityPoolId: identityPoolId }).promise();
+    res = await new CognitoIdentity({ region }).getIdentityPoolRoles({ IdentityPoolId: identityPoolId }).promise();
   } catch (e) {
     console.log(e);
   }

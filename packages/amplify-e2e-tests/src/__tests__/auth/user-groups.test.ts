@@ -43,7 +43,7 @@ describe('user group tests', () => {
           .map((key) => meta.auth[key])
           .find((auth) => auth.service === 'Cognito').output;
 
-        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId);
+        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId, region);
         const roleMapKeyClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientID}`;
         const roleMapKeyWebClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientIDWeb}`;
 
@@ -71,7 +71,7 @@ describe('user group tests', () => {
           .map((key) => meta.auth[key])
           .find((auth) => auth.service === 'Cognito').output;
 
-        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId);
+        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId, region);
         const roleMapKeyClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientID}`;
         const roleMapKeyWebClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientIDWeb}`;
 
@@ -95,7 +95,7 @@ describe('user group tests', () => {
           .map((key) => meta.auth[key])
           .find((auth) => auth.service === 'Cognito').output;
 
-        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId);
+        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId, region);
         const roleMapKeyClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientID}`;
         const roleMapKeyWebClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientIDWeb}`;
 
@@ -144,7 +144,7 @@ describe('user group tests', () => {
           .map((key) => meta.auth[key])
           .find((auth) => auth.service === 'Cognito').output;
 
-        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId);
+        const identityPoolRoles = await getIdentityPoolRoles(IdentityPoolId, region);
         const roleMapKeyClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientID}`;
         const roleMapKeyWebClientId = `cognito-idp.${region}.amazonaws.com/${UserPoolId}:${AppClientIDWeb}`;
 
