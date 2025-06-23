@@ -5,6 +5,5 @@ export interface IIdentityPoolService {
   listIdentityPoolDetails(): Promise<IdentityPool[]>;
   getIdentityPoolRoles(
     identityPoolId: string,
-    region: string,
   ): Promise<{ authRoleArn: string; authRoleName: string; unauthRoleArn: string; unauthRoleName: string }>;
 }

@@ -325,10 +325,7 @@ const importServiceWalkthrough = async (
     }
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(
-      answers.identityPoolId!,
-      Region,
-    );
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;
@@ -1182,10 +1179,7 @@ export const importedAuthEnvInit = async (
     answers.identityProviders = identityPools[0].providers;
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(
-      answers.identityPoolId!,
-      Region,
-    );
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;
@@ -1338,10 +1332,7 @@ export const headlessImport = async (
     answers.identityProviders = identityPools[0].providers;
 
     // Get the auth and unauth roles assigned and all the required parameters from the selected Identity Pool.
-    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(
-      answers.identityPoolId!,
-      Region,
-    );
+    const { authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = await identity.getIdentityPoolRoles(answers.identityPoolId!);
 
     answers.authRoleArn = authRoleArn;
     answers.authRoleName = authRoleName;

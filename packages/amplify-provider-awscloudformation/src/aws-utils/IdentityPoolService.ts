@@ -21,6 +21,8 @@ export const createIdentityPoolService = async (context: $TSContext, options: $T
     // could not load credentials
   }
 
+  console.log(credentials);
+  // could be that this is missing region -- look into this on Monday
   const cognitoIdentity = new CognitoIdentityClient({ ...credentials, ...options });
 
   return new IdentityPoolService(cognitoIdentity);
@@ -83,13 +85,10 @@ export class IdentityPoolService implements IIdentityPoolService {
 
   public async getIdentityPoolRoles(
     identityPoolId: string,
-    region: string,
   ): Promise<{ authRoleArn: string; authRoleName: string; unauthRoleArn: string; unauthRoleName: string }> {
-    // identity pool ID is expected to be in the format REGION:GUID.
-    const identityId = region + ':' + identityPoolId;
     const response = await this.cognitoIdentity.send(
       new GetIdentityPoolRolesCommand({
-        IdentityPoolId: identityId,
+        IdentityPoolId: identityPoolId,
       }),
     );
 

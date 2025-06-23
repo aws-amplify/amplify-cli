@@ -208,7 +208,7 @@ export const getUserPoolDomain = async (domain: string, region: string) => {
   return res;
 };
 
-export const getIdentityPoolRoles = async (identityPoolId: string, region: string) => {
+export const getIdentityPoolRoles = async (identityPoolId: string) => {
   let res;
 
   try {
