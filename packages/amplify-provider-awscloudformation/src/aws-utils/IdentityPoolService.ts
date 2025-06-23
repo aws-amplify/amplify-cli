@@ -21,8 +21,6 @@ export const createIdentityPoolService = async (context: $TSContext, options: $T
     // could not load credentials
   }
 
-  console.log(credentials);
-  // could be that this is missing region -- look into this on Monday
   const cognitoIdentity = new CognitoIdentityClient({ ...credentials, ...options });
 
   return new IdentityPoolService(cognitoIdentity);
