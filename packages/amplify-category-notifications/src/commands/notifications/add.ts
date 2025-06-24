@@ -57,6 +57,10 @@ export const run = async (context: $TSContext): Promise<$TSContext> => {
     });
   }
 
+  printer.warn(`Amazon Pinpoint is reaching end of life on October 30, 2026 and no longer accepts new customers as of May 20, 2025.
+    It is recommended you use use AWS End User Messaging for push notifications and SMS, Amazon Simple Email Service for sending emails, Amazon Connect for campaigns, journeys, endpoints, and engagement analytics.
+    For more information see: https://docs.aws.amazon.com/pinpoint/latest/userguide/migrate.html \n`);
+
   const availableChannels: Array<string> = getAvailableChannels();
   const disabledChannels: Array<string> = await getDisabledChannelsFromAmplifyMeta();
 

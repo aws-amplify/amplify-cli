@@ -16,6 +16,9 @@ let options: $TSAny;
 export const run = async (context: $TSContext): Promise<$TSAny> => {
   const { amplify } = context;
   const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
+  printer.warn(`Amazon Pinpoint is reaching end of life on October 30, 2026 and no longer accepts new customers as of May 20, 2025.
+    It is recommended you use Kinesis for event collection and mobile analytics instead.\n`);
+
   return amplify
     .serviceSelectionPrompt(context, category, servicesMetadata, 'Select an Analytics provider')
     .then((result) => {
