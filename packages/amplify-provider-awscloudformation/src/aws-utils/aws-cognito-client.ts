@@ -1,12 +1,11 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import aws from './aws.js';
-import * as AWS from 'aws-sdk';
+import { CognitoIdentityProviderClient, CognitoIdentityProviderClientConfig } from '@aws-sdk/client-cognito-identity-provider';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { proxyAgent } from './aws-globals';
 
 export class CognitoUserPoolClientProvider {
   private static instance: CognitoUserPoolClientProvider;
-  readonly client: AWS.CognitoIdentityServiceProvider;
+  readonly client: CognitoIdentityProviderClient;
 
   static async getInstance(context: $TSContext, options = {}): Promise<CognitoUserPoolClientProvider> {
     if (!CognitoUserPoolClientProvider.instance) {
@@ -23,12 +22,16 @@ export class CognitoUserPoolClientProvider {
   }
 
   constructor(creds: AwsSecrets, options = {}) {
-    this.client = new aws.CognitoIdentityServiceProvider({
+    const clientConfig: CognitoIdentityProviderClientConfig = {
       ...creds,
       ...options,
-      httpOptions: {
-        agent: proxyAgent(),
+      requestHandler: {
+        httpOptions: {
+          agent: proxyAgent(),
+        },
       },
-    });
+    };
+
+    this.client = new CognitoIdentityProviderClient(clientConfig);
   }
 }

@@ -21,17 +21,14 @@ export class LocationService {
   }
 
   private constructor(cred: AwsSecrets, options = {}) {
-    const agent = proxyAgent();
     this.client = new LocationClient({
       ...cred,
       ...options,
-      requestHandler: agent
-        ? {
-            httpOptions: {
-              agent,
-            },
-          }
-        : undefined,
+      requestHandler: {
+        httpOptions: {
+          agent: proxyAgent(),
+        },
+      },
     });
   }
 }
