@@ -42,6 +42,7 @@
     "@aws-sdk/client-location": "^3.624.0",
     "@aws-sdk/client-sts": "^3.624.0",
     "@aws-sdk/types": "^3.624.0",
+    "@smithy/node-http-handler": "^4.0.6",
     "amplify-codegen": "^4.10.3",
     "archiver": "^7.0.1",
     "aws-cdk-lib": "~2.189.1",

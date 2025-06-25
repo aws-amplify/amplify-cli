@@ -1,5 +1,6 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { LocationClient } from '@aws-sdk/client-location';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { proxyAgent } from './aws-globals';
 
@@ -24,11 +25,10 @@ export class LocationService {
     this.client = new LocationClient({
       ...cred,
       ...options,
-      requestHandler: {
-        httpOptions: {
-          agent: proxyAgent(),
-        },
-      },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     });
   }
 }

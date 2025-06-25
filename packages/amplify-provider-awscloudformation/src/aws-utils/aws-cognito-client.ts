@@ -1,5 +1,6 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProviderClient, CognitoIdentityProviderClientConfig } from '@aws-sdk/client-cognito-identity-provider';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { proxyAgent } from './aws-globals';
 
@@ -25,11 +26,10 @@ export class CognitoUserPoolClientProvider {
     const clientConfig: CognitoIdentityProviderClientConfig = {
       ...creds,
       ...options,
-      requestHandler: {
-        httpOptions: {
-          agent: proxyAgent(),
-        },
-      },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     };
 
     this.client = new CognitoIdentityProviderClient(clientConfig);

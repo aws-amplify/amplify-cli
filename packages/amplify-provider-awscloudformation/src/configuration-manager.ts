@@ -13,7 +13,7 @@ import chalk from 'chalk';
 import { prompt } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+import { STS } from 'aws-sdk';
 import awsRegions from './aws-regions';
 import constants from './constants';
 import * as setupNewUser from './setup-new-user';
@@ -469,7 +469,7 @@ async function validateConfig(context: $TSContext) {
         awsConfigInfo.config.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
         awsConfigInfo.config.region &&
         awsRegions.regions.includes(awsConfigInfo.config.region);
-      const sts = new STSClient({
+      const sts = new STS({
         credentials: {
           accessKeyId: awsConfigInfo.config.accessKeyId,
           secretAccessKey: awsConfigInfo.config.secretAccessKey,
@@ -477,7 +477,7 @@ async function validateConfig(context: $TSContext) {
         },
       });
       try {
-        await sts.send(new GetCallerIdentityCommand({}));
+        await sts.getCallerIdentity({}).promise();
       } catch (err) {
         awsConfigInfo.configValidated = false;
       }
