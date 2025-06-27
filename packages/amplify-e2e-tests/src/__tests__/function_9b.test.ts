@@ -143,7 +143,7 @@ describe('nodejs', () => {
 
       expect(fnResponse.StatusCode).toBe(200);
       expect(fnResponse.Payload).toBeDefined();
-      const gqlResponse = JSON.parse(fnResponse.Payload as string);
+      const gqlResponse = JSON.parse(fnResponse.Payload.toString());
 
       expect(gqlResponse.data).toBeDefined();
       expect(gqlResponse.data.createTodo.name).toEqual('todo');
@@ -203,7 +203,7 @@ describe('nodejs', () => {
 
       expect(fnResponse.StatusCode).toBe(200);
       expect(fnResponse.Payload).toBeDefined();
-      const gqlResponse = JSON.parse(fnResponse.Payload as string);
+      const gqlResponse = JSON.parse(fnResponse.Payload.toString());
 
       expect(gqlResponse.data).toBeDefined();
       expect(gqlResponse.data.createTodo.name).toEqual('todo');
