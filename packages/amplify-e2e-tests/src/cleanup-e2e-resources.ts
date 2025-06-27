@@ -2,7 +2,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { config } from 'dotenv';
 import yargs from 'yargs';
-import { S3Client, ListBucketsCommand, GetBucketTaggingCommand } from '@aws-sdk/client-s3';
+import { S3Client, ListBucketsCommand, GetBucketTaggingCommand, Bucket } from '@aws-sdk/client-s3';
 import {
   IAMClient,
   ListRolesCommand,
@@ -13,14 +13,17 @@ import {
   DetachRolePolicyCommand,
   ListRolePoliciesCommand,
   DeleteRolePolicyCommand,
+  Role,
+  AttachedPolicy,
 } from '@aws-sdk/client-iam';
-import { PinpointClient, GetAppsCommand, DeleteAppCommand } from '@aws-sdk/client-pinpoint';
+import { PinpointClient, GetAppsCommand, DeleteAppCommand, ApplicationResponse } from '@aws-sdk/client-pinpoint';
 import {
   CognitoIdentityProviderClient,
   ListUserPoolsCommand,
   DescribeUserPoolCommand,
   DeleteUserPoolDomainCommand,
   DeleteUserPoolCommand,
+  UserPoolDescriptionType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AppSyncClient, ListGraphqlApisCommand, DeleteGraphqlApiCommand } from '@aws-sdk/client-appsync';
 import {
@@ -37,6 +40,7 @@ import {
   DeleteStackCommand,
   waitUntilStackDeleteComplete,
   StackStatus,
+  Tag,
 } from '@aws-sdk/client-cloudformation';
 import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
@@ -184,17 +188,17 @@ const isStale = (created: Date): boolean => {
 /**
  * We define a resource as viable for deletion if it matches TEST_REGEX in the name, and if it is > STALE_DURATION_MS old.
  */
-const testBucketStalenessFilter = (resource: any): boolean => {
+const testBucketStalenessFilter = (resource: Bucket): boolean => {
   const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
   return isTestResource && isStale(resource.CreationDate);
 };
 
-const testRoleStalenessFilter = (resource: any): boolean => {
+const testRoleStalenessFilter = (resource: Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
   return isTestResource && isStale(resource.CreateDate);
 };
 
-const testUserPoolStalenessFilter = (resource: any): boolean => {
+const testUserPoolStalenessFilter = (resource: UserPoolDescriptionType): boolean => {
   const isTestResource = resource.Name.match(USER_POOL_TEST_REGEX);
   return isTestResource && isStale(resource.CreationDate);
 };
@@ -210,7 +214,7 @@ const testAppSyncApiStalenessFilter = (resource: any): boolean => {
   return isTestResource && isStaleResource;
 };
 
-const testPinpointAppStalenessFilter = (resource: any): boolean => {
+const testPinpointAppStalenessFilter = (resource: ApplicationResponse): boolean => {
   const isTestResource = resource.Name.match(PINPOINT_TEST_REGEX);
   return isTestResource && isStale(new Date(resource.CreationDate));
 };
@@ -299,7 +303,7 @@ const deleteOrphanedOidcProviders = async (account: AWSAccountInfo): Promise<voi
 /**
  * Get the relevant AWS config object for a given account and region.
  */
-const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): any => ({
+const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): unknown => ({
   credentials: {
     accessKeyId,
     secretAccessKey,
@@ -356,7 +360,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
  * @param tags Tags associated with the resource
  * @returns build number or undefined
  */
-const getJobId = (tags: any[] = []): number | undefined => {
+const getJobId = (tags: Tag[] = []): number | undefined => {
   const jobId = tags.find((tag) => tag.Key === 'circleci:build_id')?.Value;
   return jobId && Number.parseInt(jobId, 10);
 };
@@ -661,7 +665,12 @@ const deleteAttachedRolePolicies = async (account: AWSAccountInfo, accountIndex:
   await Promise.all(rolePolicies.AttachedPolicies.map((policy) => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
 };
 
-const detachIamAttachedRolePolicy = async (account: AWSAccountInfo, accountIndex: number, roleName: string, policy: any): Promise<void> => {
+const detachIamAttachedRolePolicy = async (
+  account: AWSAccountInfo,
+  accountIndex: number,
+  roleName: string,
+  policy: AttachedPolicy,
+): Promise<void> => {
   try {
     console.log(`[ACCOUNT ${accountIndex}] Detach Iam Attached Role Policy ${policy.PolicyName}`);
     const iamClient = new IAMClient(getAWSConfig(account));

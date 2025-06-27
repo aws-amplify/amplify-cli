@@ -13845,6 +13845,7 @@ __metadata:
     "@aws-sdk/client-s3": 3.624.0
     "@aws-sdk/client-ssm": 3.624.0
     "@aws-sdk/client-sts": 3.624.0
+    "@aws-sdk/credential-providers": 3.624.0
     "@aws-sdk/lib-storage": 3.624.0
     "@babel/core": ^7.23.2
     "@babel/plugin-transform-modules-commonjs": 7.10.4

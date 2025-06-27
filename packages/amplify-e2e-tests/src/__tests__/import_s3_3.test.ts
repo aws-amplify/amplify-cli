@@ -1,4 +1,4 @@
-import * as aws from 'aws-sdk';
+import { S3Client, CreateBucketCommand, GetBucketLocationCommand, DeleteBucketCommand } from '@aws-sdk/client-s3';
 import {
   addAuthWithDefault,
   amplifyPushAuth,
@@ -36,28 +36,24 @@ describe('headless s3 import', () => {
     const shortId = getShortId();
     bucketNameToImport = `${bucketPrefix}${shortId}`;
 
-    const s3 = new aws.S3();
+    const s3 = new S3Client();
 
-    await s3
-      .createBucket({
+    await s3.send(
+      new CreateBucketCommand({
         Bucket: bucketNameToImport,
-      })
-      .promise();
+      }),
+    );
 
-    const locationResponse = await s3
-      .getBucketLocation({
+    const locationResponse = await s3.send(
+      new GetBucketLocationCommand({
         Bucket: bucketNameToImport,
-      })
-      .promise();
+      }),
+    );
 
     // For us-east-1 buckets the LocationConstraint is always emtpy, we have to return a
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
-    if (
-      locationResponse.LocationConstraint === undefined ||
-      locationResponse.LocationConstraint === '' ||
-      locationResponse.LocationConstraint === null
-    ) {
+    if (locationResponse.LocationConstraint === undefined || locationResponse.LocationConstraint === null) {
       bucketLocation = 'us-east-1';
     } else {
       bucketLocation = locationResponse.LocationConstraint;
@@ -66,13 +62,13 @@ describe('headless s3 import', () => {
 
   afterAll(async () => {
     // Delete bucket
-    const s3 = new aws.S3();
+    const s3 = new S3Client();
 
-    await s3
-      .deleteBucket({
+    await s3.send(
+      new DeleteBucketCommand({
         Bucket: bucketNameToImport,
-      })
-      .promise();
+      }),
+    );
   });
 
   beforeEach(async () => {
