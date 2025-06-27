@@ -303,7 +303,7 @@ const deleteOrphanedOidcProviders = async (account: AWSAccountInfo): Promise<voi
 /**
  * Get the relevant AWS config object for a given account and region.
  */
-const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): unknown => ({
+const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): any => ({
   credentials: {
     accessKeyId,
     secretAccessKey,
