@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.43-rc.004abe163d41470.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.42...@aws-amplify/amplify-app@5.0.43-rc.004abe163d41470.0) (2025-07-01)
+
+
+### Bug Fixes
+
+* upgrade most packages that use `rimraf` and `glob` ([#14153](https://github.com/aws-amplify/amplify-cli/issues/14153)) ([c85ed14](https://github.com/aws-amplify/amplify-cli/commit/c85ed14b2fe61c09a026f7bb7c82857b5227dff2))
+
+
+
+
+
 ## [5.0.42](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-app@5.0.41...@aws-amplify/amplify-app@5.0.42) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-app

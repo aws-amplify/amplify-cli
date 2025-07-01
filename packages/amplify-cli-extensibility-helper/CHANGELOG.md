@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.39-rc.004abe163d41470.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.38...@aws-amplify/cli-extensibility-helper@3.0.39-rc.004abe163d41470.0) (2025-07-01)
+
+
+### Bug Fixes
+
+* pin CDK version again ([#14186](https://github.com/aws-amplify/amplify-cli/issues/14186)) ([ef7f5eb](https://github.com/aws-amplify/amplify-cli/commit/ef7f5ebe0136049865554c6ec0235abc9b816fea))
+
+
+
+
+
 ## [3.0.38](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@3.0.37...@aws-amplify/cli-extensibility-helper@3.0.38) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

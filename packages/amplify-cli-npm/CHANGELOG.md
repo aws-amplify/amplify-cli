@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.0.0-rc.004abe163d41470.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@13.0.1...@aws-amplify/cli@14.0.0-rc.004abe163d41470.0) (2025-07-01)
+
+
+### Bug Fixes
+
+* upgrade most packages that use `rimraf` and `glob` ([#14153](https://github.com/aws-amplify/amplify-cli/issues/14153)) ([c85ed14](https://github.com/aws-amplify/amplify-cli/commit/c85ed14b2fe61c09a026f7bb7c82857b5227dff2))
+
+
+* feat!: version bump (#14226) ([004abe1](https://github.com/aws-amplify/amplify-cli/commit/004abe163d414709d8173b22e9fbed3a6dd24e1e)), closes [#14226](https://github.com/aws-amplify/amplify-cli/issues/14226)
+
+
+### BREAKING CHANGES
+
+* block adding lex:
+
+
+
+
+
 ## [13.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@13.0.0...@aws-amplify/cli@13.0.1) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/cli
