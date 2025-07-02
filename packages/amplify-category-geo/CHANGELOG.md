@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-geo@3.5.21...@aws-amplify/amplify-category-geo@3.5.22) (2025-07-01)
+
+
+### Bug Fixes
+
+* pin CDK version again ([#14186](https://github.com/aws-amplify/amplify-cli/issues/14186)) ([ef7f5eb](https://github.com/aws-amplify/amplify-cli/commit/ef7f5ebe0136049865554c6ec0235abc9b816fea))
+
+
+
+
+
 ## [3.5.21](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-geo@3.5.20...@aws-amplify/amplify-category-geo@3.5.21) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-geo
