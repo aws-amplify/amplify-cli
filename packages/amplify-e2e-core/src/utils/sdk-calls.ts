@@ -121,7 +121,6 @@ export const getDeploymentBucketObject = async (projectRoot: string, objectKey: 
     Key: objectKey,
   });
   const result = await s3.send(command);
-  console.log(result.Body);
   return result.Body?.transformToString();
 };
 
