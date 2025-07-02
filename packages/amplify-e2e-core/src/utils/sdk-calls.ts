@@ -121,7 +121,8 @@ export const getDeploymentBucketObject = async (projectRoot: string, objectKey: 
     Key: objectKey,
   });
   const result = await s3.send(command);
-  return result.Body?.toLocaleString();
+  console.log(result.Body);
+  return result.Body?.transformToString();
 };
 
 export const deleteS3Bucket = async (bucket: string, providedS3Client: S3Client | undefined = undefined) => {
