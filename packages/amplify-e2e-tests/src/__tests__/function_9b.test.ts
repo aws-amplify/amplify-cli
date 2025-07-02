@@ -143,7 +143,7 @@ describe('nodejs', () => {
 
       expect(fnResponse.StatusCode).toBe(200);
       expect(fnResponse.Payload).toBeDefined();
-      const gqlResponse = JSON.parse(fnResponse.Payload.toString());
+      const gqlResponse = JSON.parse(fnResponse.Payload.transformToString());
 
       expect(gqlResponse.data).toBeDefined();
       expect(gqlResponse.data.createTodo.name).toEqual('todo');

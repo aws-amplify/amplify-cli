@@ -88,7 +88,6 @@ it('should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
 
   // check that the lambda response includes the secret value
   const response = await invokeFunction(`${funcName}-integtest`, JSON.stringify(lambdaEvent), region);
-  console.log(response.Payload);
   expect(JSON.parse(response.Payload.transformToString())?.Value).toEqual('testCustomPoliciesValue');
 });
 
