@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-cli-shared-interfaces",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "API interfaces to be shared across different amplfy-cli packages",
   "main": "lib/index.js",
   "scripts": {
