@@ -24,6 +24,7 @@ beforeAll(async () => {
       secretAccessKey: fakeSecretKey,
     },
     region: fakeRegion,
+    apiVersion: '2006-03-01',
     endpoint: 'http://localhost:20005',
     forcePathStyle: true,
     tls: false,
@@ -78,39 +79,37 @@ describe('Test list api', () => {
     expect(response.Contents[0].Key).toEqual('normal/2.png');
     expect(response.Contents.length).toEqual(1);
   });
-  test('get list', async () => {
-    const response = await s3client.send(new ListObjectsV2Command({ Bucket: bucket }));
+  test('get list 2', async () => {
+    const response = await s3client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: '' }));
     expect(response).toBeDefined();
     //expect(response.Contents.length).toEqual(1);
   });
   test('empty bucket', async () => {
     const response = await s3client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: 'public' }));
     expect(response).toBeDefined();
-    expect(response.Contents.length).toEqual(0);
+    expect(response.Contents).toBeUndefined();
   });
 
   test('list object pagination', async () => {
     const maxKeys = 2;
     let total = 7;
-    let response = await s3client
-      .listObjects({
+    let response = await s3client.send(
+      new ListObjectsV2Command({
         Bucket: bucket,
         Prefix: 'pagination',
-        Marker: '',
         MaxKeys: maxKeys,
-      })
-      .promise();
+      }),
+    );
     while (response.IsTruncated === true) {
       expect(response).toBeDefined();
       expect(response.Contents.length).toEqual(maxKeys);
-      response = await s3client
-        .listObjects({
+      response = await s3client.send(
+        new ListObjectsV2Command({
           Bucket: bucket,
           Prefix: 'pagination',
-          Marker: response.NextMarker,
           MaxKeys: maxKeys,
-        })
-        .promise();
+        }),
+      );
       total = total - maxKeys;
     }
     expect(response.Contents.length).toEqual(total);

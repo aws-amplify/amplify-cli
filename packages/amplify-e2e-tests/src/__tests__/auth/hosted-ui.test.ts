@@ -135,7 +135,7 @@ describe('hosted ui tests', () => {
         const updatedDomainRes = await getUserPoolDomain(hostedUIDomain, region);
         expect(updatedDomainRes).toBeDefined();
         const originalDomainRes = await getUserPoolDomain(originalHostedUIDomain, region);
-        expect(originalDomainRes).toEqual({ DomainDescription: {} });
+        expect(originalDomainRes.DomainDescription).toEqual({ DomainDescription: {} });
 
         const deleteOriginalDomainRes = await deleteUserPoolDomain(originalHostedUIDomain, userPoolId, region);
         // undefined response as it throws InvalidParameterException: No such domain or user pool exists.

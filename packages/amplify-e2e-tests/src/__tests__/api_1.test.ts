@@ -61,8 +61,11 @@ describe('amplify add api (GraphQL)', () => {
     const error = { message: null };
     try {
       const table = await getDDBTable(tableName, region);
-      expect(table).toBeUndefined();
+      console.log(table);
+      expect(table.Table).toBeUndefined();
     } catch (ex) {
+      console.log('Found error');
+      console.log(ex);
       Object.assign(error, ex);
     }
     expect(error).toBeDefined();
