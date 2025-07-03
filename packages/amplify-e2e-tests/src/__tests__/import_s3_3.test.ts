@@ -53,7 +53,11 @@ describe('headless s3 import', () => {
     // For us-east-1 buckets the LocationConstraint is always emtpy, we have to return a
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
-    if (locationResponse.LocationConstraint === undefined || locationResponse.LocationConstraint === null) {
+    if (
+      locationResponse.LocationConstraint === undefined ||
+      locationResponse.LocationConstraint === null ||
+      (locationResponse.LocationConstraint as String) === ''
+    ) {
       bucketLocation = 'us-east-1';
     } else {
       bucketLocation = locationResponse.LocationConstraint;
