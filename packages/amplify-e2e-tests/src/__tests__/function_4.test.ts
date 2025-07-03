@@ -77,7 +77,7 @@ describe('add function with layers for runtime nodeJS', () => {
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
-    expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldSuccessOutput);
+    expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toEqual(helloWorldSuccessOutput);
   });
 
   it('can add multiple project layers for nodejs', async () => {
@@ -128,7 +128,7 @@ describe('add function with layers for runtime nodeJS', () => {
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
-    expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldSuccessOutput);
+    expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toEqual(helloWorldSuccessOutput);
   });
 });
 
@@ -191,6 +191,6 @@ describe('add function with layers for runtime python', () => {
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
-    expect(JSON.parse(response.Payload.toString()).body).toMatch(helloWorldSuccessOutput);
+    expect(JSON.parse(response.Payload.transformToString()).body).toMatch(helloWorldSuccessOutput);
   });
 });
