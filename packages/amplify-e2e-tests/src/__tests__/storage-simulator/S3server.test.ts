@@ -79,7 +79,7 @@ describe('Test list api', () => {
     expect(response.Contents[0].Key).toEqual('normal/2.png');
     expect(response.Contents.length).toEqual(1);
   });
-  test('get list 2', async () => {
+  test('get list', async () => {
     const response = await s3client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: '' }));
     expect(response).toBeDefined();
     //expect(response.Contents.length).toEqual(1);
