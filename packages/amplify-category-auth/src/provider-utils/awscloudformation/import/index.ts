@@ -1,12 +1,7 @@
 import { ICognitoUserPoolService, IIdentityPoolService } from '@aws-amplify/amplify-util-import';
 import { $TSAny, $TSContext, ServiceSelection, stateManager, AmplifyError, AmplifyFrontend } from '@aws-amplify/amplify-cli-core';
-import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
-import {
-  IdentityProviderType,
-  UserPoolClientType,
-  UserPoolDescriptionType,
-  UserPoolType,
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CognitoIdentityProvider, IdentityPool } from '@aws-sdk/client-cognito-identity';
+import { IdentityProviderType, UserPoolClientType, UserPoolDescriptionType, UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import Enquirer from 'enquirer';
@@ -82,7 +77,7 @@ const printSuccess = (context: $TSContext, authSelections: AuthSelections, userP
   if (authSelections === 'userPoolOnly') {
     printer.info(importMessages.UserPoolOnlySuccess(userPool.Name!));
   } else {
-    printer.info(importMessages.UserPoolAndIdentityPoolSuccess(userPool.Name!, identityPool!.IdentityPoolName));
+    printer.info(importMessages.UserPoolAndIdentityPoolSuccess(userPool.Name!, identityPool!.IdentityPoolName!));
   }
   printer.blankLine();
   printer.info('Next steps:');
@@ -294,7 +289,7 @@ const importServiceWalkthrough = async (
     if (questionParameters.validatedIdentityPools!.length === 1) {
       const { identityPool } = questionParameters.validatedIdentityPools![0];
 
-      printer.info(importMessages.OneIdentityPoolValid(identityPool.IdentityPoolName, identityPool.IdentityPoolId));
+      printer.info(importMessages.OneIdentityPoolValid(identityPool.IdentityPoolName!, identityPool.IdentityPoolId!));
 
       answers.identityPoolId = identityPool.IdentityPoolId;
       answers.identityPool = identityPool;

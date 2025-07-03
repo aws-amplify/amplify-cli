@@ -1,9 +1,9 @@
-import { AmplifyUIBuilder } from 'aws-sdk';
+import { CreateComponentData } from '@aws-sdk/client-amplifyuibuilder';
 
 // FormCheckout used from AmplifyUIKit
 // Source: https://www.figma.com/community/file/1047600760128127424
 
-export const formCheckoutComponent: AmplifyUIBuilder.CreateComponentData = {
+export const formCheckoutComponent: CreateComponentData = {
   name: 'FormCheckout',
   componentType: 'Flex',
   schemaVersion: '1.0',

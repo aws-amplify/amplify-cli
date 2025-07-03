@@ -20,6 +20,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.624.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.624.0",
     "aws-sdk": "^2.1464.0"
   },
   "devDependencies": {

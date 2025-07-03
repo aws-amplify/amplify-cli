@@ -77,7 +77,7 @@ describe('nodejs', () => {
       expect(result1.StatusCode).toBe(200);
       expect(result1.Payload).toBeDefined();
 
-      const payload1 = JSON.parse(result1.Payload.toString());
+      const payload1 = JSON.parse(result1.Payload.transformToString());
       expect(payload1.errorType).toBeUndefined();
       expect(payload1.errorMessage).toBeUndefined();
       expect(payload1.Items).toBeDefined();
@@ -90,7 +90,7 @@ describe('nodejs', () => {
       expect(result2.StatusCode).toBe(200);
       expect(result2.Payload).toBeDefined();
 
-      const payload2 = JSON.parse(result2.Payload.toString());
+      const payload2 = JSON.parse(result2.Payload.transformToString());
       expect(payload2.errorType).toBeUndefined();
       expect(payload2.errorMessage).toBeUndefined();
       expect(payload2.Items).toBeDefined();
@@ -153,7 +153,7 @@ describe('nodejs', () => {
       expect(result.StatusCode).toBe(200);
       expect(result.Payload).toBeDefined();
 
-      const payload = JSON.parse(result.Payload.toString());
+      const payload = JSON.parse(result.Payload.transformToString());
       expect(payload.errorType).toBeUndefined();
       expect(payload.errorMessage).toBeUndefined();
       expect(payload.Items).toBeDefined();
