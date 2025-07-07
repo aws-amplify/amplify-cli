@@ -38,30 +38,47 @@ describe('headless s3 import', () => {
 
     const s3 = new S3Client();
 
-    await s3.send(
-      new CreateBucketCommand({
-        Bucket: bucketNameToImport,
-      }),
-    );
+    try {
+      await s3.send(
+        new CreateBucketCommand({
+          Bucket: bucketNameToImport,
+        }),
+      );
+    } catch (err) {
+      console.log('failed to create bucket');
+      console.log(err);
+      throw err;
+    }
 
-    const locationResponse = await s3.send(
-      new GetBucketLocationCommand({
-        Bucket: bucketNameToImport,
-      }),
-    );
+    let locationResponse;
+    try {
+      locationResponse = await s3.send(
+        new GetBucketLocationCommand({
+          Bucket: bucketNameToImport,
+        }),
+      );
+    } catch (err) {
+      console.log('failed to get bucket region');
+      console.log(err);
+      throw err;
+    }
 
     // For us-east-1 buckets the LocationConstraint is always emtpy, we have to return a
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
     if (
       locationResponse.LocationConstraint === undefined ||
-      locationResponse.LocationConstraint === null ||
-      (locationResponse.LocationConstraint as String) === ''
+      locationResponse.LocationConstraint.toString() === '' ||
+      locationResponse.LocationConstraint === null
     ) {
       bucketLocation = 'us-east-1';
+    } else if (locationResponse.LocationConstraint === 'EU') {
+      bucketLocation = 'eu-west-1';
     } else {
       bucketLocation = locationResponse.LocationConstraint;
     }
+
+    console.log(bucketLocation);
   });
 
   afterAll(async () => {
