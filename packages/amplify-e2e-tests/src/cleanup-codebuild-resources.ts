@@ -47,6 +47,7 @@ import {
   GetBucketTaggingCommand,
   ListObjectVersionsCommand,
   Bucket,
+  GetBucketLocationCommand,
 } from '@aws-sdk/client-s3';
 import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import fs from 'fs-extra';
@@ -594,7 +595,10 @@ const getS3Buckets = async (account: AWSAccountInfo, cbClient: CodeBuildClient):
       continue;
     }
     try {
-      const bucketDetails = await s3Client.send(new GetBucketTaggingCommand({ Bucket: bucket.Name }));
+      const locationResponse = await s3Client.send(new GetBucketLocationCommand({ Bucket: bucket.Name }));
+      const bucketRegion = locationResponse.LocationConstraint || 'us-east-1';
+      const bucketS3Client = new S3Client(getAWSConfig(account, bucketRegion));
+      const bucketDetails = await bucketS3Client.send(new GetBucketTaggingCommand({ Bucket: bucket.Name }));
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
         result.push({

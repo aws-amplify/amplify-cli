@@ -2,7 +2,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { config } from 'dotenv';
 import yargs from 'yargs';
-import { S3Client, ListBucketsCommand, GetBucketTaggingCommand, Bucket } from '@aws-sdk/client-s3';
+import { S3Client, ListBucketsCommand, GetBucketTaggingCommand, GetBucketLocationCommand, Bucket } from '@aws-sdk/client-s3';
 import {
   IAMClient,
   ListRolesCommand,
@@ -467,7 +467,10 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
     try {
-      const bucketDetails = await s3Client.send(new GetBucketTaggingCommand({ Bucket: bucket.Name }));
+      const locationResponse = await s3Client.send(new GetBucketLocationCommand({ Bucket: bucket.Name }));
+      const bucketRegion = locationResponse.LocationConstraint || 'us-east-1';
+      const bucketS3Client = new S3Client(getAWSConfig(account, bucketRegion));
+      const bucketDetails = await bucketS3Client.send(new GetBucketTaggingCommand({ Bucket: bucket.Name }));
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
         result.push({
@@ -889,6 +892,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       sessionToken: process.env.AWS_SESSION_TOKEN,
     },
+    endpoint: 'https://sts.amazonaws.com',
   });
   const parentAccountIdentity = await stsRes.send(new GetCallerIdentityCommand({}));
   const orgApi = new OrganizationsClient({
