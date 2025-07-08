@@ -66,7 +66,8 @@ describe('amplify init', () => {
     }).toThrow();
 
     // add new environment test to not crash
-    await updatedInitNewEnvWithProfile(projectRoot, { envName: 'test' });
+    const newEnvName = `test${Date.now()}`;
+    await updatedInitNewEnvWithProfile(projectRoot, { envName: newEnvName });
 
     // check parameters.json exists
     expect(() => {

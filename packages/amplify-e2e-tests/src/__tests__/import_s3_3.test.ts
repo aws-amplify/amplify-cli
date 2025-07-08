@@ -36,6 +36,7 @@ describe('headless s3 import', () => {
     const shortId = getShortId();
     bucketNameToImport = `${bucketPrefix}${shortId}`;
 
+    // setting default region for S3 Client
     const s3 = new S3Client({ region: 'us-east-1' });
 
     await s3.send(
@@ -64,12 +65,10 @@ describe('headless s3 import', () => {
     } else {
       bucketLocation = locationResponse.LocationConstraint;
     }
-
-    console.log(bucketLocation);
   });
 
   afterAll(async () => {
-    // Delete bucket
+    // Delete bucket - in SDK V3, buckets are very picky about the region their client is in
     const s3 = new S3Client({ region: bucketLocation || 'us-east-1' });
 
     await s3.send(
