@@ -36,32 +36,19 @@ describe('headless s3 import', () => {
     const shortId = getShortId();
     bucketNameToImport = `${bucketPrefix}${shortId}`;
 
-    const s3 = new S3Client();
+    const s3 = new S3Client({ region: 'us-east-1' });
 
-    try {
-      await s3.send(
-        new CreateBucketCommand({
-          Bucket: bucketNameToImport,
-        }),
-      );
-    } catch (err) {
-      console.log('failed to create bucket');
-      console.log(err);
-      throw err;
-    }
+    await s3.send(
+      new CreateBucketCommand({
+        Bucket: bucketNameToImport,
+      }),
+    );
 
-    let locationResponse;
-    try {
-      locationResponse = await s3.send(
-        new GetBucketLocationCommand({
-          Bucket: bucketNameToImport,
-        }),
-      );
-    } catch (err) {
-      console.log('failed to get bucket region');
-      console.log(err);
-      throw err;
-    }
+    const locationResponse = await s3.send(
+      new GetBucketLocationCommand({
+        Bucket: bucketNameToImport,
+      }),
+    );
 
     // For us-east-1 buckets the LocationConstraint is always emtpy, we have to return a
     // region in every case.
@@ -83,7 +70,7 @@ describe('headless s3 import', () => {
 
   afterAll(async () => {
     // Delete bucket
-    const s3 = new S3Client();
+    const s3 = new S3Client({ region: bucketLocation || 'us-east-1' });
 
     await s3.send(
       new DeleteBucketCommand({

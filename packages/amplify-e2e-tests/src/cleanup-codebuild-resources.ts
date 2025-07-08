@@ -848,7 +848,10 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
       console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${name}`);
       console.log(`Bucket creation time (PST): ${createTime?.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
       const s3 = new S3Client(getAWSConfig(account));
-      await deleteS3Bucket(name, s3);
+      const locationResponse = await s3.send(new GetBucketLocationCommand({ Bucket: name }));
+      const bucketRegion = locationResponse.LocationConstraint || 'us-east-1';
+      const regionalS3Client = new S3Client(getAWSConfig(account, bucketRegion));
+      await deleteS3Bucket(name, regionalS3Client);
     } catch (e) {
       console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
       if (e.name === 'ExpiredTokenException') {
