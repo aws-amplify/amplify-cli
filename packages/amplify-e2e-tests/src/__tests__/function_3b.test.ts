@@ -120,7 +120,6 @@ describe('dotnet function tests', () => {
     });
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    console.log(response.Payload);
     expect(JSON.parse(response.Payload.transformToString()).statusCode).toEqual(200);
 
     assertDotNetVersion();

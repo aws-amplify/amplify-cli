@@ -11,7 +11,7 @@ const runGQLMutation = async (gql_url, mutation, variables) => {
     region: process.env.REGION,
     auth: {
       type: AUTH_TYPE.AWS_IAM,
-      // TO DO: not sure if this will have the same behavior
+      // See documentation here: https://www.npmjs.com/package/@aws-sdk/credential-providers
       credentials: fromNodeProviderChain(),
     },
     disableOffline: true,

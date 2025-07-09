@@ -428,7 +428,6 @@ export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
 };
 
 export const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
-  // TO DO: may need to come back and change the retryMode to match retryDelayOptions { base: 500 }
   const cloudWatchLogsClient = new CloudWatchLogsClient({ region, retryMode: 'standard' });
 
   let targetStreamName = logStreamName;
@@ -454,7 +453,6 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
   return logsResp.events || [];
 };
 
-// TO DO: kind of suspicious of this, may need to come back
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: $TSAny) => {
   const clientConfig = profileConfig ? profileConfig : { region };
   const client = new CloudFormationClient(clientConfig);

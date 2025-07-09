@@ -65,9 +65,7 @@ describe('amplify init', () => {
       getParameters(projectRoot, category, authResourceName);
     }).toThrow();
 
-    // add new environment test to not crash
-    const newEnvName = `test${Date.now()}`;
-    await updatedInitNewEnvWithProfile(projectRoot, { envName: newEnvName });
+    await updatedInitNewEnvWithProfile(projectRoot, { envName: 'test' });
 
     // check parameters.json exists
     expect(() => {

@@ -351,7 +351,6 @@ const deleteS3Bucket = async (bucket: string, providedS3Client: S3Client | undef
       }
     });
 
-    // TO DO: not sure whether this will work the same way
     continuationToken = results.NextKeyMarker;
     truncated = !!results.IsTruncated;
   }
