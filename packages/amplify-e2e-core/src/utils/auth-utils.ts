@@ -55,6 +55,7 @@ export async function addUserToGroup(userPoolId: string, username: string, group
 
 export function getConfiguredCognitoClient(region = process.env.CLI_REGION): CognitoIdentityServiceProvider {
   const cognitoClient = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region });
+
   const awsconfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,

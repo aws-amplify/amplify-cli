@@ -1,9 +1,9 @@
-import { CreateComponentData } from '@aws-sdk/client-amplifyuibuilder';
+import { AmplifyUIBuilder } from 'aws-sdk';
 
 // MyIcon used from AmplifyUIKit
 // Source: https://www.figma.com/community/file/1047600760128127424
 
-export const myIconComponent: CreateComponentData = {
+export const myIconComponent: AmplifyUIBuilder.CreateComponentData = {
   name: 'MyIcon',
   componentType: 'Icon',
   schemaVersion: '1.0',

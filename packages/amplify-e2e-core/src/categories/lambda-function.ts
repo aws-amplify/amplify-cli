@@ -1,5 +1,5 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
-import { InvokeCommandOutput } from '@aws-sdk/client-lambda';
+import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 import { globSync } from 'glob';
 import * as path from 'path';
@@ -636,7 +636,10 @@ export const functionMockAssert = (
   });
 };
 
-export const functionCloudInvoke = async (cwd: string, settings: { funcName: string; payload: string }): Promise<InvokeCommandOutput> => {
+export const functionCloudInvoke = async (
+  cwd: string,
+  settings: { funcName: string; payload: string },
+): Promise<Lambda.InvocationResponse> => {
   const meta = getProjectMeta(cwd);
   const lookupName = settings.funcName;
   expect(meta.function[lookupName]).toBeDefined();
@@ -644,10 +647,10 @@ export const functionCloudInvoke = async (cwd: string, settings: { funcName: str
   expect(functionName).toBeDefined();
   expect(region).toBeDefined();
   const result = await invokeFunction(functionName, settings.payload, region);
-  if (!result.Payload) {
-    throw new Error('No payload in lambda response');
+  if (!result.$response.data) {
+    throw new Error('No data in lambda response');
   }
-  return result;
+  return result.$response.data as Lambda.InvocationResponse;
 };
 
 const getTemplateChoices = (runtime: FunctionRuntimes) => {
