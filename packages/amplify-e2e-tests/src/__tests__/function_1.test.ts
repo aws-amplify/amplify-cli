@@ -50,7 +50,7 @@ describe('nodejs', () => {
       expect(region).toBeDefined();
       const cloudFunction = await getFunction(Name, region);
       const response = await invokeFunction(Name, JSON.stringify({}), region);
-      const payload = JSON.parse(response.Payload.toString());
+      const payload = JSON.parse(response.Payload.transformToString());
       expect(payload.headers['Access-Control-Allow-Origin']).toEqual('*');
       expect(payload.headers['Access-Control-Allow-Headers']).toEqual('*');
       expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);

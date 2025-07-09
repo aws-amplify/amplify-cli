@@ -14,7 +14,7 @@ import {
   amplifyStudioHeadlessPull,
 } from '@aws-amplify/amplify-e2e-core';
 import { spawnSync, spawn } from 'child_process';
-import { AmplifyUIBuilder } from 'aws-sdk';
+import { AmplifyUIBuilderClient, CreateComponentCommand } from '@aws-sdk/client-amplifyuibuilder';
 import fs from 'fs-extra';
 import path from 'path';
 import * as execa from 'execa';
@@ -51,23 +51,23 @@ describe('amplify pull with uibuilder', () => {
     appId = getAppId(projRoot);
     const meta = getBackendAmplifyMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
-    const amplifyUIBuilder = new AmplifyUIBuilder({ region });
+    const amplifyUIBuilder = new AmplifyUIBuilderClient({ region });
 
-    await amplifyUIBuilder
-      .createComponent({
+    await amplifyUIBuilder.send(
+      new CreateComponentCommand({
         appId,
         environmentName: envName,
         componentToCreate: myIconComponent,
-      })
-      .promise();
+      }),
+    );
 
-    await amplifyUIBuilder
-      .createComponent({
+    await amplifyUIBuilder.send(
+      new CreateComponentCommand({
         appId,
         environmentName: envName,
         componentToCreate: formCheckoutComponent,
-      })
-      .promise();
+      }),
+    );
 
     // needs to enable studio for resources to be pull down
     await enableAdminUI(appId, envName, region);

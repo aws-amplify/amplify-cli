@@ -9,7 +9,7 @@ import {
   initJSProjectWithProfile,
   amplifyPushAuth,
 } from '@aws-amplify/amplify-e2e-core';
-import * as AWS from 'aws-sdk';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 describe('amplify push ', () => {
   let pushProjRoot: string;
@@ -33,13 +33,13 @@ describe('amplify push ', () => {
     const meta = amplifyMeta.providers.awscloudformation;
     const bucketName = meta.DeploymentBucketName;
 
-    const s3 = new AWS.S3();
-    await s3
-      .deleteObject({
+    const s3 = new S3Client();
+    await s3.send(
+      new DeleteObjectCommand({
         Bucket: bucketName,
         Key: '#current-cloud-backend.zip',
-      })
-      .promise();
+      }),
+    );
 
     await expect(amplifyPushAuth(pushProjRoot)).rejects.toThrow();
     await amplifyPushForce(pushProjRoot);
