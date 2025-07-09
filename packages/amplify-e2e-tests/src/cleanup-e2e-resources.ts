@@ -2,6 +2,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { config } from 'dotenv';
 import yargs from 'yargs';
+import { S3Client, GetBucketLocationCommand } from '@aws-sdk/client-s3';
 import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
@@ -670,11 +671,14 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${name}`);
     console.log(`Bucket creation time (PST): ${bucket.createTime.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })}`);
-    const s3 = new aws.S3(getAWSConfig(account));
-    await deleteS3Bucket(name, s3);
+    const s3 = new S3Client(getAWSConfig(account));
+    const locationReponse = await s3.send(new GetBucketLocationCommand({ Bucket: name }));
+    const bucketRegion = locationReponse.LocationConstraint || 'us-east-1';
+    const regionalS3Client = new S3Client(getAWSConfig(account, bucketRegion));
+    await deleteS3Bucket(name, regionalS3Client);
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting bucket ${name} failed with error ${e.message}`);
-    if (e.code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
