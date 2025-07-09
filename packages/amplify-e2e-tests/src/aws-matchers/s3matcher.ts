@@ -1,10 +1,10 @@
-import { S3Client, HeadBucketCommand } from '@aws-sdk/client-s3';
+import { S3 } from 'aws-sdk';
 
 export const toBeAS3Bucket = async (bucketName: string) => {
-  const s3 = new S3Client();
+  const s3 = new S3();
   let pass: boolean;
   try {
-    await s3.send(new HeadBucketCommand({ Bucket: bucketName }));
+    await s3.headBucket({ Bucket: bucketName }).promise();
     pass = true;
   } catch (e) {
     pass = false;

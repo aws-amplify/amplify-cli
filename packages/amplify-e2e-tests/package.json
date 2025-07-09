@@ -54,6 +54,7 @@
     "aws-amplify": "^5.3.16",
     "aws-appsync": "^4.1.1",
     "aws-cdk-lib": "~2.189.1",
+    "aws-sdk": "^2.1464.0",
     "axios": "^1.6.7",
     "constructs": "^10.0.5",
     "dotenv": "^8.2.0",

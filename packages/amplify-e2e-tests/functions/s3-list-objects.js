@@ -1,13 +1,13 @@
-const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
-const awsS3Client = new S3Client();
+const AWS = require('aws-sdk');
+const awsS3Client = new AWS.S3();
 const bucketEnvVar = '{{bucketEnvVar}}'; // This value is replaced from test
 
 exports.handler = async () => {
-  const command = new ListObjectsV2Command({
-    Bucket: process.env[bucketEnvVar],
-  });
-
-  const listObjects = await awsS3Client.send(command);
+  const listObjects = await awsS3Client
+    .listObjectsV2({
+      Bucket: process.env[bucketEnvVar],
+    })
+    .promise();
 
   return listObjects;
 };

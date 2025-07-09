@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 require('isomorphic-fetch');
-const { fromNodeProviderChain } = require('@aws-sdk/credential-providers');
+const AWS = require('aws-sdk');
 const AWSAppSyncClient = require('aws-appsync').default;
 const { AUTH_TYPE } = require('aws-appsync');
 const gql = require('graphql-tag');
@@ -11,8 +11,7 @@ const runGQLMutation = async (gql_url, mutation, variables) => {
     region: process.env.REGION,
     auth: {
       type: AUTH_TYPE.AWS_IAM,
-      // See documentation here: https://www.npmjs.com/package/@aws-sdk/credential-providers
-      credentials: fromNodeProviderChain(),
+      credentials: AWS.config.credentials,
     },
     disableOffline: true,
   });

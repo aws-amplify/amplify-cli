@@ -1,11 +1,11 @@
-import { IAMClient, GetRoleCommand } from '@aws-sdk/client-iam';
+import { IAM } from 'aws-sdk';
 
 export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
-  const iam = new IAMClient();
+  const iam = new IAM();
   let pass: boolean;
   let message: string;
   try {
-    const { Role: role } = await iam.send(new GetRoleCommand({ RoleName: roleName }));
+    const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
     if (arn) {
       pass = role.Arn === arn ? true : false;
       if (pass) {
@@ -33,15 +33,13 @@ export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, 
   let message = '';
 
   try {
-    const iam = new IAMClient({
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
-      },
+    const iam = new IAM({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
     });
 
-    const { Role: role } = await iam.send(new GetRoleCommand({ RoleName: roleName }));
+    const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
     const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
 
     pass = assumeRolePolicyDocument.Statement.some((statement) => {
@@ -75,15 +73,13 @@ export const toHaveDenyAssumeRolePolicy = async (roleName: string) => {
   let message = '';
 
   try {
-    const iam = new IAMClient({
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
-      },
+    const iam = new IAM({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
     });
 
-    const { Role: role } = await iam.send(new GetRoleCommand({ RoleName: roleName }));
+    const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
     const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
 
     pass = assumeRolePolicyDocument?.Statement?.length === 1 && assumeRolePolicyDocument?.Statement?.[0]?.Effect === 'Deny';
