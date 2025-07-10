@@ -31,7 +31,7 @@ describe('auth admin api tests', () => {
       };
     }
     const lambdaResponse = await invokeFunction(adminLambdaName, JSON.stringify(request), adminLambdaRegion);
-    return JSON.parse(lambdaResponse.Payload.transformToString());
+    return JSON.parse(lambdaResponse.Payload.toString());
   };
 
   beforeAll(async () => {

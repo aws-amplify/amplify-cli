@@ -65,6 +65,6 @@ describe('python function tests', () => {
       ...helloWorldSuccessOutput,
       body: JSON.stringify(helloWorldSuccessOutput.body),
     };
-    expect(JSON.parse(response.Payload.transformToString())).toEqual(JSON.parse(JSON.stringify(helloWorldSuccessOutputCloud)));
+    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(JSON.stringify(helloWorldSuccessOutputCloud)));
   });
 });

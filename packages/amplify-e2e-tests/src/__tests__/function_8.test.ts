@@ -57,7 +57,7 @@ describe('java function tests', () => {
     const payload = '{"firstName":"John","lastName" : "Doe"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(JSON.parse(response.Payload.transformToString())).toEqual(helloWorldSuccessObj);
+    expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessObj);
   });
 });
 

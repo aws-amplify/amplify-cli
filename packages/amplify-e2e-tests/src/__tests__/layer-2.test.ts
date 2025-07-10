@@ -233,7 +233,7 @@ describe('amplify add lambda layer with changes', () => {
 
     const payload = '{}';
     let response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
-    expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toEqual(helloWorldUpperCaseOutput);
+    expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldUpperCaseOutput);
 
     // 2. Step
     // - Update casing.js in layer
@@ -266,7 +266,7 @@ describe('amplify add lambda layer with changes', () => {
 
     response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
-    expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toEqual(helloWorldUpperCaseOutput);
+    expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldUpperCaseOutput);
 
     // 3. Step
     // - Update function to use latest version of the layer
@@ -296,7 +296,7 @@ describe('amplify add lambda layer with changes', () => {
 
     response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
-    expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toEqual(helloWorldTitleCaseOutput);
+    expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldTitleCaseOutput);
   });
 
   /*

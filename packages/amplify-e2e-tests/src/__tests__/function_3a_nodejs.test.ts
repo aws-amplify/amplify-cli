@@ -58,7 +58,7 @@ describe('nodejs function tests', () => {
 
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
 
-    expect(JSON.parse(response.Payload.transformToString())).toEqual(helloWorldSuccessObj);
+    expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessObj);
   });
 
   it('add nodejs hello world function and mock locally, check buildType, push, check buildType', async () => {

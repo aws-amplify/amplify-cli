@@ -70,7 +70,7 @@ describe('nodejs', () => {
 
       expect(fnResponse.StatusCode).toBe(200);
       expect(fnResponse.Payload).toBeDefined();
-      const apiResponse = JSON.parse(fnResponse.Payload.transformToString());
+      const apiResponse = JSON.parse(fnResponse.Payload as string);
       expect(apiResponse.graphqlApi).toBeDefined();
       expect(apiResponse.graphqlApi.name).toContain(apiName);
     });

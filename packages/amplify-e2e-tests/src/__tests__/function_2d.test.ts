@@ -59,8 +59,8 @@ describe('nodejs', () => {
           },
         }),
       });
-      expect(JSON.parse(response.Payload.transformToString()).statusCode).toEqual(200);
-      expect(JSON.parse(response.Payload.transformToString()).body).toContain('post call succeed!');
+      expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+      expect(JSON.parse(response.Payload.toString()).body).toContain('post call succeed!');
 
       response = await functionCloudInvoke(projRoot, {
         funcName,
@@ -73,8 +73,8 @@ describe('nodejs', () => {
           },
         }),
       });
-      expect(JSON.parse(response.Payload.transformToString()).statusCode).toEqual(200);
-      expect(JSON.parse(response.Payload.transformToString()).body).toContain('post call succeed!');
+      expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+      expect(JSON.parse(response.Payload.toString()).body).toContain('post call succeed!');
 
       response = await functionCloudInvoke(projRoot, {
         funcName,
@@ -87,8 +87,8 @@ describe('nodejs', () => {
           },
         }),
       });
-      expect(JSON.parse(response.Payload.transformToString()).statusCode).toEqual(200);
-      expect(JSON.parse(response.Payload.transformToString()).body).toContain('put call succeed!');
+      expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+      expect(JSON.parse(response.Payload.toString()).body).toContain('put call succeed!');
 
       response = await functionCloudInvoke(projRoot, {
         funcName,
@@ -97,8 +97,8 @@ describe('nodejs', () => {
           httpMethod: 'GET',
         }),
       });
-      expect(JSON.parse(response.Payload.transformToString()).statusCode).toEqual(200);
-      expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toEqual([item1]);
+      expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+      expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual([item1]);
 
       response = await functionCloudInvoke(projRoot, {
         funcName,
@@ -107,8 +107,8 @@ describe('nodejs', () => {
           httpMethod: 'GET',
         }),
       });
-      expect(JSON.parse(response.Payload.transformToString()).statusCode).toEqual(200);
-      expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toEqual(item2);
+      expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+      expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(item2);
 
       response = await functionCloudInvoke(projRoot, {
         funcName,
@@ -117,9 +117,9 @@ describe('nodejs', () => {
           httpMethod: 'GET',
         }),
       });
-      expect(JSON.parse(response.Payload.transformToString()).statusCode).toEqual(200);
-      expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toContainEqual(item1);
-      expect(JSON.parse(JSON.parse(response.Payload.transformToString()).body)).toContainEqual(item2);
+      expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
+      expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toContainEqual(item1);
+      expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toContainEqual(item2);
 
       response = await functionCloudInvoke(projRoot, {
         funcName,
@@ -128,7 +128,7 @@ describe('nodejs', () => {
           httpMethod: 'DELETE',
         }),
       });
-      expect(JSON.parse(response.Payload.transformToString()).statusCode).toEqual(200);
+      expect(JSON.parse(response.Payload.toString()).statusCode).toEqual(200);
     });
   });
 });

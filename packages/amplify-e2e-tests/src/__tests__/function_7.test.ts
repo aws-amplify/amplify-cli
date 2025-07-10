@@ -62,7 +62,7 @@ describe('function secret value', () => {
 
     // check that the lambda response includes the secret value
     const response = await invokeFunction(`${funcName}-integtest`, JSON.stringify(lambdaEvent), region);
-    expect(JSON.parse(response.Payload.transformToString())[0]?.Value).toEqual('testsecretvalue');
+    expect(JSON.parse(response.Payload.toString())[0]?.Value).toEqual('testsecretvalue');
   });
 
   it('removes secrets immediately when func not pushed', async () => {
