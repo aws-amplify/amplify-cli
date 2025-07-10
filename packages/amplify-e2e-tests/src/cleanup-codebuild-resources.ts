@@ -189,7 +189,7 @@ const testAppSyncApiStalenessFilter = (resource: AppSync.GraphqlApi): boolean =>
 };
 
 const testPinpointAppStalenessFilter = (resource: Pinpoint.ApplicationResponse): boolean => {
-  const isTestResource = !!(resource.Name?.match(PINPOINT_TEST_REGEX) && resource.CreationDate);
+  const isTestResource = !!(resource.Name.match(PINPOINT_TEST_REGEX) && resource.CreationDate);
   return isTestResource && isStale(resource.CreationDate);
 };
 
@@ -435,7 +435,7 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
     // Todo: We need to investigate if we should go ahead and remove the resources to prevent account getting cluttered
     const resources = await cfnClient.listStackResources({ StackName: stackName }).promise();
     resourcesFailedToDelete =
-      resources?.StackResourceSummaries?.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map((r) => r.LogicalResourceId!) ?? [];
+      resources?.StackResourceSummaries?.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map((r) => r.LogicalResourceId) ?? [];
   }
   const jobId = getJobId(tags);
   return {

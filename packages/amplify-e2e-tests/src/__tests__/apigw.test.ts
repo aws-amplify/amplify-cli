@@ -102,11 +102,13 @@ describe('API Gateway e2e tests', () => {
     const restApiName = `e2eRestApi${shortId}`;
 
     await addRestApi(projRoot, { apiName: restApiName });
+    console.log('attempting to overrider api');
     await amplifyOverrideApi(projRoot);
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-rest.ts');
     const destOverrideTsFilePath = path.join(pathManager.getResourceDirectoryPath(projRoot, 'api', restApiName), 'override.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideTsFilePath);
 
+    console.log('building overrides');
     await buildOverrides(projRoot);
 
     const cfnPath = path.join(
