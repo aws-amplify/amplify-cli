@@ -124,9 +124,7 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
       },
     }))
     .map((delParams) => s3.deleteObjects(delParams).promise());
-
   await Promise.all(deleteReq);
-
   await s3
     .deleteBucket({
       Bucket: bucket,
