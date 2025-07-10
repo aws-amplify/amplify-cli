@@ -25,16 +25,16 @@ import {
   nonInteractiveInitAttach,
   nonInteractivePullAttach,
 } from '@aws-amplify/amplify-e2e-core';
-import { S3Client, CreateBucketCommand, DeleteBucketCommand } from '@aws-sdk/client-s3';
+import { S3 } from 'aws-sdk';
 import { getShortId, importS3 } from '../import-helpers';
 
 describe('attach amplify to git-cloned project', () => {
   const envName = 'test';
   let projRoot: string;
-  const s3Client = new S3Client();
+  const s3Client = new S3();
   const importBucketName = `git-clone-test-bucket-${getShortId()}`;
   beforeAll(async () => {
-    await s3Client.send(new CreateBucketCommand({ Bucket: importBucketName }));
+    await s3Client.createBucket({ Bucket: importBucketName }).promise();
     projRoot = await createNewProjectDir('clone-test');
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
     await addFunction(
@@ -60,7 +60,7 @@ describe('attach amplify to git-cloned project', () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
     } finally {
-      await s3Client.send(new DeleteBucketCommand({ Bucket: importBucketName }));
+      await s3Client.deleteBucket({ Bucket: importBucketName }).promise();
     }
   });
 

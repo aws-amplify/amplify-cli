@@ -14,7 +14,7 @@ import {
   getProjectMeta,
   sleep,
 } from '@aws-amplify/amplify-e2e-core';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import S3 from 'aws-sdk/clients/s3';
 import { DeploymentState, DeploymentStatus, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
 describe('Schema iterative update - locking', () => {
@@ -67,7 +67,7 @@ describe('Schema iterative update - locking', () => {
     const projectRegion = meta.providers.awscloudformation.Region;
     const deploymentBucketName = meta.providers.awscloudformation.DeploymentBucketName;
 
-    const s3 = new S3Client({
+    const s3 = new S3({
       region: projectRegion,
     });
 
@@ -79,15 +79,14 @@ describe('Schema iterative update - locking', () => {
 
     while (retry < maxRetries || !lockFileExists) {
       try {
-        const deploymentStateObject = await s3.send(
-          new GetObjectCommand({
+        const deploymentStateObject = await s3
+          .getObject({
             Bucket: deploymentBucketName,
             Key: stateFileName,
-          }),
-        );
+          })
+          .promise();
 
-        const bodyString = await deploymentStateObject.Body?.transformToString();
-        const deploymentState = JSONUtilities.parse<DeploymentState>(bodyString);
+        const deploymentState = JSONUtilities.parse<DeploymentState>(deploymentStateObject.Body.toString());
 
         if (deploymentState.status === DeploymentStatus.DEPLOYING) {
           lockFileExists = true;

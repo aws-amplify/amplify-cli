@@ -11,7 +11,7 @@ import {
   deleteProjectDir,
 } from '@aws-amplify/amplify-e2e-core';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { SSMClient, GetParameterCommand, PutParameterCommand } from '@aws-sdk/client-ssm';
+import AWS from 'aws-sdk';
 import path from 'path';
 
 const customIAMPolicy: CustomIAMPolicy = {
@@ -50,21 +50,21 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
   const region = meta?.providers?.awscloudformation.Region ?? undefined;
 
   // Put SSM parameter
-  const ssmClient = new SSMClient({ region });
-  await ssmClient.send(
-    new PutParameterCommand({
+  const ssmClient = new AWS.SSM({ region });
+  await ssmClient
+    .putParameter({
       Name: '/amplify/testCustomPolicies',
       Value: 'testCustomPoliciesValue',
       Type: 'String',
       Overwrite: true,
-    }),
-  );
+    })
+    .promise();
 
-  const getParaResponse = await ssmClient.send(
-    new GetParameterCommand({
+  const getParaResponse = await ssmClient
+    .getParameter({
       Name: '/amplify/testCustomPolicies',
-    }),
-  );
+    })
+    .promise();
   const ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);

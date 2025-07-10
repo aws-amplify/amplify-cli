@@ -10,7 +10,7 @@ import {
   initJSProjectWithProfile,
   nspawn as spawn,
 } from '@aws-amplify/amplify-e2e-core';
-import { DescribeUserPoolCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -35,7 +35,10 @@ describe('amplify auth with trigger', () => {
 
     const meta = getProjectMeta(projRoot);
     const userPoolId = Object.keys(meta.auth).map((key) => meta.auth[key])[0].output.UserPoolId;
-    let userPool = (await getUserPool(userPoolId, meta.providers.awscloudformation.Region)) as DescribeUserPoolCommandOutput;
+    let userPool = (await getUserPool(
+      userPoolId,
+      meta.providers.awscloudformation.Region,
+    )) as CognitoIdentityServiceProvider.DescribeUserPoolResponse;
 
     expect(userPool.UserPool).toBeDefined();
     expect(userPool.UserPool.LambdaConfig).toBeDefined();
@@ -47,7 +50,10 @@ describe('amplify auth with trigger', () => {
 
     await amplifyPushAuth(projRoot);
 
-    userPool = (await getUserPool(userPoolId, meta.providers.awscloudformation.Region)) as DescribeUserPoolCommandOutput;
+    userPool = (await getUserPool(
+      userPoolId,
+      meta.providers.awscloudformation.Region,
+    )) as CognitoIdentityServiceProvider.DescribeUserPoolResponse;
 
     expect(userPool.UserPool).toBeDefined();
     expect(userPool.UserPool.EmailVerificationSubject).toBe('New code');

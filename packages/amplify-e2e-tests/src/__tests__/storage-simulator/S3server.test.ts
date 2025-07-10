@@ -1,6 +1,5 @@
 import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
-import { S3Client, ListObjectsV2Command, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { Upload } from '@aws-sdk/lib-storage';
+import * as AWS from 'aws-sdk';
 import * as fs from 'fs-extra';
 
 const port = 20005; // for testing
@@ -18,16 +17,16 @@ let simulator;
 jest.setTimeout(2000000);
 
 beforeAll(async () => {
-  s3client = new S3Client({
-    credentials: {
-      accessKeyId: fakeAccessId,
-      secretAccessKey: fakeSecretKey,
-    },
+  const ep = new AWS.Endpoint('http://localhost:20005');
+  s3client = new AWS.S3({
+    accessKeyId: fakeAccessId,
+    secretAccessKey: fakeSecretKey,
     region: fakeRegion,
     apiVersion: '2006-03-01',
-    endpoint: 'http://localhost:20005',
-    forcePathStyle: true,
-    tls: false,
+    endpoint: ep.href,
+    s3BucketEndpoint: true,
+    sslEnabled: false,
+    s3ForcePathStyle: true,
   });
 
   simulator = new AmplifyStorageSimulator({ port, route, localDirS3 });
@@ -58,58 +57,59 @@ describe('test server running', () => {
 
 describe('Test get api', () => {
   test('get image work ', async () => {
-    const data = await s3client.send(new GetObjectCommand({ Bucket: bucket, Key: '2.png' }));
+    const data = await s3client.getObject({ Bucket: bucket, Key: '2.png' }).promise();
     expect(data).toBeDefined();
     expect(data.Body).toBeDefined();
   });
 
   test('get text file', async () => {
-    const data = await s3client.send(new GetObjectCommand({ Bucket: bucket, Key: 'abc.txt' }));
+    const data = await s3client.getObject({ Bucket: bucket, Key: 'abc.txt' }).promise();
     expect(data).toBeDefined();
     expect(data.Body).toBeDefined();
-    const bodyString = await data.Body.transformToString();
-    expect(bodyString).toEqual('Helloworld1234');
+    expect(data.Body.toString()).toEqual('Helloworld1234');
   });
 });
 
 describe('Test list api', () => {
   test('get list', async () => {
-    const response = await s3client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: 'normal' }));
+    const response = await s3client.listObjects({ Bucket: bucket, Prefix: 'normal' }).promise();
     expect(response).toBeDefined();
     expect(response.Contents[0].Key).toEqual('normal/2.png');
     expect(response.Contents.length).toEqual(1);
   });
   test('get list', async () => {
-    const response = await s3client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: '' }));
+    const response = await s3client.listObjects({ Bucket: bucket }).promise();
     expect(response).toBeDefined();
     //expect(response.Contents.length).toEqual(1);
   });
   test('empty bucket', async () => {
-    const response = await s3client.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: 'public' }));
+    const response = await s3client.listObjects({ Bucket: bucket, Prefix: 'public' }).promise();
     expect(response).toBeDefined();
-    expect(response.Contents).toBeUndefined();
+    expect(response.Contents.length).toEqual(0);
   });
 
   test('list object pagination', async () => {
     const maxKeys = 2;
     let total = 7;
-    let response = await s3client.send(
-      new ListObjectsV2Command({
+    let response = await s3client
+      .listObjects({
         Bucket: bucket,
         Prefix: 'pagination',
+        Marker: '',
         MaxKeys: maxKeys,
-      }),
-    );
+      })
+      .promise();
     while (response.IsTruncated === true) {
       expect(response).toBeDefined();
       expect(response.Contents.length).toEqual(maxKeys);
-      response = await s3client.send(
-        new ListObjectsV2Command({
+      response = await s3client
+        .listObjects({
           Bucket: bucket,
           Prefix: 'pagination',
+          Marker: response.NextMarker,
           MaxKeys: maxKeys,
-        }),
-      );
+        })
+        .promise();
       total = total - maxKeys;
     }
     expect(response.Contents.length).toEqual(total);
@@ -123,7 +123,7 @@ describe('Test delete api', () => {
     fs.copySync(__dirname + '/test-data/normal/', dirPathOne + '/');
   });
   test('test one delete ', async () => {
-    await s3client.send(new DeleteObjectCommand({ Bucket: bucket, Key: 'deleteOne/2.png' }));
+    await s3client.deleteObject({ Bucket: bucket, Key: 'deleteOne/2.png' }).promise();
     expect(fs.rmdirSync(dirPathOne)).toBeUndefined;
   });
 });
@@ -138,11 +138,7 @@ describe('Test put api', () => {
       Prefix: 'upload',
       Body: buffer,
     };
-    const upload = new Upload({
-      client: s3client,
-      params,
-    });
-    const data = await upload.done();
+    const data = await s3client.upload(params).promise();
     expect(data).toBeDefined();
   });
 
@@ -185,10 +181,7 @@ describe('Test put api', () => {
       Key: 'upload/abc.txt',
       Body: buf1,
     };
-    const data = await new Upload({
-      client: s3client,
-      params,
-    }).done();
+    const data = await s3client.upload(params).promise();
     expect(data).toBeDefined();
   });
 
@@ -199,10 +192,7 @@ describe('Test put api', () => {
       Body: JSON.stringify(Jsonobj),
       ContentType: 'application/json',
     };
-    const data = await new Upload({
-      client: s3client,
-      params,
-    }).done();
+    const data = await s3client.upload(params).promise();
     const jsonFile = __dirname + '/test-data/upload/abc.json';
     const contents = fs.readFileSync(jsonFile);
     const obj = JSON.parse(contents.toString());
@@ -219,10 +209,7 @@ describe('Test put api', () => {
       Key: 'upload/long_image.jpg',
       Body: buf2,
     };
-    const data = await new Upload({
-      client: s3client,
-      params,
-    }).done();
+    const data = await s3client.upload(params).promise();
     expect(data.Key).toBe('upload/long_image.jpg');
   });
 
@@ -232,30 +219,21 @@ describe('Test put api', () => {
       Key: 'upload/long_image1.jpg',
       Body: buf2,
     };
-    const data = await new Upload({
-      client: s3client,
-      params: params1,
-    }).done();
+    const data = await s3client.upload(params1).promise();
 
     const params2 = {
       Bucket: bucket, // pass your bucket name
       Key: 'upload/long_image2.jpg',
       Body: buf2,
     };
-    const data2 = await new Upload({
-      client: s3client,
-      params: params2,
-    }).done();
+    const data2 = await s3client.upload(params2).promise();
 
     const params3 = {
       Bucket: bucket, // pass your bucket name
       Key: 'upload/long_image3.jpg',
       Body: buf2,
     };
-    const data3 = await new Upload({
-      client: s3client,
-      params: params3,
-    }).done();
+    const data3 = await s3client.upload(params3).promise();
 
     expect(data.Key).toBe('upload/long_image1.jpg');
     expect(data2.Key).toBe('upload/long_image2.jpg');
@@ -280,9 +258,9 @@ describe('Test put api', () => {
     };
 
     const uploadPromises = [];
-    uploadPromises.push(new Upload({ client: s3client, params: params1 }).done());
-    uploadPromises.push(new Upload({ client: s3client, params: params2 }).done());
-    uploadPromises.push(new Upload({ client: s3client, params: params3 }).done());
+    uploadPromises.push(s3client.upload(params1).promise());
+    uploadPromises.push(s3client.upload(params2).promise());
+    uploadPromises.push(s3client.upload(params3).promise());
 
     const uploadResults = await Promise.all(uploadPromises);
     expect(uploadResults[0].Key).toBe('upload/long_image1.jpg');
