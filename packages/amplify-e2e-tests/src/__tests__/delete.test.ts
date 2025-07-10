@@ -1,4 +1,5 @@
-import { S3, Amplify } from 'aws-sdk';
+import { S3Client, HeadBucketCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { AmplifyClient, GetAppCommand } from '@aws-sdk/client-amplify';
 import {
   addPinpointAnalytics,
   addApiWithoutSchema,
@@ -137,22 +138,22 @@ async function testDeletion(projRoot: string, settings: { ios?: boolean; android
 }
 
 async function putFiles(bucket: string, count = 1001) {
-  const s3 = new S3();
+  const s3 = new S3Client();
   const s3Params = [...Array(count)].map((_, num) => ({
     Bucket: bucket,
     Body: 'dummy body',
     Key: `${num}.txt`,
   }));
-  await Promise.all(s3Params.map((p) => s3.putObject(p).promise()));
+  await Promise.all(s3Params.map((p) => s3.send(new PutObjectCommand(p))));
 }
 
 async function bucketExists(bucket: string) {
-  const s3 = new S3();
+  const s3 = new S3Client();
   const params = {
     Bucket: bucket,
   };
   try {
-    await s3.headBucket(params).promise();
+    await s3.send(new HeadBucketCommand(params));
     return true;
   } catch (error) {
     if (error.statusCode === 404) {
@@ -163,9 +164,9 @@ async function bucketExists(bucket: string) {
 }
 
 async function appExists(appId: string, region: string) {
-  const amplify = new Amplify({ region });
+  const amplify = new AmplifyClient({ region });
   try {
-    await amplify.getApp({ appId }).promise();
+    await amplify.send(new GetAppCommand({ appId }));
     return true;
   } catch (ex) {
     return false;

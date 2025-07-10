@@ -185,7 +185,7 @@ describe('amplify add api (GraphQL)', () => {
       await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
       expect(true).toBe(false); // expecting failure
     } catch (err) {
-      expect(err.message).toBe(`GraphQL API ${GraphQLAPIIdOutput} not found.`);
+      expect(err.message).toBe(`API not found.`);
     }
   });
 });
