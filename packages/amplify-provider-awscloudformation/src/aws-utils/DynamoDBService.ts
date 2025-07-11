@@ -1,6 +1,14 @@
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { IDynamoDBService } from '@aws-amplify/amplify-util-import';
-import DynamoDB, { ListTablesInput, ListTablesOutput, TableDescription, TableName } from 'aws-sdk/clients/dynamodb';
+import {
+  DynamoDBClient,
+  ListTablesCommand,
+  ListTablesCommandInput,
+  ListTablesCommandOutput,
+  DescribeTableCommand,
+  TableDescription,
+} from '@aws-sdk/client-dynamodb';
 import { loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
 
@@ -13,26 +21,28 @@ export const createDynamoDBService = async (context: $TSContext, options: $TSAny
     // could not load credentials
   }
 
-  const dynamoDB = new DynamoDB({ ...credentials, ...options });
+  const dynamoDBClient = new DynamoDBClient({
+    ...credentials,
+    ...options,
+  });
 
-  return new DynamoDBService(dynamoDB);
+  return new DynamoDBService(dynamoDBClient);
 };
 
 export class DynamoDBService implements IDynamoDBService {
   private cachedTableList: string[] = [];
 
-  public constructor(private dynamoDB: DynamoDB) {}
+  public constructor(private dynamoDBClient: DynamoDBClient) {}
 
-  public async listTables(): Promise<TableName[]> {
+  public async listTables(): Promise<string[]> {
     if (this.cachedTableList.length === 0) {
-      const result = await pagedAWSCall<ListTablesOutput, TableName, TableName>(
-        async (params: ListTablesInput, nextToken: TableName) => {
-          return await this.dynamoDB
-            .listTables({
-              ...params,
-              ExclusiveStartTableName: nextToken,
-            })
-            .promise();
+      const result = await pagedAWSCall<ListTablesCommandOutput, string, string>(
+        async (params: ListTablesCommandInput, nextToken: string) => {
+          const command = new ListTablesCommand({
+            ...params,
+            ExclusiveStartTableName: nextToken,
+          });
+          return await this.dynamoDBClient.send(command);
         },
         {
           Limit: 100,
@@ -48,11 +58,10 @@ export class DynamoDBService implements IDynamoDBService {
   }
 
   public async getTableDetails(tableName: string): Promise<TableDescription> {
-    const response = await this.dynamoDB
-      .describeTable({
-        TableName: tableName,
-      })
-      .promise();
+    const command = new DescribeTableCommand({
+      TableName: tableName,
+    });
+    const response = await this.dynamoDBClient.send(command);
 
     return response.Table;
   }

@@ -1,12 +1,12 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import * as AWS from 'aws-sdk';
+import { LocationClient } from '@aws-sdk/client-location';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
-import aws from './aws.js';
 import { proxyAgent } from './aws-globals';
 
 export class LocationService {
   private static instance: LocationService;
-  readonly client: AWS.Location;
+  readonly client: LocationClient;
 
   static async getInstance(context: $TSContext, options = {}): Promise<LocationService> {
     if (!LocationService.instance) {
@@ -22,12 +22,13 @@ export class LocationService {
   }
 
   private constructor(cred: AwsSecrets, options = {}) {
-    this.client = new aws.Location({
+    this.client = new LocationClient({
       ...cred,
       ...options,
-      httpOptions: {
-        agent: proxyAgent(),
-      },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     });
   }
 }

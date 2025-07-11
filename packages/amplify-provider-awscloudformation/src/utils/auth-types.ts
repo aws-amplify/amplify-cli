@@ -1,4 +1,5 @@
 import { $TSAny } from '@aws-amplify/amplify-cli-core';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 export type AuthFlow = 'admin' | 'profile' | 'accessKeys' | 'general';
 export interface AuthFlowConfig extends Partial<AwsSdkConfig> {
@@ -14,6 +15,8 @@ export interface AwsSdkConfig {
   region: string;
   secretAccessKey: string;
   sessionToken?: string;
+  requestHandler?: NodeHttpHandler;
+  // TO DO: remove eventually, V2 style of handling proxies
   httpOptions?: {
     agent: $TSAny;
   };
