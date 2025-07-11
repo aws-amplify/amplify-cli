@@ -2,7 +2,7 @@
 import { nspawn as spawn, getCLIPath } from '..';
 
 export const amplifyOverrideRoot = (cwd: string, settings: { testingWithLatestCodebase?: boolean }): Promise<void> => {
-  const args = ['override', 'project'];
+  const args = ['override', 'project', '--debug'];
 
   return spawn(getCLIPath(settings.testingWithLatestCodebase), args, { cwd, stripColors: true })
     .wait('Do you want to edit override.ts file now?')
@@ -12,7 +12,7 @@ export const amplifyOverrideRoot = (cwd: string, settings: { testingWithLatestCo
 };
 
 export const amplifyOverrideAuth = (cwd: string): Promise<void> => {
-  const args = ['override', 'auth'];
+  const args = ['override', 'auth', '--debug'];
 
   return spawn(getCLIPath(), args, { cwd, stripColors: true })
     .wait('Do you want to edit override.ts file now?')
@@ -22,7 +22,7 @@ export const amplifyOverrideAuth = (cwd: string): Promise<void> => {
 };
 
 export const amplifyOverrideApi = (cwd: string): Promise<void> => {
-  const args = ['override', 'api'];
+  const args = ['override', 'api', '--debug'];
   const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
   chain.wait('Do you want to edit override.ts file now?').sendNo().sendEof();
   return chain.runAsync();

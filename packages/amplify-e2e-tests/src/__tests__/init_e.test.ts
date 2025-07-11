@@ -50,6 +50,7 @@ describe('amplify init e', () => {
     await expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // override new env
+    console.log('attempting to overrider root');
     await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: false });
 
     // test awscloudformation folder is not excluded in vscode settings.json after override
@@ -71,10 +72,12 @@ describe('amplify init e', () => {
 
     // test with valid file
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
+    console.log('replacing override file');
     replaceOverrideFileWithProjectInfo(srcOverrideFilePath, destOverrideFilePath, 'integtest', projectName);
     // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
     await expect(amplifyPushOverride(projRoot, false, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
     // should succeed now
+    console.log('pushing override');
     await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toContain('mockRole');

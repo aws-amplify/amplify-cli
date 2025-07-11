@@ -25,6 +25,7 @@ env:
 phases:
   build:
     commands:
+      - node --version
       - git config --global core.longpaths true
       - bash ./codebuild_specs/scripts-windows/load-e2e-cache.sh
       - bash ./codebuild_specs/scripts-windows/rename-packaged-cli.sh

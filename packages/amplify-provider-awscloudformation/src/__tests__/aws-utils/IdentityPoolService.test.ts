@@ -9,26 +9,25 @@ let mockCognitoIdentityRoles = {
 
 const iamRoleNameRegex = /[\w+=,.@-]+/;
 
-jest.mock('aws-sdk', () => {
+jest.mock('@aws-sdk/client-cognito-identity', () => {
   return {
-    CognitoIdentity: jest.fn(() => {
+    CognitoIdentityClient: jest.fn(() => {
       return {
         config: {},
-        getIdentityPoolRoles: jest.fn().mockImplementation(() => ({
-          promise: async () => {
-            return {
-              Roles: mockCognitoIdentityRoles,
-            };
-          },
-        })),
+        send: jest.fn().mockImplementation(() => {
+          return {
+            Roles: mockCognitoIdentityRoles,
+          };
+        }),
       };
     }),
+    GetIdentityPoolRolesCommand: jest.fn(() => {}),
   };
 });
 
 jest.mock('../../configuration-manager', () => {
   return {
-    loadConfiguration: jest.fn().mockReturnValue({}) as jest.MockedFunction<typeof loadConfiguration>,
+    loadConfiguration: jest.fn().mockReturnValue({ region: 'us-east-1' }) as jest.MockedFunction<typeof loadConfiguration>,
   };
 });
 
