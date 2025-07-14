@@ -10,7 +10,7 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
-import { Bucket } from 'aws-sdk/clients/s3';
+import { Bucket } from '@aws-sdk/client-s3';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';

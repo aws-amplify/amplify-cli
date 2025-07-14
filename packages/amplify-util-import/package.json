@@ -20,7 +20,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.1464.0"
+    "@aws-sdk/client-dynamodb": "^3.515.0",
+    "@aws-sdk/client-s3": "^3.515.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"

@@ -377,10 +377,11 @@ __metadata:
     "@aws-amplify/amplify-prompts": 2.8.7
     "@aws-amplify/amplify-util-import": 2.8.3
     "@aws-amplify/cli-extensibility-helper": 3.0.39
+    "@aws-sdk/client-dynamodb": ^3.515.0
+    "@aws-sdk/client-s3": ^3.515.0
     amplify-headless-interface: 1.17.8
     amplify-util-headless-input: 1.9.19
     aws-cdk-lib: ~2.189.1
-    aws-sdk: ^2.1464.0
     chalk: ^4.1.1
     cloudform-types: ^4.2.0
     constructs: ^10.0.5
@@ -883,8 +884,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-util-import@workspace:packages/amplify-util-import"
   dependencies:
+    "@aws-sdk/client-dynamodb": ^3.515.0
+    "@aws-sdk/client-s3": ^3.515.0
     "@types/node": ^12.12.6
-    aws-sdk: ^2.1464.0
   languageName: unknown
   linkType: soft
 
@@ -2565,7 +2567,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:^3.624.0":
+"@aws-sdk/client-dynamodb@npm:^3.515.0, @aws-sdk/client-dynamodb@npm:^3.624.0":
   version: 3.844.0
   resolution: "@aws-sdk/client-dynamodb@npm:3.844.0"
   dependencies:
@@ -3517,7 +3519,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.624.0":
+"@aws-sdk/client-s3@npm:^3.515.0, @aws-sdk/client-s3@npm:^3.624.0":
   version: 3.844.0
   resolution: "@aws-sdk/client-s3@npm:3.844.0"
   dependencies:
