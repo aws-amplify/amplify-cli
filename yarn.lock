@@ -888,6 +888,7 @@ __metadata:
     "@aws-sdk/client-dynamodb": ^3.515.0
     "@aws-sdk/client-s3": ^3.515.0
     "@types/node": ^12.12.6
+    aws-sdk: ^2.1464.0
   languageName: unknown
   linkType: soft
 
@@ -3454,7 +3455,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.624.0, @aws-sdk/client-s3@npm:^3.25.0":
+"@aws-sdk/client-s3@npm:3.624.0":
   version: 3.624.0
   resolution: "@aws-sdk/client-s3@npm:3.624.0"
   dependencies:
@@ -3520,7 +3521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.515.0, @aws-sdk/client-s3@npm:^3.624.0":
+"@aws-sdk/client-s3@npm:^3.25.0, @aws-sdk/client-s3@npm:^3.515.0, @aws-sdk/client-s3@npm:^3.624.0":
   version: 3.844.0
   resolution: "@aws-sdk/client-s3@npm:3.844.0"
   dependencies:
@@ -5850,7 +5851,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/types@npm:3.609.0, @aws-sdk/types@npm:^3.1.0, @aws-sdk/types@npm:^3.222.0, @aws-sdk/types@npm:^3.25.0":
+"@aws-sdk/types@npm:3.609.0":
   version: 3.609.0
   resolution: "@aws-sdk/types@npm:3.609.0"
   dependencies:
@@ -5860,7 +5861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/types@npm:3.840.0, @aws-sdk/types@npm:^3.624.0":
+"@aws-sdk/types@npm:3.840.0, @aws-sdk/types@npm:^3.1.0, @aws-sdk/types@npm:^3.222.0, @aws-sdk/types@npm:^3.25.0, @aws-sdk/types@npm:^3.624.0":
   version: 3.840.0
   resolution: "@aws-sdk/types@npm:3.840.0"
   dependencies:
@@ -5904,7 +5905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-arn-parser@npm:3.568.0, @aws-sdk/util-arn-parser@npm:^3.310.0":
+"@aws-sdk/util-arn-parser@npm:3.568.0":
   version: 3.568.0
   resolution: "@aws-sdk/util-arn-parser@npm:3.568.0"
   dependencies:
@@ -5913,7 +5914,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-arn-parser@npm:3.804.0":
+"@aws-sdk/util-arn-parser@npm:3.804.0, @aws-sdk/util-arn-parser@npm:^3.310.0":
   version: 3.804.0
   resolution: "@aws-sdk/util-arn-parser@npm:3.804.0"
   dependencies:

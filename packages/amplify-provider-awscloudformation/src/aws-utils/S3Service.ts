@@ -65,7 +65,9 @@ export class S3Service implements IS3Service {
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
     if (
-      (response.LocationConstraint === undefined || response.LocationConstraint, toString() === '' || response.LocationConstraint === null)
+      response.LocationConstraint === undefined ||
+      response.LocationConstraint.toString() === '' ||
+      response.LocationConstraint === null
     ) {
       return 'us-east-1';
     }
