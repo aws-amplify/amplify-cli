@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext, AmplifyError, JSONUtilities, pathManager, SecretFileMode, spinner } from '@aws-amplify/amplify-cli-core';
 
-import { STSClient, AssumeRoleCommand, AssumeRoleCommandInput, Credentials as STSCredentials } from '@aws-sdk/client-sts';
+import { STSClient, AssumeRoleCommand, AssumeRoleCommandInput } from '@aws-sdk/client-sts';
 import { fromProcess } from '@aws-sdk/credential-providers';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import * as fs from 'fs-extra';

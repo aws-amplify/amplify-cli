@@ -1,5 +1,4 @@
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { IDynamoDBService } from '@aws-amplify/amplify-util-import';
 import {
   DynamoDBClient,
