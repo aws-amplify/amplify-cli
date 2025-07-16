@@ -8,6 +8,7 @@ import {
   IdentityPool,
   IdentityPoolShortDescription,
   ListIdentityPoolsResponse,
+  ListIdentityPoolsInput,
 } from '@aws-sdk/client-cognito-identity';
 import { loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
@@ -35,7 +36,7 @@ export class IdentityPoolService implements IIdentityPoolService {
   public async listIdentityPools(): Promise<IdentityPoolShortDescription[]> {
     if (this.cachedIdentityPoolIds.length === 0) {
       const result = await pagedAWSCall<ListIdentityPoolsResponse, IdentityPoolShortDescription, string>(
-        async (params: any, nextToken: string) =>
+        async (params: ListIdentityPoolsInput, nextToken: string) =>
           await this.cognitoIdentity.send(
             new ListIdentityPoolsCommand({
               ...params,

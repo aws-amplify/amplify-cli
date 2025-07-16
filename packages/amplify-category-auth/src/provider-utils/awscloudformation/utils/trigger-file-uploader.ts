@@ -1,5 +1,5 @@
 import { $TSContext, pathManager, stateManager, AmplifyCategories, spinner, AmplifyFault } from '@aws-amplify/amplify-cli-core';
-import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, PutObjectCommandInput, PutObjectCommandOutput } from '@aws-sdk/client-s3';
 import { createReadStream, readdirSync, existsSync } from 'fs-extra';
 import mime from 'mime-types';
 import * as path from 'path';
@@ -35,7 +35,7 @@ export const uploadFiles = async (context: $TSContext): Promise<void> => {
       return;
     }
     const fileList = readdirSync(assetPath);
-    const uploadFileTasks: (() => Promise<void>)[] = [];
+    const uploadFileTasks: (() => Promise<PutObjectCommandOutput>)[] = [];
     fileList.forEach((file) => {
       uploadFileTasks.push(async () => uploadFile(s3Client, bucketName, path.join(assetPath, file), file));
     });
@@ -53,7 +53,12 @@ export const uploadFiles = async (context: $TSContext): Promise<void> => {
   }
 };
 
-const uploadFile = async (s3Client: S3Client, hostingBucketName: string, filePath: string, file: string): Promise<void> => {
+const uploadFile = async (
+  s3Client: S3Client,
+  hostingBucketName: string,
+  filePath: string,
+  file: string,
+): Promise<PutObjectCommandOutput> => {
   const fileStream = createReadStream(filePath);
   const contentType = mime.lookup(filePath);
   const uploadParams: PutObjectCommandInput = {
@@ -65,5 +70,5 @@ const uploadFile = async (s3Client: S3Client, hostingBucketName: string, filePat
   };
 
   const command = new PutObjectCommand(uploadParams);
-  await s3Client.send(command);
+  return await s3Client.send(command);
 };
