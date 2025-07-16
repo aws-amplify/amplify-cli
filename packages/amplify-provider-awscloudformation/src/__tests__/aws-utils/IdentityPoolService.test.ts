@@ -27,7 +27,7 @@ jest.mock('@aws-sdk/client-cognito-identity', () => {
 
 jest.mock('../../configuration-manager', () => {
   return {
-    loadConfiguration: jest.fn().mockReturnValue({ region: 'us-east-1' }) as jest.MockedFunction<typeof loadConfiguration>,
+    loadConfiguration: jest.fn().mockReturnValue({}) as jest.MockedFunction<typeof loadConfiguration>,
   };
 });
 

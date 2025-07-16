@@ -85,7 +85,6 @@ describe('zero config auth', () => {
     expect(userPool.UserPool).toBeDefined();
 
     // override new env
-    console.log('attempting to override auth');
     await amplifyOverrideAuth(projRoot);
 
     // this is where we will write our override logic to
@@ -107,7 +106,6 @@ describe('zero config auth', () => {
     // should throw error if AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES is set
     await expect(amplifyPushOverride(projRoot, false, { AMPLIFY_CLI_DISABLE_SCRIPTING_FEATURES: 'true' })).rejects.toThrowError();
     // should succeed now
-    console.log('should have successfully pushed overrides');
     await amplifyPushOverride(projRoot);
 
     // check overwritten config

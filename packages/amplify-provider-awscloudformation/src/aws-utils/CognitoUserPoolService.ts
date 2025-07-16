@@ -20,6 +20,7 @@ import {
   ProviderDescription,
   ListUserPoolClientsRequest,
   ListIdentityProvidersRequest,
+  ListUserPoolsRequest,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
 import { loadConfiguration } from '../configuration-manager';
@@ -49,7 +50,7 @@ export class CognitoUserPoolService implements ICognitoUserPoolService {
   public async listUserPools(): Promise<UserPoolDescriptionType[]> {
     if (this.cachedUserPoolIds.length === 0) {
       const result = await pagedAWSCall<ListUserPoolsResponse, UserPoolDescriptionType, string>(
-        async (params: any, nextToken: string) => {
+        async (params: ListUserPoolsRequest, nextToken: string) => {
           logger('listUserPool.cognito.listUserPools', [{ params, NextToken: nextToken }])();
           return await this.cognito.send(
             new ListUserPoolsCommand({
