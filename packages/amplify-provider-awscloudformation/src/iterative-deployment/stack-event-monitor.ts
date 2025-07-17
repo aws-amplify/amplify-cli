@@ -1,4 +1,4 @@
-import { StackEvent } from 'aws-sdk/clients/cloudformation';
+import { StackEvent } from '@aws-sdk/client-cloudformation';
 import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { fileLogger, Logger } from '../utils/aws-logger';
 import { CloudFormationClient, DescribeStackEventsCommand } from '@aws-sdk/client-cloudformation';
