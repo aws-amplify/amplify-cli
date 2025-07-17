@@ -1,17 +1,22 @@
 import { $TSAny, $TSContext, AmplifyError } from '@aws-amplify/amplify-cli-core';
-import { Lambda as AwsSdkLambda } from 'aws-sdk';
-import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
+import {
+  LambdaClient,
+  ListLayerVersionsCommand,
+  ListLayerVersionsCommandInput,
+  ListLayerVersionsCommandOutput,
+  DeleteLayerVersionCommand,
+  LayerVersionsListItem,
+} from '@aws-sdk/client-lambda';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
 import { proxyAgent } from './aws-globals';
 
-const aws = require('./aws');
-
 const logger = fileLogger('aws-lambda');
 
 export class Lambda {
-  private lambda: AwsSdkLambda;
+  private lambda: LambdaClient;
 
   constructor(private readonly context: $TSContext, options = {}) {
     return (async () => {
@@ -21,24 +26,25 @@ export class Lambda {
       } catch (e) {
         // ignore missing config
       }
-      this.lambda = new aws.Lambda({
+      this.lambda = new LambdaClient({
         ...cred,
         ...options,
-        httpOptions: {
-          agent: proxyAgent(),
-        },
+        requestHandler: new NodeHttpHandler({
+          httpAgent: proxyAgent(),
+          httpsAgent: proxyAgent(),
+        }),
       });
       return this;
     })() as $TSAny;
   }
 
   async listLayerVersions(layerNameOrArn: string) {
-    const startingParams: ListLayerVersionsRequest = { LayerName: layerNameOrArn, MaxItems: 20 };
-    const result = await pagedAWSCall<ListLayerVersionsResponse, LayerVersionsListItem, string>(
-      async (params: ListLayerVersionsRequest, nextMarker?: string) => {
+    const startingParams: ListLayerVersionsCommandInput = { LayerName: layerNameOrArn, MaxItems: 20 };
+    const result = await pagedAWSCall<ListLayerVersionsCommandOutput, LayerVersionsListItem, string>(
+      async (params: ListLayerVersionsCommandInput, nextMarker?: string) => {
         params = nextMarker ? { ...params, Marker: nextMarker } : params;
         logger('Lambda.listLayerVersions', [params])();
-        return await this.lambda.listLayerVersions(params).promise();
+        return await this.lambda.send(new ListLayerVersionsCommand(params));
       },
       startingParams,
       (response) => response?.LayerVersions,
@@ -48,15 +54,18 @@ export class Lambda {
   }
 
   async deleteLayerVersions(layerNameOrArn: string, versions: number[]) {
-    const params = { LayerName: layerNameOrArn, VersionNumber: undefined };
     const deletionPromises = [];
     for (const version of versions) {
-      params.VersionNumber = version;
+      const params = {
+        LayerName: layerNameOrArn,
+        VersionNumber: version,
+      };
+
       deletionPromises.push(async () => {
         try {
-          await this.lambda.deleteLayerVersion(params).promise();
+          await this.lambda.send(new DeleteLayerVersionCommand(params));
         } catch (err) {
-          if (err.code !== 'ParameterNotFound') {
+          if (err.name !== 'ParameterNotFound') {
             throw new AmplifyError(
               'LambdaLayerDeleteError',
               {
@@ -70,7 +79,7 @@ export class Lambda {
     }
 
     try {
-      await Promise.all(deletionPromises);
+      await Promise.all(deletionPromises.map((fn) => fn()));
     } catch (e) {
       this.context.print.error(
         'Failed to delete some or all layer versions. Check your internet connection and try again. ' +

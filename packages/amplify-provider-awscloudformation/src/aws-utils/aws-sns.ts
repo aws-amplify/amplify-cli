@@ -1,6 +1,7 @@
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
-import aws from './aws.js';
+import { SNSClient, GetSMSSandboxAccountStatusCommand } from '@aws-sdk/client-sns';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { proxyAgent } from './aws-globals';
 
 // Currently SNS is used only by Cognito for sending SMS and  has the following SNS mapping
@@ -15,7 +16,7 @@ const COGNITO_SMS_REGION_MAPPING = {
 };
 export class SNS {
   private static instance: SNS;
-  private readonly sns: AWS.SNS;
+  private readonly sns: SNSClient;
 
   static async getInstance(context: $TSContext, options = {}): Promise<SNS> {
     if (!SNS.instance) {
@@ -37,17 +38,18 @@ export class SNS {
   }
 
   private constructor(context: $TSContext, cred: $TSAny, options = {}) {
-    this.sns = new aws.SNS({
+    this.sns = new SNSClient({
       ...cred,
       ...options,
-      httpOptions: {
-        agent: proxyAgent(),
-      },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     });
   }
 
   public async isInSandboxMode(): Promise<boolean> {
-    const result = await this.sns.getSMSSandboxAccountStatus().promise();
+    const result = await this.sns.send(new GetSMSSandboxAccountStatusCommand({}));
     return result.IsInSandbox;
   }
 }

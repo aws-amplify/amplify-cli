@@ -13,7 +13,6 @@ import chalk from 'chalk';
 import { prompt } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { STS } from 'aws-sdk';
 import awsRegions from './aws-regions';
 import constants from './constants';
 import * as setupNewUser from './setup-new-user';
@@ -32,6 +31,7 @@ import {
   retryAuthConfig,
 } from './question-flows/configuration-questions';
 import { proxyAgent } from './aws-utils/aws-globals';
+import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 
 interface AwsConfig extends AwsSecrets {
   useProfile?: boolean;
@@ -469,7 +469,7 @@ async function validateConfig(context: $TSContext) {
         awsConfigInfo.config.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
         awsConfigInfo.config.region &&
         awsRegions.regions.includes(awsConfigInfo.config.region);
-      const sts = new STS({
+      const sts = new STSClient({
         credentials: {
           accessKeyId: awsConfigInfo.config.accessKeyId,
           secretAccessKey: awsConfigInfo.config.secretAccessKey,
@@ -477,7 +477,7 @@ async function validateConfig(context: $TSContext) {
         },
       });
       try {
-        await sts.getCallerIdentity({}).promise();
+        await sts.send(new GetCallerIdentityCommand({}));
       } catch (err) {
         awsConfigInfo.configValidated = false;
       }

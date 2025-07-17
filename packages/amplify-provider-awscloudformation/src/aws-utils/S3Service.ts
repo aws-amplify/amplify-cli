@@ -75,8 +75,8 @@ export class S3Service implements IS3Service {
   }
 }
 
-const handleS3Error = (error: { code: string; message: string }): boolean => {
-  if (error.code === 'NotFound') {
+const handleS3Error = (error: { name: string; message: string }): boolean => {
+  if (error.name === 'NotFound') {
     return false;
   }
   throw new AmplifyFault(

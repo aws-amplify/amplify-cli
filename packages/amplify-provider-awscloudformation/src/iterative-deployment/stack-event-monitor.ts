@@ -1,7 +1,7 @@
 import { StackEvent } from 'aws-sdk/clients/cloudformation';
-import * as aws from 'aws-sdk';
 import { AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { fileLogger, Logger } from '../utils/aws-logger';
+import { CloudFormationClient, DescribeStackEventsCommand } from '@aws-sdk/client-cloudformation';
 
 export interface StackEventMonitorOptions {
   pollDelay: number;
@@ -31,7 +31,7 @@ export class StackEventMonitor {
   private logger: Logger;
 
   constructor(
-    private cfn: aws.CloudFormation,
+    private cfn: CloudFormationClient,
     private stackName: string,
     private printerFn: () => void,
     private addEventActivity: (event) => void,
@@ -104,12 +104,12 @@ export class StackEventMonitor {
       let nextToken: string | undefined;
       let finished = false;
       while (!finished) {
-        const response = await this.cfn
-          .describeStackEvents({
+        const response = await this.cfn.send(
+          new DescribeStackEventsCommand({
             StackName: stackName,
             NextToken: nextToken,
-          })
-          .promise();
+          }),
+        );
         const eventPage = response?.StackEvents ?? [];
 
         for (const event of eventPage) {
@@ -143,10 +143,10 @@ export class StackEventMonitor {
       }
     } catch (e) {
       this.logger('readNewEvents', [])(e);
-      if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
+      if (e.name === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }
-      if (e.code !== 'Throttling') {
+      if (e.name !== 'Throttling') {
         throw new AmplifyFault(
           'NotImplementedFault',
           {

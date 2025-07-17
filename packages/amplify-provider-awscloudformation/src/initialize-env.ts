@@ -28,7 +28,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     try {
       currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
     } catch (err) {
-      if (err?.code === 'NoSuchBucket') {
+      if (err?.name === 'NoSuchBucket') {
         throw new AmplifyError('EnvironmentNotInitializedError', {
           message: `Could not find a deployment bucket for the specified backend environment. This environment may have been deleted.`,
           resolution: 'Make sure the environment has been initialized with "amplify init" or "amplify env add".',

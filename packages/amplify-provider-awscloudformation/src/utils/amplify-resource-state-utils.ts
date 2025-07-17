@@ -1,7 +1,6 @@
 import { Template } from 'cloudform-types';
 import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
-import { CloudFormation } from 'aws-sdk';
-import { Capabilities } from 'aws-sdk/clients/cloudformation';
+import { CloudFormationClient, DescribeStacksCommand, DescribeStackResourcesCommand, Capability } from '@aws-sdk/client-cloudformation';
 import _ from 'lodash';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 
@@ -14,16 +13,15 @@ export interface GSIRecord {
  */
 export interface DeploymentRecord {
   parameters?: Record<string, string>;
-  capabilities?: Capabilities;
+  capabilities?: Capability[];
 }
 
-export const getPreviousDeploymentRecord = async (cfnClient: CloudFormation, stackId: string): Promise<DeploymentRecord> => {
+export const getPreviousDeploymentRecord = async (cfnClient: CloudFormationClient, stackId: string): Promise<DeploymentRecord> => {
   const depRecord: DeploymentRecord = {};
-  const apiStackInfo = await cfnClient
-    .describeStacks({
-      StackName: stackId,
-    })
-    .promise();
+  const describeStacksCommand = new DescribeStacksCommand({
+    StackName: stackId,
+  });
+  const apiStackInfo = await cfnClient.send(describeStacksCommand);
   depRecord.parameters = apiStackInfo.Stacks[0].Parameters.reduce((acc, param) => {
     acc[param.ParameterKey] = param.ParameterValue;
     return acc;
@@ -32,20 +30,18 @@ export const getPreviousDeploymentRecord = async (cfnClient: CloudFormation, sta
   return depRecord;
 };
 
-export const getTableNames = async (cfnClient: CloudFormation, tables: string[], StackId: string): Promise<Map<string, string>> => {
+export const getTableNames = async (cfnClient: CloudFormationClient, tables: string[], StackId: string): Promise<Map<string, string>> => {
   const tableNameMap: Map<string, string> = new Map();
-  const apiResources = await cfnClient
-    .describeStackResources({
-      StackName: StackId,
-    })
-    .promise();
+  const describeStackResourcesCommand = new DescribeStackResourcesCommand({
+    StackName: StackId,
+  });
+  const apiResources = await cfnClient.send(describeStackResourcesCommand);
   for (const resource of apiResources.StackResources) {
     if (tables.includes(resource.LogicalResourceId)) {
-      const tableStack = await cfnClient
-        .describeStacks({
-          StackName: resource.PhysicalResourceId,
-        })
-        .promise();
+      const describeStacksCommand = new DescribeStacksCommand({
+        StackName: resource.PhysicalResourceId,
+      });
+      const tableStack = await cfnClient.send(describeStacksCommand);
       const tableName = tableStack.Stacks[0].Outputs.reduce((acc, out) => {
         if (out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`) {
           acc.push(out.OutputValue);
