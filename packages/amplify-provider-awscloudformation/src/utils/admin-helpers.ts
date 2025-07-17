@@ -2,7 +2,6 @@ import { stateManager, $TSContext, AmplifyError, AmplifyFault } from '@aws-ampli
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { CognitoIdentityClient, GetCredentialsForIdentityCommand } from '@aws-sdk/client-cognito-identity';
 import { CognitoIdentityProviderClient, InitiateAuthCommand } from '@aws-sdk/client-cognito-identity-provider';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 import { ProxyAgent } from 'proxy-agent';

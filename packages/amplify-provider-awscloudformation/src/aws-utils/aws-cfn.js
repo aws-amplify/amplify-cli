@@ -7,7 +7,6 @@ const BottleNeck = require('bottleneck');
 const chalk = require('chalk');
 const columnify = require('columnify');
 
-// AWS SDK v3 imports
 const {
   CloudFormationClient,
   CreateStackCommand,
@@ -434,7 +433,7 @@ class CloudFormation {
           }
           this.progressBar?.stop();
 
-          self.context.usageData.calculatePushNormalizationFactor(this.stackEvents, stackId);
+          context.usageData.calculatePushNormalizationFactor(this.stackEvents, stackId);
           await self.updateamplifyMetaFileWithStackOutputs(stackName);
         } catch (updateErr) {
           if (self.pollForEvents) {
