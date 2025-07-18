@@ -848,7 +848,6 @@ __metadata:
     amplify-codegen: ^4.10.3
     archiver: ^7.0.1
     aws-cdk-lib: ~2.189.1
-    aws-sdk: ^2.1464.0
     aws-sdk-client-mock: ^4.1.0
     aws-sdk-client-mock-jest: ^4.1.0
     bottleneck: 2.19.5
@@ -901,7 +900,6 @@ __metadata:
     "@aws-sdk/client-dynamodb": ^3.515.0
     "@aws-sdk/client-s3": ^3.515.0
     "@types/node": ^12.12.6
-    aws-sdk: ^2.1464.0
   languageName: unknown
   linkType: soft
 
