@@ -4,13 +4,12 @@
 
 ```ts
 
-import { Buckets } from 'aws-sdk/clients/s3';
+import { Bucket } from '@aws-sdk/client-s3';
 import { GetUserPoolMfaConfigResponse } from '@aws-sdk/client-cognito-identity-provider';
 import { IdentityPool } from '@aws-sdk/client-cognito-identity';
 import { IdentityPoolShortDescription } from '@aws-sdk/client-cognito-identity';
 import { IdentityProviderType } from '@aws-sdk/client-cognito-identity-provider';
-import { TableDescription } from 'aws-sdk/clients/dynamodb';
-import { TableName } from 'aws-sdk/clients/dynamodb';
+import { TableDescription } from '@aws-sdk/client-dynamodb';
 import { UserPoolClientType } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolDescriptionType } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolType } from '@aws-sdk/client-cognito-identity-provider';
@@ -34,7 +33,7 @@ export interface IDynamoDBService {
     // (undocumented)
     getTableDetails(tableName: string): Promise<TableDescription>;
     // (undocumented)
-    listTables(): Promise<TableName[]>;
+    listTables(): Promise<string[]>;
     // (undocumented)
     tableExists(tableName: string): Promise<boolean>;
 }
@@ -61,7 +60,7 @@ export interface IS3Service {
     // (undocumented)
     getBucketLocation(bucketName: string): Promise<string>;
     // (undocumented)
-    listBuckets(): Promise<Buckets>;
+    listBuckets(): Promise<Bucket[]>;
 }
 
 // (No @packageDocumentation comment for this package)

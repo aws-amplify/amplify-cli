@@ -68,6 +68,7 @@
     "amplify-codegen": "^4.10.3",
     "archiver": "^7.0.1",
     "aws-cdk-lib": "~2.189.1",
+    "aws-sdk": "^2.1464.0",
     "bottleneck": "2.19.5",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
