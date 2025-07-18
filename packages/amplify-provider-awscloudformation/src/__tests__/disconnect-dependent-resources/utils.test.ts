@@ -8,10 +8,10 @@ import {
 import { pathManager, stateManager, readCFNTemplate, writeCFNTemplate, CFNTemplateFormat } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
 import { S3 } from '../../aws-utils/aws-s3';
-import { CloudFormation } from 'aws-sdk';
 import { getPreviousDeploymentRecord } from '../../utils/amplify-resource-state-utils';
 import Template from 'cloudform-types/types/template';
 import { DeploymentOp, DeploymentStep } from '../../iterative-deployment';
+import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 
 jest.mock('fs-extra');
 jest.mock('@aws-amplify/amplify-cli-core');
@@ -147,14 +147,12 @@ describe('uploadTempFuncDeploymentFiles', () => {
 describe('generateIterativeFuncDeploymentSteps', () => {
   it('generates steps with correct pointers', async () => {
     const cfnClient_stub = {
-      describeStackResources: () => ({
-        promise: async () => ({
-          StackResources: [
-            {
-              PhysicalResourceId: 'testStackId',
-            },
-          ],
-        }),
+      send: () => ({
+        StackResources: [
+          {
+            PhysicalResourceId: 'testStackId',
+          },
+        ],
       }),
     };
     getPreviousDeploymentRecord_mock
@@ -173,7 +171,7 @@ describe('generateIterativeFuncDeploymentSteps', () => {
     stateManager_mock.getResourceParametersJson.mockReturnValue({});
     stateManager_mock.getTeamProviderInfo.mockReturnValue({});
     stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: 'testenv' });
-    const result = await generateIterativeFuncDeploymentSteps(cfnClient_stub as unknown as CloudFormation, 'testRootStackId', [
+    const result = await generateIterativeFuncDeploymentSteps(cfnClient_stub as unknown as CloudFormationClient, 'testRootStackId', [
       'func1',
       'func2',
     ]);
