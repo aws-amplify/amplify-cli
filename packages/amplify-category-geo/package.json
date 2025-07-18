@@ -28,18 +28,15 @@
   "dependencies": {
     "@aws-amplify/amplify-cli-core": "4.4.2",
     "@aws-amplify/amplify-prompts": "2.8.7",
+    "@aws-sdk/client-location": "^3.624.0",
     "ajv": "^6.12.6",
     "amplify-headless-interface": "1.17.8",
     "amplify-util-headless-input": "1.9.19",
     "aws-cdk-lib": "~2.189.1",
-    "aws-sdk": "^2.1464.0",
     "constructs": "^10.0.5",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
-  },
-  "devDependencies": {
-    "@aws-sdk/client-location": "3.624.0"
   },
   "jest": {
     "collectCoverage": true,
