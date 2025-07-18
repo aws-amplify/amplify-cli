@@ -140,7 +140,7 @@ const isPolicyAccessible = async (context: $TSContext, policyArn: string) => {
     await iamClient.client.send(new GetPolicyCommand({ PolicyArn: policyArn }));
   } catch (err) {
     // NoSuchEntity error
-    if (err?.statusCode === 404) {
+    if (err?.name.includes('NoSuchEntity')) {
       return false;
     }
     // if it's some other error (such as client credentials don't have getPolicy permissions, or network error)
