@@ -30,7 +30,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "coveralls": "~3.0.9",
+    "coveralls": "~3.1.1",
     "growl": "^1.10.5",
     "istanbul": "~0.4.5",
     "mocha": "^11.0.1",

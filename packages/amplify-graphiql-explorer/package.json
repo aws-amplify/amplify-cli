@@ -67,7 +67,7 @@
     "util": "^0.12.4",
     "web-vitals": "^0.2.4",
     "webpack": "^5.64.4",
-    "webpack-dev-server": "^5.2.1",
+    "webpack-dev-server": "^5.2.2",
     "webpack-manifest-plugin": "^4.0.2",
     "workbox-webpack-plugin": "^7.3.0"
   },
