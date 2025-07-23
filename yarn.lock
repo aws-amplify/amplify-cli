@@ -225,7 +225,7 @@ __metadata:
     amplify-headless-interface: 1.17.8
     amplify-util-headless-input: 1.9.19
     aws-cdk-lib: ~2.189.1
-    axios: ^1.6.7
+    axios: ^1.11.0
     chalk: ^4.1.1
     change-case: ^4.1.1
     cloudform-types: ^4.2.0
@@ -719,7 +719,7 @@ __metadata:
     util: ^0.12.4
     web-vitals: ^0.2.4
     webpack: ^5.64.4
-    webpack-dev-server: ^5.2.1
+    webpack-dev-server: ^5.2.2
     webpack-manifest-plugin: ^4.0.2
     workbox-webpack-plugin: ^7.3.0
   languageName: unknown
@@ -919,7 +919,7 @@ __metadata:
     aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
     aws-sdk-mock: ^6.2.0
-    axios: ^1.6.7
+    axios: ^1.11.0
     chokidar: ^3.5.3
     constructs: ^10.0.5
     detect-port: ^1.3.0
@@ -1126,7 +1126,7 @@ __metadata:
     "@types/glob": ^7.1.1
     "@types/gunzip-maybe": ^1.4.0
     "@types/node": ^12.12.6
-    "@types/node-fetch": ^2.6.1
+    "@types/node-fetch": ^2.6.12
     "@types/progress": ^2.0.3
     "@types/promise-sequential": ^1.1.0
     "@types/tar-fs": ^2.0.0
@@ -1184,7 +1184,7 @@ __metadata:
   dependencies:
     "@aws-amplify/cli-internal": 14.0.0
     "@types/tar": ^6.1.1
-    axios: ^1.6.7
+    axios: ^1.11.0
     rimraf: ^6.0.1
     tar-stream: ^2.2.0
   bin:
@@ -11742,13 +11742,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:2.6.4, @types/node-fetch@npm:^2.6.1":
+"@types/node-fetch@npm:2.6.4":
   version: 2.6.4
   resolution: "@types/node-fetch@npm:2.6.4"
   dependencies:
     "@types/node": "*"
     form-data: ^3.0.0
   checksum: e43e4670ed8b7693dbf660ac1450b14fcfcdd8efca1eb0f501b6ad95af2d1fa06f8541db03e9511e82a5fee510a238fe0913330c9a58f8ac6892b985f6dd993e
+  languageName: node
+  linkType: hard
+
+"@types/node-fetch@npm:^2.6.12":
+  version: 2.6.12
+  resolution: "@types/node-fetch@npm:2.6.12"
+  dependencies:
+    "@types/node": "*"
+    form-data: ^4.0.0
+  checksum: 7693acad5499b7df2d1727d46cff092a63896dc04645f36b973dd6dd754a59a7faba76fcb777bdaa35d80625c6a9dd7257cca9c401a4bab03b04480cda7fd1af
   languageName: node
   linkType: hard
 
@@ -13072,7 +13082,7 @@ __metadata:
     aws-appsync: ^4.1.1
     aws-cdk-lib: ~2.189.1
     aws-sdk: ^2.1464.0
-    axios: ^1.6.7
+    axios: ^1.11.0
     constructs: ^10.0.5
     dotenv: ^8.2.0
     esm: ^3.2.25
@@ -13231,7 +13241,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "amplify-velocity-template@workspace:packages/amplify-velocity-template"
   dependencies:
-    coveralls: ~3.0.9
+    coveralls: ~3.1.1
     growl: ^1.10.5
     istanbul: ~0.4.5
     lodash: ^4.17.21
@@ -14010,14 +14020,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.5, axios@npm:^1.6.7, axios@npm:^1.7.4":
-  version: 1.8.2
-  resolution: "axios@npm:1.8.2"
+"axios@npm:^1.11.0, axios@npm:^1.6.5, axios@npm:^1.7.4":
+  version: 1.11.0
+  resolution: "axios@npm:1.11.0"
   dependencies:
     follow-redirects: ^1.15.6
-    form-data: ^4.0.0
+    form-data: ^4.0.4
     proxy-from-env: ^1.1.0
-  checksum: d8c2969e4642dc6d39555ac58effe06c051ba7aac2bd40cad7a9011c019fb2f16ee011c5a6906cb25b8a4f87258c359314eb981f852e60ad445ecaeb793c7aa2
+  checksum: 5de273d33d43058610e4d252f0963cc4f10714da0bfe872e8ef2cbc23c2c999acc300fd357b6bce0fc84a2ca9bd45740fa6bb28199ce2c1266c8b1a393f2b36e
   languageName: node
   linkType: hard
 
@@ -16189,9 +16199,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"coveralls@npm:~3.0.9":
-  version: 3.0.14
-  resolution: "coveralls@npm:3.0.14"
+"coveralls@npm:~3.1.1":
+  version: 3.1.1
+  resolution: "coveralls@npm:3.1.1"
   dependencies:
     js-yaml: ^3.13.1
     lcov-parse: ^1.0.0
@@ -16199,8 +16209,8 @@ __metadata:
     minimist: ^1.2.5
     request: ^2.88.2
   bin:
-    coveralls: ./bin/coveralls.js
-  checksum: 0be7bfdd449055d8c21c12be30201d4feabf517e9fb4cca96a56b037fa16ac4c3000805440e3d0af5487e396bf66a468e6ab6e4b66677559ffc2cb39e55a2dfc
+    coveralls: bin/coveralls.js
+  checksum: 9ada8daa6a93064f966cf070b1a6c0bb112b00502c67ce0b3047464b83a026bb60405b23abcd9888521458b28f111052cb353af6878a098cd748954df75faa6d
   languageName: node
   linkType: hard
 
@@ -17762,14 +17772,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-set-tostringtag@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "es-set-tostringtag@npm:2.0.3"
+"es-set-tostringtag@npm:^2.0.3, es-set-tostringtag@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "es-set-tostringtag@npm:2.1.0"
   dependencies:
-    get-intrinsic: ^1.2.4
+    es-errors: ^1.3.0
+    get-intrinsic: ^1.2.6
     has-tostringtag: ^1.0.2
-    hasown: ^2.0.1
-  checksum: f22aff1585eb33569c326323f0b0d175844a1f11618b86e193b386f8be0ea9474cfbe46df39c45d959f7aa8f6c06985dc51dd6bce5401645ec5a74c4ceaa836a
+    hasown: ^2.0.2
+  checksum: ef2ca9ce49afe3931cb32e35da4dcb6d86ab02592cfc2ce3e49ced199d9d0bb5085fc7e73e06312213765f5efa47cc1df553a6a5154584b21448e9fb8355b1af
   languageName: node
   linkType: hard
 
@@ -19018,14 +19029,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "form-data@npm:4.0.0"
+"form-data@npm:^4.0.0, form-data@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "form-data@npm:4.0.4"
   dependencies:
     asynckit: ^0.4.0
     combined-stream: ^1.0.8
+    es-set-tostringtag: ^2.1.0
+    hasown: ^2.0.2
     mime-types: ^2.1.12
-  checksum: cb6f3ac49180be03ff07ba3ff125f9eba2ff0b277fb33c7fc47569fc5e616882c5b1c69b9904c4c4187e97dd0419dd03b134174756f296dec62041e6527e2c6e
+  checksum: 373525a9a034b9d57073e55eab79e501a714ffac02e7a9b01be1c820780652b16e4101819785e1e18f8d98f0aee866cc654d660a435c378e16a72f2e7cac9695
   languageName: node
   linkType: hard
 
@@ -19298,7 +19311,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-intrinsic@npm:^1.1.1, get-intrinsic@npm:^1.2.1, get-intrinsic@npm:^1.2.3, get-intrinsic@npm:^1.2.4, get-intrinsic@npm:^1.3.0":
+"get-intrinsic@npm:^1.1.1, get-intrinsic@npm:^1.2.1, get-intrinsic@npm:^1.2.3, get-intrinsic@npm:^1.2.4, get-intrinsic@npm:^1.2.6, get-intrinsic@npm:^1.3.0":
   version: 1.3.0
   resolution: "get-intrinsic@npm:1.3.0"
   dependencies:
@@ -20286,7 +20299,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hasown@npm:^2.0.0, hasown@npm:^2.0.1, hasown@npm:^2.0.2":
+"hasown@npm:^2.0.0, hasown@npm:^2.0.2":
   version: 2.0.2
   resolution: "hasown@npm:2.0.2"
   dependencies:
@@ -20532,7 +20545,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-middleware@npm:^2.0.7":
+"http-proxy-middleware@npm:^2.0.9":
   version: 2.0.9
   resolution: "http-proxy-middleware@npm:2.0.9"
   dependencies:
@@ -31532,9 +31545,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "webpack-dev-server@npm:5.2.1"
+"webpack-dev-server@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "webpack-dev-server@npm:5.2.2"
   dependencies:
     "@types/bonjour": ^3.5.13
     "@types/connect-history-api-fallback": ^1.5.4
@@ -31552,7 +31565,7 @@ __metadata:
     connect-history-api-fallback: ^2.0.0
     express: ^4.21.2
     graceful-fs: ^4.2.6
-    http-proxy-middleware: ^2.0.7
+    http-proxy-middleware: ^2.0.9
     ipaddr.js: ^2.1.0
     launch-editor: ^2.6.1
     open: ^10.0.3
@@ -31573,7 +31586,7 @@ __metadata:
       optional: true
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
-  checksum: 22bcf2bcc7c72cd2065883ed4368fbcdf20078bc746b07689d10a0546ee99ea00bc50f0474112278ffd8598a5bc237df2bf7bb7f6dcda940a16b1eb91137efea
+  checksum: 58d7ddb054cdbba22ddfa3d6644194abf6197c14530e1e64ccd7f0b670787245eea966ee72e95abd551c54313627bde0d227a0d2a1e2557102b1a3504ac0b7f1
   languageName: node
   linkType: hard
 

@@ -40,7 +40,7 @@
     "amplify-headless-interface": "1.17.8",
     "amplify-util-headless-input": "1.9.19",
     "aws-cdk-lib": "~2.189.1",
-    "axios": "^1.6.7",
+    "axios": "^1.11.0",
     "chalk": "^4.1.1",
     "change-case": "^4.1.1",
     "constructs": "^10.0.5",
