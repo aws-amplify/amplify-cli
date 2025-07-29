@@ -109,11 +109,19 @@ export enum CFN_SQS_TYPE {
   Queue = 'AWS::SQS::Queue',
 }
 
+export enum CFN_KINESIS_TYPE {
+  Queue = 'AWS::SQS::Queue',
+}
+
 export enum CFN_LAMBDA_TYPE {
   Function = 'AWS::Lambda::Function',
 }
 
-export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE | CFN_SQS_TYPE | CFN_LAMBDA_TYPE;
+export enum CFN_KINESIS_TYPE {
+  Stream = 'AWS::Kinesis::Stream',
+}
+
+export type CFN_RESOURCE_TYPES = CFN_AUTH_TYPE | CFN_S3_TYPE | CFN_IAM_TYPE | CFN_SQS_TYPE | CFN_LAMBDA_TYPE | CFN_KINESIS_TYPE;
 
 export type AWS_RESOURCE_ATTRIBUTES = 'Arn';
 

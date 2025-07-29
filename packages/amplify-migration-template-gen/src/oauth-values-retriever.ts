@@ -44,7 +44,8 @@ const retrieveOAuthValues = async ({
   assert(value);
   const parsedValue = JSON.parse(value);
   if (!Array.isArray(parsedValue) || parsedValue.length === 0) {
-    throw new Error(INVALID_OAUTH_GEN1_PROVIDER_METADATA_ERROR);
+    // TBD
+    // throw new Error(INVALID_OAUTH_GEN1_PROVIDER_METADATA_ERROR);
   }
 
   const oAuthClientValues: OAuthClient[] = [];

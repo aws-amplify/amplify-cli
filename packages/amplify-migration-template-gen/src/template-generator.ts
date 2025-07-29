@@ -392,8 +392,8 @@ class TemplateGenerator {
         for (const resourceMapping of customResourceMap) {
           const sourceLogicalId = resourceMapping.Source.LogicalResourceId;
           const destinationLogicalId = resourceMapping.Destination.LogicalResourceId;
-
-          if (sourceLogicalId && destinationLogicalId) {
+          // category is sourceLogicalId as set in generate method
+          if (sourceLogicalId && destinationLogicalId && category === sourceLogicalId) {
             sourceToDestinationMap.set(sourceLogicalId, destinationLogicalId);
           }
         }
