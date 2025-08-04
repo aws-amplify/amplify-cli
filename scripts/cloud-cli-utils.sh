@@ -36,7 +36,8 @@ function triggerProjectBatch {
       npm_variable_override="name=NPM_TAG,value=$npm_tag,type=PLAINTEXT"
     fi
     RESULT=$(aws codebuild start-build-batch --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
-     --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT $npm_variable_override \
-     --query 'buildBatch.id' --output text)
+     --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT \
+      name=WINDOWS_IMAGE_2019,value=671107461633.dkr.ecr.us-east-1.amazonaws.com/amplify-cli-codebuild-testing-stack-prod-amplifyclie2eecrc5fd2bba-ke8oxaimjhf2:windows2019-3.0.0-1,type=PLAINTEXT \ 
+      $npm_variable_override --query 'buildBatch.id' --output text)
     echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=us-east-1"
 }
