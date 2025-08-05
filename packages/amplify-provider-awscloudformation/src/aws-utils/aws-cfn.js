@@ -110,14 +110,14 @@ class CloudFormation {
         return reject(createErr);
       }
       try {
-        const waitResult = await waitUntilStackCreateComplete({ client: cfnModel, maxWaitTime: 300 }, cfnStackCheckParams);
+        await waitUntilStackCreateComplete({ client: cfnModel, maxWaitTime: 300 }, cfnStackCheckParams);
 
         if (self.pollForEvents) {
           clearTimeout(self.pollForEvents);
         }
 
         this.progressBar?.stop();
-        resolve(waitResult.state);
+        resolve(cfnModel.send(new DescribeStacksCommand(cfnStackCheckParams)));
       } catch (completeErr) {
         if (self.pollForEvents) {
           clearTimeout(self.pollForEvents);

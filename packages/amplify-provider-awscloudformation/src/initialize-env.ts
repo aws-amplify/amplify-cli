@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import { globSync } from 'glob';
 import _ from 'lodash';
 import path from 'path';
+import { Readable } from 'stream';
 import Cloudformation from './aws-utils/aws-cfn';
 import { S3 } from './aws-utils/aws-s3';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
@@ -12,6 +13,14 @@ import { downloadZip, extractZip } from './zip-util';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 
 const logger = fileLogger('initialize-env');
+
+const streamToString = async (stream: Readable) => {
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks).toString('utf-8');
+};
 
 /**
  * initialize env for selected provider
@@ -95,13 +104,12 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     //
 
     let hasMigratedResources = false;
-    const s3AmplifyMeta = JSONUtilities.parse(
-      (
-        await s3.getFile({
-          Key: PathConstants.AmplifyMetaFileName,
-        })
-      ).toString(),
-    );
+    // convert output of getFile from stream to string for parsing
+    const s3FileStream = await s3.getFile({
+      Key: PathConstants.AmplifyMetaFileName,
+    });
+    const s3FileString = await streamToString(s3FileStream as Readable);
+    const s3AmplifyMeta = JSONUtilities.parse(s3FileString);
 
     Object.keys(s3AmplifyMeta)
       .filter((k) => k !== 'providers')

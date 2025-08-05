@@ -1145,6 +1145,7 @@ __metadata:
     "@aws-amplify/amplify-util-mock": 5.10.16
     "@aws-amplify/amplify-util-uibuilder": 1.14.20
     "@aws-cdk/cloudformation-diff": ~2.68.0
+    "@aws-sdk/client-amplify": ^3.624.0
     "@types/archiver": ^5.3.1
     "@types/columnify": ^1.5.1
     "@types/folder-hash": ^4.0.1
