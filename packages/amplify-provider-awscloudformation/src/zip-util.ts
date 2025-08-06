@@ -7,16 +7,12 @@ import { fileLogger } from './utils/aws-logger';
 
 const logger = fileLogger('zip-util');
 
-/**
- * Converts a ReadableStream to Buffer
- */
 const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    stream.on('data', (chunk: Buffer) => chunks.push(chunk));
-    stream.on('error', reject);
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
-  });
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
 };
 
 /**
