@@ -40,6 +40,7 @@ export function headlessPull(
     JSON.stringify(providersParam),
     '--no-override',
     '--yes',
+    '--debug',
   ];
   if (categoryConfig) pullCommand.push(...['--categories', JSON.stringify(categoryConfig)]);
   if (frontendConfig) pullCommand.push('--frontend', JSON.stringify(frontendConfig));
@@ -63,6 +64,7 @@ export function authConfigPull(
   Object.keys(params).forEach((key) => {
     if (params[key]) pullCommand.push(...[`--${key}`, JSON.stringify(params[key])]);
   });
+  pullCommand.push('--debug');
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     spawn(util.getCLIPath(), pullCommand, { cwd: projectRootDirPath, stripColors: true })

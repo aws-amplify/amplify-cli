@@ -524,7 +524,6 @@ class CloudFormation {
         .filter((k) => k === 'providers')
         .forEach((category) => {
           Object.keys(amplifyMeta[category]).forEach((key) => {
-            console.log(rootStackResult);
             const formattedOutputs = formatOutputs(rootStackResult.Stacks[0].Outputs);
             this.context.amplify.updateProviderAmplifyMeta('awscloudformation', formattedOutputs);
             /**
@@ -563,7 +562,6 @@ class CloudFormation {
             const index = resources.findIndex((resourceItem) => resourceItem.LogicalResourceId === logicalResourceId);
 
             if (index !== -1) {
-              console.log(stackResult[index]);
               const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
 
               const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'output', formattedOutputs);

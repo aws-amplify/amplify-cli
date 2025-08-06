@@ -47,6 +47,8 @@ export const amplifyPull = (
     args.push(providerJson);
   }
 
+  args.push('--debug');
+
   const chain = spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true });
 
   if (settings.emptyDir && !settings.yesFlag) {
