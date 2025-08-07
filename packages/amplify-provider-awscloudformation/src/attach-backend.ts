@@ -335,7 +335,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
     return;
   }
 
-  const buff = Buffer.from(zipObject.Body);
+  const buff = Buffer.from(await zipObject.Body.transformToByteArray());
 
   fs.ensureDirSync(tempDirPath);
 
