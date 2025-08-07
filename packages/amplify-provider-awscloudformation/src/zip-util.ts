@@ -7,7 +7,7 @@ import { fileLogger } from './utils/aws-logger';
 
 const logger = fileLogger('zip-util');
 
-const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
+export const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
   const chunks = [];
   for await (const chunk of stream) {
     chunks.push(Buffer.from(chunk));

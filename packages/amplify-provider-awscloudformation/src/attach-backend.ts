@@ -14,6 +14,7 @@ import { adminLoginFlow } from './admin-login';
 import { fileLogger } from './utils/aws-logger';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { GetAppCommand, ListAppsCommand, GetBackendEnvironmentCommand, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
+import { streamToBuffer } from './zip-util';
 
 const logger = fileLogger('attach-backend');
 
@@ -335,7 +336,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
     return;
   }
 
-  const buff = Buffer.from(await zipObject.Body.transformToByteArray());
+  const buff = await streamToBuffer(zipObject.Body);
 
   fs.ensureDirSync(tempDirPath);
 

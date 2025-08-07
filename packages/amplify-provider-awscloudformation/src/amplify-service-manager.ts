@@ -16,6 +16,7 @@ import {
   GetAppCommand,
   GetBackendEnvironmentCommand,
   ListAppsCommand,
+  ListBackendEnvironmentsCommand,
 } from '@aws-sdk/client-amplify';
 
 const logger = fileLogger('amplify-service-manager');
@@ -443,12 +444,12 @@ async function searchAmplifyService(amplifyClient, stackName): Promise<AmplifySe
         maxResults: 25,
       },
     ])();
-    listAppsResponse = await amplifyClient
-      .listApps({
+    listAppsResponse = await amplifyClient.send(
+      new ListAppsCommand({
         nextToken: listAppsResponse.nextToken,
         maxResults: 25,
-      })
-      .promise();
+      }),
+    );
     result.apps = result.apps.concat(listAppsResponse.apps);
   } while (listAppsResponse.nextToken);
 
@@ -462,12 +463,12 @@ async function searchAmplifyService(amplifyClient, stackName): Promise<AmplifySe
             nextToken: listEnvResponse.nextToken,
           },
         ])();
-        listEnvResponse = await amplifyClient
-          .listBackendEnvironments({
+        listEnvResponse = await amplifyClient.send(
+          new ListBackendEnvironmentsCommand({
             appId: listAppsResponse.apps[i].appId,
             nextToken: listEnvResponse.nextToken,
-          })
-          .promise();
+          }),
+        );
 
         for (let j = 0; j < listEnvResponse.backendEnvironments.length; j++) {
           if (listEnvResponse.backendEnvironments[j].stackName === stackName) {
