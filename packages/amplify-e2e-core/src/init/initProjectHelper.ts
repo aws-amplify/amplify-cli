@@ -52,6 +52,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   if (s.permissionsBoundaryArn) {
     cliArgs.push('--permissions-boundary', s.permissionsBoundaryArn);
   }
+  cliArgs.push('--debug');
 
   if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 

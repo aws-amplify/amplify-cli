@@ -342,7 +342,7 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
 
   try {
     const tempFilePath = path.join(tempDirPath, zipFileName);
-    fs.writeFileSync(tempFilePath, buff.toString());
+    fs.writeFileSync(tempFilePath, buff);
 
     const unzippedDirPath = path.join(tempDirPath, path.basename(zipFileName, '.zip'));
 
