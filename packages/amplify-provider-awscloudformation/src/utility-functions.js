@@ -14,6 +14,26 @@ const { run: archiver } = require('./utils/archiver');
 const ECR = require('./aws-utils/aws-ecr');
 const { pagedAWSCall } = require('./aws-utils/paged-call');
 const { fileLogger } = require('./utils/aws-logger');
+const {
+  GetGraphqlApiCommand,
+  GetIntrospectionSchemaCommand,
+  ListApiKeysCommand,
+  ListGraphqlApisCommand,
+} = require('@aws-sdk/client-appsync');
+const { ListHostedZonesCommand } = require('@aws-sdk/client-route-53');
+const {
+  CreateSecretCommand,
+  DescribeSecretCommand,
+  GetSecretValueCommand,
+  PutSecretValueCommand,
+  UpdateSecretCommand,
+} = require('@aws-sdk/client-secrets-manager');
+const { ListFunctionsCommand } = require('@aws-sdk/client-lambda');
+const { DescribeVoicesCommand } = require('@aws-sdk/client-polly');
+const { DescribeTableCommand, ListTablesCommand } = require('@aws-sdk/client-dynamodb');
+const { GetBuiltinSlotTypesCommand, GetSlotTypesCommand } = require('@aws-sdk/client-lex-model-building-service');
+const { ListEndpointsCommand } = require('@aws-sdk/client-sagemaker');
+const { DescribeRepositoriesCommand } = require('@aws-sdk/client-ecr');
 
 const logger = fileLogger('utility-functions');
 const { getAccountId } = require('./amplify-sts');
@@ -35,12 +55,12 @@ module.exports = {
     let zoneFound;
 
     do {
-      const { NextMarker, IsTruncated, HostedZones } = await client.route53
-        .listHostedZones({
+      const { NextMarker, IsTruncated, HostedZones } = await client.route53.send(
+        new ListHostedZonesCommand({
           Marker,
           MaxItems: '100',
-        })
-        .promise();
+        }),
+      );
 
       zoneFound = HostedZones.find((zone) => `${domain}.`.endsWith(zone.Name));
 
@@ -88,14 +108,14 @@ module.exports = {
   newSecret: async (context, options) => {
     const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
-    const response = await client.secretsManager
-      .createSecret({
+    const response = await client.secretsManager.send(
+      new CreateSecretCommand({
         Description: description,
         Name: name,
         SecretString: secret,
         ClientRequestToken: version,
-      })
-      .promise();
+      }),
+    );
 
     return response;
   },
@@ -105,14 +125,14 @@ module.exports = {
   updateSecret: async (context, options) => {
     const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
-    const response = await client.secretsManager
-      .updateSecret({
+    const response = await client.secretsManager.send(
+      new UpdateSecretCommand({
         SecretId: name,
         Description: description,
         SecretString: secret,
         ClientRequestToken: version,
-      })
-      .promise();
+      }),
+    );
 
     return response;
   },
@@ -127,7 +147,7 @@ module.exports = {
     let secretArn;
 
     try {
-      ({ ARN: secretArn } = await client.secretsManager.describeSecret({ SecretId: name }).promise());
+      ({ ARN: secretArn } = await client.secretsManager.send(new DescribeSecretCommand({ SecretId: name })));
     } catch (error) {
       const { code } = error;
 
@@ -153,12 +173,12 @@ module.exports = {
   putSecretValue: async (context, options) => {
     const { name, secret } = options;
     const client = await new SecretsManager(context);
-    const response = await client.secretsManager
-      .putSecretValue({
+    const response = await client.secretsManager.send(
+      new PutSecretValueCommand({
         SecretId: name,
         SecretString: secret,
-      })
-      .promise();
+      }),
+    );
 
     return response;
   },
@@ -169,11 +189,11 @@ module.exports = {
   retrieveSecret: async (context, options) => {
     const { secretArn: SecretId } = options;
     const client = await new SecretsManager(context);
-    const response = await client.secretsManager
-      .getSecretValue({
+    const response = await client.secretsManager.send(
+      new GetSecretValueCommand({
         SecretId,
-      })
-      .promise();
+      }),
+    );
 
     return response;
   },
@@ -211,7 +231,7 @@ module.exports = {
    */
   getLambdaFunctions: async (context) => {
     const lambdaModel = await new Lambda(context);
-    let nextMarker;
+    let nextMarker: string;
     const lambdaFunctions = [];
 
     do {
@@ -219,12 +239,12 @@ module.exports = {
         MaxItems: 10000,
         Marker: nextMarker,
       })();
-      const paginatedFunctions = await lambdaModel.lambda
-        .listFunctions({
+      const paginatedFunctions = await lambdaModel.lambda.send(
+        new ListFunctionsCommand({
           MaxItems: 10000,
           Marker: nextMarker,
-        })
-        .promise();
+        }),
+      );
       if (paginatedFunctions && paginatedFunctions.Functions) {
         lambdaFunctions.push(...paginatedFunctions.Functions);
       }
@@ -238,7 +258,7 @@ module.exports = {
   getPollyVoices: async (context) => {
     const pollyModel = await new Polly(context);
     logger('getPollyVoices.pollyModel.polly.describeVoices', [])();
-    return pollyModel.polly.describeVoices().promise();
+    return pollyModel.polly.send(new DescribeVoicesCommand());
   },
   /**
    *
@@ -256,7 +276,7 @@ module.exports = {
           ExclusiveStartTableName: nextToken,
         },
       ])();
-      const paginatedTables = await dynamodbModel.dynamodb.listTables({ Limit: 100, ExclusiveStartTableName: nextToken }).promise();
+      const paginatedTables = await dynamodbModel.dynamodb.send(new ListTablesCommand({ Limit: 100, ExclusiveStartTableName: nextToken }));
       const dynamodbTables = paginatedTables.TableNames;
       nextToken = paginatedTables.LastEvaluatedTableName;
       for (let i = 0; i < dynamodbTables.length; i += 1) {
@@ -266,11 +286,11 @@ module.exports = {
           },
         ])();
         describeTablePromises.push(
-          dynamodbModel.dynamodb
-            .describeTable({
+          dynamodbModel.dynamodb.send(
+            new DescribeTableCommand({
               TableName: dynamodbTables[i],
-            })
-            .promise(),
+            }),
+          ),
         );
       }
     } while (nextToken);
@@ -306,7 +326,7 @@ module.exports = {
     return new AppSync(context)
       .then((result) => {
         const appSyncModel = result;
-        return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
+        return appSyncModel.appSync.send(new ListGraphqlApisCommand({ maxResults: 25 }));
       })
       .then((result) => result.graphqlApis);
   },
@@ -328,7 +348,7 @@ module.exports = {
             format: 'JSON',
           },
         ])();
-        return appSyncModel.appSync.getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' }).promise();
+        return appSyncModel.appSync.send(GetIntrospectionSchemaCommand({ apiId: options.apiId, format: 'JSON' }));
       })
       .then((result) => result.schema.toString() || null);
   },
@@ -347,7 +367,7 @@ module.exports = {
     ])();
     return new AppSync(context, awsOptions).then((result) => {
       const appSyncModel = result;
-      return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
+      return appSyncModel.appSync.send(new GetGraphqlApiCommand({ apiId: options.apiId }));
     });
   },
   /**
@@ -364,7 +384,7 @@ module.exports = {
     logger('getBuiltInSlotTypes.lex.getBuiltinSlotTypes', [params])();
     return new Lex(context).then((result) => {
       logger();
-      return result.lex.getBuiltinSlotTypes(params).promise();
+      return result.lex.send(new GetBuiltinSlotTypesCommand(params));
     });
   },
   /**
@@ -375,7 +395,7 @@ module.exports = {
       maxResults: 50,
     };
     logger('getSlotTypes.lex.getSlotTypes', [params])();
-    return new Lex(context).then((result) => result.lex.getSlotTypes(params).promise());
+    return new Lex(context).then((result) => result.lex.send(new GetSlotTypesCommand(params)));
   },
   /**
    * @deprecated Use getGraphQLApiKeys instead
@@ -394,7 +414,7 @@ module.exports = {
         apiId: options.apiId,
       },
     ])();
-    return new AppSync(context, awsOptions).then((result) => result.appSync.listApiKeys({ apiId: options.apiId }).promise());
+    return new AppSync(context, awsOptions).then((result) => result.appSync.send(new ListApiKeysCommand({ apiId: options.apiId })));
   },
   /**
    *
@@ -402,7 +422,7 @@ module.exports = {
   getEndpoints: async (context) => {
     const sagemakerModel = await new SageMaker(context);
     logger('getEndpoints.sageMaker.listEndpoints', [])();
-    return sagemakerModel.sageMaker.listEndpoints().promise();
+    return sagemakerModel.sageMaker.send(new ListEndpointsCommand());
   },
   /**
    *
@@ -411,7 +431,7 @@ module.exports = {
     const ecr = await new ECR(context);
 
     const results = await pagedAWSCall(
-      async (params, nextToken) => ecr.ecr.describeRepositories({ ...params, nextToken }).promise(),
+      async (params, nextToken) => ecr.ecr.send(new DescribeRepositoriesCommand({ ...params, nextToken })),
       options,
       ({ repositories }) => repositories,
       ({ nextToken }) => nextToken,
