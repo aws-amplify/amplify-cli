@@ -31,12 +31,17 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
     }
     await initWorkflow(projRoot, settings);
   } finally {
+    console.log('resetting credentials and config files');
     if (fs.existsSync(configFilePathHide)) {
       fs.renameSync(configFilePathHide, configFilePath);
     }
     if (fs.existsSync(credentialsFilePathHide)) {
       fs.renameSync(credentialsFilePathHide, credentialsFilePath);
     }
+    process.env.AWS_ACCESS_KEY_ID = settings.accessKeyId;
+    process.env.AWS_SECRET_ACCESS_KEY = settings.secretAccessKey;
+    process.env.AWS_DEFAULT_REGION = settings.region;
+    process.env.AWS_REGION = settings.region;
   }
 }
 

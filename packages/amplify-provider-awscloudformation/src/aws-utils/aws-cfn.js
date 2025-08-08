@@ -110,7 +110,7 @@ class CloudFormation {
         return reject(createErr);
       }
       try {
-        await waitUntilStackCreateComplete({ client: cfnModel, maxWaitTime: 300 }, cfnStackCheckParams);
+        await waitUntilStackCreateComplete({ client: cfnModel }, cfnStackCheckParams);
 
         if (self.pollForEvents) {
           clearTimeout(self.pollForEvents);
@@ -426,7 +426,7 @@ class CloudFormation {
           await cfnModel.send(new UpdateStackCommand(cfnParentStackParams));
           self.readStackEvents(stackName);
 
-          await waitUntilStackUpdateComplete({ client: cfnModel, maxWaitTime: 300 }, cfnStackCheckParams);
+          await waitUntilStackUpdateComplete({ client: cfnModel }, cfnStackCheckParams);
 
           if (self.pollForEvents) {
             clearTimeout(self.pollForEvents);
@@ -676,7 +676,7 @@ class CloudFormation {
 
       try {
         await cfnModel.send(new DeleteStackCommand(cfnStackParams));
-        await waitUntilStackDeleteComplete({ client: cfnModel, maxWaitTime: 300 }, cfnStackParams);
+        await waitUntilStackDeleteComplete({ client: cfnModel }, cfnStackParams);
       } catch (completeErr) {
         console.log(`Error deleting stack ${stackName}`);
         const errorDetails = await this.collectStackErrors(stackName);
