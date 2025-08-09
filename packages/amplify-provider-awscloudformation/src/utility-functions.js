@@ -231,7 +231,7 @@ module.exports = {
    */
   getLambdaFunctions: async (context) => {
     const lambdaModel = await new Lambda(context);
-    let nextMarker: string;
+    let nextMarker;
     const lambdaFunctions = [];
 
     do {
