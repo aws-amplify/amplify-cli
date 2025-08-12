@@ -57,10 +57,10 @@ describe('profile tests', () => {
       expect(profile_config).toBeDefined();
       expect(fromProcessMock).toHaveBeenCalledWith({ profile: 'fake' });
       expect(mockCredentialProvider).toHaveBeenCalled();
-      expect(profile_config.accessKeyId).toBe('chainTestAccessKey');
-      expect(profile_config.secretAccessKey).toBe('chainTestSecret');
-      expect(profile_config.sessionToken).toBe('chainTestSessionToken');
-      expect(profile_config.expiration).toEqual(new Date(1234));
+      expect(profile_config.credentials.accessKeyId).toBe('chainTestAccessKey');
+      expect(profile_config.credentials.secretAccessKey).toBe('chainTestSecret');
+      expect(profile_config.credentials.sessionToken).toBe('chainTestSessionToken');
+      expect(profile_config.credentials.expiration).toEqual(new Date(1234));
     });
 
     it('sets AWS_SDK_LOAD_CONFIG while credential provider executes', async () => {
