@@ -100,11 +100,13 @@ export const getProfiledAwsConfig = async (
       const credentials = await fromProcess({ profile: profileName })();
 
       awsConfigInfo = {
+        credentials: {
+          accessKeyId: credentials.accessKeyId,
+          secretAccessKey: credentials.secretAccessKey,
+          sessionToken: credentials.sessionToken,
+          expiration: credentials.expiration,
+        },
         region: profileConfig.region,
-        accessKeyId: credentials.accessKeyId,
-        secretAccessKey: credentials.secretAccessKey,
-        sessionToken: credentials.sessionToken,
-        expiration: credentials.expiration,
         requestHandler: new NodeHttpHandler({
           httpAgent: proxyAgent(),
           httpsAgent: proxyAgent(),

@@ -225,11 +225,11 @@ async function initialize(context: $TSContext, authConfig?: AuthFlowConfig) {
   if (authConfig?.type === 'accessKeys') {
     if (
       (awsConfigInfo.config?.accessKeyId && awsConfigInfo.config?.secretAccessKey) ||
-      (authConfig?.accessKeyId && authConfig?.secretAccessKey)
+      (authConfig?.credentials && authConfig?.credentials.accessKeyId && authConfig?.credentials.secretAccessKey)
     ) {
-      awsConfigInfo.config.accessKeyId = awsConfigInfo.config.accessKeyId || authConfig.accessKeyId;
-      awsConfigInfo.config.secretAccessKey = awsConfigInfo.config.secretAccessKey || authConfig.secretAccessKey;
-      awsConfigInfo.config.sessionToken = awsConfigInfo.config.sessionToken || authConfig.sessionToken;
+      awsConfigInfo.config.accessKeyId = awsConfigInfo.config.accessKeyId || authConfig.credentials.accessKeyId;
+      awsConfigInfo.config.secretAccessKey = awsConfigInfo.config.secretAccessKey || authConfig.credentials.secretAccessKey;
+      awsConfigInfo.config.sessionToken = awsConfigInfo.config.sessionToken || authConfig.credentials.sessionToken;
       awsConfigInfo.config.region = awsConfigInfo.config.region || authConfig.region;
     } else {
       await promptForAuthConfig(context, authConfig);
@@ -475,6 +475,7 @@ async function validateConfig(context: $TSContext) {
           secretAccessKey: awsConfigInfo.config.secretAccessKey,
           sessionToken: awsConfigInfo.config.sessionToken,
         },
+        region: awsConfigInfo.config.region,
       });
       try {
         await sts.send(new GetCallerIdentityCommand({}));
@@ -512,9 +513,11 @@ function persistLocalEnvConfig(context: $TSContext) {
     } else {
       awsInfo.useProfile = false;
       const awsSecrets = {
-        accessKeyId: awsConfigInfo.config.accessKeyId,
-        secretAccessKey: awsConfigInfo.config.secretAccessKey,
-        sessionToken: awsConfigInfo.config.sessionToken,
+        credentials: {
+          accessKeyId: awsConfigInfo.config.accessKeyId,
+          secretAccessKey: awsConfigInfo.config.secretAccessKey,
+          sessionToken: awsConfigInfo.config.sessionToken,
+        },
         region: awsConfigInfo.config.region,
       };
       const sharedConfigDirPath = path.join(pathManager.getHomeDotAmplifyDirPath(), constants.ProviderName);
@@ -609,7 +612,7 @@ function removeProjectConfig(envName: string) {
 }
 
 export async function loadConfiguration(context: $TSContext): Promise<AwsSdkConfig> {
-  const envName = stateManager.getCurrentEnvName() || context?.exeInfo?.inputParams?.amplify?.envName;
+  const envName = context?.exeInfo?.inputParams?.amplify?.envName || stateManager.getCurrentEnvName();
   const config = await loadConfigurationForEnv(context, envName);
   return config;
 }
@@ -617,7 +620,7 @@ export async function loadConfiguration(context: $TSContext): Promise<AwsSdkConf
 function loadConfigFromPath(profilePath: string): AwsSdkConfig {
   if (fs.existsSync(profilePath)) {
     const config = JSONUtilities.readJson<AwsSdkConfig>(profilePath);
-    if (config.accessKeyId && config.secretAccessKey && config.region) {
+    if (config.credentials && config.credentials.accessKeyId && config.credentials.secretAccessKey && config.region) {
       return config;
     }
   }
@@ -637,8 +640,15 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
         awsConfigInfo.config.region = awsConfigInfo.region;
       }
     }
-
-    return awsConfigInfo.config;
+    const config = {
+      credentials: {
+        accessKeyId: awsConfigInfo.config.accessKeyId,
+        secretAccessKey: awsConfigInfo.config.secretAccessKey,
+        sessionToken: awsConfigInfo.config.sessionToken,
+      },
+      region: awsConfigInfo.config.region,
+    };
+    return config;
   }
 
   const projectConfigInfo = getConfigForEnv(context, env);
@@ -816,9 +826,11 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
       }
     } else {
       resultAWSConfigInfo = {
-        accessKeyId: awsConfigInfo.config.accessKeyId,
-        secretAccessKey: awsConfigInfo.config.secretAccessKey,
-        sessionToken: awsConfigInfo.config.sessionToken,
+        credentials: {
+          accessKeyId: awsConfigInfo.config.accessKeyId,
+          secretAccessKey: awsConfigInfo.config.secretAccessKey,
+          sessionToken: awsConfigInfo.config.sessionToken,
+        },
         region: awsConfigInfo.config.region,
       };
     }
@@ -887,9 +899,11 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   if (accessKeyId && secretAccessKey && region) {
     return {
       type: 'accessKeys',
-      accessKeyId,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
       region,
-      secretAccessKey,
     };
   }
 
@@ -926,9 +940,11 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     if (accessKeyId && secretAccessKey && region) {
       return {
         type: 'accessKeys',
-        accessKeyId,
+        credentials: {
+          accessKeyId,
+          secretAccessKey,
+        },
         region,
-        secretAccessKey,
       };
     }
   }

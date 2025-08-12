@@ -89,11 +89,13 @@ export async function getTempCredsWithAdminTokens(context: $TSContext, appId: st
   );
 
   return {
-    accessKeyId: Credentials.AccessKeyId,
-    expiration: Credentials.Expiration,
+    credentials: {
+      accessKeyId: Credentials.AccessKeyId,
+      secretAccessKey: Credentials.SecretAccessKey,
+      sessionToken: Credentials.SessionToken,
+      expiration: Credentials.Expiration,
+    },
     region,
-    secretAccessKey: Credentials.SecretAccessKey,
-    sessionToken: Credentials.SessionToken,
   };
 }
 
@@ -135,11 +137,13 @@ async function getAdminCognitoCredentials(idToken: CognitoIdToken, identityId: s
   );
 
   return {
-    accessKeyId: Credentials.AccessKeyId,
-    expiration: Credentials.Expiration,
+    credentials: {
+      accessKeyId: Credentials.AccessKeyId,
+      secretAccessKey: Credentials.SecretKey,
+      sessionToken: Credentials.SessionToken,
+      expiration: Credentials.Expiration,
+    },
     region,
-    secretAccessKey: Credentials.SecretKey,
-    sessionToken: Credentials.SessionToken,
   };
 }
 

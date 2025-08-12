@@ -10,11 +10,13 @@ export interface AuthFlowConfig extends Partial<AwsSdkConfig> {
 }
 
 export interface AwsSdkConfig {
-  accessKeyId: string;
-  expiration?: Date;
+  credentials: {
+    accessKeyId: string;
+    secretAccessKey: string;
+    sessionToken?: string;
+    expiration?: Date;
+  };
   region: string;
-  secretAccessKey: string;
-  sessionToken?: string;
   requestHandler?: NodeHttpHandler;
   // TO DO: remove eventually, V2 style of handling proxies
   httpOptions?: {
