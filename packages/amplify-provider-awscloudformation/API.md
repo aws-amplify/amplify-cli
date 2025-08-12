@@ -17,9 +17,12 @@ import { Template } from '@aws-amplify/amplify-cli-core';
 // @public (undocumented)
 export interface AwsSdkConfig {
     // (undocumented)
-    accessKeyId: string;
-    // (undocumented)
-    expiration?: Date;
+    credentials: {
+        accessKeyId: string;
+        secretAccessKey: string;
+        sessionToken?: string;
+        expiration?: Date;
+    };
     // (undocumented)
     httpOptions?: {
         agent: $TSAny;
@@ -28,10 +31,6 @@ export interface AwsSdkConfig {
     region: string;
     // (undocumented)
     requestHandler?: NodeHttpHandler;
-    // (undocumented)
-    secretAccessKey: string;
-    // (undocumented)
-    sessionToken?: string;
 }
 
 // @public (undocumented)

@@ -23,6 +23,17 @@ export interface AwsSdkConfig {
     agent: $TSAny;
   };
 }
+export interface legacyAwsSdkConfig {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+  expiration?: Date;
+  region: string;
+  httpOptions?: {
+    agent: $TSAny;
+  };
+}
+
 export interface AdminAuthPayload {
   accessToken: CognitoAccessToken;
   clockDrift: number;

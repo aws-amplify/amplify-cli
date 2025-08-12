@@ -20,7 +20,7 @@ import obfuscateUtil from './utility-obfuscate';
 import * as systemConfigManager from './system-config-manager';
 import { doAdminTokensExist, getTempCredsWithAdminTokens, isAmplifyAdminApp } from './utils/admin-helpers';
 import { resolveAppId } from './utils/resolve-appId';
-import { AuthFlow, AuthFlowConfig, AwsSdkConfig } from './utils/auth-types';
+import { AuthFlow, AuthFlowConfig, AwsSdkConfig, legacyAwsSdkConfig } from './utils/auth-types';
 import {
   accessKeysQuestion,
   authTypeQuestion,
@@ -622,6 +622,22 @@ function loadConfigFromPath(profilePath: string): AwsSdkConfig {
     const config = JSONUtilities.readJson<AwsSdkConfig>(profilePath);
     if (config.credentials && config.credentials.accessKeyId && config.credentials.secretAccessKey && config.region) {
       return config;
+    } else if (
+      !config.credentials &&
+      (config as unknown as legacyAwsSdkConfig).accessKeyId &&
+      (config as unknown as legacyAwsSdkConfig).secretAccessKey &&
+      (config as unknown as legacyAwsSdkConfig).region
+    ) {
+      // in cases where legacy credentials come in, they are not properly converted to AwsSdkConfig type
+      const legacy = config as unknown as legacyAwsSdkConfig;
+      return {
+        credentials: {
+          accessKeyId: legacy.accessKeyId,
+          secretAccessKey: legacy.secretAccessKey,
+          sessionToken: legacy.sessionToken,
+        },
+        region: legacy.region,
+      };
     }
   }
   throw new AmplifyError('ConfigurationError', {
