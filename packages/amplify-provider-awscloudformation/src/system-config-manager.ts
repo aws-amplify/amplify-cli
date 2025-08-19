@@ -118,7 +118,9 @@ export const getProfiledAwsConfig = async (
       const profileCredentials = getProfileCredentials(profileName);
       awsConfigInfo = {
         ...profileConfig,
-        ...profileCredentials,
+        credentials: {
+          ...profileCredentials,
+        },
       };
       validateCredentials(awsConfigInfo, profileName);
     }
@@ -343,10 +345,10 @@ export const getProfileCredentials = (profileName: string): $TSAny => {
 
 const validateCredentials = (credentials: $TSAny, profileName: string): void => {
   const missingKeys = [];
-  if (!credentials?.accessKeyId && !process.env.AWS_ACCESS_KEY_ID) {
+  if (!credentials?.credentials.accessKeyId && !process.env.AWS_ACCESS_KEY_ID) {
     missingKeys.push('aws_access_key_id');
   }
-  if (!credentials?.secretAccessKey && !process.env.AWS_SECRET_ACCESS_KEY) {
+  if (!credentials?.credentials.secretAccessKey && !process.env.AWS_SECRET_ACCESS_KEY) {
     missingKeys.push('aws_secret_access_key');
   }
   if (missingKeys.length > 0) {

@@ -61,7 +61,7 @@
     "@aws-amplify/amplify-graphiql-explorer": "2.6.2",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
-    "@types/node": "^12.12.6",
+    "@types/node": "^20.9.0",
     "@types/ws": "^8.2.2",
     "jose": "^5.2.0"
   },

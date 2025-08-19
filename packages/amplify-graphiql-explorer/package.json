@@ -74,7 +74,7 @@
   "devDependencies": {
     "@semantic-ui-react/css-patch": "^1.0.0",
     "@types/jest": "^29.5.1",
-    "@types/node": "^12.12.6",
+    "@types/node": "^20.9.0",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11"
   },

@@ -15,13 +15,13 @@ import { text } from 'node:stream/consumers';
 
 const logger = fileLogger('initialize-env');
 
-// const streamToString = async (stream: Readable) => {
-//   const chunks = [];
-//   for await (const chunk of stream) {
-//     chunks.push(Buffer.from(chunk));
-//   }
-//   return Buffer.concat(chunks).toString('utf-8');
-// };
+const streamToString = async (stream: Readable) => {
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks).toString('utf-8');
+};
 
 /**
  * initialize env for selected provider
