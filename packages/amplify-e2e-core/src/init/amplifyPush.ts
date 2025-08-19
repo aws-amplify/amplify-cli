@@ -143,7 +143,6 @@ export const amplifyPushWithoutCodegen = async (
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
-  args.push('--debug');
   return spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
     .wait('Are you sure you want to continue?')
     .sendCarriageReturn()
@@ -216,7 +215,7 @@ export function amplifyPushUpdateLegacy(
  * Function to test amplify push
  */
 export const amplifyPushAuth = (cwd: string, testingWithLatestCodebase = false, env?: Record<string, string>): Promise<void> =>
-  spawn(getCLIPath(testingWithLatestCodebase), ['push', '--debug'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS, env })
+  spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS, env })
     .wait('Are you sure you want to continue?')
     .sendYes()
     .wait(/.*/)

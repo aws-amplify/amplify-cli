@@ -79,7 +79,7 @@ export class Lambda {
     }
 
     try {
-      await Promise.all(deletionPromises.map((fn) => fn()));
+      await Promise.all(deletionPromises);
     } catch (e) {
       this.context.print.error(
         'Failed to delete some or all layer versions. Check your internet connection and try again. ' +

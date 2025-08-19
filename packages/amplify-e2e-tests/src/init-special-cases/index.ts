@@ -49,7 +49,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['init', '--debug'], {
+    const chain = spawn(getCLIPath(), ['init'], {
       cwd,
       stripColors: true,
       env: {

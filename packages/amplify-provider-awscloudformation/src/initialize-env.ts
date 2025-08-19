@@ -11,16 +11,17 @@ import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { downloadZip, extractZip } from './zip-util';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
+import { text } from 'node:stream/consumers';
 
 const logger = fileLogger('initialize-env');
 
-const streamToString = async (stream: Readable) => {
-  const chunks = [];
-  for await (const chunk of stream) {
-    chunks.push(Buffer.from(chunk));
-  }
-  return Buffer.concat(chunks).toString('utf-8');
-};
+// const streamToString = async (stream: Readable) => {
+//   const chunks = [];
+//   for await (const chunk of stream) {
+//     chunks.push(Buffer.from(chunk));
+//   }
+//   return Buffer.concat(chunks).toString('utf-8');
+// };
 
 /**
  * initialize env for selected provider
@@ -108,7 +109,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     const s3FileStream = await s3.getFile({
       Key: PathConstants.AmplifyMetaFileName,
     });
-    const s3FileString = await streamToString(s3FileStream as Readable);
+    const s3FileString = await text(s3FileStream as Readable);
     const s3AmplifyMeta = JSONUtilities.parse(s3FileString);
 
     Object.keys(s3AmplifyMeta)

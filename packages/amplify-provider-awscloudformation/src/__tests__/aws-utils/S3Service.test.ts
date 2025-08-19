@@ -30,7 +30,6 @@ jest.mock('@aws-sdk/client-s3', () => {
     return {};
   });
 
-  // Mock S3Client constructor
   const mockS3Client = jest.fn().mockImplementation((options) => {
     const region = options.region || 'us-east-1';
 
