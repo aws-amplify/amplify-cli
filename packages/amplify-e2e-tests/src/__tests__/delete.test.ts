@@ -32,6 +32,7 @@ import { getAWSExportsPath } from '../aws-exports/awsExports';
 describe('amplify delete', () => {
   let projRoot: string;
   beforeEach(async () => {
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     projRoot = await createNewProjectDir('delete');
   });
 
