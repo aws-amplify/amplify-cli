@@ -269,6 +269,7 @@ __metadata:
     "@aws-amplify/amplify-environment-parameters": 1.9.20
     "@aws-amplify/amplify-function-plugin-interface": 1.12.1
     "@aws-amplify/amplify-prompts": 2.8.7
+    "@aws-sdk/client-ssm": ^3.624.0
     "@types/folder-hash": ^4.0.1
     archiver: ^7.0.1
     aws-sdk: ^2.1464.0

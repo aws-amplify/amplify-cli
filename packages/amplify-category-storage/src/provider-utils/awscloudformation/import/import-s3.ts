@@ -115,7 +115,7 @@ const importServiceWalkthrough = async (
   const bucketList = await s3.listBuckets();
 
   // Return if no User Pools found in the project's region
-  if (_.isEmpty(bucketList)) {
+  if (bucketList.length == 0) {
     printer.info(importMessages.NoS3BucketsToImport);
     return undefined;
   }
