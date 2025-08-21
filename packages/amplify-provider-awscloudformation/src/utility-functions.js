@@ -149,9 +149,10 @@ module.exports = {
     try {
       ({ ARN: secretArn } = await client.secretsManager.send(new DescribeSecretCommand({ SecretId: name })));
     } catch (error) {
-      const { code } = error;
+      const { name } = error;
 
-      if (code !== 'ResourceNotFoundException') {
+      if (name !== 'ResourceNotFoundException') {
+        console.log(error);
         throw new AmplifyFault(
           'ResourceNotFoundFault',
           {
