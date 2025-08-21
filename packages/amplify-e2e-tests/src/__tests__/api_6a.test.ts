@@ -15,6 +15,7 @@ const projName = 'apitest';
 
 let projRoot;
 beforeEach(async () => {
+  process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
   projRoot = await createNewProjectDir(projName);
   await initJSProjectWithProfile(projRoot, { name: projName });
   await addApiWithoutSchema(projRoot, { transformerVersion: 2 });
