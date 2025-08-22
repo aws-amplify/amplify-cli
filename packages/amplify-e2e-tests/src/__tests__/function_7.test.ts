@@ -23,7 +23,6 @@ describe('function secret value', () => {
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('funcsecrets');
-    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
   });
 
   afterEach(async () => {

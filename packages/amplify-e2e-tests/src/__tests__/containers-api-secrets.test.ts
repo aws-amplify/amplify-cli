@@ -23,7 +23,6 @@ async function setupAmplifyProject(cwd: string) {
 describe('amplify api add', () => {
   let projRoot: string;
   beforeEach(async () => {
-    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     projRoot = await createNewProjectDir('containers');
   });
 
