@@ -8,11 +8,17 @@ import {
   getProjectMeta,
   createNewProjectDir,
   deleteProjectDir,
+  tryScheduleCredentialRefresh,
 } from '@aws-amplify/amplify-e2e-core';
 import { addEnvironment } from '../../environment/env';
 
 describe('amplify add api', () => {
   let projRoot: string;
+
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('api-key-migration-2');
   });

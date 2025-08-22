@@ -12,10 +12,15 @@ import {
   updateApiSchema,
   getDeploymentBucketObject,
   getProjectConfig,
+  tryScheduleCredentialRefresh,
 } from '@aws-amplify/amplify-e2e-core';
 
 describe('upload Studio CMS assets on push', () => {
   let projRoot: string;
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('studio-cms-upload');
   });

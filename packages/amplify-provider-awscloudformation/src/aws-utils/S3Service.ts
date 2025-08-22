@@ -40,10 +40,11 @@ export class S3Service implements IS3Service {
     } catch (error) {
       console.log(error);
       // workaround for S3 service bug causing headBucket for a opt-in region bucket to respond with BadRequest if s3 client is initialized with a different region
-      if (error.region !== client.config.region && error.name === 'BadRequest') {
+      if (error.name === 'BadRequest' || error.$metadata.httpStatusCode === 301) {
+        // if bucket is in different region, followRegionRedirects should allow us to find it
         const newClient = new S3Client({
           ...client.config?.credentials,
-          region: error.region,
+          region: client.config?.region,
           followRegionRedirects: true,
         });
         return this.checkIfBucketExists(bucketName, newClient);

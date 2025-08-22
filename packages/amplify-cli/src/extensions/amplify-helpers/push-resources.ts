@@ -119,6 +119,7 @@ export const pushResources = async (
       await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
       // TODO PL: this needs to be removed once the api category is using the new amplify error class
+      console.log(err);
       const isAuthError = isValidGraphQLAuthError(err.message);
       if (isAuthError) {
         retryPush = await handleValidGraphQLAuthError(context, err.message);
