@@ -60,7 +60,7 @@ export const importHeadlessStorage = async (
   request: ImportStorageRequest,
   reject = true,
 ): Promise<ExecaChildProcess<string>> => {
-  return await executeHeadlessCommand(cwd, 'storage', 'import', '--debug', request, reject);
+  return await executeHeadlessCommand(cwd, 'storage', 'import', request, reject);
 };
 
 export const removeHeadlessStorage = async (cwd: string, request: RemoveStorageRequest): Promise<ExecaChildProcess<string>> => {
@@ -92,7 +92,7 @@ const executeHeadlessCommand = async (
   allowDestructiveUpdates = false,
   settings = { testingWithLatestCodebase: false },
 ) => {
-  const args = [operation, category, '--headless'];
+  const args = [operation, category, '--headless', '--debug'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
