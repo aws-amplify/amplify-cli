@@ -132,6 +132,7 @@ describe('headless s3 import', () => {
       false,
     );
 
+    console.log(processResult.stdout);
     expect(processResult.exitCode).toBe(0);
     expect(processResult.stdout).toEqual('');
 

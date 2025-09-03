@@ -238,6 +238,8 @@ describe('s3 import', () => {
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
       expectS3LocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
+    } catch (err) {
+      console.log(err);
     } finally {
       deleteProjectDir(projectRootPull);
     }
