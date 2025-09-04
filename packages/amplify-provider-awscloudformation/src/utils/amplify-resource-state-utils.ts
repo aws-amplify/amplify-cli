@@ -42,13 +42,16 @@ export const getTableNames = async (cfnClient: CloudFormationClient, tables: str
         StackName: resource.PhysicalResourceId,
       });
       const tableStack = await cfnClient.send(describeStacksCommand);
-      const tableName = tableStack.Stacks[0].Outputs.reduce((acc, out) => {
-        if (out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`) {
-          acc.push(out.OutputValue);
-        }
-        return acc;
-      }, []);
-      tableNameMap.set(resource.LogicalResourceId, tableName[0]);
+      console.log(`Table stacks: ${tableStack.Stacks[0]}`);
+      if (tableStack.Stacks[0].Outputs) {
+        const tableName = tableStack.Stacks[0].Outputs.reduce((acc, out) => {
+          if (out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`) {
+            acc.push(out.OutputValue);
+          }
+          return acc;
+        }, []);
+        tableNameMap.set(resource.LogicalResourceId, tableName[0]);
+      }
     }
   }
   return tableNameMap;
