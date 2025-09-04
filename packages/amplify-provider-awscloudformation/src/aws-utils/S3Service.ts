@@ -35,12 +35,11 @@ export class S3Service implements IS3Service {
     try {
       const command = new HeadBucketCommand({ Bucket: bucketName });
       const response = await client.send(command);
-      // If the return object has no keys then it means successful empty object was returned.
-      return Object.keys(response).length === 0;
+      // HeadBucket command will return an error if bucket does not exist
+      return true;
     } catch (error) {
-      console.log(error);
       // workaround for S3 service bug causing headBucket for a opt-in region bucket to respond with BadRequest if s3 client is initialized with a different region
-      if (error.name === 'BadRequest' || error.$metadata.httpStatusCode === 301) {
+      if (error.$metadata.httpStatusCode === 301 || error.name === 'BadRequest') {
         // if bucket is in different region, followRegionRedirects should allow us to find it
         const newClient = new S3Client({
           ...client.config?.credentials,
