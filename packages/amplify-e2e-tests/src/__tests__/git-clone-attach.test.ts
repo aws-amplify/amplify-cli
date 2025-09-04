@@ -34,7 +34,6 @@ describe('attach amplify to git-cloned project', () => {
   const s3Client = new S3();
   const importBucketName = `git-clone-test-bucket-${getShortId()}`;
   beforeAll(async () => {
-    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     await s3Client.createBucket({ Bucket: importBucketName }).promise();
     projRoot = await createNewProjectDir('clone-test');
     await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });

@@ -34,7 +34,7 @@ export class S3Service implements IS3Service {
     const client = s3Client ?? this.s3Client;
     try {
       const command = new HeadBucketCommand({ Bucket: bucketName });
-      const response = await client.send(command);
+      await client.send(command);
       // HeadBucket command will return an error if bucket does not exist
       return true;
     } catch (error) {

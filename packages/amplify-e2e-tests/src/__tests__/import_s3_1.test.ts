@@ -92,7 +92,6 @@ describe('s3 import', () => {
   });
 
   beforeEach(async () => {
-    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     projectRoot = await createNewProjectDir(projectPrefix);
     ignoreProjectDeleteErrors = false;
   });
@@ -238,8 +237,6 @@ describe('s3 import', () => {
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
       expectS3LocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
-    } catch (err) {
-      console.log(err);
     } finally {
       deleteProjectDir(projectRootPull);
     }

@@ -13,7 +13,6 @@ import { addEnvironment } from '../../environment/env';
 
 describe('amplify add api', () => {
   let projRoot: string;
-
   beforeEach(async () => {
     projRoot = await createNewProjectDir('api-key-migration-2');
   });

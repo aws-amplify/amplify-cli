@@ -31,7 +31,7 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
     }
     await initWorkflow(projRoot, settings);
   } finally {
-    console.log('resetting credentials and config files');
+    // reset credentials and config files
     if (fs.existsSync(configFilePathHide)) {
       fs.renameSync(configFilePathHide, configFilePath);
     }

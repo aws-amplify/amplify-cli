@@ -50,7 +50,6 @@ describe('s3 import a', () => {
   let ignoreProjectDeleteErrors = false;
 
   beforeAll(async () => {
-    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
     ogShortId = getShortId();
     ogSettings = createStorageSettings(ogProjectSettings.name, ogShortId);

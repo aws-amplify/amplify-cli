@@ -16,7 +16,6 @@ import {
 
 describe('upload Studio CMS assets on push', () => {
   let projRoot: string;
-
   beforeEach(async () => {
     projRoot = await createNewProjectDir('studio-cms-upload');
   });

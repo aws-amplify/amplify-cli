@@ -33,7 +33,6 @@ describe('headless s3 import', () => {
   let bucketLocation: string;
 
   beforeAll(async () => {
-    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     const shortId = getShortId();
     bucketNameToImport = `${bucketPrefix}${shortId}`;
 
@@ -132,7 +131,6 @@ describe('headless s3 import', () => {
       false,
     );
 
-    console.log(processResult.stdout);
     expect(processResult.exitCode).toBe(0);
     expect(processResult.stdout).toEqual('');
 
