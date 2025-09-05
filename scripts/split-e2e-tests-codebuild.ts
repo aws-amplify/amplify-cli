@@ -39,6 +39,7 @@ const RUN_SOLO = [
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
   'src/__tests__/schema-connection-1.test.ts',
+  'src/__tests__/studio-modelgen.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
   'src/__tests__/uibuilder.test.ts',
 ];
