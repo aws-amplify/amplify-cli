@@ -767,7 +767,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
       ...process.env,
       ...pushEnv,
       ...options.env,
-      NODE_OPTIONS: '--max_old_space_size=5120',
+      NODE_OPTIONS: '--max_old_space_size=4096',
     };
 
     // Undo ci-info detection, required for some tests

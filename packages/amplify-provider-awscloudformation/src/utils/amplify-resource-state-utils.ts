@@ -42,7 +42,6 @@ export const getTableNames = async (cfnClient: CloudFormationClient, tables: str
         StackName: resource.PhysicalResourceId,
       });
       const tableStack = await cfnClient.send(describeStacksCommand);
-      console.log(tableStack.Stacks[0]);
       if (tableStack.Stacks[0].Outputs) {
         const tableName = tableStack.Stacks[0].Outputs.reduce((acc, out) => {
           if (out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`) {

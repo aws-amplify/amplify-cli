@@ -92,7 +92,7 @@ const executeHeadlessCommand = async (
   allowDestructiveUpdates = false,
   settings = { testingWithLatestCodebase: false },
 ) => {
-  const args = [operation, category, '--headless', '--debug'];
+  const args = [operation, category, '--headless'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }

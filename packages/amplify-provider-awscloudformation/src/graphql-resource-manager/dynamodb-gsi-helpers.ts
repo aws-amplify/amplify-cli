@@ -113,7 +113,6 @@ export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Ta
 
   const removedIndices = _.remove(gsis, { IndexName: indexName });
   assertNotIntrinsicFunction(removedIndices);
-  console.log(gsis);
   const gsiKeySchemas: Array<KeySchema> = gsis.reduce((acc, gsi) => {
     acc.push(...(gsi.KeySchema as Array<KeySchema>));
     return acc;
