@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "14.0.0",
+  "version": "14.0.1-rc.68b20016465b616.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "tar-stream": "^2.2.0"
   },
   "devDependencies": {
-    "@aws-amplify/cli-internal": "14.0.0",
+    "@aws-amplify/cli-internal": "14.0.1-rc.68b20016465b616.0",
     "@types/tar": "^6.1.1",
     "rimraf": "^6.0.1"
   },

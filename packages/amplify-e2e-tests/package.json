@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "4.11.7",
+  "version": "4.11.8-rc.68b20016465b616.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "smoketest": "yarn e2e --testPathPattern='src/__tests__/smoke-tests/.*.test.ts'"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "3.7.22",
+    "@aws-amplify/amplify-category-auth": "3.7.23-rc.68b20016465b616.0",
     "@aws-amplify/amplify-cli-core": "4.4.2",
     "@aws-amplify/amplify-e2e-core": "5.7.5",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.20",
