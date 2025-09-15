@@ -47,7 +47,7 @@ runs:
 
       # For iOS tests
     - name: Setup Ruby
-      uses: ruby/setup-ruby@22fdc77bf4148f810455b226c90fb81b5cbc00a7 # v1.171.0
+      uses: ruby/setup-ruby@efbf473cab83af4468e8606cc33eca9281bb213f # v1.256.0
       if: runner.os == 'macOS'
       with:
         ruby-version: '3.4.5'
