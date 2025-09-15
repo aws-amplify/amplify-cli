@@ -23,17 +23,21 @@ describe('Smoke Test - iOS', () => {
       deleteProjectDir(projRoot);
     });
 
-    it('Creates Amplify iOS App', async () => {
-      await fs.cp(exampleIOSAppPath, projRoot, {
-        recursive: true,
-      });
+    it(
+      'Creates Amplify iOS App',
+      async () => {
+        await fs.cp(exampleIOSAppPath, projRoot, {
+          recursive: true,
+        });
 
-      await initIosProjectWithXcode(projRoot);
-      await addApi(projRoot);
-      await generateModels(projRoot, { expectXcode: true });
-      await rubyBundleInstall(projRoot);
-      await buildAndTestExampleIosApp(projRoot);
-    });
+        await initIosProjectWithXcode(projRoot);
+        await addApi(projRoot);
+        await generateModels(projRoot, { expectXcode: true });
+        await rubyBundleInstall(projRoot);
+        await buildAndTestExampleIosApp(projRoot);
+      },
+      20 * 60 * 1000,
+    ); // 20 minutes timeout
   } else {
     it('dummy test', () => {});
   }
@@ -50,6 +54,7 @@ function rubyBundleInstall(cwd: string) {
 function buildAndTestExampleIosApp(cwd: string) {
   return spawn('bundle', ['exec', 'fastlane', 'scan', '--device', 'iPhone 16 Pro', '--deployment_target_version', '16.1'], {
     cwd,
+    noOutputTimeout: 15 * 60 * 1000, // 15 minutes for iOS build
   })
     .wait(/Test.*Succeeded/)
     .runAsync();
