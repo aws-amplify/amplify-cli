@@ -50,7 +50,7 @@ runs:
       uses: ruby/setup-ruby@efbf473cab83af4468e8606cc33eca9281bb213f # v1.256.0
       if: runner.os == 'macOS'
       with:
-        ruby-version: '3.4.5'
+        ruby-version: '3.2.1'
 
       # For iOS tests
     - name: Set Default Xcode Version
