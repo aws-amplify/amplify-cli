@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
-  "version": "3.7.22",
+  "version": "3.7.23-rc.608faffde08db52.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "@aws-amplify/amplify-environment-parameters": "1.9.20",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.7",
-    "@aws-amplify/amplify-util-import": "2.8.3",
+    "@aws-amplify/amplify-util-import": "2.8.4-rc.608faffde08db52.0",
     "@aws-amplify/cli-extensibility-helper": "3.0.39",
     "@aws-sdk/client-cognito-identity": "^3.624.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.624.0",
