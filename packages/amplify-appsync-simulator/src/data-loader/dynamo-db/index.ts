@@ -1,5 +1,13 @@
-import { AttributeMap } from 'aws-sdk/clients/dynamodb';
-import { DynamoDB } from 'aws-sdk';
+import {
+  AttributeValue,
+  DynamoDBClient,
+  GetItemCommand,
+  PutItemCommand,
+  UpdateItemCommand,
+  DeleteItemCommand,
+  QueryCommand,
+  ScanCommand,
+} from '@aws-sdk/client-dynamodb';
 import { unmarshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
 
@@ -15,7 +23,7 @@ type DynamoDBLoaderConfig = {
   options: object;
 };
 export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
-  private client: DynamoDB;
+  private client: DynamoDBClient;
   private tableName: string;
 
   constructor(private ddbConfig: DynamoDBLoaderConfig) {
@@ -24,7 +32,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       throw new Error(`Invalid DynamoDBConfig ${JSON.stringify(ddbConfig, null, 4)}`);
     }
     this.tableName = tableName;
-    this.client = new DynamoDB({ ...ddbConfig.config, ...ddbConfig.options });
+    this.client = new DynamoDBClient({ ...ddbConfig.config, ...ddbConfig.options });
   }
 
   async load(payload): Promise<object | null> {
@@ -53,11 +61,11 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
           throw new Error(`Unknown operation name: ${payload.operation}`);
       }
     } catch (e) {
-      if (e.code) {
+      if (e.name) {
         console.log('Error while executing Local DynamoDB');
         console.log(JSON.stringify(payload, null, 4));
         console.log(e);
-        e.extensions = { errorType: 'DynamoDB:' + e.code };
+        e.extensions = { errorType: 'DynamoDB:' + e.name };
       }
       throw e;
     }
@@ -67,13 +75,13 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     try {
       const items = await this.getAllItems();
       for await (const item of items) {
-        await this.client
-          .deleteItem({
+        await this.client.send(
+          new DeleteItemCommand({
             TableName: this.tableName,
             Key: { id: item.id },
             ReturnValues: 'ALL_OLD',
-          })
-          .promise();
+          }),
+        );
       }
     } catch (e) {
       throw new Error(`Error while deleting all items from ${this.tableName}`);
@@ -81,17 +89,17 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     return [this.tableName];
   }
   // Gets all the records from the DynamoDB local table
-  private async getAllItems(): Promise<Array<AttributeMap> | null> {
+  private async getAllItems(): Promise<Array<Record<string, AttributeValue>> | null> {
     let items = [];
-    let data = await this.client.scan({ TableName: this.tableName }).promise();
+    let data = await this.client.send(new ScanCommand({ TableName: this.tableName }));
     items = [...items, ...data.Items];
     while (typeof data.LastEvaluatedKey !== 'undefined') {
-      data = await this.client
-        .scan({
+      data = await this.client.send(
+        new ScanCommand({
           TableName: this.tableName,
           ExclusiveStartKey: data.LastEvaluatedKey,
-        })
-        .promise();
+        }),
+      );
       items = [...items, ...data.Items];
     }
     return items;
@@ -99,13 +107,13 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
 
   private async getItem(payload: any): Promise<object | null> {
     const { consistentRead = false } = payload;
-    const result = await this.client
-      .getItem({
+    const result = await this.client.send(
+      new GetItemCommand({
         TableName: this.tableName,
         Key: payload.key,
         ConsistentRead: consistentRead,
-      })
-      .promise();
+      }),
+    );
 
     if (!result.Item) return null;
     return unmarshall(result.Item);
@@ -122,8 +130,8 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         expressionValues = null,
       } = {},
     } = payload;
-    await this.client
-      .putItem({
+    await this.client.send(
+      new PutItemCommand({
         TableName: this.tableName,
         Item: {
           ...attributeValues,
@@ -132,8 +140,8 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ConditionExpression: expression,
         ExpressionAttributeNames: expressionNames,
         ExpressionAttributeValues: expressionValues,
-      })
-      .promise();
+      }),
+    );
 
     // put does not return us anything useful so we need to fetch the object.
 
@@ -165,7 +173,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       Items: items,
       ScannedCount: scannedCount,
       LastEvaluatedKey: resultNextToken = null,
-    } = await this.client.query(params as any).promise();
+    } = await this.client.send(new QueryCommand(params as any));
 
     return {
       items: items.map((item) => unmarshall(item)),
@@ -191,7 +199,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ...(update.expressionValues || {}),
       }),
     };
-    const { Attributes: updated } = await this.client.updateItem(params).promise();
+    const { Attributes: updated } = await this.client.send(new UpdateItemCommand(params));
     return unmarshall(updated);
   }
 
@@ -205,16 +213,16 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         expressionValues = null,
       } = {},
     } = payload;
-    const { Attributes: deleted } = await this.client
-      .deleteItem({
+    const { Attributes: deleted } = await this.client.send(
+      new DeleteItemCommand({
         TableName: this.tableName,
         Key: key,
         ReturnValues: 'ALL_OLD',
         ConditionExpression: expression,
         ExpressionAttributeNames: expressionNames,
         ExpressionAttributeValues: expressionValues,
-      })
-      .promise();
+      }),
+    );
 
     return unmarshall(deleted);
   }
@@ -243,7 +251,11 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         },
       });
     }
-    const { Items: items, ScannedCount: scannedCount, LastEvaluatedKey: resultNextToken = null } = await this.client.scan(params).promise();
+    const {
+      Items: items,
+      ScannedCount: scannedCount,
+      LastEvaluatedKey: resultNextToken = null,
+    } = await this.client.send(new ScanCommand(params));
 
     return {
       items: items.map((item) => unmarshall(item)),
