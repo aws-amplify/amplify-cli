@@ -78,7 +78,7 @@ export const loadFunctionTestFile = (fileName: string): string => {
  */
 export const addNodeDependencies = (root: string, functionName: string, dependencies: string[]): void => {
   const indexPath = path.join(getPathToFunction(root, functionName), 'src');
-  execa.commandSync(`yarn add ${dependencies.join(' ')}`, { cwd: indexPath });
+  execa.sync('yarn', ['add', ...dependencies], { cwd: indexPath });
 };
 
 /**
