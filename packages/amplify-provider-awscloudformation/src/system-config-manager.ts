@@ -94,9 +94,8 @@ export const getProfiledAwsConfig = async (
       // need to force AWS_SDK_LOAD_CONFIG to a truthy value to force ProcessCredentials to prefer the credential process in ~/.aws/config instead of ~/.aws/credentials
       const sdkLoadConfigOriginal = process.env.AWS_SDK_LOAD_CONFIG;
       process.env.AWS_SDK_LOAD_CONFIG = '1';
-      const chain = new CredentialProviderChain();
       const processProvider = () => new ProcessCredentials({ profile: profileName });
-      chain.providers.push(processProvider);
+      const chain = new CredentialProviderChain([processProvider]);
 
       const credentials = await chain.resolvePromise();
       awsConfigInfo = {
