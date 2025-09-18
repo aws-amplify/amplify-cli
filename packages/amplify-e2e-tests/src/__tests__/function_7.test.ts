@@ -22,6 +22,7 @@ describe('function secret value', () => {
   let projRoot: string;
 
   beforeEach(async () => {
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     projRoot = await createNewProjectDir('funcsecrets');
   });
 

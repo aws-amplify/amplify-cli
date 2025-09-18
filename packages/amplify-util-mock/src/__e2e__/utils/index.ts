@@ -12,6 +12,7 @@ import { DynamoDB } from 'aws-sdk';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { querySearchable } from '../../utils/opensearch';
 import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
@@ -44,7 +45,7 @@ export async function launchDDBLocal() {
 
 export async function deploy(
   transformerOutput: any,
-  client?: DynamoDB,
+  client?: DynamoDBClient,
   opensearchURL?: URL,
 ): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
@@ -65,7 +66,7 @@ export async function deploy(
 export async function reDeploy(
   transformerOutput: any,
   simulator: AmplifyAppSyncSimulator,
-  client?: DynamoDB,
+  client?: DynamoDBClient,
 ): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
