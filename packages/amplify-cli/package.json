@@ -36,7 +36,7 @@
   "dependencies": {
     "@aws-amplify/amplify-app": "5.0.43",
     "@aws-amplify/amplify-category-analytics": "5.0.42",
-    "@aws-amplify/amplify-category-api": "^5.15.0",
+    "@aws-amplify/amplify-category-api": "5.15.1-sdk-0-ssmSend.0",
     "@aws-amplify/amplify-category-auth": "3.7.22",
     "@aws-amplify/amplify-category-custom": "3.1.29",
     "@aws-amplify/amplify-category-function": "5.7.15",
