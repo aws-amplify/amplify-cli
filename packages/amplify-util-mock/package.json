@@ -81,6 +81,8 @@
     "aws-appsync": "^4.1.4",
     "aws-cdk-lib": "~2.189.1",
     "aws-sdk": "^2.1464.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0",
     "aws-sdk-mock": "^6.2.0",
     "axios": "^1.11.0",
     "constructs": "^10.0.5",

@@ -1,36 +1,41 @@
 import { createAndUpdateTable, MockDynamoDBConfig } from '../../../utils/dynamo-db';
-import AWS_MOCK from 'aws-sdk-mock';
-import * as AWS from 'aws-sdk';
-import { DynamoDB } from 'aws-sdk';
-
+import {
+  AttributeDefinition,
+  CreateTableCommand,
+  DynamoDBClient,
+  KeySchemaElement,
+  ListTablesCommand,
+  UpdateTableCommand,
+} from '@aws-sdk/client-dynamodb';
+import { mockClient } from 'aws-sdk-client-mock';
 import { createTables, describeTables, getUpdateTableInput, updateTables } from '../../../utils/dynamo-db/utils';
-import { CreateTableInput, GlobalSecondaryIndex } from 'aws-sdk/clients/dynamodb';
+
+const ddbMock = mockClient(DynamoDBClient);
 
 jest.mock('../../../utils/dynamo-db/utils');
 
 describe('createAndUpdateTable', () => {
-  const describeTablesMock = jest.fn();
-  const table1Input: CreateTableInput = {
+  const table1Input = {
     TableName: 'table1',
     AttributeDefinitions: [
       {
         AttributeName: 'id',
         AttributeType: 'S',
-      },
+      } as AttributeDefinition,
       {
         AttributeName: 'name',
         AttributeType: 'S',
-      },
+      } as AttributeDefinition,
     ],
     KeySchema: [
       {
         AttributeName: 'id',
         KeyType: 'HASH',
-      },
+      } as KeySchemaElement,
     ],
   };
 
-  const indexByName: GlobalSecondaryIndex = {
+  const indexByName = {
     IndexName: 'byName',
     KeySchema: [
       {
@@ -38,12 +43,11 @@ describe('createAndUpdateTable', () => {
         KeyType: 'HASH',
       },
     ],
-
     Projection: {
       ProjectionType: 'ALL',
     },
   };
-  const indexByContent: GlobalSecondaryIndex = {
+  const indexByContent = {
     IndexName: 'index1',
     KeySchema: [
       {
@@ -51,20 +55,19 @@ describe('createAndUpdateTable', () => {
         KeyType: 'HASH',
       },
     ],
-
     Projection: {
       ProjectionType: 'ALL',
     },
   };
 
-  const table2Input: CreateTableInput = {
+  const table2Input = {
     ...table1Input,
     AttributeDefinitions: [
       ...table1Input.AttributeDefinitions,
       {
         AttributeName: 'content',
         AttributeType: 'S',
-      },
+      } as AttributeDefinition,
     ],
     TableName: 'table2',
     GlobalSecondaryIndexes: [indexByName, indexByContent],
@@ -73,7 +76,7 @@ describe('createAndUpdateTable', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.useFakeTimers();
-    AWS_MOCK.setSDKInstance(AWS);
+    ddbMock.reset();
   });
 
   it('should create new tables when they are missing', async () => {
@@ -81,26 +84,18 @@ describe('createAndUpdateTable', () => {
       tables: [{ Properties: table1Input, isNewlyAdded: true }],
     };
 
-    const mockListTables = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({ TableNames: [] }),
-    });
+    ddbMock.on(ListTablesCommand).resolves({ TableNames: [] });
+    ddbMock.on(CreateTableCommand).resolves({});
+    ddbMock.on(UpdateTableCommand).resolves({});
 
-    describeTablesMock.mockReturnValue({});
-
-    const ddbClient = {
-      describeTables: describeTablesMock,
-      listTables: mockListTables,
-    };
-    await createAndUpdateTable(ddbClient as unknown as DynamoDB, mockDDBConfig);
-    expect(createTables).toHaveBeenCalledWith(ddbClient, [table1Input]);
+    //const ddbClient = new DynamoDBClient({});
+    await createAndUpdateTable(ddbMock as unknown as DynamoDBClient, mockDDBConfig);
+    expect(createTables).toHaveBeenCalledWith(ddbMock as unknown as DynamoDBClient, [table1Input]);
     expect(getUpdateTableInput).not.toHaveBeenCalled();
-    expect(updateTables).toHaveBeenCalledWith(ddbClient, []);
+    expect(updateTables).toHaveBeenCalledWith(ddbMock as unknown as DynamoDBClient, []);
   });
 
   it('should update existing table with new GSI', async () => {
-    const createTablesMock = jest.fn();
-    const mockListTables = jest.fn();
-
     const getUpdateTableInputResult = [
       {
         ...table2Input,
@@ -116,13 +111,9 @@ describe('createAndUpdateTable', () => {
       },
     ];
 
-    createTablesMock.mockReturnValue(() => {
-      jest.fn().mockResolvedValue([]);
-    });
-
-    mockListTables.mockReturnValue({
-      promise: jest.fn().mockResolvedValue({ TableNames: [table1Input.TableName, table2Input.TableName] }),
-    });
+    ddbMock.on(ListTablesCommand).resolves({ TableNames: [table1Input.TableName, table2Input.TableName] });
+    ddbMock.on(CreateTableCommand).resolves({});
+    ddbMock.on(UpdateTableCommand).resolves({});
 
     (getUpdateTableInput as jest.Mock).mockImplementation((input) => (input === table2Input ? getUpdateTableInputResult : []));
 
@@ -137,15 +128,10 @@ describe('createAndUpdateTable', () => {
         { Properties: table2Input, isNewlyAdded: false },
       ],
     };
-    const ddbClient = {
-      createTables: createTablesMock,
-      listTables: mockListTables,
-      getUpdateTableInput,
-    };
 
-    await createAndUpdateTable(ddbClient as unknown as DynamoDB, mockDDBConfig);
-    expect(createTables).toHaveBeenCalledWith(ddbClient, []);
+    await createAndUpdateTable(ddbMock as unknown as DynamoDBClient, mockDDBConfig);
+    expect(createTables).toHaveBeenCalledWith(ddbMock as unknown as DynamoDBClient, []);
     expect(getUpdateTableInput).toHaveBeenCalledWith(table2Input, { ...table2Input, GlobalSecondaryIndex: [] });
-    expect(updateTables).toHaveBeenCalledWith(ddbClient, getUpdateTableInputResult);
+    expect(updateTables).toHaveBeenCalledWith(ddbMock as unknown as DynamoDBClient, getUpdateTableInputResult);
   });
 });
