@@ -73,6 +73,7 @@
     "verify-api-extract": "yarn extract-api && ./scripts/verify-extract-api.sh",
     "verify-commit": "yarn ts-node ./scripts/verify-commit.ts",
     "verify-yarn-lock": "./scripts/verify-yarn-lock.sh",
+    "view-test-artifact": "./scripts/view-test-artifacts.sh",
     "workflow-results": "yarn ts-node ./scripts/cci-workflow-results.ts"
   },
   "bugs": {
