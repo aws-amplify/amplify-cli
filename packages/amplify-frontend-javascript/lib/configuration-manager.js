@@ -123,7 +123,7 @@ async function confirmFrameworkConfiguration(context) {
       {
         type: 'input',
         name: 'BuildCommand',
-        message: 'Build Command: ',
+        message: 'Build Command:',
         default: config.BuildCommand,
       },
       {
