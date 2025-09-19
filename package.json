@@ -114,7 +114,7 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^29.0.0",
     "@types/js-yaml": "^4.0.0",
-    "@types/node": "^18.16.1",
+    "@types/node": "^20.9.0",
     "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",

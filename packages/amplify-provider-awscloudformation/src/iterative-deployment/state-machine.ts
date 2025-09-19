@@ -10,6 +10,7 @@ import {
   collectError,
 } from './helpers';
 import { send } from 'xstate/lib/actions';
+import { Capability } from '@aws-sdk/client-cloudformation';
 
 export type DeploymentMachineOp = {
   stackTemplatePath: string;
@@ -17,7 +18,7 @@ export type DeploymentMachineOp = {
   parameters: Record<string, string>;
   tableNames: string[];
   stackName: string;
-  capabilities?: string[];
+  capabilities?: Capability[];
   stackTemplateUrl: string;
   region: string;
   clientRequestToken?: string;

@@ -1,27 +1,26 @@
-import type { CloudFormation } from 'aws-sdk';
 import { StackEventMonitor } from '../../iterative-deployment/stack-event-monitor';
+import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
+import { CloudFormationClient, DescribeStackEventsCommand } from '@aws-sdk/client-cloudformation';
 
 const stackProgressPrinterStub = {
   printerFn: jest.fn(),
   addEventActivity: jest.fn(),
 };
 
-const cfn = {
-  describeStackEvents: () => ({
-    promise: () =>
-      Promise.resolve({
-        NextToken: undefined,
-      }),
-  }),
-} as unknown as CloudFormation;
+const mockCfnClient = mockClient(CloudFormationClient);
 
 jest.useFakeTimers();
 jest.spyOn(global, 'setTimeout');
 jest.spyOn(global, 'clearTimeout');
 
 describe('StackEventMonitor', () => {
+  mockCfnClient.on(DescribeStackEventsCommand).resolves({
+    NextToken: undefined,
+  });
+
   const monitor = new StackEventMonitor(
-    cfn,
+    mockCfnClient as unknown as CloudFormationClient,
     'testStackName',
     stackProgressPrinterStub.printerFn,
     stackProgressPrinterStub.addEventActivity,

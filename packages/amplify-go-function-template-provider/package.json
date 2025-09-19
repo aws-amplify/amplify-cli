@@ -30,6 +30,6 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/lodash": "^4.14.149",
-    "@types/node": "^12.12.6"
+    "@types/node": "^20.9.0"
   }
 }

@@ -3,6 +3,7 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import sequential from 'promise-sequential';
 import { APIGateway } from './aws-utils/aws-apigw';
+import { GetSdkCommand } from '@aws-sdk/client-api-gateway';
 
 /**
  * Download API models from API Gateway
@@ -41,7 +42,7 @@ const extractAPIModel = async (context: $TSContext, resource: $TSObject, framewo
 
   const apiName = resource.output.ApiName;
 
-  const data = await apigw.apigw.getSdk(apigwParams).promise();
+  const data = await apigw.apigw.send(new GetSdkCommand(apigwParams));
 
   const backendDir = pathManager.getBackendDirPath();
 

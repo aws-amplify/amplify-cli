@@ -8,6 +8,7 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import { prompt } from 'inquirer';
 import { IAMClient } from '../aws-utils/aws-iam';
+import { GetPolicyCommand } from '@aws-sdk/client-iam';
 
 export const configurePermissionsBoundaryForExistingEnv = async (context: $TSContext) => {
   setPermissionsBoundaryArn(await permissionsBoundarySupplier(context));
@@ -136,10 +137,10 @@ const rolloverPermissionsBoundaryToNewEnvironment = async (context: $TSContext) 
 const isPolicyAccessible = async (context: $TSContext, policyArn: string) => {
   const iamClient = await IAMClient.getInstance(context);
   try {
-    await iamClient.client.getPolicy({ PolicyArn: policyArn }).promise();
+    await iamClient.client.send(new GetPolicyCommand({ PolicyArn: policyArn }));
   } catch (err) {
     // NoSuchEntity error
-    if (err?.statusCode === 404) {
+    if (err?.name.includes('NoSuchEntity')) {
       return false;
     }
     // if it's some other error (such as client credentials don't have getPolicy permissions, or network error)

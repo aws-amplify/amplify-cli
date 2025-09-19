@@ -18,7 +18,7 @@ describe('initialize environment', () => {
     },
   } as unknown as $TSContext;
   it('throws AmplifyError if the deployment bucket does not exist', async () => {
-    downloadZipMock.mockRejectedValueOnce({ code: 'NoSuchBucket' });
+    downloadZipMock.mockRejectedValueOnce({ name: 'NoSuchBucket' });
     const actual = await expect(run(contextStub, {})).rejects;
     await actual.toBeInstanceOf(AmplifyException);
     await actual.toMatchInlineSnapshot(

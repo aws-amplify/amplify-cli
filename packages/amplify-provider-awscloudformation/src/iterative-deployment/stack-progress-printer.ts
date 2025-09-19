@@ -1,5 +1,5 @@
 import { MultiProgressBar } from '@aws-amplify/amplify-prompts';
-import type { StackEvent, StackEvents } from 'aws-sdk/clients/cloudformation';
+import type { StackEvent } from '@aws-sdk/client-cloudformation';
 import chalk from 'chalk';
 import columnify from 'columnify';
 import {
@@ -15,7 +15,7 @@ import { IStackProgressPrinter } from './stack-event-monitor';
  * Iterative deployment stack printer.
  */
 export class StackProgressPrinter implements IStackProgressPrinter {
-  private events: StackEvents = [];
+  private events: StackEvent[] = [];
   private progressBars: MultiProgressBar;
   private eventMap: EventMap;
   private categoriesPrinted: string[] = [];

@@ -15,7 +15,7 @@ import {
   cantHaveMoreThan500ResourcesRule,
   sanityCheckDiffs,
 } from 'graphql-transformer-core';
-import { CloudFormation } from 'aws-sdk';
+import { CloudFormationClient, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 import { Diff } from 'deep-diff';
 import _ from 'lodash';
 import fs from 'fs-extra';
@@ -40,7 +40,7 @@ const SEARCHABLE_STACK_NAME = 'SearchableStack';
  * Type for GQLResourceManagerProps
  */
 export type GQLResourceManagerProps = {
-  cfnClient: CloudFormation;
+  cfnClient: CloudFormationClient;
   resourceMeta?: ResourceMeta;
   backendDir: string;
   cloudBackendDir: string;
@@ -73,7 +73,7 @@ export type ResourceMeta = {
 export class GraphQLResourceManager {
   static serviceName = 'AppSync';
   static categoryName = 'api';
-  private cfnClient: CloudFormation;
+  private cfnClient: CloudFormationClient;
   private resourceMeta: ResourceMeta;
   private cloudBackendApiProjectRoot: string;
   private backendApiProjectRoot: string;
@@ -89,10 +89,12 @@ export class GraphQLResourceManager {
     rebuildAllTables = false,
   ): Promise<GraphQLResourceManager> => {
     const cred = await loadConfiguration(context);
-    const cfn = new CloudFormation(cred);
-    const apiStack = await cfn
-      .describeStackResources({ StackName: StackId, LogicalResourceId: gqlResource.providerMetadata.logicalId })
-      .promise();
+    const cfn = new CloudFormationClient(cred);
+    const describeStackResourcesCommand = new DescribeStackResourcesCommand({
+      StackName: StackId,
+      LogicalResourceId: gqlResource.providerMetadata.logicalId,
+    });
+    const apiStack = await cfn.send(describeStackResourcesCommand);
 
     return new GraphQLResourceManager({
       cfnClient: cfn,

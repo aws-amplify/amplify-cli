@@ -31,27 +31,29 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 jest.mock('../../../extensions/amplify-helpers/get-plugin-instance', () => ({
   getPluginInstance: jest.fn().mockReturnValue({
     getConfiguredAmplifyClient: jest.fn().mockResolvedValue({
-      listBackendEnvironments: jest.fn().mockReturnValue({
-        promise: jest
-          .fn()
-          .mockImplementationOnce(() => ({
+      send: jest
+        .fn()
+        // first ListBackendEnv Call
+        .mockImplementationOnce(() =>
+          Promise.resolve({
             backendEnvironments: [],
-          }))
-          .mockImplementationOnce(() => {
-            throw new Error('listBackendEnvironments error');
-          })
-          .mockImplementationOnce(() => {
-            // eslint-disable-next-line no-throw-literal
-            throw {
-              name: 'BucketNotFoundError',
-              message: 'Bucket not found',
-              link: 'https://docs.aws.amazon.com/',
-            };
           }),
-      }),
-      deleteApp: jest.fn().mockReturnValue({
-        promise: jest.fn().mockResolvedValue(true),
-      }),
+        )
+        // DeleteApp call
+        .mockImplementationOnce(() => Promise.resolve(true))
+        // second ListBackendEnv Call
+        .mockImplementationOnce(() => {
+          throw new Error('listBackendEnvironments error');
+        })
+        // third ListBackendEnv Call
+        .mockImplementationOnce(() => {
+          // eslint-disable-next-line no-throw-literal
+          throw {
+            name: 'BucketNotFoundError',
+            message: 'Bucket not found',
+            link: 'https://docs.aws.amazon.com/',
+          };
+        }),
     }),
   }),
 }));

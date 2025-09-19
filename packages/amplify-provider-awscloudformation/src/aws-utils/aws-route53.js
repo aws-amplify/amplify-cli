@@ -1,5 +1,6 @@
 // @ts-check
-const aws = require('./aws.js');
+const { Route53Client } = require('@aws-sdk/client-route-53');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 const configurationManager = require('../configuration-manager');
 const { proxyAgent } = require('./aws-globals');
 
@@ -15,13 +16,14 @@ class Route53 {
       }
       this.context = context;
 
-      /** @type {AWS.Route53} */
-      this.route53 = new aws.Route53({
+      /** @type {Route53Client} */
+      this.route53 = new Route53Client({
         ...cred,
         ...options,
-        httpOptions: {
-          agent: proxyAgent(),
-        },
+        requestHandler: new NodeHttpHandler({
+          httpAgent: proxyAgent(),
+          httpsAgent: proxyAgent(),
+        }),
       });
 
       return this;

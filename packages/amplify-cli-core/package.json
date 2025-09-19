@@ -68,7 +68,7 @@
     "@types/hjson": "^2.4.2",
     "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.149",
-    "@types/node": "^12.12.6",
+    "@types/node": "^20.9.0",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
     "@types/yarnpkg__lockfile": "^1.1.5",

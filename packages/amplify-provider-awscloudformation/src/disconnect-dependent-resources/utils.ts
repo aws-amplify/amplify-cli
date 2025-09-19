@@ -9,13 +9,13 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { CloudFormation } from 'aws-sdk';
 import _ from 'lodash';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { S3 } from '../aws-utils/aws-s3';
 import { fileLogger } from '../utils/aws-logger';
 import { getPreviousDeploymentRecord } from '../utils/amplify-resource-state-utils';
 import { DeploymentOp, DeploymentStep } from '../iterative-deployment';
+import { CloudFormationClient, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
 
 const logger = fileLogger('disconnect-dependent-resources');
 
@@ -81,7 +81,7 @@ export const uploadTempFuncDeploymentFiles = async (s3Client: S3, funcNames: str
  * Generates the iterative deployment steps necessary to remove then re-add function dependency on rebuilt table
  */
 export const generateIterativeFuncDeploymentSteps = async (
-  cfnClient: CloudFormation,
+  cfnClient: CloudFormationClient,
   rootStackId: string,
   functionNames: string[],
 ): Promise<{ deploymentSteps: DeploymentStep[]; lastMetaKey: string }> => {
@@ -130,13 +130,13 @@ export const prependDeploymentSteps = (
  * Also writes the deployment operation to the temp meta path
  */
 const generateIterativeFuncDeploymentOp = async (
-  cfnClient: CloudFormation,
+  cfnClient: CloudFormationClient,
   rootStackId: string,
   functionName: string,
 ): Promise<DeploymentOp> => {
-  const funcStack = await cfnClient
-    .describeStackResources({ StackName: rootStackId, LogicalResourceId: `function${functionName}` })
-    .promise();
+  const funcStack = await cfnClient.send(
+    new DescribeStackResourcesCommand({ StackName: rootStackId, LogicalResourceId: `function${functionName}` }),
+  );
 
   if (!funcStack.StackResources || funcStack.StackResources.length === 0) {
     throw new AmplifyFault('ResourceNotFoundFault', {

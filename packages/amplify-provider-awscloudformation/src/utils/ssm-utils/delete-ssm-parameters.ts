@@ -1,10 +1,10 @@
 import { $TSContext, AmplifyFault, IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import type { SSM as SSMType } from 'aws-sdk';
 import { SSM } from '../../aws-utils/aws-ssm';
 import { resolveAppId } from '../resolve-appId';
 import { executeSdkPromisesWithExponentialBackOff } from './exp-backoff-executor';
 import { getSsmSdkParametersDeleteParameters, getSsmSdkParametersGetParametersByPath } from './get-ssm-sdk-parameters';
+import { DeleteParametersCommand, DeleteParametersResult, GetParametersByPathCommand, SSMClient } from '@aws-sdk/client-ssm';
 
 /**
  * Delete all CloudFormation parameters from the service for a given environment
@@ -55,7 +55,7 @@ export const deleteEnvironmentParametersForResources = async (
   await deleteParametersFromParameterStore(client, removedParameterKeys);
 };
 
-const deleteParametersFromParameterStore = async (ssmClient: SSMType, parameterKeys: string[]): Promise<void> => {
+const deleteParametersFromParameterStore = async (ssmClient: SSMClient, parameterKeys: string[]): Promise<void> => {
   if (parameterKeys.length === 0) {
     return;
   }
@@ -63,10 +63,10 @@ const deleteParametersFromParameterStore = async (ssmClient: SSMType, parameterK
     const chunkedKeys = chunkForParameterStore(parameterKeys);
     const deleteKeysFromPSPromises = chunkedKeys.map((keys) => {
       const ssmArgument = getSsmSdkParametersDeleteParameters(keys);
-      return () => ssmClient.deleteParameters(ssmArgument).promise();
+      return () => ssmClient.send(new DeleteParametersCommand(ssmArgument));
     });
 
-    await executeSdkPromisesWithExponentialBackOff<SSMType.DeleteParametersResult>(deleteKeysFromPSPromises);
+    await executeSdkPromisesWithExponentialBackOff<DeleteParametersResult>(deleteKeysFromPSPromises);
   } catch (e) {
     throw new AmplifyFault(
       'ParametersDeleteFault',
@@ -85,12 +85,12 @@ function isAmplifyParameter(parameter: string) {
   return lastPartOfPath.startsWith(keyPrefix);
 }
 
-const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMType): Promise<Array<string>> => {
+const getAllEnvParametersFromParameterStore = async (appId: string, envName: string, ssmClient: SSMClient): Promise<Array<string>> => {
   const parametersUnderPath: Array<string> = [];
   let receivedNextToken = '';
   do {
     const ssmArgument = getSsmSdkParametersGetParametersByPath(appId, envName, receivedNextToken);
-    const [data] = await executeSdkPromisesWithExponentialBackOff([() => ssmClient.getParametersByPath(ssmArgument).promise()]);
+    const [data] = await executeSdkPromisesWithExponentialBackOff([() => ssmClient.send(new GetParametersByPathCommand(ssmArgument))]);
     parametersUnderPath.push(
       ...data.Parameters.map((returnedParameter) => returnedParameter.Name).filter((name) => isAmplifyParameter(name)),
     );

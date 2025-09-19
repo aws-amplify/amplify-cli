@@ -1,5 +1,11 @@
 import { AmplifyError, JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { EC2 } from 'aws-sdk';
+import {
+  EC2Client,
+  DescribeAvailabilityZonesCommand,
+  DescribeVpcsCommand,
+  DescribeInternetGatewaysCommand,
+  DescribeSubnetsCommand,
+} from '@aws-sdk/client-ec2';
 import { Netmask } from 'netmask';
 import { loadConfiguration } from '../configuration-manager';
 import { RESOURCE_TAG } from './stack';
@@ -28,9 +34,9 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     // ignore missing config
   }
 
-  const ec2 = new EC2({ ...cred });
+  const ec2Client = new EC2Client(cred);
 
-  const { AvailabilityZones } = await ec2.describeAvailabilityZones().promise();
+  const { AvailabilityZones } = await ec2Client.send(new DescribeAvailabilityZonesCommand({}));
 
   if (subnetsCount > AvailabilityZones.length) {
     const subnets = subnetsCount;
@@ -44,11 +50,11 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     });
   }
 
-  const { Vpcs } = await ec2
-    .describeVpcs({
+  const { Vpcs } = await ec2Client.send(
+    new DescribeVpcsCommand({
       Filters: [{ Name: 'tag:Name', Values: [vpcName] }],
-    })
-    .promise();
+    }),
+  );
 
   if (Vpcs.length === 0) {
     // we need a new one
@@ -69,8 +75,8 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     });
   }
 
-  const { InternetGateways } = await ec2
-    .describeInternetGateways({
+  const { InternetGateways } = await ec2Client.send(
+    new DescribeInternetGatewaysCommand({
       Filters: [
         {
           Name: 'attachment.vpc-id',
@@ -81,8 +87,8 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
           Values: ['available'],
         },
       ],
-    })
-    .promise();
+    }),
+  );
 
   if (vpcId && InternetGateways.length === 0) {
     throw new AmplifyError('ConfigurationError', {
@@ -92,7 +98,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
 
   const [{ InternetGatewayId: internetGatewayId = undefined } = {}] = InternetGateways;
 
-  const { Subnets } = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
+  const { Subnets } = await ec2Client.send(new DescribeSubnetsCommand({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }));
 
   const availabilityZonesIterator = new (class implements IterableIterator<string> {
     private counter = 0;

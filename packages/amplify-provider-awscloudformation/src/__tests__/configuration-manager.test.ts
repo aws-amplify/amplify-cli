@@ -58,12 +58,15 @@ describe('load configuration for env', () => {
     } as $TSContext;
     const result = await loadConfigurationForEnv(contextStub, 'test');
     expect(result).toMatchInlineSnapshot(`
-{
-  "accessKeyId": "testAccessKey",
-  "region": "us-test-1",
-  "secretAccessKey": "testSecretKey",
-}
-`);
+      {
+        "credentials": {
+          "accessKeyId": "testAccessKey",
+          "secretAccessKey": "testSecretKey",
+          "sessionToken": undefined,
+        },
+        "region": "us-test-1",
+      }
+    `);
     expect(resolveRegionSpy).not.toBeCalled();
   });
 
@@ -82,12 +85,15 @@ describe('load configuration for env', () => {
     process.env.AWS_REGION = 'us-test-2';
     const result = await loadConfigurationForEnv(contextStub, 'test');
     expect(result).toMatchInlineSnapshot(`
-{
-  "accessKeyId": "testAccessKey",
-  "region": "us-test-2",
-  "secretAccessKey": "testSecretKey",
-}
-`);
+      {
+        "credentials": {
+          "accessKeyId": "testAccessKey",
+          "secretAccessKey": "testSecretKey",
+          "sessionToken": undefined,
+        },
+        "region": "us-test-2",
+      }
+    `);
     process.env.AWS_REGION = origRegion;
   });
 });

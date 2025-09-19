@@ -1,6 +1,5 @@
 import { AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
 import * as assert from 'assert';
-import { CognitoIdentity } from 'aws-sdk';
 import bodyParser from 'body-parser'; // eslint-disable-line
 import cors from 'cors';
 import express from 'express'; // eslint-disable-line
@@ -10,6 +9,7 @@ import _ from 'lodash';
 
 import { Printer } from '@aws-amplify/amplify-prompts';
 import { AdminAuthPayload, CognitoAccessToken, CognitoIdToken } from './auth-types';
+import { CognitoIdentityClient, GetIdCommand } from '@aws-sdk/client-cognito-identity';
 
 /**
  * Admin login server class
@@ -61,17 +61,17 @@ export class AdminLoginServer {
 
   private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> {
     // eslint-disable-line
-    const cognitoIdentity = new CognitoIdentity({ region });
+    const cognitoIdentity = new CognitoIdentityClient({ region });
     const login = idToken.payload.iss.replace('https://', '');
     const logins = {
       [login]: idToken.jwtToken,
     };
-    const { IdentityId } = await cognitoIdentity
-      .getId({
+    const { IdentityId } = await cognitoIdentity.send(
+      new GetIdCommand({
         IdentityPoolId,
         Logins: logins,
-      })
-      .promise();
+      }),
+    );
     if (!IdentityId) {
       throw new AmplifyError('AmplifyStudioLoginError', {
         message: 'IdentityId not defined. Amplify CLI was unable to retrieve credentials.',

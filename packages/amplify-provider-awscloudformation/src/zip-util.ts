@@ -1,10 +1,19 @@
 import { AmplifyFault, extract } from '@aws-amplify/amplify-cli-core';
 import fs from 'fs-extra';
 import path from 'path';
+import { Readable } from 'stream';
 import { S3 } from './aws-utils/aws-s3';
 import { fileLogger } from './utils/aws-logger';
 
 const logger = fileLogger('zip-util');
+
+export const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+};
 
 /**
  * Downloads a zip file from S3
@@ -23,7 +32,7 @@ export const downloadZip = async (s3: S3, tempDir: string, zipFileName: string, 
   // that doesn't seem to exist in runtime.
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const buff = Buffer.from(objectResult);
+  const buff = await streamToBuffer(objectResult as ReadableStream);
   const tempFile = `${tempDir}/${zipFileName}`;
   await fs.writeFile(tempFile, buff);
 

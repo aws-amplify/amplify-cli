@@ -1,13 +1,13 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import aws from './aws.js';
-import { APIGateway as APIGW } from 'aws-sdk';
+import { APIGatewayClient, APIGatewayClientConfig } from '@aws-sdk/client-api-gateway';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { loadConfiguration } from '../configuration-manager';
 import { proxyAgent } from './aws-globals';
 
 export class APIGateway {
   private static instance: APIGateway;
   private readonly context: $TSContext;
-  public readonly apigw: APIGW;
+  public readonly apigw: APIGatewayClient;
 
   static async getInstance(context: $TSContext, options = {}): Promise<APIGateway> {
     if (!APIGateway.instance) {
@@ -25,12 +25,16 @@ export class APIGateway {
 
   constructor(context: $TSContext, creds, options = {}) {
     this.context = context;
-    this.apigw = new aws.APIGateway({
+
+    const clientConfig: APIGatewayClientConfig = {
       ...creds,
       ...options,
-      httpOptions: {
-        agent: proxyAgent(),
-      },
-    });
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
+    };
+
+    this.apigw = new APIGatewayClient(clientConfig);
   }
 }

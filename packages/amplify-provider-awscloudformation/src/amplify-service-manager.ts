@@ -9,6 +9,15 @@ import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-c
 import { $TSContext, stateManager, AmplifyFault, AmplifyError } from '@aws-amplify/amplify-cli-core';
 import { fileLogger } from './utils/aws-logger';
 import { loadConfigurationForEnv } from './configuration-manager';
+import {
+  CreateAppCommand,
+  CreateBackendEnvironmentCommand,
+  DeleteBackendEnvironmentCommand,
+  GetAppCommand,
+  GetBackendEnvironmentCommand,
+  ListAppsCommand,
+  ListBackendEnvironmentsCommand,
+} from '@aws-sdk/client-amplify';
 
 const logger = fileLogger('amplify-service-manager');
 
@@ -47,11 +56,7 @@ export async function init(amplifyServiceParams) {
     ])();
 
     try {
-      const getAppResult = await amplifyClient
-        .getApp({
-          appId: inputAmplifyAppId,
-        })
-        .promise();
+      const getAppResult = await amplifyClient.send(new GetAppCommand({ appId: inputAmplifyAppId }));
       context.print.info(`Amplify AppID found: ${inputAmplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
       amplifyAppId = inputAmplifyAppId;
     } catch (e) {
@@ -95,12 +100,12 @@ export async function init(amplifyServiceParams) {
               maxResults: 25,
             },
           ])();
-          listAppsResponse = await amplifyClient
-            .listApps({
+          listAppsResponse = await amplifyClient.send(
+            new ListAppsCommand({
               nextToken: listAppsResponse.nextToken,
               maxResults: 25,
-            })
-            .promise();
+            }),
+          );
           apps = apps.concat(listAppsResponse.apps);
         } while (listAppsResponse.nextToken);
 
@@ -126,11 +131,11 @@ export async function init(amplifyServiceParams) {
     logger('init.amplifyClient.createApp', [createAppParams])();
     try {
       if (amplifyAppCreationEnabled()) {
-        const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
+        const createAppResponse = await amplifyClient.send(new CreateAppCommand(createAppParams));
         amplifyAppId = createAppResponse.app.appId;
       }
     } catch (e) {
-      if (e.code === 'LimitExceededException') {
+      if (e.name === 'LimitExceededException') {
         throw new AmplifyError(
           'ProjectInitError',
           {
@@ -141,9 +146,9 @@ export async function init(amplifyServiceParams) {
           e,
         );
       }
-      if (context?.exeInfo?.awsConfigInfo?.configLevel === 'general' && e.code === 'ConfigError') {
+      if (context?.exeInfo?.awsConfigInfo?.configLevel === 'general' && e.name === 'ConfigError') {
         throw new AmplifyError('ConfigurationError', {
-          code: e.code,
+          code: e.name,
           message: e.message,
           resolution: 'https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html',
         });
@@ -177,12 +182,12 @@ export async function init(amplifyServiceParams) {
 
   try {
     log();
-    const { backendEnvironment } = await amplifyClient
-      .getBackendEnvironment({
+    const { backendEnvironment } = await amplifyClient.send(
+      new GetBackendEnvironmentCommand({
         appId: amplifyAppId,
         environmentName: envName,
-      })
-      .promise();
+      }),
+    );
 
     if (backendEnvironment) {
       verifiedStackName = backendEnvironment.stackName;
@@ -204,7 +209,7 @@ export async function init(amplifyServiceParams) {
       deploymentArtifacts: deploymentBucketName,
     };
     logger('init.amplifyClient.getBackendEnvironment', [createEnvParams])();
-    await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+    await amplifyClient.send(new CreateBackendEnvironmentCommand(createEnvParams));
   }
 
   return {
@@ -241,9 +246,9 @@ export async function deleteEnv(context: $TSContext, envName: string, awsConfigI
       };
       logger('deleteEnv.amplifyClient.deleteBackendEnvironment', [deleteEnvParams])();
       try {
-        await amplifyClient.deleteBackendEnvironment(deleteEnvParams).promise();
+        await amplifyClient.send(new DeleteBackendEnvironmentCommand(deleteEnvParams));
       } catch (ex) {
-        if (ex.code === 'NotFoundException') {
+        if (ex.name === 'NotFoundException') {
           context.print.warning(ex.message);
         } else {
           throw new AmplifyFault(
@@ -325,14 +330,14 @@ export async function postPushCheck(context) {
       logger('postPushCheck.amplifyClient.createApp', [createAppParams])();
       try {
         if (amplifyAppCreationEnabled()) {
-          const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
+          const createAppResponse = await amplifyClient.send(new CreateAppCommand(createAppParams));
           amplifyAppId = createAppResponse.app.appId;
         }
       } catch (e) {
-        if (e.code === 'LimitExceededException') {
+        if (e.name === 'LimitExceededException') {
           // Do nothing
         } else if (
-          e.code === 'BadRequestException' &&
+          e.name === 'BadRequestException' &&
           e.message.includes('Rate exceeded while calling CreateApp, please slow down or try again later.')
         ) {
           // Do nothing
@@ -359,7 +364,7 @@ export async function postPushCheck(context) {
       deploymentArtifacts: teamProviderInfo[envName][ProviderName].DeploymentBucketName,
     };
     logger('postPushCheck.amplifyClient.createBackendEnvironment', [createEnvParams])();
-    await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+    await amplifyClient.send(new CreateBackendEnvironmentCommand(createEnvParams));
   }
 
   providerMeta[AmplifyAppIdLabel] = amplifyAppId;
@@ -439,12 +444,12 @@ async function searchAmplifyService(amplifyClient, stackName): Promise<AmplifySe
         maxResults: 25,
       },
     ])();
-    listAppsResponse = await amplifyClient
-      .listApps({
+    listAppsResponse = await amplifyClient.send(
+      new ListAppsCommand({
         nextToken: listAppsResponse.nextToken,
         maxResults: 25,
-      })
-      .promise();
+      }),
+    );
     result.apps = result.apps.concat(listAppsResponse.apps);
   } while (listAppsResponse.nextToken);
 
@@ -458,12 +463,12 @@ async function searchAmplifyService(amplifyClient, stackName): Promise<AmplifySe
             nextToken: listEnvResponse.nextToken,
           },
         ])();
-        listEnvResponse = await amplifyClient
-          .listBackendEnvironments({
+        listEnvResponse = await amplifyClient.send(
+          new ListBackendEnvironmentsCommand({
             appId: listAppsResponse.apps[i].appId,
             nextToken: listEnvResponse.nextToken,
-          })
-          .promise();
+          }),
+        );
 
         for (let j = 0; j < listEnvResponse.backendEnvironments.length; j++) {
           if (listEnvResponse.backendEnvironments[j].stackName === stackName) {

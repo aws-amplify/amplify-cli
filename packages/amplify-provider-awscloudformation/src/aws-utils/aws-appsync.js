@@ -1,4 +1,5 @@
-const aws = require('./aws.js');
+const { AppSyncClient } = require('@aws-sdk/client-appsync');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 const configurationManager = require('../configuration-manager');
 const { proxyAgent } = require('./aws-globals');
 
@@ -13,12 +14,13 @@ class AppSync {
       }
 
       this.context = context;
-      this.appSync = new aws.AppSync({
+      this.appSync = new AppSyncClient({
         ...cred,
         ...options,
-        httpOptions: {
-          agent: proxyAgent(),
-        },
+        requestHandler: new NodeHttpHandler({
+          httpAgent: proxyAgent(),
+          httpsAgent: proxyAgent(),
+        }),
       });
       return this;
     })();

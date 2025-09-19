@@ -1,4 +1,5 @@
-const aws = require('./aws.js');
+const { PollyClient } = require('@aws-sdk/client-polly');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 const configurationManager = require('../configuration-manager');
 const { proxyAgent } = require('./aws-globals');
 
@@ -12,13 +13,14 @@ class Polly {
         // ignore missing config
       }
       this.context = context;
-      this.polly = new aws.Polly({
+      this.polly = new PollyClient({
         ...cred,
         ...options,
         apiVersion: '2016-06-10',
-        httpOptions: {
-          agent: proxyAgent(),
-        },
+        requestHandler: new NodeHttpHandler({
+          httpAgent: proxyAgent(),
+          httpsAgent: proxyAgent(),
+        }),
       });
       return this;
     })();

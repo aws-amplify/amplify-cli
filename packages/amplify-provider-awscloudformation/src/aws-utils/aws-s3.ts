@@ -12,10 +12,25 @@ import _ from 'lodash';
 
 import fs from 'fs-extra';
 import ora from 'ora';
-import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
+import {
+  S3Client,
+  GetObjectCommand,
+  CreateBucketCommand,
+  HeadBucketCommand,
+  ListObjectVersionsCommand,
+  DeleteObjectsCommand,
+  HeadObjectCommand,
+  DeleteObjectCommand,
+  DeleteBucketCommand,
+  waitUntilBucketExists,
+  ListObjectVersionsCommandOutput,
+  ObjectIdentifier,
+  ListObjectVersionsCommandInput,
+} from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { pagedAWSCall } from './paged-call';
 import { loadConfiguration } from '../configuration-manager';
-import aws from './aws';
 import { proxyAgent } from './aws-globals';
 
 const providerName = require('../constants').ProviderName;
@@ -34,7 +49,7 @@ type OptionalExceptFor<T, TRequired extends keyof T> = Partial<T> & Pick<T, TReq
 export class S3 {
   private static instance: S3;
   private readonly context: $TSContext;
-  private readonly s3: AWS.S3;
+  private readonly s3: S3Client;
   private uploadState: {
     envName: string;
     s3Params: {
@@ -64,12 +79,13 @@ export class S3 {
 
   private constructor(context: $TSContext, cred: $TSAny, options = {}) {
     this.context = context;
-    this.s3 = new aws.S3({
+    this.s3 = new S3Client({
       ...cred,
       ...options,
-      httpOptions: {
-        agent: proxyAgent(),
-      },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     });
   }
 
@@ -145,13 +161,16 @@ export class S3 {
         // the ratio from before https://github.com/aws-amplify/amplify-cli/pull/13493.
         augmentedS3Params.Body = await consumers.buffer(augmentedS3Params.Body);
       }
-      uploadTask = this.s3.upload(augmentedS3Params);
+      uploadTask = new Upload({
+        client: this.s3,
+        params: augmentedS3Params,
+      });
       if (showSpinner) {
-        uploadTask.on('httpUploadProgress', (max) => {
-          spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
+        uploadTask.on('httpUploadProgress', (progress) => {
+          spinner.text = `Uploading files...${Math.round((progress.loaded / progress.total) * 100)}%`;
         });
       }
-      await uploadTask.promise();
+      await uploadTask.done();
       return this.uploadState.s3Params.Bucket;
     } finally {
       if (showSpinner) {
@@ -170,7 +189,7 @@ export class S3 {
     s3Params = this.attachBucketToParams(s3Params, envName);
     logger('s3.getFile', [s3Params])();
 
-    const result = await this.s3.getObject(s3Params).promise();
+    const result = await this.s3.send(new GetObjectCommand(s3Params));
     return result.Body;
   }
 
@@ -192,9 +211,9 @@ export class S3 {
       );
       this.context.print.warning(`Bucket name: ${bucketName}`);
       logger('createBucket.s3.createBucket', [params])();
-      await this.s3.createBucket(params).promise();
+      await this.s3.send(new CreateBucketCommand(params));
       logger('createBucket.s3.waitFor', ['bucketExists', params])();
-      await this.s3.waitFor('bucketExists', params).promise();
+      await waitUntilBucketExists({ client: this.s3, maxWaitTime: 60 }, params);
       this.context.print.success('S3 bucket successfully created');
     } else if (throwIfExists) {
       throw new AmplifyError('BucketAlreadyExistsError', {
@@ -212,13 +231,13 @@ export class S3 {
    */
   async getAllObjectVersions(
     bucketName: string,
-    options: OptionalExceptFor<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
+    options: OptionalExceptFor<ListObjectVersionsCommandOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
   ) {
-    const result = await pagedAWSCall<ListObjectVersionsOutput, Required<ObjectIdentifier>, typeof options, ListObjectVersionsRequest>(
+    const result = await pagedAWSCall<ListObjectVersionsCommandOutput, ObjectIdentifier, typeof options, ListObjectVersionsCommandInput>(
       async (param, nextToken?) => {
         const parmaWithNextToken = nextToken ? { ...param, ...nextToken } : param;
         logger('getAllObjectKey.s3.listObjectVersions', [parmaWithNextToken])();
-        const objVersionList = await this.s3.listObjectVersions(parmaWithNextToken).promise();
+        const objVersionList = await this.s3.send(new ListObjectVersionsCommand(parmaWithNextToken));
         return objVersionList;
       },
       {
@@ -246,14 +265,14 @@ export class S3 {
     const chunkedResultLength = chunkedResult.length;
     for (let idx = 0; idx < chunkedResultLength; idx += 1) {
       logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
-      await this.s3
-        .deleteObjects({
+      await this.s3.send(
+        new DeleteObjectsCommand({
           Bucket: bucketName,
           Delete: {
             Objects: chunkedResult[idx],
           },
-        })
-        .promise();
+        }),
+      );
     }
   }
 
@@ -266,12 +285,12 @@ export class S3 {
   public async checkExistObject(bucketName: string, filePath: string): Promise<boolean> {
     logger('checkExistObject.s3', [{ BucketName: bucketName, FilePath: filePath }])();
     try {
-      await this.s3
-        .headObject({
+      await this.s3.send(
+        new HeadObjectCommand({
           Bucket: bucketName,
           Key: filePath,
-        })
-        .promise();
+        }),
+      );
       return true;
     } catch (error) {
       logger('checkExistObject.s3', [{ BucketName: bucketName, FilePath: filePath, Error: error.name }])();
@@ -288,12 +307,12 @@ export class S3 {
     logger('deleteObject.s3', [{ BucketName: bucketName, FilePath: filePath }])();
     const objExists = await this.checkExistObject(bucketName, filePath);
     if (objExists) {
-      await this.s3
-        .deleteObject({
+      await this.s3.send(
+        new DeleteObjectCommand({
           Bucket: bucketName,
           Key: filePath,
-        })
-        .promise();
+        }),
+      );
     }
   }
 
@@ -308,14 +327,14 @@ export class S3 {
     const chunkedResultLength = chunkedResult.length;
     for (let idx = 0; idx < chunkedResultLength; idx += 1) {
       logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
-      await this.s3
-        .deleteObjects({
+      await this.s3.send(
+        new DeleteObjectsCommand({
           Bucket: bucketName,
           Delete: {
             Objects: chunkedResult[idx],
           },
-        })
-        .promise();
+        }),
+      );
     }
   }
 
@@ -329,7 +348,7 @@ export class S3 {
       logger('deleteS3Bucket.s3.deleteAllObjects', [{ BucketName: bucketName }])();
       await this.deleteAllObjects(bucketName);
       logger('deleteS3Bucket.s3.deleteBucket', [{ BucketName: bucketName }])();
-      await this.s3.deleteBucket({ Bucket: bucketName }).promise();
+      await this.s3.send(new DeleteBucketCommand({ Bucket: bucketName }));
     }
   }
 
@@ -351,16 +370,16 @@ export class S3 {
   public async ifBucketExists(bucketName: string): Promise<boolean> {
     try {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])();
-      await this.s3
-        .headBucket({
+      await this.s3.send(
+        new HeadBucketCommand({
           Bucket: bucketName,
-        })
-        .promise();
+        }),
+      );
       return true;
     } catch (e) {
       logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])(e);
 
-      if (e.code === 'NotFound') {
+      if (e.name === 'NotFound') {
         throw new AmplifyError(
           'BucketNotFoundError',
           {
@@ -389,16 +408,21 @@ export class S3 {
    */
   public getStringObjectFromBucket = async (bucketName: string, objectKey: string): Promise<string | undefined> => {
     try {
-      const result = await this.s3
-        .getObject({
+      const result = await this.s3.send(
+        new GetObjectCommand({
           Bucket: bucketName,
           Key: objectKey,
-        })
-        .promise();
+        }),
+      );
 
-      return result.Body.toString();
+      // Convert the stream to string
+      if (result.Body) {
+        const bodyContents = await result.Body.transformToString();
+        return bodyContents;
+      }
+      return undefined;
     } catch (e) {
-      if (e.statusCode === 404) {
+      if (e.$metadata?.httpStatusCode === 404) {
         return undefined;
       }
 

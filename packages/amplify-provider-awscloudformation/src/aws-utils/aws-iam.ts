@@ -1,6 +1,5 @@
-import aws from './aws.js';
-import awstype from 'aws-sdk';
-import { IAM } from 'aws-sdk';
+import { IAMClient as IAM, IAMClientConfig } from '@aws-sdk/client-iam';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { AwsSdkConfig } from '../utils/auth-types.js';
 import { getAwsConfig } from '../configuration-manager';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
@@ -10,7 +9,7 @@ export class IAMClient {
   private static instance: IAMClient;
   public readonly client: IAM;
 
-  static async getInstance(context: $TSContext, options: IAM.ClientConfiguration = {}): Promise<IAMClient> {
+  static async getInstance(context: $TSContext, options: IAMClientConfig = {}): Promise<IAMClient> {
     if (!IAMClient.instance) {
       let cred: AwsSdkConfig;
       try {
@@ -24,13 +23,14 @@ export class IAMClient {
     return IAMClient.instance;
   }
 
-  private constructor(creds: AwsSdkConfig, options: IAM.ClientConfiguration = {}) {
-    this.client = new (aws as typeof awstype).IAM({
+  private constructor(creds: AwsSdkConfig, options: IAMClientConfig = {}) {
+    this.client = new IAM({
       ...creds,
       ...options,
-      httpOptions: {
-        agent: proxyAgent(),
-      },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     });
   }
 }
