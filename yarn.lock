@@ -905,6 +905,7 @@ __metadata:
     "@aws-amplify/graphql-transformer-interfaces": ^3.12.0
     "@aws-amplify/graphql-transformer-migrator": ^2.2.32
     "@aws-sdk/client-dynamodb": ^3.624.0
+    "@aws-sdk/client-dynamodb-streams": ^3.624.0
     "@hapi/topo": ^5.0.0
     "@types/detect-port": ^1.3.0
     "@types/jest": ^29.0.0
@@ -918,10 +919,8 @@ __metadata:
     amplify-storage-simulator: 1.11.7
     aws-appsync: ^4.1.4
     aws-cdk-lib: ~2.189.1
-    aws-sdk: ^2.1464.0
     aws-sdk-client-mock: ^4.1.0
     aws-sdk-client-mock-jest: ^4.1.0
-    aws-sdk-mock: ^6.2.0
     axios: ^1.11.0
     chokidar: ^3.5.3
     constructs: ^10.0.5
@@ -2452,6 +2451,53 @@ __metadata:
     tslib: ^2.0.0
     uuid: ^3.0.0
   checksum: 6ca9adc591ce4da8309591bc18f52d825ba3fa129b4fa8f1093bb1575aeacc297bcbf5a750196988153f2463e3ee130168b4bfc0ef0ff0b8ab98a68affe45872
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-dynamodb-streams@npm:^3.624.0":
+  version: 3.891.0
+  resolution: "@aws-sdk/client-dynamodb-streams@npm:3.891.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 5.2.0
+    "@aws-crypto/sha256-js": 5.2.0
+    "@aws-sdk/core": 3.890.0
+    "@aws-sdk/credential-provider-node": 3.891.0
+    "@aws-sdk/middleware-host-header": 3.891.0
+    "@aws-sdk/middleware-logger": 3.891.0
+    "@aws-sdk/middleware-recursion-detection": 3.891.0
+    "@aws-sdk/middleware-user-agent": 3.891.0
+    "@aws-sdk/region-config-resolver": 3.890.0
+    "@aws-sdk/types": 3.887.0
+    "@aws-sdk/util-endpoints": 3.891.0
+    "@aws-sdk/util-user-agent-browser": 3.887.0
+    "@aws-sdk/util-user-agent-node": 3.891.0
+    "@smithy/config-resolver": ^4.2.2
+    "@smithy/core": ^3.11.0
+    "@smithy/fetch-http-handler": ^5.2.1
+    "@smithy/hash-node": ^4.1.1
+    "@smithy/invalid-dependency": ^4.1.1
+    "@smithy/middleware-content-length": ^4.1.1
+    "@smithy/middleware-endpoint": ^4.2.2
+    "@smithy/middleware-retry": ^4.2.3
+    "@smithy/middleware-serde": ^4.1.1
+    "@smithy/middleware-stack": ^4.1.1
+    "@smithy/node-config-provider": ^4.2.2
+    "@smithy/node-http-handler": ^4.2.1
+    "@smithy/protocol-http": ^5.2.1
+    "@smithy/smithy-client": ^4.6.2
+    "@smithy/types": ^4.5.0
+    "@smithy/url-parser": ^4.1.1
+    "@smithy/util-base64": ^4.1.0
+    "@smithy/util-body-length-browser": ^4.1.0
+    "@smithy/util-body-length-node": ^4.1.0
+    "@smithy/util-defaults-mode-browser": ^4.1.2
+    "@smithy/util-defaults-mode-node": ^4.1.2
+    "@smithy/util-endpoints": ^3.1.2
+    "@smithy/util-middleware": ^4.1.1
+    "@smithy/util-retry": ^4.1.2
+    "@smithy/util-utf8": ^4.1.0
+    tslib: ^2.6.2
+  checksum: 0f3a2af784560e3fa0f4864635c984df22959c27de6af718ad2f2538970911ad0b0f713695c288d9412772da8009e4446cc2047084ad8f29c6c3ed64f17a73aa
   languageName: node
   linkType: hard
 
@@ -14763,17 +14809,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk-mock@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "aws-sdk-mock@npm:6.2.0"
-  dependencies:
-    aws-sdk: ^2.1231.0
-    neotraverse: ^0.6.15
-    sinon: ^18.0.1
-  checksum: a8ef205ecc806225f5b7cc6a09864d73d23add434dc42213c2aa3bd9285741651cf56c8b9f6be5619c405cfd07c3caa64a2351ff597ace0c96b4ba30ac6c811a
-  languageName: node
-  linkType: hard
-
 "aws-sdk@npm:^2.1464.0":
   version: 2.1464.0
   resolution: "aws-sdk@npm:2.1464.0"
@@ -25496,13 +25531,6 @@ __metadata:
   version: 2.6.2
   resolution: "neo-async@npm:2.6.2"
   checksum: c2f5a604a54a8ec5438a342e1f356dff4bc33ccccdb6dc668d94fe8e5eccfc9d2c2eea6064b0967a767ba63b33763f51ccf2cd2441b461a7322656c1f06b3f5d
-  languageName: node
-  linkType: hard
-
-"neotraverse@npm:^0.6.15":
-  version: 0.6.18
-  resolution: "neotraverse@npm:0.6.18"
-  checksum: 46f4c53cbbdc53671150916b544a9f46e27781f8003985237507542190173bec131168d89b846535f9c34c0a2a7debb1ab3a4f7a93d08218e2c194a363708ffa
   languageName: node
   linkType: hard
 

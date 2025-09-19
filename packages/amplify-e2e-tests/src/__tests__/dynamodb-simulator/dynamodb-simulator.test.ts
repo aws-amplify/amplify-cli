@@ -73,7 +73,7 @@ describe('emulator operations', () => {
     const dynamo = ddbSimulator.getClient(emu);
 
     const tables = await dynamo.send(new ListTablesCommand());
-    expect(tables).toEqual({ TableNames: [] });
+    expect(tables.TableNames).toEqual(undefined);
   });
 
   it('should preserve state between restarts with dbPath', async () => {
@@ -92,9 +92,7 @@ describe('emulator operations', () => {
     emulators.push(emuTwo);
     const dynamoTwo = await ddbSimulator.getClient(emuTwo);
     const t = await dynamoTwo.send(new ListTablesCommand());
-    expect(t).toEqual({
-      TableNames: ['foo'],
-    });
+    expect(t.TableNames).toEqual(['foo']);
   });
 
   it('should start on specific port', async () => {

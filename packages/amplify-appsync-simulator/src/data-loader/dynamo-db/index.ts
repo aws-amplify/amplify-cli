@@ -14,8 +14,10 @@ import { AmplifyAppSyncSimulatorDataLoader } from '..';
 type DynamoDBConnectionConfig = {
   endpoint: string;
   region: 'us-fake-1';
-  accessKeyId: 'fake';
-  secretAccessKey: 'fake';
+  credentials: {
+    accessKeyId: 'fake';
+    secretAccessKey: 'fake';
+  };
   tableName: string;
 };
 type DynamoDBLoaderConfig = {

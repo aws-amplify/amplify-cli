@@ -8,11 +8,10 @@ import _ from 'lodash';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { querySearchable } from '../../utils/opensearch';
 import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
@@ -38,7 +37,7 @@ export async function launchDDBLocal() {
     dbPath,
     port: null,
   });
-  const client: DynamoDB = await dynamoEmulator.getClient(emulator);
+  const client: DynamoDBClient = await dynamoEmulator.getClient(emulator);
   logDebug(dbPath);
   return { emulator, dbPath, client };
 }
