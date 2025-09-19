@@ -28,7 +28,7 @@ import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
 import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
-import { TableDescription } from 'aws-sdk/clients/dynamodb';
+import { TableDescription } from '@aws-sdk/client-dynamodb';
 import { querySearchable } from '../utils/opensearch';
 import { getMockOpensearchDataDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';

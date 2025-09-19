@@ -1,14 +1,14 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
 import { createTables, describeTables, getUpdateTableInput, updateTables } from './utils';
-import { CreateTableInput } from 'aws-sdk/clients/dynamodb';
+import { CreateTableInput } from '@aws-sdk/client-dynamodb';
 
 export type MockDynamoDBConfig = {
   tables: { Properties: CreateTableInput; isNewlyAdded: boolean }[];
 };
 
-export async function createAndUpdateTable(dynamoDbClient: DynamoDB, config: MockDynamoDBConfig): Promise<MockDynamoDBConfig> {
+export async function createAndUpdateTable(dynamoDbClient: DynamoDBClient, config: MockDynamoDBConfig): Promise<MockDynamoDBConfig> {
   const tables = config.tables.map((table) => table.Properties);
-  const existingTables = await dynamoDbClient.listTables().promise();
+  const existingTables = await dynamoDbClient.send(new ListTablesCommand({}));
   const existingTablesWithDetails = await describeTables(dynamoDbClient, existingTables.TableNames);
   const tablesToCreate = tables.filter((t) => {
     const tableName = t.TableName;

@@ -1,5 +1,12 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import type { SSM } from 'aws-sdk';
+import {
+  SSMClient,
+  GetParametersCommand,
+  GetParametersByPathCommand,
+  PutParameterCommand,
+  DeleteParameterCommand,
+  DeleteParametersCommand,
+} from '@aws-sdk/client-ssm';
 
 /**
  * Wrapper around SSM SDK calls
@@ -14,7 +21,7 @@ export class SSMClientWrapper {
     return SSMClientWrapper.instance;
   };
 
-  private constructor(private readonly ssmClient: SSM) {}
+  private constructor(private readonly ssmClient: SSMClient) {}
 
   /**
    * Returns a list of secret name value pairs
@@ -23,12 +30,12 @@ export class SSMClientWrapper {
     if (!secretNames || secretNames.length === 0) {
       return [];
     }
-    const result = await this.ssmClient
-      .getParameters({
+    const result = await this.ssmClient.send(
+      new GetParametersCommand({
         Names: secretNames,
         WithDecryption: true,
-      })
-      .promise();
+      }),
+    );
 
     return result?.Parameters?.map(({ Name, Value }) => ({ secretName: Name, secretValue: Value }));
   };
@@ -40,8 +47,8 @@ export class SSMClientWrapper {
     let NextToken;
     const accumulator: string[] = [];
     do {
-      const result: SSM.GetParametersByPathResult = await this.ssmClient
-        .getParametersByPath({
+      const result = await this.ssmClient.send(
+        new GetParametersByPathCommand({
           Path: secretPath,
           MaxResults: 10,
           ParameterFilters: [
@@ -52,8 +59,8 @@ export class SSMClientWrapper {
             },
           ],
           NextToken,
-        })
-        .promise();
+        }),
+      );
 
       if (Array.isArray(result?.Parameters)) {
         accumulator.push(...result.Parameters.filter((param) => param?.Name !== undefined).map((param) => param.Name));
@@ -68,31 +75,32 @@ export class SSMClientWrapper {
    * Sets the given secretName to the secretValue. If secretName is already present, it is overwritten.
    */
   setSecret = async (secretName: string, secretValue: string): Promise<void> => {
-    await this.ssmClient
-      .putParameter({
+    await this.ssmClient.send(
+      new PutParameterCommand({
         Name: secretName,
         Value: secretValue,
         Type: 'SecureString',
         Overwrite: true,
-      })
-      .promise();
+      }),
+    );
   };
 
   /**
    * Deletes secretName. If it already doesn't exist, this is treated as success. All other errors will throw.
    */
   deleteSecret = async (secretName: string): Promise<void> => {
-    await this.ssmClient
-      .deleteParameter({
-        Name: secretName,
-      })
-      .promise()
-      .catch((err) => {
-        if (err.code !== 'ParameterNotFound') {
-          // if the value didn't exist in the first place, consider it deleted
-          throw err;
-        }
-      });
+    try {
+      await this.ssmClient.send(
+        new DeleteParameterCommand({
+          Name: secretName,
+        }),
+      );
+    } catch (err) {
+      if (err.name !== 'ParameterNotFound') {
+        // if the value didn't exist in the first place, consider it deleted
+        throw err;
+      }
+    }
   };
 
   /**
@@ -100,18 +108,18 @@ export class SSMClientWrapper {
    */
   deleteSecrets = async (secretNames: string[]): Promise<void> => {
     try {
-      await this.ssmClient.deleteParameters({ Names: secretNames }).promise();
+      await this.ssmClient.send(new DeleteParametersCommand({ Names: secretNames }));
     } catch (err) {
       // if the value didn't exist in the first place, consider it deleted
-      if (err.code !== 'ParameterNotFound') {
+      if (err.name !== 'ParameterNotFound') {
         throw err;
       }
     }
   };
 }
 
-const getSSMClient = async (context: $TSContext): Promise<SSM> => {
-  const { client } = await context.amplify.invokePluginMethod<{ client: SSM }>(
+const getSSMClient = async (context: $TSContext): Promise<SSMClient> => {
+  const { client } = await context.amplify.invokePluginMethod<{ client: SSMClient }>(
     context,
     'awscloudformation',
     undefined,
