@@ -29,12 +29,17 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   private tableName: string;
 
   constructor(private ddbConfig: DynamoDBLoaderConfig) {
-    const { tableName, endpoint } = ddbConfig.config;
+    const { tableName, endpoint, credentials } = ddbConfig.config;
     if (!tableName || !endpoint) {
       throw new Error(`Invalid DynamoDBConfig ${JSON.stringify(ddbConfig, null, 4)}`);
     }
     this.tableName = tableName;
-    this.client = new DynamoDBClient({ ...ddbConfig.config, ...ddbConfig.options });
+    this.client = new DynamoDBClient({
+      endpoint,
+      region: ddbConfig.config.region,
+      credentials,
+      ...ddbConfig.options,
+    });
   }
 
   async load(payload): Promise<object | null> {
