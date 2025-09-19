@@ -73,7 +73,7 @@ describe('emulator operations', () => {
     const dynamo = ddbSimulator.getClient(emu);
 
     const tables = await dynamo.send(new ListTablesCommand());
-    expect(tables.TableNames).toEqual(undefined);
+    expect(tables.TableNames).toEqual([]);
   });
 
   it('should preserve state between restarts with dbPath', async () => {
