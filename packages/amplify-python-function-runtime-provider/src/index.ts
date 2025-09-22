@@ -18,7 +18,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
         runtime: {
           name: 'Python',
           value: 'python',
-          cloudTemplateValue: 'python3.8',
+          cloudTemplateValue: 'python3.13',
           defaultHandler: 'index.handler',
           layerExecutablePath: 'python',
           layerDefaultFiles: [
