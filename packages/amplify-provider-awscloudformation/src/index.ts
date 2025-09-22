@@ -153,7 +153,8 @@ export async function getConfiguredSSMClient(context) {
 }
 
 export async function getConfiguredCognitoIdentityProviderClient(context) {
-  return await CognitoUserPoolClientProvider.getInstance(context);
+  const provider = await CognitoUserPoolClientProvider.getInstance(context);
+  return { client: provider.client };
 }
 
 export async function getConfiguredLocationServiceClient(context: $TSContext, options?: Record<string, unknown>) {
