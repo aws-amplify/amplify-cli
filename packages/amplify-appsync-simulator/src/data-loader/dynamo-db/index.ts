@@ -132,9 +132,9 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       attributeValues,
       condition: {
         // we only provide limited support for condition update expressions.
-        expression = null,
-        expressionNames = null,
-        expressionValues = null,
+        expression = undefined,
+        expressionNames = undefined,
+        expressionValues = undefined,
       } = {},
     } = payload;
     await this.client.send(
@@ -215,9 +215,9 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       key,
       condition: {
         // we only provide limited support for condition update expressions.
-        expression = null,
-        expressionNames = null,
-        expressionValues = null,
+        expression = undefined,
+        expressionNames = undefined,
+        expressionValues = undefined,
       } = {},
     } = payload;
     const { Attributes: deleted } = await this.client.send(
