@@ -158,7 +158,8 @@ export async function getConfiguredCognitoIdentityProviderClient(context) {
 }
 
 export async function getConfiguredLocationServiceClient(context: $TSContext, options?: Record<string, unknown>) {
-  return await LocationService.getInstance(context, options);
+  const provider = await LocationService.getInstance(context, options);
+  return { client: provider.client };
 }
 
 async function getLambdaSdk(context: $TSContext) {
