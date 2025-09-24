@@ -10,11 +10,11 @@ import {
   ListIdentityPoolsResponse,
   ListIdentityPoolsInput,
 } from '@aws-sdk/client-cognito-identity';
-import { loadConfiguration } from '../configuration-manager';
+import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
 
 export const createIdentityPoolService = async (context: $TSContext, options: $TSAny): Promise<IdentityPoolService> => {
-  let credentials = {};
+  let credentials: AwsSecrets = {};
 
   try {
     credentials = await loadConfiguration(context);
@@ -22,7 +22,14 @@ export const createIdentityPoolService = async (context: $TSContext, options: $T
     // could not load credentials
   }
 
-  const cognitoIdentity = new CognitoIdentityClient({ ...credentials, ...options });
+  const cognitoIdentity = new CognitoIdentityClient({
+    ...options,
+    credentials: {
+      accessKeyId: credentials.accessKeyId,
+      secretAccessKey: credentials.secretAccessKey,
+    },
+    region: credentials.region,
+  });
 
   return new IdentityPoolService(cognitoIdentity);
 };
