@@ -51,6 +51,14 @@ export interface AwsSecrets {
   region?: string;
 }
 
+export interface AwsSecretsV3 {
+  credentials?: {
+    accessKeyId?: string;
+    secretAccessKey?: string;
+  };
+  region?: string;
+}
+
 const defaultAWSConfig: AwsConfig = {
   useProfile: true,
   profileName: 'default',

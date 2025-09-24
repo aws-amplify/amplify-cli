@@ -1,7 +1,7 @@
 import { $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { IS3Service } from '@aws-amplify/amplify-util-import';
 import { S3Client, ListBucketsCommand, HeadBucketCommand, GetBucketLocationCommand, Bucket } from '@aws-sdk/client-s3';
-import { AwsSecrets, loadConfiguration } from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 
 export const createS3Service = async (context: $TSContext): Promise<S3Service> => {
   const credentials = await tryGetCredentials(context);
@@ -90,7 +90,7 @@ const handleS3Error = (error: { name: string; message: string }): boolean => {
   );
 };
 
-const tryGetCredentials = async (context: $TSContext): Promise<AwsSecrets> => {
+const tryGetCredentials = async (context: $TSContext) => {
   try {
     return await loadConfiguration(context);
   } catch (e) {

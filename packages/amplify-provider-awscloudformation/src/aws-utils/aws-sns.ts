@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
-import { AwsSecrets, loadConfiguration } from '../configuration-manager';
+import { AwsSecretsV3, loadConfiguration } from '../configuration-manager';
 import { SNSClient, GetSMSSandboxAccountStatusCommand } from '@aws-sdk/client-sns';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { proxyAgent } from './aws-globals';
@@ -20,7 +20,7 @@ export class SNS {
 
   static async getInstance(context: $TSContext, options = {}): Promise<SNS> {
     if (!SNS.instance) {
-      let cred: AwsSecrets = {};
+      let cred: AwsSecretsV3 = {};
       try {
         cred = await loadConfiguration(context);
       } catch (e) {

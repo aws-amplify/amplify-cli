@@ -8,7 +8,7 @@ import {
   LayerVersionsListItem,
 } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
-import { AwsSecrets, loadConfiguration } from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
 import { proxyAgent } from './aws-globals';
@@ -20,7 +20,7 @@ export class Lambda {
 
   constructor(private readonly context: $TSContext, options = {}) {
     return (async () => {
-      let cred: AwsSecrets;
+      let cred;
       try {
         cred = await loadConfiguration(context);
       } catch (e) {
