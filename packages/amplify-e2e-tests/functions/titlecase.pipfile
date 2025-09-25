@@ -9,4 +9,4 @@ verify_ssl = true
 titlecase = "==0.12.0"
 
 [requires]
-python_version = "3.8"
+python_version = "3.13"
