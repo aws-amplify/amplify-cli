@@ -24,8 +24,12 @@ export class CognitoUserPoolClientProvider {
 
   constructor(creds, options = {}) {
     const clientConfig: CognitoIdentityProviderClientConfig = {
-      ...creds,
       ...options,
+      credentials: {
+        accessKeyId: creds.accessKeyId,
+        secretAccessKey: creds.secretAccessKey,
+      },
+      region: creds.region,
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),
