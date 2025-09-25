@@ -22,6 +22,7 @@ describe('amplify geo add a', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('geo-add-test');
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
   });
 
   afterEach(async () => {

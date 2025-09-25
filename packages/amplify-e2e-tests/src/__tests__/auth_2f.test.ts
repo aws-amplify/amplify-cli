@@ -20,6 +20,7 @@ const defaultsSettings = {
 describe('amplify add auth...', () => {
   let projRoot: string;
   beforeEach(async () => {
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     projRoot = await createNewProjectDir('auth');
   });
 
