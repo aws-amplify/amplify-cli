@@ -29,7 +29,7 @@ import { pagedAWSCall } from './paged-call';
 const logger = fileLogger('CognitoUserPoolService');
 
 export const createCognitoUserPoolService = async (context: $TSContext, options: $TSAny): Promise<CognitoUserPoolService> => {
-  let credentials: AwsSecrets = {};
+  let credentials = {};
 
   try {
     credentials = await loadConfiguration(context);
@@ -38,12 +38,8 @@ export const createCognitoUserPoolService = async (context: $TSContext, options:
   }
 
   const cognito = new CognitoIdentityProviderClient({
+    ...credentials,
     ...options,
-    credentials: {
-      accessKeyId: credentials.accessKeyId,
-      secretAccessKey: credentials.secretAccessKey,
-    },
-    region: credentials.region,
   });
 
   return new CognitoUserPoolService(cognito);
