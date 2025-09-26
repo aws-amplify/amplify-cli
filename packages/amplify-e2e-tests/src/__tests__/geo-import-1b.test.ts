@@ -22,6 +22,7 @@ describe('amplify geo import', () => {
   let collectionName: string;
   let region: string;
   beforeEach(async () => {
+    process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
     projRoot = await createNewProjectDir('geo-import-test');
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
