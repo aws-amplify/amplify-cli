@@ -10,7 +10,7 @@ export class LocationService {
 
   static async getInstance(context: $TSContext, options = {}): Promise<LocationService> {
     if (!LocationService.instance) {
-      let cred: AwsSecrets = {};
+      let cred: AwsV3Secrets = {};
       try {
         cred = await loadConfiguration(context);
       } catch (e) {
@@ -21,13 +21,14 @@ export class LocationService {
     return LocationService.instance;
   }
 
-  private constructor(cred: AwsSecrets, options = {}) {
+  private constructor(cred: AwsV3Secrets, options = {}) {
     this.client = new LocationClient({
       ...cred,
       ...options,
       credentials: {
         accessKeyId: cred.accessKeyId,
         secretAccessKey: cred.secretAccessKey,
+        sessionToken: cred.sessionToken,
       },
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
