@@ -8,7 +8,7 @@ import {
   QueryCommand,
   ScanCommand,
 } from '@aws-sdk/client-dynamodb';
-import { unmarshall, nullIfEmpty } from './utils';
+import { unmarshall, marshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
 
 type DynamoDBConnectionConfig = {
@@ -117,7 +117,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     const result = await this.client.send(
       new GetItemCommand({
         TableName: this.tableName,
-        Key: payload.key,
+        Key: marshall(payload.key),
         ConsistentRead: consistentRead,
       }),
     );
@@ -140,13 +140,13 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     await this.client.send(
       new PutItemCommand({
         TableName: this.tableName,
-        Item: {
+        Item: marshall({
           ...attributeValues,
           ...key,
-        },
+        }),
         ConditionExpression: expression,
         ExpressionAttributeNames: expressionNames,
-        ExpressionAttributeValues: expressionValues,
+        ExpressionAttributeValues: marshall(expressionValues),
       }),
     );
 
@@ -161,7 +161,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       TableName: this.tableName,
       KeyConditionExpression: keyCondition.expression,
       FilterExpression: filter.expression,
-      ExpressionAttributeValues: nullIfEmpty({
+      ExpressionAttributeValues: marshall({
         ...(filter.expressionValues || {}),
         ...(keyCondition.expressionValues || {}),
       }),
@@ -169,7 +169,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ...(filter.expressionNames || {}),
         ...(keyCondition.expressionNames || {}),
       }),
-      ExclusiveStartKey: nextToken ? JSON.parse(Buffer.from(nextToken, 'base64').toString()) : null,
+      ExclusiveStartKey: nextToken ? marshall(JSON.parse(Buffer.from(nextToken, 'base64').toString())) : null,
       IndexName: index,
       Limit: limit,
       ConsistentRead: consistentRead,
@@ -193,7 +193,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     const { key, update = {}, condition = {} } = payload;
     const params: any = {
       TableName: this.tableName,
-      Key: key,
+      Key: marshall(key),
       UpdateExpression: update.expression,
       ConditionExpression: condition.expression,
       ReturnValues: 'ALL_NEW',
@@ -201,7 +201,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ...(condition.expressionNames || {}),
         ...(update.expressionNames || {}),
       }),
-      ExpressionAttributeValues: nullIfEmpty({
+      ExpressionAttributeValues: marshall({
         ...(condition.expressionValues || {}),
         ...(update.expressionValues || {}),
       }),
@@ -223,11 +223,11 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     const { Attributes: deleted } = await this.client.send(
       new DeleteItemCommand({
         TableName: this.tableName,
-        Key: key,
+        Key: marshall(key),
         ReturnValues: 'ALL_OLD',
         ConditionExpression: expression,
         ExpressionAttributeNames: expressionNames,
-        ExpressionAttributeValues: expressionValues,
+        ExpressionAttributeValues: marshall(expressionValues),
       }),
     );
 
@@ -239,7 +239,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
 
     const params = {
       TableName: this.tableName,
-      ExclusiveStartKey: nextToken ? JSON.parse(Buffer.from(nextToken, 'base64').toString()) : null,
+      ExclusiveStartKey: nextToken ? marshall(JSON.parse(Buffer.from(nextToken, 'base64').toString())) : null,
       IndexName: index,
       Limit: limit,
       ConsistentRead: consistentRead,
@@ -253,9 +253,9 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ExpressionAttributeNames: nullIfEmpty({
           ...(filter.expressionNames || undefined),
         }),
-        ExpressionAttributeValues: {
-          ...(filter.expressionValues || undefined),
-        },
+        ExpressionAttributeValues: marshall({
+          ...(filter.expressionValues || {}),
+        }),
       });
     }
     const {

@@ -1,7 +1,14 @@
-import { unmarshall as awsUnmarshall } from '@aws-sdk/util-dynamodb';
+import { unmarshall as awsUnmarshall, marshall as awsMarshall } from '@aws-sdk/util-dynamodb';
 
 export function nullIfEmpty(obj: object): object | null {
   return Object.keys(obj).length === 0 ? null : obj;
+}
+
+export function marshall(obj: object) {
+  if (!obj || Object.keys(obj).length === 0) {
+    return undefined;
+  }
+  return awsMarshall(obj);
 }
 
 export function unmarshall(raw, isRaw = true) {
