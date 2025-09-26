@@ -1,7 +1,7 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { LocationClient } from '@aws-sdk/client-location';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
-import { AwsV3Secrets, loadConfiguration } from '../configuration-manager';
+import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { proxyAgent } from './aws-globals';
 
 export class LocationService {
@@ -10,7 +10,7 @@ export class LocationService {
 
   static async getInstance(context: $TSContext, options = {}): Promise<LocationService> {
     if (!LocationService.instance) {
-      let cred: AwsV3Secrets = {};
+      let cred: AwsSecrets = {};
       try {
         cred = await loadConfiguration(context);
       } catch (e) {
@@ -21,22 +21,10 @@ export class LocationService {
     return LocationService.instance;
   }
 
-  private constructor(cred: AwsV3Secrets, options = {}) {
-    // this is a temporary workaround until PR#14236 is merged
-    let region;
-    if (JSON.stringify(options) === '{}') {
-      region = (options as { region: string }).region ? (options as { region: string }).region : cred.region;
-    }
-
+  private constructor(cred: AwsSecrets, options = {}) {
     this.client = new LocationClient({
+      ...cred,
       ...options,
-      credentials: {
-        accessKeyId: cred.accessKeyId,
-        secretAccessKey: cred.secretAccessKey,
-        sessionToken: cred.sessionToken,
-        expiration: cred.expiration,
-      },
-      region: region,
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),
