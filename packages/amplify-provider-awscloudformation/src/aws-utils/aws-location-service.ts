@@ -25,6 +25,10 @@ export class LocationService {
     this.client = new LocationClient({
       ...cred,
       ...options,
+      credentials: {
+        accessKeyId: cred.accessKeyId,
+        secretAccessKey: cred.secretAccessKey,
+      },
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),
