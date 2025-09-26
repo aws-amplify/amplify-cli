@@ -32,7 +32,8 @@ export async function createAndUpdateTable(dynamoDbClient: DynamoDBClient, confi
   return config;
 }
 
-export function configureDDBDataSource(config, ddbConfig) {
+export async function configureDDBDataSource(config, ddbConfig) {
+  const creds = await ddbConfig.credentials();
   return {
     ...config,
     dataSources: config.dataSources.map((d) => {
@@ -46,9 +47,9 @@ export function configureDDBDataSource(config, ddbConfig) {
           endpoint: ddbConfig.endpoint,
           region: ddbConfig.region,
           credentials: {
-            accessKeyId: ddbConfig.credentials?.accessKeyId,
-            secretAccessKey: ddbConfig.credentials?.secretAccessKey,
-            sessionToken: ddbConfig.credentials?.sessionToken || process.env.AWS_SESSION_TOKEN,
+            accessKeyId: creds.accessKeyId,
+            secretAccessKey: creds.secretAccessKey,
+            sessionToken: creds.sessionToken || process.env.AWS_SESSION_TOKEN,
           },
         },
       };

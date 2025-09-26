@@ -52,7 +52,7 @@ export async function deploy(
 
   if (client) {
     await createAndUpdateTable(client, config);
-    config = configureDDBDataSource(config, client.config);
+    config = await configureDDBDataSource(config, client.config);
   }
   await configureLambdaDataSource(config);
   if (opensearchURL) {
@@ -72,7 +72,7 @@ export async function reDeploy(
 
   if (client) {
     await createAndUpdateTable(client, config);
-    config = configureDDBDataSource(config, client.config);
+    config = await configureDDBDataSource(config, client.config);
   }
   await configureLambdaDataSource(config);
   simulator?.reload(config);

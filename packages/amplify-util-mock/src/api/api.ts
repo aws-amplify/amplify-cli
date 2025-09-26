@@ -151,7 +151,7 @@ export class APITest {
     const { transformerOutput } = await runTransformer(context);
     let config: any = processAppSyncResources(transformerOutput, parameters);
     config = await this.ensureDDBTables(config);
-    config = this.configureDDBDataSource(config);
+    config = await this.configureDDBDataSource(config);
     this.transformerResult = await this.configureLambdaDataSource(context, config);
     this.transformerResult = await this.configureOpensearchDataSource(this.transformerResult);
     this.userOverriddenSlots = transformerOutput.userOverriddenSlots;
@@ -375,9 +375,9 @@ export class APITest {
       });
   }
 
-  private configureDDBDataSource(config) {
+  private async configureDDBDataSource(config) {
     const ddbConfig = this.ddbClient.config;
-    return configureDDBDataSource(config, ddbConfig);
+    return await configureDDBDataSource(config, ddbConfig);
   }
   public async getAppSyncAPI(context) {
     const currentMeta = await getAmplifyMeta(context);
