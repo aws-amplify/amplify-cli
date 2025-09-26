@@ -22,6 +22,12 @@ export class LocationService {
   }
 
   private constructor(cred: AwsV3Secrets, options = {}) {
+    // this is a temporary workaround until PR#14236 is merged
+    let region;
+    if (JSON.stringify(options) === '{}') {
+      region = (options as { region: string }).region ? (options as { region: string }).region : cred.region;
+    }
+
     this.client = new LocationClient({
       ...options,
       credentials: {
@@ -30,7 +36,7 @@ export class LocationService {
         sessionToken: cred.sessionToken,
         expiration: cred.expiration,
       },
-      region: cred.region,
+      region: region,
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),
