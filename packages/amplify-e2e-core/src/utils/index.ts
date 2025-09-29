@@ -156,7 +156,7 @@ export const overrideLayerCodePython = (
   content: string,
   targetFileName = 'index.py',
 ): void => {
-  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'lib', 'python');
+  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'lib', 'python3.13', 'site-packages');
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);
