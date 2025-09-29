@@ -24,6 +24,7 @@ export class CognitoUserPoolClientProvider {
 
   constructor(creds: AwsV3Secrets, options = {}) {
     const clientConfig: CognitoIdentityProviderClientConfig = {
+      ...creds,
       ...options,
       credentials: {
         accessKeyId: creds.accessKeyId,
@@ -31,7 +32,6 @@ export class CognitoUserPoolClientProvider {
         sessionToken: creds.sessionToken,
         expiration: creds.expiration,
       },
-      region: creds.region,
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),

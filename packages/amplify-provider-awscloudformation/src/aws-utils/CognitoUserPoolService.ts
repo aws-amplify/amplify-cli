@@ -38,6 +38,7 @@ export const createCognitoUserPoolService = async (context: $TSContext, options:
   }
 
   const cognito = new CognitoIdentityProviderClient({
+    ...credentials,
     ...options,
     credentials: {
       accessKeyId: credentials.accessKeyId,
@@ -45,7 +46,6 @@ export const createCognitoUserPoolService = async (context: $TSContext, options:
       sessionToken: credentials.sessionToken,
       expiration: credentials.expiration,
     },
-    region: credentials.region,
   });
 
   return new CognitoUserPoolService(cognito);
