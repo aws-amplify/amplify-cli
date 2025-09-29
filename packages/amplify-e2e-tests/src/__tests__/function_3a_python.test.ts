@@ -28,7 +28,6 @@ describe('python function tests', () => {
   let projRoot: string;
   let funcName: string;
 
-  // Install Python 3.13 if not available
   beforeAll(async () => {
     installPython313();
   });

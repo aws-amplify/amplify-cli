@@ -141,7 +141,6 @@ describe('add function with layers for runtime python', () => {
   const [shortId] = uuid().split('-');
   let functionName: string;
 
-  // Install Python 3.13 if not available
   beforeAll(async () => {
     installPython313();
   });
@@ -197,6 +196,7 @@ describe('add function with layers for runtime python', () => {
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
+    console.log(response);
     expect(JSON.parse(response.Payload.toString()).body).toMatch(helloWorldSuccessOutput);
   });
 });
