@@ -30,6 +30,7 @@ export * from './hooks';
 export * from './git-operations';
 export * from './help';
 export * from './credentials-rotator';
+export * from './install-python';
 
 /**
  * Whether the current environment is CircleCI or not
