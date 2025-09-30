@@ -14,6 +14,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
       const pyBinary = getPythonBinaryName();
       const pyVersion = await execWithOutputAsString(`${pyBinary} --version`);
       const layerPythonPath = path.join(params.srcRoot, 'lib', 'python' + majMinPyVersion(pyVersion), 'site-packages');
+      console.log(layerPythonPath);
       const pipEnvDir = await getPipenvDir(params.srcRoot);
       // copy from virtualenv to layer path to maintain layer required structure
       fs.copySync(pipEnvDir, layerPythonPath, { overwrite: true });
