@@ -30,7 +30,6 @@ export * from './hooks';
 export * from './git-operations';
 export * from './help';
 export * from './credentials-rotator';
-export * from './install-python';
 
 /**
  * Whether the current environment is CircleCI or not
@@ -156,13 +155,7 @@ export const overrideLayerCodePython = (
   content: string,
   targetFileName = 'index.py',
 ): void => {
-  // Extract Python version from Pipfile content
-  const pythonVersionMatch = content.match(/python_version\s*=\s*"(\d+\.\d+)"/);
-  const pythonVersion = pythonVersionMatch ? pythonVersionMatch[1] : '3.8'; // fallback to 3.8
-  console.log(pythonVersion);
-
-  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'lib', `python${pythonVersion}`, 'site-packages');
-  console.log(dirPath);
+  const dirPath = path.join(getPathToLayer(root, { projName: projectName, layerName }), 'lib', 'python');
   const targetPath = path.join(dirPath, targetFileName);
 
   fs.ensureDirSync(dirPath);

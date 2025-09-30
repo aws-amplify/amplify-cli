@@ -9,7 +9,6 @@ import {
   functionCloudInvoke,
   getProjectConfig,
   initJSProjectWithProfile,
-  installPython313,
   LayerOptions,
   LayerRuntime,
   loadFunctionTestFile,
@@ -141,10 +140,6 @@ describe('add function with layers for runtime python', () => {
   const [shortId] = uuid().split('-');
   let functionName: string;
 
-  beforeAll(async () => {
-    installPython313();
-  });
-
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
     await initJSProjectWithProfile(projRoot, {});
@@ -196,7 +191,6 @@ describe('add function with layers for runtime python', () => {
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload });
 
-    console.log(response);
     expect(JSON.parse(response.Payload.toString()).body).toMatch(helloWorldSuccessOutput);
   });
 });

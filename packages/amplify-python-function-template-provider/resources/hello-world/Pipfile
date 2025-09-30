@@ -9,4 +9,4 @@ verify_ssl = true
 src = {editable = true, path = "./src"}
 
 [requires]
-python_version = "3.13"
+python_version = "3.8"

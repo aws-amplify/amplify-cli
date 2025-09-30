@@ -22,7 +22,6 @@ import {
   getProjectConfig,
   getProjectMeta,
   initJSProjectWithProfile,
-  installPython313,
   LayerOptions,
   LayerPermission,
   LayerPermissionName,
@@ -41,10 +40,6 @@ describe('amplify add lambda layer with changes', () => {
   let projRoot: string;
   let projName: string;
   const envName = 'integtest';
-
-  beforeAll(async () => {
-    installPython313();
-  });
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('layers');
@@ -376,13 +371,13 @@ describe('amplify add lambda layer with changes', () => {
     add python layer
     add files in opt
     push
-    remove lib/python3.13/site-packages (simulate gitignore),
+    remove lib/python3.8/site-packages (simulate gitignore),
     amplify status -> no change
     delete Pipfile.lock
     amplify status -> update
     push
     -> should not create layer version, (it should force a pip install),
-    lib/python3.13/site-packages should exist with content, push should succeed
+    lib/python3.8/site-packages should exist with content, push should succeed
   */
 
   it('add python layer, remove lock file, site-packages, verify status, push', async () => {
@@ -410,7 +405,7 @@ describe('amplify add lambda layer with changes', () => {
 
     const firstArn = getCurrentLayerArnFromMeta(projRoot, { layerName, projName });
 
-    // 1. Remove lib/python3.13/site-packages
+    // 1. Remove lib/python3.8/site-packages
     // 2. Check status: No Change
     const layerPath = path.join(
       projRoot,

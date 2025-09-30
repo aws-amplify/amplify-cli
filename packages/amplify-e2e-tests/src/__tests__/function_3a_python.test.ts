@@ -5,7 +5,6 @@ import {
   addFunction,
   functionMockAssert,
   functionCloudInvoke,
-  installPython313,
   createNewProjectDir,
   deleteProjectDir,
   generateRandomShortId,
@@ -27,10 +26,6 @@ describe('python function tests', () => {
 
   let projRoot: string;
   let funcName: string;
-
-  beforeAll(async () => {
-    installPython313();
-  });
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('py-functions');
