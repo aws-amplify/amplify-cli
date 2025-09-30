@@ -4,9 +4,14 @@ import {
   GetItemCommand,
   PutItemCommand,
   UpdateItemCommand,
+  UpdateItemCommandInput,
   DeleteItemCommand,
   QueryCommand,
+  QueryInput,
   ScanCommand,
+  ScanCommandInput,
+  Select,
+  ReturnValue,
 } from '@aws-sdk/client-dynamodb';
 import { unmarshall, marshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
@@ -29,15 +34,13 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   private tableName: string;
 
   constructor(private ddbConfig: DynamoDBLoaderConfig) {
-    const { tableName, endpoint, credentials } = ddbConfig.config;
+    const { tableName, endpoint } = ddbConfig.config;
     if (!tableName || !endpoint) {
       throw new Error(`Invalid DynamoDBConfig ${JSON.stringify(ddbConfig, null, 4)}`);
     }
     this.tableName = tableName;
     this.client = new DynamoDBClient({
-      endpoint,
-      region: ddbConfig.config.region,
-      credentials,
+      ...ddbConfig.config,
       ...ddbConfig.options,
     });
   }
@@ -86,7 +89,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
           new DeleteItemCommand({
             TableName: this.tableName,
             Key: { id: item.id },
-            ReturnValues: 'ALL_OLD',
+            ReturnValues: 'ALL_OLD' as ReturnValue,
           }),
         );
       }
@@ -117,21 +120,13 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     const result = await this.client.send(
       new GetItemCommand({
         TableName: this.tableName,
-        Key: this.isAlreadyTyped(payload.key) ? payload.key : marshall(payload.key),
+        Key: payload.key as Record<string, AttributeValue>,
         ConsistentRead: consistentRead,
       }),
     );
 
     if (!result.Item) return null;
     return unmarshall(result.Item);
-  }
-
-  private isAlreadyTyped(obj): boolean {
-    return (
-      obj &&
-      typeof obj === 'object' &&
-      Object.values(obj).some((val) => val && typeof val === 'object' && ('S' in val || 'N' in val || 'B' in val))
-    );
   }
 
   private async putItem(payload): Promise<object | null> {
@@ -146,56 +141,50 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       } = {},
     } = payload;
 
-    const itemData = { ...attributeValues, ...key };
-    const item = this.isAlreadyTyped(itemData) ? itemData : marshall(itemData);
-    const typedExpressionValues = this.isAlreadyTyped(expressionValues) ? expressionValues : marshall(expressionValues);
-
     await this.client.send(
       new PutItemCommand({
         TableName: this.tableName,
-        Item: item,
+        Item: {
+          ...key,
+          ...attributeValues,
+        } as Record<string, AttributeValue>,
         ConditionExpression: expression,
         ExpressionAttributeNames: expressionNames,
-        ExpressionAttributeValues: typedExpressionValues,
+        ExpressionAttributeValues: expressionValues as Record<string, AttributeValue>,
       }),
     );
 
     // put does not return us anything useful so we need to fetch the object.
-
     return this.getItem({ key, consistentRead: true });
   }
   private async query({ query: keyCondition, filter, index, nextToken, limit, scanIndexForward = true, consistentRead = false, select }) {
     keyCondition = keyCondition || { expression: null };
     filter = filter || { expression: null };
 
-    const combinedExpressionValues = {
-      ...(filter.expressionValues || {}),
-      ...(keyCondition.expressionValues || {}),
-    };
-
     const params = {
       TableName: this.tableName,
       KeyConditionExpression: keyCondition.expression,
       FilterExpression: filter.expression,
-      ExpressionAttributeValues: this.isAlreadyTyped(combinedExpressionValues)
-        ? combinedExpressionValues
-        : marshall(combinedExpressionValues),
+      ExpressionAttributeValues: nullIfEmpty({
+        ...(filter.expressionValues || undefined),
+        ...(keyCondition.expressionValues || undefined),
+      } as Record<string, AttributeValue>),
       ExpressionAttributeNames: nullIfEmpty({
-        ...(filter.expressionNames || {}),
-        ...(keyCondition.expressionNames || {}),
+        ...(filter.expressionNames || undefined),
+        ...(keyCondition.expressionNames || undefined),
       }),
-      ExclusiveStartKey: nextToken ? marshall(JSON.parse(Buffer.from(nextToken, 'base64').toString())) : null,
+      ExclusiveStartKey: nextToken,
       IndexName: index,
       Limit: limit,
       ConsistentRead: consistentRead,
       ScanIndexForward: scanIndexForward,
-      Select: select || 'ALL_ATTRIBUTES',
+      Select: select || ('ALL_ATTRIBUTES' as Select),
     };
     const {
       Items: items,
       ScannedCount: scannedCount,
       LastEvaluatedKey: resultNextToken = null,
-    } = await this.client.send(new QueryCommand(params as any));
+    } = await this.client.send(new QueryCommand(params as QueryInput));
 
     return {
       items: items.map((item) => unmarshall(item)),
@@ -207,24 +196,20 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   private async updateItem(payload) {
     const { key, update = {}, condition = {} } = payload;
 
-    const combinedExpressionValues = {
-      ...(condition.expressionValues || {}),
-      ...(update.expressionValues || {}),
-    };
-
-    const params: any = {
+    const params: UpdateItemCommandInput = {
       TableName: this.tableName,
-      Key: this.isAlreadyTyped(key) ? key : marshall(key),
+      Key: key,
       UpdateExpression: update.expression,
       ConditionExpression: condition.expression,
       ReturnValues: 'ALL_NEW',
       ExpressionAttributeNames: nullIfEmpty({
         ...(condition.expressionNames || {}),
         ...(update.expressionNames || {}),
-      }),
-      ExpressionAttributeValues: this.isAlreadyTyped(combinedExpressionValues)
-        ? combinedExpressionValues
-        : marshall(combinedExpressionValues),
+      } as Record<string, string>),
+      ExpressionAttributeValues: nullIfEmpty({
+        ...(condition.expressionValues || {}),
+        ...(update.expressionValues || {}),
+      } as Record<string, AttributeValue>),
     };
     const { Attributes: updated } = await this.client.send(new UpdateItemCommand(params));
     return unmarshall(updated);
@@ -243,11 +228,11 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     const { Attributes: deleted } = await this.client.send(
       new DeleteItemCommand({
         TableName: this.tableName,
-        Key: marshall(key),
+        Key: key as Record<string, AttributeValue>,
         ReturnValues: 'ALL_OLD',
         ConditionExpression: expression,
         ExpressionAttributeNames: expressionNames,
-        ExpressionAttributeValues: marshall(expressionValues),
+        ExpressionAttributeValues: expressionValues as Record<string, AttributeValue>,
       }),
     );
 
@@ -257,7 +242,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   private async scan(payload) {
     const { filter, index, limit, consistentRead = false, nextToken, select, totalSegments, segment } = payload;
 
-    const params = {
+    const params: ScanCommandInput = {
       TableName: this.tableName,
       ExclusiveStartKey: nextToken ? marshall(JSON.parse(Buffer.from(nextToken, 'base64').toString())) : null,
       IndexName: index,
@@ -275,7 +260,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         }),
         ExpressionAttributeValues: marshall({
           ...(filter.expressionValues || {}),
-        }),
+        } as Record<string, AttributeValue>),
       });
     }
     const {

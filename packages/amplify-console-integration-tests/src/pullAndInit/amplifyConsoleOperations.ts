@@ -40,7 +40,7 @@ export async function deleteAmplifyStack(stackName: string, cfnClient?: CloudFor
   }
 }
 
-async function PaginatedDeleteProjects(amplifyClient: AmplifyClient, token?: any) {
+async function PaginatedDeleteProjects(amplifyClient: AmplifyClient, token?: string) {
   const sequential = require('promise-sequential');
   const maxResults = 25;
   const listAppsResult = await amplifyClient.send(

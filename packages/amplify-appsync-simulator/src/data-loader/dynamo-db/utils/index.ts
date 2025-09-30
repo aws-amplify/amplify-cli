@@ -1,6 +1,7 @@
 import { unmarshall as awsUnmarshall, marshall as awsMarshall } from '@aws-sdk/util-dynamodb';
+import { AttributeValue } from '@aws-sdk/client-dynamodb';
 
-export function nullIfEmpty(obj: object): object | null {
+export function nullIfEmpty<T extends Record<string, string | AttributeValue>>(obj: T): T | null {
   return Object.keys(obj).length === 0 ? null : obj;
 }
 
