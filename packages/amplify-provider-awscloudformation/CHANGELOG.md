@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.10-rc.c27f822c56dfa50.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.9...@aws-amplify/amplify-provider-awscloudformation@8.11.10-rc.c27f822c56dfa50.0) (2025-09-30)
+
+
+### Bug Fixes
+
+* e2e tests for auth, geo, and python lambda functions ([#14264](https://github.com/aws-amplify/amplify-cli/issues/14264)) ([da6de92](https://github.com/aws-amplify/amplify-cli/commit/da6de92bf764db9f9c2797fbd1fd1d0f5b9c578a))
+* Userpool does not exist ([#14262](https://github.com/aws-amplify/amplify-cli/issues/14262)) ([5464abe](https://github.com/aws-amplify/amplify-cli/commit/5464abe68d55faf0b91d4306f119a844abdc6d3d))
+
+
+
+
+
 ## [8.11.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.8...@aws-amplify/amplify-provider-awscloudformation@8.11.9) (2025-09-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
