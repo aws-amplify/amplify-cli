@@ -9,7 +9,10 @@ export function marshall(obj: object) {
   if (!obj || Object.keys(obj).length === 0) {
     return undefined;
   }
-  return awsMarshall(obj);
+  return awsMarshall(obj, {
+    removeUndefinedValues: true,
+    convertEmptyValues: true,
+  });
 }
 
 export function unmarshall(raw, isRaw = true) {
