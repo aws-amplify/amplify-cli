@@ -9,7 +9,6 @@ import {
   ScanCommand,
   UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
 
 type DynamoDBConnectionConfig = {
@@ -114,12 +113,10 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
 
   private async getItem(payload: any): Promise<object | null> {
     const { consistentRead = false } = payload;
-    const unmarshalledKey = payload.key ? unmarshall(payload.key) : {};
-
     const result = await this.client.send(
       new GetCommand({
         TableName: this.tableName,
-        Key: unmarshalledKey,
+        Key: payload.key,
         ConsistentRead: consistentRead,
       }),
     );
@@ -138,15 +135,13 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         expressionValues = undefined,
       } = {},
     } = payload;
-    const unmarshalledKey = key ? unmarshall(key) : {};
-    const unmarshalledAttributeValues = attributeValues ? unmarshall(attributeValues) : {};
 
     await this.client.send(
       new PutCommand({
         TableName: this.tableName,
         Item: {
-          ...unmarshalledKey,
-          ...unmarshalledAttributeValues,
+          ...key,
+          ...attributeValues,
         },
         ConditionExpression: expression,
         ExpressionAttributeNames: expressionNames,
@@ -155,28 +150,25 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     );
 
     // put does not return us anything useful so we need to fetch the object.
-    return this.getItem({ key: unmarshalledKey, consistentRead: true });
+    return this.getItem({ key, consistentRead: true });
   }
   private async query({ query: keyCondition, filter, index, nextToken, limit, scanIndexForward = true, consistentRead = false, select }) {
     keyCondition = keyCondition || { expression: null };
     filter = filter || { expression: null };
-    const unmarshalledFilterExpressionValues = filter.expressionValues ? unmarshall(filter.expressionValues) : {};
-    const unmarshalledKeyConditionExpressionValues = keyCondition.expressionValues ? unmarshall(keyCondition.expressionValues) : {};
-    const unmarshalledNextToken = nextToken ? unmarshall(nextToken) : undefined;
 
     const params = {
       TableName: this.tableName,
       KeyConditionExpression: keyCondition.expression,
       FilterExpression: filter.expression,
       ExpressionAttributeValues: {
-        ...unmarshalledFilterExpressionValues,
-        ...unmarshalledKeyConditionExpressionValues,
+        ...(filter.expressionValues || {}),
+        ...(keyCondition.expressionValues || {}),
       },
       ExpressionAttributeNames: {
         ...(filter.expressionNames || {}),
         ...(keyCondition.expressionNames || {}),
       },
-      ExclusiveStartKey: unmarshalledNextToken,
+      ExclusiveStartKey: nextToken,
       IndexName: index,
       Limit: limit,
       ConsistentRead: consistentRead,
@@ -203,13 +195,10 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
 
   private async updateItem(payload) {
     const { key, update = {}, condition = {} } = payload;
-    const unmarshalledKey = key ? unmarshall(key) : {};
-    const unmarshalledUpdateExpressionValues = update.expressionValues ? unmarshall(update.expressionValues) : {};
-    const unmarshalledConditionExpressionValues = condition.expressionValues ? unmarshall(condition.expressionValues) : {};
 
     const params: UpdateCommandInput = {
       TableName: this.tableName,
-      Key: unmarshalledKey,
+      Key: key,
       UpdateExpression: update.expression,
       ConditionExpression: condition.expression,
       ReturnValues: 'ALL_NEW',
@@ -218,8 +207,8 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ...(update.expressionNames || {}),
       },
       ExpressionAttributeValues: {
-        ...unmarshalledConditionExpressionValues,
-        ...unmarshalledUpdateExpressionValues,
+        ...(condition.expressionValues || {}),
+        ...(update.expressionValues || {}),
       },
     };
 
@@ -237,17 +226,14 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         expressionValues = undefined,
       } = {},
     } = payload;
-    const unmarshalledKey = key ? unmarshall(key) : {};
-    const unmarshalledExpressionValues = expressionValues ? unmarshall(expressionValues) : undefined;
-
     const { Attributes: deleted } = await this.client.send(
       new DeleteCommand({
         TableName: this.tableName,
-        Key: unmarshalledKey,
+        Key: key,
         ReturnValues: 'ALL_OLD',
         ConditionExpression: expression,
         ExpressionAttributeNames: expressionNames,
-        ExpressionAttributeValues: unmarshalledExpressionValues,
+        ExpressionAttributeValues: expressionValues,
       }),
     );
 
@@ -269,11 +255,10 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     };
 
     if (filter) {
-      const unmarshalledFilterExpressionValues = filter.expressionValues ? unmarshall(filter.expressionValues) : undefined;
       Object.assign(params, {
         FilterExpression: filter.expression,
         ExpressionAttributeNames: filter.expressionNames,
-        ExpressionAttributeValues: unmarshalledFilterExpressionValues,
+        ExpressionAttributeValues: filter.expressionValues,
       });
     }
 
