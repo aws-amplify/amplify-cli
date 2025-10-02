@@ -97,7 +97,7 @@ export class SSMClientWrapper {
         }),
       );
     } catch (err) {
-      if (err.code !== 'ParameterNotFound') {
+      if (err.name !== 'ParameterNotFound') {
         // if the value didn't exist in the first place, consider it deleted
         throw err;
       }
@@ -112,7 +112,7 @@ export class SSMClientWrapper {
       await this.ssmClient.send(new DeleteParametersCommand({ Names: secretNames }));
     } catch (err) {
       // if the value didn't exist in the first place, consider it deleted
-      if (err.code !== 'ParameterNotFound') {
+      if (err.name !== 'ParameterNotFound') {
         throw err;
       }
     }
