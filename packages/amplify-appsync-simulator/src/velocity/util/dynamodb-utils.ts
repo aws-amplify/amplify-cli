@@ -4,7 +4,10 @@ import { toJSON } from '../value-mapper/to-json';
 
 export const dynamodbUtils = {
   toDynamoDB(value: any) {
-    return marshall(toJSON(value));
+    return marshall(toJSON(value), {
+      removeUndefinedValues: true,
+      convertEmptyValues: true,
+    });
   },
   $toSet(values, fn = (value) => value) {
     return this.toDynamoDB(new Set([].concat(values).map((value) => fn(value))));
