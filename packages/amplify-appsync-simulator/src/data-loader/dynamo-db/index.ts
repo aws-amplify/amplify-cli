@@ -12,6 +12,7 @@ import {
   ScanCommandInput,
   Select,
   ReturnValue,
+  PutItemCommandInput,
 } from '@aws-sdk/client-dynamodb';
 import { unmarshall, marshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
@@ -141,18 +142,19 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       } = {},
     } = payload;
 
-    await this.client.send(
-      new PutItemCommand({
-        TableName: this.tableName,
-        Item: {
-          ...key,
-          ...attributeValues,
-        } as Record<string, AttributeValue>,
-        ConditionExpression: expression,
-        ExpressionAttributeNames: expressionNames,
-        ExpressionAttributeValues: expressionValues as Record<string, AttributeValue>,
-      }),
-    );
+    const params = {
+      TableName: this.tableName,
+      Item: {
+        ...key,
+        ...attributeValues,
+      } as Record<string, AttributeValue>,
+      ConditionExpression: expression,
+      ExpressionAttributeNames: expressionNames,
+      ExpressionAttributeValues: expressionValues as Record<string, AttributeValue>,
+    };
+    console.log(params);
+
+    await this.client.send(new PutItemCommand(params));
 
     // put does not return us anything useful so we need to fetch the object.
     return this.getItem({ key, consistentRead: true });
