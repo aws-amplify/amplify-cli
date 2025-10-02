@@ -65,9 +65,15 @@ export const dynamodbUtils = {
     return JSON.stringify(this.toNull());
   },
   toList(value) {
-    return this.toDynamoDB(value);
+    console.log('Making a list...');
+    console.log(value);
+    const output = this.toDynamoDB(value);
+    console.log(output);
+    return output;
   },
   toListJson(value) {
+    console.log('Stringify my list...');
+    console.log(value);
     return JSON.stringify(this.toList(value));
   },
   toMap(value) {
