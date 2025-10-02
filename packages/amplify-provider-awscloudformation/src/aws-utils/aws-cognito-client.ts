@@ -1,7 +1,7 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { CognitoIdentityProviderClient, CognitoIdentityProviderClientConfig } from '@aws-sdk/client-cognito-identity-provider';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
-import { AwsSecrets, loadConfiguration } from '../configuration-manager';
+import { AwsV3Secrets, loadConfiguration } from '../configuration-manager';
 import { proxyAgent } from './aws-globals';
 
 export class CognitoUserPoolClientProvider {
@@ -10,7 +10,7 @@ export class CognitoUserPoolClientProvider {
 
   static async getInstance(context: $TSContext, options = {}): Promise<CognitoUserPoolClientProvider> {
     if (!CognitoUserPoolClientProvider.instance) {
-      let cred: AwsSecrets = {};
+      let cred: AwsV3Secrets = {};
       try {
         cred = await loadConfiguration(context);
       } catch (e) {
@@ -22,10 +22,16 @@ export class CognitoUserPoolClientProvider {
     return CognitoUserPoolClientProvider.instance;
   }
 
-  constructor(creds: AwsSecrets, options = {}) {
+  constructor(creds: AwsV3Secrets, options = {}) {
     const clientConfig: CognitoIdentityProviderClientConfig = {
       ...creds,
       ...options,
+      credentials: {
+        accessKeyId: creds.accessKeyId,
+        secretAccessKey: creds.secretAccessKey,
+        sessionToken: creds.sessionToken,
+        expiration: creds.expiration,
+      },
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),
