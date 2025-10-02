@@ -23,7 +23,7 @@ import {
   ListUserPoolsRequest,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { ICognitoUserPoolService } from '@aws-amplify/amplify-util-import';
-import { AwsV3Secrets, loadConfiguration } from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
 const logger = fileLogger('CognitoUserPoolService');
@@ -38,7 +38,6 @@ export const createCognitoUserPoolService = async (context: $TSContext, options:
   }
 
   const cognito = new CognitoIdentityProviderClient({
-    ...credentials,
     ...credentials,
     ...options,
   });
