@@ -90,7 +90,7 @@ class CloudFormation {
     })();
   }
 
-  createResourceStack(cfnParentStackParams) {
+  async createResourceStack(cfnParentStackParams) {
     const cfnModel = this.cfn;
     const { context } = this;
     const cfnStackCheckParams = {
@@ -98,44 +98,41 @@ class CloudFormation {
     };
     const self = this;
     self.eventStartTime = new Date();
+    logger('cfnModel.createStack', [cfnParentStackParams])();
+    try {
+      await cfnModel.send(new CreateStackCommand(cfnParentStackParams));
+      this.readStackEvents(cfnParentStackParams.StackName);
+    } catch (createErr) {
+      logger('cfnModel.createStack', [cfnParentStackParams])(createErr);
+      context.print.error('\nAn error occurred when creating the CloudFormation stack');
+      throw createErr;
+    }
+    try {
+      await waitUntilStackCreateComplete({ client: cfnModel }, cfnStackCheckParams);
 
-    return new Promise(async (resolve, reject) => {
-      logger('cfnModel.createStack', [cfnParentStackParams])();
-      try {
-        await cfnModel.send(new CreateStackCommand(cfnParentStackParams));
-        this.readStackEvents(cfnParentStackParams.StackName);
-      } catch (createErr) {
-        logger('cfnModel.createStack', [cfnParentStackParams])(createErr);
-        context.print.error('\nAn error occurred when creating the CloudFormation stack');
-        return reject(createErr);
+      if (self.pollForEvents) {
+        clearTimeout(self.pollForEvents);
       }
-      try {
-        await waitUntilStackCreateComplete({ client: cfnModel }, cfnStackCheckParams);
 
-        if (self.pollForEvents) {
-          clearTimeout(self.pollForEvents);
-        }
-
-        this.progressBar?.stop();
-        resolve(cfnModel.send(new DescribeStacksCommand(cfnStackCheckParams)));
-      } catch (completeErr) {
-        if (self.pollForEvents) {
-          clearTimeout(self.pollForEvents);
-        }
-
-        this.progressBar?.stop();
-        context.print.error('\nAn error occurred when creating the CloudFormation stack');
-        const errorDetails = await this.collectStackErrors(cfnParentStackParams.StackName);
-        logger('cfnModel.createStack', [cfnParentStackParams])(completeErr);
-        const error = new AmplifyFault(
-          'DeploymentFault',
-          { message: 'Initialization of project failed', details: errorDetails },
-          completeErr,
-        );
-        error.stack = null;
-        reject(error);
+      this.progressBar?.stop();
+      return cfnModel.send(new DescribeStacksCommand(cfnStackCheckParams));
+    } catch (completeErr) {
+      if (self.pollForEvents) {
+        clearTimeout(self.pollForEvents);
       }
-    });
+
+      this.progressBar?.stop();
+      context.print.error('\nAn error occurred when creating the CloudFormation stack');
+      const errorDetails = await this.collectStackErrors(cfnParentStackParams.StackName);
+      logger('cfnModel.createStack', [cfnParentStackParams])(completeErr);
+      const error = new AmplifyFault(
+        'DeploymentFault',
+        { message: 'Initialization of project failed', details: errorDetails },
+        completeErr,
+      );
+      error.stack = null;
+      throw error;
+    }
   }
 
   /**
