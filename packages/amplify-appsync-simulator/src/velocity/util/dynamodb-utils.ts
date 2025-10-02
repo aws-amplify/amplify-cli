@@ -10,7 +10,11 @@ export const dynamodbUtils = {
     });
   },
   $toSet(values, fn = (value) => value) {
-    return this.toDynamoDB(new Set([].concat(values).map((value) => fn(value))));
+    console.log('Making...something...');
+    console.log(values);
+    const output = this.toDynamoDB(new Set([].concat(values).map((value) => fn(value))));
+    console.log(output);
+    return output;
   },
   toDynamoDBJson(value) {
     return JSON.stringify(this.toDynamoDB(value));
@@ -65,15 +69,9 @@ export const dynamodbUtils = {
     return JSON.stringify(this.toNull());
   },
   toList(value) {
-    console.log('Making a list...');
-    console.log(value);
-    const output = this.toDynamoDB(value);
-    console.log(output);
-    return output;
+    return this.toDynamoDB(value);
   },
   toListJson(value) {
-    console.log('Stringify my list...');
-    console.log(value);
     return JSON.stringify(this.toList(value));
   },
   toMap(value) {
