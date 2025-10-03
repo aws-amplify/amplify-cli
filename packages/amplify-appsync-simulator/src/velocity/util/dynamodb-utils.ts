@@ -5,11 +5,13 @@ import { toJSON } from '../value-mapper/to-json';
 export const dynamodbUtils = {
   toDynamoDB(value: any) {
     console.log('marshalling...');
-    console.log(value);
-    return marshall(toJSON(value), {
+    console.log(toJSON(value));
+    const output = marshall(toJSON(value), {
       removeUndefinedValues: true,
       convertEmptyValues: true,
     });
+    console.log(output);
+    return output;
   },
   $toSet(values, fn = (value) => value) {
     return this.toDynamoDB(new Set([].concat(values).map((value) => fn(value))));

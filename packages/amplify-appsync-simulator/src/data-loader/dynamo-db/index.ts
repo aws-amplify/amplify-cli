@@ -12,7 +12,6 @@ import {
   ScanCommandInput,
   Select,
   ReturnValue,
-  PutItemCommandInput,
 } from '@aws-sdk/client-dynamodb';
 import { unmarshall, marshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
