@@ -8,6 +8,7 @@ import * as configureKey from './apns-key-config';
 import * as configureCertificate from './apns-cert-config';
 import { ChannelAction, IChannelAPIResponse, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';
+import { UpdateApnsChannelCommand, UpdateApnsSandboxChannelCommand, GetApnsChannelCommand } from '@aws-sdk/client-pinpoint';
 
 const channelName = 'APNS';
 const spinner = ora('');
@@ -95,8 +96,8 @@ export const enable = async (context: $TSContext, successMessage: string | undef
 
   let data;
   try {
-    data = await context.exeInfo.pinpointClient.updateApnsChannel(params).promise();
-    await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
+    data = await context.exeInfo.pinpointClient.send(new UpdateApnsChannelCommand(params));
+    await context.exeInfo.pinpointClient.send(new UpdateApnsSandboxChannelCommand(sandboxParams));
     context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
   } catch (e) {
     spinner.stop();
@@ -187,8 +188,8 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
 
   let data;
   try {
-    data = await context.exeInfo.pinpointClient.updateApnsChannel(params).promise();
-    await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
+    data = await context.exeInfo.pinpointClient.send(new UpdateApnsChannelCommand(params));
+    await context.exeInfo.pinpointClient.send(new UpdateApnsSandboxChannelCommand(sandboxParams));
   } catch (e) {
     spinner.fail(`Failed to update the ${channelName} channel.`);
     throw new AmplifyFault(
@@ -219,7 +220,7 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
   spinner.start(`Retrieving channel information for ${channelName}.`);
 
   try {
-    const data = await context.exeInfo.pinpointClient.getApnsChannel(params).promise();
+    const data = await context.exeInfo.pinpointClient.send(new GetApnsChannelCommand(params));
     spinner.succeed(`Channel information retrieved for ${channelName}`);
     pinpointApp[channelName] = data.APNSChannelResponse;
     return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.APNSChannelResponse);

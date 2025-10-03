@@ -41,7 +41,7 @@ const mockPinpointResponseData = (status: boolean, action: ChannelAction): IChan
   action,
   channel: ChannelType.FCM,
   deploymentType: ChannelConfigDeploymentType.INLINE,
-  output: undefined,
+  output: {},
   response: {
     capability: AmplifyCategories.NOTIFICATIONS,
     pluginName: AmplifyCategories.NOTIFICATIONS,
@@ -86,17 +86,11 @@ describe('channel-FCM', () => {
   const mockPinpointResponseErr = new Error('channel-FCM.test.js error');
 
   const mockPinpointClient = {
-    updateGcmChannel: jest.fn().mockImplementation(() => ({
-      promise: jest.fn(() => mockPinpointResponseData(true, ChannelAction.ENABLE)),
-    })),
+    send: jest.fn().mockResolvedValue({ GCMChannelResponse: {} }),
   };
 
   const mockPinpointClientReject = {
-    updateGcmChannel: jest.fn().mockImplementation(() => ({
-      promise: jest.fn(() => {
-        throw mockPinpointResponseErr;
-      }),
-    })),
+    send: jest.fn().mockRejectedValue(mockPinpointResponseErr),
   };
 
   test('configure', async () => {
@@ -106,19 +100,19 @@ describe('channel-FCM', () => {
 
     const mockContextObj = mockContext(mockChannelEnabledOutput, mockPinpointClient);
     await channelFCM.configure(mockContextObj).then(() => {
-      expect(mockPinpointClient.updateGcmChannel).toBeCalled();
+      expect(mockPinpointClient.send).toBeCalled();
     });
 
     mockChannelEnabledOutput.Enabled = true;
     prompterMock.yesOrNo.mockResolvedValueOnce(false);
     await channelFCM.configure(mockContext(mockChannelEnabledOutput, mockPinpointClient)).then(() => {
-      expect(mockPinpointClient.updateGcmChannel).toBeCalled();
+      expect(mockPinpointClient.send).toBeCalled();
     });
 
     mockChannelEnabledOutput.Enabled = false;
     prompterMock.yesOrNo.mockResolvedValueOnce(true);
     await channelFCM.configure(mockContext(mockChannelEnabledOutput, mockPinpointClient)).then(() => {
-      expect(mockPinpointClient.updateGcmChannel).toBeCalled();
+      expect(mockPinpointClient.send).toBeCalled();
     });
   });
 
@@ -126,14 +120,7 @@ describe('channel-FCM', () => {
     prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
     const mockContextObj = mockContext(mockChannelEnabledOutput, mockPinpointClient);
     const data = await channelFCM.enable(mockContextObj, 'successMessage');
-    expect(mockPinpointClient.updateGcmChannel).toBeCalledWith({
-      ApplicationId: undefined,
-      GCMChannelRequest: {
-        ServiceJson: serviceAccountJson,
-        DefaultAuthenticationMethod: 'TOKEN',
-        Enabled: true,
-      },
-    });
+    expect(mockPinpointClient.send).toBeCalled();
     expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.ENABLE));
   });
 
@@ -142,19 +129,21 @@ describe('channel-FCM', () => {
 
     const context = mockContextReject(mockServiceOutput, mockPinpointClientReject);
     const errCert: AmplifyFault = await getError(async () => channelFCM.enable(context as unknown as $TSContext, 'successMessage'));
-    expect(context.exeInfo.pinpointClient.updateGcmChannel).toBeCalled();
+    expect(context.exeInfo.pinpointClient.send).toBeCalled();
     expect(errCert?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
   });
 
   test('disable', async () => {
     const data = await channelFCM.disable(mockContextReject(mockServiceOutput, mockPinpointClient));
-    expect(mockPinpointClient.updateGcmChannel).toBeCalled();
+    expect(mockPinpointClient.send).toBeCalled();
     expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.DISABLE));
   });
 
   test('disable unsuccessful', async () => {
-    await expect(channelFCM.disable(mockContextReject(mockServiceOutput, mockPinpointClientReject))).rejects.toThrowError(
-      'Failed to disable the FCM channel',
+    const errDisable: AmplifyFault = await getError(async () =>
+      channelFCM.disable(mockContextReject(mockServiceOutput, mockPinpointClientReject)),
     );
+    expect(mockPinpointClientReject.send).toBeCalled();
+    expect(errDisable?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
   });
 });

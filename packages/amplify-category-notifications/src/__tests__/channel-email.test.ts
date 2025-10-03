@@ -23,7 +23,7 @@ const mockPinpointResponseData = (status: boolean, action: ChannelAction): IChan
   action,
   channel: ChannelType.Email,
   deploymentType: ChannelConfigDeploymentType.INLINE,
-  output: undefined,
+  output: {},
   response: {
     capability: AmplifyCategories.NOTIFICATIONS,
     pluginName: AmplifyCategories.NOTIFICATIONS,
@@ -34,9 +34,7 @@ const mockPinpointResponseData = (status: boolean, action: ChannelAction): IChan
 });
 
 const mockPinpointClient = {
-  updateEmailChannel: jest.fn().mockImplementation(() => ({
-    promise: jest.fn(() => mockPinpointResponseData(true, ChannelAction.ENABLE)),
-  })),
+  send: jest.fn().mockResolvedValue({ EmailChannelResponse: {} }),
 };
 
 const mockContext = (output: $TSAny, client: $TSAny): $TSContext =>
@@ -61,7 +59,7 @@ describe('channel-FCM', () => {
 
     const mockContextObj = mockContext({ Enabled: true }, mockPinpointClient);
     const data = await channelEmail.enable(mockContextObj, 'successMessage');
-    expect(mockPinpointClient.updateEmailChannel).toBeCalled();
+    expect(mockPinpointClient.send).toBeCalled();
     expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.ENABLE));
     expect(mockContextObj.exeInfo.serviceMeta.output['Email'].RoleArn).toEqual('fake:arn:role');
   });
