@@ -146,7 +146,7 @@ type ConfigBase = {
     variables: [string: string];
   };
 };
-const MAX_WORKERS = 3;
+const MAX_WORKERS = 2;
 const MAX_WORKERS_WINDOWS = 2;
 type OS_TYPE = 'w' | 'l';
 type CandidateJob = {
