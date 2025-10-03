@@ -1,14 +1,19 @@
-import { Converter } from 'aws-sdk/clients/dynamodb';
-import { DynamoDBSet } from 'aws-sdk/lib/dynamodb/set';
+import { marshall } from '@aws-sdk/util-dynamodb';
 
 import { toJSON } from '../value-mapper/to-json';
 
 export const dynamodbUtils = {
   toDynamoDB(value: any) {
-    return Converter.input(toJSON(value));
+    if (Array.isArray(value)) {
+      return { L: marshall(toJSON(value)) };
+    }
+    return marshall(toJSON(value), {
+      removeUndefinedValues: true,
+      convertEmptyValues: true,
+    });
   },
   $toSet(values, fn = (value) => value) {
-    return this.toDynamoDB(new DynamoDBSet([].concat(values).map((value) => fn(value))));
+    return this.toDynamoDB(new Set([].concat(values).map((value) => fn(value))));
   },
   toDynamoDBJson(value) {
     return JSON.stringify(this.toDynamoDB(value));

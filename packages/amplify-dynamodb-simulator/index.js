@@ -230,12 +230,14 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
 }
 
 function getClient(emu, options = {}) {
-  const { DynamoDB } = require('aws-sdk');
-  return new DynamoDB({
+  const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+  return new DynamoDBClient({
     endpoint: emu.url,
     region: 'us-fake-1',
-    accessKeyId: 'fake',
-    secretAccessKey: 'fake',
+    credentials: {
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+    },
     ...options,
   });
 }

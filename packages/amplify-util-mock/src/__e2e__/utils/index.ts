@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { querySearchable } from '../../utils/opensearch';
 import { isWindowsPlatform } from '@aws-amplify/amplify-cli-core';
@@ -37,14 +37,14 @@ export async function launchDDBLocal() {
     dbPath,
     port: null,
   });
-  const client: DynamoDB = await dynamoEmulator.getClient(emulator);
+  const client: DynamoDBClient = await dynamoEmulator.getClient(emulator);
   logDebug(dbPath);
   return { emulator, dbPath, client };
 }
 
 export async function deploy(
   transformerOutput: any,
-  client?: DynamoDB,
+  client?: DynamoDBClient,
   opensearchURL?: URL,
 ): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
@@ -52,7 +52,7 @@ export async function deploy(
 
   if (client) {
     await createAndUpdateTable(client, config);
-    config = configureDDBDataSource(config, client.config);
+    config = await configureDDBDataSource(config, client.config);
   }
   await configureLambdaDataSource(config);
   if (opensearchURL) {
@@ -65,14 +65,14 @@ export async function deploy(
 export async function reDeploy(
   transformerOutput: any,
   simulator: AmplifyAppSyncSimulator,
-  client?: DynamoDB,
+  client?: DynamoDBClient,
 ): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
   if (client) {
     await createAndUpdateTable(client, config);
-    config = configureDDBDataSource(config, client.config);
+    config = await configureDDBDataSource(config, client.config);
   }
   await configureLambdaDataSource(config);
   simulator?.reload(config);

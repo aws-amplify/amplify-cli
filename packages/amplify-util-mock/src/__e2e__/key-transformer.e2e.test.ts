@@ -14,6 +14,7 @@ let dbPath = null;
 let server;
 
 beforeAll(async () => {
+  process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
   const validSchema = `
     type Order @model @key(fields: ["customerEmail", "createdAt"]) {
         customerEmail: String!
@@ -116,6 +117,7 @@ test('Test next token with key', async () => {
   const items2 = await itemsByStatus(status, { beginsWith: '2019' }, 2, itemsNextToken);
   expect(items2.data).toBeDefined();
   // get last two values
+  console.log(items2);
   expect(items2.data.itemsByStatus.items).toHaveLength(2);
   expect(items2.data.itemsByStatus.items).toEqual(
     expect.arrayContaining([

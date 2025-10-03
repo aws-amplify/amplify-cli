@@ -28,7 +28,7 @@ import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
 import { ddbLambdaTriggerHandler } from './lambda-trigger-handler';
-import { TableDescription } from 'aws-sdk/clients/dynamodb';
+import { TableDescription } from '@aws-sdk/client-dynamodb';
 import { querySearchable } from '../utils/opensearch';
 import { getMockOpensearchDataDirectory } from '../utils/mock-directory';
 import { buildLambdaTrigger } from './lambda-invoke';
@@ -94,7 +94,7 @@ export class APITest {
       await this.generateCode(context, appSyncConfig);
 
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
-      context.print.info(`GraphiQL IDE is available for local testing at ${this.appSyncSimulator.localhostUrl}`);
+      context.print.info(`GraphQL IDE is available for local testing at ${this.appSyncSimulator.localhostUrl}`);
       await this.startDDBListeners(context, appSyncConfig, false);
     } catch (e) {
       const errMessage = 'Failed to start API Mocking.';
@@ -151,7 +151,7 @@ export class APITest {
     const { transformerOutput } = await runTransformer(context);
     let config: any = processAppSyncResources(transformerOutput, parameters);
     config = await this.ensureDDBTables(config);
-    config = this.configureDDBDataSource(config);
+    config = await this.configureDDBDataSource(config);
     this.transformerResult = await this.configureLambdaDataSource(context, config);
     this.transformerResult = await this.configureOpensearchDataSource(this.transformerResult);
     this.userOverriddenSlots = transformerOutput.userOverriddenSlots;
@@ -375,9 +375,9 @@ export class APITest {
       });
   }
 
-  private configureDDBDataSource(config) {
+  private async configureDDBDataSource(config) {
     const ddbConfig = this.ddbClient.config;
-    return configureDDBDataSource(config, ddbConfig);
+    return await configureDDBDataSource(config, ddbConfig);
   }
   public async getAppSyncAPI(context) {
     const currentMeta = await getAmplifyMeta(context);
