@@ -6,6 +6,12 @@ import { checkAmplifyServiceIAMPermission } from './amplify-service-permission-c
 import constants from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { storeCurrentCloudBackend } from './utils/upload-current-cloud-backend';
+import {
+  CreateBackendEnvironmentCommand,
+  GetAppCommand,
+  GetBackendEnvironmentCommand,
+  ListBackendEnvironmentsCommand,
+} from '@aws-sdk/client-amplify';
 
 const logger = fileLogger('amplify-service-migrate');
 
@@ -67,11 +73,7 @@ export const run = async (context): Promise<void> => {
       },
     ])();
     try {
-      const getAppResult = await amplifyClient
-        .getApp({
-          appId: amplifyAppId,
-        })
-        .promise();
+      const getAppResult = await amplifyClient.send(new GetAppCommand({ appId: amplifyAppId }));
       context.print.info(`Amplify AppID found: ${amplifyAppId}. Amplify App name is: ${getAppResult.app.name}`);
     } catch (e) {
       throw new AmplifyError(
@@ -93,12 +95,12 @@ export const run = async (context): Promise<void> => {
           nextToken: listEnvResponse.nextToken,
         },
       ])();
-      listEnvResponse = await amplifyClient
-        .listBackendEnvironments({
+      listEnvResponse = await amplifyClient.send(
+        new ListBackendEnvironmentsCommand({
           appId: amplifyAppId,
           nextToken: listEnvResponse.nextToken,
-        })
-        .promise();
+        }),
+      );
 
       backendEnvs = backendEnvs.concat(listEnvResponse.backendEnvironments);
     } while (listEnvResponse.nextToken);
@@ -115,7 +117,7 @@ export const run = async (context): Promise<void> => {
       const log = logger('run.amplifyClient.createBackendEnvironment', [createEnvParams]);
       log();
       try {
-        await amplifyClient.createBackendEnvironment(createEnvParams).promise();
+        await amplifyClient.send(new CreateBackendEnvironmentCommand(createEnvParams));
       } catch (ex) {
         log(ex);
       }
@@ -126,7 +128,7 @@ export const run = async (context): Promise<void> => {
         environmentName: envName,
       };
       logger('run.amplifyClient.getBackendEnvironment', [getEnvParams])();
-      const { backendEnvironment } = await amplifyClient.getBackendEnvironment(getEnvParams).promise();
+      const { backendEnvironment } = await amplifyClient.send(new GetBackendEnvironmentCommand(getEnvParams));
       if (StackName !== backendEnvironment.stackName) {
         throw new AmplifyError('InvalidStackError', {
           message: `Stack name mismatch for the backend environment ${envName}. Local: ${StackName}, Amplify: ${backendEnvironment.stackName}`,

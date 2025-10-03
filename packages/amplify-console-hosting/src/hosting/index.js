@@ -10,6 +10,7 @@ const clientFactory = require('../utils/client-factory');
 const tableUtils = require('../utils/table-utils');
 const { ensureEnvParamManager } = require('@aws-amplify/amplify-environment-parameters');
 const { spinner } = require('@aws-amplify/amplify-cli-core');
+const { ListBranchesCommand } = require('@aws-sdk/client-amplify');
 
 const HELP_INFO_PLACE_HOLDER =
   'Manual deployment allows you to publish your web app to the Amplify Console without connecting a Git provider. Continuous deployment allows you to publish changes on every code commit by connecting your GitHub, Bitbucket, GitLab, or AWS CodeCommit repositories.';
@@ -166,7 +167,7 @@ function isHostingEnabled(context) {
 async function isFrontendCreatedOnline(context) {
   const appId = utils.getAppIdForCurrEnv(context);
   const amplifyClient = await clientFactory.getAmplifyClient(context);
-  const result = await amplifyClient.listBranches({ appId }).promise();
+  const result = await amplifyClient.send(new ListBranchesCommand({ appId }));
   if (result.branches.length > 0) {
     return true;
   } else {
