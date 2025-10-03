@@ -5,8 +5,8 @@ import { toJSON } from '../value-mapper/to-json';
 export const dynamodbUtils = {
   toDynamoDB(value: any) {
     console.log('marshalling...');
-    console.log(toJSON(value));
-    const output = marshall(toJSON(value), {
+    const input = Array.isArray(value) ? value : toJSON(value);
+    const output = marshall(input, {
       removeUndefinedValues: true,
       convertEmptyValues: true,
     });
