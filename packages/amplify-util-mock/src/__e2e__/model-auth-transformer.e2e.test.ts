@@ -563,6 +563,7 @@ test('Test listPosts query when authorized', async () => {
     {},
   );
   logDebug(JSON.stringify(listResponse, null, 4));
+  console.log(listResponse);
   expect(listResponse.data.listPosts.items.length).toEqual(1);
 
   const listResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(
@@ -815,6 +816,7 @@ test(`Test listSalaries w/ Admin group protection authorized`, async () => {
         }
     }
     `);
+  console.log(req2);
   expect(req2.data.listSalaries.items.length).toEqual(1);
   expect(req2.data.listSalaries.items[0].id).toEqual(req.data.createSalary.id);
   expect(req2.data.listSalaries.items[0].wage).toEqual(101);
@@ -2387,6 +2389,8 @@ test(`Test createTestIdentity as admin.`, async () => {
   );
   const relevantPost = listResponse.data.listTestIdentities.items.find((p) => p.id === getReq.data.getTestIdentity.id);
   logDebug(JSON.stringify(listResponse, null, 4));
+  console.log(listResponse);
+  console.log(relevantPost);
   expect(relevantPost).toBeTruthy();
   expect(relevantPost.title).toEqual('Test title update');
   expect(relevantPost.owner.slice(0, 19)).toEqual('https://cognito-idp');

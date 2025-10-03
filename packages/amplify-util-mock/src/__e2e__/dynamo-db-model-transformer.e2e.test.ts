@@ -153,6 +153,7 @@ test('Test createAuthor mutation', async () => {
     expect(response.data.createAuthor.entityMetadata.isActive).toEqual(true);
   } catch (e) {
     logDebug(e);
+    console.log(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -476,6 +477,7 @@ test('Test listPosts query with filter', async () => {
   } catch (e) {
     logDebug(e);
     // fail
+    console.log(e);
     expect(e).toBeUndefined();
   }
 });
@@ -643,6 +645,7 @@ test('Test enum filters List', async () => {
     });
   } catch (e) {
     logDebug(e);
+    console.log(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -687,6 +690,7 @@ test('Test createPost mutation with non-model types', async () => {
         },
       },
     );
+    console.log(response);
     expect(response.data.createPost.id).toBeDefined();
     expect(response.data.createPost.title).toEqual('Check that metadata exists');
     expect(response.data.createPost.createdAt).toBeDefined();
@@ -697,6 +701,7 @@ test('Test createPost mutation with non-model types', async () => {
     expect(response.data.createPost.appearsIn).toEqual(['NEWHOPE']);
   } catch (e) {
     logDebug(e);
+    console.log(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -755,6 +760,7 @@ test('Test updatePost mutation with non-model types', async () => {
         },
       },
     );
+    console.log(updateResponse);
     expect(updateResponse.data.updatePost.title).toEqual('Add some metadata');
     expect(updateResponse.data.updatePost.metadata).toBeDefined();
     expect(updateResponse.data.updatePost.metadata.tags.published).toEqual(true);
@@ -762,6 +768,7 @@ test('Test updatePost mutation with non-model types', async () => {
     expect(updateResponse.data.updatePost.appearsIn).toEqual(['NEWHOPE', 'EMPIRE']);
   } catch (e) {
     logDebug(e);
+    console.log(e);
     // fail
     expect(e).toBeUndefined();
   }
