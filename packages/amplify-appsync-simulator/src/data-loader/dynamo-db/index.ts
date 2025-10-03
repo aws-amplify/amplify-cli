@@ -173,7 +173,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ...(filter.expressionNames || undefined),
         ...(keyCondition.expressionNames || undefined),
       }),
-      ExclusiveStartKey: nextToken,
+      ExclusiveStartKey: nextToken ? marshall(JSON.parse(Buffer.from(nextToken, 'base64').toString())) : null,
       IndexName: index,
       Limit: limit,
       ConsistentRead: consistentRead,

@@ -117,7 +117,7 @@ test('Test next token with key', async () => {
   const items2 = await itemsByStatus(status, { beginsWith: '2019' }, 2, itemsNextToken);
   expect(items2.data).toBeDefined();
   // get last two values
-  console.log(items);
+  console.log(items2);
   expect(items2.data.itemsByStatus.items).toHaveLength(2);
   expect(items2.data.itemsByStatus.items).toEqual(
     expect.arrayContaining([
