@@ -12,6 +12,7 @@ let server;
 jest.setTimeout(2000000);
 
 beforeAll(async () => {
+  process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   const validSchema = `
   type Post @model {

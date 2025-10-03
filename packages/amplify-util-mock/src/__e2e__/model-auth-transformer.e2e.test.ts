@@ -45,6 +45,7 @@ const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 
 beforeAll(async () => {
+  process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
   // Create a stack for the post model with auth enabled.
   const validSchema = `
     type Post @model @auth(rules: [{ allow: owner }]) {

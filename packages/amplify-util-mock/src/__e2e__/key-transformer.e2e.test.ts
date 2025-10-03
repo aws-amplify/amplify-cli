@@ -14,6 +14,7 @@ let dbPath = null;
 let server;
 
 beforeAll(async () => {
+  process.env.AMPLIFY_ENABLE_DEBUG_OUTPUT = 'true';
   const validSchema = `
     type Order @model @key(fields: ["customerEmail", "createdAt"]) {
         customerEmail: String!
