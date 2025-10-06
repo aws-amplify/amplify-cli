@@ -1,10 +1,22 @@
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
+import {
+  AmplifyUIBuilderClient,
+  ExportComponentsCommand,
+  ExportThemesCommand,
+  ExportFormsCommand,
+  GetMetadataCommand,
+  StartCodegenJobCommand,
+  GetCodegenJobCommand,
+} from '@aws-sdk/client-amplifyuibuilder';
 import { getCodegenConfig } from 'amplify-codegen';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 import * as utils from '../commands/utils';
 import { run } from '../commands/generateComponents';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
 import { getUiBuilderComponentsPath } from '../commands/utils/getUiBuilderComponentsPath';
+
+const amplifyUIBuilderMock = mockClient(AmplifyUIBuilderClient);
 
 jest.mock('../commands/utils');
 jest.mock('@aws-amplify/amplify-cli-core');
@@ -25,7 +37,6 @@ jest.mock('amplify-codegen', () => ({
   getCodegenConfig: jest.fn(),
 }));
 
-const awsMock = aws as any;
 const utilsMock = utils as any;
 const isDataStoreEnabledMocked = isDataStoreEnabled as any;
 const getTransformerVersionMocked = getTransformerVersion as any;
@@ -62,20 +73,10 @@ const projectPath = '/usr/test/test-project';
 describe('can generate components', () => {
   let context: any;
   let schemas: any;
-  let mockedExport: jest.Mock<any, any>;
-  const getMetadataPromise = jest.fn().mockReturnValue({
-    features: {
-      ...defaultStudioFeatureFlags,
-    },
-  });
-  const startCodegenJobPromise = jest.fn().mockReturnValue({
-    entity: { id: 'jobId123' },
-  });
-  const mockStartCodegenJob = jest.fn().mockReturnValue({
-    promise: startCodegenJobPromise,
-  });
   beforeEach(() => {
     jest.clearAllMocks();
+    amplifyUIBuilderMock.reset();
+
     isDataStoreEnabledMocked.mockResolvedValue(true);
     getTransformerVersionMocked.mockResolvedValue(2);
     context = {
@@ -118,30 +119,25 @@ describe('can generate components', () => {
       getGeneratedFragmentsPath: jest.fn().mockReturnValue(projectPath + '/src/graphql/fragments.js'),
       getQueryMaxDepth: jest.fn().mockReturnValue(3),
     });
-
-    mockedExport = jest.fn().mockReturnValue({
+    amplifyUIBuilderMock.on(ExportComponentsCommand).resolves({
       entities: schemas.entities,
     });
-    awsMock.AmplifyUIBuilder = jest.fn().mockReturnValue({
-      exportComponents: jest.fn().mockReturnValue({
-        promise: () => mockedExport(),
-      }),
-      exportThemes: jest.fn().mockReturnValue({
-        promise: () => mockedExport(),
-      }),
-      exportForms: jest.fn().mockReturnValue({
-        promise: () => mockedExport(),
-      }),
-      exportViews: jest.fn().mockReturnValue({
-        promise: () => mockedExport(),
-      }),
-      getMetadata: jest.fn().mockReturnValue({
-        promise: getMetadataPromise,
-      }),
-      startCodegenJob: mockStartCodegenJob,
-      getCodegenJob: jest.fn().mockReturnValue({
-        promise: jest.fn().mockReturnValue({ status: 'succeeded' }),
-      }),
+    amplifyUIBuilderMock.on(ExportThemesCommand).resolves({
+      entities: schemas.entities,
+    });
+    amplifyUIBuilderMock.on(ExportFormsCommand).resolves({
+      entities: schemas.entities,
+    });
+    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
+      features: {
+        ...defaultStudioFeatureFlags,
+      },
+    });
+    amplifyUIBuilderMock.on(StartCodegenJobCommand).resolves({
+      entity: { id: 'jobId123' },
+    });
+    amplifyUIBuilderMock.on(GetCodegenJobCommand).resolves({
+      status: 'succeeded',
     });
     getUiBuilderComponentsPathMocked.mockReturnValue(projectPath + '/src/ui-components');
     utilsMock.generateUiBuilderComponents = jest.fn().mockReturnValue(schemas.entities);
@@ -155,8 +151,10 @@ describe('can generate components', () => {
   it('runs generateComponents', async () => {
     utilsMock.isFormDetachedFromModel = jest.fn().mockReturnValueOnce(true);
     await run(context, 'PostPull');
-    expect(mockedExport).toBeCalledTimes(3);
-    expect(startCodegenJobPromise).toBeCalledTimes(1);
+    expect(amplifyUIBuilderMock.commandCalls(ExportComponentsCommand)).toHaveLength(1);
+    expect(amplifyUIBuilderMock.commandCalls(ExportThemesCommand)).toHaveLength(1);
+    expect(amplifyUIBuilderMock.commandCalls(ExportFormsCommand)).toHaveLength(1);
+    expect(amplifyUIBuilderMock.commandCalls(StartCodegenJobCommand)).toHaveLength(1);
     expect(utilsMock.waitForSucceededJob).toBeCalledTimes(1);
     expect(getUiBuilderComponentsPathMocked).toBeCalledTimes(1);
     expect(utilsMock.extractUIComponents).toBeCalledTimes(1);
@@ -166,13 +164,8 @@ describe('can generate components', () => {
   it('should autogenerate forms if transformer v2 and datastore and feature flag are enabled', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(true);
     getTransformerVersionMocked.mockResolvedValue(2);
-    getMetadataPromise.mockReturnValue({
-      features: {
-        ...defaultStudioFeatureFlags,
-      },
-    });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+    expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
       appId: 'testAppId',
       environmentName: 'testEnvName',
       codegenJobToCreate: expect.objectContaining({ autoGenerateForms: true }),
@@ -182,13 +175,8 @@ describe('can generate components', () => {
   it('should not autogenerate forms if transformer v1', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(true);
     getTransformerVersionMocked.mockResolvedValue(1);
-    getMetadataPromise.mockReturnValue({
-      features: {
-        ...defaultStudioFeatureFlags,
-      },
-    });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+    expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
       appId: 'testAppId',
       environmentName: 'testEnvName',
       codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
@@ -197,14 +185,14 @@ describe('can generate components', () => {
 
   it('should not autogenerate forms if datastore is not enabled and GraphQL is not enabled', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(false);
-    getMetadataPromise.mockReturnValue({
+    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
       features: {
         ...defaultStudioFeatureFlags,
         isGraphQLEnabled: 'false',
       },
     });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+    expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
       appId: 'testAppId',
       environmentName: 'testEnvName',
       codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
@@ -213,7 +201,7 @@ describe('can generate components', () => {
 
   it('should not autogenerate forms if datastore is not enabled and GraphQL is enabled with invalid config', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(false);
-    getMetadataPromise.mockReturnValue({
+    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
       features: {
         ...defaultStudioFeatureFlags,
         isGraphQLEnabled: 'true',
@@ -223,7 +211,7 @@ describe('can generate components', () => {
       throw new Error();
     });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+    expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
       appId: 'testAppId',
       environmentName: 'testEnvName',
       codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
@@ -232,14 +220,14 @@ describe('can generate components', () => {
 
   it('should autogenerate forms if datastore is not enabled and GraphQL is enabled with valid config', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(false);
-    getMetadataPromise.mockReturnValue({
+    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
       features: {
         ...defaultStudioFeatureFlags,
         isGraphQLEnabled: 'true',
       },
     });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+    expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
       appId: 'testAppId',
       environmentName: 'testEnvName',
       codegenJobToCreate: expect.objectContaining({ autoGenerateForms: true }),
@@ -248,14 +236,14 @@ describe('can generate components', () => {
 
   it('should not autogenerate forms if feature flag  is not enabled', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(true);
-    getMetadataPromise.mockReturnValue({
+    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
       features: {
         ...defaultStudioFeatureFlags,
         autoGenerateForms: 'false',
       },
     });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
+    expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
       appId: 'testAppId',
       environmentName: 'testEnvName',
       codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
@@ -265,13 +253,8 @@ describe('can generate components', () => {
   describe('codegen job creation', () => {
     it('should inclue dataStore configuration when dataStore is enabled', async () => {
       isDataStoreEnabledMocked.mockResolvedValue(true);
-      getMetadataPromise.mockReturnValue({
-        features: {
-          ...defaultStudioFeatureFlags,
-        },
-      });
       await run(context, 'PostPull');
-      expect(mockStartCodegenJob).toHaveBeenCalledWith({
+      expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
         appId: 'testAppId',
         environmentName: 'testEnvName',
         codegenJobToCreate: expect.objectContaining({
@@ -288,14 +271,14 @@ describe('can generate components', () => {
 
     it('should inclue GraphQL configuration when dataStore is disabled and valid api configuration is found', async () => {
       isDataStoreEnabledMocked.mockResolvedValue(false);
-      getMetadataPromise.mockReturnValue({
+      amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
         features: {
           ...defaultStudioFeatureFlags,
           isGraphQLEnabled: 'true',
         },
       });
       await run(context, 'PostPull');
-      expect(mockStartCodegenJob).toHaveBeenCalledWith({
+      expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
         appId: 'testAppId',
         environmentName: 'testEnvName',
         codegenJobToCreate: expect.objectContaining({
@@ -318,14 +301,14 @@ describe('can generate components', () => {
 
     it('should include dependencies', async () => {
       isDataStoreEnabledMocked.mockResolvedValue(false);
-      getMetadataPromise.mockReturnValue({
+      amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
         features: {
           ...defaultStudioFeatureFlags,
           isGraphQLEnabled: 'true',
         },
       });
       await run(context, 'PostPull');
-      expect(mockStartCodegenJob).toHaveBeenCalledWith({
+      expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
         appId: 'testAppId',
         environmentName: 'testEnvName',
         codegenJobToCreate: expect.objectContaining({
@@ -340,7 +323,7 @@ describe('can generate components', () => {
 
     it('should inclue noApi configuration when dataStore is disabled and no valid GraphQL Api', async () => {
       isDataStoreEnabledMocked.mockResolvedValue(false);
-      getMetadataPromise.mockReturnValue({
+      amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
         features: {
           ...defaultStudioFeatureFlags,
           isGraphQLEnabled: 'true',
@@ -350,7 +333,7 @@ describe('can generate components', () => {
         throw new Error();
       });
       await run(context, 'PostPull');
-      expect(mockStartCodegenJob).toHaveBeenCalledWith({
+      expect(amplifyUIBuilderMock).toHaveRecievedCommandWith(StartCodegenJobCommand, {
         appId: 'testAppId',
         environmentName: 'testEnvName',
         codegenJobToCreate: expect.objectContaining({

@@ -1,5 +1,12 @@
+import { mockClient } from 'aws-sdk-client-mock';
+import {
+  AmplifyUIBuilderClient,
+  ExportComponentsCommand,
+  ExportThemesCommand,
+  ExportFormsCommand,
+  GetMetadataCommand,
+} from '@aws-sdk/client-amplifyuibuilder';
 import { AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
-import aws from 'aws-sdk';
 import {
   getEnvName,
   getAppId,
@@ -31,7 +38,7 @@ jest.mock('@aws-amplify/amplify-category-api', () => ({
 jest.mock('fs');
 jest.mock('node-fetch');
 
-const awsMock = aws as any;
+const amplifyUIBuilderMock = mockClient(AmplifyUIBuilderClient);
 const stateManagerMock = stateManager as any;
 const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 const mockWriteFileSync = jest.mocked(writeFileSync);
@@ -71,6 +78,7 @@ describe('should sync amplify ui builder components', () => {
 
   beforeEach(() => {
     mockNodeFetch.mockReset();
+    amplifyUIBuilderMock.reset();
     process.env = { ...env };
 
     isDataStoreEnabledMocked.mockResolvedValue(true);
@@ -110,88 +118,59 @@ describe('should sync amplify ui builder components', () => {
       },
     }));
 
-    awsMock.AmplifyUIBuilder = jest.fn(() => ({
-      exportComponents: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          entities: [
-            {
-              appId: 'd37nrm8rzt3oek', // eslint-disable-line spellcheck/spell-checker
-              bindingProperties: {},
-              componentType: 'Box',
-              environmentName: 'staging',
-              id: 's-s4mU579Ycf6JGHwhqT', // eslint-disable-line spellcheck/spell-checker
-              name: 'aawwdd', // eslint-disable-line spellcheck/spell-checker
-              overrides: {},
-              properties: {},
-              variants: [],
-            },
-          ],
-        })),
-      })),
-      exportThemes: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          entities: [{}],
-        })),
-      })),
-      exportForms: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          entities: [
-            {
-              name: 'BasicFormCreate',
-              formActionType: 'create',
-              dataType: {
-                dataSourceType: 'Custom',
-                dataTypeName: 'Post',
+    amplifyUIBuilderMock.on(ExportComponentsCommand).resolves({
+      entities: [
+        {
+          appId: 'd37nrm8rzt3oek', // eslint-disable-line spellcheck/spell-checker
+          bindingProperties: {},
+          componentType: 'Box',
+          environmentName: 'staging',
+          id: 's-s4mU579Ycf6JGHwhqT', // eslint-disable-line spellcheck/spell-checker
+          name: 'aawwdd', // eslint-disable-line spellcheck/spell-checker
+          overrides: {},
+          properties: {},
+          variants: [],
+        },
+      ],
+    });
+    amplifyUIBuilderMock.on(ExportThemesCommand).resolves({
+      entities: [{}],
+    });
+    amplifyUIBuilderMock.on(ExportFormsCommand).resolves({
+      entities: [
+        {
+          name: 'BasicFormCreate',
+          formActionType: 'create',
+          dataType: {
+            dataSourceType: 'Custom',
+            dataTypeName: 'Post',
+          },
+          fields: {
+            name: {
+              inputType: {
+                required: true,
+                type: 'TextField',
+                name: 'name',
+                defaultValue: 'John Doe',
               },
-              fields: {
-                name: {
-                  inputType: {
-                    required: true,
-                    type: 'TextField',
-                    name: 'name',
-                    defaultValue: 'John Doe',
-                  },
-                  label: 'name',
-                },
-              },
-              sectionalElements: {},
-              style: {},
-            },
-          ],
-        })),
-      })),
-      exportViews: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          entities: [
-            {
-              appId: '23342',
-              dataSource: { type: 'Custom' },
-              environmentName: 'staging',
-              id: 'id',
-              name: 'ProductTable',
-              // TODO: replace with export when Codegen updated
-              schemaVersion: '1.0',
-              style: {},
-              viewConfiguration: {
-                type: 'Table',
-              },
-            },
-          ],
-        })),
-      })),
-      getMetadata: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          features: {
-            autoGenerateForms: 'true',
-            autoGenerateViews: 'true',
-            formFeatureFlags: {
-              isRelationshipSupported: 'false',
-              isNonModelSupported: 'false',
+              label: 'name',
             },
           },
-        })),
-      })),
-    }));
+          sectionalElements: {},
+          style: {},
+        },
+      ],
+    });
+    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
+      features: {
+        autoGenerateForms: 'true',
+        autoGenerateViews: 'true',
+        formFeatureFlags: {
+          isRelationshipSupported: 'false',
+          isNonModelSupported: 'false',
+        },
+      },
+    });
   });
 
   afterEach(() => {

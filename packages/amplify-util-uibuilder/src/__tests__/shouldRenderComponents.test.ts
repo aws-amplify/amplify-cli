@@ -1,9 +1,9 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { mockClient } from 'aws-sdk-client-mock';
+import { AmplifyUIBuilderClient, GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { shouldRenderComponents } from '../commands/utils/shouldRenderComponents';
 
-const awsMock = aws as any;
+const amplifyUIBuilderMock = mockClient(AmplifyUIBuilderClient);
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
@@ -28,21 +28,16 @@ describe('should render components', () => {
   let context: $TSContext | any;
 
   beforeAll(async () => {
-    // set metadata response
-    awsMock.AmplifyUIBuilder = jest.fn(() => ({
-      getMetadata: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          features: {
-            autoGenerateForms: 'true',
-            autoGenerateViews: 'true',
-            formFeatureFlags: {
-              isRelationshipSupported: 'false',
-              isNonModelSupported: 'false',
-            },
-          },
-        })),
-      })),
-    }));
+    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
+      features: {
+        autoGenerateForms: 'true',
+        autoGenerateViews: 'true',
+        formFeatureFlags: {
+          isRelationshipSupported: 'false',
+          isNonModelSupported: 'false',
+        },
+      },
+    });
     context = {
       input: {
         options: {

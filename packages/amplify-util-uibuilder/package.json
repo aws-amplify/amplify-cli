@@ -19,8 +19,9 @@
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-amplify/codegen-ui": "2.14.2",
     "@aws-amplify/codegen-ui-react": "2.14.2",
+    "@aws-sdk/client-amplifybackend": "^3.624.0",
+    "@aws-sdk/client-amplifyuibuilder": "^3.624.0",
     "amplify-codegen": "^4.10.3",
-    "aws-sdk": "^2.1464.0",
     "fs-extra": "^8.1.0",
     "node-fetch": "^2.6.7",
     "ora": "^4.0.3",
@@ -32,6 +33,8 @@
     "@types/jest": "^29.5.1",
     "@types/semver": "^7.1.0",
     "@types/tiny-async-pool": "^2.0.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0",
     "ts-jest": "^29.1.0"
   },
   "jest": {
