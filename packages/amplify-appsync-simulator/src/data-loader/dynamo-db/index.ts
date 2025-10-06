@@ -210,9 +210,20 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ...(condition.expressionValues || {}),
         ...(update.expressionValues || {}),
       } as Record<string, AttributeValue>),
+      ReturnValuesOnConditionCheckFailure: 'ALL_OLD',
     };
-    const { Attributes: updated } = await this.client.send(new UpdateItemCommand(params));
-    return unmarshall(updated);
+
+    console.log(params);
+    try {
+      const { Attributes: updated } = await this.client.send(new UpdateItemCommand(params));
+      return unmarshall(updated);
+    } catch (err) {
+      if (err.Item) {
+        console.log(err.Item);
+      }
+      throw err;
+    }
+    //return unmarshall(updated);
   }
 
   private async deleteItem(payload) {
