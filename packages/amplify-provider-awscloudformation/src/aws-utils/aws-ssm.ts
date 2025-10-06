@@ -1,16 +1,16 @@
 import { $TSContext, $TSObject } from '@aws-amplify/amplify-cli-core';
-import { AwsSecrets, loadConfiguration } from '../configuration-manager';
-import aws from './aws.js';
-import * as AWS from 'aws-sdk';
+import { loadConfiguration } from '../configuration-manager';
+import { SSMClient } from '@aws-sdk/client-ssm';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { proxyAgent } from './aws-globals';
 
 export class SSM {
   private static instance: SSM;
-  readonly client: AWS.SSM;
+  readonly client: SSMClient;
 
   static async getInstance(context: $TSContext, options: $TSObject = {}): Promise<SSM> {
     if (!SSM.instance) {
-      let cred: AwsSecrets = {};
+      let cred = {};
       try {
         cred = await loadConfiguration(context);
       } catch (e) {
@@ -22,13 +22,14 @@ export class SSM {
     return SSM.instance;
   }
 
-  private constructor(cred: AwsSecrets, options = {}) {
-    this.client = new aws.SSM({
+  private constructor(cred, options = {}) {
+    this.client = new SSMClient({
       ...cred,
       ...options,
-      httpOptions: {
-        agent: proxyAgent(),
-      },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     });
   }
 }

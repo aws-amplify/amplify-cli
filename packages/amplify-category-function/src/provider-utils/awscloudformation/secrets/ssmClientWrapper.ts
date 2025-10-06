@@ -1,11 +1,12 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import {
-  SSMClient,
-  GetParametersCommand,
-  GetParametersByPathCommand,
-  PutParameterCommand,
   DeleteParameterCommand,
   DeleteParametersCommand,
+  GetParametersByPathCommand,
+  GetParametersByPathResult,
+  GetParametersCommand,
+  PutParameterCommand,
+  SSMClient,
 } from '@aws-sdk/client-ssm';
 
 /**
@@ -47,7 +48,7 @@ export class SSMClientWrapper {
     let NextToken;
     const accumulator: string[] = [];
     do {
-      const result = await this.ssmClient.send(
+      const result: GetParametersByPathResult = await this.ssmClient.send(
         new GetParametersByPathCommand({
           Path: secretPath,
           MaxResults: 10,

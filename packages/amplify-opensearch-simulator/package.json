@@ -39,7 +39,7 @@
     "wait-port": "^0.2.7"
   },
   "devDependencies": {
-    "@types/node": "^12.12.6",
+    "@types/node": "^20.9.0",
     "@types/openpgp": "^4.4.19",
     "uuid": "^8.3.2"
   },

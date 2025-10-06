@@ -1,4 +1,5 @@
-const aws = require('./aws.js');
+const { SageMakerClient } = require('@aws-sdk/client-sagemaker');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 const configurationManager = require('../configuration-manager');
 const { proxyAgent } = require('./aws-globals');
 
@@ -13,13 +14,13 @@ class SageMaker {
       }
       this.context = context;
 
-      this.sageMaker = new aws.SageMaker({
+      this.sageMaker = new SageMakerClient({
         ...cred,
         ...options,
-        apiVersion: '2017-07-24',
-        httpOptions: {
-          agent: proxyAgent(),
-        },
+        requestHandler: new NodeHttpHandler({
+          httpAgent: proxyAgent(),
+          httpsAgent: proxyAgent(),
+        }),
       });
       return this;
     })();

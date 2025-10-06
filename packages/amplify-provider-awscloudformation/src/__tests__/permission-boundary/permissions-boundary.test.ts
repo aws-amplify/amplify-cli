@@ -1,8 +1,10 @@
 import { $TSContext, setPermissionsBoundaryArn, getPermissionsBoundaryArn, stateManager } from '@aws-amplify/amplify-cli-core';
 import { prompt } from 'inquirer';
-import { IAM } from 'aws-sdk';
+import { GetPolicyCommand, IAMClient as IAM } from '@aws-sdk/client-iam';
 import { configurePermissionsBoundaryForInit } from '../../permissions-boundary/permissions-boundary';
 import { IAMClient } from '../../aws-utils/aws-iam';
+import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 
 const permissionsBoundaryArn = 'arn:aws:iam::123456789012:policy/some-policy-name';
 const argName = 'permissions-boundary';
@@ -25,6 +27,7 @@ const getPermissionsBoundaryArn_mock = getPermissionsBoundaryArn as jest.MockedF
 const prompt_mock = prompt as jest.MockedFunction<typeof prompt>;
 const IAMClient_mock = IAMClient as jest.Mocked<typeof IAMClient>;
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+const mockIAMClient = mockClient(IAM);
 
 stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: 'testenv' });
 
@@ -53,6 +56,7 @@ describe('configure permissions boundary on init', () => {
       },
     } as unknown as $TSContext;
     jest.clearAllMocks();
+    mockIAMClient.reset();
   });
   it('applies policy specifed in cmd arg when present', async () => {
     context_stub.input.options[argName] = permissionsBoundaryArn;
@@ -108,12 +112,9 @@ describe('configure permissions boundary on env add', () => {
   it('applies existing policy to new env when existing policy is accessible', async () => {
     getPermissionsBoundaryArn_mock.mockReturnValueOnce(permissionsBoundaryArn);
     IAMClient_mock.getInstance.mockResolvedValueOnce({
-      client: {
-        getPolicy: jest.fn().mockReturnValueOnce({
-          promise: jest.fn(),
-        }),
-      } as unknown as IAM,
+      client: mockIAMClient as unknown as IAM,
     });
+    mockIAMClient.on(GetPolicyCommand).resolvesOnce({});
     await configurePermissionsBoundaryForInit(context_stub);
     expect(setPermissionsBoundaryArn_mock.mock.calls[0][0]).toEqual(permissionsBoundaryArn);
     expect(prompt_mock).not.toHaveBeenCalled();
@@ -122,12 +123,9 @@ describe('configure permissions boundary on env add', () => {
   it('prompts for new policy when existing one is not accessible', async () => {
     getPermissionsBoundaryArn_mock.mockReturnValueOnce(permissionsBoundaryArn);
     IAMClient_mock.getInstance.mockResolvedValueOnce({
-      client: {
-        getPolicy: jest.fn().mockReturnValueOnce({
-          promise: jest.fn().mockRejectedValueOnce({ statusCode: 404, message: 'test error' }),
-        }),
-      } as unknown as IAM,
+      client: mockIAMClient as unknown as IAM,
     });
+    mockIAMClient.on(GetPolicyCommand).rejects({ name: 'NoSuchEntityException', message: 'test error' });
     const newPermissionsBoundaryArn = 'thisIsANewArn';
     prompt_mock.mockResolvedValueOnce({
       permissionsBoundaryArn: newPermissionsBoundaryArn,
@@ -140,12 +138,9 @@ describe('configure permissions boundary on env add', () => {
     context_stub.input.options.yes = true;
     getPermissionsBoundaryArn_mock.mockReturnValueOnce(permissionsBoundaryArn);
     IAMClient_mock.getInstance.mockResolvedValueOnce({
-      client: {
-        getPolicy: jest.fn().mockReturnValueOnce({
-          promise: jest.fn().mockRejectedValueOnce({ statusCode: 404, message: 'test error' }),
-        }),
-      } as unknown as IAM,
+      client: mockIAMClient as unknown as IAM,
     });
+    mockIAMClient.on(GetPolicyCommand).rejects({ name: 'NoSuchEntityException', message: 'test error' });
     await expect(configurePermissionsBoundaryForInit(context_stub)).rejects.toMatchInlineSnapshot(
       `[InputValidationError: A permissions boundary ARN must be specified using --permissions-boundary]`,
     );

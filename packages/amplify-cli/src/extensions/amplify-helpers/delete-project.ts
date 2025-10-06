@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import ora from 'ora';
 import chalk from 'chalk';
+import { ListBackendEnvironmentsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
 import { FeatureFlags, $TSContext, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
@@ -37,7 +38,7 @@ export const deleteProject = async (context: $TSContext): Promise<void> => {
         const amplifyClient = await awsCloudPlugin.getConfiguredAmplifyClient(context, {});
         const environments = await amplifyBackendEnvironments(amplifyClient, appId);
         if (environments.length === 0) {
-          await amplifyClient.deleteApp({ appId }).promise();
+          await amplifyClient.send(new DeleteAppCommand({ appId }));
         } else {
           printer.warn('Amplify App cannot be deleted, other environments still linked to Application');
         }
@@ -77,11 +78,7 @@ const removeLocalAmplifyDir = (context: $TSContext): void => {
 };
 
 const amplifyBackendEnvironments = async (client, appId): Promise<string[]> => {
-  const data = await client
-    .listBackendEnvironments({
-      appId,
-    })
-    .promise();
+  const data = await client.send(new ListBackendEnvironmentsCommand({ appId }));
   return data.backendEnvironments;
 };
 

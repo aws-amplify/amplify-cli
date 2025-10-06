@@ -1,4 +1,5 @@
-const aws = require('./aws.js');
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 const configurationManager = require('../configuration-manager');
 const { proxyAgent } = require('./aws-globals');
 
@@ -13,12 +14,13 @@ class DynamoDB {
       }
       this.context = context;
 
-      this.dynamodb = new aws.DynamoDB({
+      this.dynamodb = new DynamoDBClient({
         ...cred,
         ...options,
-        httpOptions: {
-          agent: proxyAgent(),
-        },
+        requestHandler: new NodeHttpHandler({
+          httpAgent: proxyAgent(),
+          httpsAgent: proxyAgent(),
+        }),
       });
       return this;
     })();

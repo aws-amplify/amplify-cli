@@ -1,7 +1,9 @@
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
 import { SSM } from '../../../aws-utils/aws-ssm';
-import type { SSM as SSMType } from 'aws-sdk';
+import { GetParametersCommand, GetParametersCommandOutput, PutParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { getEnvParametersDownloadHandler, getEnvParametersUploadHandler } from '../../../utils/ssm-utils/env-parameter-ssm-helpers';
+import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 
 jest.mock('@aws-amplify/amplify-cli-core');
 jest.mock('../../../aws-utils/aws-ssm');
@@ -13,20 +15,10 @@ stateManagerMock.metaFileExists = jest.fn().mockReturnValue(true);
 stateManagerMock.getMeta = jest.fn();
 stateManagerMock.getCurrentEnvName = jest.fn().mockReturnValue('mockEnv');
 
-const putParameterPromiseMock = jest.fn().mockImplementation(() => Promise.resolve());
-const getParametersPromiseMock = jest.fn().mockImplementation(() => Promise.resolve());
-
-const getParametersMock = jest.fn().mockImplementation(() => ({
-  promise: getParametersPromiseMock,
-}));
+const mockSsmClient = mockClient(SSMClient);
 
 mockSSM.getInstance = jest.fn().mockResolvedValue({
-  client: {
-    putParameter: jest.fn().mockImplementation(() => ({
-      promise: putParameterPromiseMock,
-    })),
-    getParameters: getParametersMock,
-  },
+  client: mockSsmClient as unknown as SSMClient,
 });
 
 const contextMock = {} as unknown as $TSContext;
@@ -34,12 +26,20 @@ const contextMock = {} as unknown as $TSContext;
 jest.useFakeTimers();
 
 describe('uploading environment parameters', () => {
+  beforeEach(() => {
+    mockSsmClient.reset();
+  });
+
   it('returns an async function which can invoke the SSM client', async () => {
     stateManagerMock.getMeta.mockReturnValueOnce({ providers: { awscloudformation: { AmplifyAppId: 'mockedAppId' } } });
+    mockSsmClient.on(PutParameterCommand).resolves({});
+
     const returnedFn = await getEnvParametersUploadHandler(contextMock);
     expect(returnedFn).toBeDefined();
     await returnedFn('key', 'value');
-    expect(putParameterPromiseMock).toBeCalledTimes(1);
+
+    expect(mockSsmClient.calls().length).toBe(1);
+    expect(mockSsmClient).toHaveReceivedCommandTimes(PutParameterCommand, 1);
   });
 
   it('returns no-op when AmplifyAppId is undefined', async () => {
@@ -48,12 +48,14 @@ describe('uploading environment parameters', () => {
     expect(returnedFn).toBeDefined();
     await returnedFn('key1', 'value');
     await returnedFn('key2', 'value');
-    expect(getParametersPromiseMock).not.toBeCalled();
+    expect(mockSsmClient.calls().length).toBe(0);
+    expect(mockSsmClient).toHaveReceivedCommandTimes(PutParameterCommand, 0);
   });
 });
 
 describe('downloading environment parameters', () => {
-  afterEach(() => {
+  beforeEach(() => {
+    mockSsmClient.reset();
     jest.clearAllMocks();
     jest.clearAllTimers();
   });
@@ -64,7 +66,8 @@ describe('downloading environment parameters', () => {
     expect(returnedFn).toBeDefined();
     const mockParams = await returnedFn(['mockMissingParam']);
     expect(mockParams).toStrictEqual({});
-    expect(getParametersMock).not.toBeCalled();
+    expect(mockSsmClient.calls().length).toBe(0);
+    expect(mockSsmClient).toHaveReceivedCommandTimes(GetParametersCommand, 0);
   });
 
   it('returns {} when no keys are supplied', async () => {
@@ -73,20 +76,25 @@ describe('downloading environment parameters', () => {
     expect(returnedFn).toBeDefined();
     const mockParams = await returnedFn([]);
     expect(mockParams).toStrictEqual({});
-    expect(getParametersMock).not.toBeCalled();
+    expect(mockSsmClient.calls().length).toBe(0);
+    expect(mockSsmClient).toHaveReceivedCommandTimes(GetParametersCommand, 0);
   });
 
   it('returns an async function which can invoke the SSM client', async () => {
     stateManagerMock.getMeta.mockReturnValueOnce({ providers: { awscloudformation: { AmplifyAppId: 'mockedAppId' } } });
-    const singleResultMock: SSMType.GetParametersResult = { Parameters: [{ Name: '/amplify/mockAppId/mockEnv/key', Value: '"value"' }] };
-    getParametersPromiseMock.mockResolvedValueOnce(singleResultMock);
+
+    const singleResultMock: GetParametersCommandOutput = {
+      Parameters: [{ Name: '/amplify/mockAppId/mockEnv/key', Value: '"value"' }],
+      $metadata: {},
+    };
+    mockSsmClient.on(GetParametersCommand).resolves(singleResultMock);
 
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
     expect(returnedFn).toBeDefined();
     const mockParams = await returnedFn(['key']);
     expect(mockParams).toStrictEqual({ key: 'value' });
-    expect(getParametersMock).toBeCalledTimes(1);
-    expect(getParametersPromiseMock).toBeCalledTimes(1);
+    expect(mockSsmClient.calls().length).toBe(1);
+    expect(mockSsmClient).toHaveReceivedCommandTimes(GetParametersCommand, 1);
   });
 
   it('returns function which can handle many parameters in a single request', async () => {
@@ -101,22 +109,37 @@ describe('downloading environment parameters', () => {
       mockCloudParams.push({ Name: `/amplify/mockedAppId/mockEnv/${key}`, Value: '"value"' });
     }
     const expectedKeyPaths = keys.map((key) => `/amplify/mockedAppId/mockEnv/${key}`);
-    getParametersPromiseMock.mockResolvedValueOnce({ Parameters: mockCloudParams.slice(0, 10) });
-    getParametersPromiseMock.mockResolvedValueOnce({ Parameters: mockCloudParams.slice(10) });
+
+    mockSsmClient
+      .on(GetParametersCommand)
+      .resolvesOnce({
+        Parameters: mockCloudParams.slice(0, 10),
+        $metadata: {},
+      })
+      .resolvesOnce({
+        Parameters: mockCloudParams.slice(10),
+        $metadata: {},
+      });
 
     const returnedFn = await getEnvParametersDownloadHandler(contextMock);
     expect(returnedFn).toBeDefined();
     const mockParams = await returnedFn(keys);
-    expect(getParametersMock).toBeCalledTimes(2);
-    expect(getParametersMock).toBeCalledWith({
+
+    expect(mockSsmClient.calls().length).toBe(2);
+    expect(mockSsmClient).toHaveReceivedCommandTimes(GetParametersCommand, 2);
+
+    // Check first call
+    expect(mockSsmClient.call(0).args[0].input).toEqual({
       Names: expectedKeyPaths.slice(0, 10),
       WithDecryption: false,
     });
-    expect(getParametersMock).toBeCalledWith({
+
+    // Check second call
+    expect(mockSsmClient.call(1).args[0].input).toEqual({
       Names: expectedKeyPaths.slice(10),
       WithDecryption: false,
     });
+
     expect(mockParams).toStrictEqual(expectedParams);
-    expect(getParametersPromiseMock).toBeCalledTimes(2);
   });
 });

@@ -1,8 +1,15 @@
 import { $TSContext, AmplifyError, AmplifyFault, IDeploymentStateManager } from '@aws-amplify/amplify-cli-core';
 import { AmplifySpinner, printer as promptsPrinter } from '@aws-amplify/amplify-prompts';
 import assert from 'assert';
-import * as aws from 'aws-sdk';
-import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { S3Client, HeadObjectCommand } from '@aws-sdk/client-s3';
+import {
+  CloudFormationClient,
+  DescribeStacksCommand,
+  UpdateStackCommand,
+  waitUntilStackUpdateComplete,
+} from '@aws-sdk/client-cloudformation';
+import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import throttle from 'lodash.throttle';
 import { interpret } from 'xstate';
 import { getBucketKey, getHttpUrl } from './helpers';
@@ -90,7 +97,7 @@ export class DeploymentManager {
     try {
       const cred = await loadConfiguration(context);
       // this is the "general" config level case, aws sdk will resolve creds and region from env variables etc.
-      const region = cred?.region ?? new aws.S3().config.region;
+      const region = cred?.region ?? new S3Client().config.region.toString();
       return new DeploymentManager(cred, region, deploymentBucket, eventMap, options);
     } catch (e) {
       throw new AmplifyError(
@@ -105,16 +112,16 @@ export class DeploymentManager {
 
   private deployment: DeploymentMachineStep[] = [];
   private options: Required<DeploymentManagerOptions>;
-  private cfnClient: aws.CloudFormation;
-  private s3Client: aws.S3;
-  private ddbClient: aws.DynamoDB;
+  private cfnClient: CloudFormationClient;
+  private s3Client: S3Client;
+  private ddbClient: DynamoDBClient;
   private deploymentStateManager?: IDeploymentStateManager;
   private logger: Logger;
   private printer: IStackProgressPrinter;
   private spinner: AmplifySpinner;
 
   private constructor(
-    creds: ConfigurationOptions,
+    creds: any,
     private region: string,
     private deploymentBucket: string,
     private eventMap: EventMap,
@@ -127,14 +134,26 @@ export class DeploymentManager {
       ...options,
     };
     this.eventMap = eventMap;
-    this.s3Client = new aws.S3(creds);
-    this.cfnClient = new aws.CloudFormation({
+    this.s3Client = new S3Client({ ...creds, region });
+    this.cfnClient = new CloudFormationClient({
       ...creds,
-      maxRetries: 10,
+      region,
+      maxAttempts: 10,
       customUserAgent: this.options.userAgent,
-      httpOptions: { agent: proxyAgent() },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     });
-    this.ddbClient = new aws.DynamoDB({ ...creds, region, maxRetries: 10, httpOptions: { agent: proxyAgent() } });
+    this.ddbClient = new DynamoDBClient({
+      ...creds,
+      region,
+      maxAttempts: 10,
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
+    });
     this.logger = fileLogger('deployment-manager');
     this.printer = new StackProgressPrinter(eventMap);
     this.spinner = new AmplifySpinner();
@@ -364,7 +383,7 @@ export class DeploymentManager {
    * @param stackName name of the stack
    */
   private ensureStack = async (stackName: string): Promise<boolean> => {
-    const result = await this.cfnClient.describeStacks({ StackName: stackName }).promise();
+    const result = await this.cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
     return result.Stacks[0].StackStatus.endsWith('_COMPLETE');
   };
 
@@ -375,14 +394,14 @@ export class DeploymentManager {
   private ensureTemplateExists = async (templatePath: string): Promise<boolean> => {
     try {
       const bucketKey = getBucketKey(templatePath, this.deploymentBucket);
-      await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
+      await this.s3Client.send(new HeadObjectCommand({ Bucket: this.deploymentBucket, Key: bucketKey }));
       return true;
     } catch (e) {
       throw new AmplifyError(
         'DeploymentError',
         {
           message:
-            e.code === 'NotFound'
+            e.name === 'NotFound'
               ? `The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`
               : e.message,
           details: e.message,
@@ -396,14 +415,14 @@ export class DeploymentManager {
     assert(tableName, 'table name should be passed');
 
     try {
-      const response = await this.ddbClient.describeTable({ TableName: tableName }).promise();
+      const response = await this.ddbClient.send(new DescribeTableCommand({ TableName: tableName }));
       if (response.Table?.TableStatus === 'DELETING') {
         return false;
       }
       const globalSecondaryIndexes = response.Table?.GlobalSecondaryIndexes;
       return globalSecondaryIndexes ? globalSecondaryIndexes.every((idx) => idx.IndexStatus === 'ACTIVE') : true;
     } catch (err) {
-      if (err?.code === 'ResourceNotFoundException') {
+      if (err?.name === 'ResourceNotFoundException') {
         return true; // in the case of an iterative update that recreates a table, non-existence means the table has been fully removed
       }
       throw new AmplifyFault(
@@ -481,26 +500,22 @@ export class DeploymentManager {
       ParameterValue: val.toString(),
     }));
 
-    await cfn
-      .updateStack({
+    await cfn.send(
+      new UpdateStackCommand({
         StackName: currentStack.stackName,
         Parameters: parameters,
         TemplateURL: currentStack.stackTemplateUrl,
         Capabilities: currentStack.capabilities,
         ClientRequestToken: currentStack.clientRequestToken,
-      })
-      .promise();
+      }),
+    );
   };
 
   private waitForDeployment = async (stackParams: DeploymentMachineOp): Promise<void> => {
     const { cfnClient } = this;
     assert(stackParams.stackName, 'stackName should be passed to waitForDeployment');
 
-    await cfnClient
-      .waitFor('stackUpdateComplete', {
-        StackName: stackParams.stackName,
-      })
-      .promise();
+    await waitUntilStackUpdateComplete({ client: cfnClient, maxWaitTime: 600 }, { StackName: stackParams.stackName });
   };
 
   private rollBackStack = async (currentStack: Readonly<DeploymentMachineOp>): Promise<void> => {

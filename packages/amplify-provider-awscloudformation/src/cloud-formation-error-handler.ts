@@ -33,7 +33,7 @@ export const handleCloudFormationError = (err: Error & { details?: string }): vo
       {
         message: 'Deployment is already in progress.',
         resolution: 'Wait for the other deployment to finish and try again.',
-        code: (err as $TSAny).code,
+        code: (err as $TSAny).name,
       },
       err,
     );
