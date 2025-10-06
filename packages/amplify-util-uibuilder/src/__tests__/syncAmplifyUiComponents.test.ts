@@ -193,7 +193,7 @@ describe('should sync amplify ui builder components', () => {
           },
         });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
   });
 

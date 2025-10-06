@@ -97,7 +97,7 @@ describe('handlePrePush', () => {
           },
         });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
   });
 

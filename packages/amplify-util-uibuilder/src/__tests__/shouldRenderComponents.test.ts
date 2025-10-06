@@ -47,7 +47,7 @@ describe('should render components', () => {
           },
         });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
     context = {
       input: {

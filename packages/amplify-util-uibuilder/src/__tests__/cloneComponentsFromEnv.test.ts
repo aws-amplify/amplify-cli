@@ -70,7 +70,7 @@ describe('can clone components to new environment', () => {
           },
         });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
   });
 

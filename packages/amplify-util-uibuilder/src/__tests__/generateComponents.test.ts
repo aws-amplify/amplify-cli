@@ -147,7 +147,7 @@ describe('can generate components', () => {
       if (command instanceof GetCodegenJobCommand) {
         return Promise.resolve({ status: 'succeeded' });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
 
     getUiBuilderComponentsPathMocked.mockReturnValue(projectPath + '/src/ui-components');
@@ -213,7 +213,7 @@ describe('can generate components', () => {
           },
         });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
     await run(context, 'PostPull');
     expect(mockSend).toHaveBeenCalledWith(
@@ -238,7 +238,7 @@ describe('can generate components', () => {
           },
         });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
     getCodegenConfigMocked.mockImplementation(() => {
       throw new Error();
@@ -266,7 +266,7 @@ describe('can generate components', () => {
           },
         });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
     await run(context, 'PostPull');
     expect(mockSend).toHaveBeenCalledWith(
@@ -291,7 +291,7 @@ describe('can generate components', () => {
           },
         });
       }
-      return Promise.resole({});
+      return Promise.resolve({});
     });
     await run(context, 'PostPull');
     expect(mockSend).toHaveBeenCalledWith(
