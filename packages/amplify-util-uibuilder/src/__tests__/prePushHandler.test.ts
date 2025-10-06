@@ -1,5 +1,4 @@
-import { mockClient } from 'aws-sdk-client-mock';
-import { AmplifyUIBuilderClient, ExportFormsCommand, GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
+import { ExportFormsCommand, GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
 import { Form } from '@aws-sdk/client-amplifyuibuilder';
 import { printer } from '@aws-amplify/amplify-prompts'; // eslint-disable-line import/no-extraneous-dependencies
 import * as utils from '../commands/utils';
@@ -16,7 +15,15 @@ jest.mock('@aws-amplify/amplify-category-api', () => ({
   isDataStoreEnabled: jest.fn(),
 }));
 
-const amplifyUIBuilderMock = mockClient(AmplifyUIBuilderClient);
+const mockSend = jest.fn();
+
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => ({
+  ...jest.requireActual('@aws-sdk/client-amplifyuibuilder'),
+  AmplifyUIBuilderClient: jest.fn().mockImplementation(() => ({
+    send: mockSend,
+  })),
+}));
+
 const utilsMock = utils as any;
 const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 
@@ -27,7 +34,7 @@ describe('handlePrePush', () => {
   let exportedForms: Form[];
 
   beforeEach(() => {
-    amplifyUIBuilderMock.reset();
+    mockSend.mockReset();
     isDataStoreEnabledMocked.mockResolvedValue(true);
     context = {
       amplify: {
@@ -74,18 +81,23 @@ describe('handlePrePush', () => {
       },
     ];
 
-    amplifyUIBuilderMock.on(ExportFormsCommand).resolves({
-      entities: exportedForms,
-    });
-    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
-      features: {
-        autoGenerateForms: 'true',
-        autoGenerateViews: 'true',
-        formFeatureFlags: {
-          isRelationshipSupported: 'false',
-          isNonModelSupported: 'false',
-        },
-      },
+    mockSend.mockImplementation((command) => {
+      if (command instanceof ExportFormsCommand) {
+        return Promise.resolve({ entities: exportedForms });
+      }
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
+          features: {
+            autoGenerateForms: 'true',
+            autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
+          },
+        });
+      }
+      return Promise.resole({});
     });
   });
 

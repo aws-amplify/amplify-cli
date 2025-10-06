@@ -17,7 +17,6 @@ import {
   getStartCodegenJobDependencies,
 } from './utils';
 import { getUiBuilderComponentsPath } from './utils/getUiBuilderComponentsPath';
-import { AmplifyUIBuilderClient } from '@aws-sdk/client-amplifyuibuilder';
 import type { ApiConfiguration, StartCodegenJobData, ReactStartCodegenJobData } from '@aws-sdk/client-amplifyuibuilder';
 import { getApiConfiguration, hasDataStoreConfiguration, hasGraphQLConfiguration } from './utils/getApiConfiguration';
 

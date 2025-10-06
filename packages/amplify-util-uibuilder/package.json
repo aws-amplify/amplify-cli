@@ -33,8 +33,6 @@
     "@types/jest": "^29.5.1",
     "@types/semver": "^7.1.0",
     "@types/tiny-async-pool": "^2.0.0",
-    "aws-sdk-client-mock": "^4.1.0",
-    "aws-sdk-client-mock-jest": "^4.1.0",
     "ts-jest": "^29.1.0"
   },
   "jest": {

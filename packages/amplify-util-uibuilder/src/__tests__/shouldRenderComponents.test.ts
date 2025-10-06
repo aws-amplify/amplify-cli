@@ -1,9 +1,15 @@
-import { mockClient } from 'aws-sdk-client-mock';
-import { AmplifyUIBuilderClient, GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
+import { GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { shouldRenderComponents } from '../commands/utils/shouldRenderComponents';
 
-const amplifyUIBuilderMock = mockClient(AmplifyUIBuilderClient);
+const mockSend = jest.fn();
+
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => ({
+  ...jest.requireActual('@aws-sdk/client-amplifyuibuilder'),
+  AmplifyUIBuilderClient: jest.fn().mockImplementation(() => ({
+    send: mockSend,
+  })),
+}));
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
@@ -28,15 +34,20 @@ describe('should render components', () => {
   let context: $TSContext | any;
 
   beforeAll(async () => {
-    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
-      features: {
-        autoGenerateForms: 'true',
-        autoGenerateViews: 'true',
-        formFeatureFlags: {
-          isRelationshipSupported: 'false',
-          isNonModelSupported: 'false',
-        },
-      },
+    mockSend.mockImplementation((command) => {
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
+          features: {
+            autoGenerateForms: 'true',
+            autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
+            },
+          },
+        });
+      }
+      return Promise.resole({});
     });
     context = {
       input: {

@@ -1,11 +1,16 @@
-import { mockClient } from 'aws-sdk-client-mock';
-import {
-  AmplifyUIBuilderClient,
-  ExportComponentsCommand,
-  ExportThemesCommand,
-  ExportFormsCommand,
-  GetMetadataCommand,
-} from '@aws-sdk/client-amplifyuibuilder';
+// @aws-sdk/client-amplifybackend needs this, which we are accessing through AmplifyStudioClient
+const fs = require('fs');
+const { promisify } = require('util');
+
+if (!fs.promises) {
+  fs.promises = {
+    readFile: promisify(fs.readFile),
+    writeFile: promisify(fs.writeFile),
+    access: promisify(fs.access),
+  };
+}
+
+import { ExportComponentsCommand, ExportThemesCommand, ExportFormsCommand, GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
 import { AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   getEnvName,
@@ -38,7 +43,15 @@ jest.mock('@aws-amplify/amplify-category-api', () => ({
 jest.mock('fs');
 jest.mock('node-fetch');
 
-const amplifyUIBuilderMock = mockClient(AmplifyUIBuilderClient);
+const mockSend = jest.fn();
+
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => ({
+  ...jest.requireActual('@aws-sdk/client-amplifyuibuilder'),
+  AmplifyUIBuilderClient: jest.fn().mockImplementation(() => ({
+    send: mockSend,
+  })),
+}));
+
 const stateManagerMock = stateManager as any;
 const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 const mockWriteFileSync = jest.mocked(writeFileSync);
@@ -78,7 +91,7 @@ describe('should sync amplify ui builder components', () => {
 
   beforeEach(() => {
     mockNodeFetch.mockReset();
-    amplifyUIBuilderMock.reset();
+    mockSend.mockReset();
     process.env = { ...env };
 
     isDataStoreEnabledMocked.mockResolvedValue(true);
@@ -118,58 +131,69 @@ describe('should sync amplify ui builder components', () => {
       },
     }));
 
-    amplifyUIBuilderMock.on(ExportComponentsCommand).resolves({
-      entities: [
-        {
-          appId: 'd37nrm8rzt3oek', // eslint-disable-line spellcheck/spell-checker
-          bindingProperties: {},
-          componentType: 'Box',
-          environmentName: 'staging',
-          id: 's-s4mU579Ycf6JGHwhqT', // eslint-disable-line spellcheck/spell-checker
-          name: 'aawwdd', // eslint-disable-line spellcheck/spell-checker
-          overrides: {},
-          properties: {},
-          variants: [],
-        },
-      ],
-    });
-    amplifyUIBuilderMock.on(ExportThemesCommand).resolves({
-      entities: [{}],
-    });
-    amplifyUIBuilderMock.on(ExportFormsCommand).resolves({
-      entities: [
-        {
-          name: 'BasicFormCreate',
-          formActionType: 'create',
-          dataType: {
-            dataSourceType: 'Custom',
-            dataTypeName: 'Post',
-          },
-          fields: {
-            name: {
-              inputType: {
-                required: true,
-                type: 'TextField',
-                name: 'name',
-                defaultValue: 'John Doe',
+    mockSend.mockImplementation((command) => {
+      if (command instanceof ExportComponentsCommand) {
+        return Promise.resolve({
+          entities: [
+            {
+              appId: 'd37nrm8rzt3oek', // eslint-disable-line spellcheck/spell-checker
+              bindingProperties: {},
+              componentType: 'Box',
+              environmentName: 'staging',
+              id: 's-s4mU579Ycf6JGHwhqT', // eslint-disable-line spellcheck/spell-checker
+              name: 'aawwdd', // eslint-disable-line spellcheck/spell-checker
+              overrides: {},
+              properties: {},
+              variants: [],
+            },
+          ],
+        });
+      }
+      if (command instanceof ExportThemesCommand) {
+        return Promise.resolve({
+          entities: [{}],
+        });
+      }
+      if (command instanceof ExportFormsCommand) {
+        return Promise.resolve({
+          entities: [
+            {
+              name: 'BasicFormCreate',
+              formActionType: 'create',
+              dataType: {
+                dataSourceType: 'Custom',
+                dataTypeName: 'Post',
               },
-              label: 'name',
+              fields: {
+                name: {
+                  inputType: {
+                    required: true,
+                    type: 'TextField',
+                    name: 'name',
+                    defaultValue: 'John Doe',
+                  },
+                  label: 'name',
+                },
+              },
+              sectionalElements: {},
+              style: {},
+            },
+          ],
+        });
+      }
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
+          features: {
+            autoGenerateForms: 'true',
+            autoGenerateViews: 'true',
+            formFeatureFlags: {
+              isRelationshipSupported: 'false',
+              isNonModelSupported: 'false',
             },
           },
-          sectionalElements: {},
-          style: {},
-        },
-      ],
-    });
-    amplifyUIBuilderMock.on(GetMetadataCommand).resolves({
-      features: {
-        autoGenerateForms: 'true',
-        autoGenerateViews: 'true',
-        formFeatureFlags: {
-          isRelationshipSupported: 'false',
-          isNonModelSupported: 'false',
-        },
-      },
+        });
+      }
+      return Promise.resole({});
     });
   });
 
