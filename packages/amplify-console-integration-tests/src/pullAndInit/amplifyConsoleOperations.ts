@@ -1,27 +1,20 @@
-import {
-  AmplifyClient,
-  ListAppsCommand,
-  DeleteAppCommand,
-  CreateAppCommand,
-  CreateBackendEnvironmentCommand,
-} from '@aws-sdk/client-amplify';
-import { CloudFormationClient, DeleteStackCommand } from '@aws-sdk/client-cloudformation';
+import { Amplify, CloudFormation } from 'aws-sdk';
 import moment from 'moment';
 
 import { getConfigFromProfile } from '../profile-helper';
 
 export function getConfiguredAmplifyClient() {
   const config = getConfigFromProfile();
-  return new AmplifyClient(config);
+  return new Amplify(config);
 }
 
 export function getConfiguredCFNClient() {
   const config = getConfigFromProfile();
-  return new CloudFormationClient(config);
+  return new CloudFormation(config);
 }
 
 //delete all existing amplify console projects
-export async function deleteAllAmplifyProjects(amplifyClient?: AmplifyClient) {
+export async function deleteAllAmplifyProjects(amplifyClient?: Amplify) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();
   }
@@ -31,29 +24,29 @@ export async function deleteAllAmplifyProjects(amplifyClient?: AmplifyClient) {
   } while (token);
 }
 
-export async function deleteAmplifyStack(stackName: string, cfnClient?: CloudFormationClient) {
+export async function deleteAmplifyStack(stackName: string, cfnClient?: CloudFormation) {
   if (!cfnClient) cfnClient = getConfiguredCFNClient();
   try {
-    await cfnClient.send(new DeleteStackCommand({ StackName: stackName }));
+    await cfnClient.deleteStack({ StackName: stackName }).promise();
   } catch (err) {
     // do nothing
   }
 }
 
-async function PaginatedDeleteProjects(amplifyClient: AmplifyClient, token?: string) {
+async function PaginatedDeleteProjects(amplifyClient: Amplify, token?: string) {
   const sequential = require('promise-sequential');
-  const maxResults = 25;
-  const listAppsResult = await amplifyClient.send(
-    new ListAppsCommand({
+  const maxResults = '25';
+  const listAppsResult = await amplifyClient
+    .listApps({
       maxResults,
       nextToken: token,
-    }),
-  );
+    })
+    .promise();
 
   const deleteTasks = [];
   listAppsResult.apps.forEach((app) => {
     deleteTasks.push(async () => {
-      await amplifyClient.send(new DeleteAppCommand({ appId: app.appId }));
+      await amplifyClient.deleteApp({ appId: app.appId }).promise();
     });
   });
   await sequential(deleteTasks);
@@ -68,7 +61,7 @@ export function generateBackendEnvParams(appId: string, projectName: string, env
   return { appId, envName, stackName, deploymentBucketName };
 }
 
-export async function createConsoleApp(projectName: string, amplifyClient?: AmplifyClient) {
+export async function createConsoleApp(projectName: string, amplifyClient?: Amplify) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();
   }
@@ -77,11 +70,11 @@ export async function createConsoleApp(projectName: string, amplifyClient?: Ampl
     environmentVariables: { _LIVE_PACKAGE_UPDATES: '[{"pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]' },
   };
 
-  const createAppResponse = await amplifyClient.send(new CreateAppCommand(createAppParams));
+  const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
   return createAppResponse.app.appId;
 }
 
-export async function deleteConsoleApp(appId: string, amplifyClient?: AmplifyClient) {
+export async function deleteConsoleApp(appId: string, amplifyClient?: Amplify) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();
   }
@@ -89,13 +82,13 @@ export async function deleteConsoleApp(appId: string, amplifyClient?: AmplifyCli
     appId,
   };
   try {
-    await amplifyClient.send(new DeleteAppCommand(deleteAppParams));
+    await amplifyClient.deleteApp(deleteAppParams).promise();
   } catch (err) {
     // Do nothing
   }
 }
 
-export async function createBackendEnvironment(backendParams: any, amplifyClient?: AmplifyClient) {
+export async function createBackendEnvironment(backendParams: any, amplifyClient?: Amplify) {
   if (!amplifyClient) {
     amplifyClient = getConfiguredAmplifyClient();
   }
@@ -109,5 +102,5 @@ export async function createBackendEnvironment(backendParams: any, amplifyClient
     deploymentArtifacts: deploymentBucketName,
   };
 
-  await amplifyClient.send(new CreateBackendEnvironmentCommand(createEnvParams));
+  await amplifyClient.createBackendEnvironment(createEnvParams).promise();
 }
