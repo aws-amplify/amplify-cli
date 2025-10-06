@@ -522,9 +522,10 @@ test('Test deletePost mutation when not authorized', async () => {
 });
 
 test('Test listPosts query when authorized', async () => {
+  const uniqueTitle = `testing list ${Date.now()}`;
   const firstPost = await GRAPHQL_CLIENT_1.query(
     `mutation {
-        createPost(input: { title: "testing list" }) {
+        createPost(input: { title: "${uniqueTitle}" }) {
             id
             title
             createdAt
@@ -535,13 +536,13 @@ test('Test listPosts query when authorized', async () => {
     {},
   );
   expect(firstPost.data.createPost.id).toBeDefined();
-  expect(firstPost.data.createPost.title).toEqual('testing list');
+  expect(firstPost.data.createPost.title).toEqual(uniqueTitle);
   expect(firstPost.data.createPost.createdAt).toBeDefined();
   expect(firstPost.data.createPost.updatedAt).toBeDefined();
   expect(firstPost.data.createPost.owner).toEqual(USERNAME1);
   await GRAPHQL_CLIENT_2.query(
     `mutation {
-        createPost(input: { title: "testing list" }) {
+        createPost(input: { title: "${uniqueTitle}" }) {
             id
             title
             createdAt
@@ -554,7 +555,7 @@ test('Test listPosts query when authorized', async () => {
   // There are two posts but only 1 created by me.
   const listResponse = await GRAPHQL_CLIENT_1.query(
     `query {
-        listPosts(filter: { title: { eq: "testing list" } }, limit: 25) {
+        listPosts(filter: { title: { eq: "${uniqueTitle}" } }, limit: 25) {
             items {
                 id
             }
@@ -568,7 +569,7 @@ test('Test listPosts query when authorized', async () => {
 
   const listResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(
     `query {
-        listPosts(filter: { title: { eq: "testing list" } }, limit: 25) {
+        listPosts(filter: { title: { eq: "${uniqueTitle}" } }, limit: 25) {
             items {
                 id
             }
