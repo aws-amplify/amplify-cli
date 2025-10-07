@@ -1,5 +1,5 @@
 
-# 1. Migrate Gen1 apps to Gen2
+# 0002 Migrate Gen1 apps to Gen2
 
 As we kick-off work on the migration project, define the overall flow our customers will follow.
 
