@@ -189,7 +189,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     return {
       items: (items || []).map((item) => unmarshall(item)),
       scannedCount,
-      nextToken: resultNextToken ? Buffer.from(JSON.stringify(resultNextToken)).toString('base64') : null,
+      nextToken: resultNextToken ? unmarshall(Buffer.from(JSON.stringify(resultNextToken)).toString('base64')) : null,
     };
   }
 
@@ -283,7 +283,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     return {
       items: (items || []).map((item) => unmarshall(item)),
       scannedCount,
-      nextToken: resultNextToken ? Buffer.from(JSON.stringify(resultNextToken)).toString('base64') : null,
+      nextToken: resultNextToken ? unmarshall(Buffer.from(JSON.stringify(resultNextToken)).toString('base64')) : null,
     };
   }
 }
