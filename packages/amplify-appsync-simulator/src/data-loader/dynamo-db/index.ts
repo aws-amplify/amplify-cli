@@ -173,7 +173,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ...(filter.expressionNames || undefined),
         ...(keyCondition.expressionNames || undefined),
       }),
-      ExclusiveStartKey: nextToken ? marshall(JSON.parse(Buffer.from(nextToken, 'base64').toString())) : null,
+      ExclusiveStartKey: nextToken ? JSON.parse(Buffer.from(nextToken, 'base64').toString()) : null,
       IndexName: index,
       Limit: limit,
       ConsistentRead: consistentRead,
@@ -189,7 +189,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     return {
       items: (items || []).map((item) => unmarshall(item)),
       scannedCount,
-      nextToken: resultNextToken ? unmarshall(Buffer.from(JSON.stringify(resultNextToken)).toString('base64')) : null,
+      nextToken: resultNextToken ? Buffer.from(JSON.stringify(resultNextToken)).toString('base64') : null,
     };
   }
 
@@ -213,17 +213,8 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       ReturnValuesOnConditionCheckFailure: 'ALL_OLD',
     };
 
-    console.log(params);
-    try {
-      const { Attributes: updated } = await this.client.send(new UpdateItemCommand(params));
-      return unmarshall(updated);
-    } catch (err) {
-      if (err.Item) {
-        console.log(err.Item);
-      }
-      throw err;
-    }
-    //return unmarshall(updated);
+    const { Attributes: updated } = await this.client.send(new UpdateItemCommand(params));
+    return unmarshall(updated);
   }
 
   private async deleteItem(payload) {
@@ -253,9 +244,11 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   private async scan(payload) {
     const { filter, index, limit, consistentRead = false, nextToken, select, totalSegments, segment } = payload;
 
+    console.log('SCAN PAYLOAD:', JSON.stringify(payload, null, 2));
+
     const params: ScanCommandInput = {
       TableName: this.tableName,
-      ExclusiveStartKey: nextToken ? marshall(JSON.parse(Buffer.from(nextToken, 'base64').toString())) : null,
+      ExclusiveStartKey: nextToken ? JSON.parse(Buffer.from(nextToken, 'base64').toString()) : null,
       IndexName: index,
       Limit: limit,
       ConsistentRead: consistentRead,
@@ -269,9 +262,9 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ExpressionAttributeNames: nullIfEmpty({
           ...(filter.expressionNames || undefined),
         }),
-        ExpressionAttributeValues: marshall({
+        ExpressionAttributeValues: {
           ...(filter.expressionValues || {}),
-        } as Record<string, AttributeValue>),
+        },
       });
     }
     const {
@@ -280,10 +273,13 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       LastEvaluatedKey: resultNextToken = null,
     } = await this.client.send(new ScanCommand(params));
 
+    console.log('SCAN PARAMS:', JSON.stringify(params, null, 2));
+    console.log('SCAN RESULT ITEMS:', items?.length || 0);
+
     return {
       items: (items || []).map((item) => unmarshall(item)),
       scannedCount,
-      nextToken: resultNextToken ? unmarshall(Buffer.from(JSON.stringify(resultNextToken)).toString('base64')) : null,
+      nextToken: resultNextToken ? Buffer.from(JSON.stringify(resultNextToken)).toString('base64') : null,
     };
   }
 }
