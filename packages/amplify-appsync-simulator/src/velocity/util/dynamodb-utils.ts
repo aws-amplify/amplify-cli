@@ -7,7 +7,16 @@ export const dynamodbUtils = {
     if (Array.isArray(value)) {
       return { L: marshall(toJSON(value)) };
     }
-    return marshall(toJSON(value), {
+    const jsonValue = toJSON(value);
+    if (jsonValue !== null && typeof jsonValue === 'object' && !Array.isArray(jsonValue)) {
+      return {
+        M: marshall(jsonValue, {
+          removeUndefinedValues: true,
+          convertEmptyValues: true,
+        }),
+      };
+    }
+    return marshall(jsonValue, {
       removeUndefinedValues: true,
       convertEmptyValues: true,
     });
@@ -81,13 +90,13 @@ export const dynamodbUtils = {
     return JSON.stringify(this.toMap(value));
   },
   toMapValues(values) {
-    return Object.entries(toJSON(values)).reduce(
-      (sum, [key, value]) => ({
+    const jsonValues = toJSON(values);
+    return Object.entries(jsonValues).reduce((sum, [key, value]) => {
+      return {
         ...sum,
         [key]: this.toDynamoDB(value),
-      }),
-      {},
-    );
+      };
+    }, {});
   },
   toMapValuesJson(values) {
     return JSON.stringify(this.toMapValues(values));
