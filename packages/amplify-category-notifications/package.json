@@ -30,13 +30,19 @@
     "@aws-amplify/amplify-environment-parameters": "1.9.20",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "@aws-amplify/amplify-provider-awscloudformation": "8.11.10",
-    "aws-sdk": "^2.1464.0",
+    "@aws-sdk/client-iam": "^3.901.0",
+    "@aws-sdk/client-pinpoint": "^3.901.0",
+    "@smithy/node-http-handler": "^4.3.0",
     "chalk": "^4.1.1",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.21",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "proxy-agent": "^6.3.0"
+  },
+  "devDependencies": {
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0"
   },
   "jest": {
     "testEnvironmentOptions": {

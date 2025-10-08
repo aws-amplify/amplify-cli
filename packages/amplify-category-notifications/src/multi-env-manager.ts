@@ -33,7 +33,7 @@ import {
   viewShowInlineModeInstructionsStop,
 } from './display-utils';
 import { getAvailableChannels } from './notifications-backend-cfg-channel-api';
-
+import { DeleteAppCommand } from '@aws-sdk/client-pinpoint';
 /**
  * Create Pinpoint resource in Analytics, Create Pinpoint Meta for Notifications category and
  * update configuration for enabling/disabling channels.
@@ -264,21 +264,18 @@ export const deletePinpointAppForEnv = async (context: $TSContext, envName: stri
     const pinpointClient = await getPinpointClient(context, AmplifyCategories.NOTIFICATIONS, 'delete', envName);
 
     await authHelper.deleteRolePolicy(context);
-    return pinpointClient
-      .deleteApp(params)
-      .promise()
-      .then(() => {
-        printer.success(`Successfully deleted Pinpoint project: ${pinpointApp.Id}`);
-      })
-      .catch((err: $TSAny) => {
-        // awscloudformation might have already removed the pinpoint project
-        if (err.code === 'NotFoundException') {
-          printer.warn(`${pinpointApp.Id}: not found`);
-        } else {
-          printer.error(`Failed to delete Pinpoint project: ${pinpointApp.Id}`);
-          throw err;
-        }
-      });
+    try {
+      await pinpointClient.send(new DeleteAppCommand(params));
+      printer.success(`Successfully deleted Pinpoint project: ${pinpointApp.Id}`);
+    } catch (err) {
+      // awscloudformation might have already removed the pinpoint project
+      if (err.name === 'NotFoundException') {
+        printer.warn(`${pinpointApp.Id}: not found`);
+      } else {
+        printer.error(`Failed to delete Pinpoint project: ${pinpointApp.Id}`);
+        throw err;
+      }
+    }
   }
   return undefined;
 };
