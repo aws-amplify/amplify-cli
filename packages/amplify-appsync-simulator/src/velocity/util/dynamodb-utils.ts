@@ -90,8 +90,7 @@ export const dynamodbUtils = {
     return JSON.stringify(this.toMap(value));
   },
   toMapValues(values) {
-    const jsonValues = toJSON(values);
-    return Object.entries(jsonValues).reduce((sum, [key, value]) => {
+    return Object.entries(toJSON(values)).reduce((sum, [key, value]) => {
       return {
         ...sum,
         [key]: this.toDynamoDB(value),

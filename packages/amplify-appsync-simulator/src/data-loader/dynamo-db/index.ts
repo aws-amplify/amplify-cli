@@ -13,7 +13,7 @@ import {
   Select,
   ReturnValue,
 } from '@aws-sdk/client-dynamodb';
-import { unmarshall, marshall, nullIfEmpty } from './utils';
+import { unmarshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
 
 type DynamoDBConnectionConfig = {
@@ -244,8 +244,6 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   private async scan(payload) {
     const { filter, index, limit, consistentRead = false, nextToken, select, totalSegments, segment } = payload;
 
-    console.log('SCAN PAYLOAD:', JSON.stringify(payload, null, 2));
-
     const params: ScanCommandInput = {
       TableName: this.tableName,
       ExclusiveStartKey: nextToken ? JSON.parse(Buffer.from(nextToken, 'base64').toString()) : null,
@@ -272,9 +270,6 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       ScannedCount: scannedCount,
       LastEvaluatedKey: resultNextToken = null,
     } = await this.client.send(new ScanCommand(params));
-
-    console.log('SCAN PARAMS:', JSON.stringify(params, null, 2));
-    console.log('SCAN RESULT ITEMS:', items?.length || 0);
 
     return {
       items: (items || []).map((item) => unmarshall(item)),
