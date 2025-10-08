@@ -3,6 +3,7 @@ import ora from 'ora';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';
+import { UpdateSmsChannelCommand, GetSmsChannelCommand } from '@aws-sdk/client-pinpoint';
 
 const channelName = 'SMS';
 const spinner = ora('');
@@ -45,7 +46,7 @@ export const enable = async (context: $TSContext): Promise<$TSAny> => {
   spinner.start('Enabling SMS channel.');
 
   try {
-    const data = await context.exeInfo.pinpointClient.updateSmsChannel(params).promise();
+    const data = await context.exeInfo.pinpointClient.send(new UpdateSmsChannelCommand(params));
     context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
     spinner.succeed(`The ${channelName} channel has been successfully enabled.`);
 
@@ -78,7 +79,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
   spinner.start('Disabling SMS channel.');
 
   try {
-    const data = await context.exeInfo.pinpointClient.updateSmsChannel(params).promise();
+    const data = await context.exeInfo.pinpointClient.send(new UpdateSmsChannelCommand(params));
     context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
     spinner.succeed(`The ${channelName} channel has been disabled.`);
 
@@ -107,7 +108,7 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
   };
   spinner.start(`Retrieving channel information for ${channelName}.`);
   try {
-    const data = await context.exeInfo.pinpointClient.getSmsChannel(params).promise();
+    const data = await context.exeInfo.pinpointClient.send(new GetSmsChannelCommand(params));
     spinner.succeed(`Successfully retrieved channel information for ${channelName}.`);
     // eslint-disable-next-line no-param-reassign
     pinpointApp[channelName] = data.SMSChannelResponse;
