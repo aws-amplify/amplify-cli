@@ -1,6 +1,6 @@
 {
   "name": "amplify-java-function-runtime-provider",
-  "version": "2.3.52",
+  "version": "2.3.53-rc.58861f883391d6e.0",
   "description": "Provides functionality related to functions in JAVA on AWS",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.2",
+    "@aws-amplify/amplify-cli-core": "4.4.3-rc.58861f883391d6e.0",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",

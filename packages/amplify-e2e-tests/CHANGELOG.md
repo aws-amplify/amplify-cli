@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.9-rc.58861f883391d6e.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.8...amplify-e2e-tests@4.11.9-rc.58861f883391d6e.0) (2025-10-08)
+
+
+### Bug Fixes
+
+* e2e tests for auth, geo, and python lambda functions ([#14264](https://github.com/aws-amplify/amplify-cli/issues/14264)) ([da6de92](https://github.com/aws-amplify/amplify-cli/commit/da6de92bf764db9f9c2797fbd1fd1d0f5b9c578a))
+
+
+
+
+
 ## [4.11.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.7...amplify-e2e-tests@4.11.8) (2025-09-17)
 
 **Note:** Version bump only for package amplify-e2e-tests

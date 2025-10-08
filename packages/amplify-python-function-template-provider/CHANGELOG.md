@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.8-rc.58861f883391d6e.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-python-function-template-provider@1.4.7...@aws-amplify/amplify-python-function-template-provider@1.4.8-rc.58861f883391d6e.0) (2025-10-08)
+
+
+### Bug Fixes
+
+* e2e tests for auth, geo, and python lambda functions ([#14264](https://github.com/aws-amplify/amplify-cli/issues/14264)) ([da6de92](https://github.com/aws-amplify/amplify-cli/commit/da6de92bf764db9f9c2797fbd1fd1d0f5b9c578a))
+
+
+
+
+
 ## [1.4.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-python-function-template-provider@1.4.5...@aws-amplify/amplify-python-function-template-provider@1.4.7) (2023-11-08)
 
 
