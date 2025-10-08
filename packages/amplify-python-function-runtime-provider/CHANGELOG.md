@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.53](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.52...amplify-python-function-runtime-provider@2.4.53) (2025-10-08)
+
+
+### Bug Fixes
+
+* e2e tests for auth, geo, and python lambda functions ([#14264](https://github.com/aws-amplify/amplify-cli/issues/14264)) ([da6de92](https://github.com/aws-amplify/amplify-cli/commit/da6de92bf764db9f9c2797fbd1fd1d0f5b9c578a))
+
+
+
+
+
 ## [2.4.52](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@2.4.51...amplify-python-function-runtime-provider@2.4.52) (2025-07-01)
 
 
