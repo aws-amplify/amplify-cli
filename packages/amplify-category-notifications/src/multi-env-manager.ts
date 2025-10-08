@@ -269,7 +269,7 @@ export const deletePinpointAppForEnv = async (context: $TSContext, envName: stri
       printer.success(`Successfully deleted Pinpoint project: ${pinpointApp.Id}`);
     } catch (err) {
       // awscloudformation might have already removed the pinpoint project
-      if (err.code === 'NotFoundException') {
+      if (err.name === 'NotFoundException') {
         printer.warn(`${pinpointApp.Id}: not found`);
       } else {
         printer.error(`Failed to delete Pinpoint project: ${pinpointApp.Id}`);

@@ -154,7 +154,7 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
     return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.GCMChannelResponse);
   } catch (err) {
     spinner.stop();
-    if (err.code !== 'NotFoundException') {
+    if (err.name !== 'NotFoundException') {
       throw new AmplifyFault(
         'NotificationsChannelFCMFault',
         {

@@ -43,7 +43,7 @@ export async function pinpointAppExist(pinpointProjectId: string, region: string
       result = true;
     }
   } catch (err) {
-    if (err.code === 'NotFoundException') {
+    if (err.name === 'NotFoundException') {
       result = false;
     } else {
       throw err;
