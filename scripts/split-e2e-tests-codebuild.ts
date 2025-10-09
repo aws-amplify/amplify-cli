@@ -36,6 +36,7 @@ const RUN_SOLO = [
   'src/__tests__/import_s3_2b.test.ts',
   'src/__tests__/import_s3_2c.test.ts',
   'src/__tests__/import_s3_3.test.ts',
+  'src/__tests__/notifications-analytics-compatibility-in-app-2.test.ts',
   'src/__tests__/notifications-in-app-messaging.test.ts',
   'src/__tests__/schema-auth-11-a.test.ts',
   'src/__tests__/schema-auth-15.test.ts',
