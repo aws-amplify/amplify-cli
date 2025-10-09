@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-opensearch-simulator",
-  "version": "1.7.20",
+  "version": "1.7.21",
   "description": "Opensearch local simulator",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.2",
+    "@aws-amplify/amplify-cli-core": "4.4.3",
     "@aws-amplify/amplify-prompts": "2.8.7",
     "detect-port": "^1.3.0",
     "execa": "^5.1.1",
