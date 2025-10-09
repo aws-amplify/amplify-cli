@@ -1,8 +1,8 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 
 const MILLI_SECONDS = 1000;
 export async function waitTillTableStateIsActive(
-  dynamoDBClient: DynamoDB,
+  dynamoDBClient: DynamoDBClient,
   tableName: string,
   maximumWait: number = 15 * MILLI_SECONDS,
 ): Promise<void> {
@@ -12,7 +12,7 @@ export async function waitTillTableStateIsActive(
     let timeoutHandle;
     /* eslint-enable */
     const checkStatus = async () => {
-      const tableDescription = await dynamoDBClient.describeTable({ TableName: tableName }).promise();
+      const tableDescription = await dynamoDBClient.send(new DescribeTableCommand({ TableName: tableName }));
       if (tableDescription.Table.TableStatus === 'ACTIVE') {
         clearTimeout(timeoutHandle);
         clearInterval(intervalHandle);

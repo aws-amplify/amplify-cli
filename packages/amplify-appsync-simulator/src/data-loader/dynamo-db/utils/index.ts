@@ -1,11 +1,12 @@
-import { Converter } from 'aws-sdk/clients/dynamodb';
+import { unmarshall as awsUnmarshall } from '@aws-sdk/util-dynamodb';
+import { AttributeValue } from '@aws-sdk/client-dynamodb';
 
-export function nullIfEmpty(obj: object): object | null {
+export function nullIfEmpty<T extends Record<string, string | AttributeValue>>(obj: T): T | null {
   return Object.keys(obj).length === 0 ? null : obj;
 }
 
 export function unmarshall(raw, isRaw = true) {
-  const content = isRaw ? Converter.unmarshall(raw) : raw;
+  const content = isRaw ? awsUnmarshall(raw) : raw;
   // Because of the funky set type used in the aws-sdk, we need to further unwrap
   // to find if there is a set that needs to be unpacked into an array.
 

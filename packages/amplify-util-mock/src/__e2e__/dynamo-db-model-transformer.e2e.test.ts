@@ -128,14 +128,14 @@ test('Test createAuthor mutation', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation($input: CreateAuthorInput!) {
-          createAuthor(input: $input) {
-              id
-              name
-              entityMetadata {
-                  isActive
-              }
-          }
-      }`,
+            createAuthor(input: $input) {
+                id
+                name
+                entityMetadata {
+                    isActive
+                }
+            }
+        }`,
       {
         input: {
           name: 'Jeff B',
@@ -161,13 +161,13 @@ test('Test createPost mutation', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation {
-          createPost(input: { title: "Hello, World!" }) {
-              id
-              title
-              createdAt
-              updatedAt
-          }
-      }`,
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`,
       {},
     );
     expect(response.data.createPost.id).toBeDefined();
@@ -441,30 +441,30 @@ test('Test listPosts query with filter', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
-          createPost(input: { title: "Test List with filter" }) {
-              id
-              title
-              createdAt
-              updatedAt
-          }
-      }`,
+            createPost(input: { title: "Test List with filter" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`,
       {},
     );
     expect(createResponse.data.createPost.id).toBeDefined();
     expect(createResponse.data.createPost.title).toEqual('Test List with filter');
     const listWithFilterResponse = await GRAPHQL_CLIENT.query(
       `query {
-          listPosts(filter: {
-              title: {
-                  contains: "List with filter"
-              }
-          }) {
-              items {
-                  id
-                  title
-              }
-          }
-      }`,
+            listPosts(filter: {
+                title: {
+                    contains: "List with filter"
+                }
+            }) {
+                items {
+                    id
+                    title
+                }
+            }
+        }`,
       {},
     );
     logDebug(JSON.stringify(listWithFilterResponse, null, 4));
@@ -483,61 +483,61 @@ test('Test enum filters List', async () => {
   try {
     await GRAPHQL_CLIENT.query(
       `mutation {
-          createPost(input: { title: "Appears in New Hope", appearsIn: [NEWHOPE], episode: NEWHOPE }) {
-              id
-              title
-              createdAt
-              updatedAt
-          }
-      }`,
-      {},
-    );
-    await GRAPHQL_CLIENT.query(
-      `mutation {
-          createPost(input: { title: "Appears in Jedi", appearsIn: [JEDI], episode: JEDI }) {
-              id
-              title
-              createdAt
-              updatedAt
-          }
-      }`,
-      {},
-    );
-    await GRAPHQL_CLIENT.query(
-      `mutation {
-            createPost(input: { title: "Appears in Empire", appearsIn: [EMPIRE], episode: EMPIRE }) {
+            createPost(input: { title: "Appears in New Hope", appearsIn: [NEWHOPE], episode: NEWHOPE }) {
                 id
                 title
                 createdAt
                 updatedAt
             }
         }`,
+      {},
+    );
+    await GRAPHQL_CLIENT.query(
+      `mutation {
+            createPost(input: { title: "Appears in Jedi", appearsIn: [JEDI], episode: JEDI }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`,
+      {},
+    );
+    await GRAPHQL_CLIENT.query(
+      `mutation {
+              createPost(input: { title: "Appears in Empire", appearsIn: [EMPIRE], episode: EMPIRE }) {
+                  id
+                  title
+                  createdAt
+                  updatedAt
+              }
+          }`,
       {},
     );
 
     await GRAPHQL_CLIENT.query(
       `mutation {
-            createPost(input: { title: "Appears in Empire & JEDI", appearsIn: [EMPIRE, JEDI] }) {
-                id
-                title
-                createdAt
-                updatedAt
-            }
-        }`,
+              createPost(input: { title: "Appears in Empire & JEDI", appearsIn: [EMPIRE, JEDI] }) {
+                  id
+                  title
+                  createdAt
+                  updatedAt
+              }
+          }`,
       {},
     );
 
     // filter list of enums
     const appearsInWithFilterResponseJedi = await GRAPHQL_CLIENT.query(
       `query {
-          listPosts(filter: { appearsIn: {eq: [JEDI]}}) {
-              items {
-                  title
-                  id
-              }
-          }
-      }
-      `,
+            listPosts(filter: { appearsIn: {eq: [JEDI]}}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
       {},
     );
     expect(appearsInWithFilterResponseJedi.data.listPosts.items).toBeDefined();
@@ -548,14 +548,14 @@ test('Test enum filters List', async () => {
 
     const appearsInWithFilterResponseNonJedi = await GRAPHQL_CLIENT.query(
       `query {
-          listPosts(filter: { appearsIn: {ne: [JEDI]}}) {
-              items {
-                  title
-                  id
-              }
-          }
-      }
-      `,
+            listPosts(filter: { appearsIn: {ne: [JEDI]}}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
       {},
     );
     logDebug(JSON.stringify(appearsInWithFilterResponseNonJedi));
@@ -568,14 +568,14 @@ test('Test enum filters List', async () => {
 
     const appearsInContainingJedi = await GRAPHQL_CLIENT.query(
       `query {
-          listPosts(filter: { appearsIn: {contains: JEDI }}) {
-              items {
-                  title
-                  id
-              }
-          }
-      }
-      `,
+            listPosts(filter: { appearsIn: {contains: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
       {},
     );
     expect(appearsInContainingJedi.data.listPosts.items).toBeDefined();
@@ -587,14 +587,14 @@ test('Test enum filters List', async () => {
 
     const appearsInNotContainingJedi = await GRAPHQL_CLIENT.query(
       `query {
-          listPosts(filter: { appearsIn: {notContains: JEDI }}) {
-              items {
-                  title
-                  id
-              }
-          }
-      }
-      `,
+            listPosts(filter: { appearsIn: {notContains: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
       {},
     );
     expect(appearsInNotContainingJedi.data.listPosts.items).toBeDefined();
@@ -607,14 +607,14 @@ test('Test enum filters List', async () => {
     // enum filter
     const jediEpisode = await GRAPHQL_CLIENT.query(
       `query {
-          listPosts(filter: { episode: {eq: JEDI }}) {
-              items {
-                  title
-                  id
-              }
-          }
-      }
-      `,
+            listPosts(filter: { episode: {eq: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
       {},
     );
     expect(jediEpisode.data.listPosts.items).toBeDefined();
@@ -624,14 +624,14 @@ test('Test enum filters List', async () => {
 
     const nonJediEpisode = await GRAPHQL_CLIENT.query(
       `query {
-          listPosts(filter: { episode: {ne: JEDI }}) {
-              items {
-                  title
-                  id
-              }
-          }
-      }
-      `,
+            listPosts(filter: { episode: {ne: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
       {},
     );
     expect(nonJediEpisode.data.listPosts.items).toBeDefined();
@@ -651,24 +651,24 @@ test('Test createPost mutation with non-model types', async () => {
   try {
     const response = await GRAPHQL_CLIENT.query(
       `mutation CreatePost($input: CreatePostInput!) {
-          createPost(input: $input) {
-              id
-              title
-              createdAt
-              updatedAt
-              metadata {
-                  tags {
-                      published
-                      metadata {
-                          tags {
-                              published
-                          }
-                      }
-                  }
-              }
-              appearsIn
-          }
-      }`,
+            createPost(input: $input) {
+                id
+                title
+                createdAt
+                updatedAt
+                metadata {
+                    tags {
+                        published
+                        metadata {
+                            tags {
+                                published
+                            }
+                        }
+                    }
+                }
+                appearsIn
+            }
+        }`,
       {
         input: {
           title: 'Check that metadata exists',
@@ -705,37 +705,37 @@ test('Test updatePost mutation with non-model types', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
-          createPost(input: { title: "Test Update" }) {
-              id
-              title
-              createdAt
-              updatedAt
-          }
-      }`,
+            createPost(input: { title: "Test Update" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`,
       {},
     );
     expect(createResponse.data.createPost.id).toBeDefined();
     expect(createResponse.data.createPost.title).toEqual('Test Update');
     const updateResponse = await GRAPHQL_CLIENT.query(
       `mutation UpdatePost($input: UpdatePostInput!) {
-          updatePost(input: $input) {
-              id
-              title
-              createdAt
-              updatedAt
-              metadata {
-                  tags {
-                      published
-                      metadata {
-                          tags {
-                              published
-                          }
-                      }
-                  }
-              }
-              appearsIn
-          }
-      }`,
+            updatePost(input: $input) {
+                id
+                title
+                createdAt
+                updatedAt
+                metadata {
+                    tags {
+                        published
+                        metadata {
+                            tags {
+                                published
+                            }
+                        }
+                    }
+                }
+                appearsIn
+            }
+        }`,
       {
         input: {
           id: createResponse.data.createPost.id,

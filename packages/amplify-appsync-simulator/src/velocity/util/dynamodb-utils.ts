@@ -1,14 +1,28 @@
-import { Converter } from 'aws-sdk/clients/dynamodb';
-import { DynamoDBSet } from 'aws-sdk/lib/dynamodb/set';
+import { marshall } from '@aws-sdk/util-dynamodb';
 
 import { toJSON } from '../value-mapper/to-json';
 
 export const dynamodbUtils = {
   toDynamoDB(value: any) {
-    return Converter.input(toJSON(value));
+    if (Array.isArray(value)) {
+      return { L: marshall(toJSON(value)) };
+    }
+    const jsonValue = toJSON(value);
+    if (jsonValue !== null && typeof jsonValue === 'object' && !Array.isArray(jsonValue)) {
+      return {
+        M: marshall(jsonValue, {
+          removeUndefinedValues: true,
+          convertEmptyValues: true,
+        }),
+      };
+    }
+    return marshall(jsonValue, {
+      removeUndefinedValues: true,
+      convertEmptyValues: true,
+    });
   },
   $toSet(values, fn = (value) => value) {
-    return this.toDynamoDB(new DynamoDBSet([].concat(values).map((value) => fn(value))));
+    return this.toDynamoDB(new Set([].concat(values).map((value) => fn(value))));
   },
   toDynamoDBJson(value) {
     return JSON.stringify(this.toDynamoDB(value));
@@ -76,13 +90,12 @@ export const dynamodbUtils = {
     return JSON.stringify(this.toMap(value));
   },
   toMapValues(values) {
-    return Object.entries(toJSON(values)).reduce(
-      (sum, [key, value]) => ({
+    return Object.entries(toJSON(values)).reduce((sum, [key, value]) => {
+      return {
         ...sum,
         [key]: this.toDynamoDB(value),
-      }),
-      {},
-    );
+      };
+    }, {});
   },
   toMapValuesJson(values) {
     return JSON.stringify(this.toMapValues(values));

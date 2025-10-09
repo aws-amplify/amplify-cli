@@ -2,7 +2,7 @@ import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { invokeTrigger } from '../../api/lambda-invoke';
 import { isMockable } from '@aws-amplify/amplify-category-function';
 import * as lambdaTriggerHandlers from '../../api/lambda-trigger-handler';
-import { DynamoDBStreams, Endpoint } from 'aws-sdk';
+import { DynamoDBStreamsClient } from '@aws-sdk/client-dynamodb-streams';
 
 jest.mock('../../api/lambda-invoke', () => ({
   invokeTrigger: jest.fn(),
@@ -17,7 +17,7 @@ const isMockableMock = isMockable as jest.MockedFunction<typeof isMockable>;
 const mockContext = {} as $TSContext;
 const mockStreamArn = 'mock-arn';
 const mockTrigger = { name: 'mock-trigger' };
-const mockDDBEndpoint = new Endpoint('mock');
+const mockDDBEndpoint = 'mock';
 
 describe('Lambda Trigger Handler', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -66,7 +66,7 @@ describe('Lambda Trigger Handler', () => {
     const pollForRecordsMock = jest.spyOn(lambdaTriggerHandlers, 'pollDDBStreamAndInvokeLambda').mockResolvedValueOnce();
     await lambdaTriggerHandlers.ddbLambdaTriggerHandler(mockContext, mockStreamArn, mockTrigger, mockDDBEndpoint);
     expect(pollForRecordsMock).toBeCalledTimes(1);
-    expect(pollForRecordsMock).toBeCalledWith(mockContext, mockStreamArn, expect.any(DynamoDBStreams), mockTrigger);
+    expect(pollForRecordsMock).toBeCalledWith(mockContext, mockStreamArn, expect.any(DynamoDBStreamsClient), mockTrigger);
   });
 
   it('Invokes the local lambda when records are available to be processed', async () => {
