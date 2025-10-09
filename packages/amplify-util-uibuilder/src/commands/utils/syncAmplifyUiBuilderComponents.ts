@@ -3,13 +3,13 @@ import type { GenericDataSchema, GenericDataField, GenericDataRelationshipType }
 import {
   CodegenGenericDataEnum,
   CodegenGenericDataFieldDataType,
-  CodegenGenericDataFields,
+  CodegenGenericDataField,
   CodegenGenericDataModel,
   CodegenGenericDataNonModel,
   CodegenGenericDataRelationshipType,
   CodegenJob,
   CodegenJobGenericDataSchema,
-} from 'aws-sdk/clients/amplifyuibuilder';
+} from '@aws-sdk/client-amplifyuibuilder';
 import fetch from 'node-fetch';
 import { performance } from 'perf_hooks';
 import path from 'path';
@@ -51,11 +51,11 @@ const mapRelationshipTypeToCodegen = (
   }
 };
 
-const mapDataFieldsToCodegen = (fields: { [fieldName: string]: GenericDataField }): CodegenGenericDataFields => {
-  const codegenFields: CodegenGenericDataFields = {};
+const mapDataFieldsToCodegen = (fields: { [fieldName: string]: GenericDataField }): Record<string, CodegenGenericDataField> => {
+  const codegenFields: Record<string, CodegenGenericDataField> = {};
 
   Object.entries(fields).forEach(([fieldName, dataField]) => {
-    let dataType: CodegenGenericDataFieldDataType = '';
+    let dataType: CodegenGenericDataFieldDataType = 'String';
     let dataTypeValue = '';
     if (typeof dataField.dataType === 'object' && dataField.dataType !== null) {
       if ('enum' in dataField.dataType) {

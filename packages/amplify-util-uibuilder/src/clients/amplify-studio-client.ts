@@ -1,7 +1,18 @@
 import { $TSContext, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
-import type { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
-import type { CreateComponentData, Component, Theme, Form, StartCodegenJobData } from 'aws-sdk/clients/amplifyuibuilder';
-import { AmplifyUIBuilder, AmplifyBackend } from 'aws-sdk';
+import {
+  AmplifyUIBuilderClient,
+  AmplifyUIBuilderClientConfig,
+  GetMetadataCommand,
+  CreateComponentCommand,
+  DeleteFormCommand,
+  GetCodegenJobCommand,
+  ExportComponentsCommand,
+  ExportThemesCommand,
+  ExportFormsCommand,
+  StartCodegenJobCommand,
+} from '@aws-sdk/client-amplifyuibuilder';
+import { AmplifyBackendClient, AmplifyBackendClientConfig, GetBackendAPIModelsCommand } from '@aws-sdk/client-amplifybackend';
+import type { CreateComponentData, Component, Theme, Form, StartCodegenJobData } from '@aws-sdk/client-amplifyuibuilder';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { getAppId, getEnvName } from '../commands/utils/environmentHelpers';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
@@ -23,7 +34,7 @@ export type StudioMetadata = {
 /**
  * Builds the Amplify Backend Client
  */
-const buildAmplifyBackendClient = (awsConfigInfo: ServiceConfigurationOptions): AmplifyBackend => {
+const buildAmplifyBackendClient = (awsConfigInfo: AmplifyBackendClientConfig): AmplifyBackendClient => {
   const awsConfig = { ...awsConfigInfo };
   if (process.env.AMPLIFY_BACKEND_ENDPOINT) {
     awsConfig.endpoint = process.env.AMPLIFY_BACKEND_ENDPOINT;
@@ -33,13 +44,13 @@ const buildAmplifyBackendClient = (awsConfigInfo: ServiceConfigurationOptions): 
     awsConfig.region = process.env.AMPLIFY_BACKEND_REGION;
   }
 
-  return new AmplifyBackend(awsConfig);
+  return new AmplifyBackendClient(awsConfig);
 };
 
 /**
  * Builds the Amplify UIBuilder Client
  */
-const buildAmplifyUiBuilderClient = (awsConfigInfo: ServiceConfigurationOptions): AmplifyUIBuilder => {
+const buildAmplifyUiBuilderClient = (awsConfigInfo: AmplifyUIBuilderClientConfig): AmplifyUIBuilderClient => {
   const awsConfig = { ...awsConfigInfo };
   if (process.env.UI_BUILDER_ENDPOINT) {
     awsConfig.endpoint = process.env.UI_BUILDER_ENDPOINT;
@@ -49,15 +60,15 @@ const buildAmplifyUiBuilderClient = (awsConfigInfo: ServiceConfigurationOptions)
     awsConfig.region = process.env.UI_BUILDER_REGION;
   }
 
-  return new AmplifyUIBuilder(awsConfig);
+  return new AmplifyUIBuilderClient(awsConfig);
 };
 
 /**
  * used for Amplify Studio related clients
  */
 export default class AmplifyStudioClient {
-  #amplifyUiBuilder: AmplifyUIBuilder;
-  #amplifyBackend: AmplifyBackend;
+  #amplifyUiBuilder: AmplifyUIBuilderClient;
+  #amplifyBackend: AmplifyBackendClient;
   #appId: string;
   #envName: string;
   metadata: StudioMetadata;
@@ -90,7 +101,7 @@ export default class AmplifyStudioClient {
         context,
         resolvedEnvName,
         resolvedAppId,
-      ]) as ServiceConfigurationOptions,
+      ]) as AmplifyUIBuilderClientConfig,
       isDataStoreEnabled(context),
     ]);
 
@@ -111,7 +122,7 @@ export default class AmplifyStudioClient {
   /*
    * Builds the clients
    */
-  constructor(awsConfigInfo: ServiceConfigurationOptions, appId: string, envName: string) {
+  constructor(awsConfigInfo: AmplifyUIBuilderClientConfig, appId: string, envName: string) {
     this.#amplifyUiBuilder = buildAmplifyUiBuilderClient(awsConfigInfo);
     this.#amplifyBackend = buildAmplifyBackendClient(awsConfigInfo);
     this.#appId = appId;
@@ -134,12 +145,12 @@ export default class AmplifyStudioClient {
     const environmentName = envName || this.#envName;
     const resolvedAppId = appId || this.#appId;
     try {
-      const response = await this.#amplifyUiBuilder
-        .getMetadata({
+      const response = await this.#amplifyUiBuilder.send(
+        new GetMetadataCommand({
           appId: resolvedAppId,
           environmentName,
-        })
-        .promise();
+        }),
+      );
       this.metadata = {
         autoGenerateForms: response.features?.autoGenerateForms === 'true',
         autoGenerateViews: response.features?.autoGenerateViews === 'true',
@@ -164,14 +175,16 @@ export default class AmplifyStudioClient {
       let nextToken: string | undefined;
       const uiBuilderComponents: Component[] = [];
       do {
-        const response = await this.#amplifyUiBuilder
-          .exportComponents({
+        const response = await this.#amplifyUiBuilder.send(
+          new ExportComponentsCommand({
             appId: resolvedAppId,
             environmentName,
             nextToken,
-          })
-          .promise();
-        uiBuilderComponents.push(...response.entities);
+          }),
+        );
+        if (response.entities) {
+          uiBuilderComponents.push(...response.entities);
+        }
         nextToken = response.nextToken;
       } while (nextToken);
       return { entities: uiBuilderComponents };
@@ -191,14 +204,16 @@ export default class AmplifyStudioClient {
       let nextToken: string | undefined;
       const uiBuilderThemes: Theme[] = [];
       do {
-        const response = await this.#amplifyUiBuilder
-          .exportThemes({
+        const response = await this.#amplifyUiBuilder.send(
+          new ExportThemesCommand({
             appId: resolvedAppId,
             environmentName,
             nextToken,
-          })
-          .promise();
-        uiBuilderThemes.push(...response.entities);
+          }),
+        );
+        if (response.entities) {
+          uiBuilderThemes.push(...response.entities);
+        }
         nextToken = response.nextToken;
       } while (nextToken);
       return { entities: uiBuilderThemes };
@@ -214,14 +229,16 @@ export default class AmplifyStudioClient {
       let nextToken: string | undefined;
       const uibuilderForms: Form[] = [];
       do {
-        const response = await this.#amplifyUiBuilder
-          .exportForms({
+        const response = await this.#amplifyUiBuilder.send(
+          new ExportFormsCommand({
             appId: resolvedAppId,
             environmentName,
             nextToken,
-          })
-          .promise();
-        uibuilderForms.push(...response.entities);
+          }),
+        );
+        if (response.entities) {
+          uibuilderForms.push(...response.entities);
+        }
         nextToken = response.nextToken;
       } while (nextToken);
       return { entities: uibuilderForms };
@@ -234,13 +251,13 @@ export default class AmplifyStudioClient {
     const environmentName = envName || this.#envName;
     const resolvedAppId = appId || this.#appId;
     try {
-      const response = await this.#amplifyUiBuilder
-        .createComponent({
+      const response = await this.#amplifyUiBuilder.send(
+        new CreateComponentCommand({
           appId: resolvedAppId,
           environmentName,
           componentToCreate: component,
-        })
-        .promise();
+        }),
+      );
       return response.entity;
     } catch (err) {
       throw new Error(`Failed to create component: ${err.message}`);
@@ -251,7 +268,7 @@ export default class AmplifyStudioClient {
     const environmentName = envName || this.#envName;
     const resolvedAppId = appId || this.#appId;
     try {
-      await this.#amplifyUiBuilder.deleteForm({ id: formId, environmentName, appId: resolvedAppId }).promise();
+      await this.#amplifyUiBuilder.send(new DeleteFormCommand({ id: formId, environmentName, appId: resolvedAppId }));
     } catch (err) {
       printer.debug(err.toString());
       throw err;
@@ -262,14 +279,14 @@ export default class AmplifyStudioClient {
     try {
       const environmentName = envName || this.#envName;
       const resolvedAppId = appId || this.#appId;
-      const { Models } = await this.#amplifyBackend
-        .getBackendAPIModels({
+      const response = await this.#amplifyBackend.send(
+        new GetBackendAPIModelsCommand({
           AppId: resolvedAppId,
           BackendEnvironmentName: environmentName,
           ResourceName: resourceName,
-        })
-        .promise();
-      return Models;
+        }),
+      );
+      return response.Models;
     } catch (err) {
       throw new Error(`Models not found in AmplifyBackend:GetBackendAPIModels response: ${err.message}`);
     }
@@ -279,13 +296,13 @@ export default class AmplifyStudioClient {
     const environmentName = envName || this.#envName;
     const resolvedAppId = appId || this.#appId;
     try {
-      const response = await this.#amplifyUiBuilder
-        .startCodegenJob({
+      const response = await this.#amplifyUiBuilder.send(
+        new StartCodegenJobCommand({
           appId: resolvedAppId,
           environmentName,
           codegenJobToCreate,
-        })
-        .promise();
+        }),
+      );
       if (!response.entity || !response.entity.id) {
         throw new Error('Error starting codegen job');
       }
@@ -301,17 +318,17 @@ export default class AmplifyStudioClient {
     const environmentName = envName || this.#envName;
     const resolvedAppId = appId || this.#appId;
     try {
-      const { job } = await this.#amplifyUiBuilder
-        .getCodegenJob({
+      const response = await this.#amplifyUiBuilder.send(
+        new GetCodegenJobCommand({
           id: jobId,
           appId: resolvedAppId,
           environmentName,
-        })
-        .promise();
-      if (!job) {
+        }),
+      );
+      if (!response.job) {
         throw new Error('Error getting codegen job');
       }
-      return job;
+      return response.job;
     } catch (err) {
       printer.debug(err.toString());
       throw err;

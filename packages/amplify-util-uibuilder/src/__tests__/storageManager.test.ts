@@ -1,5 +1,5 @@
 import { hasStorageField } from '../commands/utils';
-import { Form } from 'aws-sdk/clients/amplifyuibuilder';
+import { Form } from '@aws-sdk/client-amplifyuibuilder';
 
 const formWithNoCustomization: Form = {
   id: 'f-123456',

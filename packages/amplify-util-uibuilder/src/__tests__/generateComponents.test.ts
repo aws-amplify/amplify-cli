@@ -1,10 +1,26 @@
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import {
+  ExportComponentsCommand,
+  ExportThemesCommand,
+  ExportFormsCommand,
+  GetMetadataCommand,
+  StartCodegenJobCommand,
+  GetCodegenJobCommand,
+} from '@aws-sdk/client-amplifyuibuilder';
 import { getCodegenConfig } from 'amplify-codegen';
 import { isDataStoreEnabled } from '@aws-amplify/amplify-category-api';
 import * as utils from '../commands/utils';
 import { run } from '../commands/generateComponents';
 import { getTransformerVersion } from '../commands/utils/featureFlags';
 import { getUiBuilderComponentsPath } from '../commands/utils/getUiBuilderComponentsPath';
+
+const mockSend = jest.fn();
+
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => ({
+  ...jest.requireActual('@aws-sdk/client-amplifyuibuilder'),
+  AmplifyUIBuilderClient: jest.fn().mockImplementation(() => ({
+    send: mockSend,
+  })),
+}));
 
 jest.mock('../commands/utils');
 jest.mock('@aws-amplify/amplify-cli-core');
@@ -25,7 +41,6 @@ jest.mock('amplify-codegen', () => ({
   getCodegenConfig: jest.fn(),
 }));
 
-const awsMock = aws as any;
 const utilsMock = utils as any;
 const isDataStoreEnabledMocked = isDataStoreEnabled as any;
 const getTransformerVersionMocked = getTransformerVersion as any;
@@ -62,20 +77,10 @@ const projectPath = '/usr/test/test-project';
 describe('can generate components', () => {
   let context: any;
   let schemas: any;
-  let mockedExport: jest.Mock<any, any>;
-  const getMetadataPromise = jest.fn().mockReturnValue({
-    features: {
-      ...defaultStudioFeatureFlags,
-    },
-  });
-  const startCodegenJobPromise = jest.fn().mockReturnValue({
-    entity: { id: 'jobId123' },
-  });
-  const mockStartCodegenJob = jest.fn().mockReturnValue({
-    promise: startCodegenJobPromise,
-  });
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSend.mockReset();
+
     isDataStoreEnabledMocked.mockResolvedValue(true);
     getTransformerVersionMocked.mockResolvedValue(2);
     context = {
@@ -119,30 +124,32 @@ describe('can generate components', () => {
       getQueryMaxDepth: jest.fn().mockReturnValue(3),
     });
 
-    mockedExport = jest.fn().mockReturnValue({
-      entities: schemas.entities,
+    mockSend.mockImplementation((command) => {
+      if (command instanceof ExportComponentsCommand) {
+        return Promise.resolve({ entities: schemas.entities });
+      }
+      if (command instanceof ExportThemesCommand) {
+        return Promise.resolve({ entities: schemas.entities });
+      }
+      if (command instanceof ExportFormsCommand) {
+        return Promise.resolve({ entities: schemas.entities });
+      }
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
+          features: {
+            ...defaultStudioFeatureFlags,
+          },
+        });
+      }
+      if (command instanceof StartCodegenJobCommand) {
+        return Promise.resolve({ entity: { id: 'jobId123' } });
+      }
+      if (command instanceof GetCodegenJobCommand) {
+        return Promise.resolve({ status: 'succeeded' });
+      }
+      return Promise.resolve({});
     });
-    awsMock.AmplifyUIBuilder = jest.fn().mockReturnValue({
-      exportComponents: jest.fn().mockReturnValue({
-        promise: () => mockedExport(),
-      }),
-      exportThemes: jest.fn().mockReturnValue({
-        promise: () => mockedExport(),
-      }),
-      exportForms: jest.fn().mockReturnValue({
-        promise: () => mockedExport(),
-      }),
-      exportViews: jest.fn().mockReturnValue({
-        promise: () => mockedExport(),
-      }),
-      getMetadata: jest.fn().mockReturnValue({
-        promise: getMetadataPromise,
-      }),
-      startCodegenJob: mockStartCodegenJob,
-      getCodegenJob: jest.fn().mockReturnValue({
-        promise: jest.fn().mockReturnValue({ status: 'succeeded' }),
-      }),
-    });
+
     getUiBuilderComponentsPathMocked.mockReturnValue(projectPath + '/src/ui-components');
     utilsMock.generateUiBuilderComponents = jest.fn().mockReturnValue(schemas.entities);
     utilsMock.generateUiBuilderThemes = jest.fn().mockReturnValue(schemas.entities);
@@ -155,8 +162,10 @@ describe('can generate components', () => {
   it('runs generateComponents', async () => {
     utilsMock.isFormDetachedFromModel = jest.fn().mockReturnValueOnce(true);
     await run(context, 'PostPull');
-    expect(mockedExport).toBeCalledTimes(3);
-    expect(startCodegenJobPromise).toBeCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledWith(expect.any(ExportComponentsCommand));
+    expect(mockSend).toHaveBeenCalledWith(expect.any(ExportThemesCommand));
+    expect(mockSend).toHaveBeenCalledWith(expect.any(ExportFormsCommand));
+    expect(mockSend).toHaveBeenCalledWith(expect.any(StartCodegenJobCommand));
     expect(utilsMock.waitForSucceededJob).toBeCalledTimes(1);
     expect(getUiBuilderComponentsPathMocked).toBeCalledTimes(1);
     expect(utilsMock.extractUIComponents).toBeCalledTimes(1);
@@ -166,203 +175,231 @@ describe('can generate components', () => {
   it('should autogenerate forms if transformer v2 and datastore and feature flag are enabled', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(true);
     getTransformerVersionMocked.mockResolvedValue(2);
-    getMetadataPromise.mockReturnValue({
-      features: {
-        ...defaultStudioFeatureFlags,
-      },
-    });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
-      appId: 'testAppId',
-      environmentName: 'testEnvName',
-      codegenJobToCreate: expect.objectContaining({ autoGenerateForms: true }),
-    });
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: {
+          appId: 'testAppId',
+          environmentName: 'testEnvName',
+          codegenJobToCreate: expect.objectContaining({ autoGenerateForms: true }),
+        },
+      }),
+    );
   });
 
   it('should not autogenerate forms if transformer v1', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(true);
     getTransformerVersionMocked.mockResolvedValue(1);
-    getMetadataPromise.mockReturnValue({
-      features: {
-        ...defaultStudioFeatureFlags,
-      },
-    });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
-      appId: 'testAppId',
-      environmentName: 'testEnvName',
-      codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
-    });
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: {
+          appId: 'testAppId',
+          environmentName: 'testEnvName',
+          codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
+        },
+      }),
+    );
   });
 
   it('should not autogenerate forms if datastore is not enabled and GraphQL is not enabled', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(false);
-    getMetadataPromise.mockReturnValue({
-      features: {
-        ...defaultStudioFeatureFlags,
-        isGraphQLEnabled: 'false',
-      },
+    mockSend.mockImplementationOnce((command) => {
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
+          features: {
+            ...defaultStudioFeatureFlags,
+            isGraphQLEnabled: 'false',
+          },
+        });
+      }
+      return Promise.resolve({});
     });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
-      appId: 'testAppId',
-      environmentName: 'testEnvName',
-      codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
-    });
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: {
+          appId: 'testAppId',
+          environmentName: 'testEnvName',
+          codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
+        },
+      }),
+    );
   });
 
   it('should not autogenerate forms if datastore is not enabled and GraphQL is enabled with invalid config', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(false);
-    getMetadataPromise.mockReturnValue({
-      features: {
-        ...defaultStudioFeatureFlags,
-        isGraphQLEnabled: 'true',
-      },
+    mockSend.mockImplementationOnce((command) => {
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
+          features: {
+            ...defaultStudioFeatureFlags,
+            isGraphQLEnabled: 'true',
+          },
+        });
+      }
+      return Promise.resolve({});
     });
     getCodegenConfigMocked.mockImplementation(() => {
       throw new Error();
     });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
-      appId: 'testAppId',
-      environmentName: 'testEnvName',
-      codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
-    });
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: {
+          appId: 'testAppId',
+          environmentName: 'testEnvName',
+          codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
+        },
+      }),
+    );
   });
 
   it('should autogenerate forms if datastore is not enabled and GraphQL is enabled with valid config', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(false);
-    getMetadataPromise.mockReturnValue({
-      features: {
-        ...defaultStudioFeatureFlags,
-        isGraphQLEnabled: 'true',
-      },
+    mockSend.mockImplementationOnce((command) => {
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
+          features: {
+            ...defaultStudioFeatureFlags,
+            isGraphQLEnabled: 'true',
+          },
+        });
+      }
+      return Promise.resolve({});
     });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
-      appId: 'testAppId',
-      environmentName: 'testEnvName',
-      codegenJobToCreate: expect.objectContaining({ autoGenerateForms: true }),
-    });
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: {
+          appId: 'testAppId',
+          environmentName: 'testEnvName',
+          codegenJobToCreate: expect.objectContaining({ autoGenerateForms: true }),
+        },
+      }),
+    );
   });
 
   it('should not autogenerate forms if feature flag  is not enabled', async () => {
     isDataStoreEnabledMocked.mockResolvedValue(true);
-    getMetadataPromise.mockReturnValue({
-      features: {
-        ...defaultStudioFeatureFlags,
-        autoGenerateForms: 'false',
-      },
+    mockSend.mockImplementationOnce((command) => {
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
+          features: {
+            ...defaultStudioFeatureFlags,
+            autoGenerateForms: 'false',
+          },
+        });
+      }
+      return Promise.resolve({});
     });
     await run(context, 'PostPull');
-    expect(mockStartCodegenJob).toHaveBeenCalledWith({
-      appId: 'testAppId',
-      environmentName: 'testEnvName',
-      codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
-    });
+    expect(mockSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: {
+          appId: 'testAppId',
+          environmentName: 'testEnvName',
+          codegenJobToCreate: expect.objectContaining({ autoGenerateForms: false }),
+        },
+      }),
+    );
   });
 
   describe('codegen job creation', () => {
     it('should inclue dataStore configuration when dataStore is enabled', async () => {
       isDataStoreEnabledMocked.mockResolvedValue(true);
-      getMetadataPromise.mockReturnValue({
-        features: {
-          ...defaultStudioFeatureFlags,
-        },
-      });
       await run(context, 'PostPull');
-      expect(mockStartCodegenJob).toHaveBeenCalledWith({
-        appId: 'testAppId',
-        environmentName: 'testEnvName',
-        codegenJobToCreate: expect.objectContaining({
-          renderConfig: {
-            react: expect.objectContaining({
-              apiConfiguration: {
-                dataStoreConfig: {},
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: {
+            appId: 'testAppId',
+            environmentName: 'testEnvName',
+            codegenJobToCreate: expect.objectContaining({
+              renderConfig: {
+                react: expect.objectContaining({
+                  apiConfiguration: {
+                    dataStoreConfig: {},
+                  },
+                }),
               },
             }),
           },
         }),
-      });
+      );
     });
 
     it('should inclue GraphQL configuration when dataStore is disabled and valid api configuration is found', async () => {
       isDataStoreEnabledMocked.mockResolvedValue(false);
-      getMetadataPromise.mockReturnValue({
-        features: {
-          ...defaultStudioFeatureFlags,
-          isGraphQLEnabled: 'true',
-        },
-      });
+
       await run(context, 'PostPull');
-      expect(mockStartCodegenJob).toHaveBeenCalledWith({
-        appId: 'testAppId',
-        environmentName: 'testEnvName',
-        codegenJobToCreate: expect.objectContaining({
-          renderConfig: {
-            react: expect.objectContaining({
-              apiConfiguration: {
-                graphQLConfig: {
-                  fragmentsFilePath: '../graphql/fragments.js',
-                  mutationsFilePath: '../graphql/mutations.js',
-                  queriesFilePath: '../graphql/queries.js',
-                  subscriptionsFilePath: '../graphql/subscriptions.js',
-                  typesFilePath: '',
-                },
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: {
+            appId: 'testAppId',
+            environmentName: 'testEnvName',
+            codegenJobToCreate: expect.objectContaining({
+              renderConfig: {
+                react: expect.objectContaining({
+                  apiConfiguration: {
+                    graphQLConfig: {
+                      fragmentsFilePath: '../graphql/fragments.js',
+                      mutationsFilePath: '../graphql/mutations.js',
+                      queriesFilePath: '../graphql/queries.js',
+                      subscriptionsFilePath: '../graphql/subscriptions.js',
+                      typesFilePath: '',
+                    },
+                  },
+                }),
               },
             }),
           },
         }),
-      });
+      );
     });
 
     it('should include dependencies', async () => {
       isDataStoreEnabledMocked.mockResolvedValue(false);
-      getMetadataPromise.mockReturnValue({
-        features: {
-          ...defaultStudioFeatureFlags,
-          isGraphQLEnabled: 'true',
-        },
-      });
       await run(context, 'PostPull');
-      expect(mockStartCodegenJob).toHaveBeenCalledWith({
-        appId: 'testAppId',
-        environmentName: 'testEnvName',
-        codegenJobToCreate: expect.objectContaining({
-          renderConfig: {
-            react: expect.objectContaining({
-              dependencies: { '@aws-amplify/ui-react': '4.6.0', 'aws-amplify': '^5.0.2', '@aws-amplify/ui-react-storage': '^1.2.0' },
-            }),
-          },
-        }),
-      });
-    });
-
-    it('should inclue noApi configuration when dataStore is disabled and no valid GraphQL Api', async () => {
-      isDataStoreEnabledMocked.mockResolvedValue(false);
-      getMetadataPromise.mockReturnValue({
-        features: {
-          ...defaultStudioFeatureFlags,
-          isGraphQLEnabled: 'true',
-        },
-      });
-      getCodegenConfigMocked.mockImplementation(() => {
-        throw new Error();
-      });
-      await run(context, 'PostPull');
-      expect(mockStartCodegenJob).toHaveBeenCalledWith({
-        appId: 'testAppId',
-        environmentName: 'testEnvName',
-        codegenJobToCreate: expect.objectContaining({
-          renderConfig: {
-            react: expect.objectContaining({
-              apiConfiguration: {
-                noApiConfig: {},
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: {
+            appId: 'testAppId',
+            environmentName: 'testEnvName',
+            codegenJobToCreate: expect.objectContaining({
+              renderConfig: {
+                react: expect.objectContaining({
+                  dependencies: { '@aws-amplify/ui-react': '4.6.0', 'aws-amplify': '^5.0.2', '@aws-amplify/ui-react-storage': '^1.2.0' },
+                }),
               },
             }),
           },
         }),
+      );
+    });
+
+    it('should inclue noApi configuration when dataStore is disabled and no valid GraphQL Api', async () => {
+      isDataStoreEnabledMocked.mockResolvedValue(false);
+      getCodegenConfigMocked.mockImplementation(() => {
+        throw new Error();
       });
+      await run(context, 'PostPull');
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: {
+            appId: 'testAppId',
+            environmentName: 'testEnvName',
+            codegenJobToCreate: expect.objectContaining({
+              renderConfig: {
+                react: expect.objectContaining({
+                  apiConfiguration: {
+                    noApiConfig: {},
+                  },
+                }),
+              },
+            }),
+          },
+        }),
+      );
     });
   });
 });

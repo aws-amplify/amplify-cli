@@ -1,9 +1,15 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { shouldRenderComponents } from '../commands/utils/shouldRenderComponents';
 
-const awsMock = aws as any;
+const mockSend = jest.fn();
+
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => ({
+  ...jest.requireActual('@aws-sdk/client-amplifyuibuilder'),
+  AmplifyUIBuilderClient: jest.fn().mockImplementation(() => ({
+    send: mockSend,
+  })),
+}));
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   ...jest.requireActual('@aws-amplify/amplify-cli-core'),
@@ -28,10 +34,9 @@ describe('should render components', () => {
   let context: $TSContext | any;
 
   beforeAll(async () => {
-    // set metadata response
-    awsMock.AmplifyUIBuilder = jest.fn(() => ({
-      getMetadata: jest.fn(() => ({
-        promise: jest.fn(() => ({
+    mockSend.mockImplementation((command) => {
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
@@ -40,9 +45,10 @@ describe('should render components', () => {
               isNonModelSupported: 'false',
             },
           },
-        })),
-      })),
-    }));
+        });
+      }
+      return Promise.resolve({});
+    });
     context = {
       input: {
         options: {
