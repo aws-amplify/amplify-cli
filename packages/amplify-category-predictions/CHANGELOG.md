@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.24](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.23...@aws-amplify/amplify-category-predictions@5.5.24) (2025-10-08)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-predictions
+
+
+
+
+
 ## [5.5.23](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-predictions@5.5.22...@aws-amplify/amplify-category-predictions@5.5.23) (2025-09-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-predictions
