@@ -57,7 +57,7 @@ class CloudFormation {
         userAgentParam = formUserAgentParam(context, userAgentAction);
       }
 
-      this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
+      this.pollQueue = new BottleNeck({ minTime: 500, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
       this.pollQueueStacks = [];
       this.stackEvents = [];
       let cred;
@@ -75,6 +75,8 @@ class CloudFormation {
         ...cred,
         ...options,
         ...userAgentOption,
+        retryMode: 'adaptive',
+        maxAttempts: 10,
         requestHandler: new NodeHttpHandler({
           httpAgent: proxyAgent(),
           httpsAgent: proxyAgent(),
@@ -608,21 +610,12 @@ class CloudFormation {
     }
   }
 
-  async describeStack(cfnNestedStackParams, maxTry = 10, timeout = CFN_POLL_TIME) {
+  async describeStack(cfnNestedStackParams) {
     const cfnModel = this.cfn;
     const log = logger('describeStack.cfn.describeStacks', [cfnNestedStackParams]);
-    try {
-      log();
-      const result = await cfnModel.send(new DescribeStacksCommand(cfnNestedStackParams));
-      return result;
-    } catch (e) {
-      log(e);
-      if (e.name === 'Throttling' && e.retryable && maxTry > 0) {
-        await new Promise((resolve) => setTimeout(resolve, timeout));
-        return this.describeStack(cfnNestedStackParams, maxTry - 1, timeout);
-      }
-      throw e;
-    }
+    log();
+    const result = await cfnModel.send(new DescribeStacksCommand(cfnNestedStackParams));
+    return result;
   }
 
   async listStackResources(stackId) {
