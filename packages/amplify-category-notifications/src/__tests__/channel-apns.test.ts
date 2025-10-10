@@ -17,7 +17,7 @@ jest.mock('../apns-cert-config');
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
-const mockPinpointClient = mockClient(PinpointClient as any);
+const mockPinpointClient = mockClient(PinpointClient);
 
 class NoErrorThrownError extends Error {}
 // wrapper to avoid conditional error checks
@@ -48,8 +48,20 @@ describe('channel-APNS', () => {
   mockServiceOutput[channelName] = mockChannelOutput;
 
   const mockPinpointResponseErr = new Error('channel-APNS.test.js error');
-  const mockPinpointResponseData = {
-    APNSChannelResponse: { Enabled: true, ApplicationId: 'test-app-id' },
+  const mockApnsChannelResponseData = {
+    APNSChannelResponse: {
+      Enabled: true,
+      ApplicationId: 'test-app-id',
+      Platform: 'APNS' as const,
+    },
+  };
+
+  const mockApnsSandboxChannelResponseData = {
+    APNSSandboxChannelResponse: {
+      Enabled: true,
+      ApplicationId: 'test-app-id',
+      Platform: 'APNS_SANDBOX' as const,
+    },
   };
 
   const mockAPNSChannelResponseData = (status: boolean, action: ChannelAction, output: $TSAny): IChannelAPIResponse => ({
@@ -74,7 +86,7 @@ describe('channel-APNS', () => {
       serviceMeta: {
         output: mockServiceOutput,
       },
-      pinpointClient: mockPinpointClient as any,
+      pinpointClient: mockPinpointClient as unknown as PinpointClient,
     },
     print: {
       info: jest.fn(),
@@ -96,73 +108,73 @@ describe('channel-APNS', () => {
   });
 
   test('configure', async () => {
-    mockPinpointClient.on(UpdateApnsChannelCommand as any).resolves(mockPinpointResponseData as any);
-    mockPinpointClient.on(UpdateApnsSandboxChannelCommand as any).resolves(mockPinpointResponseData as any);
+    mockPinpointClient.on(UpdateApnsChannelCommand).resolves(mockApnsChannelResponseData);
+    mockPinpointClient.on(UpdateApnsSandboxChannelCommand).resolves(mockApnsSandboxChannelResponseData);
 
     mockChannelOutput.Enabled = true;
     prompterMock.yesOrNo.mockResolvedValueOnce(true);
     await channelAPNS.configure(mockContext);
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
 
     mockChannelOutput.Enabled = true;
     prompterMock.yesOrNo.mockResolvedValueOnce(false);
     prompterMock.pick.mockResolvedValueOnce('Certificate');
     await channelAPNS.configure(mockContext);
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
 
     mockChannelOutput.Enabled = false;
     prompterMock.yesOrNo.mockResolvedValueOnce(true);
     prompterMock.pick.mockResolvedValueOnce('Certificate');
     await channelAPNS.configure(mockContext);
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
   });
 
   test('enable', async () => {
-    mockPinpointClient.on(UpdateApnsChannelCommand as any).resolves(mockPinpointResponseData as any);
-    mockPinpointClient.on(UpdateApnsSandboxChannelCommand as any).resolves(mockPinpointResponseData as any);
+    mockPinpointClient.on(UpdateApnsChannelCommand).resolves(mockApnsChannelResponseData);
+    mockPinpointClient.on(UpdateApnsSandboxChannelCommand).resolves(mockApnsSandboxChannelResponseData);
 
     prompterMock.pick.mockResolvedValueOnce('Certificate');
     const disableData = await channelAPNS.enable(mockContext, 'successMessage');
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsSandboxChannelCommand as any);
-    expect(disableData).toEqual(mockAPNSChannelResponseData(true, ChannelAction.ENABLE, mockPinpointResponseData.APNSChannelResponse));
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsSandboxChannelCommand);
+    expect(disableData).toEqual(mockAPNSChannelResponseData(true, ChannelAction.ENABLE, mockApnsChannelResponseData.APNSChannelResponse));
 
     prompterMock.pick.mockResolvedValueOnce('Key');
     const enableData = await channelAPNS.enable(mockContext, 'successMessage');
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsSandboxChannelCommand as any);
-    expect(enableData).toEqual(mockAPNSChannelResponseData(true, ChannelAction.ENABLE, mockPinpointResponseData.APNSChannelResponse));
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsSandboxChannelCommand);
+    expect(enableData).toEqual(mockAPNSChannelResponseData(true, ChannelAction.ENABLE, mockApnsChannelResponseData.APNSChannelResponse));
   });
 
   test('enable unsuccessful', async () => {
-    mockPinpointClient.on(UpdateApnsChannelCommand as any).rejects(mockPinpointResponseErr);
+    mockPinpointClient.on(UpdateApnsChannelCommand).rejects(mockPinpointResponseErr);
 
     prompterMock.pick.mockResolvedValueOnce('Certificate');
     const errCert: AmplifyFault = await getError(async () => channelAPNS.enable(mockContext, 'successMessage'));
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
     expect(errCert?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
 
     prompterMock.pick.mockResolvedValueOnce('Key');
     const errKey: AmplifyFault = await getError(async () => channelAPNS.enable(mockContext, 'successMessage'));
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
     expect(errKey?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
   });
 
   test('disable', async () => {
-    mockPinpointClient.on(UpdateApnsChannelCommand as any).resolves(mockPinpointResponseData as any);
-    mockPinpointClient.on(UpdateApnsSandboxChannelCommand as any).resolves(mockPinpointResponseData as any);
+    mockPinpointClient.on(UpdateApnsChannelCommand).resolves(mockApnsChannelResponseData);
+    mockPinpointClient.on(UpdateApnsSandboxChannelCommand).resolves(mockApnsSandboxChannelResponseData);
 
     const data = await channelAPNS.disable(mockContext);
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsSandboxChannelCommand as any);
-    expect(data).toEqual(mockAPNSChannelResponseData(true, ChannelAction.DISABLE, mockPinpointResponseData.APNSChannelResponse));
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsSandboxChannelCommand);
+    expect(data).toEqual(mockAPNSChannelResponseData(true, ChannelAction.DISABLE, mockApnsChannelResponseData.APNSChannelResponse));
   });
 
   test('disable unsuccessful', async () => {
-    mockPinpointClient.on(UpdateApnsChannelCommand as any).rejects(mockPinpointResponseErr);
+    mockPinpointClient.on(UpdateApnsChannelCommand).rejects(mockPinpointResponseErr);
 
     const errKey: AmplifyFault = await getError(async () => channelAPNS.disable(mockContext));
-    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand as any);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateApnsChannelCommand);
     expect(errKey?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
   });
 });

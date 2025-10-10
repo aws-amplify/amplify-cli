@@ -18,6 +18,7 @@ const RUN_SOLO = [
   'src/__tests__/function_2a.test.ts',
   'src/__tests__/geo-add-d.test.ts',
   'src/__tests__/geo-add-e.test.ts',
+  'src/__tests__/migration/api.key.migration5.test.ts',
   'src/__tests__/geo-add-f.test.ts',
   'src/__tests__/geo-remove-1.test.ts',
   'src/__tests__/geo-remove-2.test.ts',

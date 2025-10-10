@@ -22,7 +22,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
-const mockPinpointClient = mockClient(PinpointClient as any);
+const mockPinpointClient = mockClient(PinpointClient);
 
 const mockPinpointResponseData = (status: boolean, action: ChannelAction, output: any): IChannelAPIResponse => ({
   action,
@@ -44,7 +44,7 @@ const mockContext = (output: $TSAny): $TSContext =>
       serviceMeta: {
         output,
       },
-      pinpointClient: mockPinpointClient as any,
+      pinpointClient: mockPinpointClient as unknown as PinpointClient,
     },
     print: {
       info: jest.fn(),
@@ -53,21 +53,25 @@ const mockContext = (output: $TSAny): $TSContext =>
   } as unknown as $TSContext);
 
 describe('channel-Email', () => {
-  const mockEmailChannelResponse = { Enabled: true, ApplicationId: 'test-app-id' };
+  const mockEmailChannelResponse = {
+    Enabled: true,
+    ApplicationId: 'test-app-id',
+    Platform: 'EMAIL' as const,
+  };
 
   beforeEach(() => {
     mockPinpointClient.reset();
   });
 
   test('enable should store role arn', async () => {
-    mockPinpointClient.on(UpdateEmailChannelCommand as any).resolves({ EmailChannelResponse: mockEmailChannelResponse } as any);
+    mockPinpointClient.on(UpdateEmailChannelCommand).resolves({ EmailChannelResponse: mockEmailChannelResponse });
     prompterMock.input.mockResolvedValueOnce('fake@email.com');
     prompterMock.input.mockResolvedValueOnce('fake:arn:identity');
     prompterMock.input.mockResolvedValueOnce('fake:arn:role');
 
     const mockContextObj = mockContext({ Enabled: true });
     const data = await channelEmail.enable(mockContextObj, 'successMessage');
-    expect(mockPinpointClient).toHaveReceivedCommandWith(UpdateEmailChannelCommand as any, {
+    expect(mockPinpointClient).toHaveReceivedCommandWith(UpdateEmailChannelCommand, {
       ApplicationId: undefined,
       EmailChannelRequest: {
         FromAddress: 'fake@email.com',
