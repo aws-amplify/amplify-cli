@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.12-rc.53e973b0659ebad.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.11...@aws-amplify/amplify-provider-awscloudformation@8.11.12-rc.53e973b0659ebad.0) (2025-10-10)
+
+
+### Bug Fixes
+
+* `amplify codegen` command ([#14277](https://github.com/aws-amplify/amplify-cli/issues/14277)) ([53e973b](https://github.com/aws-amplify/amplify-cli/commit/53e973b0659ebad2728b82ed38e0adea6071aa59))
+
+
+
+
+
 ## [8.11.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-provider-awscloudformation@8.11.10...@aws-amplify/amplify-provider-awscloudformation@8.11.11) (2025-10-08)
 
 **Note:** Version bump only for package @aws-amplify/amplify-provider-awscloudformation
