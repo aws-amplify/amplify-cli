@@ -37,7 +37,7 @@ const { getStatusToErrorMsg, collectStackErrorMessages } = require('./cloudforma
 const { printer } = require('@aws-amplify/amplify-prompts');
 const { proxyAgent } = require('./aws-globals');
 
-const CFN_MAX_CONCURRENT_REQUEST = 5;
+const CFN_MAX_CONCURRENT_REQUEST = 2; // Throttle rate limit for a lot of Cloudformation operations is 2 per second: https://docs.aws.amazon.com/general/latest/gr/cfn.html
 const CFN_POLL_TIME = (process.env.IS_AMPLIFY_CI ? 30 : 5) * 1000; // 5 secs wait to check if  new stacks are created by root stack
 const CFN_POLL_TIME_MAX = (process.env.IS_AMPLIFY_CI ? 120 : 30) * 1000; // 30 seconds
 let CFNLOG = [];
@@ -110,7 +110,7 @@ class CloudFormation {
       throw createErr;
     }
     try {
-      await waitUntilStackCreateComplete({ client: cfnModel }, cfnStackCheckParams);
+      await waitUntilStackCreateComplete({ client: cfnModel, maxWaitTime: 1800 }, cfnStackCheckParams);
 
       if (self.pollForEvents) {
         clearTimeout(self.pollForEvents);
