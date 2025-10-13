@@ -481,10 +481,13 @@ const deleteApp = async (context: $TSContext, pinpointAppId: string): Promise<$T
     const data = await pinpointClient.send(new DeleteAppCommand(params));
     spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse?.Name || params.ApplicationId}`);
     if (data.ApplicationResponse) {
-      return data.ApplicationResponse;
+      return {
+        ...data.ApplicationResponse,
+        Region: pinpointClient.config.region as any,
+      };
     }
     return { Id: params.ApplicationId };
-    // Removed region property assignment due to changes in sdk v3 ApplicationResponse interface
+    // Keep region assignment as any due to changes in SDK v3 ApplicationResponse interface
   } catch (err: any) {
     if (err.name === 'NotFoundException') {
       spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
