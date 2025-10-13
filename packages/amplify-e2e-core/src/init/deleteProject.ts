@@ -19,8 +19,6 @@ export const deleteProject = async (
     await retry(
       () => describeCloudFormationStack(stackName, region, profileConfig),
       (stack) => stack.StackStatus.endsWith('_COMPLETE') || stack.StackStatus.endsWith('_FAILED'),
-      { timeoutMS: 1000 * 60 * 15 },
-      (stack) => stack.StackStatus.includes('_IN_PROGRESS'), // Treat stuck in-progress states as failed
     );
 
     await spawn(getCLIPath(usingLatestCodebase), ['delete'], { cwd, stripColors: true, noOutputTimeout })
