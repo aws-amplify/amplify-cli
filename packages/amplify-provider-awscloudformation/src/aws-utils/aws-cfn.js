@@ -57,7 +57,7 @@ class CloudFormation {
         userAgentParam = formUserAgentParam(context, userAgentAction);
       }
 
-      this.pollQueue = new BottleNeck({ minTime: 500, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
+      this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
       this.pollQueueStacks = [];
       this.stackEvents = [];
       let cred;

@@ -82,6 +82,8 @@ export class S3 {
     this.s3 = new S3Client({
       ...cred,
       ...options,
+      retryMode: 'adaptive',
+      maxAttempts: 10,
       requestHandler: new NodeHttpHandler({
         httpAgent: proxyAgent(),
         httpsAgent: proxyAgent(),

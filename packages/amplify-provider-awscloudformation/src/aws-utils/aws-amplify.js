@@ -29,6 +29,8 @@ async function getConfiguredAmplifyClient(context, options = {}) {
       httpAgent: proxyAgent(),
       httpsAgent: proxyAgent(),
     }),
+    maxAttempts: 10,
+    retryMode: 'adaptive',
   };
 
   // this is the "project" config level case, creds and region are explicitly set or retrieved from a profile
