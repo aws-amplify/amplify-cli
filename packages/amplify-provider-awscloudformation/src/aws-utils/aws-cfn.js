@@ -57,7 +57,7 @@ class CloudFormation {
         userAgentParam = formUserAgentParam(context, userAgentAction);
       }
 
-      this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
+      this.pollQueue = new BottleNeck({ minTime: 500, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
       this.pollQueueStacks = [];
       this.stackEvents = [];
       let cred;
@@ -75,7 +75,7 @@ class CloudFormation {
         ...cred,
         ...options,
         ...userAgentOption,
-        retryMode: 'adaptive',
+        retryMode: 'standard',
         maxAttempts: 10,
         requestHandler: new NodeHttpHandler({
           httpAgent: proxyAgent(),
@@ -541,15 +541,13 @@ class CloudFormation {
     }
 
     if (resources.length > 0) {
-      const promises = [];
-
-      for (let i = 0; i < resources.length; i++) {
-        const cfnNestedStackParams = {
-          StackName: resources[i].PhysicalResourceId,
-        };
-
-        promises.push(this.describeStack(cfnNestedStackParams));
-      }
+      const promises = resources.map((resource) =>
+        this.pollQueue.schedule(() =>
+          this.describeStack({ StackName: resource.PhysicalResourceId }).catch((err) => {
+            console.warn(`Failed to get information from stack ${resource.PhysicalResourceId}:`, err.message);
+          }),
+        ),
+      );
 
       const stackResult = await Promise.all(promises);
 
