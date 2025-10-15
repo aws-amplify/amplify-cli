@@ -37,7 +37,7 @@ const { getStatusToErrorMsg, collectStackErrorMessages } = require('./cloudforma
 const { printer } = require('@aws-amplify/amplify-prompts');
 const { proxyAgent } = require('./aws-globals');
 
-const CFN_MAX_CONCURRENT_REQUEST = 2; // Throttle rate limit for a lot of Cloudformation operations is 2 per second: https://docs.aws.amazon.com/general/latest/gr/cfn.html
+const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = (process.env.IS_AMPLIFY_CI ? 30 : 5) * 1000; // 5 secs wait to check if  new stacks are created by root stack
 const CFN_POLL_TIME_MAX = (process.env.IS_AMPLIFY_CI ? 120 : 30) * 1000; // 30 seconds
 let CFNLOG = [];
@@ -57,7 +57,7 @@ class CloudFormation {
         userAgentParam = formUserAgentParam(context, userAgentAction);
       }
 
-      this.pollQueue = new BottleNeck({ minTime: 500, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
+      this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
       this.pollQueueStacks = [];
       this.stackEvents = [];
       let cred;
@@ -75,8 +75,6 @@ class CloudFormation {
         ...cred,
         ...options,
         ...userAgentOption,
-        retryMode: 'standard',
-        maxAttempts: 10,
         requestHandler: new NodeHttpHandler({
           httpAgent: proxyAgent(),
           httpsAgent: proxyAgent(),
@@ -110,7 +108,7 @@ class CloudFormation {
       throw createErr;
     }
     try {
-      await waitUntilStackCreateComplete({ client: cfnModel, maxWaitTime: 1800 }, cfnStackCheckParams);
+      await waitUntilStackCreateComplete({ client: cfnModel }, cfnStackCheckParams);
 
       if (self.pollForEvents) {
         clearTimeout(self.pollForEvents);
@@ -334,7 +332,7 @@ class CloudFormation {
       return events;
     } catch (e) {
       log(e);
-      if (e && (e.name === 'Throttling' || e.name === 'ThrottlingException')) {
+      if (e && e.name === 'Throttling') {
         return [];
       }
       throw e;
@@ -541,13 +539,15 @@ class CloudFormation {
     }
 
     if (resources.length > 0) {
-      const promises = resources.map((resource) =>
-        this.pollQueue.schedule(() =>
-          this.describeStack({ StackName: resource.PhysicalResourceId }).catch((err) => {
-            console.warn(`Failed to get information from stack ${resource.PhysicalResourceId}:`, err.message);
-          }),
-        ),
-      );
+      const promises = [];
+
+      for (let i = 0; i < resources.length; i++) {
+        const cfnNestedStackParams = {
+          StackName: resources[i].PhysicalResourceId,
+        };
+
+        promises.push(this.describeStack(cfnNestedStackParams));
+      }
 
       const stackResult = await Promise.all(promises);
 
@@ -617,7 +617,7 @@ class CloudFormation {
       return result;
     } catch (e) {
       log(e);
-      if ((e.name === 'Throttling' || e.name === 'ThrottlingException') && e.$retryable.throttling && maxTry > 0) {
+      if (e.name === 'Throttling' && maxTry > 0) {
         await new Promise((resolve) => setTimeout(resolve, timeout));
         return this.describeStack(cfnNestedStackParams, maxTry - 1, timeout);
       }

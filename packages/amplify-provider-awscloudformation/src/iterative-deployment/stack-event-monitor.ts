@@ -146,7 +146,7 @@ export class StackEventMonitor {
       if (e.name === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }
-      if (e.name !== 'Throttling' || e.name === 'ThrottlingException') {
+      if (e.name !== 'Throttling') {
         throw new AmplifyFault(
           'NotImplementedFault',
           {
