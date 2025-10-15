@@ -349,9 +349,12 @@ module.exports = {
             format: 'JSON',
           },
         ])();
-        return appSyncModel.appSync.send(GetIntrospectionSchemaCommand({ apiId: options.apiId, format: 'JSON' }));
+        return appSyncModel.appSync.send(new GetIntrospectionSchemaCommand({ apiId: options.apiId, format: 'JSON' }));
       })
-      .then((result) => result.schema.toString() || null);
+      .then((result) => {
+        const schema = new TextDecoder('utf-8').decode(result.schema);
+        return schema || null;
+      });
   },
   /**
    *
