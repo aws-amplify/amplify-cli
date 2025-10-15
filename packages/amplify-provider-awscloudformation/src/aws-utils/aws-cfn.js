@@ -334,7 +334,7 @@ class CloudFormation {
       return events;
     } catch (e) {
       log(e);
-      if (e && e.name === 'Throttling') {
+      if (e && (e.name === 'Throttling' || e.name === 'ThrottlingException')) {
         return [];
       }
       throw e;
@@ -608,12 +608,21 @@ class CloudFormation {
     }
   }
 
-  async describeStack(cfnNestedStackParams) {
+  async describeStack(cfnNestedStackParams, maxTry = 10, timeout = CFN_POLL_TIME) {
     const cfnModel = this.cfn;
     const log = logger('describeStack.cfn.describeStacks', [cfnNestedStackParams]);
-    log();
-    const result = await cfnModel.send(new DescribeStacksCommand(cfnNestedStackParams));
-    return result;
+    try {
+      log();
+      const result = await cfnModel.send(new DescribeStacksCommand(cfnNestedStackParams));
+      return result;
+    } catch (e) {
+      log(e);
+      if ((e.name === 'Throttling' || e.name === 'ThrottlingException') && e.$retryable.throttling && maxTry > 0) {
+        await new Promise((resolve) => setTimeout(resolve, timeout));
+        return this.describeStack(cfnNestedStackParams, maxTry - 1, timeout);
+      }
+      throw e;
+    }
   }
 
   async listStackResources(stackId) {
