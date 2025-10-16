@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-util-mock",
-  "version": "5.10.20",
+  "version": "5.10.21-rc.f461d5fc669822b.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "@aws-amplify/amplify-environment-parameters": "1.9.21",
     "@aws-amplify/amplify-opensearch-simulator": "1.7.21",
     "@aws-amplify/amplify-prompts": "2.8.7",
-    "@aws-amplify/amplify-provider-awscloudformation": "8.11.12",
+    "@aws-amplify/amplify-provider-awscloudformation": "8.11.13-rc.f461d5fc669822b.0",
     "@hapi/topo": "^5.0.0",
     "amplify-codegen": "^4.10.3",
     "amplify-dynamodb-simulator": "2.9.25",
