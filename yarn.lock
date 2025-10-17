@@ -333,14 +333,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@aws-amplify/amplify-category-notifications@2.26.36, @aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
+"@aws-amplify/amplify-category-notifications@npm:2.26.36":
+  version: 2.26.36
+  resolution: "@aws-amplify/amplify-category-notifications@npm:2.26.36"
+  dependencies:
+    "@aws-amplify/amplify-cli-core": 4.4.3
+    "@aws-amplify/amplify-environment-parameters": 1.9.21
+    "@aws-amplify/amplify-prompts": 2.8.7
+    "@aws-amplify/amplify-provider-awscloudformation": 8.11.12
+    aws-sdk: ^2.1464.0
+    chalk: ^4.1.1
+    fs-extra: ^8.1.0
+    lodash: ^4.17.21
+    ora: ^4.0.3
+    promise-sequential: ^1.1.1
+    proxy-agent: ^6.3.0
+  checksum: 0b2ae2119dde9da7a6f0b52deceb6ee0895c3c6123388ab4350cad2228bce52584e6055cee15fb0c5b4accc57cf82544b853fb9ce82654e60b3b7e14d3bed63e
+  languageName: node
+  linkType: hard
+
+"@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications":
   version: 0.0.0-use.local
   resolution: "@aws-amplify/amplify-category-notifications@workspace:packages/amplify-category-notifications"
   dependencies:
     "@aws-amplify/amplify-cli-core": 4.4.3
     "@aws-amplify/amplify-environment-parameters": 1.9.21
     "@aws-amplify/amplify-prompts": 2.8.7
-    "@aws-amplify/amplify-provider-awscloudformation": 8.11.12
+    "@aws-amplify/amplify-provider-awscloudformation": 8.11.13
     "@aws-sdk/client-iam": ^3.901.0
     "@aws-sdk/client-pinpoint": ^3.901.0
     "@smithy/node-http-handler": ^4.3.0
@@ -885,6 +904,81 @@ __metadata:
     xstate: 4.26.1
   languageName: unknown
   linkType: soft
+
+"@aws-amplify/amplify-provider-awscloudformation@npm:8.11.13":
+  version: 8.11.13
+  resolution: "@aws-amplify/amplify-provider-awscloudformation@npm:8.11.13"
+  dependencies:
+    "@aws-amplify/amplify-category-custom": 3.1.30
+    "@aws-amplify/amplify-cli-core": 4.4.3
+    "@aws-amplify/amplify-cli-logger": 1.3.8
+    "@aws-amplify/amplify-environment-parameters": 1.9.21
+    "@aws-amplify/amplify-prompts": 2.8.7
+    "@aws-amplify/amplify-util-import": 2.8.5
+    "@aws-amplify/cli-extensibility-helper": 3.0.40
+    "@aws-amplify/graphql-transformer-core": ^2.11.2
+    "@aws-amplify/graphql-transformer-interfaces": ^3.12.1
+    "@aws-sdk/client-amplify": ^3.624.0
+    "@aws-sdk/client-api-gateway": ^3.624.0
+    "@aws-sdk/client-appsync": ^3.624.0
+    "@aws-sdk/client-cloudformation": ^3.624.0
+    "@aws-sdk/client-cognito-identity": ^3.624.0
+    "@aws-sdk/client-cognito-identity-provider": ^3.624.0
+    "@aws-sdk/client-dynamodb": ^3.624.0
+    "@aws-sdk/client-ec2": ^3.624.0
+    "@aws-sdk/client-ecr": ^3.624.0
+    "@aws-sdk/client-iam": ^3.624.0
+    "@aws-sdk/client-lambda": ^3.624.0
+    "@aws-sdk/client-lex-model-building-service": ^3.624.0
+    "@aws-sdk/client-location": ^3.624.0
+    "@aws-sdk/client-polly": ^3.624.0
+    "@aws-sdk/client-route-53": ^3.624.0
+    "@aws-sdk/client-s3": ^3.624.0
+    "@aws-sdk/client-sagemaker": ^3.624.0
+    "@aws-sdk/client-secrets-manager": ^3.624.0
+    "@aws-sdk/client-sns": ^3.624.0
+    "@aws-sdk/client-ssm": ^3.624.0
+    "@aws-sdk/client-sts": ^3.624.0
+    "@aws-sdk/credential-provider-node": ^3.624.0
+    "@aws-sdk/credential-providers": ^3.624.0
+    "@aws-sdk/lib-dynamodb": ^3.624.0
+    "@aws-sdk/lib-storage": ^3.624.0
+    "@aws-sdk/s3-request-presigner": ^3.624.0
+    "@aws-sdk/types": ^3.624.0
+    "@smithy/node-http-handler": ^4.1.0
+    amplify-codegen: ^4.10.3
+    archiver: ^7.0.1
+    aws-cdk-lib: ~2.189.1
+    aws-sdk: ^2.1464.0
+    bottleneck: 2.19.5
+    chalk: ^4.1.1
+    cloudform-types: ^4.2.0
+    columnify: ^1.5.4
+    constructs: ^10.0.5
+    cors: ^2.8.5
+    deep-diff: ^1.0.2
+    folder-hash: ^4.0.2
+    fs-extra: ^8.1.0
+    glob: ^11.0.1
+    graphql: ^15.5.0
+    graphql-transformer-core: ^8.2.17
+    ignore: ^5.2.0
+    ini: ^1.3.5
+    inquirer: ^7.3.3
+    is-wsl: ^2.2.0
+    jose: ^4.15.5
+    lodash: ^4.17.21
+    lodash.throttle: ^4.1.1
+    netmask: ^2.0.2
+    node-fetch: ^2.6.7
+    ora: ^4.0.3
+    promise-sequential: ^1.1.1
+    proxy-agent: ^6.3.0
+    rimraf: ^6.0.1
+    xstate: ^4.14.0
+  checksum: fb00826398b9c86f480d26f504676d8c40d64da5732c1fbe86ea6629848b97c2d0ea9b90b049e2e3811952f2df92aeafbbe7cc2ca8445a7cbb144185f93241f8
+  languageName: node
+  linkType: hard
 
 "@aws-amplify/amplify-python-function-template-provider@1.4.8, @aws-amplify/amplify-python-function-template-provider@workspace:packages/amplify-python-function-template-provider":
   version: 0.0.0-use.local
@@ -34803,6 +34897,13 @@ __metadata:
   version: 4.26.1
   resolution: "xstate@npm:4.26.1"
   checksum: f221af3400a9c19de4eb6c0b0080364b63a3a352b1af0965b54855a6a41d13a3e104878267ea5f19be8ecbb318559b0930237de68c20b065d58112d7ec23ea78
+  languageName: node
+  linkType: hard
+
+"xstate@npm:^4.14.0":
+  version: 4.38.3
+  resolution: "xstate@npm:4.38.3"
+  checksum: 8a2063743517390107275113bca0e757dba99102e7d57d40cf656b5cc03a6f2c5e10fbf3752294d9d29fbe1d8757bb9a54f54c934a22f205a237956dd10dcd0f
   languageName: node
   linkType: hard
 
