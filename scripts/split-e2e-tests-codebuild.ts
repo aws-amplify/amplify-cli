@@ -232,7 +232,8 @@ const splitTestsV3 = (
       let maxWorkers = os === 'w' ? MAX_WORKERS_WINDOWS : MAX_WORKERS;
       if (os === 'l' && (RUN_DUO.find((duo) => test === duo) || currentJob.tests.some((duo) => RUN_DUO.includes(duo)))) {
         maxWorkers = 2;
-        // if a job already has 2 tests, set up a new job - this will mean some jobs that can run as 3 will be running as 2
+        // if we had a test that requires it is in a job with only 2 tests and a job already has 2 tests, set up a new job
+        // this may mean there will occasionally be jobs that can run with 3 tests will be running with 2
         if (currentJob.tests.length === maxWorkers) {
           osJobs.push(createRandomJob(os));
           currentJob = osJobs[osJobs.length - 1];
