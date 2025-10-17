@@ -617,7 +617,7 @@ class CloudFormation {
       return result;
     } catch (e) {
       log(e);
-      if (e.name === 'Throttling' && e.retryable && maxTry > 0) {
+      if (e.name === 'Throttling' && maxTry > 0) {
         await new Promise((resolve) => setTimeout(resolve, timeout));
         return this.describeStack(cfnNestedStackParams, maxTry - 1, timeout);
       }
