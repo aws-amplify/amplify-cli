@@ -65,6 +65,17 @@ export {
 } from './utils/ssm-utils/env-parameter-ssm-helpers';
 export { AwsSdkConfig } from './utils/auth-types';
 
+// Drift detection exports
+export { detectStackDrift } from './drift-detection/detect-stack-drift';
+export {
+  DriftFormatter,
+  type DriftFormatterProps,
+  type DriftFormatterOutput,
+  type CloudFormationTemplate,
+} from './drift-detection/drift-formatter';
+import { detectStackDrift } from './drift-detection/detect-stack-drift';
+import { DriftFormatter } from './drift-detection/drift-formatter';
+
 function init(context) {
   return initializer.run(context);
 }
@@ -228,4 +239,6 @@ module.exports = {
   formUserAgentParam,
   loadConfiguration,
   resolveRegion,
+  detectStackDrift,
+  DriftFormatter,
 };
