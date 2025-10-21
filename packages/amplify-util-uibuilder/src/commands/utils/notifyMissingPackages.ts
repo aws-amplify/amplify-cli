@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import rangeSubset from 'semver/ranges/subset';
 import { extractArgs } from './extractArgs';
-import { CodegenDependencies } from 'aws-sdk/clients/amplifyuibuilder';
+import { CodegenDependency } from '@aws-sdk/client-amplifyuibuilder';
 
 type PackageJson = { dependencies: { [key: string]: string } };
 
@@ -55,7 +55,7 @@ export const getStartCodegenJobDependencies = (packageJsonFile: PackageJson) => 
 export const notifyMissingPackages = (
   context: $TSContext,
   hasStorageManagerField?: boolean,
-  dependencies?: CodegenDependencies | undefined,
+  dependencies?: CodegenDependency[] | undefined,
 ): void => {
   const packageJson = parsePackageJsonFile(context);
   if (!packageJson) {
@@ -66,9 +66,9 @@ export const notifyMissingPackages = (
   // don't warn about the storage dependency if the project doesn't need it
   const dependenciesToCheck = hasStorageManagerField
     ? dependencies
-    : dependencies?.filter((dependency) => dependency.name !== '@aws-amplify/ui-react-storage');
+    : dependencies?.filter((dependency: CodegenDependency) => dependency.name !== '@aws-amplify/ui-react-storage');
 
-  dependenciesToCheck?.forEach((dependency) => {
+  dependenciesToCheck?.forEach((dependency: CodegenDependency) => {
     const packageIsInstalled = Object.keys(packageJson.dependencies).includes(`${dependency.name}`);
     if (!packageIsInstalled) {
       printer.warn(
