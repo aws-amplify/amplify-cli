@@ -3,7 +3,7 @@ import { AmplifyStudioClient } from '../../clients';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { getUiBuilderComponentsPath } from './getUiBuilderComponentsPath';
 import { getCodegenConfig } from 'amplify-codegen';
-import { ApiConfiguration } from 'aws-sdk/clients/amplifyuibuilder';
+import { ApiConfiguration } from '@aws-sdk/client-amplifyuibuilder';
 import path from 'path';
 
 //a posix formatted relative path must always be returned as the return values are used directly in jsx files as import paths
