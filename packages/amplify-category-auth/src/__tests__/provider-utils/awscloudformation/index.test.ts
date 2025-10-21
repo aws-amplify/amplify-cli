@@ -19,8 +19,41 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 // mock fns
 const pluginInstanceMock = jest.fn();
 const loadResourceParametersMock = jest.fn().mockReturnValue({
-  hostedUIProviderMeta:
-    '[{"ProviderName":"Facebook","authorize_scopes":"email,public_profile","AttributeMapping":{"email":"email","username":"id"}},{"ProviderName":"LoginWithAmazon","authorize_scopes":"profile profile:user_id","AttributeMapping":{"email":"email","username":"user_id"}},{"ProviderName":"Google","authorize_scopes":"openid email profile","AttributeMapping":{"email":"email","username":"sub"}},{"ProviderName":"SignInWithApple","authorize_scopes":"openid email profile","AttributeMapping":{"email":"email","username":"sub"}}]',
+  thirdPartyAuth: true, // enable third party auth, but do not include any authProviders. Should not fail.
+  hostedUIProviderMeta: JSON.stringify([
+    {
+      ProviderName: 'Facebook',
+      authorize_scopes: 'email,public_profile',
+      AttributeMapping: {
+        email: 'email',
+        username: 'id',
+      },
+    },
+    {
+      ProviderName: 'LoginWithAmazon',
+      authorize_scopes: 'profile profile:user_id',
+      AttributeMapping: {
+        email: 'email',
+        username: 'user_id',
+      },
+    },
+    {
+      ProviderName: 'Google',
+      authorize_scopes: 'openid email profile',
+      AttributeMapping: {
+        email: 'email',
+        username: 'sub',
+      },
+    },
+    {
+      ProviderName: 'SignInWithApple',
+      authorize_scopes: 'openid email profile',
+      AttributeMapping: {
+        email: 'email',
+        username: 'sub',
+      },
+    },
+  ]),
 });
 const pluginInstance = {
   loadResourceParameters: loadResourceParametersMock,
