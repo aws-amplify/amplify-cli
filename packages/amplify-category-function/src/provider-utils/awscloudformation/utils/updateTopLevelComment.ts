@@ -60,14 +60,13 @@ const secretsUsageFooter = `Parameters will be of the form { Name: 'secretName',
 const secretsUsageTemplate = (secretNames: string[]) =>
   `${secretsUsageHeader}
 
-const aws = require('aws-sdk');
+const { SSMClient, GetParametersCommand } = require('@aws-sdk/client-ssm');
 
-const { Parameters } = await (new aws.SSM())
-  .getParameters({
-    Names: ${JSON.stringify(secretNames)}.map(secretName => process.env[secretName]),
-    WithDecryption: true,
-  })
-  .promise();
+const client = new SSMClient();
+const { Parameters } = await client.send(new GetParametersCommand({
+  Names: ${JSON.stringify(secretNames)}.map(secretName => process.env[secretName]),
+  WithDecryption: true,
+}));
 
 ${secretsUsageFooter}`;
 

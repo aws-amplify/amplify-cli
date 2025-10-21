@@ -1,5 +1,17 @@
+// @aws-sdk/client-amplifybackend needs this, which we are accessing through AmplifyStudioClient
+const fs = require('fs');
+const { promisify } = require('util');
+
+if (!fs.promises) {
+  fs.promises = {
+    readFile: promisify(fs.readFile),
+    writeFile: promisify(fs.writeFile),
+    access: promisify(fs.access),
+  };
+}
+
+import { ExportComponentsCommand, ExportThemesCommand, ExportFormsCommand, GetMetadataCommand } from '@aws-sdk/client-amplifyuibuilder';
 import { AmplifyCategories, AmplifySupportedService, stateManager } from '@aws-amplify/amplify-cli-core';
-import aws from 'aws-sdk';
 import {
   getEnvName,
   getAppId,
@@ -31,7 +43,15 @@ jest.mock('@aws-amplify/amplify-category-api', () => ({
 jest.mock('fs');
 jest.mock('node-fetch');
 
-const awsMock = aws as any;
+const mockSend = jest.fn();
+
+jest.mock('@aws-sdk/client-amplifyuibuilder', () => ({
+  ...jest.requireActual('@aws-sdk/client-amplifyuibuilder'),
+  AmplifyUIBuilderClient: jest.fn().mockImplementation(() => ({
+    send: mockSend,
+  })),
+}));
+
 const stateManagerMock = stateManager as any;
 const isDataStoreEnabledMocked = jest.mocked(isDataStoreEnabled);
 const mockWriteFileSync = jest.mocked(writeFileSync);
@@ -71,6 +91,7 @@ describe('should sync amplify ui builder components', () => {
 
   beforeEach(() => {
     mockNodeFetch.mockReset();
+    mockSend.mockReset();
     process.env = { ...env };
 
     isDataStoreEnabledMocked.mockResolvedValue(true);
@@ -110,9 +131,9 @@ describe('should sync amplify ui builder components', () => {
       },
     }));
 
-    awsMock.AmplifyUIBuilder = jest.fn(() => ({
-      exportComponents: jest.fn(() => ({
-        promise: jest.fn(() => ({
+    mockSend.mockImplementation((command) => {
+      if (command instanceof ExportComponentsCommand) {
+        return Promise.resolve({
           entities: [
             {
               appId: 'd37nrm8rzt3oek', // eslint-disable-line spellcheck/spell-checker
@@ -126,15 +147,15 @@ describe('should sync amplify ui builder components', () => {
               variants: [],
             },
           ],
-        })),
-      })),
-      exportThemes: jest.fn(() => ({
-        promise: jest.fn(() => ({
+        });
+      }
+      if (command instanceof ExportThemesCommand) {
+        return Promise.resolve({
           entities: [{}],
-        })),
-      })),
-      exportForms: jest.fn(() => ({
-        promise: jest.fn(() => ({
+        });
+      }
+      if (command instanceof ExportFormsCommand) {
+        return Promise.resolve({
           entities: [
             {
               name: 'BasicFormCreate',
@@ -158,29 +179,10 @@ describe('should sync amplify ui builder components', () => {
               style: {},
             },
           ],
-        })),
-      })),
-      exportViews: jest.fn(() => ({
-        promise: jest.fn(() => ({
-          entities: [
-            {
-              appId: '23342',
-              dataSource: { type: 'Custom' },
-              environmentName: 'staging',
-              id: 'id',
-              name: 'ProductTable',
-              // TODO: replace with export when Codegen updated
-              schemaVersion: '1.0',
-              style: {},
-              viewConfiguration: {
-                type: 'Table',
-              },
-            },
-          ],
-        })),
-      })),
-      getMetadata: jest.fn(() => ({
-        promise: jest.fn(() => ({
+        });
+      }
+      if (command instanceof GetMetadataCommand) {
+        return Promise.resolve({
           features: {
             autoGenerateForms: 'true',
             autoGenerateViews: 'true',
@@ -189,9 +191,10 @@ describe('should sync amplify ui builder components', () => {
               isNonModelSupported: 'false',
             },
           },
-        })),
-      })),
-    }));
+        });
+      }
+      return Promise.resolve({});
+    });
   });
 
   afterEach(() => {
