@@ -1,4 +1,5 @@
-import aws from './aws.js';
+import { STSClient, GetCallerIdentityCommand, GetCallerIdentityCommandOutput } from '@aws-sdk/client-sts';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { loadConfiguration } from '../configuration-manager';
 import { $TSAny, $TSContext } from '@aws-amplify/amplify-cli-core';
 import { proxyAgent } from './aws-globals';
@@ -6,7 +7,7 @@ import { proxyAgent } from './aws-globals';
 export class STS {
   private static instance: STS;
   private readonly context: $TSContext;
-  private readonly sts: AWS.STS;
+  private readonly sts: STSClient;
 
   static async getInstance(context: $TSContext, options = {}): Promise<STS> {
     if (!STS.instance) {
@@ -24,16 +25,17 @@ export class STS {
 
   private constructor(context: $TSContext, cred: $TSAny, options = {}) {
     this.context = context;
-    this.sts = new aws.STS({
+    this.sts = new STSClient({
       ...cred,
-      options,
-      httpOptions: {
-        agent: proxyAgent(),
-      },
+      ...options,
+      requestHandler: new NodeHttpHandler({
+        httpAgent: proxyAgent(),
+        httpsAgent: proxyAgent(),
+      }),
     });
   }
 
-  async getCallerIdentity(): Promise<AWS.STS.GetCallerIdentityResponse> {
-    return await this.sts.getCallerIdentity().promise();
+  async getCallerIdentity(): Promise<GetCallerIdentityCommandOutput> {
+    return await this.sts.send(new GetCallerIdentityCommand({}));
   }
 }

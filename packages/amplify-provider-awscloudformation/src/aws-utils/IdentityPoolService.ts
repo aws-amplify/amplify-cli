@@ -22,7 +22,10 @@ export const createIdentityPoolService = async (context: $TSContext, options: $T
     // could not load credentials
   }
 
-  const cognitoIdentity = new CognitoIdentityClient({ ...credentials, ...options });
+  const cognitoIdentity = new CognitoIdentityClient({
+    ...credentials,
+    ...options,
+  });
 
   return new IdentityPoolService(cognitoIdentity);
 };

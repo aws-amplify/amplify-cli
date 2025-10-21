@@ -1,6 +1,7 @@
 const clientFactory = require('./client-factory');
 const Table = require('cli-table3');
 const { spinner } = require('@aws-amplify/amplify-cli-core');
+const { ListBranchesCommand, ListDomainAssociationsCommand } = require('@aws-sdk/client-amplify');
 
 async function generateTableContentForApp(context, appId) {
   spinner.start('Fetching AWS Amplify Console domains');
@@ -10,12 +11,12 @@ async function generateTableContentForApp(context, appId) {
   let nextToken = null;
   try {
     do {
-      const { branches } = await amplifyClient
-        .listBranches({
+      const { branches } = await amplifyClient.send(
+        new ListBranchesCommand({
           appId,
           nextToken,
-        })
-        .promise();
+        }),
+      );
 
       for (const branch of branches) {
         const { branchName, displayName } = branch;
@@ -27,12 +28,12 @@ async function generateTableContentForApp(context, appId) {
 
     nextToken = null;
     do {
-      const { domainAssociations } = await amplifyClient
-        .listDomainAssociations({
+      const { domainAssociations } = await amplifyClient.send(
+        new ListDomainAssociationsCommand({
           appId,
           nextToken,
-        })
-        .promise();
+        }),
+      );
 
       for (const domainAssociation of domainAssociations) {
         const { domainName, subDomains } = domainAssociation;

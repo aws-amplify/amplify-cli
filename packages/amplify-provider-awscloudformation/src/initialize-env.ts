@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import { globSync } from 'glob';
 import _ from 'lodash';
 import path from 'path';
+import { Readable } from 'stream';
 import Cloudformation from './aws-utils/aws-cfn';
 import { S3 } from './aws-utils/aws-s3';
 import { buildOverridesEnabledResources } from './build-override-enabled-resources';
@@ -10,6 +11,7 @@ import { S3BackendZipFileName } from './constants';
 import { fileLogger } from './utils/aws-logger';
 import { downloadZip, extractZip } from './zip-util';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
+import { text } from 'node:stream/consumers';
 
 const logger = fileLogger('initialize-env');
 
@@ -28,7 +30,7 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     try {
       currentCloudBackendZip = await downloadZip(s3, tempDir, S3BackendZipFileName, undefined);
     } catch (err) {
-      if (err?.code === 'NoSuchBucket') {
+      if (err?.name === 'NoSuchBucket') {
         throw new AmplifyError('EnvironmentNotInitializedError', {
           message: `Could not find a deployment bucket for the specified backend environment. This environment may have been deleted.`,
           resolution: 'Make sure the environment has been initialized with "amplify init" or "amplify env add".',
@@ -95,13 +97,12 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     //
 
     let hasMigratedResources = false;
-    const s3AmplifyMeta = JSONUtilities.parse(
-      (
-        await s3.getFile({
-          Key: PathConstants.AmplifyMetaFileName,
-        })
-      ).toString(),
-    );
+    // convert output of getFile from stream to string for parsing
+    const s3FileStream = await s3.getFile({
+      Key: PathConstants.AmplifyMetaFileName,
+    });
+    const s3FileString = await text(s3FileStream as Readable);
+    const s3AmplifyMeta = JSONUtilities.parse(s3FileString);
 
     Object.keys(s3AmplifyMeta)
       .filter((k) => k !== 'providers')

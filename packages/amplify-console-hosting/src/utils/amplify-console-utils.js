@@ -2,6 +2,13 @@ const { spinner } = require('@aws-amplify/amplify-cli-core');
 const fs = require('fs-extra');
 const fetch = require('node-fetch');
 const { ProxyAgent } = require('proxy-agent');
+const {
+  CreateDeploymentCommand,
+  GetJobCommand,
+  ListJobsCommand,
+  StartDeploymentCommand,
+  StopJobCommand,
+} = require('@aws-sdk/client-amplify');
 
 const DEPLOY_ARTIFACTS_MESSAGE = 'Deploying build artifacts to the Amplify Console..';
 const DEPLOY_COMPLETE_MESSAGE = 'Deployment complete!';
@@ -24,9 +31,9 @@ async function publishFileToAmplify(appId, branchName, artifactsPath, amplifyCli
       branchName,
     };
     await cancelAllPendingJob(appId, branchName, amplifyClient);
-    const { zipUploadUrl, jobId } = await amplifyClient.createDeployment(params).promise();
+    const { zipUploadUrl, jobId } = await amplifyClient.send(new CreateDeploymentCommand(params));
     await httpPutFile(artifactsPath, zipUploadUrl);
-    await amplifyClient.startDeployment({ ...params, jobId }).promise();
+    await amplifyClient.send(new StartDeploymentCommand({ ...params, jobId }));
     await waitJobToSucceed({ ...params, jobId }, amplifyClient);
     spinner.succeed(DEPLOY_COMPLETE_MESSAGE);
   } catch (err) {
@@ -40,12 +47,12 @@ async function cancelAllPendingJob(appId, branchName, amplifyClient) {
     appId,
     branchName,
   };
-  const { jobSummaries } = await amplifyClient.listJobs(params).promise();
+  const { jobSummaries } = await amplifyClient.send(new ListJobsCommand(params));
   for (const jobSummary of jobSummaries) {
     const { jobId, status } = jobSummary;
     if (status === 'PENDING' || status === 'RUNNING') {
       const job = { ...params, jobId };
-      await amplifyClient.stopJob(job).promise();
+      await amplifyClient.send(new StopJobCommand(job));
     }
   }
 }
@@ -61,7 +68,7 @@ function waitJobToSucceed(job, amplifyClient) {
     let processing = true;
     try {
       while (processing) {
-        const getJobResult = await amplifyClient.getJob(job).promise();
+        const getJobResult = await amplifyClient.send(new GetJobCommand(job));
         const jobSummary = getJobResult.job.summary;
         if (jobSummary.status === 'FAILED') {
           console.log(`Job failed.${JSON.stringify(jobSummary)}`);

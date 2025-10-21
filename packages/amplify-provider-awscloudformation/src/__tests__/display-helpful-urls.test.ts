@@ -1,8 +1,8 @@
 import { ApiCategoryFacade, BannerMessage, stateManager } from '@aws-amplify/amplify-cli-core';
-import { AWSError } from 'aws-sdk';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { SNS } from '../aws-utils/aws-sns';
 import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
+import { AwsError } from 'aws-sdk-client-mock';
 
 jest.mock('../aws-utils/aws-sns');
 jest.mock('@aws-amplify/amplify-cli-core');
@@ -77,8 +77,8 @@ describe('showSMSSandBoxWarning', () => {
 
   describe('when IAM user is missing sandbox permission', () => {
     beforeEach(() => {
-      const authError = new Error() as AWSError;
-      authError.code = 'AuthorizationError';
+      const authError = new Error() as AwsError;
+      authError.name = 'AuthorizationError';
       mockedSNSClientInstance.isInSandboxMode.mockRejectedValue(authError);
     });
     it('should not show any warning if there is no message associated', async () => {
@@ -110,8 +110,8 @@ describe('showSMSSandBoxWarning', () => {
 
   describe('it should not show any warning message when the SNS API is not deployed', () => {
     beforeEach(() => {
-      const resourceNotFoundError = new Error() as AWSError;
-      resourceNotFoundError.code = 'ResourceNotFound';
+      const resourceNotFoundError = new Error() as AwsError;
+      resourceNotFoundError.name = 'ResourceNotFound';
       mockedSNSClientInstance.isInSandboxMode.mockRejectedValue(resourceNotFoundError);
     });
     it('should not print error', async () => {
@@ -127,8 +127,8 @@ describe('showSMSSandBoxWarning', () => {
 
   describe('it should not show any warning message when there is a network error', () => {
     beforeEach(() => {
-      const networkError = new Error() as AWSError;
-      networkError.code = 'UnknownEndpoint';
+      const networkError = new Error() as AwsError;
+      networkError.name = 'UnknownEndpoint';
       mockedSNSClientInstance.isInSandboxMode.mockRejectedValue(networkError);
     });
 

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-function",
-  "version": "5.7.15",
+  "version": "5.7.16",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -26,10 +26,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/amplify-cli-core": "4.4.2",
-    "@aws-amplify/amplify-environment-parameters": "1.9.20",
+    "@aws-amplify/amplify-cli-core": "4.4.3",
+    "@aws-amplify/amplify-environment-parameters": "1.9.21",
     "@aws-amplify/amplify-function-plugin-interface": "1.12.1",
     "@aws-amplify/amplify-prompts": "2.8.7",
+    "@aws-sdk/client-ssm": "^3.624.0",
     "archiver": "^7.0.1",
     "aws-sdk": "^2.1464.0",
     "chalk": "^4.1.1",
