@@ -2,14 +2,7 @@ import { $TSAny, $TSContext, AmplifyCategories, AmplifyError } from '@aws-amplif
 import { printer } from '@aws-amplify/amplify-prompts';
 import ora from 'ora';
 import os from 'os';
-import {
-  IAMClient,
-  CreatePolicyCommand,
-  AttachRolePolicyCommand,
-  DeletePolicyCommand,
-  DetachRolePolicyCommand,
-  ListAttachedRolePoliciesCommand,
-} from '@aws-sdk/client-iam';
+import IAM from 'aws-sdk/clients/iam';
 
 const providerName = 'awscloudformation';
 const policyNamePrefix = 'pinpoint_amplify-';
@@ -37,8 +30,15 @@ const createPolicy = async (context: $TSContext): Promise<$TSAny> => {
     PolicyDocument: getPolicyDoc(context),
   };
   const iamClient = await getIamClient(context, undefined);
-  const data = await iamClient.send(new CreatePolicyCommand(params));
-  return data.Policy;
+  return new Promise((resolve, reject) => {
+    iamClient.createPolicy(params, (err: $TSAny, data: $TSAny) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data.Policy);
+      }
+    });
+  });
 };
 
 const attachPolicy = async (context: $TSContext, policy: $TSAny): Promise<void> => {
@@ -55,8 +55,15 @@ const attachPolicyToRole = async (context: $TSContext, policy: $TSAny, roleName:
     PolicyArn: policy.Arn,
   };
   const iamClient = await getIamClient(context, 'update');
-  const data = await iamClient.send(new AttachRolePolicyCommand(params));
-  return data;
+  return new Promise((resolve, reject) => {
+    iamClient.attachRolePolicy(params, (err: $TSAny, data: $TSAny) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
 };
 
 const deletePolicy = async (context: $TSContext, policyArn: string): Promise<$TSAny> => {
@@ -64,7 +71,7 @@ const deletePolicy = async (context: $TSContext, policyArn: string): Promise<$TS
     PolicyArn: policyArn,
   };
   const iamClient = await getIamClient(context, undefined);
-  return iamClient.send(new DeletePolicyCommand(params));
+  return iamClient.deletePolicy(params).promise();
 };
 
 const detachPolicyFromRole = async (context: $TSContext, policyArn: string, roleName: string): Promise<$TSAny> => {
@@ -73,13 +80,13 @@ const detachPolicyFromRole = async (context: $TSContext, policyArn: string, role
     RoleName: roleName,
   };
   const iamClient = await getIamClient(context, undefined);
-  return iamClient.send(new DetachRolePolicyCommand(params));
+  return iamClient.detachRolePolicy(params).promise();
 };
 
 const listAttachedRolePolicies = async (context: $TSContext, roleName: string): Promise<$TSAny> => {
   const params = { RoleName: roleName };
   const iamClient = await getIamClient(context, undefined);
-  return iamClient.send(new ListAttachedRolePoliciesCommand(params));
+  return iamClient.listAttachedRolePolicies(params).promise();
 };
 
 /**
@@ -145,7 +152,7 @@ const getIamClient = async (context: $TSContext, action: string | undefined): Pr
   // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
   const provider = require(providerPlugins[providerName]);
   const config = await provider.getConfiguredAWSClientConfig(context, AmplifyCategories.NOTIFICATIONS, action);
-  return new IAMClient({
+  return new IAM({
     ...config,
   });
 };

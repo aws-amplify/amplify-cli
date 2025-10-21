@@ -5,7 +5,6 @@ import { printer, prompter } from '@aws-amplify/amplify-prompts';
 import ora from 'ora';
 import { ChannelAction, ChannelConfigDeploymentType } from './channel-types';
 import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';
-import { UpdateEmailChannelCommand, GetEmailChannelCommand } from '@aws-sdk/client-pinpoint';
 
 const channelName = 'Email';
 const spinner = ora('');
@@ -68,7 +67,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
 
   spinner.start('Enabling Email Channel.');
   try {
-    const data = await context.exeInfo.pinpointClient.send(new UpdateEmailChannelCommand(params));
+    const data = await context.exeInfo.pinpointClient.updateEmailChannel(params).promise();
     spinner.succeed(successMessage ?? `The ${channelName} channel has been successfully enabled.`);
     context.exeInfo.serviceMeta.output[channelName] = {
       RoleArn: params.EmailChannelRequest.RoleArn,
@@ -76,7 +75,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
     };
     return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.EmailChannelResponse);
   } catch (err) {
-    if (err && err.name === 'NotFoundException') {
+    if (err && err.code === 'NotFoundException') {
       spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
       return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, {
         id: params.ApplicationId,
@@ -123,12 +122,12 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
   };
   spinner.start('Disabling Email Channel.');
   try {
-    const data = await context.exeInfo.pinpointClient.send(new UpdateEmailChannelCommand(params));
+    const data = await context.exeInfo.pinpointClient.updateEmailChannel(params).promise();
     spinner.succeed(`The ${channelName} channel has been disabled.`);
     context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
     return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.EmailChannelResponse);
   } catch (err) {
-    if (err && err.name === 'NotFoundException') {
+    if (err && err.code === 'NotFoundException') {
       spinner.succeed(`Project with ID '${params.ApplicationId}' was already deleted from the cloud.`);
       return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, {
         id: params.ApplicationId,
@@ -160,14 +159,14 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
 
   spinner.start(`Retrieving channel information for ${channelName}.`);
   try {
-    const data = await context.exeInfo.pinpointClient.send(new GetEmailChannelCommand(params));
+    const data = await context.exeInfo.pinpointClient.getEmailChannel(params).promise();
     spinner.succeed(`Channel information retrieved for ${channelName}`);
     // eslint-disable-next-line no-param-reassign
     pinpointApp[channelName] = data.EmailChannelResponse;
     return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.EmailChannelResponse);
   } catch (err) {
     spinner.stop();
-    if (err.name !== 'NotFoundException') {
+    if (err.code !== 'NotFoundException') {
       throw new AmplifyFault(
         'NotificationsChannelEmailFault',
         {

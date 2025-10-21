@@ -1,7 +1,4 @@
 import { prompter } from '@aws-amplify/amplify-prompts';
-import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest';
-import { PinpointClient, UpdateEmailChannelCommand } from '@aws-sdk/client-pinpoint';
 import * as channelEmail from '../channel-email';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
 import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService } from '@aws-amplify/amplify-cli-core';
@@ -22,13 +19,11 @@ jest.mock('@aws-amplify/amplify-cli-core', () => {
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
-const mockPinpointClient = mockClient(PinpointClient);
-
-const mockPinpointResponseData = (status: boolean, action: ChannelAction, output: any): IChannelAPIResponse => ({
+const mockPinpointResponseData = (status: boolean, action: ChannelAction): IChannelAPIResponse => ({
   action,
   channel: ChannelType.Email,
   deploymentType: ChannelConfigDeploymentType.INLINE,
-  output,
+  output: undefined,
   response: {
     capability: AmplifyCategories.NOTIFICATIONS,
     pluginName: AmplifyCategories.NOTIFICATIONS,
@@ -38,13 +33,19 @@ const mockPinpointResponseData = (status: boolean, action: ChannelAction, output
   },
 });
 
-const mockContext = (output: $TSAny): $TSContext =>
+const mockPinpointClient = {
+  updateEmailChannel: jest.fn().mockImplementation(() => ({
+    promise: jest.fn(() => mockPinpointResponseData(true, ChannelAction.ENABLE)),
+  })),
+};
+
+const mockContext = (output: $TSAny, client: $TSAny): $TSContext =>
   ({
     exeInfo: {
       serviceMeta: {
         output,
       },
-      pinpointClient: mockPinpointClient as unknown as PinpointClient,
+      pinpointClient: client,
     },
     print: {
       info: jest.fn(),
@@ -52,35 +53,16 @@ const mockContext = (output: $TSAny): $TSContext =>
     },
   } as unknown as $TSContext);
 
-describe('channel-Email', () => {
-  const mockEmailChannelResponse = {
-    Enabled: true,
-    ApplicationId: 'test-app-id',
-    Platform: 'EMAIL' as const,
-  };
-
-  beforeEach(() => {
-    mockPinpointClient.reset();
-  });
-
+describe('channel-FCM', () => {
   test('enable should store role arn', async () => {
-    mockPinpointClient.on(UpdateEmailChannelCommand).resolves({ EmailChannelResponse: mockEmailChannelResponse });
     prompterMock.input.mockResolvedValueOnce('fake@email.com');
     prompterMock.input.mockResolvedValueOnce('fake:arn:identity');
     prompterMock.input.mockResolvedValueOnce('fake:arn:role');
 
-    const mockContextObj = mockContext({ Enabled: true });
+    const mockContextObj = mockContext({ Enabled: true }, mockPinpointClient);
     const data = await channelEmail.enable(mockContextObj, 'successMessage');
-    expect(mockPinpointClient).toHaveReceivedCommandWith(UpdateEmailChannelCommand, {
-      ApplicationId: undefined,
-      EmailChannelRequest: {
-        FromAddress: 'fake@email.com',
-        Identity: 'fake:arn:identity',
-        RoleArn: 'fake:arn:role',
-        Enabled: true,
-      },
-    });
-    expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.ENABLE, mockEmailChannelResponse));
+    expect(mockPinpointClient.updateEmailChannel).toBeCalled();
+    expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.ENABLE));
     expect(mockContextObj.exeInfo.serviceMeta.output['Email'].RoleArn).toEqual('fake:arn:role');
   });
 });
