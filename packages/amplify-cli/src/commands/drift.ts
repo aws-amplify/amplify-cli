@@ -147,25 +147,19 @@ export class AmplifyDriftDetector {
     }
   }
 
-  /**
-   * Get root stack name from team-provider-info.json
-   * Following Amplify's stack naming convention
-   */
   private getRootStackName(): string {
     const projectPath = pathManager.findProjectRoot();
-    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
-    const localEnvInfo = stateManager.getLocalEnvInfo(projectPath);
-    const envName = localEnvInfo.envName;
+    const meta = stateManager.getMeta(projectPath);
 
-    const stackInfo = teamProviderInfo[envName]?.awscloudformation;
-    if (!stackInfo || !stackInfo.StackName) {
+    const stackName = meta?.providers?.awscloudformation?.StackName;
+    if (!stackName) {
       throw new AmplifyError('StackNotFoundError', {
-        message: `Stack information not found for environment "${envName}".`,
+        message: 'Stack information not found in amplify-meta.json.',
         resolution: 'Has the project been deployed? Run "amplify push" to deploy your project.',
       });
     }
 
-    return stackInfo.StackName;
+    return stackName;
   }
 
   /**
