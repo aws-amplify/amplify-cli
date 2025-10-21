@@ -5,7 +5,6 @@ import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from 
 import { buildPinpointChannelResponseSuccess } from './pinpoint-helper';
 import { validateFilePath } from './validate-filepath';
 import fs from 'fs-extra';
-import { UpdateGcmChannelCommand, GetGcmChannelCommand } from '@aws-sdk/client-pinpoint';
 
 const channelName = 'FCM';
 const spinner = ora('');
@@ -64,7 +63,7 @@ export const enable = async (context: $TSContext, successMessage: string | undef
 
   spinner.start('Enabling FCM channel.');
   try {
-    const data = await context.exeInfo.pinpointClient.send(new UpdateGcmChannelCommand(params));
+    const data = await context.exeInfo.pinpointClient.updateGcmChannel(params).promise();
     spinner.succeed(successMessage ?? `The ${channelName} channel has been successfully enabled.`);
     context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
     return buildPinpointChannelResponseSuccess(ChannelAction.ENABLE, deploymentType, channelName, data.GCMChannelResponse);
@@ -118,7 +117,7 @@ export const disable = async (context: $TSContext): Promise<$TSAny> => {
 
   spinner.start('Disabling FCM channel.');
   try {
-    const data = await context.exeInfo.pinpointClient.send(new UpdateGcmChannelCommand(params));
+    const data = await context.exeInfo.pinpointClient.updateGcmChannel(params).promise();
     spinner.succeed(`The ${channelName} channel has been disabled.`);
     context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
     return buildPinpointChannelResponseSuccess(ChannelAction.DISABLE, deploymentType, channelName, data.GCMChannelResponse);
@@ -147,14 +146,14 @@ export const pull = async (context: $TSContext, pinpointApp: $TSAny): Promise<$T
 
   spinner.start(`Retrieving channel information for ${channelName}.`);
   try {
-    const data = await context.exeInfo.pinpointClient.send(new GetGcmChannelCommand(params));
+    const data = await context.exeInfo.pinpointClient.getGcmChannel(params).promise();
     spinner.succeed(`Successfully retrieved channel information for ${channelName}.`);
     // eslint-disable-next-line no-param-reassign
     pinpointApp[channelName] = data.GCMChannelResponse;
     return buildPinpointChannelResponseSuccess(ChannelAction.PULL, deploymentType, channelName, data.GCMChannelResponse);
   } catch (err) {
     spinner.stop();
-    if (err.name !== 'NotFoundException') {
+    if (err.code !== 'NotFoundException') {
       throw new AmplifyFault(
         'NotificationsChannelFCMFault',
         {

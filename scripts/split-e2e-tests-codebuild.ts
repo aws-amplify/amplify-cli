@@ -45,9 +45,6 @@ const RUN_SOLO = [
 const RUN_DUO = [
   'src/__tests__/api_6c.test.ts',
   'src/__tests__/auth_9.test.ts',
-  'src/__tests__/function_2a.test.ts',
-  'src/__tests__/geo-add-d.test.ts',
-  'src/__tests__/migration/api.key.migration5.test.ts',
   'src/__tests__/notifications-analytics-compatibility-in-app-2.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
   'src/__tests__/schema-searchable.test.ts',
