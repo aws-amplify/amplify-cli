@@ -180,6 +180,9 @@
     "follow-redirects": "^1.15.6",
     "tar": "^6.2.1",
     "ejs": "^3.1.10",
-    "form-data": "^4.0.4"
+    "form-data": "^4.0.4",
+    "@smithy/types": "^3.3.0",
+    "@smithy/smithy-client": "^3.1.12",
+    "@smithy/middleware-stack": "^3.0.3"
   }
 }
