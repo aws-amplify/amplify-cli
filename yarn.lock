@@ -881,7 +881,7 @@ __metadata:
     proxy-agent: ^6.3.0
     rimraf: ^6.0.1
     typescript: ^4.9.5
-    xstate: 4.26.1
+    xstate: ^4.14.0
   languageName: unknown
   linkType: soft
 
@@ -35268,10 +35268,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xstate@npm:4.26.1":
-  version: 4.26.1
-  resolution: "xstate@npm:4.26.1"
-  checksum: f221af3400a9c19de4eb6c0b0080364b63a3a352b1af0965b54855a6a41d13a3e104878267ea5f19be8ecbb318559b0930237de68c20b065d58112d7ec23ea78
+"xstate@npm:^4.14.0":
+  version: 4.38.3
+  resolution: "xstate@npm:4.38.3"
+  checksum: 8a2063743517390107275113bca0e757dba99102e7d57d40cf656b5cc03a6f2c5e10fbf3752294d9d29fbe1d8757bb9a54f54c934a22f205a237956dd10dcd0f
   languageName: node
   linkType: hard
 
