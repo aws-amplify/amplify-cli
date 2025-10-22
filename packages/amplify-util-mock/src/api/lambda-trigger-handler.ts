@@ -1,5 +1,11 @@
 import { $TSContext, AmplifyFault, AMPLIFY_SUPPORT_DOCS } from '@aws-amplify/amplify-cli-core';
-import { DynamoDBStreams, Endpoint } from 'aws-sdk';
+import {
+  DynamoDBStreamsClient,
+  DescribeStreamCommand,
+  GetShardIteratorCommand,
+  GetRecordsCommand,
+  Shard,
+} from '@aws-sdk/client-dynamodb-streams';
 import { invokeTrigger } from './lambda-invoke';
 import { isMockable } from '@aws-amplify/amplify-category-function';
 import { printer } from '@aws-amplify/amplify-prompts';
@@ -17,7 +23,7 @@ export const ddbLambdaTriggerHandler = async (
   context: $TSContext,
   streamArn?: string,
   lambdaTrigger?: LambdaTrigger,
-  localDynamoDBEndpoint?: Endpoint,
+  localDynamoDBEndpoint?: string,
 ): Promise<void> => {
   if (!lambdaTrigger || (!lambdaTrigger?.name && !lambdaTrigger?.config)) {
     throw new AmplifyFault('MockProcessFault', {
@@ -60,8 +66,8 @@ export const ddbLambdaTriggerHandler = async (
  * @param streams DDB streams client
  * @returns latest active shard iterator
  */
-export const getLatestShardIterator = async (streamArn: string, streams: DynamoDBStreams): Promise<string> => {
-  const stream = await streams.describeStream({ StreamArn: streamArn }).promise();
+export const getLatestShardIterator = async (streamArn: string, streams: DynamoDBStreamsClient): Promise<string> => {
+  const stream = await streams.send(new DescribeStreamCommand({ StreamArn: streamArn }));
 
   if (!stream) {
     throw new AmplifyFault('MockProcessFault', {
@@ -80,13 +86,13 @@ export const getLatestShardIterator = async (streamArn: string, streams: DynamoD
     });
   }
 
-  const { ShardIterator: start } = await streams
-    .getShardIterator({
+  const { ShardIterator: start } = await streams.send(
+    new GetShardIteratorCommand({
       StreamArn: streamArn,
       ShardId: shardId,
       ShardIteratorType: DDBStreamsShardIteratorType.LATEST,
-    })
-    .promise();
+    }),
+  );
 
   return start;
 };
@@ -98,7 +104,7 @@ enum DDBStreamsShardIteratorType {
   AFTER_SEQUENCE_NUMBER = 'AFTER_SEQUENCE_NUMBER',
 }
 
-const isShardActive = (shard: DynamoDBStreams.Shard): boolean => {
+const isShardActive = (shard: Shard): boolean => {
   return shard.SequenceNumberRange && shard.SequenceNumberRange.StartingSequenceNumber && !shard.SequenceNumberRange.EndingSequenceNumber;
 };
 
@@ -109,15 +115,15 @@ const isShardActive = (shard: DynamoDBStreams.Shard): boolean => {
  * @param streams DDB streams client
  * @returns latest available records from stream
  */
-export const getStreamRecords = async (shardIterator: string, streamArn: string, streams: DynamoDBStreams) => {
+export const getStreamRecords = async (shardIterator: string, streamArn: string, streams: DynamoDBStreamsClient) => {
   const shardIteratorCopy = shardIterator;
   try {
-    const data = await streams.getRecords({ ShardIterator: shardIteratorCopy }).promise();
+    const data = await streams.send(new GetRecordsCommand({ ShardIterator: shardIteratorCopy }));
     return { data: data, shardIterator: shardIteratorCopy };
   } catch (error) {
     printer.info('Re-Trying with a new shard');
     const latestShardIterator = await getLatestShardIterator(streamArn, streams);
-    const data = await streams.getRecords({ ShardIterator: latestShardIterator }).promise();
+    const data = await streams.send(new GetRecordsCommand({ ShardIterator: latestShardIterator }));
     return { data: data, shardIterator: latestShardIterator };
   }
 };
@@ -129,7 +135,7 @@ export const getStreamRecords = async (shardIterator: string, streamArn: string,
 export const pollDDBStreamAndInvokeLambda = async (
   context: $TSContext,
   streamArn: string,
-  streams: DynamoDBStreams,
+  streams: DynamoDBStreamsClient,
   lambdaTrigger: LambdaTrigger,
 ) => {
   let shardIterator = await getLatestShardIterator(streamArn, streams);
@@ -151,15 +157,17 @@ export const pollDDBStreamAndInvokeLambda = async (
   }
 };
 
-export const getDDBStreamsClient = (localDynamoDBEndpoint: Endpoint): DynamoDBStreams => {
+export const getDDBStreamsClient = (localDynamoDBEndpoint: string): DynamoDBStreamsClient => {
   const MOCK_REGION = 'us-fake-1';
   const MOCK_ACCESS_KEY = 'fake';
   const MOCK_SECRET_ACCESS_KEY = 'fake';
 
-  return new DynamoDBStreams({
+  return new DynamoDBStreamsClient({
     endpoint: localDynamoDBEndpoint,
     region: MOCK_REGION,
-    accessKeyId: MOCK_ACCESS_KEY,
-    secretAccessKey: MOCK_SECRET_ACCESS_KEY,
+    credentials: {
+      accessKeyId: MOCK_ACCESS_KEY,
+      secretAccessKey: MOCK_SECRET_ACCESS_KEY,
+    },
   });
 };

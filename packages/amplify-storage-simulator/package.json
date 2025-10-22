@@ -43,8 +43,7 @@
     "@types/glob": "^7.1.1",
     "@types/serve-static": "^1.13.3",
     "@types/uuid": "^8.3.1",
-    "@types/xml": "^1.0.4",
-    "aws-sdk": "^2.1464.0"
+    "@types/xml": "^1.0.4"
   },
   "berry": {
     "plugins": [
