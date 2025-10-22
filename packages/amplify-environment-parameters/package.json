@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-environment-parameters",
-  "version": "1.9.21",
+  "version": "1.9.22",
   "description": "Amplify CLI environment parameter manager",
   "repository": {
     "type": "git",
