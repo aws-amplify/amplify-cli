@@ -427,11 +427,11 @@ batch:
           TEST_SUITE: src/__tests__/schema-auth-1a.test.ts|src/__tests__/geo-headless.test.ts|src/__tests__/function_9a.test.ts
       depend-on:
         - upb
-    - identifier: l_export_pull_a_api_7_api_10
+    - identifier: l_export_pull_a_api_7
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/export-pull-a.test.ts|src/__tests__/api_7.test.ts|src/__tests__/api_10.test.ts
+          TEST_SUITE: src/__tests__/export-pull-a.test.ts|src/__tests__/api_7.test.ts
       depend-on:
         - upb
     - identifier: l_api_key_migration5_schema_iterative_rollback_1
@@ -590,9 +590,11 @@ batch:
       depend-on:
         - upb
     - identifier: l_api_6c_api_2b
+    - identifier: l_api_6c_api_2b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
+          TEST_SUITE: src/__tests__/api_6c.test.ts|src/__tests__/api_2b.test.ts
           TEST_SUITE: src/__tests__/api_6c.test.ts|src/__tests__/api_2b.test.ts
       depend-on:
         - upb
@@ -673,46 +675,46 @@ batch:
           TEST_SUITE: src/__tests__/function_2a.test.ts|src/__tests__/auth_6.test.ts
       depend-on:
         - upb
-    - identifier: l_storage_1b_storage_1a_schema_iterative_update_2
+    - identifier: l_storage_1a_schema_iterative_update_2_function_9b
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/storage-1b.test.ts|src/__tests__/storage-1a.test.ts|src/__tests__/schema-iterative-update-2.test.ts
+          TEST_SUITE: src/__tests__/storage-1a.test.ts|src/__tests__/schema-iterative-update-2.test.ts|src/__tests__/function_9b.test.ts
       depend-on:
         - upb
-    - identifier: l_function_9b_custom_policies_container_api_9b
+    - identifier: l_custom_policies_container_api_9b_function_7
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_9b.test.ts|src/__tests__/custom_policies_container.test.ts|src/__tests__/api_9b.test.ts
+          TEST_SUITE: src/__tests__/custom_policies_container.test.ts|src/__tests__/api_9b.test.ts|src/__tests__/function_7.test.ts
       depend-on:
         - upb
-    - identifier: l_function_7_function_2b_function_11
+    - identifier: l_function_2b_function_11_api_connection_migration2
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/function_7.test.ts|src/__tests__/function_2b.test.ts|src/__tests__/function_11.test.ts
+          TEST_SUITE: src/__tests__/function_2b.test.ts|src/__tests__/function_11.test.ts|src/__tests__/migration/api.connection.migration2.test.ts
       depend-on:
         - upb
-    - identifier: l_api_connection_migration2_storage_4_containers_api_secrets
+    - identifier: l_storage_4_containers_api_secrets_api_4
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/migration/api.connection.migration2.test.ts|src/__tests__/storage-4.test.ts|src/__tests__/containers-api-secrets.test.ts
+          TEST_SUITE: src/__tests__/storage-4.test.ts|src/__tests__/containers-api-secrets.test.ts|src/__tests__/api_4.test.ts
       depend-on:
         - upb
-    - identifier: l_api_4_schema_auth_10_schema_key
+    - identifier: l_schema_auth_10_schema_key_resolvers
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/api_4.test.ts|src/__tests__/schema-auth-10.test.ts|src/__tests__/schema-key.test.ts
+          TEST_SUITE: src/__tests__/schema-auth-10.test.ts|src/__tests__/schema-key.test.ts|src/__tests__/resolvers.test.ts
       depend-on:
         - upb
-    - identifier: l_resolvers_geo_multi_env_searchable_datastore
+    - identifier: l_geo_multi_env_searchable_datastore
       buildspec: codebuild_specs/run_e2e_tests_linux.yml
       env:
         variables:
-          TEST_SUITE: src/__tests__/resolvers.test.ts|src/__tests__/geo-multi-env.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts
+          TEST_SUITE: src/__tests__/geo-multi-env.test.ts|src/__tests__/graphql-v2/searchable-datastore.test.ts
       depend-on:
         - upb
     - identifier: l_schema_searchable_apigw
