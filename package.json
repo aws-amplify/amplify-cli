@@ -110,7 +110,7 @@
     "@commitlint/config-lerna-scopes": "^19.7.0",
     "@commitlint/cz-commitlint": "^17.5.0",
     "@commitlint/prompt": "^17.6.1",
-    "@microsoft/api-extractor": "^7.34.6",
+    "@microsoft/api-extractor": "7.34.6",
     "@types/glob": "^7.1.1",
     "@types/jest": "^29.0.0",
     "@types/js-yaml": "^4.0.0",

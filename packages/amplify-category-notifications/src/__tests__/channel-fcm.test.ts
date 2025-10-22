@@ -1,6 +1,9 @@
 /* eslint-disable spellcheck/spell-checker */
 import { $TSContext, $TSAny, AmplifyCategories, AmplifySupportedService, AmplifyFault } from '@aws-amplify/amplify-cli-core';
 import { prompter } from '@aws-amplify/amplify-prompts';
+import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
+import { PinpointClient, UpdateGcmChannelCommand } from '@aws-sdk/client-pinpoint';
 import * as channelFCM from '../channel-fcm';
 import { ChannelAction, ChannelConfigDeploymentType, IChannelAPIResponse } from '../channel-types';
 import { ChannelType } from '../notifications-backend-cfg-channel-api';
@@ -26,6 +29,8 @@ jest.mock('fs-extra', () => ({
 jest.mock('@aws-amplify/amplify-prompts');
 const prompterMock = prompter as jest.Mocked<typeof prompter>;
 
+const mockPinpointClient = mockClient(PinpointClient);
+
 class NoErrorThrownError extends Error {}
 const getError = async <TError>(call: () => unknown): Promise<TError> => {
   try {
@@ -37,11 +42,11 @@ const getError = async <TError>(call: () => unknown): Promise<TError> => {
 };
 const channelName = 'FCM';
 
-const mockPinpointResponseData = (status: boolean, action: ChannelAction): IChannelAPIResponse => ({
+const mockPinpointResponseData = (status: boolean, action: ChannelAction, output: any): IChannelAPIResponse => ({
   action,
   channel: ChannelType.FCM,
   deploymentType: ChannelConfigDeploymentType.INLINE,
-  output: undefined,
+  output,
   response: {
     capability: AmplifyCategories.NOTIFICATIONS,
     pluginName: AmplifyCategories.NOTIFICATIONS,
@@ -51,13 +56,13 @@ const mockPinpointResponseData = (status: boolean, action: ChannelAction): IChan
   },
 });
 
-const mockContext = (output: $TSAny, client: $TSAny): $TSContext =>
+const mockContext = (output: $TSAny): $TSContext =>
   ({
     exeInfo: {
       serviceMeta: {
         output,
       },
-      pinpointClient: client,
+      pinpointClient: mockPinpointClient as unknown as PinpointClient,
     },
     print: {
       info: jest.fn(),
@@ -65,68 +70,52 @@ const mockContext = (output: $TSAny, client: $TSAny): $TSContext =>
     },
   } as unknown as $TSContext);
 
-const mockContextReject = (output: $TSAny, clientReject: $TSAny): $TSAny => ({
-  exeInfo: {
-    serviceMeta: {
-      output,
-    },
-    pinpointClient: clientReject,
-  },
-  print: {
-    info: jest.fn(),
-    error: jest.fn(),
-  },
-});
-
 describe('channel-FCM', () => {
   const mockServiceOutput: Record<string, unknown> = {};
   const mockChannelEnabledOutput = { Enabled: true };
   mockServiceOutput[channelName] = mockChannelEnabledOutput;
 
   const mockPinpointResponseErr = new Error('channel-FCM.test.js error');
-
-  const mockPinpointClient = {
-    updateGcmChannel: jest.fn().mockImplementation(() => ({
-      promise: jest.fn(() => mockPinpointResponseData(true, ChannelAction.ENABLE)),
-    })),
+  const mockGCMChannelResponse = {
+    Enabled: true,
+    ApplicationId: 'test-app-id',
+    Platform: 'GCM' as const,
   };
 
-  const mockPinpointClientReject = {
-    updateGcmChannel: jest.fn().mockImplementation(() => ({
-      promise: jest.fn(() => {
-        throw mockPinpointResponseErr;
-      }),
-    })),
-  };
+  beforeEach(() => {
+    mockPinpointClient.reset();
+  });
 
   test('configure', async () => {
+    mockPinpointClient.on(UpdateGcmChannelCommand).resolves({ GCMChannelResponse: mockGCMChannelResponse });
+
     mockChannelEnabledOutput.Enabled = true;
     prompterMock.yesOrNo.mockResolvedValueOnce(true);
     prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
 
-    const mockContextObj = mockContext(mockChannelEnabledOutput, mockPinpointClient);
-    await channelFCM.configure(mockContextObj).then(() => {
-      expect(mockPinpointClient.updateGcmChannel).toBeCalled();
-    });
+    const mockContextObj = mockContext(mockChannelEnabledOutput);
+    await channelFCM.configure(mockContextObj);
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateGcmChannelCommand);
 
     mockChannelEnabledOutput.Enabled = true;
     prompterMock.yesOrNo.mockResolvedValueOnce(false);
-    await channelFCM.configure(mockContext(mockChannelEnabledOutput, mockPinpointClient)).then(() => {
-      expect(mockPinpointClient.updateGcmChannel).toBeCalled();
-    });
+    prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
+    await channelFCM.configure(mockContext(mockChannelEnabledOutput));
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateGcmChannelCommand);
 
     mockChannelEnabledOutput.Enabled = false;
     prompterMock.yesOrNo.mockResolvedValueOnce(true);
-    await channelFCM.configure(mockContext(mockChannelEnabledOutput, mockPinpointClient)).then(() => {
-      expect(mockPinpointClient.updateGcmChannel).toBeCalled();
-    });
+    prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
+    await channelFCM.configure(mockContext(mockChannelEnabledOutput));
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateGcmChannelCommand);
   });
 
   test('enable', async () => {
+    mockPinpointClient.on(UpdateGcmChannelCommand).resolves({ GCMChannelResponse: mockGCMChannelResponse });
     prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
-    const mockContextObj = mockContext(mockChannelEnabledOutput, mockPinpointClient);
+    const mockContextObj = mockContext(mockChannelEnabledOutput);
     const data = await channelFCM.enable(mockContextObj, 'successMessage');
-    expect(mockPinpointClient.updateGcmChannel).toBeCalledWith({
+    expect(mockPinpointClient).toHaveReceivedCommandWith(UpdateGcmChannelCommand, {
       ApplicationId: undefined,
       GCMChannelRequest: {
         ServiceJson: serviceAccountJson,
@@ -134,27 +123,30 @@ describe('channel-FCM', () => {
         Enabled: true,
       },
     });
-    expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.ENABLE));
+    expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.ENABLE, mockGCMChannelResponse));
   });
 
   test('enable unsuccessful', async () => {
+    mockPinpointClient.on(UpdateGcmChannelCommand).rejects(mockPinpointResponseErr);
     prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
 
-    const context = mockContextReject(mockServiceOutput, mockPinpointClientReject);
-    const errCert: AmplifyFault = await getError(async () => channelFCM.enable(context as unknown as $TSContext, 'successMessage'));
-    expect(context.exeInfo.pinpointClient.updateGcmChannel).toBeCalled();
+    const context = mockContext(mockServiceOutput);
+    const errCert: AmplifyFault = await getError(async () => channelFCM.enable(context, 'successMessage'));
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateGcmChannelCommand);
     expect(errCert?.downstreamException?.message).toContain(mockPinpointResponseErr.message);
   });
 
   test('disable', async () => {
-    const data = await channelFCM.disable(mockContextReject(mockServiceOutput, mockPinpointClient));
-    expect(mockPinpointClient.updateGcmChannel).toBeCalled();
-    expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.DISABLE));
+    mockPinpointClient.on(UpdateGcmChannelCommand).resolves({ GCMChannelResponse: mockGCMChannelResponse });
+    prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
+    const data = await channelFCM.disable(mockContext(mockServiceOutput));
+    expect(mockPinpointClient).toHaveReceivedCommand(UpdateGcmChannelCommand);
+    expect(data).toEqual(mockPinpointResponseData(true, ChannelAction.DISABLE, mockGCMChannelResponse));
   });
 
   test('disable unsuccessful', async () => {
-    await expect(channelFCM.disable(mockContextReject(mockServiceOutput, mockPinpointClientReject))).rejects.toThrowError(
-      'Failed to disable the FCM channel',
-    );
+    mockPinpointClient.on(UpdateGcmChannelCommand).rejects(mockPinpointResponseErr);
+    prompterMock.input.mockResolvedValueOnce(serviceJSONFilePath);
+    await expect(channelFCM.disable(mockContext(mockServiceOutput))).rejects.toThrowError('Failed to disable the FCM channel');
   });
 });
