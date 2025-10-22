@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-console-integration-tests",
-  "version": "2.11.24",
+  "version": "2.11.25-rc.a1438c586b30f26.0",
   "description": "",
   "repository": {
     "type": "git",

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.25-rc.a1438c586b30f26.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.24...@aws-amplify/amplify-category-auth@3.7.25-rc.a1438c586b30f26.0) (2025-10-22)
+
+
+### Bug Fixes
+
+* cli throws an error when `thirdPartyAuth` is enabled, but `authProvider` is not included ([762f2f2](https://github.com/aws-amplify/amplify-cli/commit/762f2f20c4e4199fdee5e8cec496afa72c4104f2))
+
+
+### Reverts
+
+* Revert "refactor: amplify-category-notifications aws sdk v3 migration (#14271)" (#14285) ([510560d](https://github.com/aws-amplify/amplify-cli/commit/510560decb0735a0e8633aadfa6c23fae376dfe1)), closes [#14271](https://github.com/aws-amplify/amplify-cli/issues/14271) [#14285](https://github.com/aws-amplify/amplify-cli/issues/14285)
+
+
+
+
+
 ## [3.7.24](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@3.7.23...@aws-amplify/amplify-category-auth@3.7.24) (2025-10-08)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-opensearch-simulator",
-  "version": "1.7.21",
+  "version": "1.7.22-rc.a1438c586b30f26.0",
   "description": "Opensearch local simulator",
   "repository": {
     "type": "git",
