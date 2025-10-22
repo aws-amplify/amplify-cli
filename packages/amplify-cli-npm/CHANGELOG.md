@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.1.2...@aws-amplify/cli@14.2.0) (2025-10-22)
+
+
+### Features
+
+* bump version ([#14291](https://github.com/aws-amplify/amplify-cli/issues/14291)) ([a1438c5](https://github.com/aws-amplify/amplify-cli/commit/a1438c586b30f266a7ccca45ef71c23eae762bb8))
+
+
+### Reverts
+
+* Revert "refactor: amplify-category-notifications aws sdk v3 migration (#14271)" (#14285) ([510560d](https://github.com/aws-amplify/amplify-cli/commit/510560decb0735a0e8633aadfa6c23fae376dfe1)), closes [#14271](https://github.com/aws-amplify/amplify-cli/issues/14271) [#14285](https://github.com/aws-amplify/amplify-cli/issues/14285)
+
+
+
+
+
 ## [14.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@14.1.1...@aws-amplify/cli@14.1.2) (2025-10-16)
 
 **Note:** Version bump only for package @aws-amplify/cli
