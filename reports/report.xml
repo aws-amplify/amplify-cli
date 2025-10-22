@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="2" failures="0" errors="0" time="3.491">
+  <testsuite name="validate" errors="0" failures="0" skipped="1" timestamp="2025-10-22T20:36:56" time="3.459" tests="2">
+    <testcase classname="validate should return true" name="validate should return true" time="0.001">
+    </testcase>
+    <testcase classname="validate should return false" name="validate should return false" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
+</testsuites>
